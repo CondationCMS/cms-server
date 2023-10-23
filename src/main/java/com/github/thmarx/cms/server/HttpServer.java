@@ -1,4 +1,8 @@
-package com.github.thmarx.cms.extensions.http;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
+ */
+package com.github.thmarx.cms.server;
 
 /*-
  * #%L
@@ -20,22 +24,13 @@ package com.github.thmarx.cms.extensions.http;
  * #L%
  */
 
-import io.undertow.server.HttpHandler;
-import io.undertow.server.HttpServerExchange;
-import lombok.RequiredArgsConstructor;
+import java.io.IOException;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class UndertowHttpHandlerWrapper implements HttpHandler {
+public interface HttpServer extends AutoCloseable {
 	
-	private final ExtensionHttpHandler handler;
-	
-	@Override
-	public void handleRequest(final HttpServerExchange exchange) throws Exception {
-		handler.execute(new UndertowRequest(exchange), new UndertowResponse(exchange));
-	}
-	
+	void startup () throws IOException;
 }

@@ -21,7 +21,7 @@ package com.github.thmarx.cms.template.thymeleaf;
  */
 import com.github.thmarx.cms.ContentParser;
 import com.github.thmarx.cms.RequestContext;
-import com.github.thmarx.cms.Server;
+import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.template.TemplateEngine;
 import com.github.thmarx.cms.template.functions.list.NodeListFunctionBuilder;
@@ -61,7 +61,7 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 		templateResolver.setPrefix(this.templateBase.toString() + File.separatorChar);
 		//templateResolver.setSuffix(".html");
-		if (Server.DEV_MODE) {
+		if (Startup.DEV_MODE) {
 			templateResolver.setCacheable(false);
 		} else {
 			templateResolver.setCacheable(true);

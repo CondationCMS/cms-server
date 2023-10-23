@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.server;
 
 /*-
  * #%L
@@ -19,6 +19,10 @@ package com.github.thmarx.cms;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.ContentParser;
+import com.github.thmarx.cms.ContentRenderer;
+import com.github.thmarx.cms.ContentResolver;
+import com.github.thmarx.cms.HostProperties;
 import com.github.thmarx.cms.eventbus.EventBus;
 import com.github.thmarx.cms.eventbus.EventListener;
 import com.github.thmarx.cms.eventbus.events.ContentChangedEvent;
@@ -32,13 +36,6 @@ import com.github.thmarx.cms.template.TemplateEngine;
 import com.github.thmarx.cms.template.freemarker.FreemarkerTemplateEngine;
 import com.github.thmarx.cms.template.pebble.PebbleTemplateEngine;
 import com.github.thmarx.cms.template.thymeleaf.ThymeleafTemplateEngine;
-import io.undertow.Handlers;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.RoutingHandler;
-import io.undertow.server.handlers.encoding.EncodingHandler;
-import io.undertow.server.handlers.resource.FileResourceManager;
-import io.undertow.server.handlers.resource.PathResourceManager;
-import io.undertow.server.handlers.resource.ResourceHandler;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -55,15 +52,15 @@ public class VHost {
 
 	private final FileSystem fileSystem;
 
-	private ContentRenderer contentRenderer;
-	private ContentResolver contentResolver;
-	private ContentParser contentParser;
-	private TemplateEngine templateEngine;
-	private ExtensionManager extensionManager;
+	protected ContentRenderer contentRenderer;
+	protected ContentResolver contentResolver;
+	protected ContentParser contentParser;
+	protected TemplateEngine templateEngine;
+	protected ExtensionManager extensionManager;
 
-	private Path contentBase;
-	private Path assetBase;
-	private Path templateBase;
+	protected Path contentBase;
+	protected Path assetBase;
+	protected Path templateBase;
 
 	@Getter
 	private String hostname;
@@ -71,7 +68,7 @@ public class VHost {
 	@Getter
 	private final EventBus eventBus;
 
-	private HostProperties properties;
+	protected HostProperties properties;
 
 	public VHost(final Path hostBase) {
 		this.eventBus = new EventBus();
@@ -120,7 +117,7 @@ public class VHost {
 		});
 	}
 
-	private TemplateEngine resolveTemplateEngine() {
+	protected TemplateEngine resolveTemplateEngine() {
 		var engine = this.properties.templateEngine();
 		return switch (engine) {
 			case "thymeleaf" ->
@@ -132,7 +129,7 @@ public class VHost {
 		};
 	}
 
-	private MarkdownRenderer resolveMarkdownRenderer(final Context context) {
+	protected MarkdownRenderer resolveMarkdownRenderer(final Context context) {
 		var engine = this.properties.markdownEngine();
 		return switch (engine) {
 			case "flexmark" ->
@@ -144,31 +141,5 @@ public class VHost {
 		};
 	}
 
-	public HttpHandler httpHandler() {
-		final PathResourceManager resourceManager = new PathResourceManager(assetBase);
-		ResourceHandler staticResourceHandler = new ResourceHandler(resourceManager);
-		// TODO: think about some better strategy for ttl
-		if (!Server.DEV_MODE) {
-			staticResourceHandler.setCacheTime((int)TimeUnit.DAYS.toSeconds(1));
-		}
-		HttpHandler compressionHandler = new EncodingHandler.Builder().build(null).wrap(staticResourceHandler);
-		//DirectBufferCache assetCache = new DirectBufferCache(100, 10, 1000);
-		//CacheHandler cacheHandler = new CacheHandler(assetCache, new EncodingHandler.Builder().build(null).wrap(staticResourceHandler));
-		
-		ResourceHandler faviconHandler = new ResourceHandler(new FileResourceManager(assetBase.resolve("favicon.ico").toFile()));
-		
-		var pathHandler = Handlers.path(new DefaultHttpHandler(contentResolver, extensionManager, (context) -> {
-			return resolveMarkdownRenderer(context);
-		}))
-				.addPrefixPath("/assets", compressionHandler)
-				.addExactPath("/favicon.ico", faviconHandler);
-
-		RoutingHandler extensionHandler = Handlers.routing();
-		extensionHandler.get("/{name}", new ExtensionsHttpHandler(extensionManager, "get"));
-		extensionHandler.post("/{name}", new ExtensionsHttpHandler(extensionManager, "post"));
-
-		pathHandler.addPrefixPath("/extensions", extensionHandler);
-
-		return pathHandler;
-	}
+	
 }

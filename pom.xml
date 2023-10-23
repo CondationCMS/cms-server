@@ -9,7 +9,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
-		<exec.mainClass>com.github.thmarx.cms.Server</exec.mainClass>
+		<exec.mainClass>com.github.thmarx.cms.Startup</exec.mainClass>
 	</properties>
 	<inceptionYear>2023</inceptionYear>
 	<organization>
@@ -25,7 +25,12 @@
 		<dependency>
 			<groupId>io.undertow</groupId>
 			<artifactId>undertow-core</artifactId>
-			<version>2.3.8.Final</version>
+			<version>2.3.9.Final</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>jetty-server</artifactId>
+			<version>12.0.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -70,14 +75,14 @@
 			<version>32.1.2-jre</version>
 		</dependency>
 		<dependency>
-			<groupId>org.graalvm.sdk</groupId>
-			<artifactId>graal-sdk</artifactId>
-			<version>23.1.0</version>
+			<groupId>org.graalvm.polyglot</groupId>
+			<artifactId>polyglot</artifactId>
+			<version>23.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.graalvm.js</groupId>
 			<artifactId>js-language</artifactId>
-			<version>23.1.0</version>
+			<version>23.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

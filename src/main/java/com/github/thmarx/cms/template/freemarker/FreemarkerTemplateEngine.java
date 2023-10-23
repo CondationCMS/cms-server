@@ -22,7 +22,7 @@ package com.github.thmarx.cms.template.freemarker;
 
 import com.github.thmarx.cms.ContentParser;
 import com.github.thmarx.cms.RequestContext;
-import com.github.thmarx.cms.Server;
+import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.template.TemplateEngine;
 import com.github.thmarx.cms.template.functions.list.NodeListFunctionBuilder;
@@ -66,7 +66,7 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 		config.setWrapUncheckedExceptions(true);
 		config.setFallbackOnNullLoopVariable(false);
 
-		if (Server.DEV_MODE) {
+		if (Startup.DEV_MODE) {
 			config.setCacheStorage(new NullCacheStorage());
 			config.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
 		} else {

@@ -23,7 +23,7 @@ package com.github.thmarx.cms.template.pebble;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.thmarx.cms.ContentParser;
 import com.github.thmarx.cms.RequestContext;
-import com.github.thmarx.cms.Server;
+import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.template.TemplateEngine;
 import com.github.thmarx.cms.template.functions.list.NodeListFunctionBuilder;
@@ -67,7 +67,7 @@ public class PebbleTemplateEngine implements TemplateEngine {
 		final PebbleEngine.Builder builder = new PebbleEngine.Builder()
 				.loader(loader);
 		
-		if (Server.DEV_MODE) {
+		if (Startup.DEV_MODE) {
 			builder.templateCache(null);
 			builder.tagCache(null);
 			builder.cacheActive(false);

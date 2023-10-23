@@ -21,6 +21,7 @@ package com.github.thmarx.cms;
  */
 
 import java.util.Deque;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public record RequestContext(String uri, Map<String, Deque<String>> queryParameters, RenderContext renderContext) {
+public record RequestContext(String uri, Map<String, List<String>> queryParameters, RenderContext renderContext) {
 
 	public String getQueryParameter(String name, final String defaultValue) {
 		if (!queryParameters.containsKey(name)) {

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template;
+package com.github.thmarx.cms.extensions.http.jetty;
 
 /*-
  * #%L
@@ -20,27 +20,29 @@ package com.github.thmarx.cms.template;
  * #L%
  */
 
-import com.github.thmarx.cms.template.freemarker.FreemarkerTemplateEngine;
-import com.github.thmarx.cms.RequestContext;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import com.github.thmarx.cms.extensions.http.Response;
+import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.jetty.util.Callback;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface TemplateEngine {
+@RequiredArgsConstructor
+public class JettyResponse implements Response {
 	
-	public void invalidateCache();
+	private final org.eclipse.jetty.server.Response original;
+	private final Callback callback;
 
-	String render(final String template, final FreemarkerTemplateEngine.Model model, final RequestContext context) throws IOException;
-	
-	@RequiredArgsConstructor
-	public static class Model {
-		public final Map<String, Object> values = new HashMap<>();
-		public final Path contentFile;
-	} 
+	@Override
+	public void addHeader(String name, String value) {
+		original.getHeaders().add(name, value);
+	}
+
+	@Override
+	public void write(String content, Charset charset) {
+		original.write(true, ByteBuffer.wrap(content.getBytes(charset)), callback);
+	}
 }

@@ -1,8 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.server.undertow;
 
 /*-
  * #%L
@@ -26,7 +22,7 @@ package com.github.thmarx.cms;
 
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
-import com.github.thmarx.cms.extensions.http.UndertowHttpHandlerWrapper;
+import com.github.thmarx.cms.extensions.http.undertow.UndertowHttpHandlerWrapper;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import java.util.Optional;
@@ -37,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class ExtensionsHttpHandler implements HttpHandler {
+public class UndertowExtensionsHttpHandler implements HttpHandler {
 
 	private final ExtensionManager extensionManager;
 	private final String method;

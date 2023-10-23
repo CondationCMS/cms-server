@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.extensions.http;
+package com.github.thmarx.cms.extensions.http.jetty;
 
 /*-
  * #%L
@@ -19,8 +19,8 @@ package com.github.thmarx.cms.extensions.http;
  * limitations under the License.
  * #L%
  */
-
-import io.undertow.server.HttpServerExchange;
+import com.github.thmarx.cms.extensions.http.Request;
+import com.github.thmarx.cms.server.jetty.JettyDefaultHandler;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.http.Trailers;
+import org.eclipse.jetty.io.Content;
 
 /**
  *
@@ -36,37 +38,40 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class UndertowRequest implements Request {
+public class JettyRequest implements Request {
 
-	private final HttpServerExchange exchange;
+	private final org.eclipse.jetty.server.Request original;
 
 	private String body = "";
 	public boolean bodyRead = false;
-	
-	public String getBody () {
+
+	public String getBody() {
 		return getBody(StandardCharsets.UTF_8);
 	}
-	
-	public String getBody (final Charset charset) {
-		if (!bodyRead) {			
-			try {
-				body = new String(exchange.getInputStream().readAllBytes(), charset);
+
+	public String getBody(final Charset charset) {
+		if (!bodyRead) {
+			try (var inputStream = org.eclipse.jetty.server.Request.asInputStream(original)) {
+				
+				body = new String(inputStream.readAllBytes(), charset);
 				bodyRead = true;
-			} catch (IOException ex) {
+			} catch (Exception ex) {
 				log.error("", ex);
 			}
 		}
 		return body;
 	}
-	
+
 	public List<String> getQueryParamter(final String name) {
-		if (exchange.getQueryParameters().containsKey(name)) {
-			return new ArrayList<>(exchange.getQueryParameters().get(name));
+		var queryParameters = JettyDefaultHandler.queryParameters(original.getHttpURI().getQuery());
+		if (queryParameters.containsKey(name)) {
+			return queryParameters.get(name);
 		}
 		return Collections.emptyList();
 	}
 
 	public List<String> getQueryParamters() {
-		return new ArrayList<>(exchange.getQueryParameters().keySet());
+		var queryParameters = JettyDefaultHandler.queryParameters(original.getHttpURI().getQuery());
+		return new ArrayList<>(queryParameters.keySet());
 	}
 }

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.server.undertow;
 
 /*-
  * #%L
@@ -19,12 +19,16 @@ package com.github.thmarx.cms;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.*;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.markdown.MarkdownRenderer;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.HttpString;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +41,7 @@ import org.graalvm.polyglot.Context;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class DefaultHttpHandler implements HttpHandler {
+public class UndertowDefaultHttpHandler implements HttpHandler {
 
 	private final ContentResolver contentResolver;
 	private final ExtensionManager manager;
@@ -50,12 +54,16 @@ public class DefaultHttpHandler implements HttpHandler {
 			exchange.dispatch(this);
 			return;
 		}
+		var queryParameters = new HashMap<String, List<String>>();
+		exchange.getQueryParameters().entrySet().forEach(entry -> {
+			queryParameters.put(entry.getKey(), new ArrayList<>(entry.getValue()));
+		});
 		try (var contextHolder = manager.newContext()) {
-			RequestContext context = new RequestContext(exchange.getRelativePath(), exchange.getQueryParameters(),
+			RequestContext context = new RequestContext(exchange.getRelativePath(), queryParameters,
 					new RenderContext(contextHolder, markdownRendererProvider.apply(contextHolder.getContext())));
 			Optional<String> content = contentResolver.getContent(context);
 			if (!content.isPresent()) {
-				context = new RequestContext("/.technical/404", exchange.getQueryParameters(),
+				context = new RequestContext("/.technical/404", queryParameters,
 						new RenderContext(contextHolder, markdownRendererProvider.apply(contextHolder.getContext())));
 				content = contentResolver.getContent(context);
 				exchange.setStatusCode(404);

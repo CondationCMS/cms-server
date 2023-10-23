@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template;
+package com.github.thmarx.cms.extensions.http.jetty;
 
 /*-
  * #%L
@@ -20,27 +20,29 @@ package com.github.thmarx.cms.template;
  * #L%
  */
 
-import com.github.thmarx.cms.template.freemarker.FreemarkerTemplateEngine;
-import com.github.thmarx.cms.RequestContext;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+
+import com.github.thmarx.cms.extensions.http.ExtensionHttpHandler;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface TemplateEngine {
+@RequiredArgsConstructor
+public class JettyHttpHandlerWrapper extends Handler.Abstract {
 	
-	public void invalidateCache();
+	private final ExtensionHttpHandler handler;
 
-	String render(final String template, final FreemarkerTemplateEngine.Model model, final RequestContext context) throws IOException;
+	@Override
+	public boolean handle(Request request, Response response, Callback callback) throws Exception {
+		handler.execute(new JettyRequest(request), new JettyResponse(response, callback));
+		return true;
+	}
 	
-	@RequiredArgsConstructor
-	public static class Model {
-		public final Map<String, Object> values = new HashMap<>();
-		public final Path contentFile;
-	} 
+	
+	
 }

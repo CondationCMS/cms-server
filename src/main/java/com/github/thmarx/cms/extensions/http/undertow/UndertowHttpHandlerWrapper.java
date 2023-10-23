@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template;
+package com.github.thmarx.cms.extensions.http.undertow;
 
 /*-
  * #%L
@@ -20,27 +20,23 @@ package com.github.thmarx.cms.template;
  * #L%
  */
 
-import com.github.thmarx.cms.template.freemarker.FreemarkerTemplateEngine;
-import com.github.thmarx.cms.RequestContext;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
+import com.github.thmarx.cms.extensions.http.ExtensionHttpHandler;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
 import lombok.RequiredArgsConstructor;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface TemplateEngine {
+@RequiredArgsConstructor
+public class UndertowHttpHandlerWrapper implements HttpHandler {
 	
-	public void invalidateCache();
-
-	String render(final String template, final FreemarkerTemplateEngine.Model model, final RequestContext context) throws IOException;
+	private final ExtensionHttpHandler handler;
 	
-	@RequiredArgsConstructor
-	public static class Model {
-		public final Map<String, Object> values = new HashMap<>();
-		public final Path contentFile;
-	} 
+	@Override
+	public void handleRequest(final HttpServerExchange exchange) throws Exception {
+		handler.execute(new UndertowRequest(exchange), new UndertowResponse(exchange));
+	}
+	
 }

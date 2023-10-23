@@ -49,7 +49,7 @@ public class ContentParser {
 
 		var builder = Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(1));
-		if (Server.DEV_MODE) {
+		if (Startup.DEV_MODE) {
 			builder.maximumSize(0);
 		}
 		contentCache = builder.build();

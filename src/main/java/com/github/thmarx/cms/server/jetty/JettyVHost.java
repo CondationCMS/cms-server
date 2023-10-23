@@ -26,9 +26,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.PathMappingsHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.util.resource.PathResourceFactory;
@@ -45,58 +47,33 @@ public class JettyVHost extends VHost {
 	}
 
 	public Handler httpHandler() {
-		ContextHandlerCollection contextCollection = new ContextHandlerCollection();
 		final PathResourceFactory pathResourceFactory = new PathResourceFactory();
-
-		// default handler
 		
 		var defaultHandler = new JettyDefaultHandler(contentResolver, extensionManager, (context) -> {
 			return resolveMarkdownRenderer(context);
 		});
-		final ContextHandler defaultContextHandler = new ContextHandler("/");
-		defaultContextHandler.setContextPath("/");
-		defaultContextHandler.setHandler(defaultHandler);
-		defaultContextHandler.setVirtualHosts(List.of(properties.hostname()));
-		contextCollection.addHandler(defaultContextHandler);
 	
 		log.debug("create assets handler for {}", assetBase.toString());
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
-		assetsHandler.setBaseResource(pathResourceFactory.newResource(assetBase));
-		final ContextHandler assetsContextHandler = new ContextHandler(assetsHandler, "/assets");
-		assetsContextHandler.addAliasCheck((eins, zwei) -> {
-			try {
-				return PathUtil.isChild(assetBase, zwei.getPath());
-			} catch (IOException ioe) {
-				log.error(null,ioe);
-			}
-			return false;
-		});
-		assetsContextHandler.setVirtualHosts(List.of(properties.hostname()));
-		contextCollection.addHandler(assetsContextHandler);
+		assetsHandler.setBaseResource(new FolderPathResource(assetBase));
 		
 		ResourceHandler faviconHandler = new ResourceHandler();
 		faviconHandler.setDirAllowed(false);
-		faviconHandler.setBaseResource(pathResourceFactory.newResource(assetBase.resolve("favicon.ico")));
-		final ContextHandler faviconContextHandler = new ContextHandler(faviconHandler, "/favicon.ico");
-		faviconContextHandler.addAliasCheck((eins, zwei) -> {
-			try {
-				return PathUtil.isChild(assetBase, zwei.getPath());
-			} catch (IOException ioe) {
-				log.error(null,ioe);
-			}
-			return false;
-		});
-		faviconContextHandler.setVirtualHosts(List.of(properties.hostname()));
-		contextCollection.addHandler(faviconContextHandler);
+		faviconHandler.setBaseResource(new FolderPathResource(assetBase.resolve("favicon.ico")));
 		
 		var extensionHandler = new JettyExtensionHandler(extensionManager);
-		final ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extensions");
-		extensionContextHandler.setVirtualHosts(List.of(properties.hostname()));
-		contextCollection.addHandler(extensionContextHandler);
 		
+		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
+		pathMappingsHandler.addMapping(PathSpec.from("/"), defaultHandler);
+		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
+        pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
+		pathMappingsHandler.addMapping(PathSpec.from("/extensions/*"), extensionHandler);
 		
-		GzipHandler gzipHandler = new GzipHandler(contextCollection);
+		ContextHandler contextHandler = new ContextHandler(pathMappingsHandler, "/");
+		contextHandler.setVirtualHosts(List.of(properties.hostname()));
+		
+		GzipHandler gzipHandler = new GzipHandler(contextHandler);
 		gzipHandler.setMinGzipSize(10);
 		gzipHandler.addIncludedMimeTypes("text/plain");
         gzipHandler.addIncludedMimeTypes("text/html");

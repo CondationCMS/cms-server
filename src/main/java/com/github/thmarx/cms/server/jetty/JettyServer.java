@@ -84,6 +84,7 @@ public class JettyServer implements HttpServer {
 
 		HttpConfiguration httpConfig = new HttpConfiguration();
 		httpConfig.setSendServerVersion(false);
+		httpConfig.setSendXPoweredBy(false);
 		HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
 
 		server = new Server();

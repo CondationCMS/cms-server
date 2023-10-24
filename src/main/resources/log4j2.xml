@@ -17,6 +17,10 @@
 		<Logger name="extensions" level="debug" additivity="false">
 			<AppenderRef ref="console"/>
 		</Logger>
+		<!-- config jetty request logger -->
+		<!--Logger name="org.eclipse.jetty.server.RequestLog" level="info" additivity="false">
+			<AppenderRef ref="console"/>
+		</Logger-->
 		<Root level="error">
 			<AppenderRef ref="console"/>
 		</Root>

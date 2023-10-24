@@ -42,10 +42,12 @@ public class JettyRequest implements Request {
 	private String body = "";
 	public boolean bodyRead = false;
 
+	@Override
 	public String getBody() {
 		return getBody(StandardCharsets.UTF_8);
 	}
 
+	@Override
 	public String getBody(final Charset charset) {
 		if (!bodyRead) {
 			try (var inputStream = org.eclipse.jetty.server.Request.asInputStream(original)) {
@@ -59,6 +61,7 @@ public class JettyRequest implements Request {
 		return body;
 	}
 
+	@Override
 	public List<String> getQueryParamter(final String name) {
 		var queryParameters = JettyDefaultHandler.queryParameters(original.getHttpURI().getQuery());
 		if (queryParameters.containsKey(name)) {
@@ -67,6 +70,7 @@ public class JettyRequest implements Request {
 		return Collections.emptyList();
 	}
 
+	@Override
 	public List<String> getQueryParamters() {
 		var queryParameters = JettyDefaultHandler.queryParameters(original.getHttpURI().getQuery());
 		return new ArrayList<>(queryParameters.keySet());

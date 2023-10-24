@@ -1,5 +1,12 @@
 package com.github.thmarx.cms.extensions.http;
 
+import com.github.thmarx.cms.server.jetty.JettyDefaultHandler;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 /*-
  * #%L
  * cms-server
@@ -25,5 +32,14 @@ package com.github.thmarx.cms.extensions.http;
  * @author t.marx
  */
 public interface Request {
-	
+	public String getBody();
+
+	public String getBody(final Charset charset);
+
+	public List<String> getQueryParamter(final String name);
+	/**
+	 * Returns a list of query parameter names
+	 * @return 
+	 */
+	public List<String> getQueryParamters();
 }

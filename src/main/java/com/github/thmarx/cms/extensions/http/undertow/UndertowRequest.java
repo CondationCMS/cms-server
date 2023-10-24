@@ -44,10 +44,12 @@ public class UndertowRequest implements Request {
 	private String body = "";
 	public boolean bodyRead = false;
 	
+	@Override
 	public String getBody () {
 		return getBody(StandardCharsets.UTF_8);
 	}
 	
+	@Override
 	public String getBody (final Charset charset) {
 		if (!bodyRead) {			
 			try {
@@ -60,6 +62,7 @@ public class UndertowRequest implements Request {
 		return body;
 	}
 	
+	@Override
 	public List<String> getQueryParamter(final String name) {
 		if (exchange.getQueryParameters().containsKey(name)) {
 			return new ArrayList<>(exchange.getQueryParameters().get(name));
@@ -67,6 +70,7 @@ public class UndertowRequest implements Request {
 		return Collections.emptyList();
 	}
 
+	@Override
 	public List<String> getQueryParamters() {
 		return new ArrayList<>(exchange.getQueryParameters().keySet());
 	}

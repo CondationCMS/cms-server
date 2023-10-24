@@ -21,7 +21,6 @@ package com.github.thmarx.cms.extensions.http.jetty;
  */
 import com.github.thmarx.cms.extensions.http.Request;
 import com.github.thmarx.cms.server.jetty.JettyDefaultHandler;
-import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -29,8 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.http.Trailers;
-import org.eclipse.jetty.io.Content;
 
 /**
  *

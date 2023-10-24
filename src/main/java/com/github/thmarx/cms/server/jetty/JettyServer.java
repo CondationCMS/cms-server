@@ -29,6 +29,7 @@ import java.util.Properties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.github.thmarx.cms.server.HttpServer;
+import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -38,6 +39,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.strategy.AdaptiveExecutionStrategy;
 
 /**
  *
@@ -87,7 +90,10 @@ public class JettyServer implements HttpServer {
 		httpConfig.setSendXPoweredBy(false);
 		HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
 
-		server = new Server();
+		QueuedThreadPool threadPool = new QueuedThreadPool();
+		threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
+
+		server = new Server(threadPool);
 		server.setRequestLog(new CustomRequestLog(new Slf4jRequestLogWriter(), CustomRequestLog.EXTENDED_NCSA_FORMAT));
 
 		ServerConnector connector = new ServerConnector(server, http11);

@@ -19,7 +19,6 @@ package com.github.thmarx.cms.server.jetty;
  * limitations under the License.
  * #L%
  */
-
 import com.github.thmarx.cms.utils.PathUtil;
 import java.io.IOException;
 import java.net.URI;
@@ -38,11 +37,11 @@ import org.eclipse.jetty.util.resource.Resource;
  * @author t.marx
  */
 @Slf4j
-public class FolderPathResource extends Resource {
+public class FileFolderPathResource extends Resource {
 
 	private final Path path;
 
-	public FolderPathResource(Path path) {
+	public FileFolderPathResource(Path path) {
 		this.path = path;
 	}
 
@@ -78,12 +77,16 @@ public class FolderPathResource extends Resource {
 
 	@Override
 	public String getName() {
-		return path.getFileName().toString();
+		return path.toAbsolutePath().toString();
 	}
 
 	@Override
 	public String getFileName() {
-		return path.getFileName().toString();
+		Path fn = path.getFileName();
+		if (fn == null) {
+			return "";
+		}
+		return fn.toString();
 	}
 
 	@Override
@@ -115,7 +118,7 @@ public class FolderPathResource extends Resource {
 	}
 
 	protected Resource newResource(Path path) {
-		return new FolderPathResource(path);
+		return new FileFolderPathResource(path);
 	}
 
 	@Override

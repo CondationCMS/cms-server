@@ -53,11 +53,11 @@ public class JettyVHost extends VHost {
 		log.debug("create assets handler for {}", assetBase.toString());
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
-		assetsHandler.setBaseResource(new FolderPathResource(assetBase));
+		assetsHandler.setBaseResource(new FileFolderPathResource(assetBase));
 		
 		ResourceHandler faviconHandler = new ResourceHandler();
 		faviconHandler.setDirAllowed(false);
-		faviconHandler.setBaseResource(new FolderPathResource(assetBase.resolve("favicon.ico")));
+		faviconHandler.setBaseResource(new FileFolderPathResource(assetBase.resolve("favicon.ico")));
 		
 		var extensionHandler = new JettyExtensionHandler(extensionManager);
 		

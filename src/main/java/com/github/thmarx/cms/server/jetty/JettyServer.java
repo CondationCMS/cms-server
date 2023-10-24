@@ -92,7 +92,7 @@ public class JettyServer implements HttpServer {
 
 		ServerConnector connector = new ServerConnector(server, http11);
 		connector.setPort(Integer.valueOf(properties.getProperty("server.port", "8080")));
-		connector.setHost("0.0.0.0");
+		connector.setHost(properties.getProperty("server.ip", "127.0.0.1"));
 
 		server.addConnector(connector);
 		

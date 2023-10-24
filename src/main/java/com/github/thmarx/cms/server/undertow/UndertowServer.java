@@ -76,8 +76,10 @@ public class UndertowServer implements HttpServer {
 		}));
 
 		server = Undertow.builder()
-				.addHttpListener(Integer.valueOf(properties.getProperty("server.port", "8080")), "0.0.0.0")
-				.setHandler(hostHandlers)
+				.addHttpListener(
+						Integer.valueOf(properties.getProperty("server.port", "8080")), 
+						properties.getProperty("server.ip", "127.0.0.1")
+				).setHandler(hostHandlers)
 				.setServerOption(UndertowOptions.URL_CHARSET, "UTF8")
 				.build();
 		server.start();

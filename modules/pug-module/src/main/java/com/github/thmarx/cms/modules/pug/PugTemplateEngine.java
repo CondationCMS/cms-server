@@ -20,20 +20,18 @@ package com.github.thmarx.cms.modules.pug;
  * #L%
  */
 
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import de.neuland.pug4j.PugConfiguration;
+import de.neuland.pug4j.expression.GraalJsExpressionHandler;
 import de.neuland.pug4j.template.FileTemplateLoader;
 import de.neuland.pug4j.template.PugTemplate;
-import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.time.Duration;
 
 /**
  *
@@ -43,19 +41,15 @@ public class PugTemplateEngine implements TemplateEngine {
 
 	private final PugConfiguration config;
 	private final Path templateBase;
-	final Path contentBase; 
-
-	final ModuleFileSystem fileSystem;
 	
 	public PugTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties properties) {
-		this.fileSystem = fileSystem;
 		this.templateBase = fileSystem.resolve("templates/");
-		this.contentBase = fileSystem.resolve("content/");
 		
 		config = new PugConfiguration();
 		var fileTemplateLoader = new FileTemplateLoader(templateBase.toAbsolutePath().toString(), StandardCharsets.UTF_8);
 		config.setTemplateLoader(fileTemplateLoader);
 		config.setCaching(false);
+		//config.setExpressionHandler(new GraalJsExpressionHandler());
 		
 		if (properties.dev()) {
 			config.setCaching(false);

@@ -28,7 +28,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import static org.testng.Assert.*;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 

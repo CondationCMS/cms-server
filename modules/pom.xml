@@ -17,5 +17,6 @@
 		<module>thymeleaf-module</module>
 		<module>freemarker-module</module>
 		<module>markedjs-module</module>
+		<module>pug-module</module>
 	</modules>
 </project>

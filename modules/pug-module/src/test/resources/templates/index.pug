@@ -1,0 +1,10 @@
+doctype html
+html
+  head
+    title= pageName
+  body
+    p #{books.size()}
+    ol#books
+      for book in books
+        if book.available()
+          li #{book.name()} for #{book.price()} €

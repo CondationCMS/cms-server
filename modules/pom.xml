@@ -18,5 +18,6 @@
 		<module>freemarker-module</module>
 		<module>markedjs-module</module>
 		<module>pug-module</module>
+		<module>search-module</module>
 	</modules>
 </project>

@@ -41,6 +41,9 @@ public class SiteProperties {
 	public Object get (final String name) {
 		return properties.get(name);
 	}
+	public <T> T getOrDefault (final String name, final T defaultValue) {
+		return (T)properties.getOrDefault(name, defaultValue);
+	}
 	
 	private Map<String, Object> getSubMap (final String name) {
 		return (Map<String, Object>) properties.getOrDefault(name, Collections.emptyMap());

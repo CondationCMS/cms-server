@@ -51,6 +51,7 @@ public class ContentResolver {
 		if (Strings.isNullOrEmpty(context.uri())) {
 			path = "";
 		} else {
+			// remove leading slash
 			path = context.uri().substring(1);
 		}
 		

@@ -1,0 +1,118 @@
+package com.github.thmarx.cms.server.jetty.handler;
+
+/*-
+ * #%L
+ * cms-server
+ * %%
+ * Copyright (C) 2023 Marx-Software
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
+import com.github.thmarx.modules.api.ModuleManager;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.server.Response;
+import org.eclipse.jetty.util.Callback;
+
+/**
+ *
+ * @author t.marx
+ */
+@RequiredArgsConstructor
+@Slf4j
+public class JettyModuleMappingHandler extends Handler.Abstract {
+
+	private final ModuleManager moduleManager;
+
+	@Override
+	public boolean handle(Request request, Response response, Callback callback) throws Exception {
+		try {
+			String moduleId = getModuleID(request);
+
+			var module = moduleManager.module(moduleId);
+
+			if (module == null || !module.provides(JettyHttpHandlerExtensionPoint.class)) {
+				response.setStatus(404);
+				callback.succeeded();
+				return false;
+			}
+
+			var extensions = module.extensions(JettyHttpHandlerExtensionPoint.class);
+			var uri = getModuleUri(request);
+
+			Optional<JettyHttpHandlerExtensionPoint> findFirst = extensions.stream().filter(ext -> ext.getHandler().getMatchingHandler(uri).isPresent()).findFirst();
+
+			if (findFirst.isPresent()) {
+				var mapping = findFirst.get().getHandler();
+				Optional<Handler> matchingHandler = mapping.getMatchingHandler(uri);
+				if (matchingHandler.isPresent()) {
+
+					var ext = matchingHandler.get();
+					var classLoader = Thread.currentThread().getContextClassLoader();
+					try {
+						Thread.currentThread().setContextClassLoader(ext.getClass().getClassLoader());
+						setServer(getServer());
+						ext.start();
+						return ext.handle(request, response, callback);
+
+					} finally {
+						Thread.currentThread().setContextClassLoader(classLoader);
+					}
+
+				}
+			}
+			response.setStatus(404);
+			callback.succeeded();
+			return false;
+		} catch (Exception e) {
+			log.error(null, e);
+			callback.failed(e);
+			return false;
+		}
+
+	}
+
+	private String getModuleUri(Request request) {
+		var modulePath = getModulePath(request);
+		if (modulePath.contains("/")) {
+			return modulePath.substring(modulePath.indexOf("/"));
+		}
+		return modulePath;
+	}
+
+	private String getModuleID(Request request) {
+		var modulePath = getModulePath(request);
+		if (modulePath.contains("/")) {
+			return modulePath.split("/")[0];
+		}
+		return modulePath;
+	}
+
+	private String getModulePath(Request request) {
+		var path = request.getHttpURI().getPath();
+		var contextPath = request.getContext().getContextPath();
+		path = path.replace(contextPath, "");
+
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+
+		return path;
+	}
+
+}

@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
+import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,16 +83,15 @@ public class JettyVHost extends VHost {
 		defaultContextHandler.setVirtualHosts(List.of(properties.hostname()));
 		
 		
-//		var moduleHandler = new JettyModuleHandler(moduleManager);
-//		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
+		var moduleHandler = new JettyModuleMappingHandler(moduleManager);
+		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
 		var extensionHandler = new JettyExtensionHandler(extensionManager);
 		ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extension");
 		
 		ContextHandlerCollection contextCollection = new ContextHandlerCollection(
 				defaultContextHandler,
-//				moduleContextHandler,
-				extensionContextHandler,
-				modulesContextHandler()
+				moduleContextHandler,
+				extensionContextHandler
 		);
 		
 		
@@ -103,35 +103,5 @@ public class JettyVHost extends VHost {
 		gzipHandler.addIncludedMimeTypes("application/javascript");
 
 		return gzipHandler;
-	}
-	
-	private ContextHandler modulesContextHandler () {
-		List<ContextHandler> contextHandlers = new ArrayList<>();
-		moduleManager.extensions(JettyHttpHandlerExtensionPoint.class).forEach((extension) -> {
-			contextHandlers.add(new ContextHandler(
-					new MappingHandler(extension.getHandler()), extension.getContextPath() 
-			));
-		});
-		ContextHandler modulesContextHandler = new ContextHandler(
-				new ContextHandlerCollection(contextHandlers.toArray(ContextHandler[]::new)),
-				"/module"
-		);
-		
-		return modulesContextHandler;
-	}
-	
-	@RequiredArgsConstructor
-	private static class MappingHandler extends Handler.Abstract {
-
-		private final Mapping mapping;
-		
-		@Override
-		public boolean handle(Request rqst, Response rspns, Callback clbck) throws Exception {
-		
-			var path = rqst.getHttpURI().getCanonicalPath();
-			var contextPath = rqst.getContext().getContextPath();
-			clbck.succeeded();
-			return true;
-		}		
 	}
 }

@@ -12,4 +12,4 @@ modules:
 #    - pebble-module
     - thymeleaf-module
 #    - freemarker-module
-#    - ui-module
+    - ui-module

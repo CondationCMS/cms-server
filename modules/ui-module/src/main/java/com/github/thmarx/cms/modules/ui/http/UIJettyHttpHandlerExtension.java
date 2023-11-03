@@ -22,6 +22,12 @@ package com.github.thmarx.cms.modules.ui.http;
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.modules.api.annotation.Extension;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
 import org.eclipse.jetty.server.handler.ResourceHandler;
@@ -32,6 +38,7 @@ import org.eclipse.jetty.util.resource.ResourceFactory;
  * @author t.marx
  */
 @Extension(JettyHttpHandlerExtensionPoint.class)
+@Slf4j
 public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint {
 
 	@Override
@@ -41,25 +48,31 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 
 	@Override
 	public Mapping getHandler() {
+		Mapping mapping = new Mapping();
 
 		var classLoader = Thread.currentThread().getContextClassLoader();
 		try {
 			Thread.currentThread().setContextClassLoader(UIJettyHttpHandlerExtension.class.getClassLoader());
 
 			ResourceHandler resourceHandler = new ResourceHandler();
+			resourceHandler.setDirAllowed(false);
 			resourceHandler.setBaseResource(
 					ResourceFactory.of(resourceHandler)
-							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", true)
+							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", false)
 			);
+//			URL resource = UIJettyHttpHandlerExtension.class.getResource("/com/github/thmarx/cms/modules/ui/assets/");
+//			var fileURI = resource.toURI().toString().replace("jar:", "");
+//			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
 
-			Mapping mapping = new Mapping();
 			mapping.add(PathSpec.from("/assets/*"), resourceHandler);
 
-			return mapping;
-
+		} catch (Exception ex) {
+			log.error(null, ex);
 		} finally {
 			Thread.currentThread().setContextClassLoader(classLoader);
 		}
+		return mapping;
+
 	}
 
 }

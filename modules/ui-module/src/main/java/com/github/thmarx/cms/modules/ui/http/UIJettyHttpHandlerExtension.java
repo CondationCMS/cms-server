@@ -20,14 +20,11 @@ package com.github.thmarx.cms.modules.ui.http;
  * #L%
  */
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
+import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.modules.api.annotation.Extension;
 import org.eclipse.jetty.http.pathmap.PathSpec;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.handler.PathMappingsHandler;
+
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.PathResource;
-import org.eclipse.jetty.util.resource.PathResourceFactory;
-import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 
 /**
@@ -43,7 +40,7 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 	}
 
 	@Override
-	public Handler getHandler() {
+	public Mapping getHandler() {
 
 		var classLoader = Thread.currentThread().getContextClassLoader();
 		try {
@@ -55,10 +52,10 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", true)
 			);
 
-			PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
-			pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), resourceHandler);
+			Mapping mapping = new Mapping();
+			mapping.add(PathSpec.from("/assets/*"), resourceHandler);
 
-			return pathMappingsHandler;
+			return mapping;
 
 		} finally {
 			Thread.currentThread().setContextClassLoader(classLoader);

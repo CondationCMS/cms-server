@@ -30,6 +30,6 @@ public abstract class JettyHttpHandlerExtensionPoint extends AbstractExtensionEn
 
 	abstract public String getContextPath();
 	
-	abstract public Handler getHandler();
+	abstract public Mapping getHandler();
 
 }

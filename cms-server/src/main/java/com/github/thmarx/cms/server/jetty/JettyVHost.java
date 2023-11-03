@@ -22,21 +22,18 @@ package com.github.thmarx.cms.server.jetty;
 
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
+import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
-import com.github.thmarx.cms.server.jetty.handler.JettyModuleHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
-import org.eclipse.jetty.http.pathmap.ServletPathSpec;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.HandlerContainer;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -44,6 +41,7 @@ import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.PathMappingsHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+import org.eclipse.jetty.util.Callback;
 
 /**
  *
@@ -111,7 +109,7 @@ public class JettyVHost extends VHost {
 		List<ContextHandler> contextHandlers = new ArrayList<>();
 		moduleManager.extensions(JettyHttpHandlerExtensionPoint.class).forEach((extension) -> {
 			contextHandlers.add(new ContextHandler(
-					extension.getHandler(), "/module/" + extension.getContextPath() 
+					new MappingHandler(extension.getHandler()), extension.getContextPath() 
 			));
 		});
 		ContextHandler modulesContextHandler = new ContextHandler(
@@ -120,5 +118,20 @@ public class JettyVHost extends VHost {
 		);
 		
 		return modulesContextHandler;
+	}
+	
+	@RequiredArgsConstructor
+	private static class MappingHandler extends Handler.Abstract {
+
+		private final Mapping mapping;
+		
+		@Override
+		public boolean handle(Request rqst, Response rspns, Callback clbck) throws Exception {
+		
+			var path = rqst.getHttpURI().getCanonicalPath();
+			var contextPath = rqst.getContext().getContextPath();
+			clbck.succeeded();
+			return true;
+		}		
 	}
 }

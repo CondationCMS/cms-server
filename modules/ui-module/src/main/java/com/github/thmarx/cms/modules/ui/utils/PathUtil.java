@@ -20,30 +20,22 @@ package com.github.thmarx.cms.modules.ui.utils;
  * #L%
  */
 
-import com.google.common.hash.Hashing;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  *
  * @author t.marx
  */
-public abstract class Helper {
-	/**
-	 *
-	 * @author marx
-	 */
-	private static final SecureRandom RANDOM = new SecureRandom();
+public class PathUtil {
 
-	public static String hash(String value) {
-		return Hashing.sha256()
-				.hashString(value, StandardCharsets.UTF_8)
-				.toString();
-
-	}
-
-	public static String randomString() {
-		return new BigInteger(130, RANDOM).toString(32);
+	public static String toUri(final Path contentFile, final Path contentBase) {
+		Path relativize = contentBase.relativize(contentFile);
+		if (Files.isDirectory(contentFile)) {
+			relativize = relativize.resolve("index.md");
+		}
+		var uri = relativize.toString();
+		uri = uri.replaceAll("\\\\", "/");
+		return uri;
 	}
 }

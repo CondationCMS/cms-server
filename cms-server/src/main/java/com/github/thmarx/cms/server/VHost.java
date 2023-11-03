@@ -107,7 +107,8 @@ public class VHost {
 						"com.github.thmarx.cms",
 						"org.apache.logging",
 						"org.graalvm.polyglot",
-						"org.graalvm.js"
+						"org.graalvm.js",
+						"org.eclipse.jetty"
 		));
         this.moduleManager = ModuleManagerImpl.create(
 				modules.toFile(), 

@@ -20,33 +20,15 @@ package com.github.thmarx.cms.api.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.extensions.http.ExtensionHttpHandler;
-import com.github.thmarx.modules.api.ExtensionPoint;
-import com.github.thmarx.modules.api.ModuleConfiguration;
-import lombok.Getter;
 
 /**
  *
  * @author t.marx
  */
-public abstract class HttpHandlerExtensionPoint implements ExtensionPoint<CMSModuleContext>, ExtensionHttpHandler {
+@Deprecated(since = "2.5.0")
+public abstract class HttpHandlerExtensionPoint extends AbstractExtensionEndpoint implements  ExtensionHttpHandler {
 
-	@Getter
-	private ModuleConfiguration moduleConfiguration;
-	@Getter
-	private CMSModuleContext context;
-	
-	@Override
-	public void setConfiguration(ModuleConfiguration configuration) {
-		this.moduleConfiguration = configuration;
-	}
-
-	@Override
-	public void setContext(CMSModuleContext context) {
-		this.context = context;
-	}
-	
 	abstract public boolean handles (String method, String uri);
 	
 }

@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -93,7 +94,8 @@ public class JettyDefaultHandler extends Handler.Abstract {
 			}
 			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
 
-			response.write(true, ByteBuffer.wrap(content.get().getBytes(StandardCharsets.UTF_8)), callback);
+			Content.Sink.write(response, true, content.get(), callback);
+			//response.write(true, ByteBuffer.wrap(content.get().getBytes(StandardCharsets.UTF_8)), callback);
 		} catch (Exception e) {
 			log.error("", e);
 			response.setStatus(500);

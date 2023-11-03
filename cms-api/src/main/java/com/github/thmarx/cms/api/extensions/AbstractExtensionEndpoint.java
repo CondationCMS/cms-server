@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.server.undertow.extension;
+package com.github.thmarx.cms.api.extensions;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -20,29 +20,32 @@ package com.github.thmarx.cms.server.undertow.extension;
  * #L%
  */
 
-import com.github.thmarx.cms.api.extensions.http.Response;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HttpString;
-import java.nio.charset.Charset;
-import lombok.RequiredArgsConstructor;
+import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.modules.api.ExtensionPoint;
+import com.github.thmarx.modules.api.ModuleConfiguration;
+import lombok.Getter;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-@Deprecated(since = "2.5.0")
-public class UndertowResponse implements Response {
-	
-	private final HttpServerExchange exchange;
+public abstract class AbstractExtensionEndpoint implements ExtensionPoint<CMSModuleContext> {
+	@Getter
+	protected ModuleConfiguration moduleConfiguration;
+	@Getter
+	protected CMSModuleContext context;
 
 	@Override
-	public void addHeader(String name, String value) {
-		exchange.getResponseHeaders().add(HttpString.tryFromString(name), value);
+	public void setConfiguration(ModuleConfiguration configuration) {
+		this.moduleConfiguration = configuration;
 	}
 
 	@Override
-	public void write(String content, Charset charset) {
-		exchange.getResponseSender().send(content, charset);
+	public void setContext(CMSModuleContext context) {
+		this.context = context;
+	}
+	
+	@Override
+	public void init() {
 	}
 }

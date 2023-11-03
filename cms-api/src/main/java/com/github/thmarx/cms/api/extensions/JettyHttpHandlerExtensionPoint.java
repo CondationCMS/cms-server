@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.github.thmarx.cms.api.extensions;
 
 /*-
@@ -24,18 +20,16 @@ package com.github.thmarx.cms.api.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.CMSModuleContext;
-import com.github.thmarx.cms.api.template.TemplateEngine;
-import com.github.thmarx.modules.api.ExtensionPoint;
-import com.github.thmarx.modules.api.ModuleConfiguration;
-import lombok.Getter;
+import org.eclipse.jetty.server.Handler;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public abstract class TemplateModelExtendingExtentionPoint extends AbstractExtensionEndpoint{
+public abstract class JettyHttpHandlerExtensionPoint extends AbstractExtensionEndpoint {
 
-	public abstract void extendModel (TemplateEngine.Model model);
+	abstract public String getContextPath();
 	
+	abstract public Handler getHandler();
+
 }

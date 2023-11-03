@@ -93,7 +93,13 @@ public class JettyModuleHandler extends Handler.Abstract {
 	
 	private String getModulePath(Request request) {
 		var path = request.getHttpURI().getPath();
-		path = path.replace("/module/", "");
+		var contextPath = request.getContext().getContextPath();
+		path = path.replace(contextPath, "");
+		
+		if (path.startsWith("/")) {
+			path = path.substring(1);
+		}
+		
 		return path;
 	}
 

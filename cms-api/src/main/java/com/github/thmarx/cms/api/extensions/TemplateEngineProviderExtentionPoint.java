@@ -20,33 +20,14 @@ package com.github.thmarx.cms.api.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.template.TemplateEngine;
-import com.github.thmarx.modules.api.ExtensionPoint;
-import com.github.thmarx.modules.api.ModuleConfiguration;
-import lombok.Getter;
 
 /**
  *
  * @author t.marx
  */
-public abstract class TemplateEngineProviderExtentionPoint implements ExtensionPoint<CMSModuleContext> {
+public abstract class TemplateEngineProviderExtentionPoint extends AbstractExtensionEndpoint {
 
-	@Getter
-	private ModuleConfiguration moduleConfiguration;
-	@Getter
-	private CMSModuleContext context;
-	
-	@Override
-	public void setConfiguration(ModuleConfiguration configuration) {
-		this.moduleConfiguration = configuration;
-	}
-
-	@Override
-	public void setContext(CMSModuleContext context) {
-		this.context = context;
-	}
-	
 	public abstract String getName ();
 	public abstract TemplateEngine getTemplateEngine ();
 	

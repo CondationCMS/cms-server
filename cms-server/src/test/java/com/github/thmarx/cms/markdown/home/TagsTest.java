@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.api.extensions;
+package com.github.thmarx.cms.markdown.home;
 
 /*-
  * #%L
- * cms-api
+ * cms-server
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -20,15 +20,32 @@ package com.github.thmarx.cms.api.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public abstract class MarkdownRendererProviderExtentionPoint extends AbstractExtensionEndpoint {
+public class TagsTest {
 
-	public abstract String getName ();
-	public abstract MarkdownRenderer getRenderer ();
+	@Test
+	public void tag() {
+		Pattern bold = Pattern.compile("\\[{2}(.*?)\\]{2}");
+
+		var matcher = bold.matcher("[[method]]");
+		matcher.matches();
+		System.out.println(matcher.group(1));
+	}
+
 	
 }

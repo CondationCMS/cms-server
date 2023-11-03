@@ -60,7 +60,8 @@ public class JettyExtensionHandler extends Handler.Abstract {
 
 	private String getExtensionName(Request request) {
 		var path = request.getHttpURI().getPath();
-		path = path.replace("/extension", "");
+		var contextPath = request.getContext().getContextPath();
+		path = path.replace(contextPath, "");
 		if (!path.startsWith("/")) {
 			path = "/" + path;
 		}

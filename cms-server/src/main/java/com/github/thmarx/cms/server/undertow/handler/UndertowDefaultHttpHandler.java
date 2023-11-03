@@ -41,6 +41,7 @@ import org.graalvm.polyglot.Context;
  */
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated(since = "2.5.0")
 public class UndertowDefaultHttpHandler implements HttpHandler {
 
 	private final ContentResolver contentResolver;

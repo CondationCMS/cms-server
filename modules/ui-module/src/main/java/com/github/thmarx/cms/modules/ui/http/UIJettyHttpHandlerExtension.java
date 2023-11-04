@@ -57,7 +57,7 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 //					ResourceFactory.of(resourceHandler)
 //							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", false)
 //			);
-			URL resource = UIJettyHttpHandlerExtension.class.getResource("/com/github/thmarx/cms/modules/ui/assets");
+			URL resource = UIJettyHttpHandlerExtension.class.getResource("/files");
 			var fileURI = resource.toURI().toString().replace("jar:", "");
 			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
 

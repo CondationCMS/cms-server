@@ -23,10 +23,7 @@ import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
@@ -50,26 +47,26 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 	public Mapping getHandler() {
 		Mapping mapping = new Mapping();
 
-		var classLoader = Thread.currentThread().getContextClassLoader();
+//		var classLoader = Thread.currentThread().getContextClassLoader();
 		try {
-			Thread.currentThread().setContextClassLoader(UIJettyHttpHandlerExtension.class.getClassLoader());
+			//Thread.currentThread().setContextClassLoader(UIJettyHttpHandlerExtension.class.getClassLoader());
 
 			ResourceHandler resourceHandler = new ResourceHandler();
 			resourceHandler.setDirAllowed(false);
-			resourceHandler.setBaseResource(
-					ResourceFactory.of(resourceHandler)
-							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", false)
-			);
-//			URL resource = UIJettyHttpHandlerExtension.class.getResource("/com/github/thmarx/cms/modules/ui/assets/");
-//			var fileURI = resource.toURI().toString().replace("jar:", "");
-//			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
+//			resourceHandler.setBaseResource(
+//					ResourceFactory.of(resourceHandler)
+//							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", false)
+//			);
+			URL resource = UIJettyHttpHandlerExtension.class.getResource("/com/github/thmarx/cms/modules/ui/assets");
+			var fileURI = resource.toURI().toString().replace("jar:", "");
+			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
 
 			mapping.add(PathSpec.from("/assets/*"), resourceHandler);
 
 		} catch (Exception ex) {
 			log.error(null, ex);
 		} finally {
-			Thread.currentThread().setContextClassLoader(classLoader);
+//			Thread.currentThread().setContextClassLoader(classLoader);
 		}
 		return mapping;
 

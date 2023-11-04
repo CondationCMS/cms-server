@@ -21,28 +21,22 @@ package com.github.thmarx.cms.server.jetty;
  */
 
 import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
-import com.github.thmarx.cms.api.extensions.Mapping;
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.PathMappingsHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
-import org.eclipse.jetty.util.Callback;
 
 /**
  *
@@ -51,6 +45,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class JettyVHost extends VHost {
 
+	
 	public JettyVHost(Path hostBase, ServerProperties serverProperties) {
 		super(hostBase, serverProperties);
 	}
@@ -80,10 +75,11 @@ public class JettyVHost extends VHost {
         pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
 		
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
-		defaultContextHandler.setVirtualHosts(List.of(properties.hostname()));
+		defaultContextHandler.setVirtualHosts(List.of(siteProperties.hostname()));
 		
 		
-		var moduleHandler = new JettyModuleMappingHandler(moduleManager);
+		var moduleHandler = new JettyModuleMappingHandler(moduleManager, siteProperties);
+		moduleHandler.init();
 		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
 		var extensionHandler = new JettyExtensionHandler(extensionManager);
 		ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extension");

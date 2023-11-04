@@ -73,7 +73,7 @@ public class VHost {
 	@Getter
 	private final EventBus eventBus;
 
-	protected SiteProperties properties;
+	protected SiteProperties siteProperties;
 	
 	protected ModuleManager moduleManager;
 
@@ -99,7 +99,7 @@ public class VHost {
 		fileSystem.init();
 		
 		var props = fileSystem.resolve("site.yaml");
-		properties = PropertiesLoader.hostProperties(props);
+		siteProperties = PropertiesLoader.hostProperties(props);
 
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(), 
 				List.of(
@@ -110,13 +110,12 @@ public class VHost {
 						"org.graalvm.js",
 						"org.eclipse.jetty"
 		));
-        this.moduleManager = ModuleManagerImpl.create(
-				modules.toFile(), 
+        this.moduleManager = ModuleManagerImpl.create(modules.toFile(), 
 				fileSystem.resolve("modules_data").toFile(), 
-				new CMSModuleContext(properties, serverProperties, fileSystem, eventBus), 
+				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus), 
 				classLoader
 		);
-		properties.activeModules().forEach(module_id -> {
+		siteProperties.activeModules().forEach(module_id -> {
 			try {
 				log.debug("activate module {}", module_id);
 				moduleManager.activateModule(module_id);
@@ -126,7 +125,7 @@ public class VHost {
 		});
 		
 		moduleManager.getModuleIds().stream()
-				.filter(id -> !properties.activeModules().contains(id))
+				.filter(id -> !siteProperties.activeModules().contains(id))
 				.forEach((module_id) -> {
 			try {
 				log.debug("deactivate module {}", module_id);
@@ -136,7 +135,7 @@ public class VHost {
 			}
 		});
 		
-		hostname = properties.hostname();
+		hostname = siteProperties.hostname();
 
 		contentBase = fileSystem.resolve("content/");
 		assetBase = fileSystem.resolve("assets/");
@@ -149,7 +148,7 @@ public class VHost {
 
 		templateEngine = resolveTemplateEngine();
 
-		contentRenderer = new ContentRenderer(contentParser, templateEngine, fileSystem, properties, moduleManager);
+		contentRenderer = new ContentRenderer(contentParser, templateEngine, fileSystem, siteProperties, moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
 
 		eventBus.register(ContentChangedEvent.class, (EventListener<ContentChangedEvent>) (ContentChangedEvent event) -> {
@@ -163,7 +162,7 @@ public class VHost {
 	}
 
 	protected TemplateEngine resolveTemplateEngine() {
-		var engine = this.properties.templateEngine();
+		var engine = this.siteProperties.templateEngine();
 		
 		List<TemplateEngineProviderExtentionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
 		Optional<TemplateEngineProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
@@ -176,7 +175,7 @@ public class VHost {
 	}
 
 	protected MarkdownRenderer resolveMarkdownRenderer(final Context context) {
-		var engine = this.properties.markdownEngine();
+		var engine = this.siteProperties.markdownEngine();
 		
 		List<MarkdownRendererProviderExtentionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtentionPoint.class);
 		Optional<MarkdownRendererProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();

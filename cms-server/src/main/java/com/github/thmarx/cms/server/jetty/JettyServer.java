@@ -63,7 +63,7 @@ public class JettyServer implements HttpServer {
 					host.init(Path.of("modules"));
 					vhosts.add(host);
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					log.error(null, ex);
 				}
 			}
 		});

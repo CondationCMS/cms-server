@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.api.extensions;
+package com.github.thmarx.cms.modules.ui.utils;
 
 /*-
  * #%L
- * cms-api
+ * ui-module
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -24,10 +24,14 @@ package com.github.thmarx.cms.api.extensions;
  *
  * @author t.marx
  */
-public abstract class JettyHttpHandlerExtensionPoint extends AbstractExtensionPoint {
+public class ServletUtils {
 
-	abstract public String getContextPath();
-	
-	abstract public Mapping getHandler();
-
+	public static <T> T coalesce(T... ts) {
+		for (T t : ts) {
+			if (t != null) {
+				return t;
+			}
+		}
+		return null;
+	}
 }

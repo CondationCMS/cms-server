@@ -19,17 +19,20 @@ package com.github.thmarx.cms.server.jetty;
  * limitations under the License.
  * #L%
  */
-
 import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
+import com.github.thmarx.cms.api.extensions.ServletExtensionPoint;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
+import com.github.thmarx.cms.server.jetty.handler.JettyServletModuleMappingHandler;
+import jakarta.servlet.http.HttpServlet;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -45,7 +48,6 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 @Slf4j
 public class JettyVHost extends VHost {
 
-	
 	public JettyVHost(Path hostBase, ServerProperties serverProperties) {
 		super(hostBase, serverProperties);
 	}
@@ -54,7 +56,7 @@ public class JettyVHost extends VHost {
 		var defaultHandler = new JettyDefaultHandler(contentResolver, extensionManager, (context) -> {
 			return resolveMarkdownRenderer(context);
 		});
-	
+
 		log.debug("create assets handler for {}", assetBase.toString());
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
@@ -64,40 +66,60 @@ public class JettyVHost extends VHost {
 		} else {
 			assetsHandler.setCacheControl("max-age=" + TimeUnit.HOURS.toSeconds(24));
 		}
-		
+
 		ResourceHandler faviconHandler = new ResourceHandler();
 		faviconHandler.setDirAllowed(false);
 		faviconHandler.setBaseResource(new FileFolderPathResource(assetBase.resolve("favicon.ico")));
-		
+
 		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
 		pathMappingsHandler.addMapping(PathSpec.from("/"), defaultHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
-        pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
-		
+		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
+
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
 		defaultContextHandler.setVirtualHosts(List.of(siteProperties.hostname()));
-		
-		
+
 		var moduleHandler = new JettyModuleMappingHandler(moduleManager, siteProperties);
 		moduleHandler.init();
 		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
 		var extensionHandler = new JettyExtensionHandler(extensionManager);
 		ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extension");
-		
+
 		ContextHandlerCollection contextCollection = new ContextHandlerCollection(
 				defaultContextHandler,
 				moduleContextHandler,
-				extensionContextHandler
+				extensionContextHandler,
+				servletContexteHandler()
 		);
-		
-		
+
 		GzipHandler gzipHandler = new GzipHandler(contextCollection);
 		gzipHandler.setMinGzipSize(1024);
 		gzipHandler.addIncludedMimeTypes("text/plain");
-        gzipHandler.addIncludedMimeTypes("text/html");
+		gzipHandler.addIncludedMimeTypes("text/html");
 		gzipHandler.addIncludedMimeTypes("text/css");
 		gzipHandler.addIncludedMimeTypes("application/javascript");
 
 		return gzipHandler;
+	}
+
+	private ServletContextHandler servletContexteHandler() {
+		ServletContextHandler contextHandler = new ServletContextHandler("/servlet-modules");
+		//contextHandler.addServlet(new JettyServletModuleMappingHandler(moduleManager, siteProperties), "/*");
+
+		siteProperties.activeModules().forEach((var moduleid) -> {
+			final com.github.thmarx.modules.api.Module module = moduleManager
+					.module(moduleid);
+			if (module.provides(ServletExtensionPoint.class)) {
+				List<ServletExtensionPoint> extensions = module.extensions(ServletExtensionPoint.class);
+				extensions.forEach(ext -> {
+					ext.getMapping().getServletMappings().forEach((path, servlet) -> {
+						contextHandler.addServlet(servlet, "/%s%s".formatted(moduleid, path));
+					});
+					
+				});
+			}
+		});
+
+		return contextHandler;
 	}
 }

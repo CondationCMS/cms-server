@@ -26,7 +26,7 @@ import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
  *
  * @author t.marx
  */
-public abstract class MarkdownRendererProviderExtentionPoint extends AbstractExtensionEndpoint {
+public abstract class MarkdownRendererProviderExtentionPoint extends AbstractExtensionPoint {
 
 	public abstract String getName ();
 	public abstract MarkdownRenderer getRenderer ();

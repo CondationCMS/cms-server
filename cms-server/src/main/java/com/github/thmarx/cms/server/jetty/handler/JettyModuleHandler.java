@@ -37,6 +37,7 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated
 public class JettyModuleHandler extends Handler.Abstract {
 
 	private final ModuleManager moduleManager;

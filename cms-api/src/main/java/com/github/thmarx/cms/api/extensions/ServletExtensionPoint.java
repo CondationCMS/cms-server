@@ -24,10 +24,7 @@ package com.github.thmarx.cms.api.extensions;
  *
  * @author t.marx
  */
-public abstract class JettyHttpHandlerExtensionPoint extends AbstractExtensionPoint {
+public abstract class ServletExtensionPoint extends AbstractExtensionPoint {
 
-	abstract public String getContextPath();
-	
-	abstract public Mapping getHandler();
-
+	public abstract ServletMapping getMapping();
 }

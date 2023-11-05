@@ -26,7 +26,7 @@ import com.github.thmarx.cms.api.template.TemplateEngine;
  *
  * @author t.marx
  */
-public abstract class TemplateEngineProviderExtentionPoint extends AbstractExtensionEndpoint {
+public abstract class TemplateEngineProviderExtentionPoint extends AbstractExtensionPoint {
 
 	public abstract String getName ();
 	public abstract TemplateEngine getTemplateEngine ();

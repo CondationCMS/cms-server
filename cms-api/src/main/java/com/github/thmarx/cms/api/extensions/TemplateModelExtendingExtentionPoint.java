@@ -34,7 +34,7 @@ import lombok.Getter;
  *
  * @author thmar
  */
-public abstract class TemplateModelExtendingExtentionPoint extends AbstractExtensionEndpoint{
+public abstract class TemplateModelExtendingExtentionPoint extends AbstractExtensionPoint{
 
 	public abstract void extendModel (TemplateEngine.Model model);
 	

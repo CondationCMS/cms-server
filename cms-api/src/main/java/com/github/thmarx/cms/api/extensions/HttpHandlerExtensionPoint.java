@@ -27,7 +27,7 @@ import com.github.thmarx.cms.api.extensions.http.ExtensionHttpHandler;
  * @author t.marx
  */
 @Deprecated(since = "2.5.0")
-public abstract class HttpHandlerExtensionPoint extends AbstractExtensionEndpoint implements  ExtensionHttpHandler {
+public abstract class HttpHandlerExtensionPoint extends AbstractExtensionPoint implements  ExtensionHttpHandler {
 
 	abstract public boolean handles (String method, String uri);
 	

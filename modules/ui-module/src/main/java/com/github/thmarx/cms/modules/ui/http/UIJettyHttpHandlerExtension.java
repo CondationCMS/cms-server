@@ -21,9 +21,18 @@ package com.github.thmarx.cms.modules.ui.http;
  */
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
+import com.github.thmarx.cms.modules.ui.filesystem.FileFolderPathResource;
+import static com.github.thmarx.cms.modules.ui.http.UIServletExtension.createFileSystem;
 import com.github.thmarx.modules.api.annotation.Extension;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
@@ -43,6 +52,20 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 		return "ui";
 	}
 
+	public static FileSystem createFileSystem () {
+		try {
+			URL resource = UIJettyHttpHandlerExtension.class.getResource("/files");
+			
+			final Map<String, String> env = new HashMap<>();
+			final String[] array = resource.toURI().toString().split("!");
+			return FileSystems.newFileSystem(URI.create(array[0]), env);
+			
+		} catch (URISyntaxException | IOException ex) {
+			log.error("", ex);
+			throw new RuntimeException(ex);
+		}
+	}
+	
 	@Override
 	public Mapping getHandler() {
 		Mapping mapping = new Mapping();
@@ -58,8 +81,12 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 //							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", false)
 //			);
 			URL resource = UIJettyHttpHandlerExtension.class.getResource("/files");
-			var fileURI = resource.toURI().toString().replace("jar:", "");
-			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
+//			var fileURI = resource.toURI().toString().replace("jar:", "");
+//			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
+
+			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler)
+					.newResource(createFileSystem().getPath("/files")));
+//			resourceHandler.setBaseResource(new FileFolderPathResource(Path.of(resource.toURI())));
 
 			mapping.add(PathSpec.from("/assets/*"), resourceHandler);
 

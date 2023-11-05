@@ -29,7 +29,7 @@ import lombok.Getter;
  *
  * @author t.marx
  */
-public abstract class AbstractExtensionEndpoint implements ExtensionPoint<CMSModuleContext> {
+public abstract class AbstractExtensionPoint implements ExtensionPoint<CMSModuleContext> {
 	@Getter
 	protected ModuleConfiguration moduleConfiguration;
 	@Getter

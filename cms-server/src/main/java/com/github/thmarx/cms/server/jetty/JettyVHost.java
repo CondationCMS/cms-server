@@ -20,19 +20,14 @@ package com.github.thmarx.cms.server.jetty;
  * #L%
  */
 import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
-import com.github.thmarx.cms.api.extensions.ServletExtensionPoint;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
-import com.github.thmarx.cms.server.jetty.handler.JettyServletModuleMappingHandler;
-import jakarta.servlet.http.HttpServlet;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -88,8 +83,7 @@ public class JettyVHost extends VHost {
 		ContextHandlerCollection contextCollection = new ContextHandlerCollection(
 				defaultContextHandler,
 				moduleContextHandler,
-				extensionContextHandler,
-				servletContexteHandler()
+				extensionContextHandler
 		);
 
 		GzipHandler gzipHandler = new GzipHandler(contextCollection);
@@ -100,26 +94,5 @@ public class JettyVHost extends VHost {
 		gzipHandler.addIncludedMimeTypes("application/javascript");
 
 		return gzipHandler;
-	}
-
-	private ServletContextHandler servletContexteHandler() {
-		ServletContextHandler contextHandler = new ServletContextHandler("/servlet-modules");
-		//contextHandler.addServlet(new JettyServletModuleMappingHandler(moduleManager, siteProperties), "/*");
-
-		siteProperties.activeModules().forEach((var moduleid) -> {
-			final com.github.thmarx.modules.api.Module module = moduleManager
-					.module(moduleid);
-			if (module.provides(ServletExtensionPoint.class)) {
-				List<ServletExtensionPoint> extensions = module.extensions(ServletExtensionPoint.class);
-				extensions.forEach(ext -> {
-					ext.getMapping().getServletMappings().forEach((path, servlet) -> {
-						contextHandler.addServlet(servlet, "/%s%s".formatted(moduleid, path));
-					});
-					
-				});
-			}
-		});
-
-		return contextHandler;
 	}
 }

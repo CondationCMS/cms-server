@@ -28,6 +28,6 @@ public abstract class JettyHttpHandlerExtensionPoint extends AbstractExtensionPo
 
 	abstract public String getContextPath();
 	
-	abstract public Mapping getHandler();
+	abstract public Mapping getMapping();
 
 }

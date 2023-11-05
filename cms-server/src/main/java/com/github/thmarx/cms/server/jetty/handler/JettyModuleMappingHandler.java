@@ -54,7 +54,7 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 					.module(moduleid);
 			if (module.provides(JettyHttpHandlerExtensionPoint.class)) {
 				List<JettyHttpHandlerExtensionPoint> extensions = module.extensions(JettyHttpHandlerExtensionPoint.class);
-				extensions.forEach(ext -> moduleMappgings.put(moduleid, ext.getHandler()));
+				extensions.forEach(ext -> moduleMappgings.put(moduleid, ext.getMapping()));
 			}
 		});
 	}

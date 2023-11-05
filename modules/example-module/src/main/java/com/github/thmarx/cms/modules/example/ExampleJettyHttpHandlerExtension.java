@@ -45,7 +45,7 @@ public class ExampleJettyHttpHandlerExtension extends JettyHttpHandlerExtensionP
 	}
 
 	@Override
-	public Mapping getHandler() {
+	public Mapping getMapping() {
 		Mapping mapping = new Mapping();
 		mapping.add(PathSpec.from("/world"), new ExampleHandler("Hello world!"));
 		mapping.add(PathSpec.from("/people"), new ExampleHandler("Hello people!"));

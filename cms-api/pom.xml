@@ -28,11 +28,6 @@
 			<artifactId>jetty-http</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
-		 <dependency>
-            <groupId>jakarta.servlet</groupId>
-            <artifactId>jakarta.servlet-api</artifactId>
-			<version>6.0.0</version>
-        </dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-slf4j2-impl</artifactId>

@@ -21,8 +21,6 @@ package com.github.thmarx.cms.modules.ui.http;
  */
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
-import com.github.thmarx.cms.modules.ui.filesystem.FileFolderPathResource;
-import static com.github.thmarx.cms.modules.ui.http.UIServletExtension.createFileSystem;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
 import java.net.URI;
@@ -30,7 +28,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -67,36 +64,20 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 	}
 	
 	@Override
-	public Mapping getHandler() {
+	public Mapping getMapping() {
 		Mapping mapping = new Mapping();
 
-//		var classLoader = Thread.currentThread().getContextClassLoader();
 		try {
-			//Thread.currentThread().setContextClassLoader(UIJettyHttpHandlerExtension.class.getClassLoader());
-
 			ResourceHandler resourceHandler = new ResourceHandler();
 			resourceHandler.setDirAllowed(false);
-//			resourceHandler.setBaseResource(
-//					ResourceFactory.of(resourceHandler)
-//							.newClassLoaderResource("com/github/thmarx/cms/modules/ui/assets/", false)
-//			);
-			URL resource = UIJettyHttpHandlerExtension.class.getResource("/files");
-//			var fileURI = resource.toURI().toString().replace("jar:", "");
-//			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler).newJarFileResource(URI.create(fileURI)));
-
 			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler)
 					.newResource(createFileSystem().getPath("/files")));
-//			resourceHandler.setBaseResource(new FileFolderPathResource(Path.of(resource.toURI())));
-
 			mapping.add(PathSpec.from("/assets/*"), resourceHandler);
 
 		} catch (Exception ex) {
 			log.error(null, ex);
-		} finally {
-//			Thread.currentThread().setContextClassLoader(classLoader);
 		}
 		return mapping;
-
 	}
 
 }

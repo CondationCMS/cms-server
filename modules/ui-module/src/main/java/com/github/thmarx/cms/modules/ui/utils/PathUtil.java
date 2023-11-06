@@ -20,22 +20,49 @@ package com.github.thmarx.cms.modules.ui.utils;
  * #L%
  */
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 public class PathUtil {
 
 	public static String toUri(final Path contentFile, final Path contentBase) {
 		Path relativize = contentBase.relativize(contentFile);
-		if (Files.isDirectory(contentFile)) {
-			relativize = relativize.resolve("index.md");
-		}
+//		if (Files.isDirectory(contentFile)) {
+//			relativize = relativize.resolve("index.md");
+//		}
 		var uri = relativize.toString();
 		uri = uri.replaceAll("\\\\", "/");
 		return uri;
+	}
+	
+	public static boolean isChild(Path possibleParent, Path maybeChild) throws IOException {
+		return maybeChild.toFile().getCanonicalPath().startsWith(possibleParent.toFile().getCanonicalPath());
+	}
+	
+	public static boolean hasChildren (Path path) {
+		try {
+			if (!Files.isDirectory(path)) {
+				return false;
+			}
+			return Files.list(path).count() > 0;
+		} catch (IOException ex) {
+			log.error(null, ex);
+		}
+		return false;
+	}
+	
+	public static String getType (Path path) {
+		if (Files.isDirectory(path)) {
+			return "folder";
+		} else {
+			return "file";
+		}
 	}
 }

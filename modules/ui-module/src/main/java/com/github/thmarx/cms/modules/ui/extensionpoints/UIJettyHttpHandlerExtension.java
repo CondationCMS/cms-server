@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.modules.ui.http;
+package com.github.thmarx.cms.modules.ui.extensionpoints;
 
 /*-
  * #%L
@@ -21,6 +21,9 @@ package com.github.thmarx.cms.modules.ui.http;
  */
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
+import com.github.thmarx.cms.modules.ui.http.FileSystemCreateHandler;
+import com.github.thmarx.cms.modules.ui.http.FileSystemDeleteHandler;
+import com.github.thmarx.cms.modules.ui.http.FileSystemListHandler;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
 import java.net.URI;
@@ -43,11 +46,6 @@ import org.eclipse.jetty.util.resource.ResourceFactory;
 @Extension(JettyHttpHandlerExtensionPoint.class)
 @Slf4j
 public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint {
-
-	@Override
-	public String getContextPath() {
-		return "ui";
-	}
 
 	public static FileSystem createFileSystem () {
 		try {
@@ -72,7 +70,13 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 			resourceHandler.setDirAllowed(false);
 			resourceHandler.setBaseResource(ResourceFactory.of(resourceHandler)
 					.newResource(createFileSystem().getPath("/files")));
+			
+			
 			mapping.add(PathSpec.from("/assets/*"), resourceHandler);
+			mapping.add(PathSpec.from("/file-system/list"), new FileSystemListHandler(UILifecycleExtension.fileSystemService));
+			mapping.add(PathSpec.from("/file-system/create"), new FileSystemCreateHandler(UILifecycleExtension.fileSystemService));
+			mapping.add(PathSpec.from("/file-system/delete"), new FileSystemDeleteHandler(UILifecycleExtension.fileSystemService));
+			
 
 		} catch (Exception ex) {
 			log.error(null, ex);

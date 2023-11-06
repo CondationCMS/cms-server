@@ -19,16 +19,16 @@ package com.github.thmarx.cms.modules.ui.services;
  * limitations under the License.
  * #L%
  */
-
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.modules.ui.utils.PathUtil;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,39 +39,72 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class FileSystemService {
+
 	private final ModuleFileSystem fileSystem;
-	
-	public List<Node> listContent (String parent) {
-		
+
+	public List<Node> listContent(String parent) {
+
 		try {
 			var contentBase = fileSystem.resolve("content");
-			
-			return Files.list(contentBase.resolve(parent)).map((path) -> {
+			final Path parentNode = contentBase.resolve(parent);
+			if (!PathUtil.isChild(contentBase, parentNode)) {
+				return Collections.emptyList();
+			}
+
+			return Files.list(parentNode).map((path) -> {
 				var uri = PathUtil.toUri(path, contentBase);
-				return new Node(uri, path.getFileName().toString(), getIcon(path), hasChildren(path));
+				return new Node(uri, path.getFileName().toString(), PathUtil.getType(path), PathUtil.hasChildren(path));
 			}).toList();
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}
 		return Collections.emptyList();
 	}
-	
-	private boolean hasChildren (Path path) {
-		try {
-			return Files.list(path).count() > 0;
-		} catch (IOException ex) {
-			log.error(null, ex);
+
+	public boolean createFile(final String name, final String parent, final String content) throws IOException {
+		var contentBase = fileSystem.resolve("content");
+		final Path parentNode = contentBase.resolve(parent);
+		if (!PathUtil.isChild(contentBase, parentNode)) {
+			return false;
 		}
-		return false;
-	}
-	
-	private String getIcon (Path path) {
-		if (Files.isDirectory(path)) {
-			return "folder";
-		} else {
-			return "file";
+
+		Path resolve = parentNode.resolve(name);
+		if (!Files.exists(resolve)) {
+			Files.createFile(resolve);
+			Files.writeString(resolve, content, StandardCharsets.UTF_8);
 		}
+
+		return true;
 	}
-	
-	public static record Node (String id, String text, String icon, boolean children){}
+
+	public void delete(String path) throws IOException {
+		var contentBase = fileSystem.resolve("content");
+		var pathToBeDeleted = contentBase.resolve(path);
+		if (!Files.isDirectory(pathToBeDeleted)) {
+			Files.deleteIfExists(pathToBeDeleted);
+		}
+		Files.walk(pathToBeDeleted)
+				.sorted(Comparator.reverseOrder())
+				.map(Path::toFile)
+				.forEach(File::delete);
+	}
+
+	public boolean createFolder(final String name, final String parent) throws IOException {
+		var contentBase = fileSystem.resolve("content");
+		final Path parentNode = contentBase.resolve(parent);
+		if (!PathUtil.isChild(contentBase, parentNode)) {
+			return false;
+		}
+
+		Path resolve = parentNode.resolve(name);
+		if (!Files.exists(resolve)) {
+			Files.createDirectory(resolve);
+		}
+
+		return true;
+	}
+
+	public static record Node(String id, String text, String type, boolean children) {
+
+	}
 }

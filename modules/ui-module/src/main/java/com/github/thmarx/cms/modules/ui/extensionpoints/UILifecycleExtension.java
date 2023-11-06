@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.modules.ui;
+package com.github.thmarx.cms.modules.ui.extensionpoints;
 
 /*-
  * #%L
@@ -21,6 +21,7 @@ package com.github.thmarx.cms.modules.ui;
  */
 
 import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.modules.ui.services.FileSystemService;
 import com.github.thmarx.cms.modules.ui.services.FileUserService;
 import com.github.thmarx.cms.modules.ui.services.UserService;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
@@ -34,6 +35,7 @@ import com.github.thmarx.modules.api.annotation.Extension;
 public class UILifecycleExtension extends ModuleLifeCycleExtension<CMSModuleContext> {
 
 	public static UserService userService;
+	public static FileSystemService fileSystemService;
 	
 	@Override
 	public void init() {
@@ -42,6 +44,7 @@ public class UILifecycleExtension extends ModuleLifeCycleExtension<CMSModuleCont
 	@Override
 	public void activate() {
 		userService = new FileUserService(configuration.getDataDir().getAbsolutePath());
+		fileSystemService = new FileSystemService(getContext().getFileSystem());
 	}
 
 	@Override

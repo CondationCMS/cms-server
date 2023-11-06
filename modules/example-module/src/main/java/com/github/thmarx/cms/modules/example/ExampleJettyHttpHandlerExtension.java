@@ -40,11 +40,6 @@ import org.eclipse.jetty.util.Callback;
 public class ExampleJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint {
 
 	@Override
-	public String getContextPath() {
-		return "example";
-	}
-
-	@Override
 	public Mapping getMapping() {
 		Mapping mapping = new Mapping();
 		mapping.add(PathSpec.from("/world"), new ExampleHandler("Hello world!"));

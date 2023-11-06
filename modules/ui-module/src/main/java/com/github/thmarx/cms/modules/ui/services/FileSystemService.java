@@ -77,6 +77,32 @@ public class FileSystemService {
 		return true;
 	}
 
+	public String readFromFile(final String name) throws IOException {
+		var contentBase = fileSystem.resolve("content");
+		final Path file = contentBase.resolve(name);
+		if (!PathUtil.isChild(contentBase, file)) {
+			return "";
+		}
+
+		if (Files.exists(file)) {
+			return Files.readString(file, StandardCharsets.UTF_8);
+		}
+		return "";
+	}
+	
+	public boolean writeToFile(final String name, final String content) throws IOException {
+		var contentBase = fileSystem.resolve("content");
+		final Path file = contentBase.resolve(name);
+		if (!PathUtil.isChild(contentBase, file)) {
+			return false;
+		}
+
+		if (Files.exists(file)) {
+			Files.writeString(file, content, StandardCharsets.UTF_8);
+		}
+		return true;
+	}
+
 	public void delete(String path) throws IOException {
 		var contentBase = fileSystem.resolve("content");
 		var pathToBeDeleted = contentBase.resolve(path);

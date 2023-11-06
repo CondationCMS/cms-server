@@ -24,6 +24,8 @@ import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.cms.modules.ui.http.FileSystemCreateHandler;
 import com.github.thmarx.cms.modules.ui.http.FileSystemDeleteHandler;
 import com.github.thmarx.cms.modules.ui.http.FileSystemListHandler;
+import com.github.thmarx.cms.modules.ui.http.FileSystemReadHandler;
+import com.github.thmarx.cms.modules.ui.http.FileSystemWriteHandler;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
 import java.net.URI;
@@ -76,6 +78,8 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 			mapping.add(PathSpec.from("/file-system/list"), new FileSystemListHandler(UILifecycleExtension.fileSystemService));
 			mapping.add(PathSpec.from("/file-system/create"), new FileSystemCreateHandler(UILifecycleExtension.fileSystemService));
 			mapping.add(PathSpec.from("/file-system/delete"), new FileSystemDeleteHandler(UILifecycleExtension.fileSystemService));
+			mapping.add(PathSpec.from("/file-system/read"), new FileSystemReadHandler(UILifecycleExtension.fileSystemService));
+			mapping.add(PathSpec.from("/file-system/write"), new FileSystemWriteHandler(UILifecycleExtension.fileSystemService));
 			
 
 		} catch (Exception ex) {

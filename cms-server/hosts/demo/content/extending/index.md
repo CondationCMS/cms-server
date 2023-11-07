@@ -11,6 +11,8 @@ Extension are writen in good old JavaScript.
 Put your extension into the _host_**/extensions** folder. 
 All files with the nameing convention _name_**.extension.js** are loaded ad system startup.
 
+If you need more, you can use [modules](extending/modules)
+
 ### Add custom http endpoint
 
 Attention: Keep in mind, that all http endpoint extensions are loaded unter the endpoint _/extensions_.

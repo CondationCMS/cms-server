@@ -73,12 +73,12 @@ public class VHost {
 	@Getter
 	private final EventBus eventBus;
 
-	protected SiteProperties properties;
-	
+	protected SiteProperties siteProperties;
+
 	protected ModuleManager moduleManager;
 
 	protected final ServerProperties serverProperties;
-	
+
 	public VHost(final Path hostBase, final ServerProperties serverProperties) {
 		this.eventBus = new DefaultEventBus();
 		this.fileSystem = new FileSystem(hostBase, eventBus);
@@ -97,45 +97,48 @@ public class VHost {
 	public void init(Path modules) throws IOException {
 
 		fileSystem.init();
-		
-		var props = fileSystem.resolve("site.yaml");
-		properties = PropertiesLoader.hostProperties(props);
 
-		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(), 
+		var props = fileSystem.resolve("site.yaml");
+		siteProperties = PropertiesLoader.hostProperties(props);
+
+		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
-						"org.slf4j", 
+						"org.slf4j",
 						"com.github.thmarx.cms",
 						"org.apache.logging",
 						"org.graalvm.polyglot",
-						"org.graalvm.js"
-		));
-        this.moduleManager = ModuleManagerImpl.create(
-				modules.toFile(), 
-				fileSystem.resolve("modules_data").toFile(), 
-				new CMSModuleContext(properties, serverProperties, fileSystem, eventBus), 
+						"org.graalvm.js",
+						"org.eclipse.jetty",
+						"jakarta.servlet"
+				));
+		this.moduleManager = ModuleManagerImpl.create(modules.toFile(),
+				fileSystem.resolve("modules_data").toFile(),
+				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus),
 				classLoader
 		);
-		properties.activeModules().forEach(module_id -> {
-			try {
-				log.debug("activate module {}", module_id);
-				moduleManager.activateModule(module_id);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		});
-		
+		siteProperties.activeModules().stream()
+				.filter(module_id -> moduleManager.getModuleIds().contains(module_id))
+				.forEach(module_id -> {
+					try {
+						log.debug("activate module {}", module_id);
+						moduleManager.activateModule(module_id);
+					} catch (IOException ex) {
+						log.error(null, ex);
+					}
+				});
+
 		moduleManager.getModuleIds().stream()
-				.filter(id -> !properties.activeModules().contains(id))
+				.filter(id -> !siteProperties.activeModules().contains(id))
 				.forEach((module_id) -> {
-			try {
-				log.debug("deactivate module {}", module_id);
-				moduleManager.deactivateModule(module_id);
-			} catch (IOException ex) {
-				log.error(null, ex);
-			}
-		});
-		
-		hostname = properties.hostname();
+					try {
+						log.debug("deactivate module {}", module_id);
+						moduleManager.deactivateModule(module_id);
+					} catch (IOException ex) {
+						log.error(null, ex);
+					}
+				});
+
+		hostname = siteProperties.hostname();
 
 		contentBase = fileSystem.resolve("content/");
 		assetBase = fileSystem.resolve("assets/");
@@ -148,7 +151,7 @@ public class VHost {
 
 		templateEngine = resolveTemplateEngine();
 
-		contentRenderer = new ContentRenderer(contentParser, templateEngine, fileSystem, properties, moduleManager);
+		contentRenderer = new ContentRenderer(contentParser, templateEngine, fileSystem, siteProperties, moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
 
 		eventBus.register(ContentChangedEvent.class, (EventListener<ContentChangedEvent>) (ContentChangedEvent event) -> {
@@ -162,11 +165,11 @@ public class VHost {
 	}
 
 	protected TemplateEngine resolveTemplateEngine() {
-		var engine = this.properties.templateEngine();
-		
+		var engine = this.siteProperties.templateEngine();
+
 		List<TemplateEngineProviderExtentionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
 		Optional<TemplateEngineProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
-		
+
 		if (extOpt.isPresent()) {
 			return extOpt.get().getTemplateEngine();
 		} else {
@@ -175,11 +178,11 @@ public class VHost {
 	}
 
 	protected MarkdownRenderer resolveMarkdownRenderer(final Context context) {
-		var engine = this.properties.markdownEngine();
-		
+		var engine = this.siteProperties.markdownEngine();
+
 		List<MarkdownRendererProviderExtentionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtentionPoint.class);
 		Optional<MarkdownRendererProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
-		
+
 		if (extOpt.isPresent()) {
 			return extOpt.get().getRenderer();
 		} else {

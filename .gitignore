@@ -21,3 +21,5 @@ cms-server/modules/markedjs-module
 cms-server/modules/pebble-module
 cms-server/modules/thymeleaf-module
 cms-server/modules/freemarker-module
+cms-server/modules/ui-module
+cms-server/modules/pug-module

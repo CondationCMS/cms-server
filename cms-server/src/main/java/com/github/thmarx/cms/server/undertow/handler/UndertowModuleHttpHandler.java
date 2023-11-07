@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
+@Deprecated(since = "2.5.0")
 public class UndertowModuleHttpHandler implements HttpHandler {
 
 	private final ModuleManager moduleManager;

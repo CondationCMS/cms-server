@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.github.thmarx.cms.server.undertow;
 
 /*-
@@ -44,6 +40,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author t.marx
  */
+@Deprecated(since = "2.5.0")
 public class UndertowVHost extends VHost {
 
 	public UndertowVHost(Path hostBase, ServerProperties serverProperties) {

@@ -1,0 +1,8 @@
+POST http://localhost:1010/module/ui-module/file-system/create?path=.technical/test&filename=example.md&type=file
+
+---
+title: Das ist der Titel
+---
+\# Neue Datei
+
+Das ist der Inhalt

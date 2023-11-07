@@ -39,6 +39,7 @@ import com.github.thmarx.cms.server.HttpServer;
  */
 @Slf4j
 @RequiredArgsConstructor
+@Deprecated(since = "2.5.0")
 public class UndertowServer implements HttpServer {
 
 	private final ServerProperties properties;

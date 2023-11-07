@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
+@Deprecated(since = "2.5.0")
 public class UndertowExtensionsHttpHandler implements HttpHandler {
 
 	private final ExtensionManager extensionManager;

@@ -31,6 +31,7 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
+@Deprecated(since = "2.5.0")
 public class UndertowResponse implements Response {
 	
 	private final HttpServerExchange exchange;

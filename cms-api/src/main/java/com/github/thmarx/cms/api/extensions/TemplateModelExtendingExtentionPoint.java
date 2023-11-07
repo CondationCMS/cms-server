@@ -34,23 +34,8 @@ import lombok.Getter;
  *
  * @author thmar
  */
-public abstract class TemplateModelExtendingExtentionPoint implements ExtensionPoint<CMSModuleContext> {
+public abstract class TemplateModelExtendingExtentionPoint extends AbstractExtensionPoint{
 
-	@Getter
-	private ModuleConfiguration moduleConfiguration;
-	@Getter
-	private CMSModuleContext context;
-	
-	@Override
-	public void setConfiguration(ModuleConfiguration configuration) {
-		this.moduleConfiguration = configuration;
-	}
-
-	@Override
-	public void setContext(CMSModuleContext context) {
-		this.context = context;
-	}
-	
 	public abstract void extendModel (TemplateEngine.Model model);
 	
 }

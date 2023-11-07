@@ -37,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
+@Deprecated(since = "2.5.0")
 public class UndertowRequest implements Request {
 
 	private final HttpServerExchange exchange;

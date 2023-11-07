@@ -18,6 +18,5 @@
 		<module>freemarker-module</module>
 		<module>markedjs-module</module>
 		<module>pug-module</module>
-		<module>ui-module</module>
 	</modules>
 </project>

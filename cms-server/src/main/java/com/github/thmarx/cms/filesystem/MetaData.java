@@ -21,6 +21,7 @@ package com.github.thmarx.cms.filesystem;
  */
 
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.google.common.base.Strings;
 import java.time.Instant;
 import java.util.Arrays;
@@ -215,8 +216,7 @@ public class MetaData {
 		}
 
 		public boolean isSection() {
-			return Constants.SECTION_PATTERN.matcher(name).matches()
-					|| Constants.SECTION_ORDERED_PATTERN.matcher(name).matches();
+			return SectionUtil.isSection(name);
 		}
 	}
 }

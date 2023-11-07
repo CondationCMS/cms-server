@@ -53,7 +53,7 @@ public class SectionsTest extends TemplateEngineTest {
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(fileSystem);
 
-		contentRenderer = new ContentRenderer(contentParser, templates, fileSystem, new SiteProperties(Map.of()), new MockModuleManager());
+		contentRenderer = new ContentRenderer(contentParser, () -> templates, fileSystem, new SiteProperties(Map.of()), () -> new MockModuleManager());
 	}
 
 	@Test

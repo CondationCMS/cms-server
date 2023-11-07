@@ -37,6 +37,7 @@ import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.module.RenderContentFunction;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.github.thmarx.modules.manager.ModuleAPIClassLoader;
 import com.github.thmarx.modules.manager.ModuleManagerImpl;
@@ -111,11 +112,30 @@ public class VHost {
 						"org.eclipse.jetty",
 						"jakarta.servlet"
 				));
+
 		this.moduleManager = ModuleManagerImpl.create(modules.toFile(),
 				fileSystem.resolve("modules_data").toFile(),
-				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus, this::resolveMarkdownRenderer),
+				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus,
+						new RenderContentFunction(() -> contentResolver, () -> extensionManager, (context) -> resolveMarkdownRenderer())
+				),
 				classLoader
 		);
+
+		hostname = siteProperties.hostname();
+
+		contentBase = fileSystem.resolve("content/");
+		assetBase = fileSystem.resolve("assets/");
+		templateBase = fileSystem.resolve("templates/");
+
+		extensionManager = new ExtensionManager(fileSystem);
+		extensionManager.init();
+
+		contentParser = new ContentParser(fileSystem);
+
+		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager);
+		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
+
+		this.moduleManager.initModules();
 		siteProperties.activeModules().stream()
 				.filter(module_id -> moduleManager.getModuleIds().contains(module_id))
 				.forEach(module_id -> {
@@ -137,23 +157,7 @@ public class VHost {
 						log.error(null, ex);
 					}
 				});
-
-		hostname = siteProperties.hostname();
-
-		contentBase = fileSystem.resolve("content/");
-		assetBase = fileSystem.resolve("assets/");
-		templateBase = fileSystem.resolve("templates/");
-
-		extensionManager = new ExtensionManager(fileSystem);
-		extensionManager.init();
-
-		contentParser = new ContentParser(fileSystem);
-
-		templateEngine = resolveTemplateEngine();
-
-		contentRenderer = new ContentRenderer(contentParser, templateEngine, fileSystem, siteProperties, moduleManager);
-		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
-
+		
 		eventBus.register(ContentChangedEvent.class, (EventListener<ContentChangedEvent>) (ContentChangedEvent event) -> {
 			log.debug("invalidate content cache");
 			contentParser.clearCache();

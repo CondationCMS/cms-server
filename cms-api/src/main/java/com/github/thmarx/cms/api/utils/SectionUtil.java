@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.utils;
+package com.github.thmarx.cms.api.utils;
 
 /*-
  * #%L
@@ -19,7 +19,6 @@ package com.github.thmarx.cms.utils;
  * limitations under the License.
  * #L%
  */
-
 import com.github.thmarx.cms.api.Constants;
 
 /**
@@ -27,12 +26,12 @@ import com.github.thmarx.cms.api.Constants;
  * @author t.marx
  */
 public class SectionUtil {
-	
-	public static boolean isOrderedSection (final String name) {
+
+	public static boolean isOrderedSection(final String name) {
 		return Constants.SECTION_ORDERED_PATTERN.matcher(name).matches();
 	}
-	
-	public static String getSectionName (final String name) {
+
+	public static String getSectionName(final String name) {
 		if (isOrderedSection(name)) {
 			var matcher = Constants.SECTION_ORDERED_PATTERN.matcher(name);
 			matcher.matches();
@@ -43,7 +42,8 @@ public class SectionUtil {
 			return matcher.group("section");
 		}
 	}
-	public static int getSectionIndex (final String name) {
+
+	public static int getSectionIndex(final String name) {
 		if (isOrderedSection(name)) {
 			var matcher = Constants.SECTION_ORDERED_PATTERN.matcher(name);
 			matcher.matches();
@@ -51,5 +51,10 @@ public class SectionUtil {
 		} else {
 			return Constants.DEFAULT_SECTION_ORDERED_INDEX;
 		}
+	}
+
+	public static boolean isSection(final String name) {
+		return Constants.SECTION_PATTERN.matcher(name).matches()
+				|| Constants.SECTION_ORDERED_PATTERN.matcher(name).matches();
 	}
 }

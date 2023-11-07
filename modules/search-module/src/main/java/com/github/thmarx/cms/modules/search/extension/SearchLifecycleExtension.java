@@ -25,8 +25,6 @@ import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -54,7 +52,7 @@ public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 
 				var contentPath = getContext().getFileSystem().resolve("content");
 				try {
-					Files.walkFileTree(contentPath, new FileIndexingVisitor(contentPath, SearchLifecycleExtension.searchEngine));
+					Files.walkFileTree(contentPath, new FileIndexingVisitor(contentPath, SearchLifecycleExtension.searchEngine, getContext()));
 					searchEngine.commit();
 				} catch (IOException e) {
 					e.printStackTrace();

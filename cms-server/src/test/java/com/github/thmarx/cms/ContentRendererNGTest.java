@@ -57,7 +57,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(fileSystem);
 		
-		contentRenderer = new ContentRenderer(contentParser, templates, fileSystem, new SiteProperties(Map.of()), moduleManager);
+		contentRenderer = new ContentRenderer(contentParser, () -> templates, fileSystem, new SiteProperties(Map.of()), () -> moduleManager);
 	}
 
 	@Test

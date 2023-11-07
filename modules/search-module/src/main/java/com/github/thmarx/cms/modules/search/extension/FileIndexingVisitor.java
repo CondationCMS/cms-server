@@ -19,18 +19,21 @@ package com.github.thmarx.cms.modules.search.extension;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.utils.PathUtil;
+import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.modules.search.IndexDocument;
 import com.github.thmarx.cms.modules.search.SearchEngine;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
 
 /**
  *
@@ -42,17 +45,28 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 
 	private final Path contentBase;
 	private final SearchEngine searchEngine;
+	private final CMSModuleContext moduleContext;
 
 	@Override
 	public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-		
+
+		if (SectionUtil.isSection(file.getFileName().toString())) {
+			return FileVisitResult.CONTINUE;
+		}
+		if (!file.getFileName().toString().endsWith(".md")) {
+			return FileVisitResult.CONTINUE;
+		}
+
 		try {
 			log.trace("indexing file {}", file.getFileName().toString());
 			var uri = PathUtil.toRelativeFile(file, contentBase);
 			var content = getContent(file);
 
-			IndexDocument document = new IndexDocument(uri, file.getFileName().toString(), content);
-			searchEngine.index(document);
+			if (content.isPresent()) {
+				String text = Jsoup.parse(content.get()).text();
+				IndexDocument document = new IndexDocument(uri, file.getFileName().toString(), text);
+				searchEngine.index(document);
+			}
 
 		} catch (Exception e) {
 			log.error(null, e);
@@ -69,8 +83,12 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 		return FileVisitResult.CONTINUE;
 	}
 
-	private String getContent(Path path) throws IOException {
-		return Files.readString(path, StandardCharsets.UTF_8);
+	private Optional<String> getContent(Path path) throws IOException {
+		var uri = "/" + PathUtil.toRelativeFile(path, contentBase);
+
+		uri = uri.substring(0, uri.lastIndexOf("."));
+		
+		return moduleContext.getRenderContentFunction().apply(uri, Collections.emptyMap());
 	}
 
 }

@@ -1,5 +1,6 @@
 hostname: localhost
 baseurl: "http://localhost:8080"
+language: en
 template:
   engine: thymeleaf
 markdown:
@@ -12,3 +13,4 @@ modules:
 #    - pebble-module
     - thymeleaf-module
 #    - freemarker-module
+    - search-module

@@ -19,7 +19,7 @@ package com.github.thmarx.cms.filesystem;
  * limitations under the License.
  * #L%
  */
-import com.github.thmarx.cms.utils.PathUtil;
+import com.github.thmarx.cms.api.utils.PathUtil;
 import java.io.File;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;

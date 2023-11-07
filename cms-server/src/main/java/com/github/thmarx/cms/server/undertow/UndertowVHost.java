@@ -60,7 +60,7 @@ public class UndertowVHost extends VHost {
 		ResourceHandler faviconHandler = new ResourceHandler(new FileResourceManager(assetBase.resolve("favicon.ico").toFile()));
 		
 		var pathHandler = Handlers.path(new UndertowDefaultHttpHandler(contentResolver, extensionManager, (context) -> {
-			return resolveMarkdownRenderer(context);
+			return resolveMarkdownRenderer();
 		}))
 				.addPrefixPath("/assets", compressionHandler)
 				.addExactPath("/favicon.ico", faviconHandler);

@@ -113,7 +113,7 @@ public class VHost {
 				));
 		this.moduleManager = ModuleManagerImpl.create(modules.toFile(),
 				fileSystem.resolve("modules_data").toFile(),
-				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus),
+				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus, this::resolveMarkdownRenderer),
 				classLoader
 		);
 		siteProperties.activeModules().stream()
@@ -177,7 +177,7 @@ public class VHost {
 		}
 	}
 
-	protected MarkdownRenderer resolveMarkdownRenderer(final Context context) {
+	protected MarkdownRenderer resolveMarkdownRenderer() {
 		var engine = this.siteProperties.markdownEngine();
 
 		List<MarkdownRendererProviderExtentionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtentionPoint.class);

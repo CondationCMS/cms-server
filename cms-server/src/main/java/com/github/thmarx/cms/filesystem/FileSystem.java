@@ -20,12 +20,12 @@ package com.github.thmarx.cms.filesystem;
  * #L%
  */
 import com.github.thmarx.cms.api.ModuleFileSystem;
-import com.github.thmarx.cms.Constants;
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.ContentParser;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
-import com.github.thmarx.cms.utils.PathUtil;
+import com.github.thmarx.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -100,7 +100,7 @@ public class FileSystem implements ModuleFileSystem {
 
 	public List<MetaData.MetaNode> listDirectories(final Path base, final String start) {
 		var startPath = base.resolve(start);
-		String folder = PathUtil.toPath(startPath, contentBase).toString();
+		String folder = PathUtil.toRelativePath(startPath, contentBase).toString();
 
 		List<MetaData.MetaNode> nodes = new ArrayList<>();
 
@@ -126,7 +126,7 @@ public class FileSystem implements ModuleFileSystem {
 	public List<MetaData.MetaNode> listContent(final Path base, final String start) {
 		var startPath = base.resolve(start);
 
-		String folder = PathUtil.toPath(startPath, contentBase).toString();
+		String folder = PathUtil.toRelativePath(startPath, contentBase).toString();
 
 		List<MetaData.MetaNode> nodes = new ArrayList<>();
 
@@ -139,7 +139,7 @@ public class FileSystem implements ModuleFileSystem {
 	}
 
 	public List<MetaData.MetaNode> listSections(final Path contentFile) {
-		String folder = PathUtil.toPath(contentFile, contentBase).toString();
+		String folder = PathUtil.toRelativePath(contentFile, contentBase).toString();
 		String filename = contentFile.getFileName().toString();
 		filename = filename.substring(0, filename.length() - 3);
 
@@ -189,7 +189,7 @@ public class FileSystem implements ModuleFileSystem {
 		log.debug("update meta data for {}", file.toString());
 		Map<String, Object> fileMeta = contentParser.parseMeta(file);
 
-		var uri = PathUtil.toFile(file, contentBase);
+		var uri = PathUtil.toRelativeFile(file, contentBase);
 
 		metaData.addFile(uri, fileMeta);
 	}
@@ -243,7 +243,7 @@ public class FileSystem implements ModuleFileSystem {
 		Files.walkFileTree(folder, new FileVisitor<Path>() {
 			@Override
 			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-				var uri = PathUtil.toPath(dir, contentBase);
+				var uri = PathUtil.toRelativePath(dir, contentBase);
 
 				metaData.createDirectory(uri);
 				return FileVisitResult.CONTINUE;

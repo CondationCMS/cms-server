@@ -19,7 +19,7 @@ package com.github.thmarx.cms.server.jetty;
  * limitations under the License.
  * #L%
  */
-import com.github.thmarx.cms.utils.PathUtil;
+import com.github.thmarx.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;

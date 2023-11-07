@@ -20,7 +20,7 @@ package com.github.thmarx.cms.filesystem;
  * #L%
  */
 
-import com.github.thmarx.cms.Constants;
+import com.github.thmarx.cms.api.Constants;
 import com.google.common.base.Strings;
 import java.time.Instant;
 import java.util.Arrays;

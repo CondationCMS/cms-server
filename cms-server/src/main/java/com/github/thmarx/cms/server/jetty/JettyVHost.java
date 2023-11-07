@@ -49,7 +49,7 @@ public class JettyVHost extends VHost {
 
 	public Handler httpHandler() {
 		var defaultHandler = new JettyDefaultHandler(contentResolver, extensionManager, (context) -> {
-			return resolveMarkdownRenderer(context);
+			return resolveMarkdownRenderer();
 		});
 
 		log.debug("create assets handler for {}", assetBase.toString());

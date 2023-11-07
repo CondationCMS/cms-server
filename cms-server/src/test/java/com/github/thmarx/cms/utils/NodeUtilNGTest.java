@@ -20,7 +20,7 @@ package com.github.thmarx.cms.utils;
  * #L%
  */
 
-import com.github.thmarx.cms.Constants;
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.filesystem.MetaData;
 import java.util.Map;
 import org.assertj.core.api.Assertions;

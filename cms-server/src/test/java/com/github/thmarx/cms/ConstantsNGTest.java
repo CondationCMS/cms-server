@@ -20,6 +20,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
 import java.util.regex.Matcher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

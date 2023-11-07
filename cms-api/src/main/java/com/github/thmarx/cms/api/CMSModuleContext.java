@@ -21,7 +21,9 @@ package com.github.thmarx.cms.api;
  */
 
 import com.github.thmarx.cms.api.eventbus.EventBus;
+import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.modules.api.Context;
+import java.util.function.Supplier;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -39,4 +41,6 @@ public class CMSModuleContext implements Context {
 	private final ModuleFileSystem fileSystem;
 	@Getter
 	private final EventBus eventBus;
+	@Getter
+	private final Supplier<MarkdownRenderer> markdownRendererSupplier;
 }

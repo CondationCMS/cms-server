@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.modules.search;
+package com.github.thmarx.cms.modules.search.index;
 
 /*-
  * #%L
@@ -20,20 +20,36 @@ package com.github.thmarx.cms.modules.search;
  * #L%
  */
 
+
+import java.util.ArrayList;
+import java.util.List;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  *
- * @author thmar
+ * @author ThorstenMarx
  */
-public enum SearchField {
-	TAGS("tags"),;
+public class SearchResult {
 
-	private final String fieldName;
-
-	private SearchField(final String name) {
-		this.fieldName = name;
+	@Getter
+	public final List<Item> items;
+	
+	@Getter
+	@Setter
+	public long total;
+	
+	public SearchResult () {
+		items = new ArrayList<>();
 	}
-
-	public String getFieldName() {
-		return this.fieldName;
+	
+	@Data
+	public static class Item {
+		public String uri;
+		public String title;
+		public String content;
 	}
+	
 }
+

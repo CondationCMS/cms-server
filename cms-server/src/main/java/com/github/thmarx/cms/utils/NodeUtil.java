@@ -19,7 +19,7 @@ package com.github.thmarx.cms.utils;
  * limitations under the License.
  * #L%
  */
-import com.github.thmarx.cms.Constants;
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.filesystem.MetaData;
 import java.util.Collections;
 import java.util.Map;

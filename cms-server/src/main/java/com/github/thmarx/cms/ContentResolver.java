@@ -22,7 +22,7 @@ package com.github.thmarx.cms;
 
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
-import com.github.thmarx.cms.utils.PathUtil;
+import com.github.thmarx.cms.api.utils.PathUtil;
 import com.google.common.base.Strings;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -73,7 +73,7 @@ public class ContentResolver {
 			}
 		}
 		
-		var uri = PathUtil.toFile(contentFile, contentBase);
+		var uri = PathUtil.toRelativeFile(contentFile, contentBase);
 		if (!fileSystem.isVisible(uri)) {
 			return Optional.empty();
 		}

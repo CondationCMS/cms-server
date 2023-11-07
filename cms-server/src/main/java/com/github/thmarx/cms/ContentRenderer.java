@@ -20,6 +20,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.filesystem.FileSystem;

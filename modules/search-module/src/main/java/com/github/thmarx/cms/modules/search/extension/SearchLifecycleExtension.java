@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.modules.search;
+package com.github.thmarx.cms.modules.search.extension;
 
 /*-
  * #%L
@@ -19,11 +19,14 @@ package com.github.thmarx.cms.modules.search;
  * limitations under the License.
  * #L%
  */
-
 import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.modules.search.SearchEngine;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,19 +38,27 @@ import lombok.extern.slf4j.Slf4j;
 public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModuleContext> {
 
 	static SearchEngine searchEngine;
-	
+
 	@Override
 	public void init() {
 	}
 
 	@Override
 	public void activate() {
-		searchEngine = new SearchEngine(configuration.getDataDir().toPath().resolve("index"), getContext().getSiteProperties().getOrDefault("language", "standard"));
+		searchEngine = new SearchEngine();
 		try {
-			searchEngine.open();
-			
+			searchEngine.open(configuration.getDataDir().toPath().resolve("index"), getContext().getSiteProperties().getOrDefault("language", "standard"));
+
 			// stat reindexing
 			Thread.ofVirtual().start(() -> {
+
+				var contentPath = getContext().getFileSystem().resolve("content");
+				try {
+					Files.walkFileTree(contentPath, new FileIndexingVisitor(contentPath, SearchLifecycleExtension.searchEngine));
+					searchEngine.commit();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			});
 		} catch (IOException e) {
 			log.error("error opening serach engine", e);
@@ -59,7 +70,7 @@ public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 	public void deactivate() {
 		try {
 			searchEngine.close();
-		} catch (IOException e) {
+		} catch (Exception e) {
 			log.error("error closing serach engine", e);
 			throw new RuntimeException(e);
 		}

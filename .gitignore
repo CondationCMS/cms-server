@@ -15,7 +15,8 @@ build
 .gradle
 target/
 .vscode/
-server/hosts/marx-software
+cms-server/hosts/marx-software
+cms-server/hosts/demo/modules_data/search-module/index
 cms-server/modules/flexmark-module
 cms-server/modules/markedjs-module
 cms-server/modules/pebble-module
@@ -23,3 +24,4 @@ cms-server/modules/thymeleaf-module
 cms-server/modules/freemarker-module
 cms-server/modules/ui-module
 cms-server/modules/pug-module
+cms-server/modules/search-module

@@ -20,7 +20,7 @@ package com.github.thmarx.cms.template.functions.list;
  * #L%
  */
 
-import com.github.thmarx.cms.Constants;
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;

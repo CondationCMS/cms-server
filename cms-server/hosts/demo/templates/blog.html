@@ -10,7 +10,7 @@
 
 	<nav th:replace="libs/fragments.html :: navigation"></nav>
 
-	<div class="container" th:with="pageNumber = ${requestContext.getQueryParameter('page', '1')}">
+	<div id="content" class="container" th:with="pageNumber = ${requestContext.getQueryParameter('page', '1')}">
 
 		<div class="row">
 			<h1 th:text="${title}"></h1>

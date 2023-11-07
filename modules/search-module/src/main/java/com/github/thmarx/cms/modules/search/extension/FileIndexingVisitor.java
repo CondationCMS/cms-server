@@ -34,6 +34,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 /**
  *
@@ -63,7 +65,15 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 			var content = getContent(file);
 
 			if (content.isPresent()) {
-				String text = Jsoup.parse(content.get()).text();
+				final Document parsedContent = Jsoup.parse(content.get());
+				final Elements contentElements = parsedContent.select("#content");
+				String text;
+				if (contentElements != null && contentElements.size() > 0) {
+					text = contentElements.text();
+				} else {
+					text = parsedContent.text();
+				}
+				
 				IndexDocument document = new IndexDocument(uri, file.getFileName().toString(), text);
 				searchEngine.index(document);
 			}

@@ -358,4 +358,9 @@ public class SearchIndex {
 		TopDocs topDocs = searcher.search(query, total);
 		return Optional.of(topDocs.scoreDocs[total - 1]);
 	}
+
+	public void clear() throws IOException {
+		writer.deleteAll();
+		commit();
+	}
 }

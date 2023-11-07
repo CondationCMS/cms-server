@@ -25,6 +25,8 @@ import com.github.thmarx.cms.modules.search.index.SearchResult;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -71,6 +73,14 @@ public class SearchEngine implements AutoCloseable{
 			log.error(null, ex);
 		}
 		return new SearchResult();
+	}
+
+	public void clear() {
+		try {
+			searchIndex.clear();
+		} catch (IOException ex) {
+			log.error(null, ex);
+		}
 	}
 	
 }

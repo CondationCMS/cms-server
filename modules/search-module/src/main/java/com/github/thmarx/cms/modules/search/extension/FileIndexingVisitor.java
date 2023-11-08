@@ -24,6 +24,7 @@ import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.modules.search.IndexDocument;
 import com.github.thmarx.cms.modules.search.SearchEngine;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Path;
@@ -35,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
@@ -61,20 +63,30 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 
 		try {
 			log.trace("indexing file {}", file.getFileName().toString());
-			var uri = PathUtil.toRelativeFile(file, contentBase);
+			var uri = PathUtil.toURI(file, contentBase);
 			var content = getContent(file);
 
 			if (content.isPresent()) {
 				final Document parsedContent = Jsoup.parse(content.get());
+				
+				if (noindex(parsedContent)) {
+					return FileVisitResult.CONTINUE;
+				}
+				
 				final Elements contentElements = parsedContent.select("#content");
 				String text;
-				if (contentElements != null && contentElements.size() > 0) {
+				if (contentElements != null && !contentElements.isEmpty()) {
 					text = contentElements.text();
 				} else {
 					text = parsedContent.text();
 				}
+				String title = "";
+				final Elements titleElements = parsedContent.select("head title");
+				if (titleElements != null && !titleElements.isEmpty()) {
+					title = titleElements.text();
+				}
 				
-				IndexDocument document = new IndexDocument(uri, file.getFileName().toString(), text);
+				IndexDocument document = new IndexDocument(uri, title, text);
 				searchEngine.index(document);
 			}
 
@@ -85,6 +97,19 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 		return FileVisitResult.CONTINUE;
 	}
 
+	private boolean noindex (final Document document) {
+		Element meta = document.selectFirst("head meta[name='robots']");
+		
+		if (meta != null) {
+			var content = meta.attr("content");
+			if (!Strings.isNullOrEmpty(content)) {
+				return content.toLowerCase().contains("noindex");
+			}
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
 		if (dir.getFileName().toString().startsWith(".")) {

@@ -1,8 +1,12 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
-<head th:include="libs/fragments.html :: header">
-	<title></title>
+<head>
+	<meta name="robots" content="noindex, nofollow" />
+	<th:block th:replace="libs/fragments.html :: header">
+	</th:block>
+	<script src="/assets/search-1.js" defer></script>
+	<link rel="stylesheet" href="/assets/search-1.css" defer />
 </head>
 
 <body>
@@ -11,17 +15,28 @@
 
 	<div class="container" th:utext="${content}"></div>
 
-	<div class="containter" th:with="result = ${searcher.search('the query')}">
-		<h4>Searchresult:</h4>
-		<p>
-			Treffer: <h5 th:text="${result.total()}"></h5>
-		</p>
-		<p>
-			Anzahl: <h5 th:text="${result.items.size}"></h5>
-		</p>
-		<p th:each="item : ${result.items}">
-			<span th:text="${item.name()}"></span>
-		</p>
+	<div class="container">
+		<div class="row">
+			<div class="input-group mb-3">
+				<input type="text" class="form-control" id="search-input" placeholder="Search query"
+					aria-label="Search query" aria-describedby="search-button">
+				<button class="btn btn-outline-secondary" type="button" id="search-button"><span
+						class="bi bi-search"></span></button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<h6 class="nomargin" id="result_count">  
+						
+					</h6>
+					<hr class="nomargin-bottom margin-top-10">
+					<div id="search_results">
+
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<th:block th:replace="libs/fragments.html :: footer"></th:block>

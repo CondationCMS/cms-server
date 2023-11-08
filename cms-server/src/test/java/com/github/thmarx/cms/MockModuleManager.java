@@ -92,5 +92,10 @@ public class MockModuleManager implements ModuleManager {
 	@Override
 	public void close() throws Exception {
 	}
+
+	@Override
+	public void initModules() {
+		
+	}
 	
 }

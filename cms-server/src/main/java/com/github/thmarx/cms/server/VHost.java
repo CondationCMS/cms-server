@@ -157,28 +157,32 @@ public class VHost {
 						log.error(null, ex);
 					}
 				});
-		
+
 		eventBus.register(ContentChangedEvent.class, (EventListener<ContentChangedEvent>) (ContentChangedEvent event) -> {
 			log.debug("invalidate content cache");
 			contentParser.clearCache();
 		});
 		eventBus.register(TemplateChangedEvent.class, (EventListener<TemplateChangedEvent>) (TemplateChangedEvent event) -> {
 			log.debug("invalidate template cache");
-			templateEngine.invalidateCache();
+			resolveTemplateEngine().invalidateCache();
 		});
 	}
 
 	protected TemplateEngine resolveTemplateEngine() {
-		var engine = this.siteProperties.templateEngine();
+		if (this.templateEngine == null) {
+			var engine = this.siteProperties.templateEngine();
 
-		List<TemplateEngineProviderExtentionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
-		Optional<TemplateEngineProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
+			List<TemplateEngineProviderExtentionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
+			Optional<TemplateEngineProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
 
-		if (extOpt.isPresent()) {
-			return extOpt.get().getTemplateEngine();
-		} else {
-			throw new RuntimeException("no template engine found");
+			if (extOpt.isPresent()) {
+				this.templateEngine = extOpt.get().getTemplateEngine();
+			} else {
+				throw new RuntimeException("no template engine found");
+			}
 		}
+
+		return this.templateEngine;
 	}
 
 	protected MarkdownRenderer resolveMarkdownRenderer() {

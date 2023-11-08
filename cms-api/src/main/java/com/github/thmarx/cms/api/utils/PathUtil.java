@@ -53,4 +53,27 @@ public class PathUtil {
 		uri = uri.replaceAll("\\\\", "/");
 		return uri;
 	}
+	
+	public static String toURI(final Path contentFile, final Path contentBase) {
+		var relFile = toRelativeFile(contentFile, contentBase);
+		if (relFile.endsWith("index.md")) {
+			relFile = relFile.replace("index.md", "");
+		}
+		
+		if (relFile.equals("")) {
+			relFile = "/";
+		} else if (relFile.endsWith("/")) {
+			relFile = relFile.substring(0, relFile.lastIndexOf("/"));
+		} 
+		
+		if (!relFile.startsWith("/")) {
+			relFile = "/" + relFile;
+		}
+		if (relFile.endsWith(".md")) {
+			relFile = relFile.substring(0, relFile.lastIndexOf(".md"));
+		}
+		
+		
+		return relFile;
+	}
 }

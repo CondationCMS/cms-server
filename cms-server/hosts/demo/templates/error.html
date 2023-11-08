@@ -1,9 +1,12 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
-	<head>
-		<title th:text="${title}"></title>
-	</head>
-	<body th:utext="${content}">
-	</body>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<th:block th:replace="libs/fragments.html :: header">
+	</th:block>
+</head>
+
+<body th:utext="${content}">
+</body>
+
 </html>

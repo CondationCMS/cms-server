@@ -21,6 +21,7 @@ package com.github.thmarx.cms.server.jetty.extension;
  */
 import com.github.thmarx.cms.api.extensions.http.Request;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
+import com.github.thmarx.cms.utils.HTTPUtil;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -63,7 +64,7 @@ public class JettyRequest implements Request {
 
 	@Override
 	public List<String> getQueryParamter(final String name) {
-		var queryParameters = JettyDefaultHandler.queryParameters(original.getHttpURI().getQuery());
+		var queryParameters = HTTPUtil.queryParameters(original.getHttpURI().getQuery());
 		if (queryParameters.containsKey(name)) {
 			return queryParameters.get(name);
 		}
@@ -72,7 +73,7 @@ public class JettyRequest implements Request {
 
 	@Override
 	public List<String> getQueryParamters() {
-		var queryParameters = JettyDefaultHandler.queryParameters(original.getHttpURI().getQuery());
+		var queryParameters = HTTPUtil.queryParameters(original.getHttpURI().getQuery());
 		return new ArrayList<>(queryParameters.keySet());
 	}
 }

@@ -25,6 +25,7 @@ import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.ContentTags;
+import com.github.thmarx.cms.utils.HTTPUtil;
 import com.google.common.base.Strings;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -58,44 +59,32 @@ public class JettyDefaultHandler extends Handler.Abstract {
 
 	private final Function<Context, MarkdownRenderer> markdownRendererProvider;
 
-	public static Map<String, List<String>> queryParameters(String query) {
-		if (Strings.isNullOrEmpty(query)) {
-			return Collections.emptyMap();
-		}
-		return Pattern.compile("&")
-				.splitAsStream(query)
-				.map(s -> Arrays.copyOf(s.split("=", 2), 2))
-				.collect(Collectors.groupingBy(s -> decode(s[0]), Collectors.mapping(s -> decode(s[1]), Collectors.toList())));
-	}
-
-	private static String decode(final String encoded) {
-		return Optional.ofNullable(encoded)
-				.map(e -> URLDecoder.decode(e, StandardCharsets.UTF_8))
-				.orElse(null);
-	}
+	
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		var uri = request.getHttpURI().getPath();
-		var queryParameters = queryParameters(request.getHttpURI().getQuery());
+		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		try (
 				var contextHolder = manager.newContext(); 
 				final MarkdownRenderer markdownRenderer = markdownRendererProvider.apply(contextHolder.getContext());) {
 			
+			final ContentTags contentTags = new ContentTags(contextHolder.getTags());
+			
 			RequestContext context = new RequestContext(uri, queryParameters,
-					new RenderContext(contextHolder, markdownRenderer, new ContentTags(contextHolder.getTags())));
+					new RenderContext(contextHolder, markdownRenderer, contentTags));
 			Optional<String> content = contentResolver.getContent(context);
 			response.setStatus(200);
+			
 			if (!content.isPresent()) {
 				context = new RequestContext("/.technical/404", queryParameters,
-						new RenderContext(contextHolder, markdownRenderer, new ContentTags(contextHolder.getTags())));
+						new RenderContext(contextHolder, markdownRenderer, contentTags));
 				content = contentResolver.getContent(context);
 				response.setStatus(404);
 			}
 			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
 
 			Content.Sink.write(response, true, content.get(), callback);
-			//response.write(true, ByteBuffer.wrap(content.get().getBytes(StandardCharsets.UTF_8)), callback);
 		} catch (Exception e) {
 			log.error("", e);
 			response.setStatus(500);

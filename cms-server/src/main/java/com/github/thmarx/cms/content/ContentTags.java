@@ -38,7 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContentTags {
 
-	public static final Pattern TAG_PARAMS_PATTERN = Pattern.compile("\\[{2}(?<tag>.*?)( (?<params>.*?))?\\]{2}");
+	public static final Pattern TAG_PARAMS_PATTERN_SHORT = Pattern.compile("\\[{2}(?<tag>[a-z_A-Z]+)( (?<params>.*?))?\\p{Blank}*/\\]{2}");
+	
+	public static final Pattern TAG_PARAMS_PATTERN_LONG = Pattern.compile("\\[{2}(?<tag>[a-z_A-Z]+)( (?<params>.*?))?\\]{2}(?<content>.*)\\[{2}/\\k<tag>\\]{2}");
 	
 	private final Tags tags;
 
@@ -49,15 +51,23 @@ public class ContentTags {
 	
 	public String replace (final String content) {
 		
-		var matcher = TAG_PARAMS_PATTERN.matcher(content);
+		var newContent = _replace(content, TAG_PARAMS_PATTERN_SHORT);
+		return _replace(newContent, TAG_PARAMS_PATTERN_LONG);
+	}
+	
+	private String _replace (final String content, final Pattern pattern) {
+		var matcher = pattern.matcher(content);
 
 		String newContent = "";
 		int lastPosition = 0;
-		while (matcher.find()) {
+		while (matcher.find(lastPosition)) {
 			var tagName = matcher.group("tag");
 
 			newContent += content.substring(lastPosition, matcher.start());
 			Parameter params = parseParameters(matcher.group("params"));
+			if (matcher.namedGroups().containsKey("content")) {
+				params.put("content", matcher.group("content"));
+			}
 			newContent += tags.get(tagName).apply(params);
 
 			lastPosition = matcher.end();
@@ -67,7 +77,6 @@ public class ContentTags {
 		}
 
 		return newContent;
-		
 	}
 	
 	private Parameter parseParameters(final String paramString) {

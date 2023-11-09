@@ -20,6 +20,7 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
+import java.util.regex.Matcher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -42,19 +43,24 @@ public class ContentTagsTest {
 				"hello_from", 
 				(params) -> "<p><h3>%s</h3><small>from %s</small></p>".formatted(params.getOrDefault("name", ""), params.getOrDefault("from", "")));
 		
+		tags.add(
+				"mark",
+				params -> "<mark>%s</mark>".formatted(params.get("content"))
+		);
+		
 		contentTags = new ContentTags(tags);
 	}
 	
 
 	@Test
 	void simpleTest () {
-		var result = contentTags.replace("[[youtube]]");
+		var result = contentTags.replace("[[youtube    /]]");
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 	}
 	
 	@Test
 	void simple_with_text_before_and_After () {
-		var result = contentTags.replace("before [[youtube]] after");
+		var result = contentTags.replace("before [[youtube /]] after");
 		Assertions.assertThat(result).isEqualTo("before <video src=''></video> after");
 	}
 	
@@ -63,9 +69,9 @@ public class ContentTagsTest {
 		
 		var content = """
                 some text before
-                [[youtube id='id1']]
+                [[youtube id='id1' /]]
                 some text between
-				[[youtube id='id2']]
+				[[youtube id='id2' /]]
                 some text after
                 """;
 		
@@ -84,14 +90,50 @@ public class ContentTagsTest {
 	
 	@Test
 	void unknown_tag () {
-		var result = contentTags.replace("before [[vimeo id='TEST']] after");
+		var result = contentTags.replace("before [[vimeo id='TEST' /]] after");
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before  after");
 	}
 	
 	@Test
 	void hello_from () {
-		var result = contentTags.replace("[[hello_from name='Thorsten',from='Bochum']]");
+		var result = contentTags.replace("[[hello_from name='Thorsten',from='Bochum' /]]");
+		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
+		
+		result = contentTags.replace("[[hello_from name='Thorsten',from='Bochum'    /]]");
+		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
+		
+		result = contentTags.replace("[[hello_from name='Thorsten', from='Bochum' /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
+	@Test
+	void test_long () {
+		var result = contentTags.replace("[[mark]]Important[[/mark]]");
+		
+		Assertions.assertThat(result).isEqualTo("<mark>Important</mark>");
+	}
+	
+	@Test
+	void long_complex () {
+		
+		var content = """
+                some text before
+                [[mark]]Hello world![[/mark]]
+                some text between
+				[[mark]]Hello people![[/mark]]
+                some text after
+                """;
+		
+		var result = contentTags.replace(content);
+		
+		var expected = """
+                some text before
+                <mark>Hello world!</mark>
+                some text between
+				<mark>Hello people!</mark>
+                some text after
+                """;
+		
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace(expected);
+	}
 }

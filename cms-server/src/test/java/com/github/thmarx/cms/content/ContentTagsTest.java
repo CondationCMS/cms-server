@@ -48,6 +48,11 @@ public class ContentTagsTest {
 				params -> "<mark>%s</mark>".formatted(params.get("content"))
 		);
 		
+		tags.add(
+				"mark2",
+				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("content"))
+		);
+		
 		contentTags = new ContentTags(tags);
 	}
 	
@@ -111,6 +116,13 @@ public class ContentTagsTest {
 		var result = contentTags.replace("[[mark]]Important[[/mark]]");
 		
 		Assertions.assertThat(result).isEqualTo("<mark>Important</mark>");
+	}
+	
+	@Test
+	void test_long_with_params () {
+		var result = contentTags.replace("[[mark2 class='test-class']]Important[[/mark2]]");
+		
+		Assertions.assertThat(result).isEqualTo("<mark class='test-class'>Important</mark>");
 	}
 	
 	@Test

@@ -38,9 +38,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ContentTags {
 
-	public static final Pattern TAG_PARAMS_PATTERN_SHORT = Pattern.compile("\\[{2}(?<tag>[a-z_A-Z]+)( (?<params>.*?))?\\p{Blank}*/\\]{2}");
+	public static final Pattern TAG_PARAMS_PATTERN_SHORT = Pattern.compile("\\[{2}(?<tag>[a-z_A-Z0-9]+)( (?<params>.*?))?\\p{Blank}*/\\]{2}");
 	
-	public static final Pattern TAG_PARAMS_PATTERN_LONG = Pattern.compile("\\[{2}(?<tag>[a-z_A-Z]+)( (?<params>.*?))?\\]{2}(?<content>.*)\\[{2}/\\k<tag>\\]{2}");
+	public static final Pattern TAG_PARAMS_PATTERN_LONG = Pattern.compile("\\[{2}(?<tag>[a-z_A-Z0-9]+)( (?<params>.*?))?\\]{2}(?<content>.*)\\[{2}/\\k<tag>\\]{2}");
 	
 	private final Tags tags;
 

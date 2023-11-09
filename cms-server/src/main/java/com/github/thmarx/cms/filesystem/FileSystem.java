@@ -21,7 +21,7 @@ package com.github.thmarx.cms.filesystem;
  */
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.ContentParser;
+import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;

@@ -19,6 +19,8 @@ package com.github.thmarx.cms;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileSystem;

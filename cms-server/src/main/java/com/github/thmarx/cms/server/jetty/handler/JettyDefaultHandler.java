@@ -19,14 +19,14 @@ package com.github.thmarx.cms.server.jetty.handler;
  * limitations under the License.
  * #L%
  */
-import com.github.thmarx.cms.ContentResolver;
+import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.RenderContext;
 import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.content.ContentTags;
 import com.google.common.base.Strings;
 import java.net.URLDecoder;
-import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,14 +81,14 @@ public class JettyDefaultHandler extends Handler.Abstract {
 		try (
 				var contextHolder = manager.newContext(); 
 				final MarkdownRenderer markdownRenderer = markdownRendererProvider.apply(contextHolder.getContext());) {
-
+			
 			RequestContext context = new RequestContext(uri, queryParameters,
-					new RenderContext(contextHolder, markdownRenderer));
+					new RenderContext(contextHolder, markdownRenderer, new ContentTags(contextHolder.getTags())));
 			Optional<String> content = contentResolver.getContent(context);
 			response.setStatus(200);
 			if (!content.isPresent()) {
 				context = new RequestContext("/.technical/404", queryParameters,
-						new RenderContext(contextHolder, markdownRenderer));
+						new RenderContext(contextHolder, markdownRenderer, new ContentTags(contextHolder.getTags())));
 				content = contentResolver.getContent(context);
 				response.setStatus(404);
 			}

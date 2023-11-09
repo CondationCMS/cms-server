@@ -20,10 +20,11 @@ package com.github.thmarx.cms.module;
  * #L%
  */
 
-import com.github.thmarx.cms.ContentResolver;
+import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.RenderContext;
 import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class RenderContentFunction implements BiFunction<String, Map<String, Lis
 				final MarkdownRenderer markdownRenderer = markdownRendererProvider.apply(contextHolder.getContext());) {
 
 			RequestContext context = new RequestContext(uri, parameters,
-					new RenderContext(contextHolder, markdownRenderer));
+					new RenderContext(contextHolder, markdownRenderer, new ContentTags(contextHolder.getTags())));
 			return contentResolver.get().getContent(context);
 		} catch (Exception e) {
 			log.error("", e);

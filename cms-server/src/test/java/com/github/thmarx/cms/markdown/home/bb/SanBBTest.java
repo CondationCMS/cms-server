@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.markdown.home.bb;
 
 /*-
  * #%L
@@ -20,17 +20,17 @@ package com.github.thmarx.cms;
  * #L%
  */
 
-import com.github.thmarx.cms.extensions.ExtensionHolder;
-import com.github.thmarx.cms.content.ContentTags;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
- @Slf4j
-public record RenderContext(ExtensionHolder extensionHolder, MarkdownRenderer markdownRenderer, ContentTags contentTags) {
-	
-	
+public class SanBBTest {
+
+	@Test
+	void simple() {
+		Result result = SaneBB.parse("[b]Hello World[/b]");
+		System.out.printf("HTML : %s (errors: %b)", result.html, result.errors);
+	}
 }

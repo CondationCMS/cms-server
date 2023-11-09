@@ -19,6 +19,7 @@ package com.github.thmarx.cms.server.undertow.handler;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.*;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
@@ -61,11 +62,11 @@ public class UndertowDefaultHttpHandler implements HttpHandler {
 		});
 		try (var contextHolder = manager.newContext()) {
 			RequestContext context = new RequestContext(exchange.getRelativePath(), queryParameters,
-					new RenderContext(contextHolder, markdownRendererProvider.apply(contextHolder.getContext())));
+					new RenderContext(contextHolder, markdownRendererProvider.apply(contextHolder.getContext()), null));
 			Optional<String> content = contentResolver.getContent(context);
 			if (!content.isPresent()) {
 				context = new RequestContext("/.technical/404", queryParameters,
-						new RenderContext(contextHolder, markdownRendererProvider.apply(contextHolder.getContext())));
+						new RenderContext(contextHolder, markdownRendererProvider.apply(contextHolder.getContext()), null));
 				content = contentResolver.getContent(context);
 				exchange.setStatusCode(404);
 			}

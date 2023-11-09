@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.content;
 
 /*-
  * #%L
@@ -23,6 +23,7 @@ package com.github.thmarx.cms;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.thmarx.cms.Startup;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Path;

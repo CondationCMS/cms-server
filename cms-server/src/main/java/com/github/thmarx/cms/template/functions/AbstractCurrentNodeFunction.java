@@ -20,7 +20,7 @@ package com.github.thmarx.cms.template.functions;
  * #L%
  */
 
-import com.github.thmarx.cms.ContentParser;
+import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import java.io.IOException;

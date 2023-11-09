@@ -20,7 +20,7 @@ package com.github.thmarx.cms.template.functions.navigation;
  * #L%
  */
 
-import com.github.thmarx.cms.ContentParser;
+import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileSystem;

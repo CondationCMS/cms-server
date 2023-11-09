@@ -21,8 +21,11 @@ package com.github.thmarx.cms.extensions;
  */
 
 import com.github.thmarx.cms.api.extensions.http.ExtensionHttpHandler;
+import com.github.thmarx.cms.content.ContentTags;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,6 +46,8 @@ public class ExtensionHolder implements AutoCloseable {
 	private final List<TemplateSupplierExtension> registerTemplateSupplier = new ArrayList<>();
 	@Getter
 	private final List<TemplateFunctionExtension> registerTemplateFunctions = new ArrayList<>();
+	@Getter
+	private final Map<String, Function<ContentTags.Parameter, String>> tags = new HashMap<>();
 
 	@Getter
 	private final Context context;
@@ -61,6 +66,10 @@ public class ExtensionHolder implements AutoCloseable {
 
 	public void registerTemplateFunction(final String path, final Function<?, ?> function) {
 		registerTemplateFunctions.add(new TemplateFunctionExtension(path, function));
+	}
+	
+	public void addTag(final String tag, final Function<ContentTags.Parameter, String> function) {
+		tags.put(tag, function);
 	}
 
 	@Override

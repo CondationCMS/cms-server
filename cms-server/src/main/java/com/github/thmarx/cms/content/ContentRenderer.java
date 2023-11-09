@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.content;
 
 /*-
  * #%L
@@ -20,6 +20,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 
+import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
@@ -62,9 +63,12 @@ public class ContentRenderer {
 	public String render (final Path contentFile, final RequestContext context, final Map<String, List<ContentRenderer.Section>> sections) throws IOException {
 		var content = contentParser.parse(contentFile);
 		
+		var markdownContent = content.content();
+		markdownContent = context.renderContext().contentTags().replace(markdownContent);
+		
 		TemplateEngine.Model model = new TemplateEngine.Model(contentFile);
 		model.values.put("meta", content.meta());
-		model.values.put("content", context.renderContext().markdownRenderer().render(content.content()));
+		model.values.put("content", context.renderContext().markdownRenderer().render(markdownContent));
 		model.values.put("sections", sections);
 		
 		model.values.put("navigation", new NavigationFunction(this.fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));

@@ -19,9 +19,9 @@ package com.github.thmarx.cms.server;
  * limitations under the License.
  * #L%
  */
-import com.github.thmarx.cms.ContentParser;
-import com.github.thmarx.cms.ContentRenderer;
-import com.github.thmarx.cms.ContentResolver;
+import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.ContentRenderer;
+import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.PropertiesLoader;
 import com.github.thmarx.cms.api.CMSModuleContext;
@@ -47,7 +47,6 @@ import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.graalvm.polyglot.Context;
 
 /**
  *

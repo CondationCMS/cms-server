@@ -23,6 +23,7 @@ package com.github.thmarx.cms.template;
 import com.github.thmarx.cms.RenderContext;
 import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.TestHelper;
+import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.extensions.ExtensionHolder;
 import java.util.Map;
 
@@ -34,6 +35,6 @@ public abstract class TemplateEngineTest {
 	
 	protected RequestContext requestContext () {
 		var markdownRenderer = TestHelper.getRenderer();
-		return new RequestContext("", Map.of(), new RenderContext(new ExtensionHolder(null), markdownRenderer));
+		return new RequestContext("", Map.of(), new RenderContext(new ExtensionHolder(null), markdownRenderer, new ContentTags(Map.of())));
 	}
 }

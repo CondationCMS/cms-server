@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.markdown.home.bb;
 
 /*-
  * #%L
@@ -20,17 +20,19 @@ package com.github.thmarx.cms;
  * #L%
  */
 
-import com.github.thmarx.cms.extensions.ExtensionHolder;
-import com.github.thmarx.cms.content.ContentTags;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import lombok.extern.slf4j.Slf4j;
-
 /**
  *
  * @author t.marx
  */
- @Slf4j
-public record RenderContext(ExtensionHolder extensionHolder, MarkdownRenderer markdownRenderer, ContentTags contentTags) {
+class Token {
 	
+	Token() {
+	}
+
+	enum Type {
+		MALFORMED, STRING, NUMBER, EQUAL, SLASH, LEFT_BRACKET, RIGHT_BRACKET
+	}
+	Type type;
+	String str; // For STRING and NUMBER
 	
 }

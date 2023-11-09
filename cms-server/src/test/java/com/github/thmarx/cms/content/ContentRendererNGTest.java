@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.content;
 
 /*-
  * #%L
@@ -20,6 +20,11 @@ package com.github.thmarx.cms;
  * #L%
  */
 
+import com.github.thmarx.cms.MockModuleManager;
+import com.github.thmarx.cms.TestHelper;
+import com.github.thmarx.cms.TestTemplateEngine;
+import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileSystem;

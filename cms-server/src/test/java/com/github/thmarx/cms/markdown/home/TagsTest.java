@@ -20,16 +20,7 @@ package com.github.thmarx.cms.markdown.home;
  * #L%
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,14 +29,43 @@ import org.junit.jupiter.api.Test;
  */
 public class TagsTest {
 
-	@Test
-	public void tag() {
-		Pattern bold = Pattern.compile("\\[{2}(.*?)\\]{2}");
-
-		var matcher = bold.matcher("[[method]]");
-		matcher.matches();
-		System.out.println(matcher.group(1));
-	}
-
 	
+	@Test
+	public void tag_no_parameters() {
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher("[[youtube]]");
+		matcher.matches();
+		System.out.println("tag: " + matcher.group("tag"));
+	}
+	
+	@Test
+	public void tag_with_parameters() {
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher("[[youtube videoid='the-id']]");
+		matcher.matches();
+		System.out.println("tag: " + matcher.group("tag"));
+		System.out.println("params: " + matcher.group("params"));
+	}
+	
+	@Test
+	public void tag_with_multiple_parameters() {
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher("[[youtube videoid='the-id' param='other']]");
+		matcher.matches();
+		System.out.println("tag: " + matcher.group("tag"));
+		System.out.println("params: " + matcher.group("params"));
+	}
+	
+	@Test
+	public void multiple_tag_with_multiple_parameters() {
+		
+		var content = """
+                [[youtube videoid='the-id' param='other']]
+                Here is some other content.
+                [[youtube videoid='other-id' param='another']]
+                """;
+		
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher(content);
+		while (matcher.find()) {
+			System.out.println("tag: " + matcher.group("tag"));
+			System.out.println("params: " + matcher.group("params"));
+		}
+	}
 }

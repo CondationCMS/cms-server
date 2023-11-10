@@ -20,7 +20,6 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
-import java.util.regex.Matcher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -60,6 +59,9 @@ public class ContentTagsTest {
 	@Test
 	void simpleTest () {
 		var result = contentTags.replace("[[youtube    /]]");
+		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
+		
+		result = contentTags.replace("[[youtube/]]");
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 	}
 	

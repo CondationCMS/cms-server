@@ -21,10 +21,14 @@
 	</organization>
 
 	<dependencies>
-		
 		<dependency>
 			<groupId>com.github.thmarx.cms</groupId>
 			<artifactId>cms-api</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.github.usefulness</groupId>
+			<artifactId>webp-imageio</artifactId>
 		</dependency>
 		
 		<dependency>

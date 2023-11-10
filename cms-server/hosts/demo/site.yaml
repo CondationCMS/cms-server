@@ -14,3 +14,15 @@ modules:
     - thymeleaf-module
 #    - freemarker-module
     - search-module
+media:
+  formats:
+    - name: small
+      width: 256
+      height: 256
+      format: webp
+      compression: true
+    - name: big
+      width: 512
+      height: 512
+      format: webp
+      compression: true

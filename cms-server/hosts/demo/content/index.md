@@ -5,4 +5,4 @@ template: start.html
 
 # Demo Project
 
-![TestBild!](/assets/images/test.jpg "Test bild")
+![TestBild!](/media/images/test.jpg?format=small "Test bild")

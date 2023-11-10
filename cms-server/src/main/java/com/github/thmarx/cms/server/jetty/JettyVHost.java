@@ -23,6 +23,7 @@ import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
+import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
 import java.nio.file.Path;
 import java.util.List;
@@ -70,6 +71,9 @@ public class JettyVHost extends VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/"), defaultHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
+		
+		JettyMediaHandler mediaHandler = new JettyMediaHandler(assetBase, siteProperties);
+		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
 		defaultContextHandler.setVirtualHosts(List.of(siteProperties.hostname()));

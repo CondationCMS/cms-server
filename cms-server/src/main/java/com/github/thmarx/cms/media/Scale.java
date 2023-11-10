@@ -35,6 +35,30 @@ public class Scale {
 		JPEG,
 		WEBP;
 	}
+	public static Format format4String (final String format) {
+		return switch (format) {
+			case "webp" -> Format.WEBP;
+			case "jpeg" -> Format.JPEG;
+			case "png" -> Format.PNG;
+			default -> throw new RuntimeException("unknown image format");
+		};
+	}
+	public static String mime4Format (final Format format) {
+		return switch (format) {
+			case JPEG -> "image/jpeg";
+			case PNG -> "image/png";
+			case WEBP -> "image/webp";
+			default -> throw new RuntimeException("unknown image format");
+		};
+	}
+	public static String fileending4Format (final Format format) {
+		return switch (format) {
+			case JPEG -> ".jpeg";
+			case PNG -> ".png";
+			case WEBP -> ".webp";
+			default -> throw new RuntimeException("unknown image format");
+		};
+	}
 	
 	public static ScaleResult scaleWithAspectIfTooLarge(byte[] fileData, int maxWidth,
 			int maxHeight, boolean uncompressed, final Format format) {

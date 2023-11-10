@@ -36,6 +36,21 @@
 		</div>
 	</nav>
 
+	<nav aria-label="breadcrumb" th:fragment="breadcrumb">
+		<ol class="breadcrumb">
+			<th:block th:each="node,iterStat : ${navigation.path()}">
+				<li 
+				th:classappend="${node.current}? 'active'" 
+				class="breadcrumb-item"
+				th:attr="aria-current=${iterStat.last ? 'page' : ''}"
+				>
+					<a th:if="!${iterStat.last}" th:href="${node.path}" th:text="${node.name}"></a>
+					<span th:if="${iterStat.last}" th:text="${node.name}"></span>
+				</li>
+			</th:block>
+		</ol>
+	</nav>
+
 	<div class="container" th:fragment="footer">
 		<footer class="py-3 my-4">
 			<ul th:with="nodes=${navigation.list('/')}" class="nav justify-content-center border-bottom pb-3 mb-3">

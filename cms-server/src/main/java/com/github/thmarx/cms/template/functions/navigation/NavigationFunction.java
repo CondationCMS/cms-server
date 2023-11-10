@@ -24,6 +24,7 @@ import com.github.thmarx.cms.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.template.functions.AbstractCurrentNodeFunction;
 import com.github.thmarx.cms.utils.NodeUtil;
 import java.nio.file.Path;
@@ -45,6 +46,32 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		super(fileSystem, currentNode, contentParser, markdownRenderer);
 	}
 
+		/**
+	 * Returns the path from root to the current node.
+	 * @return List of orderd nodes from root to current
+	 */
+	public List<NavNode> path () {
+		List<NavNode> nodes = new ArrayList<>();
+		var contentBase = fileSystem.resolve("content/");
+		var node = currentNode;
+		while (!node.equals(contentBase.getParent())) {
+			
+			var uri = PathUtil.toRelativeFile(node, contentBase);
+			var metaNode = fileSystem.getMetaData().byUri(uri).get();
+			var name = NodeUtil.getName(metaNode);
+			
+			var path = contentBase.resolve(metaNode.uri());
+			final NavNode navNode = new NavNode(name, getUrl(path), isCurrentNode(path));
+			if (!nodes.contains(navNode)) {
+				nodes.add(navNode);
+			}
+			
+			node = node.getParent();
+		}
+		
+		return nodes.reversed();
+	}
+	
 	public List<NavNode> list(final String start) {
 		return getNodes(start, DEFAULT_DEPTH);
 	}

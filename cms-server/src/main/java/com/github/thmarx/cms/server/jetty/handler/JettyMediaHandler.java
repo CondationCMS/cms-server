@@ -89,7 +89,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 			}
 
 		} catch (Exception e) {
-			log.error("", e);
+			log.error(null, e);
 			callback.failed(e);
 		}
 		response.setStatus(404);

@@ -20,10 +20,7 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -41,5 +38,9 @@ public class SiteProperties extends ThemeProperties {
 	
 	public String markdownEngine () {
 		return (String)getSubMap("markdown").getOrDefault("engine", "flexmark");
+	}
+	
+	public String theme () {
+		return (String) properties.get("theme");
 	}
 }

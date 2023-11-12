@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api;
+package com.github.thmarx.cms.api.theme;
 
 /*-
  * #%L
@@ -20,31 +20,23 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
-import java.util.Collections;
-import java.util.Map;
+import com.github.thmarx.cms.api.ThemeProperties;
+import java.nio.file.Path;
 
 /**
  *
  * @author thmar
  */
-public class YamlProperties {
-	
-	protected final Map<String, Object> properties;
 
-	protected YamlProperties (final Map<String, Object> properties) {
-		this.properties = properties;
-	}
+public interface Theme {
 	
-	public Object get(final String name) {
-		return properties.get(name);
-	}
-
-	public <T> T getOrDefault(final String name, final T defaultValue) {
-		return (T) properties.getOrDefault(name, defaultValue);
-	}
-
-	protected Map<String, Object> getSubMap(final String name) {
-		return (Map<String, Object>) properties.getOrDefault(name, Collections.emptyMap());
-	}
+	Path templatePath();
 	
+	ThemeProperties properties();
+	
+	/**
+	 * empty theme is used for sites without configured theme
+	 * @return 
+	 */
+	boolean empty();
 }

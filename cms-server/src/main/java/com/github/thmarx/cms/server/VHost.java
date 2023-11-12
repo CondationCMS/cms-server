@@ -37,12 +37,16 @@ import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.module.RenderContentFunction;
+import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.github.thmarx.modules.manager.ModuleAPIClassLoader;
 import com.github.thmarx.modules.manager.ModuleManagerImpl;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -70,6 +74,8 @@ public class VHost {
 	@Getter
 	private String hostname;
 
+	private Theme theme;
+
 	@Getter
 	private final EventBus eventBus;
 
@@ -94,12 +100,24 @@ public class VHost {
 		}
 	}
 
+	private Theme loadTheme() throws IOException {
+
+		if (siteProperties.theme() != null) {
+			Path themeFolder = serverProperties.getThemesFolder().resolve(siteProperties.theme());
+			return DefaultTheme.load(themeFolder);
+		}
+
+		return DefaultTheme.EMPTY;
+	}
+
 	public void init(Path modules) throws IOException {
 
 		fileSystem.init();
 
 		var props = fileSystem.resolve("site.yaml");
 		siteProperties = PropertiesLoader.hostProperties(props);
+
+		theme = loadTheme();
 
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
@@ -115,7 +133,8 @@ public class VHost {
 		this.moduleManager = ModuleManagerImpl.create(modules.toFile(),
 				fileSystem.resolve("modules_data").toFile(),
 				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus,
-						new RenderContentFunction(() -> contentResolver, () -> extensionManager, (context) -> resolveMarkdownRenderer())
+						new RenderContentFunction(() -> contentResolver, () -> extensionManager, (context) -> resolveMarkdownRenderer()),
+						theme
 				),
 				classLoader
 		);
@@ -135,7 +154,14 @@ public class VHost {
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
 
 		this.moduleManager.initModules();
-		siteProperties.activeModules().stream()
+		
+		List<String> activeModules = new ArrayList<>();
+		activeModules.addAll(siteProperties.activeModules());
+		if (!theme.empty()) {
+			activeModules.addAll(theme.properties().activeModules());	
+		}
+		
+		activeModules.stream()
 				.filter(module_id -> moduleManager.getModuleIds().contains(module_id))
 				.forEach(module_id -> {
 					try {
@@ -147,7 +173,7 @@ public class VHost {
 				});
 
 		moduleManager.getModuleIds().stream()
-				.filter(id -> !siteProperties.activeModules().contains(id))
+				.filter(id -> !activeModules.contains(id))
 				.forEach((module_id) -> {
 					try {
 						log.debug("deactivate module {}", module_id);

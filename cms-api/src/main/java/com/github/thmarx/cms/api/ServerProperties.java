@@ -20,9 +20,8 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
-import java.util.Collections;
+import java.nio.file.Path;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -46,5 +45,9 @@ public class ServerProperties extends YamlProperties {
 	}
 	public int serverPort () {
 		return (int)getSubMap("server").getOrDefault("port", 8080);
+	}
+	
+	public Path getThemesFolder () {
+		return Path.of("themes/");
 	}
 }

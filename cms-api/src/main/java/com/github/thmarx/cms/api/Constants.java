@@ -39,6 +39,13 @@ public abstract class Constants {
 		public static final String MENU_TITLE = "title";
 	}
 	
+	public static class Folders {
+		public static final String CONTENT = "content/";
+		public static final String TEMPALTES = "templates/";
+		public static final String ASSETS = "assets/";
+		public static final String EXTENSIONS = "extensions/";
+	}
+	
 	public static final String SPLIT_PATH_PATTERN = Pattern.quote("/");
 	
 	public static final Pattern SECTION_PATTERN = Pattern.compile("\\w+[a-zA-Z0-9-]*\\.(?<section>[a-zA-Z0-9]+[a-zA-Z0-9-]*)\\.md");

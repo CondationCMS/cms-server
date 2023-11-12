@@ -20,7 +20,8 @@ package com.github.thmarx.cms.server.jetty.handler;
  * #L%
  */
 import com.github.thmarx.cms.Startup;
-import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.Media;
+import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.media.Scale;
 import com.github.thmarx.cms.utils.HTTPUtil;
 import java.io.IOException;
@@ -28,8 +29,6 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +49,7 @@ import org.eclipse.jetty.util.Callback;
 public class JettyMediaHandler extends Handler.Abstract {
 
 	private final Path assetBase;
-	private final SiteProperties siteProperties;
+	private final Map<String, ThemeProperties.MediaFormat> mediaFormats;
 
 	private Path tempDirectory;
 
@@ -75,7 +74,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 					return true;
 				}
 			} else {
-				var format = loadFormats().get(formatValue);
+				var format = mediaFormats.get(formatValue);
 				if (format == null) {
 					log.error("unknown format {}", formatParameter.getFirst());
 					response.setStatus(404);
@@ -88,7 +87,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 				var result = getScaledContent(mediaPath, format);
 				if (result.isPresent()) {
 
-					deliver(result.get(), Scale.mime4Format(format.format()), response);
+					deliver(result.get(), Media.mime4Format(format.format()), response);
 					
 					callback.succeeded();
 					return true;
@@ -122,7 +121,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 		return tempDirectory;
 	}
 
-	private Optional<byte[]> getScaledContent(final String mediaPath, final MediaFormat mediaFormat) throws IOException {
+	private Optional<byte[]> getScaledContent(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat) throws IOException {
 
 		Path resolve = assetBase.resolve(mediaPath);
 
@@ -142,14 +141,14 @@ public class JettyMediaHandler extends Handler.Abstract {
 		return Optional.empty();
 	}
 
-	public String getTempFilename(final String mediaPath, final MediaFormat mediaFormat) {
+	public String getTempFilename(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat) {
 		var tempFilename = mediaPath.replace("/", "_").replace(".", "_");
-		tempFilename += "-" + mediaFormat.name() + Scale.fileending4Format(mediaFormat.format());
+		tempFilename += "-" + mediaFormat.name() + Media.fileending4Format(mediaFormat.format());
 
 		return tempFilename;
 	}
 
-	private void writeTempContent(final String mediaPath, final MediaFormat mediaFormat, byte[] content) throws IOException {
+	private void writeTempContent(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat, byte[] content) throws IOException {
 		var tempFilename = getTempFilename(mediaPath, mediaFormat);
 
 		var tempFile = getTempDirectory().resolve(tempFilename);
@@ -157,7 +156,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 		Files.write(tempFile, content);
 	}
 
-	private Optional<byte[]> getTempContent(final String mediaPath, final MediaFormat mediaFormat) throws IOException {
+	private Optional<byte[]> getTempContent(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat) throws IOException {
 		var tempFilename = getTempFilename(mediaPath, mediaFormat);
 
 		var tempFile = getTempDirectory().resolve(tempFilename);
@@ -170,35 +169,12 @@ public class JettyMediaHandler extends Handler.Abstract {
 
 	private String getRelativeMediaPath(Request request) {
 		var path = request.getHttpURI().getPath();
-		var contextPath = "/media/";
-		path = path.replace(contextPath, "");
+		var contextPath = request.getContext().getContextPath();
+		if (!contextPath.endsWith("/")) {
+			contextPath += "/";
+		}
+		var replacePath = contextPath + "media/";
+		path = path.replace(replacePath, "");
 		return path;
 	}
-
-	Map<String, MediaFormat> mediaFormats;
-
-	public Map<String, MediaFormat> loadFormats() {
-		if (mediaFormats == null) {
-			mediaFormats = new HashMap<>();
-			Map<String, Object> media = siteProperties.getOrDefault("media", Collections.emptyMap());
-			List<Map<String, Object>> formats = (List<Map<String, Object>>) media.getOrDefault("formats", Collections.emptyList());
-			formats.forEach(map -> {
-				var mediaFormat = new MediaFormat(
-						(String) map.get("name"),
-						(int) map.get("width"),
-						(int) map.get("height"),
-						Scale.format4String((String) map.get("format")),
-						(boolean) map.get("compression")
-				);
-				mediaFormats.put(mediaFormat.name(), mediaFormat);
-			});
-		}
-
-		return mediaFormats;
-	}
-
-	private static record MediaFormat(String name, int width, int height, Scale.Format format, boolean compression) {
-
-	}
-
 }

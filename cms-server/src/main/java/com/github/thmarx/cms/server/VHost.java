@@ -73,7 +73,8 @@ public class VHost {
 
 	@Getter
 	private String hostname;
-
+	
+	@Getter
 	private Theme theme;
 
 	@Getter

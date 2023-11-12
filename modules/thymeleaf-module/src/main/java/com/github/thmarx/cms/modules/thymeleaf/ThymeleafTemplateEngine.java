@@ -22,8 +22,6 @@ package com.github.thmarx.cms.modules.thymeleaf;
 
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import java.io.File;
@@ -32,7 +30,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -59,18 +56,18 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 		this.serverProperties = serverProperties;
 
 		
+		ITemplateResolver siteTemplateResolver = templateResolver(this.templateBase);
+		ITemplateResolver themeTemplateResolver = null;
+		if (!theme.empty()) {
+			themeTemplateResolver = templateResolver(theme.templatesPath());
+		}
 
 		engine = new org.thymeleaf.TemplateEngine();
-		engine.setTemplateResolver(templateResolver(this.templateBase, 2));
-		
-		if (!theme.empty()) {
-			engine.addTemplateResolver(templateResolver(theme.templatePath(), 1));
-		}
+		engine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, themeTemplateResolver));
 	}
 	
-	private ITemplateResolver templateResolver (final Path templatePath, final int order) {
+	private ITemplateResolver templateResolver (final Path templatePath) {
 		var templateResolver = new FileTemplateResolver();
-		templateResolver.setOrder(order);
 		templateResolver.setTemplateMode(TemplateMode.HTML);
 		templateResolver.setPrefix(templatePath.toString() + File.separatorChar);
 		//templateResolver.setSuffix(".html");

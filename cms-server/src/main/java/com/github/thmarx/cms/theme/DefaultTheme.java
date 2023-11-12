@@ -19,14 +19,13 @@ package com.github.thmarx.cms.theme;
  * limitations under the License.
  * #L%
  */
-
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.api.theme.Theme;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,31 +38,26 @@ import org.yaml.snakeyaml.Yaml;
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultTheme implements Theme {
-	
+
 	public static final Theme EMPTY = new DefaultTheme(null, null, true);
-	
+
 	private final Path themePath;
 	private final ThemeProperties properties;
 	private boolean empty = false;
-	
-	private DefaultTheme (final Path templatePath, final ThemeProperties themeProperties, final boolean empty) {
+
+	private DefaultTheme(final Path templatePath, final ThemeProperties themeProperties, final boolean empty) {
 		this(templatePath, themeProperties);
 		this.empty = empty;
 	}
-	
-	public static Theme load (Path themePath) throws IOException {
+
+	public static Theme load(Path themePath) throws IOException {
 		Yaml yaml = new Yaml();
 		Path themeYaml = themePath.resolve("theme.yaml");
-		
-		var  content = Files.readString(themeYaml, StandardCharsets.UTF_8);
-		Map<String, Object> config = (Map<String, Object>)yaml.load(content);
-		
-		return new DefaultTheme(themePath, new ThemeProperties(config));
-	}
 
-	@Override
-	public Path templatePath() {
-		return themePath.resolve("templates/");
+		var content = Files.readString(themeYaml, StandardCharsets.UTF_8);
+		Map<String, Object> config = (Map<String, Object>) yaml.load(content);
+
+		return new DefaultTheme(themePath, new ThemeProperties(config));
 	}
 
 	@Override
@@ -74,5 +68,20 @@ public class DefaultTheme implements Theme {
 	@Override
 	public ThemeProperties properties() {
 		return properties;
+	}
+
+	@Override
+	public String getName() {
+		return (String) properties.get("name");
+	}
+
+	@Override
+	public Path assetsPath() {
+		return themePath.resolve(Constants.Folders.ASSETS);
+	}
+
+	@Override
+	public Path templatesPath() {
+		return themePath.resolve(Constants.Folders.TEMPALTES);
 	}
 }

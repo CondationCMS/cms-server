@@ -30,7 +30,11 @@ import java.nio.file.Path;
 
 public interface Theme {
 	
-	Path templatePath();
+	String getName();
+	
+	Path templatesPath ();
+	
+	Path assetsPath ();
 	
 	ThemeProperties properties();
 	

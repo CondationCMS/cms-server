@@ -21,9 +21,9 @@ package com.github.thmarx.cms.api;
  */
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -41,5 +41,26 @@ public class ThemeProperties extends YamlProperties {
 	
 	public List<String> activeModules () {
 		return (List<String>)getSubMap("modules").getOrDefault("active", List.of());
+	}
+	
+	public Map<String, MediaFormat> getMediaFormats() {
+			Map<String, MediaFormat> mediaFormats = new HashMap<>();
+			Map<String, Object> media = (Map<String, Object>) properties.getOrDefault("media", Collections.emptyMap());
+			List<Map<String, Object>> formats = (List<Map<String, Object>>) media.getOrDefault("formats", Collections.emptyList());
+			formats.forEach(map -> {
+				var mediaFormat = new MediaFormat(
+						(String) map.get("name"),
+						(int) map.get("width"),
+						(int) map.get("height"),
+						Media.format4String((String) map.get("format")),
+						(boolean) map.get("compression")
+				);
+				mediaFormats.put(mediaFormat.name(), mediaFormat);
+			});
+
+		return mediaFormats;
+	}
+	
+	public static record MediaFormat(String name, int width, int height, Media.Format format, boolean compression) {
 	}
 }

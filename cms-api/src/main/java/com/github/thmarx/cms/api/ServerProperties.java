@@ -28,17 +28,14 @@ import lombok.RequiredArgsConstructor;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class ServerProperties {
+public class ServerProperties extends YamlProperties {
 	
-	private final Map<String, Object> properties;
+	public ServerProperties (final Map<String, Object> properties) {
+		super(properties);
+	}
 	
 	public boolean dev () {
 		return (Boolean) properties.getOrDefault("dev", true);
-	}
-	
-	private Map<String, Object> getSubMap (final String name) {
-		return (Map<String, Object>) properties.getOrDefault(name, Collections.emptyMap());
 	}
 	
 	public String serverEngine () {

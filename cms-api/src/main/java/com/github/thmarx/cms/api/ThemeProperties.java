@@ -29,17 +29,17 @@ import lombok.RequiredArgsConstructor;
  *
  * @author t.marx
  */
-public class SiteProperties extends ThemeProperties {
+public class ThemeProperties extends YamlProperties {
 	
-	public SiteProperties (final Map<String, Object> properties) {
+	public ThemeProperties (final Map<String, Object> properties) {
 		super(properties);
 	}
 	
-	public String hostname () {
-		return (String) properties.getOrDefault("hostname", "localhost");
+	public String templateEngine () {
+		return (String)getSubMap("template").getOrDefault("engine", "freemarker");
 	}
 	
-	public String markdownEngine () {
-		return (String)getSubMap("markdown").getOrDefault("engine", "flexmark");
+	public List<String> activeModules () {
+		return (List<String>)getSubMap("modules").getOrDefault("active", List.of());
 	}
 }

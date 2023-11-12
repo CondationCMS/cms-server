@@ -1,0 +1,52 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<th:block th:replace="libs/fragments.html :: header">
+	</th:block>
+</head>
+
+<body>
+
+	<nav th:replace="libs/fragments.html :: navigation"></nav>
+
+	<div id="content" class="container" th:with="pageNumber = ${requestContext.getQueryParameter('page', '1')}">
+
+		<div class="row">
+			<h1 th:text="${title}"></h1>
+		</div>
+
+		<div class="row" th:utext="${content}"></div>
+		<div class="row"
+			th:with='page = ${nodeList.from("/blog/*").sort("published").reverse(true).page(pageNumber).size(1).list()}'>
+			<th:block th:each="entry : ${page.items}" data-test="e">
+				<h2 th:text="${entry.name}"></h2>
+				<p th:text="${entry.content}"></p>
+				<u th:text="${#dates.format(entry.meta['published'], 'dd-MM-yyyy HH:mm')}"></u>
+				<a th:href="${entry.path}">goto</a>
+			</th:block>
+
+			<div>
+				<nav aria-label="blog pagination">
+					<ul class="pagination">
+						<li class="page-item " th:classappend="${page.page == 1 ? 'disabled' : ''}">
+							<a class="page-link" th:href="'/blog?page=' + ${page.page-1}" tabindex="-1">Previous</a>
+						</li>
+						<li class="page-item" th:classappend="${page.page == page.total ? 'disabled' : ''}">
+							<a class="page-link" th:href="'/blog?page=' + ${page.page+1}">Next</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	</div>
+
+	<th:block th:replace="libs/fragments.html :: footer"></th:block>
+
+	<script th:replace="libs/fragments.html :: footer_scripts">
+
+	</script>
+
+</body>
+
+</html>

@@ -24,17 +24,21 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.cache.tag.CaffeineTagCache;
 import io.pebbletemplates.pebble.cache.template.CaffeineTemplateCache;
+import io.pebbletemplates.pebble.loader.DelegatingLoader;
 import io.pebbletemplates.pebble.loader.FileLoader;
+import io.pebbletemplates.pebble.loader.Loader;
 import io.pebbletemplates.pebble.template.PebbleTemplate;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.nio.file.Path;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -43,21 +47,12 @@ import java.time.Duration;
 public class PebbleTemplateEngine implements TemplateEngine {
 
 	private final PebbleEngine engine;
-	private final Path templateBase;
-	final Path contentBase; 
-
-	final ModuleFileSystem fileSystem;
 	
-	public PebbleTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties properties) {
-		this.fileSystem = fileSystem;
-		this.templateBase = fileSystem.resolve("templates/");
-		this.contentBase = fileSystem.resolve("content/");
+	
+	public PebbleTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties properties, final Theme theme) {
 		
-		var loader = new FileLoader();
-		loader.setPrefix(this.templateBase.toString() + File.separatorChar);
-		//loader.setSuffix(".html");
 		final PebbleEngine.Builder builder = new PebbleEngine.Builder()
-				.loader(loader);
+				.loader(createLoader(fileSystem, theme));
 		
 		if (properties.dev()) {
 			builder.templateCache(null);
@@ -82,6 +77,22 @@ public class PebbleTemplateEngine implements TemplateEngine {
 		
 		engine = builder
 				.build();
+	}
+	
+	private Loader<?> createLoader (final ModuleFileSystem fileSystem, final Theme theme) {
+		List<Loader<?>> loaders = new ArrayList<>();
+		
+		var siteLoader = new FileLoader();
+		siteLoader.setPrefix(fileSystem.resolve("templates/").toString() + File.separatorChar);
+		loaders.add(siteLoader);
+		
+		if (!theme.empty()) {
+			var themeLoader = new FileLoader();
+			themeLoader.setPrefix(theme.templatesPath().toString() + File.separatorChar);
+			loaders.add(themeLoader);
+		}
+		
+		return new DelegatingLoader(loaders);
 	}
 
 	@Override

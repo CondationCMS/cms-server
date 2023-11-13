@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.github.thmarx.cms.modules.pebble;
 
 /*-
@@ -43,7 +39,7 @@ public class PebbleLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 
 	@Override
 	public void activate() {
-		templateEngine = new PebbleTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties());
+		templateEngine = new PebbleTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties(), getContext().getTheme());
 	}
 
 	@Override

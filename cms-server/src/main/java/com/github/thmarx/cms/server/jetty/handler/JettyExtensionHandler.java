@@ -22,7 +22,9 @@ package com.github.thmarx.cms.server.jetty.handler;
 
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.server.jetty.extension.JettyHttpHandlerWrapper;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,15 +41,14 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class JettyExtensionHandler extends Handler.Abstract {
 
-	private final ExtensionManager extensionManager;
-
+	private final RequestContextFactory requestContextFactory;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		try (var context = extensionManager.newContext()) {
+		try (var context = requestContextFactory.create(request.getHttpURI().getPath(), Map.of())) {
 			String extension = getExtensionName(request);
 			var method = request.getMethod();
-			Optional<HttpHandlerExtension> findHttpHandler = context.findHttpHandler(method, extension);
+			Optional<HttpHandlerExtension> findHttpHandler = context.extensions().findHttpHandler(method, extension);
 			if (findHttpHandler.isEmpty()) {
 				response.setStatus(404);
 				callback.succeeded();

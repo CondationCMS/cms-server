@@ -48,9 +48,8 @@ import org.graalvm.polyglot.io.IOAccess;
 @RequiredArgsConstructor
 @Slf4j
 public class ExtensionManager implements AutoCloseable {
-
 	private final FileSystem fileSystem;
-	private final Theme theme;
+	private final Theme parentTheme;
 
 	@Getter
 	private Engine engine;
@@ -82,8 +81,8 @@ public class ExtensionManager implements AutoCloseable {
 					.option("engine.WarnInterpreterOnly", "false")
 					.build();
 
-			if (!theme.empty()) {
-				var themeExtPath = theme.extensionsPath();
+			if (!parentTheme.empty()) {
+				var themeExtPath = parentTheme.extensionsPath();
 				if (Files.exists(themeExtPath)) {
 					log.debug("load extensions from theme");
 					loadExtensions(themeExtPath, theme_sources);
@@ -118,7 +117,7 @@ public class ExtensionManager implements AutoCloseable {
 	}
 	
 
-	public RequestExtensions newContext() throws IOException {
+	public RequestExtensions newContext(Theme theme) throws IOException {
 		var context = Context.newBuilder()
 				.allowAllAccess(true)
 				.allowHostClassLookup(className -> true)

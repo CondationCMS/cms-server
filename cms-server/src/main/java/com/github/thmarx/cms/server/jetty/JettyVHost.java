@@ -84,7 +84,7 @@ public class JettyVHost extends VHost {
 		var moduleHandler = new JettyModuleMappingHandler(moduleManager, siteProperties);
 		moduleHandler.init();
 		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
-		var extensionHandler = new JettyExtensionHandler(extensionManager);
+		var extensionHandler = new JettyExtensionHandler(requestContextFactory);
 		ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extension");
 
 		ContextHandlerCollection contextCollection = new ContextHandlerCollection(

@@ -44,12 +44,14 @@ public class RequestContextFactory {
 	
 	public RequestContext create (String uri, Map<String, List<String>> queryParameters) throws IOException {
 		
-		RequestExtensions requestExtensions = extensionManager.newContext();
+		var requestTheme = new RequestTheme(theme);
+		
+		RequestExtensions requestExtensions = extensionManager.newContext(requestTheme);
 		
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer.get(), 
 				new ContentTags(requestExtensions.getTags()), 
-				new RequestTheme(theme));
+				requestTheme);
 		
 		RequestContext requestContext = new RequestContext(uri, queryParameters, requestExtensions, renderContext);
 		

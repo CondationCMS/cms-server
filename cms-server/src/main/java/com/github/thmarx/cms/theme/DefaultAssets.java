@@ -21,7 +21,6 @@ package com.github.thmarx.cms.theme;
  */
 
 import com.github.thmarx.cms.api.theme.Assets;
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import java.util.Collection;

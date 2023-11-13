@@ -19,6 +19,7 @@ package com.github.thmarx.cms.extensions;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.request.RequestExtensions;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
@@ -115,8 +116,9 @@ public class ExtensionManager implements AutoCloseable {
 					}
 				});
 	}
+	
 
-	public ExtensionHolder newContext() throws IOException {
+	public RequestExtensions newContext() throws IOException {
 		var context = Context.newBuilder()
 				.allowAllAccess(true)
 				.allowHostClassLookup(className -> true)
@@ -142,7 +144,7 @@ public class ExtensionManager implements AutoCloseable {
 				.engine(engine).build();
 		}
 
-		ExtensionHolder holder = new ExtensionHolder(context, themeContext);
+		RequestExtensions holder = new RequestExtensions(context, themeContext);
 
 		final Value bindings = context.getBindings("js");
 		bindings.putMember("extensions", holder);

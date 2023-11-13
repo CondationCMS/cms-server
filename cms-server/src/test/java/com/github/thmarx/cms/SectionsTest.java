@@ -60,8 +60,7 @@ public class SectionsTest extends TemplateEngineTest {
 				() -> templates, 
 				fileSystem, 
 				new SiteProperties(Map.of()), 
-				() -> new MockModuleManager(),
-			DefaultTheme.EMPTY
+				() -> new MockModuleManager()
 		);
 	}
 

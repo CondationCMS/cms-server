@@ -23,7 +23,6 @@ package com.github.thmarx.cms;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.server.HttpServer;
 import com.github.thmarx.cms.server.jetty.JettyServer;
-import com.github.thmarx.cms.server.undertow.UndertowServer;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -58,7 +57,6 @@ public class Startup {
 		log.debug("try to load engine: {}", engine);
 		return switch (engine) {
 			case "jetty" -> new JettyServer(properties);
-			case "undertow" -> new UndertowServer(properties);
 			default -> throw new RuntimeException("something bad happens");
 		};
 	}

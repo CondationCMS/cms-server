@@ -21,20 +21,14 @@ package com.github.thmarx.cms.module;
  */
 
 import com.github.thmarx.cms.content.ContentResolver;
-import com.github.thmarx.cms.RenderContext;
-import com.github.thmarx.cms.RequestContext;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.content.ContentTags;
-import com.github.thmarx.cms.extensions.ExtensionManager;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.graalvm.polyglot.Context;
 
 /**
  *
@@ -45,19 +39,14 @@ import org.graalvm.polyglot.Context;
 public class RenderContentFunction implements BiFunction<String, Map<String, List<String>>, Optional<String>> {
 
 	private final Supplier<ContentResolver> contentResolver;
-	private final Supplier<ExtensionManager> manager;
-
-	private final Function<Context, MarkdownRenderer> markdownRendererProvider;
+	private final Supplier<RequestContextFactory> requestContextFactory;
 	
 	@Override
 	public Optional<String> apply(String uri, Map<String, List<String>> parameters) {
 		try (
-				var contextHolder = manager.get().newContext(); 
-				final MarkdownRenderer markdownRenderer = markdownRendererProvider.apply(contextHolder.getContext());) {
+				var requestContext = requestContextFactory.get().create(uri, parameters);) {
 
-			RequestContext context = new RequestContext(uri, parameters,
-					new RenderContext(contextHolder, markdownRenderer, new ContentTags(contextHolder.getTags())));
-			return contentResolver.get().getContent(context);
+			return contentResolver.get().getContent(requestContext);
 		} catch (Exception e) {
 			log.error("", e);
 		}

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.request;
 
 /*-
  * #%L
@@ -29,8 +29,13 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public record RequestContext(String uri, Map<String, List<String>> queryParameters, RenderContext renderContext) {
-
+public record RequestContext (
+		String uri, 
+		Map<String, List<String>> queryParameters, 
+		RequestExtensions extensions,
+		RenderContext renderContext
+		) implements AutoCloseable {
+	
 	public String getQueryParameter(String name, final String defaultValue) {
 		if (!queryParameters.containsKey(name)) {
 			return defaultValue;
@@ -49,5 +54,10 @@ public record RequestContext(String uri, Map<String, List<String>> queryParamete
 			log.error(null, e);
 		}
 		return defaultValue;
+	}
+	
+	@Override
+	public void close () throws Exception {
+		extensions.close();
 	}
 }

@@ -19,12 +19,12 @@ package com.github.thmarx.cms.template;
  * limitations under the License.
  * #L%
  */
-
-import com.github.thmarx.cms.RenderContext;
-import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.content.ContentTags;
-import com.github.thmarx.cms.extensions.ExtensionHolder;
+import com.github.thmarx.cms.request.RenderContext;
+import com.github.thmarx.cms.request.RequestContext;
+import com.github.thmarx.cms.request.RequestExtensions;
+import com.github.thmarx.cms.theme.DefaultTheme;
 import java.util.Map;
 
 /**
@@ -32,9 +32,13 @@ import java.util.Map;
  * @author t.marx
  */
 public abstract class TemplateEngineTest {
-	
-	protected RequestContext requestContext () {
+
+	protected RequestContext requestContext() {
 		var markdownRenderer = TestHelper.getRenderer();
-		return new RequestContext("", Map.of(), new RenderContext(new ExtensionHolder(null, null), markdownRenderer, new ContentTags(Map.of())));
+		return new RequestContext(
+				"", 
+				Map.of(), 
+				new RequestExtensions(null, null), 
+				new RenderContext(markdownRenderer, new ContentTags(Map.of()), DefaultTheme.EMPTY));
 	}
 }

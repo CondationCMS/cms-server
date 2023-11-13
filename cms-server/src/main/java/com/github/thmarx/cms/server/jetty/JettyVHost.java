@@ -21,6 +21,7 @@ package com.github.thmarx.cms.server.jetty;
  */
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.ThemeProperties;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
@@ -52,9 +53,8 @@ public class JettyVHost extends VHost {
 	}
 
 	public Handler httpHandler() {
-		var defaultHandler = new JettyDefaultHandler(contentResolver, extensionManager, (context) -> {
-			return resolveMarkdownRenderer();
-		});
+		
+		var defaultHandler = new JettyDefaultHandler(contentResolver, requestContextFactory);
 
 		log.debug("create assets handler for {}", assetBase.toString());
 		ResourceHandler assetsHandler = new ResourceHandler();

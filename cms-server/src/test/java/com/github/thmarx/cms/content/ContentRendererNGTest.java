@@ -67,8 +67,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 				() -> templates, 
 				fileSystem, 
 				new SiteProperties(Map.of()), 
-				() -> moduleManager, 
-				DefaultTheme.EMPTY);
+				() -> moduleManager);
 	}
 
 	@Test

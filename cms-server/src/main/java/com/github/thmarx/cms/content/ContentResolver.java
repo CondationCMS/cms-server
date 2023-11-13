@@ -20,10 +20,10 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
-import com.github.thmarx.cms.RequestContext;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.utils.PathUtil;
+import com.github.thmarx.cms.request.RequestContext;
 import com.google.common.base.Strings;
 import java.nio.file.Files;
 import java.nio.file.Path;

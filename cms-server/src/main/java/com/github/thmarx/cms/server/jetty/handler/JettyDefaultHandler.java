@@ -20,14 +20,9 @@ package com.github.thmarx.cms.server.jetty.handler;
  * #L%
  */
 import com.github.thmarx.cms.content.ContentResolver;
-import com.github.thmarx.cms.RenderContext;
-import com.github.thmarx.cms.RequestContext;
-import com.github.thmarx.cms.extensions.ExtensionManager;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.content.ContentTags;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.utils.HTTPUtil;
 import java.util.Optional;
-import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.io.Content;
@@ -35,7 +30,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
-import org.graalvm.polyglot.Context;
 
 /**
  *
@@ -46,32 +40,23 @@ import org.graalvm.polyglot.Context;
 public class JettyDefaultHandler extends Handler.Abstract {
 
 	private final ContentResolver contentResolver;
-	private final ExtensionManager manager;
-
-	private final Function<Context, MarkdownRenderer> markdownRendererProvider;
-
-	
+	private final RequestContextFactory requestContextFactory;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		var uri = request.getHttpURI().getPath();
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		try (
-				var contextHolder = manager.newContext(); 
-				final MarkdownRenderer markdownRenderer = markdownRendererProvider.apply(contextHolder.getContext());) {
-			
-			final ContentTags contentTags = new ContentTags(contextHolder.getTags());
-			
-			RequestContext context = new RequestContext(uri, queryParameters,
-					new RenderContext(contextHolder, markdownRenderer, contentTags));
-			Optional<String> content = contentResolver.getContent(context);
+				var requestContext = requestContextFactory.create(uri, queryParameters)) {
+
+			Optional<String> content = contentResolver.getContent(requestContext);
 			response.setStatus(200);
-			
+
 			if (!content.isPresent()) {
-				context = new RequestContext("/.technical/404", queryParameters,
-						new RenderContext(contextHolder, markdownRenderer, contentTags));
-				content = contentResolver.getContent(context);
-				response.setStatus(404);
+				try (var context = requestContextFactory.create("/.technical/404", queryParameters)) {
+					content = contentResolver.getContent(context);
+					response.setStatus(404);
+				}
 			}
 			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
 

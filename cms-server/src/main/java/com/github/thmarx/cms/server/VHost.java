@@ -40,6 +40,7 @@ import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.module.RenderContentFunction;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.github.thmarx.modules.manager.ModuleAPIClassLoader;
@@ -86,6 +87,8 @@ public class VHost {
 
 	protected final ServerProperties serverProperties;
 
+	protected RequestContextFactory requestContextFactory;
+	
 	public VHost(final Path hostBase, final ServerProperties serverProperties) {
 		this.eventBus = new DefaultEventBus();
 		this.fileSystem = new FileSystem(hostBase, eventBus);
@@ -134,7 +137,7 @@ public class VHost {
 		this.moduleManager = ModuleManagerImpl.create(modules.toFile(),
 				fileSystem.resolve("modules_data").toFile(),
 				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus,
-						new RenderContentFunction(() -> contentResolver, () -> extensionManager, (context) -> resolveMarkdownRenderer()),
+						new RenderContentFunction(() -> contentResolver, () -> requestContextFactory),
 						theme
 				),
 				classLoader
@@ -151,9 +154,11 @@ public class VHost {
 
 		contentParser = new ContentParser(fileSystem);
 
-		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager, theme);
+		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
 
+		this.requestContextFactory = new RequestContextFactory(() -> resolveMarkdownRenderer(), extensionManager, getTheme());
+		
 		this.moduleManager.initModules();
 		
 		List<String> activeModules = new ArrayList<>();

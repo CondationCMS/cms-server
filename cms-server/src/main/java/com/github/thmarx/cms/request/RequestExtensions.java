@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.extensions;
+package com.github.thmarx.cms.request;
 
 /*-
  * #%L
@@ -22,6 +22,9 @@ package com.github.thmarx.cms.extensions;
 
 import com.github.thmarx.cms.api.extensions.http.ExtensionHttpHandler;
 import com.github.thmarx.cms.content.ContentTags;
+import com.github.thmarx.cms.extensions.HttpHandlerExtension;
+import com.github.thmarx.cms.extensions.TemplateFunctionExtension;
+import com.github.thmarx.cms.extensions.TemplateSupplierExtension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +41,7 @@ import org.graalvm.polyglot.Context;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class ExtensionHolder implements AutoCloseable {
+public class RequestExtensions implements AutoCloseable {
 
 	@Getter
 	private final List<HttpHandlerExtension> httpHandlerExtensions = new ArrayList<>();

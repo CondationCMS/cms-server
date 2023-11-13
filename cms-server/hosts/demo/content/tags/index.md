@@ -7,4 +7,4 @@ menu:
 
 ## Tags
 
-[[hello name='Thorsten']]
+[[hello name='Thorsten'/]]

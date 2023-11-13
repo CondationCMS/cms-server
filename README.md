@@ -4,5 +4,5 @@
 
 ## 2.7.0
 
-* #12 theme support
-* legacy server implementation removed 
+* theme support #12
+* legacy server implementation removed #68

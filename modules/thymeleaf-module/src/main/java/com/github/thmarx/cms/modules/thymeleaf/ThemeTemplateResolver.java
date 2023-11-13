@@ -21,6 +21,7 @@ package com.github.thmarx.cms.modules.thymeleaf;
  */
 
 import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.thymeleaf.IEngineConfiguration;
@@ -35,7 +36,7 @@ import org.thymeleaf.templateresolver.TemplateResolution;
 public class ThemeTemplateResolver implements ITemplateResolver {
 
 	private final ITemplateResolver siteTemplateResolver;
-	private final ITemplateResolver themeTemplateResolver;
+	private final Optional<ITemplateResolver> themeTemplateResolver;
 	
 	@Setter
 	private int order = 0;
@@ -54,8 +55,8 @@ public class ThemeTemplateResolver implements ITemplateResolver {
 	public TemplateResolution resolveTemplate(IEngineConfiguration configuration, String ownerTemplate, String template, Map<String, Object> templateResolutionAttributes) {
 		TemplateResolution resolveTemplate = siteTemplateResolver.resolveTemplate(configuration, ownerTemplate, template, templateResolutionAttributes);
 		
-		if ((resolveTemplate == null || !resolveTemplate.getTemplateResource().exists()) && themeTemplateResolver != null) {
-			return themeTemplateResolver.resolveTemplate(configuration, ownerTemplate, template, templateResolutionAttributes);
+		if ((resolveTemplate == null || !resolveTemplate.getTemplateResource().exists()) && themeTemplateResolver.isPresent()) {
+			return themeTemplateResolver.get().resolveTemplate(configuration, ownerTemplate, template, templateResolutionAttributes);
 		}
 		return resolveTemplate;
 	}

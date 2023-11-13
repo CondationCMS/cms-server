@@ -30,6 +30,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
@@ -44,26 +45,25 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 public class ThymeleafTemplateEngine implements TemplateEngine {
 
 	private final org.thymeleaf.TemplateEngine engine;
-	private final Path templateBase;
-	private final ModuleFileSystem fileSystem;
 	private final ServerProperties serverProperties;
 
 	public ThymeleafTemplateEngine(final ModuleFileSystem fileSystem, 
 			final ServerProperties serverProperties,
 			final Theme theme) {
-		this.fileSystem = fileSystem;
-		this.templateBase = fileSystem.resolve("templates/");
+	
+		
 		this.serverProperties = serverProperties;
 
+		var templateBase = fileSystem.resolve("templates/");
 		
-		ITemplateResolver siteTemplateResolver = templateResolver(this.templateBase);
+		ITemplateResolver siteTemplateResolver = templateResolver(templateBase);
 		ITemplateResolver themeTemplateResolver = null;
 		if (!theme.empty()) {
 			themeTemplateResolver = templateResolver(theme.templatesPath());
 		}
 
 		engine = new org.thymeleaf.TemplateEngine();
-		engine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, themeTemplateResolver));
+		engine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, Optional.ofNullable(themeTemplateResolver)));
 	}
 	
 	private ITemplateResolver templateResolver (final Path templatePath) {

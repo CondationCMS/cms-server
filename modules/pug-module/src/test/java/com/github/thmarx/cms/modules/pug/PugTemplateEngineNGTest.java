@@ -22,7 +22,9 @@ package com.github.thmarx.cms.modules.pug;
 
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -48,7 +50,32 @@ public class PugTemplateEngineNGTest {
 				return Path.of("src/test/resources").resolve(path);
 			}
 		};
-		engine = new PugTemplateEngine(fileSystem, properties);
+		engine = new PugTemplateEngine(fileSystem, properties, new Theme() {
+			@Override
+			public String getName() {
+				return "empty";
+			}
+
+			@Override
+			public Path templatesPath() {
+				return null;
+			}
+
+			@Override
+			public Path assetsPath() {
+				return null;
+			}
+
+			@Override
+			public ThemeProperties properties() {
+				return null;
+			}
+
+			@Override
+			public boolean empty() {
+				return true;
+			}
+		});
 	}
 
 	@Test

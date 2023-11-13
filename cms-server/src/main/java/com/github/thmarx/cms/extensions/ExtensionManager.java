@@ -19,6 +19,7 @@ package com.github.thmarx.cms.extensions;
  * limitations under the License.
  * #L%
  */
+import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -48,6 +49,7 @@ import org.graalvm.polyglot.io.IOAccess;
 public class ExtensionManager implements AutoCloseable {
 
 	private final FileSystem fileSystem;
+	private final Theme theme;
 
 	@Getter
 	private Engine engine;
@@ -119,6 +121,7 @@ public class ExtensionManager implements AutoCloseable {
 		final Value bindings = context.getBindings("js");
 		bindings.putMember("extensions", holder);
 		bindings.putMember("fileSystem", fileSystem);
+		bindings.putMember("theme", theme);
 
 		sources.forEach(context::eval);
 

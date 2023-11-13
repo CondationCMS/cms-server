@@ -27,6 +27,7 @@ import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.template.functions.list.NodeListFunctionBuilder;
 import com.github.thmarx.cms.template.functions.navigation.NavigationFunction;
 import com.github.thmarx.cms.api.utils.SectionUtil;
@@ -55,6 +56,7 @@ public class ContentRenderer {
 	private final FileSystem fileSystem;
 	private final SiteProperties siteProperties;
 	private final Supplier<ModuleManager> moduleManager;
+	private final Theme theme;
 	
 	public String render (final Path contentFile, final RequestContext context) throws IOException {
 		return render(contentFile, context, Collections.emptyMap());
@@ -74,6 +76,7 @@ public class ContentRenderer {
 		model.values.put("navigation", new NavigationFunction(this.fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
 		model.values.put("nodeList", new NodeListFunctionBuilder(fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
 		model.values.put("requestContext", context);
+		model.values.put("theme", theme);
 		model.values.put("site", siteProperties);
 		
 		context.renderContext().extensionHolder().getRegisterTemplateSupplier().forEach(service -> {

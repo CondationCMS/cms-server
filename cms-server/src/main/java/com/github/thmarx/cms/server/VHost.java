@@ -146,12 +146,12 @@ public class VHost {
 		assetBase = fileSystem.resolve("assets/");
 		templateBase = fileSystem.resolve("templates/");
 
-		extensionManager = new ExtensionManager(fileSystem);
+		extensionManager = new ExtensionManager(fileSystem, theme);
 		extensionManager.init();
 
 		contentParser = new ContentParser(fileSystem);
 
-		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager);
+		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager, theme);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
 
 		this.moduleManager.initModules();

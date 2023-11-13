@@ -11,6 +11,15 @@
 	<link href="/themes/default/assets/bootstrap-icons-1.11.1/bootstrap-icons.min.css" rel="stylesheet" />
 	<script src="/themes/default/assets/prism-1.29.0/prism.js" defer></script>
 	<link rel="stylesheet" href="/themes/default/assets/prism-1.29.0/prism.css" defer />
+
+	<th:block th:each="css : ${theme.assets.css()}">
+		<link rel="stylesheet" th:href="${css}" defer />
+	</th:block>
+
+	<th:block th:each="js : ${theme.assets.js()}">
+		<script th:src="${js}" defer></script>
+	</th:block>
+
 </th:block>
 
 <body>

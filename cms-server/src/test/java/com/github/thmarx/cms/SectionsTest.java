@@ -28,6 +28,7 @@ import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.template.TemplateEngineTest;
+import com.github.thmarx.cms.theme.DefaultTheme;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -55,7 +56,13 @@ public class SectionsTest extends TemplateEngineTest {
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(fileSystem);
 
-		contentRenderer = new ContentRenderer(contentParser, () -> templates, fileSystem, new SiteProperties(Map.of()), () -> new MockModuleManager());
+		contentRenderer = new ContentRenderer(contentParser, 
+				() -> templates, 
+				fileSystem, 
+				new SiteProperties(Map.of()), 
+				() -> new MockModuleManager(),
+			DefaultTheme.EMPTY
+		);
 	}
 
 	@Test

@@ -31,6 +31,7 @@ import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.template.TemplateEngineTest;
+import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.github.thmarx.modules.manager.ModuleManagerImpl;
 import java.io.IOException;
@@ -62,7 +63,12 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(fileSystem);
 		
-		contentRenderer = new ContentRenderer(contentParser, () -> templates, fileSystem, new SiteProperties(Map.of()), () -> moduleManager);
+		contentRenderer = new ContentRenderer(contentParser, 
+				() -> templates, 
+				fileSystem, 
+				new SiteProperties(Map.of()), 
+				() -> moduleManager, 
+				DefaultTheme.EMPTY);
 	}
 
 	@Test

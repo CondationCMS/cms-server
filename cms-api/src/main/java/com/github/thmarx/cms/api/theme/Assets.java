@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.markdown.home.bb;
+package com.github.thmarx.cms.api.theme;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -24,14 +24,8 @@ package com.github.thmarx.cms.markdown.home.bb;
  *
  * @author t.marx
  */
-class OpenTag {
+public interface Assets {
+	void addCss (final String css);
 	
-	String tag;
-	String html;
-	
-	OpenTag(String tag, String html) {
-		this.tag = tag;
-		this.html = html;
-	}
-	
+	void addJs (final String js);
 }

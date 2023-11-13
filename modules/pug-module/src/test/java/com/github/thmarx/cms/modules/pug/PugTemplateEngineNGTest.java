@@ -24,6 +24,7 @@ import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Assets;
 import com.github.thmarx.cms.api.theme.Theme;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -74,6 +75,16 @@ public class PugTemplateEngineNGTest {
 			@Override
 			public boolean empty() {
 				return true;
+			}
+
+			@Override
+			public Assets getAssets() {
+				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			}
+
+			@Override
+			public Path extensionsPath() {
+				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 			}
 		});
 	}

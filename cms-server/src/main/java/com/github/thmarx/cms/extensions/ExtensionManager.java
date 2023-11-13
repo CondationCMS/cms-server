@@ -55,6 +55,7 @@ public class ExtensionManager implements AutoCloseable {
 	private Engine engine;
 
 	List<Source> sources = new ArrayList<>();
+	List<Source> theme_sources = new ArrayList<>();
 
 	private ClassLoader getClassLoader() throws IOException {
 		Path libs = fileSystem.resolve("libs/");
@@ -80,28 +81,39 @@ public class ExtensionManager implements AutoCloseable {
 					.option("engine.WarnInterpreterOnly", "false")
 					.build();
 
+			if (!theme.empty()) {
+				var themeExtPath = theme.extensionsPath();
+				if (Files.exists(themeExtPath)) {
+					log.debug("load extensions from theme");
+					loadExtensions(themeExtPath, theme_sources);
+				}
+			}
 			var extPath = fileSystem.resolve("extensions/");
 			if (Files.exists(extPath)) {
-				log.debug("try to find extensions");
-				Files.list(extPath)
-						.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
-						.forEach(extFile -> {
-							try {
-								log.debug("load extension {}", extFile.getFileName().toString());
-								Source source = Source.newBuilder(
-										"js",
-										Files.readString(extFile, StandardCharsets.UTF_8),
-										extFile.getFileName().toString() + ".mjs")
-										.encoding(StandardCharsets.UTF_8)
-										.build();
-
-								sources.add(source);
-							} catch (IOException ex) {
-								log.error("", ex);
-							}
-						});
+				log.debug("load extensions from site");
+				loadExtensions(extPath, sources);
 			}
 		}
+	}
+
+	protected void loadExtensions(Path extPath, List<Source> sources) throws IOException {
+		Files.list(extPath)
+				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
+				.forEach(extFile -> {
+					try {
+						log.debug("load extension {}", extFile.getFileName().toString());
+						Source source = Source.newBuilder(
+								"js",
+								Files.readString(extFile, StandardCharsets.UTF_8),
+								extFile.getFileName().toString() + ".mjs")
+								.encoding(StandardCharsets.UTF_8)
+								.build();
+
+						sources.add(source);
+					} catch (IOException ex) {
+						log.error("", ex);
+					}
+				});
 	}
 
 	public ExtensionHolder newContext() throws IOException {
@@ -116,7 +128,21 @@ public class ExtensionManager implements AutoCloseable {
 						.build())
 				.engine(engine).build();
 
-		ExtensionHolder holder = new ExtensionHolder(context);
+		Context themeContext = null;
+		if (!theme.empty()) {
+			themeContext = Context.newBuilder()
+				.allowAllAccess(true)
+				.allowHostClassLookup(className -> true)
+				.allowHostAccess(HostAccess.ALL)
+				.allowValueSharing(true)
+				.hostClassLoader(getClassLoader())
+				.allowIO(IOAccess.newBuilder()
+						.fileSystem(new ExtensionFileSystem(theme.extensionsPath()))
+						.build())
+				.engine(engine).build();
+		}
+
+		ExtensionHolder holder = new ExtensionHolder(context, themeContext);
 
 		final Value bindings = context.getBindings("js");
 		bindings.putMember("extensions", holder);
@@ -124,6 +150,16 @@ public class ExtensionManager implements AutoCloseable {
 		bindings.putMember("theme", theme);
 
 		sources.forEach(context::eval);
+
+		if (!theme.empty()) {
+			final Value themeBindings = themeContext.getBindings("js");
+			themeBindings.putMember("extensions", holder);
+			themeBindings.putMember("fileSystem", fileSystem);
+			themeBindings.putMember("theme", theme);
+
+			theme_sources.forEach(themeContext::eval);
+		}
+		
 
 		return holder;
 	}

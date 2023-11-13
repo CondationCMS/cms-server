@@ -51,6 +51,7 @@ public class ExtensionHolder implements AutoCloseable {
 
 	@Getter
 	private final Context context;
+	private final Context themeContext;
 	
 	public void registerHttpExtension(final String method, final String path, final ExtensionHttpHandler handler) {
 		httpHandlerExtensions.add(new HttpHandlerExtension(method, path, handler));
@@ -75,5 +76,8 @@ public class ExtensionHolder implements AutoCloseable {
 	@Override
 	public void close() throws Exception {
 		context.close();
+		if (themeContext != null) {
+			themeContext.close();
+		}
 	}
 }

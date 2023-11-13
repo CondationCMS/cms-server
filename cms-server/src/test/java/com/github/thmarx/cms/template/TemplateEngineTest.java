@@ -35,6 +35,6 @@ public abstract class TemplateEngineTest {
 	
 	protected RequestContext requestContext () {
 		var markdownRenderer = TestHelper.getRenderer();
-		return new RequestContext("", Map.of(), new RenderContext(new ExtensionHolder(null), markdownRenderer, new ContentTags(Map.of())));
+		return new RequestContext("", Map.of(), new RenderContext(new ExtensionHolder(null, null), markdownRenderer, new ContentTags(Map.of())));
 	}
 }

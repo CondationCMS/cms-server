@@ -84,7 +84,7 @@ public class DefaultTheme implements Theme {
 
 	@Override
 	public Path templatesPath() {
-		return themePath.resolve(Constants.Folders.TEMPALTES);
+		return themePath.resolve(Constants.Folders.TEMPLATES);
 	}
 
 	@Override

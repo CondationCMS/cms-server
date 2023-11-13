@@ -41,9 +41,10 @@ public abstract class Constants {
 	
 	public static class Folders {
 		public static final String CONTENT = "content/";
-		public static final String TEMPALTES = "templates/";
+		public static final String TEMPLATES = "templates/";
 		public static final String ASSETS = "assets/";
 		public static final String EXTENSIONS = "extensions/";
+		public static final String MODULES = "modules/";
 	}
 	
 	public static final String SPLIT_PATH_PATTERN = Pattern.quote("/");

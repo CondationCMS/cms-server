@@ -20,6 +20,7 @@ package com.github.thmarx.cms.server.jetty;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.ServerProperties;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,7 +61,7 @@ public class JettyServer implements HttpServer {
 			if (Files.exists(props)) {
 				try {
 					var host = new JettyVHost(hostPath, properties);
-					host.init(Path.of("modules"));
+					host.init(Path.of(Constants.Folders.MODULES));
 					vhosts.add(host);
 				} catch (IOException ex) {
 					log.error(null, ex);

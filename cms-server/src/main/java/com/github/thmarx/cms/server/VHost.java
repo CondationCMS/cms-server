@@ -25,6 +25,7 @@ import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.PropertiesLoader;
 import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.extensions.MarkdownRendererProviderExtentionPoint;
@@ -46,7 +47,6 @@ import com.github.thmarx.modules.manager.ModuleManagerImpl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -142,9 +142,9 @@ public class VHost {
 
 		hostname = siteProperties.hostname();
 
-		contentBase = fileSystem.resolve("content/");
-		assetBase = fileSystem.resolve("assets/");
-		templateBase = fileSystem.resolve("templates/");
+		contentBase = fileSystem.resolve(Constants.Folders.CONTENT);
+		assetBase = fileSystem.resolve(Constants.Folders.ASSETS);
+		templateBase = fileSystem.resolve(Constants.Folders.TEMPLATES);
 
 		extensionManager = new ExtensionManager(fileSystem, theme);
 		extensionManager.init();

@@ -23,8 +23,11 @@ package com.github.thmarx.cms.modules.freemarker;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
 import freemarker.cache.NullCacheStorage;
+import freemarker.cache.TemplateLoader;
 import java.io.IOException;
 import java.io.StringWriter;
 
@@ -32,21 +35,20 @@ import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FreemarkerTemplateEngine implements TemplateEngine {
 
 	private final Configuration config;
 
 
-	final ModuleFileSystem fileSystem;
-
-	public FreemarkerTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties serverProperties) {
-		this.fileSystem = fileSystem;
-
+	public FreemarkerTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties serverProperties, final Theme theme) {
+		
 		config = new Configuration(Configuration.VERSION_2_3_32);
 
 		try {
-			config.setTemplateLoader(new FileTemplateLoader(fileSystem.resolve("templates/").toFile()));
+			config.setTemplateLoader(createTemplateLoader(fileSystem, theme));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -69,6 +71,19 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 
 		config.setSharedVariable("indexOf", new IndexOfMethod());
 		config.setSharedVariable("upper", new UpperDirective());
+	}
+	
+	private TemplateLoader createTemplateLoader (final ModuleFileSystem fileSystem, final Theme theme) throws IOException {
+		
+		List<TemplateLoader> loaders = new ArrayList<>();
+		loaders.add(new FileTemplateLoader(fileSystem.resolve("templates/").toFile()));
+		
+		if (!theme.empty()) {
+			loaders.add(new FileTemplateLoader(theme.templatesPath().toFile()));
+		}
+		return new MultiTemplateLoader(
+				loaders.toArray(TemplateLoader[]::new)
+		);
 	}
 
 	@Override

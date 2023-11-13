@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.github.thmarx.cms.modules.freemarker;
 
 /*-
@@ -43,7 +39,7 @@ public class FreemarkerLifecycleExtension extends ModuleLifeCycleExtension<CMSMo
 
 	@Override
 	public void activate() {
-		templateEngine = new FreemarkerTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties());
+		templateEngine = new FreemarkerTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties(), getContext().getTheme());
 	}
 
 	@Override

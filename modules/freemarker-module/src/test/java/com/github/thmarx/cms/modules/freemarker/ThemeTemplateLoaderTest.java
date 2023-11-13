@@ -1,0 +1,74 @@
+package com.github.thmarx.cms.modules.freemarker;
+
+/*-
+ * #%L
+ * freemarker-module
+ * %%
+ * Copyright (C) 2023 Marx-Software
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
+import java.io.IOException;
+import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+
+/**
+ *
+ * @author t.marx
+ */
+@ExtendWith(MockitoExtension.class)
+public class ThemeTemplateLoaderTest {
+	
+	
+	@Mock
+	TemplateLoader siteTemplateLoader;
+	@Mock
+	TemplateLoader themeTemplateLoader;
+	
+	MultiTemplateLoader sut;
+	
+	@BeforeEach
+	void setup () {
+		sut = new MultiTemplateLoader(List.of(siteTemplateLoader, themeTemplateLoader).toArray(TemplateLoader[]::new));
+	}
+	
+
+	@Test
+	public void site_template() throws IOException {
+		Mockito.when(siteTemplateLoader.findTemplateSource("test")).thenReturn("the template");
+		
+		sut.findTemplateSource("test");
+		
+		Mockito.verify(themeTemplateLoader, Mockito.times(0)).findTemplateSource("test");
+	}
+	
+	@Test
+	public void theme_template() throws IOException {
+		Mockito.when(siteTemplateLoader.findTemplateSource("test")).thenReturn(null);
+		
+		sut.findTemplateSource("test");
+		
+		Mockito.verify(themeTemplateLoader, Mockito.times(1)).findTemplateSource("test");
+	}
+	
+}

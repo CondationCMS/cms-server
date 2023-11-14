@@ -59,5 +59,6 @@ public record RequestContext (
 	@Override
 	public void close () throws Exception {
 		extensions.close();
+		renderContext.markdownRenderer().close();
 	}
 }

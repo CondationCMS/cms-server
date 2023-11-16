@@ -9,9 +9,20 @@
 <body>
 
 	<nav th:replace="libs/fragments.html :: navigation"></nav>
+	
 	<div id="content">
 		<div class="container" th:utext="${content}"></div>
 	</div>
+
+	<div class="container">
+		<th:block th:each="featured : ${query.create().where('featured').is(true).get(0, 1)}">
+			<div class="featured">
+				<h3 th:text="${featured.name}"></h3>
+				<a th:href="${featured.path}">goto</a>
+			</div>
+		</th:block>
+	</div>
+
 	<th:block th:replace="libs/fragments.html :: footer"></th:block>
 
 </body>

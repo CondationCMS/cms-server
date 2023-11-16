@@ -1,6 +1,7 @@
 ---
 title: Installation & Configuration
 template: start.html
+featured: true
 menu: 
     position: 10
     title: "Installation"

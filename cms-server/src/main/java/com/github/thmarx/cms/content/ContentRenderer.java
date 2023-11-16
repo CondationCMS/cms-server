@@ -30,6 +30,7 @@ import com.github.thmarx.cms.template.functions.list.NodeListFunctionBuilder;
 import com.github.thmarx.cms.template.functions.navigation.NavigationFunction;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.request.RequestContext;
+import com.github.thmarx.cms.template.functions.query.QueryFunction;
 import com.github.thmarx.modules.api.ModuleManager;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -73,6 +74,7 @@ public class ContentRenderer {
 		
 		model.values.put("navigation", new NavigationFunction(this.fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
 		model.values.put("nodeList", new NodeListFunctionBuilder(fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
+		model.values.put("query", new QueryFunction(fileSystem));
 		model.values.put("requestContext", context);
 		model.values.put("theme", context.renderContext().theme());
 		model.values.put("site", siteProperties);

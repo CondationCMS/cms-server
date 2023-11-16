@@ -26,6 +26,7 @@ import static com.github.thmarx.cms.filesystem.query.QueryUtil.sorted;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -33,56 +34,57 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class Query {
+public class Query<T> {
 
 	private final Collection<MetaData.MetaNode> nodes;
+	public final Function<MetaData.MetaNode, T> nodeMapper;
 
-	public Where where(final String field) {
-		return new Where(field, nodes);
+	public Where<T> where(final String field) {
+		return new Where<T>(field, nodes, nodeMapper);
 	}
 
-	public List<MetaData.MetaNode> get(final int offset, final int size) {
+	public List<T> get(final int offset, final int size) {
 		var filteredNodes = nodes.stream()
 				.filter(node -> !node.isDirectory())
 				.filter(MetaData::isVisible)
 				.skip(offset)
 				.limit(size)
 				.toList();
-		return Collections.unmodifiableList(filteredNodes);
+		return Collections.unmodifiableList(filteredNodes.stream().map(nodeMapper).toList());
 	}
 	
-	public List<MetaData.MetaNode> get() {
+	public List<T> get() {
 		var filteredNodes = nodes.stream()
 				.filter(node -> !node.isDirectory())
 				.filter(MetaData::isVisible)
 				.toList();
-		return Collections.unmodifiableList(filteredNodes);
+		return Collections.unmodifiableList(filteredNodes.stream().map(nodeMapper).toList());
 	}
 	
-	public Sort sort (final String field) {
-		return new Sort(field, nodes);
+	public Sort<T> sort (final String field) {
+		return new Sort<T>(field, nodes, nodeMapper);
 	}
 
 	
 
-	public static record Where(String field, Collection<MetaData.MetaNode> nodes) {
+	public static record Where<T>(String field, Collection<MetaData.MetaNode> nodes, Function<MetaData.MetaNode, T> nodeMapper) {
 
-		public Query not(Object value) {
-			return new Query(filtered(nodes, field, value, false));
+		public Query<T> not(Object value) {
+			return new Query<>(filtered(nodes, field, value, false), nodeMapper);
 		}
 
-		public Query is(Object value) {
-			return new Query(filtered(nodes, field, value, true));
+		public Query<T> is(Object value) {
+			return new Query<>(filtered(nodes, field, value, true), nodeMapper);
 		}
 	}
-	public static record Sort(String field, Collection<MetaData.MetaNode> nodes) {
+	public static record Sort<T>(String field, Collection<MetaData.MetaNode> nodes, Function<MetaData.MetaNode, T> nodeMapper) {
 
-		public Query asc() {
-			return new Query(sorted(nodes, field, true));
+		public Query<T> asc() {
+			return new Query<>(sorted(nodes, field, true), nodeMapper);
 		}
 
-		public Query desc() {
-			return new Query(sorted(nodes, field, false));
+		public Query<T> desc() {
+			return new Query<>(sorted(nodes, field, false), nodeMapper);
 		}
 	}
 }

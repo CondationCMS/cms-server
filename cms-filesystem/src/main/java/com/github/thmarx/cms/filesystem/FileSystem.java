@@ -65,17 +65,22 @@ public class FileSystem implements ModuleFileSystem {
 	@Getter
 	private final MetaData metaData = new MetaData();
 
-	public Query query () {
-		return new Query(new ArrayList<>(metaData.nodes().values()));
+	public <T> Query<T> query (final Function<MetaData.MetaNode, T> nodeMapper) {
+		return new Query(new ArrayList<>(metaData.nodes().values()), nodeMapper);
 	}
 	
-	public Query query (final String startURI) {
-		Optional<MetaData.MetaNode> startNode = metaData.findFolder(startURI);
-		if (startNode.isEmpty()) {
-			return new Query(Collections.emptyList());
-		}
-		return new Query(new ArrayList<>(startNode.get().children().values()));
+	public <T> Query<T>  query (final String startURI, final Function<MetaData.MetaNode, T> nodeMapper) {
 		
+		final String uri;
+		if (startURI.startsWith("/")) {
+			uri = startURI.substring(1);
+		} else {
+			uri = startURI;
+		}
+		
+		var nodes = metaData.nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
+		
+		return new Query(nodes, nodeMapper);
 	}
 	
 	@Experimental

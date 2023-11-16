@@ -23,12 +23,10 @@ package com.github.thmarx.cms.filesystem.query;
 import com.github.thmarx.cms.filesystem.MetaData;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -56,7 +54,7 @@ public class QueryTest {
 	
 	@Test
 	public void test_is() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").is(true).get();
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.getFirst().uri()).isEqualTo("/2");
@@ -64,7 +62,7 @@ public class QueryTest {
 	
 	@Test
 	public void test_not() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").not(true).get();
 		Assertions.assertThat(nodes).hasSize(2);
 		Assertions.assertThat(nodes.stream().map(MetaData.MetaNode::uri).toList()).contains("/test1", "/test2");
@@ -72,14 +70,14 @@ public class QueryTest {
 	
 	@Test
 	public void test_data() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.get();
 		Assertions.assertThat(nodes).hasSize(3);
 	}
 	
 	@Test
 	public void test_sort_asc() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").is(false).sort("index").asc().get();
 		Assertions.assertThat(nodes).hasSize(2);
 		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test1");
@@ -88,7 +86,7 @@ public class QueryTest {
 	
 	@Test
 	public void test_sort_desc() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").is(false).sort("index").desc().get();
 		Assertions.assertThat(nodes).hasSize(2);
 		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test2");
@@ -97,7 +95,7 @@ public class QueryTest {
 	
 	@Test
 	public void test_offset_0() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").is(false).sort("index").desc().get(0, 1);
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test2");
@@ -105,7 +103,7 @@ public class QueryTest {
 	
 	@Test
 	public void test_offset_1() {
-		Query query = new Query(nodes);
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").is(false).sort("index").desc().get(1, 1);
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test1");

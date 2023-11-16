@@ -45,9 +45,16 @@ public class NavigationFunctionNGTest {
 
 	@BeforeAll
 	static void init() throws IOException {
-		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus());
+		var contentParser = new ContentParser();
+		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+			try {
+				return contentParser.parseMeta(file);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 		fileSystem.init();
-		navigationFunction = new NavigationFunction(fileSystem, Path.of("hosts/test/content/nav/index.md"), new ContentParser(fileSystem),
+		navigationFunction = new NavigationFunction(fileSystem, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
 				markdownRenderer);
 	}
 
@@ -92,7 +99,7 @@ public class NavigationFunctionNGTest {
 	@Test
 	public void test_path() {
 
-		var sut = new NavigationFunction(fileSystem, Path.of("hosts/test/content/nav3/folder1/index.md"), new ContentParser(fileSystem),
+		var sut = new NavigationFunction(fileSystem, Path.of("hosts/test/content/nav3/folder1/index.md"), new ContentParser(),
 				markdownRenderer);
 		
 		List<NavNode> path = sut.path();

@@ -50,16 +50,22 @@ public class SectionsTest extends TemplateEngineTest {
 
 	@BeforeAll
 	public static void beforeClass() throws IOException {
-		fileSystem = new FileSystem(Path.of("hosts/test/"), new DefaultEventBus());
+		var contentParser = new ContentParser();
+		fileSystem = new FileSystem(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+			try {
+				return contentParser.parseMeta(file);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 		fileSystem.init();
-		var contentParser = new ContentParser(fileSystem);
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(fileSystem);
 
-		contentRenderer = new ContentRenderer(contentParser, 
-				() -> templates, 
-				fileSystem, 
-				new SiteProperties(Map.of()), 
+		contentRenderer = new ContentRenderer(contentParser,
+				() -> templates,
+				fileSystem,
+				new SiteProperties(Map.of()),
 				() -> new MockModuleManager()
 		);
 	}

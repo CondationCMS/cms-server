@@ -60,7 +60,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VHost {
 
-	private final FileSystem fileSystem;
+	private FileSystem fileSystem;
 
 	protected ContentRenderer contentRenderer;
 	protected ContentResolver contentResolver;
@@ -89,9 +89,11 @@ public class VHost {
 
 	protected RequestContextFactory requestContextFactory;
 	
+	private final Path hostBase;
+	
 	public VHost(final Path hostBase, final ServerProperties serverProperties) {
+		this.hostBase = hostBase;
 		this.eventBus = new DefaultEventBus();
-		this.fileSystem = new FileSystem(hostBase, eventBus);
 		this.serverProperties = serverProperties;
 	}
 
@@ -116,6 +118,16 @@ public class VHost {
 
 	public void init(Path modules) throws IOException {
 
+		contentParser = new ContentParser();
+		
+		this.fileSystem = new FileSystem(hostBase, eventBus, (file) -> {
+			try {
+				return contentParser.parseMeta(file);
+			} catch (IOException ioe) {
+				log.error(null, ioe);
+				throw new RuntimeException(ioe);
+			}
+		});
 		fileSystem.init();
 
 		var props = fileSystem.resolve("site.yaml");
@@ -151,8 +163,6 @@ public class VHost {
 
 		extensionManager = new ExtensionManager(fileSystem, theme);
 		extensionManager.init();
-
-		contentParser = new ContentParser(fileSystem);
 
 		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);

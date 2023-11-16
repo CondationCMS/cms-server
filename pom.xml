@@ -18,6 +18,7 @@
 		<module>cms-api</module>
 		<module>cms-server</module>
 		<module>modules</module>
+	 <module>cms-filesystem</module>
 	</modules>
 	<inceptionYear>2023</inceptionYear>
 	<organization>
@@ -30,6 +31,11 @@
 			<dependency>
 				<groupId>com.github.thmarx.cms</groupId>
 				<artifactId>cms-api</artifactId>
+				<version>${project.version}</version>            
+			</dependency>
+			<dependency>
+				<groupId>com.github.thmarx.cms</groupId>
+				<artifactId>cms-filesystem</artifactId>
 				<version>${project.version}</version>            
 			</dependency>
 			<dependency>
@@ -54,11 +60,6 @@
 				<version>2.2</version>            
 			</dependency>
 			<dependency>
-				<groupId>io.undertow</groupId>
-				<artifactId>undertow-core</artifactId>
-				<version>2.3.9.Final</version>
-			</dependency>
-			<dependency>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-server</artifactId>
 				<version>${jetty.version}</version>
@@ -74,7 +75,6 @@
 				<artifactId>caffeine</artifactId>
 				<version>3.1.8</version>
 			</dependency>
-			<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>

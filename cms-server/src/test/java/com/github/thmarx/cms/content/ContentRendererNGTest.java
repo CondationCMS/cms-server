@@ -23,17 +23,13 @@ package com.github.thmarx.cms.content;
 import com.github.thmarx.cms.MockModuleManager;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.TestTemplateEngine;
-import com.github.thmarx.cms.content.ContentParser;
-import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.template.TemplateEngineTest;
-import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
-import com.github.thmarx.modules.manager.ModuleManagerImpl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -41,7 +37,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -58,8 +53,14 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 	
 	@BeforeAll
 	public static void beforeClass () throws IOException {
-		final FileSystem fileSystem = new FileSystem(Path.of("hosts/test/"), new DefaultEventBus());
-		var contentParser = new ContentParser(fileSystem);
+		var contentParser = new ContentParser();
+		final FileSystem fileSystem = new FileSystem(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+			try {
+				return contentParser.parseMeta(file);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(fileSystem);
 		

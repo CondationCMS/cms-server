@@ -43,9 +43,15 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@BeforeAll
 	static void setup () throws IOException {
-		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus());
+		ContentParser parser = new ContentParser();
+		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+			try {
+				return parser.parseMeta(file);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
 		fileSystem.init();
-		ContentParser parser = new ContentParser(fileSystem);
 		var markdownRenderer = TestHelper.getRenderer();
 		nodeList = new NodeListFunctionBuilder(fileSystem, fileSystem.resolve("content/").resolve("index.md"), parser, markdownRenderer);
 	}

@@ -26,6 +26,8 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.thmarx.cms.Startup;
 import com.google.common.base.Strings;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Collections;
@@ -42,12 +44,9 @@ import org.yaml.snakeyaml.Yaml;
 @Slf4j
 public class ContentParser {
 
-	private final FileSystem fileSystem;
 	private final Cache<String, Content> contentCache;
 
-	public ContentParser(final FileSystem fileSystem) {
-		this.fileSystem = fileSystem;
-
+	public ContentParser() {
 		var builder = Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(1));
 		if (Startup.DEV_MODE) {
@@ -96,7 +95,7 @@ public class ContentParser {
 	}
 
 	private ContentRecord readContent(final Path contentFile) throws IOException {
-		var fileContent = fileSystem.loadLines(contentFile);
+		var fileContent = Files.readAllLines(contentFile, StandardCharsets.UTF_8);
 
 		StringBuilder contentBuilder = new StringBuilder();
 		StringBuilder metaBuilder = new StringBuilder();

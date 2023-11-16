@@ -25,7 +25,10 @@
 			<groupId>com.github.thmarx.cms</groupId>
 			<artifactId>cms-api</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.github.thmarx.cms</groupId>
+			<artifactId>cms-filesystem</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.github.usefulness</groupId>
 			<artifactId>webp-imageio</artifactId>
@@ -34,10 +37,6 @@
 		<dependency>
 			<groupId>org.yaml</groupId>
 			<artifactId>snakeyaml</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>io.undertow</groupId>
-			<artifactId>undertow-core</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>

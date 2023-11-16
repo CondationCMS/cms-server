@@ -41,7 +41,7 @@ public class ContentParserNGTest {
 
 	@Test
 	public void testSomeMethod() throws IOException {
-		var contentParser = new ContentParser(new FileSystem(Path.of("hosts/test/"), new DefaultEventBus()));
+		var contentParser = new ContentParser();
 		
 		var expectedMD = """
                    
@@ -59,7 +59,7 @@ public class ContentParserNGTest {
 	
 	@Test
 	public void test_date() throws IOException {
-		var contentParser = new ContentParser(new FileSystem(Path.of("hosts/test/"), new DefaultEventBus()));
+		var contentParser = new ContentParser();
 		
 		var content = contentParser.parse(Path.of("hosts/test/content/test.md"));
 		
@@ -77,7 +77,7 @@ public class ContentParserNGTest {
 	
 	@Test
 	public void test_tags() throws IOException {
-		var contentParser = new ContentParser(new FileSystem(Path.of("hosts/test/"), new DefaultEventBus()));
+		var contentParser = new ContentParser();
 		
 		var content = contentParser.parse(Path.of("hosts/test/content/tags.md"));
 		

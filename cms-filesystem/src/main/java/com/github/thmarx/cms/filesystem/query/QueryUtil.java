@@ -28,12 +28,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 final class QueryUtil {
+	
+	public static enum Operator {
+		EQUALS,
+		CONTAINS,
+		CONTAINS_NOT,
+		NOT_EQUALS;
+	}
 
 	protected static List<MetaData.MetaNode> sorted(final Collection<MetaData.MetaNode> nodes, final String field, final boolean asc) {
 		
@@ -87,18 +96,30 @@ final class QueryUtil {
 		return 0;
 	}
 
-	protected static Collection<MetaData.MetaNode> filtered(final Collection<MetaData.MetaNode> nodes, final String field, final Object value, final boolean equals) {
-		return nodes.stream().filter(createPredicate(field, value, equals)).toList();
+	protected static Collection<MetaData.MetaNode> filtered(final Collection<MetaData.MetaNode> nodes, final String field, final Object value, final Operator operator) {
+		return nodes.stream().filter(createPredicate(field, value, operator)).toList();
 	}
 
-	private static Predicate<? super MetaData.MetaNode> createPredicate(final String field, final Object value, final boolean equals) {
+	private static Predicate<? super MetaData.MetaNode> createPredicate(final String field, final Object value, final Operator operator) {
 		return (node) -> {
 			var node_value = getValue(node.data(), field);
-			if (equals) {
-				return Objects.equals(node_value, value);
-			} else {
-				return !Objects.equals(node_value, value);
+			
+			if (node_value == null) {
+				return false;
 			}
+			
+			if (Operator.EQUALS.equals(operator)) {
+				return Objects.equals(node_value, value);
+			} else if (Operator.NOT_EQUALS.equals(operator)) {
+				return !Objects.equals(node_value, value);
+			} else if (Operator.CONTAINS.equals(operator) && node_value instanceof List) {
+				return ((List)node_value).contains(value);
+			} else if (Operator.CONTAINS_NOT.equals(operator) && node_value instanceof List) {
+				return !((List)node_value).contains(value);
+			}
+			
+			log.error("unknown operation " + operator.name());
+			return false;
 		};
 	}
 

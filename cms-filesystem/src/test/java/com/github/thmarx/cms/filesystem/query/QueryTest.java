@@ -26,6 +26,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -42,13 +43,26 @@ public class QueryTest {
 	@BeforeAll
 	public static void setup (){
 		nodes = new ArrayList<>();
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index.md", Map.of("featured", true, "published", Date.from(Instant.now().plus(1, ChronoUnit.DAYS))));
+		MetaData.MetaNode node = new MetaData.MetaNode("/", "index.md", Map.of(
+				"featured", true, 
+				"published", Date.from(Instant.now().plus(1, ChronoUnit.DAYS))));
 		nodes.add(node);
-		node = new MetaData.MetaNode("/2", "index2.md", Map.of("featured", true, "published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS))));
+		node = new MetaData.MetaNode("/2", "index2.md", Map.of(
+				"featured", true, 
+				"published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS))));
 		nodes.add(node);
-		node = new MetaData.MetaNode("/test1", "test1.md", Map.of("featured", false, "index", 1, "published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS))));
+		node = new MetaData.MetaNode("/test1", "test1.md", Map.of(
+				"featured", false, 
+				"index", 1, "published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
+				"tags", List.of("three", "four")
+		));
 		nodes.add(node);
-		node = new MetaData.MetaNode("/test2", "test2.md", Map.of("featured", false, "index", 2, "published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS))));
+		node = new MetaData.MetaNode("/test2", "test2.md", Map.of(
+				"featured", false, 
+				"index", 2, 
+				"published",	Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
+				"tags", List.of("one", "two"))
+		);
 		nodes.add(node);
 	}
 	
@@ -105,6 +119,22 @@ public class QueryTest {
 	public void test_offset_1() {
 		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
 		var nodes = query.where("featured").is(false).sort("index").desc().get(1, 1);
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test1");
+	}
+	
+	@Test
+	public void test_contains() {
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
+		var nodes = query.where("tags").contains("one").get();
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test2");
+	}
+	
+	@Test
+	public void test_contains_not() {
+		Query<MetaData.MetaNode> query = new Query<>(nodes, (node) -> node);
+		var nodes = query.where("tags").contains_not("one").get();
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/test1");
 	}

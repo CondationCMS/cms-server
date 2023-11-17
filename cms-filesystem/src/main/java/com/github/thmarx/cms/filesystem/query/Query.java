@@ -70,11 +70,18 @@ public class Query<T> {
 	public static record Where<T>(String field, Collection<MetaData.MetaNode> nodes, Function<MetaData.MetaNode, T> nodeMapper) {
 
 		public Query<T> not(Object value) {
-			return new Query<>(filtered(nodes, field, value, false), nodeMapper);
+			return new Query<>(filtered(nodes, field, value, QueryUtil.Operator.NOT_EQUALS), nodeMapper);
 		}
 
 		public Query<T> is(Object value) {
-			return new Query<>(filtered(nodes, field, value, true), nodeMapper);
+			return new Query<>(filtered(nodes, field, value, QueryUtil.Operator.EQUALS), nodeMapper);
+		}
+		
+		public Query<T> contains(Object value) {
+			return new Query<>(filtered(nodes, field, value, QueryUtil.Operator.CONTAINS), nodeMapper);
+		}
+		public Query<T> contains_not(Object value) {
+			return new Query<>(filtered(nodes, field, value, QueryUtil.Operator.CONTAINS_NOT), nodeMapper);
 		}
 	}
 	public static record Sort<T>(String field, Collection<MetaData.MetaNode> nodes, Function<MetaData.MetaNode, T> nodeMapper) {

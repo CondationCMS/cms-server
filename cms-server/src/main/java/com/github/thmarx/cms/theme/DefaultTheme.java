@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ import org.yaml.snakeyaml.Yaml;
 @RequiredArgsConstructor
 public class DefaultTheme implements Theme {
 
-	public static final Theme EMPTY = new DefaultTheme(null, null, true);
+	public static final Theme EMPTY = new DefaultTheme(null, new ThemeProperties(Collections.emptyMap()), true);
 
 	private final Path themePath;
 	private final ThemeProperties properties;

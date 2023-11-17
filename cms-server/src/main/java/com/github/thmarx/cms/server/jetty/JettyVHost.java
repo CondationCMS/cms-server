@@ -21,7 +21,6 @@ package com.github.thmarx.cms.server.jetty;
  */
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.ThemeProperties;
-import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;

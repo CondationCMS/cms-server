@@ -37,7 +37,7 @@ public class SiteProperties extends ThemeProperties {
 	}
 	
 	public String markdownEngine () {
-		return (String)getSubMap("markdown").getOrDefault("engine", "flexmark");
+		return (String)getSubMap("markdown").get("engine");
 	}
 	
 	public String theme () {

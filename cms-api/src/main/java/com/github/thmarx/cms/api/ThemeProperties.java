@@ -36,7 +36,7 @@ public class ThemeProperties extends YamlProperties {
 	}
 	
 	public String templateEngine () {
-		return (String)getSubMap("template").getOrDefault("engine", "freemarker");
+		return (String)getSubMap("template").get("engine");
 	}
 	
 	public List<String> activeModules () {

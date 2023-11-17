@@ -1,8 +1,6 @@
 hostname: localhost
 baseurl: "http://localhost:1010"
 language: en
-template:
-  engine: thymeleaf
 markdown:
   engine: markedjs
 theme: default

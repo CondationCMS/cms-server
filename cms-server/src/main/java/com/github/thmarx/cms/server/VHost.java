@@ -74,7 +74,7 @@ public class VHost {
 
 	@Getter
 	private String hostname;
-	
+
 	@Getter
 	private Theme theme;
 
@@ -88,9 +88,9 @@ public class VHost {
 	protected final ServerProperties serverProperties;
 
 	protected RequestContextFactory requestContextFactory;
-	
+
 	private final Path hostBase;
-	
+
 	public VHost(final Path hostBase, final ServerProperties serverProperties) {
 		this.hostBase = hostBase;
 		this.eventBus = new DefaultEventBus();
@@ -117,9 +117,9 @@ public class VHost {
 	}
 
 	public void init(Path modules) throws IOException {
-
-		contentParser = new ContentParser();
 		
+		contentParser = new ContentParser();
+
 		this.fileSystem = new FileSystem(hostBase, eventBus, (file) -> {
 			try {
 				return contentParser.parseMeta(file);
@@ -135,6 +135,14 @@ public class VHost {
 
 		theme = loadTheme();
 
+		try {
+			getTemplateEngine();
+		} catch (Exception e) {
+			log.error(null , e);
+			fileSystem.shutdown();
+			throw e;
+		}
+		
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
 						"org.slf4j",
@@ -168,15 +176,15 @@ public class VHost {
 		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
 
 		this.requestContextFactory = new RequestContextFactory(() -> resolveMarkdownRenderer(), extensionManager, getTheme());
-		
+
 		this.moduleManager.initModules();
-		
+
 		List<String> activeModules = new ArrayList<>();
 		activeModules.addAll(siteProperties.activeModules());
 		if (!theme.empty()) {
-			activeModules.addAll(theme.properties().activeModules());	
+			activeModules.addAll(theme.properties().activeModules());
 		}
-		
+
 		activeModules.stream()
 				.filter(module_id -> moduleManager.getModuleIds().contains(module_id))
 				.forEach(module_id -> {
@@ -209,9 +217,20 @@ public class VHost {
 		});
 	}
 
+	private String getTemplateEngine() {
+		var engine = this.siteProperties.templateEngine();
+
+		var theme_engine = getTheme().properties().templateEngine();
+		if (theme_engine != null && engine != null && !theme_engine.equals(engine)) {
+			throw new RuntimeException("site template engine does not match theme template engine");
+		}
+		
+		return theme_engine != null ? theme_engine : engine;
+	}
+
 	protected TemplateEngine resolveTemplateEngine() {
 		if (this.templateEngine == null) {
-			var engine = this.siteProperties.templateEngine();
+			var engine = getTemplateEngine();
 
 			List<TemplateEngineProviderExtentionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
 			Optional<TemplateEngineProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();

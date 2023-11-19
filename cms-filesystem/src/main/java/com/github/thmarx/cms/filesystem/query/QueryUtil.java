@@ -38,10 +38,15 @@ import lombok.extern.slf4j.Slf4j;
 final class QueryUtil {
 	
 	public static enum Operator {
-		EQUALS,
 		CONTAINS,
 		CONTAINS_NOT,
-		NOT_EQUALS;
+		EQ,
+		NOT_EQ,
+		GT,
+		GTE,
+		LT,
+		LTE
+		;
 	}
 
 	protected static List<MetaData.MetaNode> sorted(final Collection<MetaData.MetaNode> nodes, final String field, final boolean asc) {
@@ -108,14 +113,22 @@ final class QueryUtil {
 				return false;
 			}
 			
-			if (Operator.EQUALS.equals(operator)) {
+			if (Operator.EQ.equals(operator)) {
 				return Objects.equals(node_value, value);
-			} else if (Operator.NOT_EQUALS.equals(operator)) {
+			} else if (Operator.NOT_EQ.equals(operator)) {
 				return !Objects.equals(node_value, value);
 			} else if (Operator.CONTAINS.equals(operator) && node_value instanceof List) {
 				return ((List)node_value).contains(value);
 			} else if (Operator.CONTAINS_NOT.equals(operator) && node_value instanceof List) {
 				return !((List)node_value).contains(value);
+			} else if (Operator.GT.equals(operator)) {
+				return compare(node_value, value) > 0;
+			} else if (Operator.GTE.equals(operator)) {
+				return compare(node_value, value) >= 0;
+			} else if (Operator.LT.equals(operator)) {
+				return compare(node_value, value) < 0;
+			} else if (Operator.LTE.equals(operator)) {
+				return compare(node_value, value) <= 0;
 			}
 			
 			log.error("unknown operation " + operator.name());

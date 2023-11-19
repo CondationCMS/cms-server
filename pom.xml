@@ -24,6 +24,12 @@
 	<organization>
 		<name>Marx-Software</name>
 	</organization>
+	<licenses>
+		<license>
+			<name>GPL v3</name>
+			<url>https://www.gnu.org/licenses/gpl-3.0.html</url>
+		</license>
+	</licenses>
 	
 	<dependencyManagement>
 		<dependencies>
@@ -189,7 +195,7 @@
 				<version>2.3.0</version>
 				<configuration>
 					<verbose>false</verbose>
-					<licenseName>apache_v2</licenseName>
+					<licenseName>gpl_v3</licenseName>
 				</configuration>
 				<executions>
 					<execution>
@@ -199,7 +205,7 @@
 						</goals>
 						<phase>process-sources</phase>
 						<configuration>
-							<licenseName>apache_v2</licenseName>
+							<licenseName>gpl_v3</licenseName>
 							<roots>
 								<root>src/main/java</root>
 								<root>src/resources</root>

@@ -26,6 +26,7 @@ import static com.github.thmarx.cms.filesystem.query.QueryUtil.sorted;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
@@ -65,8 +66,12 @@ public class Query<T> {
 		return Collections.unmodifiableList(filteredNodes.stream().map(nodeMapper).toList());
 	}
 	
-	public Sort<T> sort (final String field) {
+	public Sort<T> orderby (final String field) {
 		return new Sort<T>(field, nodes, nodeMapper);
+	}
+	
+	public Map<Object, List<MetaData.MetaNode>> groupby (final String field) {
+		return QueryUtil.groupby(nodes, field);
 	}
 
 	

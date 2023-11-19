@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,6 +50,10 @@ final class QueryUtil {
 		;
 	}
 
+	protected static Map<Object, List<MetaData.MetaNode>> groupby (final Collection<MetaData.MetaNode> nodes, final String field) {
+		return nodes.stream().collect(Collectors.groupingBy((node) -> getValue(node.data(), field)));
+	}
+	
 	protected static List<MetaData.MetaNode> sorted(final Collection<MetaData.MetaNode> nodes, final String field, final boolean asc) {
 		
 		var tempNodes = nodes.stream().sorted(

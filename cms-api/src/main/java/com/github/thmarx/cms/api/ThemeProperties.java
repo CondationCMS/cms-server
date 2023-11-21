@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import com.github.thmarx.cms.api.media.MediaFormat;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +56,8 @@ public class ThemeProperties extends YamlProperties {
 						(int) map.get("width"),
 						(int) map.get("height"),
 						Media.format4String((String) map.get("format")),
-						(boolean) map.get("compression")
+						(boolean) map.get("compression"),
+						(boolean) map.getOrDefault("cropped", false)
 				);
 				mediaFormats.put(mediaFormat.name(), mediaFormat);
 			});
@@ -63,6 +65,5 @@ public class ThemeProperties extends YamlProperties {
 		return mediaFormats;
 	}
 	
-	public static record MediaFormat(String name, int width, int height, Media.Format format, boolean compression) {
-	}
+	
 }

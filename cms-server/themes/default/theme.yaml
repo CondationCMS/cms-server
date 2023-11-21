@@ -18,3 +18,9 @@ media:
       height: 512
       format: webp
       compression: true
+    - name: cropped
+      width: 512
+      height: 256
+      format: webp
+      compression: true
+      cropped: true

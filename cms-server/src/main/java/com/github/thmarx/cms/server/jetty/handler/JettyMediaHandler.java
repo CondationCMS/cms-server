@@ -23,8 +23,7 @@ package com.github.thmarx.cms.server.jetty.handler;
  */
 import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.Media;
-import com.github.thmarx.cms.api.ThemeProperties;
-import com.github.thmarx.cms.media.Scale;
+import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.utils.HTTPUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -32,8 +31,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.io.Content;
@@ -50,10 +47,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class JettyMediaHandler extends Handler.Abstract {
 
-	private final Path assetBase;
-	private final Map<String, ThemeProperties.MediaFormat> mediaFormats;
-
-	private Path tempDirectory;
+	private final MediaManager mediaManager;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -65,7 +59,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 
 			if ("##original##".equalsIgnoreCase(formatValue)) {
 				var mediaPath = getRelativeMediaPath(request);
-				Path assetPath = assetBase.resolve(mediaPath);
+				Path assetPath = mediaManager.resolve(mediaPath);
 				if (Files.exists(assetPath)) {
 					var bytes = Files.readAllBytes(assetPath);
 					var mimetype = Files.probeContentType(assetPath);
@@ -76,17 +70,17 @@ public class JettyMediaHandler extends Handler.Abstract {
 					return true;
 				}
 			} else {
-				var format = mediaFormats.get(formatValue);
-				if (format == null) {
+				if (!mediaManager.hasMediaFormat(formatValue)) {
 					log.error("unknown format {}", formatParameter.getFirst());
 					response.setStatus(404);
 					callback.succeeded();
 					return true;
 				}
+				var format = mediaManager.getMediaFormat(formatValue);
 
 				var mediaPath = getRelativeMediaPath(request);
 
-				var result = getScaledContent(mediaPath, format);
+				var result = mediaManager.getScaledContent(mediaPath, format);
 				if (result.isPresent()) {
 
 					deliver(result.get(), Media.mime4Format(format.format()), response);
@@ -114,59 +108,6 @@ public class JettyMediaHandler extends Handler.Abstract {
 		response.setStatus(200);
 
 		Content.Sink.write(response, true, ByteBuffer.wrap(bytes));
-	}
-
-	private Path getTempDirectory() throws IOException {
-		if (tempDirectory == null) {
-			tempDirectory = Files.createTempDirectory("cms-media-temp");
-		}
-		return tempDirectory;
-	}
-
-	private Optional<byte[]> getScaledContent(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat) throws IOException {
-
-		Path resolve = assetBase.resolve(mediaPath);
-
-		if (Files.exists(resolve)) {
-			Optional<byte[]> tempContent = getTempContent(mediaPath, mediaFormat);
-			if (tempContent.isPresent()) {
-				return tempContent;
-			}
-			byte[] bytes = Files.readAllBytes(resolve);
-
-			var result = Scale.scaleWithAspectIfTooLarge(bytes, mediaFormat.width(), mediaFormat.height(), mediaFormat.compression(), mediaFormat.format());
-
-			writeTempContent(mediaPath, mediaFormat, result.data);
-
-			return Optional.of(result.data);
-		}
-		return Optional.empty();
-	}
-
-	public String getTempFilename(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat) {
-		var tempFilename = mediaPath.replace("/", "_").replace(".", "_");
-		tempFilename += "-" + mediaFormat.name() + Media.fileending4Format(mediaFormat.format());
-
-		return tempFilename;
-	}
-
-	private void writeTempContent(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat, byte[] content) throws IOException {
-		var tempFilename = getTempFilename(mediaPath, mediaFormat);
-
-		var tempFile = getTempDirectory().resolve(tempFilename);
-		Files.deleteIfExists(tempFile);
-		Files.write(tempFile, content);
-	}
-
-	private Optional<byte[]> getTempContent(final String mediaPath, final ThemeProperties.MediaFormat mediaFormat) throws IOException {
-		var tempFilename = getTempFilename(mediaPath, mediaFormat);
-
-		var tempFile = getTempDirectory().resolve(tempFilename);
-		if (Files.exists(tempFile)) {
-			return Optional.of(Files.readAllBytes(tempFile));
-		}
-
-		return Optional.empty();
 	}
 
 	private String getRelativeMediaPath(Request request) {

@@ -22,6 +22,7 @@ package com.github.thmarx.cms.media;
  * #L%
  */
 import com.github.thmarx.cms.api.Media;
+import com.github.thmarx.cms.api.media.MediaFormat;
 import com.luciad.imageio.webp.WebPWriteParam;
 import java.awt.Color;
 import java.awt.Image;
@@ -85,6 +86,17 @@ public class Scale {
 			log.error("scaleWithAspectIfTooLarge(): IOexception ", e);
 		}
 		return result;
+	}
+
+	public static byte[] toFormat(final BufferedImage imageBuff, final MediaFormat mediaFormat) throws IOException {
+		if (null != mediaFormat.format()) {
+			return switch (mediaFormat.format()) {
+				case JPEG -> toJPG(imageBuff, !mediaFormat.compression());
+				case WEBP -> toWEBP(imageBuff, !mediaFormat.compression());
+				case PNG -> toPNG(imageBuff, !mediaFormat.compression());
+			};
+		}
+		throw new IllegalArgumentException("unknown media format");
 	}
 
 	private static byte[] toPNG(final BufferedImage imageBuff, final boolean uncompressed) throws IOException {

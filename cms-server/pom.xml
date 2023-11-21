@@ -30,8 +30,8 @@
 			<artifactId>cms-filesystem</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.usefulness</groupId>
-			<artifactId>webp-imageio</artifactId>
+			<groupId>com.github.thmarx.cms</groupId>
+			<artifactId>cms-media</artifactId>
 		</dependency>
 		
 		<dependency>

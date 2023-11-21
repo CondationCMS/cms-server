@@ -78,6 +78,10 @@ public class Query<T> {
 		return new Query<>(filtered(nodes, field, value, operator), nodeMapper);
 	}
 	
+	public int count() {
+		return nodes.size();
+	}
+	
 	public List<T> get(final long offset, final long size) {
 		return get((int)offset, (int)size);
 	}

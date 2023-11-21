@@ -77,7 +77,7 @@ public class JettyVHost extends VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
 		
-		JettyMediaHandler mediaHandler = new JettyMediaHandler(new MediaManager(assetBase, getTheme(), siteProperties));
+		JettyMediaHandler mediaHandler = new JettyMediaHandler(new MediaManager(assetBase, fileSystem.resolve("temp"), getTheme(), siteProperties));
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
@@ -121,7 +121,7 @@ public class JettyVHost extends VHost {
 		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		
-		JettyMediaHandler mediaHandler = new JettyMediaHandler(new MediaManager(getTheme().assetsPath(), getTheme(), siteProperties));
+		JettyMediaHandler mediaHandler = new JettyMediaHandler(new MediaManager(getTheme().assetsPath(), fileSystem.resolve("temp"), getTheme(), siteProperties));
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 		
 		return new ContextHandler(pathMappingsHandler, "/themes/" + getTheme().getName());

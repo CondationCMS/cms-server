@@ -45,6 +45,7 @@ import net.coobird.thumbnailator.geometry.Positions;
 public class MediaManager {
 
 	private final Path assetBase;
+	private final Path tempFolder;
 	private final Theme theme;
 	private final SiteProperties siteProperties;
 
@@ -64,7 +65,10 @@ public class MediaManager {
 	
 	private Path getTempDirectory() throws IOException {
 		if (tempDirectory == null) {
-			tempDirectory = Files.createTempDirectory("cms-media-temp");
+			tempDirectory = tempFolder.resolve("media");
+			if (!Files.exists(tempDirectory)) {
+				Files.createDirectories(tempDirectory);
+			}
 		}
 		return tempDirectory;
 	}

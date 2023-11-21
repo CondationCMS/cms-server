@@ -62,7 +62,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VHost {
 
-	private FileSystem fileSystem;
+	protected FileSystem fileSystem;
 
 	protected ContentRenderer contentRenderer;
 	protected ContentResolver contentResolver;

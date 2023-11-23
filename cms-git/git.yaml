@@ -4,8 +4,8 @@ repos:
     - name: "test-repo"
       credentials: 
         username: thmarx
-        password: "pwd or token"
-      uri: "git repo"
-      folder: "target/sites/target"
-      branch: "release"
+        password: "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"
+      uri: "https://github.com/thmarx/test-repo.git"
+      folder: "target/sites/test-repo"
+      branch: "main"
       cron: "0/10 * * * * ?"

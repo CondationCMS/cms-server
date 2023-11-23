@@ -26,8 +26,6 @@ import com.github.thmarx.cms.git.tasks.CloneTask;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.SchedulerException;
 
@@ -55,10 +53,13 @@ public class RepositoryManager {
 				var result = taskRunner.execute(new CloneTask(repo));
 				try {
 					log.debug("result : {} ", result.get());
-				} catch (InterruptedException | ExecutionException ex) {
+					log.debug("schedule repo");
+					scheduler.schedule(repo);
+				} catch (Exception ex) {
 					log.error("error cloneing repository", ex);
 				}
 			}
+			
 		}
 	}
 

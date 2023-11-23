@@ -4,7 +4,7 @@ repos:
     - name: "test-repo"
       credentials: 
         username: thmarx
-        password: "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"
+        password: "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"
       uri: "https://github.com/thmarx/test-repo.git"
       folder: "target/sites/test-repo"
       branch: "main"

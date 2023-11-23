@@ -52,6 +52,11 @@
 				<version>${project.version}</version>            
 			</dependency>
 			<dependency>
+				<groupId>com.github.thmarx.cms</groupId>
+				<artifactId>cms-git</artifactId>
+				<version>${project.version}</version>            
+			</dependency>
+			<dependency>
 				<groupId>com.github.thmarx.modules</groupId>
 				<artifactId>modules-manager</artifactId>
 				<version>${modules.version}</version>

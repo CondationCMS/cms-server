@@ -23,11 +23,15 @@ package com.github.thmarx.cms;
  */
 
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.git.RepositoryManager;
 import com.github.thmarx.cms.server.HttpServer;
 import com.github.thmarx.cms.server.jetty.JettyServer;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,9 +54,31 @@ public class Startup {
 		
 		DEV_MODE = properties.dev();
 
+		initGitRepositoryManager();
+		
 		var server = getServerEngine(properties);
 		server.startup();
 	}
+	
+	private static void initGitRepositoryManager () throws IOException {
+		Path gitConfig = Path.of("git.yaml");
+		if (!Files.exists(gitConfig)) {
+			log.info("no repository configuration found");
+			return;
+		}
+		log.info("repository configuration found");
+		final RepositoryManager repositoryManager = new RepositoryManager();
+		repositoryManager.init(gitConfig);
+		
+		Runtime.getRuntime().addShutdownHook(new Thread (() -> {
+			try {
+				repositoryManager.close();
+			} catch (IOException ex) {
+				log.error("error closing repo manager", ex);
+			}
+		}));
+	}
+	
 	
 	private static HttpServer getServerEngine (ServerProperties properties) {
 		var engine = properties.serverEngine();

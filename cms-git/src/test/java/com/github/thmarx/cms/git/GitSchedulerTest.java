@@ -37,15 +37,17 @@ import org.quartz.SchedulerException;
 public class GitSchedulerTest {
 	
 	static GitScheduler scheduler;
+	static TaskRunner runner = new TaskRunner();
 	
 	@BeforeAll
 	static void setup () throws Exception {
-		scheduler = new GitScheduler();
+		scheduler = new GitScheduler(runner);
 		scheduler.open();
 	}
 	@AfterAll
 	static void shutdown () throws Exception {
 		scheduler.close();
+		runner.executor.shutdown();
 	}
 
 	@Test

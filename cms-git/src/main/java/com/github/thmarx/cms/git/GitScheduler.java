@@ -22,6 +22,7 @@ package com.github.thmarx.cms.git;
  * #L%
  */
 
+import lombok.RequiredArgsConstructor;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -37,14 +38,12 @@ import org.quartz.impl.StdSchedulerFactory;
  *
  * @author t.marx
  */
+@RequiredArgsConstructor
 public class GitScheduler {
 
 	Scheduler scheduler;
-	TaskRunner taskRunner = new TaskRunner();
+	private final TaskRunner taskRunner;
 
-	public GitScheduler() {
-
-	}
 
 	public void open() throws SchedulerException {
 		SchedulerFactory schedulerFactory = new StdSchedulerFactory();
@@ -54,7 +53,6 @@ public class GitScheduler {
 
 	public void close() throws SchedulerException {
 		scheduler.shutdown();
-		taskRunner.executor.shutdown();
 	}
 
 	public void schedule(final Repo repo) throws SchedulerException {

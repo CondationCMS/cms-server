@@ -20,6 +20,7 @@
 		<module>modules</module>
 		<module>cms-filesystem</module>
 		<module>cms-media</module>
+		<module>cms-git</module>
 	</modules>
 	<inceptionYear>2023</inceptionYear>
 	<organization>

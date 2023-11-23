@@ -1,0 +1,11 @@
+## YAML Template.
+---
+repos:
+    - name: "marx-software"
+      credentials: 
+        username: thmarx
+        password: "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"
+      uri: "https://github.com/thmarx/marx-software.git"
+      folder: "target/sites/marx-software"
+      branch: "release"
+      cron: "0/10 * * * * ?"

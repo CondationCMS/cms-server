@@ -6,6 +6,14 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 2.13.0
+
+* **FEATURE** GIT integration to add a deployment workflow [#100](https://github.com/thmarx/cms/issues/100)
+* **FEATURE** Deliver static files like **robots.txt** [#97](https://github.com/thmarx/cms/issues/97)
+* **FEATURE** Make excerpt parameterized [#96](https://github.com/thmarx/cms/issues/96)
+* **FEATURE** Exclude content from search via meta field [#95](https://github.com/thmarx/cms/issues/95)
+* **BUGFIX** Fix issue while loading media formats [#94](https://github.com/thmarx/cms/issues/94)
+
 ## 2.12.0
 
 * **FEATURE** Temp directory per site [#89](https://github.com/thmarx/cms/issues/89)

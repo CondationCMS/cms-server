@@ -21,7 +21,6 @@ package com.github.thmarx.cms.git;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.git.tasks.CloneTask;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -45,6 +44,7 @@ public class RepositoryManager {
 		config = Config.load(configFile);
 		taskRunner = new TaskRunner();
 		scheduler = new GitScheduler(taskRunner);
+		scheduler.open();
 
 		if (config.getRepos() != null) {
 			log.debug("initial clone repositories");
@@ -59,18 +59,13 @@ public class RepositoryManager {
 					log.error("error cloneing repository", ex);
 				}
 			}
-			
+
 		}
 	}
 
 	public void close() throws IOException {
-		try {
-			scheduler.close();
-			taskRunner.executor.shutdown();
-		} catch (SchedulerException ex) {
-			log.error(null, ex);
-			throw new IOException(ex);
-		}
+		scheduler.close();
+		taskRunner.executor.shutdown();
 	}
 
 }

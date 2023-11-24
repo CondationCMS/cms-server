@@ -22,7 +22,10 @@ package com.github.thmarx.cms.git;
  * #L%
  */
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
 import org.quartz.JobBuilder;
@@ -38,6 +41,7 @@ import org.quartz.impl.StdSchedulerFactory;
  *
  * @author t.marx
  */
+@Slf4j
 @RequiredArgsConstructor
 public class GitScheduler {
 
@@ -45,17 +49,27 @@ public class GitScheduler {
 	private final TaskRunner taskRunner;
 
 
-	public void open() throws SchedulerException {
-		SchedulerFactory schedulerFactory = new StdSchedulerFactory();
-		scheduler = schedulerFactory.getScheduler();
-		scheduler.start();
+	public void open() {
+		try {
+			SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+			scheduler = schedulerFactory.getScheduler();
+			scheduler.start();
+		} catch (SchedulerException ex) {
+			log.error(null, ex);
+			throw new RuntimeException(ex);
+		}
 	}
 
-	public void close() throws SchedulerException {
-		scheduler.shutdown();
+	public void close() {
+		try {
+			scheduler.shutdown();
+		} catch (SchedulerException ex) {
+			log.error(null, ex);
+			throw new RuntimeException(ex);
+		}
 	}
 
-	public void schedule(final Repo repo) throws SchedulerException {
+	public void schedule(final Repo repo)  {
 		JobDataMap data = new JobDataMap();
 		data.put("repo", repo);
 		data.put("taskRunner", taskRunner);
@@ -72,6 +86,11 @@ public class GitScheduler {
 				.forJob(jobDetail)
 				.build();
 		
-		scheduler.scheduleJob(jobDetail, trigger);
+		try {
+			scheduler.scheduleJob(jobDetail, trigger);
+		} catch (SchedulerException ex) {
+			log.error(null, ex);
+			throw new RuntimeException(ex);
+		}
 	}
 }

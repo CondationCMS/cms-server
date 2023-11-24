@@ -47,17 +47,17 @@ public class UpdateRepoJob implements Job {
 			var fetch = taskRunner.execute(new FetchTask(repo));
 			
 			if (fetch.get()) {
-				System.out.println("fetch done");
+				log.debug("fetch {} done", repo.getName());
 				var merge = taskRunner.execute(new MergeTask(repo));
 				if (merge.get()) {
-					System.out.println("merged");
+					log.debug("{} merged", repo.getName());
 				} else {
-					System.out.println("merge error");
+					log.error("merge {} error", repo.getName());
 					var reset = taskRunner.execute(new ResetTask(repo));
-					System.out.println("reset " + reset.get());
+					log.debug("reset {}", repo.getName());
 				}
 			} else {
-				System.out.println("fetch error");
+				log.error("fetch {} error", repo.getName());
 			}
 		} catch (Exception e) {
 			log.error(null, e);

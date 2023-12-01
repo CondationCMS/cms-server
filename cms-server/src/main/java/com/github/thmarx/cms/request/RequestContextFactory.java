@@ -22,6 +22,7 @@ package com.github.thmarx.cms.request;
  * #L%
  */
 
+import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.content.ContentTags;
@@ -45,7 +46,7 @@ public class RequestContextFactory {
 	
 	
 	public RequestContext create (String uri, Map<String, List<String>> queryParameters) throws IOException {
-		
+	
 		var requestTheme = new RequestTheme(theme);
 		
 		RequestExtensions requestExtensions = extensionManager.newContext(requestTheme);

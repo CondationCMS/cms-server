@@ -22,6 +22,7 @@ package com.github.thmarx.cms.template.functions;
  * #L%
  */
 
+import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
@@ -63,7 +64,9 @@ public abstract class AbstractCurrentNodeFunction {
 
 		var url = sb.toString();
 
-		return "".equals(url) ? "/" : url;
+		url =  "".equals(url) ? "/" : url;
+		
+		return url + (PreviewContext.IS_PREVIEW.get() ? "?preview" : "");
 	}
 
 	protected Optional<ContentParser.Content> parse(Path node) {

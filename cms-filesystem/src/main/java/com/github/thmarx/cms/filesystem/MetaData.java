@@ -23,6 +23,7 @@ package com.github.thmarx.cms.filesystem;
  */
 
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.filesystem.datafilter.DataFilter;
 import com.google.common.base.Strings;
@@ -95,19 +96,7 @@ public class MetaData {
 		if ("".equals(uri)) {
 			return tree.values().stream()
 					.filter(node -> !node.isHidden())
-					.map(node -> {
-						if (node.isDirectory) {
-							var tempNode = node.children.entrySet().stream().filter((entry)
-									-> entry.getKey().equals("index.md")
-							).findFirst();
-							if (tempNode.isPresent()) {
-								return tempNode.get().getValue();
-							}
-							return null;
-						} else {
-							return node;
-						}
-					})
+					.map(this::mapToIndex)
 					.filter(node -> node != null)
 					.filter(MetaData::isVisible)
 					.collect(Collectors.toList());
@@ -118,25 +107,27 @@ public class MetaData {
 				return findFolder.get().children().values()
 						.stream()
 						.filter(node -> !node.isHidden())
-						.map(node -> {
-							if (node.isDirectory) {
-								var tempNode = node.children.entrySet().stream().filter((entry)
-										-> entry.getKey().equals("index.md")
-								).findFirst();
-								if (tempNode.isPresent()) {
-									return tempNode.get().getValue();
-								}
-								return null;
-							} else {
-								return node;
-							}
-						})
+						.map(this::mapToIndex)
 						.filter(node -> node != null)
 						.filter(MetaData::isVisible)
 						.collect(Collectors.toList());
 			}
 		}
 		return Collections.emptyList();
+	}
+
+	protected MetaNode mapToIndex(MetaNode node) {
+		if (node.isDirectory) {
+			var tempNode = node.children.entrySet().stream().filter((entry)
+					-> entry.getKey().equals("index.md")
+			).findFirst();
+			if (tempNode.isPresent()) {
+				return tempNode.get().getValue();
+			}
+			return null;
+		} else {
+			return node;
+		}
 	}
 
 	public static boolean isVisible (MetaNode node) {
@@ -222,6 +213,9 @@ public class MetaData {
 		}
 
 		public boolean isPublished() {
+			if (PreviewContext.IS_PREVIEW.get()) {
+				return true;
+			}
 			var localDate = (Date) data.getOrDefault(Constants.MetaFields.PUBLISHED, Date.from(Instant.now()));
 			var now = Date.from(Instant.now());
 			return !isDraft() && (localDate.before(now) || localDate.equals(now));

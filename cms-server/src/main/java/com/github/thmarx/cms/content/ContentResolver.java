@@ -60,7 +60,9 @@ public class ContentResolver {
 			if (!PathUtil.isChild(contentBase, staticFile)) {
 				return Optional.empty();
 			}
-			return Optional.ofNullable(Files.readString(staticFile, StandardCharsets.UTF_8));
+			if (Files.exists(staticFile)) {
+				return Optional.ofNullable(Files.readString(staticFile, StandardCharsets.UTF_8));
+			}
 		} catch (IOException ex) {
 			log.error("", ex);
 		}

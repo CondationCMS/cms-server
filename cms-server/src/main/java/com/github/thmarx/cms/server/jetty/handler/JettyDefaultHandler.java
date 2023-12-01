@@ -21,7 +21,10 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.Startup;
+import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.content.ContentResolver;
+import com.github.thmarx.cms.request.RequestContext;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.utils.HTTPUtil;
 import java.util.Optional;
@@ -50,6 +53,10 @@ public class JettyDefaultHandler extends Handler.Abstract {
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		try (
 				var requestContext = requestContextFactory.create(uri, queryParameters)) {
+			
+			if (Startup.DEV_MODE && queryParameters.containsKey("preview")) {
+				PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
+			}
 
 			Optional<String> content = contentResolver.getContent(requestContext);
 			response.setStatus(200);
@@ -74,6 +81,8 @@ public class JettyDefaultHandler extends Handler.Abstract {
 			response.setStatus(500);
 			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
 			callback.succeeded();
+		} finally {
+			PreviewContext.IS_PREVIEW.remove();
 		}
 		return true;
 	}

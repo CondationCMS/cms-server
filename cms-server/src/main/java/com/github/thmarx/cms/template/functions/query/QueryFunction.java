@@ -21,6 +21,7 @@ package com.github.thmarx.cms.template.functions.query;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
@@ -31,7 +32,6 @@ import com.github.thmarx.cms.template.functions.list.Node;
 import com.github.thmarx.cms.utils.NodeUtil;
 import java.nio.file.Path;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 
 /**
  *
@@ -85,6 +85,6 @@ public class QueryFunction extends AbstractCurrentNodeFunction {
 			uri = uri.substring(0, uri.length() - 1);
 		}
 
-		return uri;
+		return uri + (PreviewContext.IS_PREVIEW.get() ? "?preview" : "");
 	}
 }

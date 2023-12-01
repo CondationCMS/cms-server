@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,8 +35,16 @@ public class SiteProperties extends ThemeProperties {
 		super(properties);
 	}
 	
-	public String hostname () {
-		return (String) properties.getOrDefault("hostname", "localhost");
+	public List<String> hostnames () {
+		var hostnames = properties.getOrDefault("hostname", "localhost");
+		
+		if (hostnames instanceof String hostname) {
+			return List.of(hostname);
+		} else if (hostnames instanceof List) {
+			return (List<String>) hostnames;
+		} else {
+			return List.of("localhost");
+		}
 	}
 	
 	public String markdownEngine () {

@@ -75,7 +75,7 @@ public class VHost {
 	protected Path templateBase;
 
 	@Getter
-	private String hostname;
+	private List<String> hostnames;
 
 	@Getter
 	private Theme theme;
@@ -165,7 +165,7 @@ public class VHost {
 				classLoader
 		);
 
-		hostname = siteProperties.hostname();
+		hostnames = siteProperties.hostnames();
 
 		contentBase = fileSystem.resolve(Constants.Folders.CONTENT);
 		assetBase = fileSystem.resolve(Constants.Folders.ASSETS);

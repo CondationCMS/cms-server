@@ -21,7 +21,6 @@ package com.github.thmarx.cms.modules.marked;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -39,18 +38,26 @@ import org.jsoup.Jsoup;
 public class MarkedMarkdownRenderer implements MarkdownRenderer {
 
 	public final Context context;
-	
+
 	public final Value markedFunction;
 	public final Source markedSource;
-	
-	public MarkedMarkdownRenderer (final Context context) {
+
+	public MarkedMarkdownRenderer(final Context context) {
 		try {
 			this.context = context;
-			
+
 			var content = new String(MarkedMarkdownRenderer.class.getResourceAsStream("marked.min.js").readAllBytes(), StandardCharsets.UTF_8);
 			markedSource = Source.newBuilder("js", content, "marked.mjs").build();
 			context.eval(markedSource);
-			markedFunction = context.eval("js", "(function (param) {return marked.parse(param);})");
+
+			var markedFunctionSource = """
+                              (function (param) {
+								%s
+                                    return marked.parse(param);
+                              })
+                              """.formatted(preview());
+
+			markedFunction = context.eval("js", markedFunctionSource);
 		} catch (IOException ex) {
 			log.error(null, ex);
 			throw new RuntimeException(ex);
@@ -61,14 +68,56 @@ public class MarkedMarkdownRenderer implements MarkdownRenderer {
 	public void close() {
 		context.close(true);
 	}
-	
-	
-	
+
+	private String preview() {
+		return """
+			var PreviewContext = Java.type('com.github.thmarx.cms.api.PreviewContext');
+			
+			if (PreviewContext.IS_PREVIEW.get()) {
+				console.log(PreviewContext.IS_PREVIEW.get())
+                const cleanUrl = (href) => {
+                  try {
+                    href = encodeURI(href).replace(/%25/g, '%');
+                  } catch (e) {
+                    return null;
+                  }
+                  return href;
+               }
+				const renderer = {
+				  link(href, title, text) {
+					  const cleanHref = cleanUrl(href);
+					  if (cleanHref === null) {
+						return text;
+					  }
+					  href = cleanHref;
+                      // is relativ internal url
+                      if (!href.startsWith("http://") && !href.startsWith("https://")) {
+						if (href.includes("?")) {
+							href += "&preview"
+					    } else {
+							href += "?preview"
+						}
+					  }
+                      
+					  let out = '<a href="' + href + '"';
+					  if (title) {
+						out += ' title="' + title + '"';
+					  }
+					  out += '>' + text + '</a>';
+					  return out;
+					}
+				}
+				marked.use({ renderer });
+         
+			}
+         """;
+	}
+
 	@Override
 	public String excerpt(String markdown, int length) {
 		var content = markedFunction.execute(markdown).asString();
 		String text = Jsoup.parse(content).text();
-		
+
 		if (text.length() <= length) {
 			return text;
 		} else {
@@ -80,5 +129,5 @@ public class MarkedMarkdownRenderer implements MarkdownRenderer {
 	public String render(String markdown) {
 		return markedFunction.execute(markdown).asString();
 	}
-	
+
 }

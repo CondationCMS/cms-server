@@ -22,6 +22,7 @@ package com.github.thmarx.cms.modules.marked;
  * #L%
  */
 
+import com.github.thmarx.cms.api.PreviewContext;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -63,4 +64,46 @@ public class MarkedMarkdownRendererTest {
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><strong>Bold</strong></p>");
 	}
 	
+	@Test
+	public void test_link() {
+		var result = sut.render("[Link text Here](https://link-url-here.org)");
+		
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"https://link-url-here.org\">Link text Here</a></p>");
+	}
+	
+	@Test
+	public void test_link_preview() {
+		try {
+			PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
+			var result = sut.render("[Link text Here](/internal/url)");
+			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"/internal/url?preview\">Link text Here</a></p>");
+		} finally {
+			PreviewContext.IS_PREVIEW.remove();
+		}
+	}
+	
+	@Test
+	public void test_link_preview_append() {
+		try {
+			PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
+			var result = sut.render("[Link text Here](/internal/url?hello=world)");
+			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"/internal/url?hello=world&preview\">Link text Here</a></p>");
+		} finally {
+			PreviewContext.IS_PREVIEW.remove();
+		}
+	}
+	
+	@Test
+	public void test_link_preview_extern() {
+		try {
+			PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
+			var result = sut.render("[Link text Here](http://external.org/url?hello=world)");
+			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"http://external.org/url?hello=world\">Link text Here</a></p>");
+			
+			result = sut.render("[Link text Here](https://external.org/url?hello=world)");
+			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"https://external.org/url?hello=world\">Link text Here</a></p>");
+		} finally {
+			PreviewContext.IS_PREVIEW.remove();
+		}
+	}
 }

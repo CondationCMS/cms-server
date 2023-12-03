@@ -22,6 +22,7 @@ package com.github.thmarx.cms.filesystem.query;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filtered;
@@ -36,7 +37,7 @@ import java.util.function.BiFunction;
  *
  * @author t.marx
  */
-public class Query<T> {
+public class Query<T> implements ContentQuery<T> {
 
 	private final Collection<ContentNode> nodes;
 //	public final BiFunction<MetaData.MetaNode, Integer, T> nodeMapper;
@@ -51,39 +52,48 @@ public class Query<T> {
 		this.nodeMapper = nodeMapper;
 	}
 	
+	@Override
 	public Query<T> excerpt (final int excerptLength) {
 		nodeMapper.setExcerpt(excerptLength);
 		return this;
 	}
 	
+	@Override
 	public Query<T> where (final String field, final Object value) {
 		return where(field, QueryUtil.Operator.EQ, value);
 	}
 
+	@Override
 	public Query<T> where (final String field, final String operator, final Object value) {
 		return where(field, QueryUtil.operator4String(operator), value);
 	}
 	
+	@Override
 	public Query<T> whereContains (final String field, final Object value) {
 		return where(field, QueryUtil.Operator.CONTAINS, value);
 	}
 	
+	@Override
 	public Query<T> whereContainsNot (final String field, final Object value) {
 		return where(field, QueryUtil.Operator.CONTAINS_NOT, value);
 	}
 	
+	@Override
 	public Query<T> whereIn (final String field, final Object... value) {
 		return where(field, QueryUtil.Operator.IN, value);
 	}
 	
+	@Override
 	public Query<T> whereNotIn (final String field, final Object... value) {
 		return where(field, QueryUtil.Operator.NOT_IN, value);
 	}
 	
+	@Override
 	public Query<T> whereIn (final String field, final List<Object> value) {
 		return where(field, QueryUtil.Operator.IN, value);
 	}
 	
+	@Override
 	public Query<T> whereNotIn (final String field, final List<Object> value) {
 		return where(field, QueryUtil.Operator.NOT_IN, value);
 	}
@@ -92,14 +102,17 @@ public class Query<T> {
 		return new Query<>(filtered(nodes, field, value, operator), nodeMapper);
 	}
 	
+	@Override
 	public int count() {
 		return nodes.size();
 	}
 	
+	@Override
 	public List<T> get(final long offset, final long size) {
 		return get((int)offset, (int)size);
 	}
 	
+	@Override
 	public List<T> get(final int offset, final int size) {
 		var filteredNodes = nodes.stream()
 				.filter(node -> !node.isDirectory())
@@ -110,6 +123,7 @@ public class Query<T> {
 		return Collections.unmodifiableList(filteredNodes.stream().map(nodeMapper).toList());
 	}
 	
+	@Override
 	public List<T> get() {
 		var filteredNodes = nodes.stream()
 				.filter(node -> !node.isDirectory())
@@ -118,15 +132,17 @@ public class Query<T> {
 		return Collections.unmodifiableList(filteredNodes.stream().map(nodeMapper).toList());
 	}
 	
+	@Override
 	public Sort<T> orderby (final String field) {
 		return new Sort<T>(field, nodes, nodeMapper);
 	}
 	
+	@Override
 	public Map<Object, List<ContentNode>> groupby (final String field) {
 		return QueryUtil.groupby(nodes, field);
 	}
 
-	public static record Sort<T>(String field, Collection<ContentNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
+	public static record Sort<T>(String field, Collection<ContentNode> nodes, ExcerptMapperFunction<T> nodeMapper) implements ContentQuery.Sort<T> {
 
 		public Query<T> asc() {
 			return new Query<>(sorted(nodes, field, true), nodeMapper);

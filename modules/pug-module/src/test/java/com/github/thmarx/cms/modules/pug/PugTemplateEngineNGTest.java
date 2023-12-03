@@ -25,10 +25,12 @@ package com.github.thmarx.cms.modules.pug;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.ThemeProperties;
+import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Assets;
 import com.github.thmarx.cms.api.theme.Theme;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -48,14 +50,29 @@ public class PugTemplateEngineNGTest {
 	@BeforeAll
 	static void setup () {
 		ServerProperties properties = new ServerProperties(Map.of("dev", true));
-		var fileSystem = new ModuleFileSystem() {
+		var fileSystem = new DBFileSystem() {
 			@Override
 			public Path resolve(String path) {
 				return Path.of("src/test/resources").resolve(path);
 			}
 
 			@Override
-			public Optional<Map<String, Object>> getMeta(String path) {
+			public String loadContent(Path file) throws IOException {
+				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			}
+
+			@Override
+			public List<String> loadLines(Path file) throws IOException {
+				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			}
+
+			@Override
+			public String loadContent(Path file, Charset charset) throws IOException {
+				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+			}
+
+			@Override
+			public List<String> loadLines(Path file, Charset charset) throws IOException {
 				throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 			}
 		};

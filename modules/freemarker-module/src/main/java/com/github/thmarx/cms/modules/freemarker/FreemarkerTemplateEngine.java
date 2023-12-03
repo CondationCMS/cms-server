@@ -24,6 +24,8 @@ package com.github.thmarx.cms.modules.freemarker;
 
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import freemarker.cache.FileTemplateLoader;
@@ -45,12 +47,12 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 	private final Configuration config;
 
 
-	public FreemarkerTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties serverProperties, final Theme theme) {
+	public FreemarkerTemplateEngine(final DB db, final ServerProperties serverProperties, final Theme theme) {
 		
 		config = new Configuration(Configuration.VERSION_2_3_32);
 
 		try {
-			config.setTemplateLoader(createTemplateLoader(fileSystem, theme));
+			config.setTemplateLoader(createTemplateLoader(db.getFileSystem(), theme));
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -75,7 +77,7 @@ public class FreemarkerTemplateEngine implements TemplateEngine {
 		config.setSharedVariable("upper", new UpperDirective());
 	}
 	
-	private TemplateLoader createTemplateLoader (final ModuleFileSystem fileSystem, final Theme theme) throws IOException {
+	private TemplateLoader createTemplateLoader (final DBFileSystem fileSystem, final Theme theme) throws IOException {
 		
 		List<TemplateLoader> loaders = new ArrayList<>();
 		loaders.add(new FileTemplateLoader(fileSystem.resolve("templates/").toFile()));

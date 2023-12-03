@@ -41,7 +41,7 @@ public class PugLifecycleExtension extends ModuleLifeCycleExtension<CMSModuleCon
 
 	@Override
 	public void activate() {
-		templateEngine = new PugTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties(), getContext().getTheme());
+		templateEngine = new PugTemplateEngine(getContext().getDb().getFileSystem(), getContext().getServerProperties(), getContext().getTheme());
 	}
 
 	@Override

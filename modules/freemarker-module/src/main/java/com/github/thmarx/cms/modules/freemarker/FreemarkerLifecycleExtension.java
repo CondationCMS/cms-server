@@ -41,7 +41,7 @@ public class FreemarkerLifecycleExtension extends ModuleLifeCycleExtension<CMSMo
 
 	@Override
 	public void activate() {
-		templateEngine = new FreemarkerTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties(), getContext().getTheme());
+		templateEngine = new FreemarkerTemplateEngine(getContext().getDb(), getContext().getServerProperties(), getContext().getTheme());
 	}
 
 	@Override

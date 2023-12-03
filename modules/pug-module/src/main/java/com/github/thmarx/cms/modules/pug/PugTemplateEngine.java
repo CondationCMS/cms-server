@@ -24,6 +24,7 @@ package com.github.thmarx.cms.modules.pug;
 
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import de.neuland.pug4j.PugConfiguration;
@@ -46,7 +47,7 @@ public class PugTemplateEngine implements TemplateEngine {
 
 	private final PugConfiguration config;
 	
-	public PugTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties properties, Theme theme) {
+	public PugTemplateEngine(final DBFileSystem fileSystem, final ServerProperties properties, Theme theme) {
 		
 		config = new PugConfiguration();
 		config.setTemplateLoader(createTemplateLoader(fileSystem, theme));
@@ -59,7 +60,7 @@ public class PugTemplateEngine implements TemplateEngine {
 		}
 	}
 	
-	private TemplateLoader createTemplateLoader (final ModuleFileSystem fileSystem, Theme theme) {
+	private TemplateLoader createTemplateLoader (final DBFileSystem fileSystem, Theme theme) {
 		var templateBase = fileSystem.resolve("templates/");
 		var siteTemplateLoader = new FileTemplateLoader(templateBase.toAbsolutePath().toString(), StandardCharsets.UTF_8);
 		Optional<TemplateLoader> themeTemplateLoader;

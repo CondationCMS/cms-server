@@ -41,7 +41,7 @@ public class ThymeleafLifecycleExtension extends ModuleLifeCycleExtension<CMSMod
 	@Override
 	public void activate() {
 		templateEngine = new ThymeleafTemplateEngine(
-				getContext().getFileSystem(), 
+				getContext().getDb().getFileSystem(), 
 				getContext().getServerProperties(), 
 				getContext().getTheme()
 		);

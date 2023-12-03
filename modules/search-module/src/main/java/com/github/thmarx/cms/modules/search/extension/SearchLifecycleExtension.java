@@ -66,7 +66,7 @@ public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 	}
 
 	protected void reindexContext() {
-		var contentPath = getContext().getFileSystem().resolve("content");
+		var contentPath = getContext().getDb().getFileSystem().resolve("content");
 		try {
 			searchEngine.clear();
 			Files.walkFileTree(contentPath, new FileIndexingVisitor(

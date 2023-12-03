@@ -25,6 +25,8 @@ package com.github.thmarx.cms.modules.pebble;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import io.pebbletemplates.pebble.PebbleEngine;
@@ -51,10 +53,10 @@ public class PebbleTemplateEngine implements TemplateEngine {
 	private final PebbleEngine engine;
 	
 	
-	public PebbleTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties properties, final Theme theme) {
+	public PebbleTemplateEngine(final DB db, final ServerProperties properties, final Theme theme) {
 		
 		final PebbleEngine.Builder builder = new PebbleEngine.Builder()
-				.loader(createLoader(fileSystem, theme));
+				.loader(createLoader(db.getFileSystem(), theme));
 		
 		if (properties.dev()) {
 			builder.templateCache(null);
@@ -81,7 +83,7 @@ public class PebbleTemplateEngine implements TemplateEngine {
 				.build();
 	}
 	
-	private Loader<?> createLoader (final ModuleFileSystem fileSystem, final Theme theme) {
+	private Loader<?> createLoader (final DBFileSystem fileSystem, final Theme theme) {
 		List<Loader<?>> loaders = new ArrayList<>();
 		
 		var siteLoader = new FileLoader();

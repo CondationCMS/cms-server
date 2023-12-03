@@ -109,7 +109,7 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 	}
 
 	private boolean shouldIndex (Path contentFile) {
-		Optional<Map<String, Object>> meta = moduleContext.getFileSystem().getMeta(PathUtil.toRelativeFile(contentFile, contentBase));
+		Optional<Map<String, Object>> meta = moduleContext.getDb().getContent().getMeta(PathUtil.toRelativeFile(contentFile, contentBase));
 		
 		return (Boolean)((Map<String, Object>) meta
 				.orElse(Map.of())

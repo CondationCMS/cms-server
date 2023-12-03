@@ -21,6 +21,7 @@ package com.github.thmarx.cms.filesystem;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.db.ContentNode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,7 +53,7 @@ public class FileSystemTest {
 	@Test
 	public void test_dimension() throws IOException {
 
-		var dimension = fileSystem.createDimension("featured", (MetaData.MetaNode node) -> node.data().containsKey("featured") ? (Boolean) node.data().get("featured") : false, Boolean.class);
+		var dimension = fileSystem.createDimension("featured", (ContentNode node) -> node.data().containsKey("featured") ? (Boolean) node.data().get("featured") : false, Boolean.class);
 
 		Assertions.assertThat(dimension.filter(Boolean.TRUE)).hasSize(2);
 		Assertions.assertThat(dimension.filter(Boolean.FALSE)).hasSize(1);

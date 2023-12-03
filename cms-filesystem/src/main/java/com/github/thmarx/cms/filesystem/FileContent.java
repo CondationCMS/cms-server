@@ -24,9 +24,12 @@ package com.github.thmarx.cms.filesystem;
 
 import com.github.thmarx.cms.api.db.Content;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.ContentQuery;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -62,7 +65,20 @@ public class FileContent implements Content {
 	public Optional<ContentNode> byUri(String uri) {
 		return fileSystem.getMetaData().byUri(uri);
 	}
-	
-	
+
+	@Override
+	public <T> ContentQuery<T> query(BiFunction<ContentNode, Integer, T> nodeMapper) {
+		return fileSystem.query(nodeMapper);
+	}
+
+	@Override
+	public <T> ContentQuery<T> query(String startURI, BiFunction<ContentNode, Integer, T> nodeMapper) {
+		return fileSystem.query(startURI, nodeMapper);
+	}
+
+	@Override
+	public Optional<Map<String, Object>> getMeta(String uri) {
+		return fileSystem.getMeta(uri);
+	}
 	
 }

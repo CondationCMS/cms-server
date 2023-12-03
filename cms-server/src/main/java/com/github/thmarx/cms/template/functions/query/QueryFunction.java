@@ -23,6 +23,7 @@ package com.github.thmarx.cms.template.functions.query;
  */
 import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.ContentParser;
@@ -63,12 +64,12 @@ public class QueryFunction extends AbstractCurrentNodeFunction {
 		return nodeMapper;
 	}
 
-	public Query create() {
-		return fileSystem.query(nodeMapper());
+	public ContentQuery create() {
+		return db.getContent().query(nodeMapper());
 	}
 
-	public Query create(final String startUri) {
-		return fileSystem.query(startUri, nodeMapper());
+	public ContentQuery create(final String startUri) {
+		return db.getContent().query(startUri, nodeMapper());
 	}
 
 	protected String toUrl(String uri) {

@@ -23,8 +23,11 @@ package com.github.thmarx.cms.api.db;
  */
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiFunction;
 
 /**
  *
@@ -40,4 +43,10 @@ public interface Content {
 	List<ContentNode> listDirectories(final Path base, final String start);
 	
 	Optional<ContentNode> byUri (final String uri);
+	
+	Optional<Map<String,Object>> getMeta(final String uri);
+	
+	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper);
+
+	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper);
 }

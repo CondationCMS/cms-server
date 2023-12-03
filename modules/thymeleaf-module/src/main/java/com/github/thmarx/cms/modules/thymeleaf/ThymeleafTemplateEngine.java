@@ -24,6 +24,7 @@ package com.github.thmarx.cms.modules.thymeleaf;
 
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import java.io.File;
@@ -49,7 +50,7 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 	private final org.thymeleaf.TemplateEngine engine;
 	private final ServerProperties serverProperties;
 
-	public ThymeleafTemplateEngine(final ModuleFileSystem fileSystem, 
+	public ThymeleafTemplateEngine(final DBFileSystem fileSystem, 
 			final ServerProperties serverProperties,
 			final Theme theme) {
 	

@@ -41,7 +41,7 @@ public class PebbleLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 
 	@Override
 	public void activate() {
-		templateEngine = new PebbleTemplateEngine(getContext().getFileSystem(), getContext().getServerProperties(), getContext().getTheme());
+		templateEngine = new PebbleTemplateEngine(getContext().getDb(), getContext().getServerProperties(), getContext().getTheme());
 	}
 
 	@Override

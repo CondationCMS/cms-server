@@ -22,6 +22,7 @@ package com.github.thmarx.cms.template.functions.navigation;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
@@ -45,7 +46,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 
 	private static final int DEFAULT_DEPTH = 0;
 
-	public NavigationFunction(DB<MetaData.MetaNode> db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
+	public NavigationFunction(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
 		super(db, currentNode, contentParser, markdownRenderer);
 	}
 
@@ -96,7 +97,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 
 	public List<NavNode> getNodesFromBase(final Path base, final String start, final int depth) {
 		try {
-			final List<MetaData.MetaNode> navNodes = new ArrayList(
+			final List<ContentNode> navNodes = new ArrayList(
 					db.getContent().listContent(base, start)
 						.stream().filter(NodeUtil::getMenuVisibility).toList()
 			);

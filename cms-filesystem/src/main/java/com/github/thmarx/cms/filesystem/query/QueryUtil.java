@@ -22,6 +22,7 @@ package com.github.thmarx.cms.filesystem.query;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.google.common.base.Strings;
 import java.util.Arrays;
@@ -71,11 +72,11 @@ final class QueryUtil {
 		};
 	}
 
-	protected static Map<Object, List<MetaData.MetaNode>> groupby (final Collection<MetaData.MetaNode> nodes, final String field) {
+	protected static Map<Object, List<ContentNode>> groupby (final Collection<ContentNode> nodes, final String field) {
 		return nodes.stream().collect(Collectors.groupingBy((node) -> getValue(node.data(), field)));
 	}
 	
-	protected static List<MetaData.MetaNode> sorted(final Collection<MetaData.MetaNode> nodes, final String field, final boolean asc) {
+	protected static List<ContentNode> sorted(final Collection<ContentNode> nodes, final String field, final boolean asc) {
 		
 		var tempNodes = nodes.stream().sorted(
 				(node1, node2) -> {
@@ -127,11 +128,11 @@ final class QueryUtil {
 		return 0;
 	}
 
-	protected static Collection<MetaData.MetaNode> filtered(final Collection<MetaData.MetaNode> nodes, final String field, final Object value, final Operator operator) {
+	protected static Collection<ContentNode> filtered(final Collection<ContentNode> nodes, final String field, final Object value, final Operator operator) {
 		return nodes.stream().filter(createPredicate(field, value, operator)).toList();
 	}
 
-	private static Predicate<? super MetaData.MetaNode> createPredicate(final String field, final Object value, final Operator operator) {
+	private static Predicate<? super ContentNode> createPredicate(final String field, final Object value, final Operator operator) {
 		return (node) -> {
 			var node_value = getValue(node.data(), field);
 			

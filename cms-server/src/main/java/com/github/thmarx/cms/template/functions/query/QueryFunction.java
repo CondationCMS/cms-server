@@ -22,6 +22,7 @@ package com.github.thmarx.cms.template.functions.query;
  * #L%
  */
 import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.ContentParser;
@@ -39,13 +40,13 @@ import java.util.function.BiFunction;
  */
 public class QueryFunction extends AbstractCurrentNodeFunction {
 
-	BiFunction<MetaData.MetaNode, Integer, Node> nodeMapper = null;
+	BiFunction<ContentNode, Integer, Node> nodeMapper = null;
 
 	public QueryFunction(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
 		super(db, currentNode, contentParser, markdownRenderer);
 	}
 	
-	private BiFunction<MetaData.MetaNode, Integer, Node> nodeMapper() {
+	private BiFunction<ContentNode, Integer, Node> nodeMapper() {
 		if (nodeMapper == null) {
 			nodeMapper = (node, excerptLength) -> {
 				var name = NodeUtil.getName(node);

@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractCurrentNodeFunction {
 
-	protected final DB<MetaData.MetaNode> db;
+	protected final DB db;
 	protected final Path currentNode;
 	protected final ContentParser contentParser;
 	protected final MarkdownRenderer markdownRenderer;

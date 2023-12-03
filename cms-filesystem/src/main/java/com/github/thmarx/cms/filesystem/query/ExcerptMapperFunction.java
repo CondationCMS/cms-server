@@ -23,7 +23,7 @@ package com.github.thmarx.cms.filesystem.query;
  */
 
 import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.filesystem.MetaData;
+import com.github.thmarx.cms.api.db.ContentNode;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -34,15 +34,15 @@ import lombok.Setter;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class ExcerptMapperFunction<T> implements Function<MetaData.MetaNode, T> {
+public class ExcerptMapperFunction<T> implements Function<ContentNode, T> {
 	
-	private final BiFunction<MetaData.MetaNode, Integer, T> nodeMapper;
+	private final BiFunction<ContentNode, Integer, T> nodeMapper;
 
 	@Setter
 	private int excerpt = Constants.DEFAULT_EXCERPT_LENGTH;
 	
 	@Override
-	public T apply(MetaData.MetaNode t) {
+	public T apply(ContentNode t) {
 		return nodeMapper.apply(t, excerpt);
 	}
 

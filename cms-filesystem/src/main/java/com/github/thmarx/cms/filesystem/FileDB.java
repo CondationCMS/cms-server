@@ -64,7 +64,7 @@ public class FileDB implements DB {
 	}
 
 	@Override
-	public Content<MetaData.MetaNode> getContent() {
+	public Content getContent() {
 		return content;
 	}
 	

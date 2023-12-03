@@ -23,6 +23,7 @@ package com.github.thmarx.cms.utils;
  */
 
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -39,7 +40,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_default_name() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of());
+		ContentNode node = new ContentNode("/", "index", Map.of());
 
 		var name = NodeUtil.getName(node);
 
@@ -48,7 +49,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_title() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"title", "The Title"
 		));
 
@@ -59,7 +60,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_title_if_emtpy_menu() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"title", "The Title",
 				"menu", Map.of(
 				)
@@ -72,7 +73,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getName_returns_menu_title() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"title", "The Title",
 				"menu", Map.of(
 						"title", "Menu title"
@@ -86,7 +87,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getMenuPosition() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"menu", Map.of(
 						"position", 1.5
 				)
@@ -97,7 +98,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getDefaultMenuPosition() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"menu", Map.of()
 		));
 		var position = NodeUtil.getMenuPosition(node);
@@ -106,7 +107,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getDefaultMenuPositionNoMenuMap() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of());
+		ContentNode node = new ContentNode("/", "index", Map.of());
 		var position = NodeUtil.getMenuPosition(node);
 		Assertions.assertThat(position).isEqualTo(Constants.DEFAULT_MENU_POSITION);
 	}

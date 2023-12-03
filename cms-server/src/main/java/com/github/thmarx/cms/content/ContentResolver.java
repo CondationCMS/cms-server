@@ -22,6 +22,7 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
@@ -104,7 +105,7 @@ public class ContentResolver {
 		
 		try {
 			
-			List<MetaData.MetaNode> sections = db.getContent().listSections(contentFile);
+			List<ContentNode> sections = db.getContent().listSections(contentFile);
 			
 			Map<String, List<ContentRenderer.Section>> renderedSections = contentRenderer.renderSections(sections, context);
 			

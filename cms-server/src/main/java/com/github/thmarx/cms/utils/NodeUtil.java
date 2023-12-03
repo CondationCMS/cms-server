@@ -22,6 +22,7 @@ package com.github.thmarx.cms.utils;
  * #L%
  */
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
 import java.util.Collections;
 import java.util.Map;
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NodeUtil {
 
-	public static String getName(MetaData.MetaNode node) {
+	public static String getName(ContentNode node) {
 
 		Map<String, Object> menu = (Map<String, Object>) node.data().getOrDefault(Constants.MetaFields.MENU, Collections.EMPTY_MAP);
 
@@ -48,7 +49,7 @@ public class NodeUtil {
 		return node.name();
 	}
 
-	public static boolean getMenuVisibility(MetaData.MetaNode node) {
+	public static boolean getMenuVisibility(ContentNode node) {
 
 		Map<String, Object> menu = (Map<String, Object>) node.data().getOrDefault(Constants.MetaFields.MENU, Collections.EMPTY_MAP);
 
@@ -59,7 +60,7 @@ public class NodeUtil {
 		return Constants.DEFAULT_MENU_VISIBILITY;
 	}
 	
-	public static Double getMenuPosition(MetaData.MetaNode node) {
+	public static Double getMenuPosition(ContentNode node) {
 
 		Map<String, Object> menu = (Map<String, Object>) node.data().getOrDefault(Constants.MetaFields.MENU, Collections.EMPTY_MAP);
 

@@ -24,14 +24,13 @@ package com.github.thmarx.cms;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
-import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.template.TemplateEngineTest;
-import com.github.thmarx.cms.theme.DefaultTheme;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -75,7 +74,7 @@ public class SectionsTest extends TemplateEngineTest {
 
 	@Test
 	public void test_sections() throws IOException {
-		List<MetaData.MetaNode> listSections = db.getContent().listSections(db.getFileSystem().resolve("content/page.md"));
+		List<ContentNode> listSections = db.getContent().listSections(db.getFileSystem().resolve("content/page.md"));
 		Assertions.assertThat(listSections).hasSize(4);
 
 		Map<String, List<ContentRenderer.Section>> renderSections = contentRenderer.renderSections(listSections, requestContext());

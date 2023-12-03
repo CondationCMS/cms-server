@@ -24,6 +24,7 @@ package com.github.thmarx.cms.filesystem;
 
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.filesystem.datafilter.DataFilter;
 import com.google.common.base.Strings;
@@ -48,12 +49,12 @@ import lombok.Getter;
  */
 public class MetaData {
 
-	private ConcurrentMap<String, MetaNode> nodes = new ConcurrentHashMap<>();
+	private ConcurrentMap<String, ContentNode> nodes = new ConcurrentHashMap<>();
 
-	private ConcurrentMap<String, MetaNode> tree = new ConcurrentHashMap<>();
+	private ConcurrentMap<String, ContentNode> tree = new ConcurrentHashMap<>();
 	
 	@Getter
-	private final DataFilter<MetaNode> dataFilter = DataFilter.builder(MetaNode.class).build();
+	private final DataFilter<ContentNode> dataFilter = DataFilter.builder(ContentNode.class).build();
 
 	void clear() {
 		nodes.clear();
@@ -61,11 +62,11 @@ public class MetaData {
 		dataFilter.clear();
 	}
 
-	ConcurrentMap<String, MetaNode> nodes() {
+	ConcurrentMap<String, ContentNode> nodes() {
 		return new ConcurrentHashMap<>(nodes);
 	}
 
-	ConcurrentMap<String, MetaNode> tree() {
+	ConcurrentMap<String, ContentNode> tree() {
 		return new ConcurrentHashMap<>(tree);
 	}
 
@@ -74,9 +75,9 @@ public class MetaData {
 			return;
 		}
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		MetaNode n = new MetaNode(uri, parts[parts.length - 1], Map.of(), true);
+		ContentNode n = new ContentNode(uri, parts[parts.length - 1], Map.of(), true);
 
-		Optional<MetaNode> parentFolder;
+		Optional<ContentNode> parentFolder;
 		if (parts.length == 1) {
 			parentFolder = getFolder(uri);
 		} else {
@@ -86,13 +87,13 @@ public class MetaData {
 		}
 
 		if (parentFolder.isPresent()) {
-			parentFolder.get().children.put(n.name(), n);
+			parentFolder.get().children().put(n.name(), n);
 		} else {
 			tree.put(n.name(), n);
 		}
 	}
 
-	public List<MetaNode> listChildren(String uri) {
+	public List<ContentNode> listChildren(String uri) {
 		if ("".equals(uri)) {
 			return tree.values().stream()
 					.filter(node -> !node.isHidden())
@@ -102,7 +103,7 @@ public class MetaData {
 					.collect(Collectors.toList());
 
 		} else {
-			Optional<MetaData.MetaNode> findFolder = findFolder(uri);
+			Optional<ContentNode> findFolder = findFolder(uri);
 			if (findFolder.isPresent()) {
 				return findFolder.get().children().values()
 						.stream()
@@ -116,9 +117,9 @@ public class MetaData {
 		return Collections.emptyList();
 	}
 
-	protected MetaNode mapToIndex(MetaNode node) {
-		if (node.isDirectory) {
-			var tempNode = node.children.entrySet().stream().filter((entry)
+	protected ContentNode mapToIndex(ContentNode node) {
+		if (node.isDirectory()) {
+			var tempNode = node.children().entrySet().stream().filter((entry)
 					-> entry.getKey().equals("index.md")
 			).findFirst();
 			if (tempNode.isPresent()) {
@@ -130,21 +131,21 @@ public class MetaData {
 		}
 	}
 
-	public static boolean isVisible (MetaNode node) {
+	public static boolean isVisible (ContentNode node) {
 		return node != null 
 				&& node.isPublished() 
 				&& !node.isHidden() 
 				&& !node.isSection();
 	}
 	
-	public Optional<MetaNode> findFolder(String uri) {
+	public Optional<ContentNode> findFolder(String uri) {
 		return getFolder(uri);
 	}
 
-	private Optional<MetaNode> getFolder(String uri) {
+	private Optional<ContentNode> getFolder(String uri) {
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
 
-		final AtomicReference<MetaNode> folder = new AtomicReference<>(null);
+		final AtomicReference<ContentNode> folder = new AtomicReference<>(null);
 		Stream.of(parts).forEach(part -> {
 			if (part.endsWith(".md")) {
 				return;
@@ -152,7 +153,7 @@ public class MetaData {
 			if (folder.get() == null) {
 				folder.set(tree.get(part));
 			} else {
-				folder.set(folder.get().children.get(part));
+				folder.set(folder.get().children().get(part));
 			}
 		});
 		return Optional.ofNullable(folder.get());
@@ -161,20 +162,20 @@ public class MetaData {
 	public void addFile(final String uri, final Map<String, Object> data) {
 
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		final MetaNode node = new MetaNode(uri, parts[parts.length - 1], data);
+		final ContentNode node = new ContentNode(uri, parts[parts.length - 1], data);
 
 		nodes.put(uri, node);
 		dataFilter.add(node);
 
 		var folder = getFolder(uri);
 		if (folder.isPresent()) {
-			folder.get().children.put(node.name(), node);
+			folder.get().children().put(node.name(), node);
 		} else {
 			tree.put(node.name(), node);
 		}
 	}
 
-	public Optional<MetaNode> byUri(final String uri) {
+	public Optional<ContentNode> byUri(final String uri) {
 		if (!nodes.containsKey(uri)) {
 			return Optional.empty();
 		}
@@ -188,61 +189,11 @@ public class MetaData {
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
 		var name = parts[parts.length - 1];
 		if (folder.isPresent()) {
-			folder.get().children.remove(name);
+			folder.get().children().remove(name);
 		} else {
 			tree.remove(name);
 		}
 	}
 
-	public static record MetaNode(String uri, String name, Map<String, Object> data, boolean isDirectory, Map<String, MetaNode> children) {
-
-		public MetaNode(String uri, String name, Map<String, Object> data, boolean isDirectory) {
-			this(uri, name, data, isDirectory, new HashMap<String, MetaNode>());
-		}
-
-		public MetaNode(String uri, String name, Map<String, Object> data) {
-			this(uri, name, data, false, new HashMap<String, MetaNode>());
-		}
-
-		public boolean isHidden() {
-			return name.startsWith(".");
-		}
-
-		public boolean isDraft() {
-			return (boolean) data().getOrDefault(Constants.MetaFields.DRAFT, false);
-		}
-
-		public boolean isPublished() {
-			if (PreviewContext.IS_PREVIEW.get()) {
-				return true;
-			}
-			var localDate = (Date) data.getOrDefault(Constants.MetaFields.PUBLISHED, Date.from(Instant.now()));
-			var now = Date.from(Instant.now());
-			return !isDraft() && (localDate.before(now) || localDate.equals(now));
-		}
-
-		public boolean isSection() {
-			return SectionUtil.isSection(name);
-		}
-		
-		@Override
-		public boolean equals (Object other) {
-			
-			if (this == other) {
-				return true;
-			}
-			
-			if (other == null) {
-				return false;
-			}
-			
-			if (!(other instanceof MetaData.MetaNode)) {
-				return false;
-			}
-			
-			var otherNode = (MetaData.MetaNode)other;
-			
-			return uri.equals(otherNode.uri);
-		}
-	}
+	
 }

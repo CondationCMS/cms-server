@@ -23,6 +23,7 @@ package com.github.thmarx.cms.filesystem;
  */
 
 import com.github.thmarx.cms.api.db.Content;
+import com.github.thmarx.cms.api.db.ContentNode;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +34,7 @@ import lombok.RequiredArgsConstructor;
  * @author thmar
  */
 @RequiredArgsConstructor
-public class FileContent implements Content<MetaData.MetaNode> {
+public class FileContent implements Content {
 
 	private final FileSystem fileSystem;
 	
@@ -43,22 +44,22 @@ public class FileContent implements Content<MetaData.MetaNode> {
 	}
 
 	@Override
-	public List<MetaData.MetaNode> listSections(Path contentFile) {
+	public List<ContentNode> listSections(Path contentFile) {
 		return fileSystem.listSections(contentFile);
 	}
 
 	@Override
-	public List<MetaData.MetaNode> listContent(Path base, String start) {
+	public List<ContentNode> listContent(Path base, String start) {
 		return fileSystem.listContent(base, start);
 	}
 
 	@Override
-	public List<MetaData.MetaNode> listDirectories(Path base, String start) {
+	public List<ContentNode> listDirectories(Path base, String start) {
 		return fileSystem.listDirectories(base, start);
 	}
 
 	@Override
-	public Optional<MetaData.MetaNode> byUri(String uri) {
+	public Optional<ContentNode> byUri(String uri) {
 		return fileSystem.getMetaData().byUri(uri);
 	}
 	

@@ -26,6 +26,7 @@ import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.filesystem.FileSystem;
@@ -104,7 +105,7 @@ public class ContentRenderer {
 		moduleManager.get().extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
 	}
 	
-	public Map<String, List<Section>> renderSections (final List<MetaData.MetaNode> sectionNodes, final RequestContext context) throws IOException {
+	public Map<String, List<Section>> renderSections (final List<ContentNode> sectionNodes, final RequestContext context) throws IOException {
 		
 		if (sectionNodes.isEmpty()) {
 			return Collections.emptyMap();

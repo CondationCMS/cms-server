@@ -30,14 +30,14 @@ import java.util.Optional;
  *
  * @author thmar
  */
-public interface Content<CN> {
+public interface Content {
 	boolean isVisible (String uri);
 	
-	List<CN>  listSections(Path contentFile);
+	List<ContentNode>  listSections(Path contentFile);
 	
-	List<CN> listContent(final Path base, final String start);
+	List<ContentNode> listContent(final Path base, final String start);
 	
-	List<CN> listDirectories(final Path base, final String start);
+	List<ContentNode> listDirectories(final Path base, final String start);
 	
-	Optional<CN> byUri (final String uri);
+	Optional<ContentNode> byUri (final String uri);
 }

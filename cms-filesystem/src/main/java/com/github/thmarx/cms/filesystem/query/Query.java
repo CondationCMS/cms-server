@@ -22,6 +22,7 @@ package com.github.thmarx.cms.filesystem.query;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filtered;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.sorted;
@@ -37,15 +38,15 @@ import java.util.function.BiFunction;
  */
 public class Query<T> {
 
-	private final Collection<MetaData.MetaNode> nodes;
+	private final Collection<ContentNode> nodes;
 //	public final BiFunction<MetaData.MetaNode, Integer, T> nodeMapper;
 
 	private ExcerptMapperFunction<T> nodeMapper;
 	
-	public Query(Collection<MetaData.MetaNode> nodes, BiFunction<MetaData.MetaNode, Integer, T> nodeMapper) {
+	public Query(Collection<ContentNode> nodes, BiFunction<ContentNode, Integer, T> nodeMapper) {
 		this(nodes, new ExcerptMapperFunction<>(nodeMapper));
 	}
-	public Query(Collection<MetaData.MetaNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
+	public Query(Collection<ContentNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
 		this.nodes = nodes;
 		this.nodeMapper = nodeMapper;
 	}
@@ -121,11 +122,11 @@ public class Query<T> {
 		return new Sort<T>(field, nodes, nodeMapper);
 	}
 	
-	public Map<Object, List<MetaData.MetaNode>> groupby (final String field) {
+	public Map<Object, List<ContentNode>> groupby (final String field) {
 		return QueryUtil.groupby(nodes, field);
 	}
 
-	public static record Sort<T>(String field, Collection<MetaData.MetaNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
+	public static record Sort<T>(String field, Collection<ContentNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
 
 		public Query<T> asc() {
 			return new Query<>(sorted(nodes, field, true), nodeMapper);

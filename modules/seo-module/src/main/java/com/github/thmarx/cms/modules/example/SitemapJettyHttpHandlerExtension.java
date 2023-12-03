@@ -22,12 +22,18 @@ package com.github.thmarx.cms.modules.example;
  * #L%
  */
 
+import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.modules.api.annotation.Extension;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -38,24 +44,43 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
+@Slf4j
 @Extension(JettyHttpHandlerExtensionPoint.class)
-public class ExampleJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint {
+public class SitemapJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint {
 
 	@Override
 	public Mapping getMapping() {
 		Mapping mapping = new Mapping();
-		mapping.add(PathSpec.from("/sitemap.xml"), new ExampleHandler("Hello world!"));
+		mapping.add(PathSpec.from("/sitemap.xml"), new SitemapHandler(getContext()));
 		return mapping;
 	}
 	
 	@RequiredArgsConstructor
-	public static class ExampleHandler extends Handler.Abstract {
+	public static class SitemapHandler extends Handler.Abstract {
 
-		private final String message;
+		private final CMSModuleContext context;
 		
 		@Override
 		public boolean handle(Request request, Response response, Callback callback) throws Exception {
-			response.write(true, ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)), callback);
+			
+			try (var sitemap = new SitemapGenerator(
+					Response.asBufferedOutputStream(request, response),
+					context.getSiteProperties()
+			)) {
+				response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/xml");
+				sitemap.start();
+				context.getDb().getContent().query((node, length) -> node).get().forEach(node -> {
+					try {
+						sitemap.addNode(node);
+					} catch (IOException ex) {
+						log.error(null, ex);
+					}
+				});
+			} catch (Exception e) {
+				log.error(null, e);
+			}
+			callback.succeeded();
+			
 			return true;
 		}
 		

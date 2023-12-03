@@ -133,6 +133,8 @@ public class MetaData {
 
 	public static boolean isVisible (ContentNode node) {
 		return node != null 
+				// check if some parent is hidden
+				&& !node.uri().startsWith(".") && !node.uri().contains("/.")
 				&& node.isPublished() 
 				&& !node.isHidden() 
 				&& !node.isSection();

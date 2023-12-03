@@ -9,6 +9,7 @@ theme: default
 modules:
   active:
     - markedjs-module
+    - seo-module
 media:
   formats:
     - name: small

@@ -26,6 +26,7 @@ import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
+import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -42,7 +43,7 @@ import org.junit.jupiter.api.Test;
 public class NodeListFunctionBuilderNGTest {
 	
 	static NodeListFunctionBuilder nodeList;
-	static FileSystem fileSystem;
+	static FileDB db;
 	
 	static ContentParser parser = new ContentParser();
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
@@ -50,19 +51,19 @@ public class NodeListFunctionBuilderNGTest {
 	@BeforeAll
 	static void setup () throws IOException {
 		
-		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return parser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
-		fileSystem.init();
-		nodeList = new NodeListFunctionBuilder(fileSystem, fileSystem.resolve("content/").resolve("index.md"), parser, markdownRenderer);
+		db.init();
+		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), parser, markdownRenderer);
 	}
 	@AfterAll
-	static void close () {
-		fileSystem.shutdown();
+	static void close () throws Exception {
+		db.close();
 	}
 
 	@Test
@@ -145,7 +146,7 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void test_from_subfolder () {
-		var nodeList = new NodeListFunctionBuilder(fileSystem, fileSystem.resolve("content/nodelist2/index.md"), parser, markdownRenderer);
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/nodelist2/index.md"), parser, markdownRenderer);
 		Page<Node> page = nodeList.from("./sub_folder/*").page(1).size(10).list();
 		var nodeUris = page.getItems().stream().map(Node::path).collect(Collectors.toList());
 		Assertions.assertThat(nodeUris)

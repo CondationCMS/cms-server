@@ -26,10 +26,11 @@ import com.github.thmarx.cms.MockModuleManager;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.TestTemplateEngine;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
-import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.template.TemplateEngineTest;
 import com.github.thmarx.modules.api.ModuleManager;
 import java.io.IOException;
@@ -56,7 +57,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 	@BeforeAll
 	public static void beforeClass () throws IOException {
 		var contentParser = new ContentParser();
-		final FileSystem fileSystem = new FileSystem(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		final FileDB db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (Exception e) {
@@ -64,11 +65,11 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 			}
 		});
 		markdownRenderer = TestHelper.getRenderer();
-		TemplateEngine templates = new TestTemplateEngine(fileSystem);
+		TemplateEngine templates = new TestTemplateEngine(db);
 		
 		contentRenderer = new ContentRenderer(contentParser, 
 				() -> templates, 
-				fileSystem, 
+				db, 
 				new SiteProperties(Map.of()), 
 				() -> moduleManager);
 	}

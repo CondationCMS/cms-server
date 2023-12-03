@@ -22,7 +22,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 import com.github.thmarx.cms.api.template.TemplateEngine;
-import com.github.thmarx.cms.filesystem.FileSystem;
+import com.github.thmarx.cms.filesystem.FileDB;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -39,7 +39,7 @@ public class TestTemplateEngine implements TemplateEngine {
 
 	private StringSubstitutor stringSubstitutor = new StringSubstitutor();
 
-	private final FileSystem fileSystem;
+	private final FileDB db;
 	
 	@Override
 	public void invalidateCache() {
@@ -53,7 +53,7 @@ public class TestTemplateEngine implements TemplateEngine {
 		values.putAll(model.values);
 		values.put("meta.title", ((Map<String, Object>)model.values.getOrDefault("meta", Map.of())).getOrDefault("title", "<no title>"));
 		
-		String templateContent = fileSystem.loadContent(fileSystem.resolve("templates").resolve(template), StandardCharsets.UTF_8);
+		String templateContent = db.getFileSystem().loadContent(db.getFileSystem().resolve("templates").resolve(template), StandardCharsets.UTF_8);
 		
 		StringSubstitutor sub = new StringSubstitutor(values);
 		return sub.replace(templateContent);

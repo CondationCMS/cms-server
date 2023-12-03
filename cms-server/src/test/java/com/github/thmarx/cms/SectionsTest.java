@@ -29,6 +29,7 @@ import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.template.TemplateEngineTest;
 import com.github.thmarx.cms.theme.DefaultTheme;
 import java.io.IOException;
@@ -48,25 +49,25 @@ public class SectionsTest extends TemplateEngineTest {
 
 	static ContentRenderer contentRenderer;
 	static MarkdownRenderer markdownRenderer;
-	static FileSystem fileSystem;
+	static FileDB db;
 
 	@BeforeAll
 	public static void beforeClass() throws IOException {
 		var contentParser = new ContentParser();
-		fileSystem = new FileSystem(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
-		fileSystem.init();
+		db.init();
 		markdownRenderer = TestHelper.getRenderer();
-		TemplateEngine templates = new TestTemplateEngine(fileSystem);
+		TemplateEngine templates = new TestTemplateEngine(db);
 
 		contentRenderer = new ContentRenderer(contentParser,
 				() -> templates,
-				fileSystem,
+				db,
 				new SiteProperties(Map.of()),
 				() -> new MockModuleManager()
 		);
@@ -74,7 +75,7 @@ public class SectionsTest extends TemplateEngineTest {
 
 	@Test
 	public void test_sections() throws IOException {
-		List<MetaData.MetaNode> listSections = fileSystem.listSections(fileSystem.resolve("content/page.md"));
+		List<MetaData.MetaNode> listSections = db.getContent().listSections(db.getFileSystem().resolve("content/page.md"));
 		Assertions.assertThat(listSections).hasSize(4);
 
 		Map<String, List<ContentRenderer.Section>> renderSections = contentRenderer.renderSections(listSections, requestContext());

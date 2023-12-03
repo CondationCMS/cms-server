@@ -26,6 +26,7 @@ import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
+import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -42,21 +43,21 @@ import org.junit.jupiter.api.Test;
 public class NavigationFunctionNGTest {
 
 	static NavigationFunction navigationFunction;
-	private static FileSystem fileSystem;
+	private static FileDB db;
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 
 	@BeforeAll
 	static void init() throws IOException {
 		var contentParser = new ContentParser();
-		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
-		fileSystem.init();
-		navigationFunction = new NavigationFunction(fileSystem, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
+		db.init();
+		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
 				markdownRenderer);
 	}
 
@@ -101,7 +102,7 @@ public class NavigationFunctionNGTest {
 	@Test
 	public void test_path() {
 
-		var sut = new NavigationFunction(fileSystem, Path.of("hosts/test/content/nav3/folder1/index.md"), new ContentParser(),
+		var sut = new NavigationFunction(db, Path.of("hosts/test/content/nav3/folder1/index.md"), new ContentParser(),
 				markdownRenderer);
 		
 		List<NavNode> path = sut.path();

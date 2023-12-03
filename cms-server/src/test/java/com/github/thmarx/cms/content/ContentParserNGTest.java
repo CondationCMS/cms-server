@@ -22,9 +22,6 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
-import com.github.thmarx.cms.content.ContentParser;
-import com.github.thmarx.cms.filesystem.FileSystem;
-import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;

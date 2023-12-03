@@ -25,6 +25,7 @@ import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
+import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.template.functions.navigation.NavigationFunction;
 import java.io.IOException;
@@ -40,21 +41,21 @@ import org.junit.jupiter.api.Test;
 public class QueryFunctionTest {
 
 	static QueryFunction query;
-	private static FileSystem fileSystem;
+	private static FileDB db;
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 
 	@BeforeAll
 	static void init() throws IOException {
 		var contentParser = new ContentParser();
-		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		});
-		fileSystem.init();
-		query = new QueryFunction(fileSystem, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
+		db.init();
+		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
 				markdownRenderer);
 	}
 

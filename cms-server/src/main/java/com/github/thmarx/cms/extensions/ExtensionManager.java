@@ -21,6 +21,7 @@ package com.github.thmarx.cms.extensions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.request.RequestExtensions;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileSystem;
@@ -50,7 +51,7 @@ import org.graalvm.polyglot.io.IOAccess;
 @RequiredArgsConstructor
 @Slf4j
 public class ExtensionManager implements AutoCloseable {
-	private final FileSystem fileSystem;
+	private final DB db;
 	private final Theme parentTheme;
 
 	@Getter
@@ -60,7 +61,7 @@ public class ExtensionManager implements AutoCloseable {
 	List<Source> theme_sources = new ArrayList<>();
 
 	private ClassLoader getClassLoader() throws IOException {
-		Path libs = fileSystem.resolve("libs/");
+		Path libs = db.getFileSystem().resolve("libs/");
 		List<URL> urls = new ArrayList<>();
 		if (Files.exists(libs)) {
 			Files.list(libs)
@@ -90,7 +91,7 @@ public class ExtensionManager implements AutoCloseable {
 					loadExtensions(themeExtPath, theme_sources);
 				}
 			}
-			var extPath = fileSystem.resolve("extensions/");
+			var extPath = db.getFileSystem().resolve("extensions/");
 			if (Files.exists(extPath)) {
 				log.debug("load extensions from site");
 				loadExtensions(extPath, sources);
@@ -127,7 +128,7 @@ public class ExtensionManager implements AutoCloseable {
 				.allowValueSharing(true)
 				.hostClassLoader(getClassLoader())
 				.allowIO(IOAccess.newBuilder()
-						.fileSystem(new ExtensionFileSystem(fileSystem.resolve("extensions/")))
+						.fileSystem(new ExtensionFileSystem(db.getFileSystem().resolve("extensions/")))
 						.build())
 				.engine(engine).build();
 
@@ -149,7 +150,8 @@ public class ExtensionManager implements AutoCloseable {
 
 		final Value bindings = context.getBindings("js");
 		bindings.putMember("extensions", holder);
-		bindings.putMember("fileSystem", fileSystem);
+		bindings.putMember("fileSystem", db.getFileSystem());
+		bindings.putMember("db", db);
 		bindings.putMember("theme", theme);
 
 		sources.forEach(context::eval);
@@ -157,7 +159,8 @@ public class ExtensionManager implements AutoCloseable {
 		if (!theme.empty()) {
 			final Value themeBindings = themeContext.getBindings("js");
 			themeBindings.putMember("extensions", holder);
-			themeBindings.putMember("fileSystem", fileSystem);
+			themeBindings.putMember("fileSystem", db.getFileSystem());
+			themeBindings.putMember("db", db);
 			themeBindings.putMember("theme", theme);
 
 			theme_sources.forEach(themeContext::eval);

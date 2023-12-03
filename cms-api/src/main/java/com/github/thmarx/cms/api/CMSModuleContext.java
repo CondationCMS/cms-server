@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.modules.api.Context;
@@ -43,7 +44,7 @@ public class CMSModuleContext implements Context {
 	@Getter
 	private final ServerProperties serverProperties;
 	@Getter
-	private final ModuleFileSystem fileSystem;
+	private final DB db;
 	@Getter
 	private final EventBus eventBus;
 	@Getter

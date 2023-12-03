@@ -23,9 +23,11 @@ package com.github.thmarx.cms.template.functions;
  */
 
 import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.filesystem.MetaData;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractCurrentNodeFunction {
 
-	protected final FileSystem fileSystem;
+	protected final DB<MetaData.MetaNode> db;
 	protected final Path currentNode;
 	protected final ContentParser contentParser;
 	protected final MarkdownRenderer markdownRenderer;
@@ -49,7 +51,7 @@ public abstract class AbstractCurrentNodeFunction {
 	protected String getUrl(Path node) {
 		StringBuilder sb = new StringBuilder();
 
-		while (node != null && !node.equals(fileSystem.resolve("content/"))) {
+		while (node != null && !node.equals(db.getFileSystem().resolve("content/"))) {
 
 			var filename = node.getFileName().toString();
 			if (!filename.equals("index.md")) {

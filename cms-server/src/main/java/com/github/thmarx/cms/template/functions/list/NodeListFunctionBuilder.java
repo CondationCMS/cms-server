@@ -23,6 +23,7 @@ package com.github.thmarx.cms.template.functions.list;
  */
 
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
@@ -68,10 +69,10 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 		return filename1.compareTo(filename2);
 	};
 
-	public NodeListFunctionBuilder(FileSystem fileSystem, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
-		super(fileSystem, currentNode, contentParser, markdownRenderer);
-		this.nodeListFunction = new NodeListFunction(fileSystem, currentNode, contentParser, markdownRenderer);
-		this.nodeListFunctionNoIndex = new NodeListFunction(fileSystem, currentNode, contentParser, markdownRenderer, true);
+	public NodeListFunctionBuilder(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
+		super(db, currentNode, contentParser, markdownRenderer);
+		this.nodeListFunction = new NodeListFunction(db, currentNode, contentParser, markdownRenderer);
+		this.nodeListFunctionNoIndex = new NodeListFunction(db, currentNode, contentParser, markdownRenderer, true);
 	}
 
 	public NodeListFunctionBuilder from(String from) {

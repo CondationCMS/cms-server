@@ -26,6 +26,7 @@ import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
@@ -57,7 +58,7 @@ public class ContentRenderer {
 
 	private final ContentParser contentParser;
 	private final Supplier<TemplateEngine> templates;
-	private final FileSystem fileSystem;
+	private final DB db;
 	private final SiteProperties siteProperties;
 	private final Supplier<ModuleManager> moduleManager;
 	
@@ -76,9 +77,9 @@ public class ContentRenderer {
 		model.values.put("content", context.renderContext().markdownRenderer().render(markdownContent));
 		model.values.put("sections", sections);
 		
-		model.values.put("navigation", new NavigationFunction(this.fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
-		model.values.put("nodeList", new NodeListFunctionBuilder(fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
-		model.values.put("query", new QueryFunction(fileSystem, contentFile, contentParser, context.renderContext().markdownRenderer()));
+		model.values.put("navigation", new NavigationFunction(db, contentFile, contentParser, context.renderContext().markdownRenderer()));
+		model.values.put("nodeList", new NodeListFunctionBuilder(db, contentFile, contentParser, context.renderContext().markdownRenderer()));
+		model.values.put("query", new QueryFunction(db, contentFile, contentParser, context.renderContext().markdownRenderer()));
 		model.values.put("requestContext", context);
 		model.values.put("theme", context.renderContext().theme());
 		model.values.put("site", siteProperties);
@@ -111,7 +112,7 @@ public class ContentRenderer {
 		
 		Map<String, List<Section>> sections = new HashMap<>();
 
-		final Path contentBase = fileSystem.resolve("content/");
+		final Path contentBase = db.getFileSystem().resolve("content/");
 		sectionNodes.forEach(node -> {
 			try {
 				var sectionPath = contentBase.resolve(node.uri());

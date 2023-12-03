@@ -22,6 +22,7 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.utils.PathUtil;
@@ -49,7 +50,7 @@ public class ContentResolver {
 
 	private final ContentRenderer contentRenderer;
 	
-	private final FileSystem fileSystem;
+	private final DB db;
 	
 	public Optional<String> getStaticContent (String uri) {
 		if (uri.startsWith("/")) {
@@ -97,13 +98,13 @@ public class ContentResolver {
 		}
 		
 		var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-		if (!fileSystem.isVisible(uri)) {
+		if (!db.getContent().isVisible(uri)) {
 			return Optional.empty();
 		}
 		
 		try {
 			
-			List<MetaData.MetaNode> sections = fileSystem.listSections(contentFile);
+			List<MetaData.MetaNode> sections = db.getContent().listSections(contentFile);
 			
 			Map<String, List<ContentRenderer.Section>> renderedSections = contentRenderer.renderSections(sections, context);
 			

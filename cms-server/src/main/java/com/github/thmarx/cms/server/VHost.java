@@ -29,6 +29,7 @@ import com.github.thmarx.cms.PropertiesLoader;
 import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.extensions.MarkdownRendererProviderExtentionPoint;
 import com.github.thmarx.cms.api.extensions.TemplateEngineProviderExtentionPoint;
@@ -41,6 +42,7 @@ import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
+import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.module.RenderContentFunction;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.theme.DefaultTheme;
@@ -52,6 +54,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -62,7 +66,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class VHost {
 
-	protected FileSystem fileSystem;
+	protected DB db;
 
 	protected ContentRenderer contentRenderer;
 	protected ContentResolver contentResolver;
@@ -101,7 +105,7 @@ public class VHost {
 
 	public void shutdown() {
 		try {
-			fileSystem.shutdown();
+			db.close();
 			extensionManager.close();
 		} catch (Exception ex) {
 			log.error("", ex);
@@ -122,7 +126,7 @@ public class VHost {
 		
 		contentParser = new ContentParser();
 
-		this.fileSystem = new FileSystem(hostBase, eventBus, (file) -> {
+		this.db = new FileDB(hostBase, eventBus, (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (IOException ioe) {
@@ -130,9 +134,9 @@ public class VHost {
 				throw new RuntimeException(ioe);
 			}
 		});
-		fileSystem.init();
+		((FileDB)db).init();
 
-		var props = fileSystem.resolve("site.yaml");
+		var props = db.getFileSystem().resolve("site.yaml");
 		siteProperties = PropertiesLoader.hostProperties(props);
 
 		theme = loadTheme();
@@ -141,7 +145,10 @@ public class VHost {
 			getTemplateEngine();
 		} catch (Exception e) {
 			log.error(null , e);
-			fileSystem.shutdown();
+			try {
+				db.close();
+			} catch (Exception ex) {
+			}
 			throw e;
 		}
 		
@@ -157,8 +164,8 @@ public class VHost {
 				));
 
 		this.moduleManager = ModuleManagerImpl.create(modules.toFile(),
-				fileSystem.resolve("modules_data").toFile(),
-				new CMSModuleContext(siteProperties, serverProperties, fileSystem, eventBus,
+				db.getFileSystem().resolve("modules_data").toFile(),
+				new CMSModuleContext(siteProperties, serverProperties, db, eventBus,
 						new RenderContentFunction(() -> contentResolver, () -> requestContextFactory),
 						theme
 				),
@@ -167,15 +174,15 @@ public class VHost {
 
 		hostnames = siteProperties.hostnames();
 
-		contentBase = fileSystem.resolve(Constants.Folders.CONTENT);
-		assetBase = fileSystem.resolve(Constants.Folders.ASSETS);
-		templateBase = fileSystem.resolve(Constants.Folders.TEMPLATES);
+		contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
+		assetBase = db.getFileSystem().resolve(Constants.Folders.ASSETS);
+		templateBase = db.getFileSystem().resolve(Constants.Folders.TEMPLATES);
 
-		extensionManager = new ExtensionManager(fileSystem, theme);
+		extensionManager = new ExtensionManager(db, theme);
 		extensionManager.init();
 
-		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), fileSystem, siteProperties, () -> moduleManager);
-		contentResolver = new ContentResolver(contentBase, contentRenderer, fileSystem);
+		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), db, siteProperties, () -> moduleManager);
+		contentResolver = new ContentResolver(contentBase, contentRenderer, db);
 
 		this.requestContextFactory = new RequestContextFactory(() -> resolveMarkdownRenderer(), extensionManager, getTheme());
 

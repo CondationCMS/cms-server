@@ -22,6 +22,7 @@ package com.github.thmarx.cms.template.functions.navigation;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.filesystem.MetaData;
@@ -44,8 +45,8 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 
 	private static final int DEFAULT_DEPTH = 0;
 
-	public NavigationFunction(FileSystem fileSystem, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
-		super(fileSystem, currentNode, contentParser, markdownRenderer);
+	public NavigationFunction(DB<MetaData.MetaNode> db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
+		super(db, currentNode, contentParser, markdownRenderer);
 	}
 
 		/**
@@ -54,12 +55,12 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 	 */
 	public List<NavNode> path () {
 		List<NavNode> nodes = new ArrayList<>();
-		var contentBase = fileSystem.resolve("content/");
+		var contentBase = db.getFileSystem().resolve("content/");
 		var node = currentNode;
 		while (!node.equals(contentBase.getParent())) {
 			
 			var uri = PathUtil.toRelativeFile(node, contentBase);
-			var metaNode = fileSystem.getMetaData().byUri(uri).get();
+			var metaNode = db.getContent().byUri(uri).get();
 			var name = NodeUtil.getName(metaNode);
 			
 			var path = contentBase.resolve(metaNode.uri());
@@ -84,7 +85,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 
 	private List<NavNode> getNodes(final String start, final int depth) {
 		if (start.startsWith("/")) { // root
-			return getNodesFromBase(fileSystem.resolve("content/"), start.substring(1), depth);
+			return getNodesFromBase(db.getFileSystem().resolve("content/"), start.substring(1), depth);
 		} else if (start.equals(".")) { // current
 			return getNodesFromBase(currentNode.getParent(), "", depth);
 		} else if (start.startsWith("./")) { // subfolder of current
@@ -96,7 +97,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 	public List<NavNode> getNodesFromBase(final Path base, final String start, final int depth) {
 		try {
 			final List<MetaData.MetaNode> navNodes = new ArrayList(
-					fileSystem.listContent(base, start)
+					db.getContent().listContent(base, start)
 						.stream().filter(NodeUtil::getMenuVisibility).toList()
 			);
 			
@@ -118,7 +119,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 			
 			
 			final List<NavNode> nodes = new ArrayList<>();
-			final Path contentBase = fileSystem.resolve("content/");
+			final Path contentBase = db.getFileSystem().resolve("content/");
 			navNodes.forEach((node) -> {
 				var name = NodeUtil.getName(node);
 				var path = contentBase.resolve(node.uri());

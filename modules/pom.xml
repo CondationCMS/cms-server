@@ -19,5 +19,6 @@
 		<module>markedjs-module</module>
 		<module>pug-module</module>
 		<module>search-module</module>
+		<module>seo-module</module>
 	</modules>
 </project>

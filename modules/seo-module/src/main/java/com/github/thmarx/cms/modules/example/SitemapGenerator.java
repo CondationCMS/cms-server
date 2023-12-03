@@ -27,6 +27,7 @@ import com.github.thmarx.cms.api.db.ContentNode;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -49,12 +50,27 @@ public class SitemapGenerator implements AutoCloseable {
 		output.write("<url>".getBytes(StandardCharsets.UTF_8));
 		output.write("<loc>%s/%s</loc>".formatted(
 				siteProperties.getOrDefault("baseurl", ""),
-				node.uri()
+				patchURi(node.uri())
 		).getBytes(StandardCharsets.UTF_8));
-		output.write("<lastmod></lastmod>".getBytes(StandardCharsets.UTF_8));
+		output.write("<lastmod>%s</lastmod>"
+				.formatted(DateTimeFormatter.ISO_LOCAL_DATE.format(node.lastmodified()))
+				.getBytes(StandardCharsets.UTF_8));
 		output.write("</url>".getBytes(StandardCharsets.UTF_8));
 	}
 
+	private String patchURi (String uri) {
+		if (uri.endsWith("index.md")) {
+			uri = uri.replace("index.md", "");
+		}
+		if (uri.endsWith("/")) {
+			uri = uri.substring(0, uri.lastIndexOf("/"));
+		}
+		if (uri.endsWith(".md")) {
+			uri = uri.substring(0, uri.lastIndexOf("."));
+		}
+		return uri;
+	}
+	
 	@Override
 	public void close() throws Exception {
 		output.write("</urlset>".getBytes(StandardCharsets.UTF_8));

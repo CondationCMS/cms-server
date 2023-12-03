@@ -36,14 +36,18 @@ import java.util.Map;
  * @author t.marx
  */
 public record ContentNode(String uri, String name, Map<String, Object> data, 
-		boolean directory, Map<String, ContentNode> children)  {
+		boolean directory, Map<String, ContentNode> children, LocalDate lastmodified)  {
 
+		public ContentNode(String uri, String name, Map<String, Object> data, boolean directory, Map<String, ContentNode> children) {
+			this(uri, name, data, directory, children, LocalDate.now());
+		}
+	
 		public ContentNode(String uri, String name, Map<String, Object> data, boolean directory) {
-			this(uri, name, data, directory, new HashMap<String, ContentNode>());
+			this(uri, name, data, directory, new HashMap<String, ContentNode>(), LocalDate.now());
 		}
 
 		public ContentNode(String uri, String name, Map<String, Object> data) {
-			this(uri, name, data, false, new HashMap<String, ContentNode>());
+			this(uri, name, data, false, new HashMap<String, ContentNode>(), LocalDate.now());
 		}
 		
 		public boolean isDirectory() {

@@ -27,3 +27,4 @@ cms-server/modules/freemarker-module
 cms-server/modules/ui-module
 cms-server/modules/pug-module
 cms-server/modules/search-module
+cms-server/modules/seo-module

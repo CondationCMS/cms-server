@@ -50,6 +50,10 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 			this(uri, name, data, false, new HashMap<String, ContentNode>(), LocalDate.now());
 		}
 		
+		public ContentNode(String uri, String name, Map<String, Object> data, LocalDate lastmodified) {
+			this(uri, name, data, false, new HashMap<String, ContentNode>(), lastmodified);
+		}
+		
 		public boolean isDirectory() {
 			return directory;
 		}

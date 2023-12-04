@@ -40,6 +40,9 @@ import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -261,7 +264,9 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		var uri = PathUtil.toRelativeFile(file, contentBase);
 
-		metaData.addFile(uri, fileMeta);
+		var lastModified = LocalDate.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
+		
+		metaData.addFile(uri, fileMeta, lastModified);
 	}
 
 	public void init() throws IOException {

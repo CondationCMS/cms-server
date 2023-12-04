@@ -29,6 +29,7 @@ import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.filesystem.datafilter.DataFilter;
 import com.google.common.base.Strings;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -161,10 +162,10 @@ public class MetaData {
 		return Optional.ofNullable(folder.get());
 	}
 
-	public void addFile(final String uri, final Map<String, Object> data) {
+	public void addFile(final String uri, final Map<String, Object> data, final LocalDate lastModified) {
 
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		final ContentNode node = new ContentNode(uri, parts[parts.length - 1], data);
+		final ContentNode node = new ContentNode(uri, parts[parts.length - 1], data, lastModified);
 
 		nodes.put(uri, node);
 		dataFilter.add(node);

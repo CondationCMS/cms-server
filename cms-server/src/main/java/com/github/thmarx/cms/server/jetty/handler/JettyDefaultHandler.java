@@ -21,7 +21,6 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.content.ContentResponse;

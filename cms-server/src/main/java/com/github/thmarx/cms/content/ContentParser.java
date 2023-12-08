@@ -22,10 +22,9 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
-import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.thmarx.cms.Startup;
+import com.github.thmarx.cms.api.PreviewContext;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -44,14 +43,14 @@ import org.yaml.snakeyaml.Yaml;
  * @author t.marx
  */
 @Slf4j
-public class ContentParser {
+public class ContentParser implements com.github.thmarx.cms.api.content.ContentParser{
 
 	private final Cache<String, Content> contentCache;
 
 	public ContentParser() {
 		var builder = Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(1));
-		if (Startup.DEV_MODE) {
+		if (PreviewContext.IS_DEV) {
 			builder.maximumSize(0);
 		}
 		contentCache = builder.build();
@@ -61,6 +60,7 @@ public class ContentParser {
 		contentCache.invalidateAll();
 	}
 
+	@Override
 	public Content parse(final Path contentFile) throws IOException {
 		final String filename = contentFile.toAbsolutePath().toString();
 		var cached = contentCache.getIfPresent(filename);
@@ -79,13 +79,13 @@ public class ContentParser {
 	}
     
     private Map<String, Object> _parseMeta (ContentRecord content) {
-        if (Strings.isNullOrEmpty(content.meta.trim())) {
+        if (Strings.isNullOrEmpty(content.meta().trim())) {
             return Collections.emptyMap();
         }
 		try {
-			return new Yaml().load(content.meta.trim());
+			return new Yaml().load(content.meta().trim());
 		} catch (Exception e) {
-			log.error("error parsing yaml: " + content.meta, e);
+			log.error("error parsing yaml: " + content.meta(), e);
 			throw new RuntimeException(e);
 		}
     }
@@ -121,8 +121,4 @@ public class ContentParser {
 		
 		return new ContentRecord(contentBuilder.toString(), metaBuilder.toString());
 	}
-
-	private record ContentRecord(String content, String meta) {}
-
-	public record Content(String content, Map<String, Object> meta) {}
 }

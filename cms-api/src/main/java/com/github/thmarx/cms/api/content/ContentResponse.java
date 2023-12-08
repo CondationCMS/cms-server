@@ -1,8 +1,10 @@
-package com.github.thmarx.cms.api;
+package com.github.thmarx.cms.api.content;
+
+import com.github.thmarx.cms.api.Constants;
 
 /*-
  * #%L
- * cms-api
+ * cms-server
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -26,9 +28,9 @@ package com.github.thmarx.cms.api;
  *
  * @author t.marx
  */
-public class PreviewContext {
-	
-	public static ThreadLocal<Boolean> IS_PREVIEW = ThreadLocal.withInitial(() -> false);
-	
-	public static boolean IS_DEV = true;
-}
+public record ContentResponse(String content, String contentType) {
+
+	public ContentResponse (String content) {
+		this(content, Constants.DEFAULT_CONTENT_TYPE);
+	}
+};

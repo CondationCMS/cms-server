@@ -22,6 +22,7 @@ package com.github.thmarx.cms.utils;
  * #L%
  */
 
+import com.github.thmarx.cms.filesystem.utils.NodeUtil;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;

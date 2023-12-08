@@ -22,7 +22,6 @@ package com.github.thmarx.cms.modules.pug;
  * #L%
  */
 
-import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.api.db.DBFileSystem;
@@ -34,7 +33,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -116,7 +114,7 @@ public class PugTemplateEngineNGTest {
 
 	@Test
 	public void testSomeMethod() throws IOException {
-		TemplateEngine.Model model = new TemplateEngine.Model(Path.of("pom.xml"));
+		TemplateEngine.Model model = new TemplateEngine.Model(Path.of("pom.xml"), null);
 		model.values.put("pageName", "Pug rendered page");
 		model.values.put("books", List.of(
 				new Book("The Hitchhiker's Guide to the Galaxy", 5.70f, true),

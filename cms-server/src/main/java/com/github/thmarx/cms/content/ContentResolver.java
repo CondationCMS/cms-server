@@ -22,6 +22,7 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
+import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.utils.PathUtil;
@@ -51,7 +52,7 @@ public class ContentResolver {
 	
 	private final DB db;
 	
-	public Optional<String> getStaticContent (String uri) {
+	public Optional<ContentResponse> getStaticContent (String uri) {
 		if (uri.startsWith("/")) {
 			uri = uri.substring(1);
 		}
@@ -61,7 +62,10 @@ public class ContentResolver {
 				return Optional.empty();
 			}
 			if (Files.exists(staticFile)) {
-				return Optional.ofNullable(Files.readString(staticFile, StandardCharsets.UTF_8));
+				return Optional.ofNullable(new ContentResponse(
+						Files.readString(staticFile, StandardCharsets.UTF_8), 
+						Files.probeContentType(staticFile)
+				));
 			}
 		} catch (IOException ex) {
 			log.error("", ex);
@@ -69,15 +73,15 @@ public class ContentResolver {
 		return Optional.empty();
 	}
 	
-	public Optional<String> getContent (final RequestContext context) {
+	public Optional<ContentResponse> getContent (final RequestContext context) {
 		return getContent(context, true);
 	}
 	
-	public Optional<String> getErrorContent (final RequestContext context) {
+	public Optional<ContentResponse> getErrorContent (final RequestContext context) {
 		return getContent(context, false);
 	}
 	
-	private Optional<String> getContent(final RequestContext context, boolean checkVisibility) {
+	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
 		String path;
 		if (Strings.isNullOrEmpty(context.uri())) {
 			path = "";
@@ -118,7 +122,10 @@ public class ContentResolver {
 			Map<String, List<ContentRenderer.Section>> renderedSections = contentRenderer.renderSections(sections, context);
 			
 			var content = contentRenderer.render(contentFile, context, renderedSections);
-			return Optional.of(content);
+			
+			var contentType = db.getContent().byUri(uri).get().contentType();
+			
+			return Optional.of(new ContentResponse(content, contentType));
 		} catch (Exception ex) {
 			log.error(null, ex);
 			return Optional.empty();

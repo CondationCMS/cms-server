@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.api;
+package com.github.thmarx.cms.filesystem.functions.list;
 
 /*-
  * #%L
- * cms-api
+ * cms-server
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -22,13 +22,16 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
+import java.util.Map;
+
 /**
  *
  * @author t.marx
  */
-public class PreviewContext {
-	
-	public static ThreadLocal<Boolean> IS_PREVIEW = ThreadLocal.withInitial(() -> false);
-	
-	public static boolean IS_DEV = true;
+
+public record Node (String name, String path, String content, String oontentType, Map<String, Object> meta) {
+	public Node (String name, String path, String content, Map<String, Object> meta) {
+		this(name, path, content, Constants.DEFAULT_CONTENT_TYPE, meta);
+	}
 }

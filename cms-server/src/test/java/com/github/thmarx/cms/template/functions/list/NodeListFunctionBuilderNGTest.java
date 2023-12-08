@@ -28,7 +28,8 @@ import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
-import com.github.thmarx.cms.filesystem.FileSystem;
+import com.github.thmarx.cms.filesystem.functions.list.Node;
+import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -157,5 +158,18 @@ public class NodeListFunctionBuilderNGTest {
 						"/nodelist2/sub_folder/folder2",
 						"/nodelist2/sub_folder/folder2/test"
 				);
+	}
+	
+	@Test
+	void test_json () {
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/index.md"), parser, markdownRenderer);
+		Page<Node> page = nodeList.from("./json").page(1).size(10).list();
+		Assertions.assertThat(page.getItems()).hasSize(1);
+		Assertions.assertThat(page.getItems().getFirst().name()).isEqualTo("HTML");
+		
+		page = nodeList.from("./json").page(1).size(10).json().list();
+		
+		Assertions.assertThat(page.getItems()).hasSize(1);
+		Assertions.assertThat(page.getItems().getFirst().name()).isEqualTo("JSON");
 	}
 }

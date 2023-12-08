@@ -23,6 +23,7 @@ package com.github.thmarx.cms.module;
  */
 
 import com.github.thmarx.cms.content.ContentResolver;
+import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import java.util.List;
 import java.util.Map;
@@ -38,13 +39,13 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class RenderContentFunction implements BiFunction<String, Map<String, List<String>>, Optional<String>> {
+public class RenderContentFunction implements BiFunction<String, Map<String, List<String>>, Optional<ContentResponse>> {
 
 	private final Supplier<ContentResolver> contentResolver;
 	private final Supplier<RequestContextFactory> requestContextFactory;
 	
 	@Override
-	public Optional<String> apply(String uri, Map<String, List<String>> parameters) {
+	public Optional<ContentResponse> apply(String uri, Map<String, List<String>> parameters) {
 		try (
 				var requestContext = requestContextFactory.get().create(uri, parameters);) {
 

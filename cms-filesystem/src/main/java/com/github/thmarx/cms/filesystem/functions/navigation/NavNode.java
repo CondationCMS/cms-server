@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template.functions.navigation;
+package com.github.thmarx.cms.filesystem.functions.navigation;
 
 /*-
  * #%L

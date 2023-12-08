@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template.functions;
+package com.github.thmarx.cms.filesystem.functions;
 
 /*-
  * #%L
@@ -23,11 +23,9 @@ package com.github.thmarx.cms.template.functions;
  */
 
 import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.content.ContentParser;
-import com.github.thmarx.cms.filesystem.FileSystem;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.filesystem.MetaData;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

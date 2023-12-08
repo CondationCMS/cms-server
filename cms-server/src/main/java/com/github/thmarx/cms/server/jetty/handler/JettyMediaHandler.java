@@ -22,6 +22,7 @@ package com.github.thmarx.cms.server.jetty.handler;
  * #L%
  */
 import com.github.thmarx.cms.Startup;
+import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.media.Media;
 import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.utils.HTTPUtil;
@@ -101,7 +102,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 	private void deliver(final byte[] bytes, final String mimetype, Response response) throws IOException {
 		response.getHeaders().add("Content-Type", mimetype);
 		response.getHeaders().add("Content-Length", bytes.length);
-		if (!Startup.DEV_MODE) {
+		if (!PreviewContext.IS_DEV) {
 			response.getHeaders().add("Access-Control-Max-Age", Duration.ofDays(10).toSeconds());
 			response.getHeaders().add("Cache-Control", "max-age=" + Duration.ofDays(10).toSeconds());
 		}		

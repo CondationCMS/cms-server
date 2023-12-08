@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template.functions.list;
+package com.github.thmarx.cms.filesystem.functions.list;
 
 /*-
  * #%L
@@ -24,14 +24,12 @@ package com.github.thmarx.cms.template.functions.list;
 
 import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.content.ContentParser;
-import com.github.thmarx.cms.filesystem.FileSystem;
-import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.template.functions.AbstractCurrentNodeFunction;
-import com.github.thmarx.cms.utils.NodeUtil;
+import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
+import com.github.thmarx.cms.filesystem.utils.NodeUtil;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Objects;
@@ -55,6 +53,8 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 
 	String sort = "title";
 	boolean reverse = false;
+	
+	String contentType = Constants.DEFAULT_CONTENT_TYPE;
 
 	final NodeListFunction nodeListFunction;
 
@@ -82,6 +82,16 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 		return this;
 	}
 
+	public NodeListFunctionBuilder contentType(String contentType) {
+		this.contentType = contentType;
+		return this;
+	}
+	
+	public NodeListFunctionBuilder json() {
+		this.contentType = "application/json";
+		return this;
+	}
+	
 	public NodeListFunctionBuilder excerpt(int length) {
 		this.excerptLength = length;
 		return this;
@@ -146,7 +156,7 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 			comparator = comparator.reversed();
 		}
 
-		return function.list(from, page, size, excerptLength, comparator);
+		return function.list(from, page, size, excerptLength, comparator, NodeUtil.contentTypeFiler(contentType));
 	}
 
 	private Comparator<ContentNode> getComparator() {

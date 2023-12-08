@@ -69,4 +69,10 @@ public abstract class Constants {
 	public static final int DEFAULT_EXCERPT_LENGTH = 200;
 	public static int DEFAULT_PAGE = 1;
 	public static int DEFAULT_PAGE_SIZE = 5;
+	
+	public static String DEFAULT_CONTENT_TYPE = ContentTypes.HTML;
+	public static class ContentTypes {
+		public static String HTML = "text/html";
+		public static String JSON = "application/json";
+	}
 }

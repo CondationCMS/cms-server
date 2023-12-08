@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template.functions.navigation;
+package com.github.thmarx.cms.filesystem.functions.navigation;
 
 /*-
  * #%L
@@ -21,16 +21,14 @@ package com.github.thmarx.cms.template.functions.navigation;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.content.ContentParser;
-import com.github.thmarx.cms.filesystem.FileSystem;
-import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.utils.PathUtil;
-import com.github.thmarx.cms.template.functions.AbstractCurrentNodeFunction;
-import com.github.thmarx.cms.utils.NodeUtil;
+import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
+import com.github.thmarx.cms.filesystem.utils.NodeUtil;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,36 +44,54 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 
 	private static final int DEFAULT_DEPTH = 0;
 
+	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
+
 	public NavigationFunction(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
 		super(db, currentNode, contentParser, markdownRenderer);
 	}
 
-		/**
+	/**
 	 * Returns the path from root to the current node.
+	 *
 	 * @return List of orderd nodes from root to current
 	 */
-	public List<NavNode> path () {
+	public List<NavNode> path() {
 		List<NavNode> nodes = new ArrayList<>();
 		var contentBase = db.getFileSystem().resolve("content/");
 		var node = currentNode;
 		while (!node.equals(contentBase.getParent())) {
-			
+
 			var uri = PathUtil.toRelativeFile(node, contentBase);
 			var metaNode = db.getContent().byUri(uri).get();
 			var name = NodeUtil.getName(metaNode);
-			
+
 			var path = contentBase.resolve(metaNode.uri());
 			final NavNode navNode = new NavNode(name, getUrl(path), isCurrentNode(path));
 			if (!nodes.contains(navNode)) {
 				nodes.add(navNode);
 			}
-			
+
 			node = node.getParent();
 		}
-		
+
 		return nodes.reversed();
 	}
-	
+
+	public NavigationFunction contentType(final String contentType) {
+		this.contentType = contentType;
+		return this;
+	}
+
+	public NavigationFunction json() {
+		this.contentType = Constants.ContentTypes.JSON;
+		return this;
+	}
+
+	public NavigationFunction html() {
+		this.contentType = Constants.ContentTypes.HTML;
+		return this;
+	}
+
 	public List<NavNode> list(final String start) {
 		return getNodes(start, DEFAULT_DEPTH);
 	}
@@ -99,27 +115,28 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		try {
 			final List<ContentNode> navNodes = new ArrayList(
 					db.getContent().listContent(base, start)
-						.stream().filter(NodeUtil::getMenuVisibility)
+							.stream()
+							.filter(NodeUtil::getMenuVisibility)
+							.filter(NodeUtil.contentTypeFiler(contentType))
 							.toList()
 			);
-			
+
 			navNodes.sort((node1, node2) -> {
 				var position1 = NodeUtil.getMenuPosition(node1);
 				var position2 = NodeUtil.getMenuPosition(node2);
-				
+
 				int compare = Double.compare(position1, position2);
-				
+
 				if (compare == 0) {
 					var name1 = NodeUtil.getName(node1);
 					var name2 = NodeUtil.getName(node2);
-					
+
 					return name1.compareTo(name2);
 				}
-				
-				return compare;	
+
+				return compare;
 			});
-			
-			
+
 			final List<NavNode> nodes = new ArrayList<>();
 			final Path contentBase = db.getFileSystem().resolve("content/");
 			navNodes.forEach((node) -> {

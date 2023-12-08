@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.api;
+package com.github.thmarx.cms.filesystem.query;
 
 /*-
  * #%L
- * cms-api
+ * cms-filesystem
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -22,13 +22,30 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.filesystem.index.IndexProviding;
+import java.util.stream.Stream;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /**
  *
  * @author t.marx
  */
-public class PreviewContext {
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class QueryContext<T> {
+
+	private Stream<ContentNode> nodes;
+
+	private ExcerptMapperFunction<T> nodeMapper;
+
+	private IndexProviding indexProviding;
+
+	private boolean useSecondaryIndex = false;
 	
-	public static ThreadLocal<Boolean> IS_PREVIEW = ThreadLocal.withInitial(() -> false);
-	
-	public static boolean IS_DEV = true;
+	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
 }

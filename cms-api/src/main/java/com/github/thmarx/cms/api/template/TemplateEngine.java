@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api.template;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -42,5 +43,6 @@ public interface TemplateEngine {
 	public static class Model {
 		public final Map<String, Object> values = new HashMap<>();
 		public final Path contentFile;
+		public final ContentNode contentNode;
 	} 
 }

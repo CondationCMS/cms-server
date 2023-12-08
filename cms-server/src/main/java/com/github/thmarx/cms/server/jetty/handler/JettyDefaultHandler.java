@@ -24,6 +24,7 @@ package com.github.thmarx.cms.server.jetty.handler;
 import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.content.ContentResolver;
+import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.utils.HTTPUtil;
 import java.util.Optional;
@@ -53,11 +54,11 @@ public class JettyDefaultHandler extends Handler.Abstract {
 		try (
 				var requestContext = requestContextFactory.create(uri, queryParameters)) {
 			
-			if (Startup.DEV_MODE && queryParameters.containsKey("preview")) {
+			if (PreviewContext.IS_DEV && queryParameters.containsKey("preview")) {
 				PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
 			}
 
-			Optional<String> content = contentResolver.getContent(requestContext);
+			Optional<ContentResponse> content = contentResolver.getContent(requestContext);
 			response.setStatus(200);
 
 			if (!content.isPresent()) {
@@ -72,9 +73,9 @@ public class JettyDefaultHandler extends Handler.Abstract {
 				}
 
 			}
-			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
+			response.getHeaders().add("Content-Type", "%s; charset=utf-8".formatted(content.get().contentType()));
 
-			Content.Sink.write(response, true, content.get(), callback);
+			Content.Sink.write(response, true, content.get().content(), callback);
 		} catch (Exception e) {
 			log.error("", e);
 			response.setStatus(500);

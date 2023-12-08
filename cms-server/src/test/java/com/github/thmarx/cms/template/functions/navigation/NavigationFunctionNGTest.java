@@ -27,7 +27,8 @@ import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
-import com.github.thmarx.cms.filesystem.FileSystem;
+import com.github.thmarx.cms.filesystem.functions.navigation.NavNode;
+import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -111,5 +112,19 @@ public class NavigationFunctionNGTest {
 		Assertions.assertThat(path.get(0).path()).isEqualTo("/");
 		Assertions.assertThat(path.get(1).path()).isEqualTo("/nav3");
 		Assertions.assertThat(path.get(2).path()).isEqualTo("/nav3/folder1");
+	}
+	
+	@Test
+	public void test_json () {
+		var navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
+				markdownRenderer);
+		
+		List<NavNode> list = navigationFunction.json().list("/json");
+		Assertions.assertThat(list).hasSize(1);
+		Assertions.assertThat(list.get(0).name()).isEqualTo("JSON");
+		
+		list = navigationFunction.html().list("/json");
+		Assertions.assertThat(list).hasSize(1);
+		Assertions.assertThat(list.get(0).name()).isEqualTo("HTML");
 	}
 }

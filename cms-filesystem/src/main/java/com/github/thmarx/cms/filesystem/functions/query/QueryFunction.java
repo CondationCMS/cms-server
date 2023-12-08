@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.template.functions.query;
+package com.github.thmarx.cms.filesystem.functions.query;
 
 /*-
  * #%L
@@ -22,16 +22,14 @@ package com.github.thmarx.cms.template.functions.query;
  * #L%
  */
 import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.content.ContentParser;
-import com.github.thmarx.cms.filesystem.MetaData;
-import com.github.thmarx.cms.filesystem.query.Query;
-import com.github.thmarx.cms.template.functions.AbstractCurrentNodeFunction;
-import com.github.thmarx.cms.template.functions.list.Node;
-import com.github.thmarx.cms.utils.NodeUtil;
+import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
+import com.github.thmarx.cms.filesystem.functions.list.Node;
+import com.github.thmarx.cms.filesystem.utils.NodeUtil;
 import java.nio.file.Path;
 import java.util.function.BiFunction;
 
@@ -72,7 +70,7 @@ public class QueryFunction extends AbstractCurrentNodeFunction {
 		return db.getContent().query(startUri, nodeMapper());
 	}
 
-	protected String toUrl(String uri) {
+	public String toUrl(String uri) {
 		if (uri.endsWith("index.md")) {
 			uri = uri.replace("index.md", "");
 		}

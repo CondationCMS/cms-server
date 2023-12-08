@@ -36,11 +36,9 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -50,7 +48,7 @@ public class QueryPerfTest {
 
 	private static Collection<ContentNode> nodes;
 	
-	private static int COUNT = 100000;
+	private static int COUNT = 1000;
 
 	private static IndexProviding indexProviding = new IndexProviding() {
 		private ConcurrentMap<String, SecondaryIndex<?>> secondaryIndexes = new ConcurrentHashMap<>();
@@ -89,7 +87,9 @@ public class QueryPerfTest {
 
 	protected Query<ContentNode> createQuery(boolean useIndex) {
 		var query = new Query<>(nodes, indexProviding, (node, i) -> node);
-		query.setUseSecondaryIndex(useIndex);
+		if (useIndex) {
+			query.enableSecondaryIndex();
+		}
 		return query;
 	}
 

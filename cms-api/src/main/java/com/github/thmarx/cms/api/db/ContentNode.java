@@ -54,6 +54,12 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 			this(uri, name, data, false, new HashMap<String, ContentNode>(), lastmodified);
 		}
 		
+		public String contentType () {
+			return (String) ((Map<String, Object>)data
+					.getOrDefault("content", Map.of()))
+					.getOrDefault("type", Constants.DEFAULT_CONTENT_TYPE);
+		}
+		
 		public boolean isDirectory() {
 			return directory;
 		}

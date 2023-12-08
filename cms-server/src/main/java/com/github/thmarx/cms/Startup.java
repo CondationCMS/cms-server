@@ -22,6 +22,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 
+import com.github.thmarx.cms.api.PreviewContext;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.git.RepositoryManager;
 import com.github.thmarx.cms.server.HttpServer;
@@ -39,8 +40,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Startup {
 
-	public static boolean DEV_MODE = false;
-	
 	public static void main(String[] args) throws Exception {
 
 		printStartup();
@@ -50,7 +49,7 @@ public class Startup {
 
 		ServerProperties properties = PropertiesLoader.serverProperties(Path.of("server.yaml"));
 		
-		DEV_MODE = properties.dev();
+		PreviewContext.IS_DEV = properties.dev();
 
 		initGitRepositoryManager();
 		

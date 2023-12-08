@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.utils;
+package com.github.thmarx.cms.filesystem.utils;
 
 /*-
  * #%L
@@ -23,9 +23,9 @@ package com.github.thmarx.cms.utils;
  */
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.filesystem.MetaData;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Predicate;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,6 +35,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NodeUtil {
 
+	public static Predicate<ContentNode> contentTypeFiler (final String contentType) {
+		return (ContentNode node) -> contentType.equals(node.contentType());
+	}
+	
 	public static String getName(ContentNode node) {
 
 		Map<String, Object> menu = (Map<String, Object>) node.data().getOrDefault(Constants.MetaFields.MENU, Collections.EMPTY_MAP);

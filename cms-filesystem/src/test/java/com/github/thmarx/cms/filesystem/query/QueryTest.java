@@ -21,6 +21,7 @@ package com.github.thmarx.cms.filesystem.query;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
@@ -85,6 +86,15 @@ public class QueryTest {
 				"index", 2,
 				"published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
 				"tags", List.of("one", "two"))
+		);
+		nodes.add(node);
+		
+		node = new ContentNode("/json", "test-json.md", Map.of(
+				"featured", false,
+				"index", 2,
+				"published", Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
+				"tags", List.of("one", "two"),
+				"content", Map.of("type", Constants.ContentTypes.JSON))
 		);
 		nodes.add(node);
 	}
@@ -228,5 +238,13 @@ public class QueryTest {
 		var nodes = query.whereIn("index", 1, 3, 4).get();
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.stream().map(ContentNode::uri).toList()).contains("/test1");
+	}
+	
+	@Test
+	public void test_json() {
+		Query<ContentNode> query = createQuery();
+		var nodes = query.json().get(0, 1);
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).uri()).isEqualTo("/json");
 	}
 }

@@ -79,9 +79,9 @@ public final class QueryUtil {
 		return nodes.collect(Collectors.groupingBy((node) -> getValue(node.data(), field)));
 	}
 	
-	protected static Stream<ContentNode> sorted(final Stream<ContentNode> nodes, final String field, final boolean asc) {
+	protected static QueryContext<?> sorted(final QueryContext<?> context, final String field, final boolean asc) {
 		
-		var tempNodes = nodes.sorted(
+		var tempNodes = context.getNodes().sorted(
 				(node1, node2) -> {
 					var value1 = getValue(node1.data(), field);
 					var value2 = getValue(node2.data(), field);
@@ -94,7 +94,9 @@ public final class QueryUtil {
 			tempNodes = tempNodes.reversed();
 		}
 		
-		return tempNodes.stream();
+		context.setNodes(tempNodes.stream());
+		
+		return context;
 	}
 	
 	private static int compare (Object o1, Object o2) {
@@ -131,19 +133,21 @@ public final class QueryUtil {
 		return 0;
 	}
 
-	protected static Stream<ContentNode> filteredWithIndex(final Stream<ContentNode> nodes, 
-			final IndexProviding indexProviding, final String field, final Object value, final Operator operator) {
+	protected static QueryContext<?> filteredWithIndex(final QueryContext<?> context, final String field, final Object value, final Operator operator) {
 		
 		if (Operator.EQ.equals(operator)) {
-			SecondaryIndex<Object> index = (SecondaryIndex<Object>) indexProviding.getOrCreateIndex(field, node -> getValue(node.data(), field));			
-			return nodes.filter(node -> index.eq(node, value));
+			SecondaryIndex<Object> index = (SecondaryIndex<Object>) context.getIndexProviding().getOrCreateIndex(field, node -> getValue(node.data(), field));			
+			context.setNodes(context.getNodes().filter(node -> index.eq(node, value)));
+			return context;
 		} else {
-			return nodes.filter(createPredicate(field, value, operator));
+			context.setNodes(context.getNodes().filter(createPredicate(field, value, operator)));
+			return context;
 		}
 	}
 	
-	protected static Stream<ContentNode> filtered(final Stream<ContentNode> nodes, final String field, final Object value, final Operator operator) {
-		return nodes.filter(createPredicate(field, value, operator));
+	protected static QueryContext filtered(final QueryContext context, final String field, final Object value, final Operator operator) {
+		context.setNodes(context.getNodes().filter(createPredicate(field, value, operator)));
+		return context;
 	}
 
 	private static Predicate<? super ContentNode> createPredicate(final String field, final Object value, final Operator operator) {

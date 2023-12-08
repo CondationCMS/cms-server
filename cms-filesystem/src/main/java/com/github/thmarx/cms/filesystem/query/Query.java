@@ -30,6 +30,7 @@ import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filtered;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filteredWithIndex;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.sorted;
+import com.github.thmarx.cms.filesystem.utils.NodeUtil;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -46,15 +47,16 @@ import lombok.Setter;
  */
 public class Query<T> implements ContentQuery<T> {
 
-	private final Stream<ContentNode> nodes;
-
-	private ExcerptMapperFunction<T> nodeMapper;
-
-	private IndexProviding indexProviding;
-
-	@Getter
-	@Setter
-	private boolean useSecondaryIndex = false;
+//	private final Stream<ContentNode> nodes;
+//
+//	private ExcerptMapperFunction<T> nodeMapper;
+//
+//	private IndexProviding indexProviding;
+//
+//	@Getter
+//	@Setter
+//	private boolean useSecondaryIndex = false;
+	private QueryContext<T> context;
 
 	public Query(Collection<ContentNode> nodes, IndexProviding indexProviding, BiFunction<ContentNode, Integer, T> nodeMapper) {
 		this(nodes.stream(), indexProviding, new ExcerptMapperFunction<>(nodeMapper));
@@ -69,14 +71,16 @@ public class Query<T> implements ContentQuery<T> {
 	}
 
 	public Query(Stream<ContentNode> nodes, IndexProviding indexProviding, ExcerptMapperFunction<T> nodeMapper) {
-		this.nodes = nodes;
-		this.indexProviding = indexProviding;
-		this.nodeMapper = nodeMapper;
+		this(new QueryContext(nodes, nodeMapper, indexProviding, false, Constants.DEFAULT_CONTENT_TYPE));
+	}
+
+	public Query(QueryContext<T> context) {
+		this.context = context;
 	}
 
 	@Override
 	public Query<T> excerpt(final int excerptLength) {
-		nodeMapper.setExcerpt(excerptLength);
+		context.getNodeMapper().setExcerpt(excerptLength);
 		return this;
 	}
 
@@ -121,16 +125,33 @@ public class Query<T> implements ContentQuery<T> {
 	}
 
 	private Query<T> where(final String field, final QueryUtil.Operator operator, final Object value) {
-		if (useSecondaryIndex) {
-			return new Query<>(filteredWithIndex(nodes, indexProviding, field, value, operator), indexProviding, nodeMapper);
+		if (context.isUseSecondaryIndex()) {
+			return new Query(filteredWithIndex(context, field, value, operator));
 		} else {
-			return new Query<>(filtered(nodes, field, value, operator), indexProviding, nodeMapper);
+			return new Query(filtered(context, field, value, operator));
 		}
+	}
+
+	public Query<T> enableSecondaryIndex() {
+		context.setUseSecondaryIndex(true);
+		return new Query<>(context);
+	}
+	
+	public Query<T> html() {
+		context.setContentType(Constants.ContentTypes.HTML);
+		return new Query<>(context);
+	}
+
+	public Query<T> json() {
+		context.setContentType(Constants.ContentTypes.JSON);
+		return new Query<>(context);
 	}
 
 	@Override
 	public int count() {
-		return (int) nodes.count();
+		return (int) context.getNodes()
+				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
+				.count();
 	}
 
 	@Override
@@ -140,12 +161,13 @@ public class Query<T> implements ContentQuery<T> {
 
 	@Override
 	public List<T> get(final int offset, final int size) {
-		return nodes
+		return context.getNodes()
+				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
 				.filter(MetaData::isVisible)
 				.skip(offset)
 				.limit(size)
-				.map(nodeMapper)
+				.map(context.getNodeMapper())
 				.toList();
 	}
 
@@ -173,12 +195,13 @@ public class Query<T> implements ContentQuery<T> {
 		int total = count();
 		int offset = (page - 1) * size;
 
-		var filteredNodes = nodes
+		var filteredNodes = context.getNodes()
+				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
 				.filter(MetaData::isVisible)
 				.skip(offset)
 				.limit(size)
-				.map(nodeMapper)
+				.map(context.getNodeMapper())
 				.toList();
 
 		int totalPages = (int) Math.ceil((float) total / size);
@@ -187,31 +210,32 @@ public class Query<T> implements ContentQuery<T> {
 
 	@Override
 	public List<T> get() {
-		return nodes
+		return context.getNodes()
+				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
 				.filter(MetaData::isVisible)
-				.map(nodeMapper)
+				.map(context.getNodeMapper())
 				.toList();
 	}
 
 	@Override
 	public Sort<T> orderby(final String field) {
-		return new Sort<T>(field, nodes, indexProviding, nodeMapper);
+		return new Sort<T>(field, context);
 	}
 
 	@Override
 	public Map<Object, List<ContentNode>> groupby(final String field) {
-		return QueryUtil.groupby(nodes, field);
+		return QueryUtil.groupby(context.getNodes(), field);
 	}
 
-	public static record Sort<T>(String field, Stream<ContentNode> nodes, IndexProviding indexProviding, ExcerptMapperFunction<T> nodeMapper) implements ContentQuery.Sort<T> {
+	public static record Sort<T>(String field, QueryContext context) implements ContentQuery.Sort<T> {
 
 		public Query<T> asc() {
-			return new Query<>(sorted(nodes, field, true), indexProviding, nodeMapper);
+			return new Query(sorted(context, field, true));
 		}
 
 		public Query<T> desc() {
-			return new Query<>(sorted(nodes, field, false), indexProviding, nodeMapper);
+			return new Query(sorted(context, field, false));
 		}
 	}
 }

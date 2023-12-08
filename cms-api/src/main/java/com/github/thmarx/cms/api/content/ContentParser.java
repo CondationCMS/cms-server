@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.template.functions.list;
+package com.github.thmarx.cms.api.content;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -22,11 +22,23 @@ package com.github.thmarx.cms.template.functions.list;
  * #L%
  */
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Map;
 
 /**
  *
  * @author t.marx
  */
+public interface ContentParser {
+	
+	void clearCache();
+	
+	Content parse(final Path contentFile) throws IOException;
+	
+	Map<String, Object> parseMeta(final Path contentFile) throws IOException;
+	
+	record ContentRecord(String content, String meta) {}
 
-public record Node (String name, String path, String content, Map<String, Object> meta) {}
+	record Content(String content, Map<String, Object> meta) {}
+}

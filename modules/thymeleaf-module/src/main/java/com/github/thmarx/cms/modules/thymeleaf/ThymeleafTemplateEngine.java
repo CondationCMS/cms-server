@@ -22,7 +22,6 @@ package com.github.thmarx.cms.modules.thymeleaf;
  * #L%
  */
 
-import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
@@ -47,8 +46,11 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 
 public class ThymeleafTemplateEngine implements TemplateEngine {
 
-	private final org.thymeleaf.TemplateEngine engine;
+	private org.thymeleaf.TemplateEngine htmlEngine;
+	private org.thymeleaf.TemplateEngine jsEngine;
 	private final ServerProperties serverProperties;
+	private final DBFileSystem fileSystem;
+	private final Theme theme;
 
 	public ThymeleafTemplateEngine(final DBFileSystem fileSystem, 
 			final ServerProperties serverProperties,
@@ -56,22 +58,40 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 	
 		
 		this.serverProperties = serverProperties;
-
-		var templateBase = fileSystem.resolve("templates/");
+		this.fileSystem = fileSystem;
+		this.theme = theme;
 		
-		ITemplateResolver siteTemplateResolver = templateResolver(templateBase);
-		ITemplateResolver themeTemplateResolver = null;
-		if (!theme.empty()) {
-			themeTemplateResolver = templateResolver(theme.templatesPath());
-		}
-
-		engine = new org.thymeleaf.TemplateEngine();
-		engine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, Optional.ofNullable(themeTemplateResolver)));
+		initHtmlTemplateing();
+		
 	}
 	
-	private ITemplateResolver templateResolver (final Path templatePath) {
+	private void initHtmlTemplateing () {
+		var templateBase = fileSystem.resolve("templates/");
+		ITemplateResolver siteTemplateResolver = templateResolver(templateBase, TemplateMode.HTML);
+		ITemplateResolver themeTemplateResolver = null;
+		if (!theme.empty()) {
+			themeTemplateResolver = templateResolver(theme.templatesPath(), TemplateMode.HTML);
+		}
+
+		htmlEngine = new org.thymeleaf.TemplateEngine();
+		htmlEngine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, Optional.ofNullable(themeTemplateResolver)));
+	}
+	
+	private void initJSTemplateing () {
+		var templateBase = fileSystem.resolve("templates/");
+		ITemplateResolver siteTemplateResolver = templateResolver(templateBase, TemplateMode.JAVASCRIPT);
+		ITemplateResolver themeTemplateResolver = null;
+		if (!theme.empty()) {
+			themeTemplateResolver = templateResolver(theme.templatesPath(), TemplateMode.JAVASCRIPT);
+		}
+
+		jsEngine = new org.thymeleaf.TemplateEngine();
+		jsEngine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, Optional.ofNullable(themeTemplateResolver)));
+	}
+	
+	private ITemplateResolver templateResolver (final Path templatePath, final TemplateMode mode) {
 		var templateResolver = new FileTemplateResolver();
-		templateResolver.setTemplateMode(TemplateMode.HTML);
+		templateResolver.setTemplateMode(mode);
 		templateResolver.setPrefix(templatePath.toString() + File.separatorChar);
 		//templateResolver.setSuffix(".html");
 		if (serverProperties.dev()) {
@@ -88,13 +108,21 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 	public String render(String template, TemplateEngine.Model model) throws IOException {
 
 		Writer writer = new StringWriter();
-		engine.process(template, new Context(Locale.getDefault(), model.values), writer);
+		final Context context = new Context(Locale.getDefault(), model.values);
+		
+		if ("application/json".equals(model.contentNode.contentType())) {
+			jsEngine.process(template, context, writer);
+		} else {
+			htmlEngine.process(template, context, writer);
+		}
+				
+		
 		return writer.toString();
 	}
 
 	@Override
 	public void invalidateCache() {
-		engine.getCacheManager().clearAllCaches();
+		htmlEngine.getCacheManager().clearAllCaches();
 	}
 
 }

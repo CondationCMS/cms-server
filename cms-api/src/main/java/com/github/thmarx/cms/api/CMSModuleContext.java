@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.theme.Theme;
@@ -48,7 +49,7 @@ public class CMSModuleContext implements Context {
 	@Getter
 	private final EventBus eventBus;
 	@Getter
-	private final BiFunction<String, Map<String, List<String>>, Optional<String>> renderContentFunction;
+	private final BiFunction<String, Map<String, List<String>>, Optional<ContentResponse>> renderContentFunction;
 	@Getter
 	private final Theme theme;
 }

@@ -22,7 +22,7 @@ package com.github.thmarx.cms.modules.search.extension;
  * #L%
  */
 import com.github.thmarx.cms.api.CMSModuleContext;
-import com.github.thmarx.cms.api.ModuleFileSystem;
+import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.modules.search.IndexDocument;
@@ -78,7 +78,7 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 			var content = getContent(file);
 
 			if (content.isPresent()) {
-				final Document parsedContent = Jsoup.parse(content.get());
+				final Document parsedContent = Jsoup.parse(content.get().content());
 				
 				if (noindex(parsedContent)) {
 					return FileVisitResult.CONTINUE;
@@ -138,7 +138,7 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 		return FileVisitResult.CONTINUE;
 	}
 
-	private Optional<String> getContent(Path path) throws IOException {
+	private Optional<ContentResponse> getContent(Path path) throws IOException {
 		var uri = "/" + PathUtil.toRelativeFile(path, contentBase);
 
 		uri = uri.substring(0, uri.lastIndexOf("."));

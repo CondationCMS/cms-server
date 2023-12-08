@@ -1,10 +1,8 @@
 ---
 title: Startseite
-template: start.html
+template: test.json
+content:
+    type: "application/json"
 search:
     index: false
 ---
-
-# Demo Project
-
-![TestBild!](/media/images/test.jpg?format=small "Test bild")

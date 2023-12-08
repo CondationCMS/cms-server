@@ -62,7 +62,7 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 		this.theme = theme;
 		
 		initHtmlTemplateing();
-		
+		initJSTemplateing();
 	}
 	
 	private void initHtmlTemplateing () {

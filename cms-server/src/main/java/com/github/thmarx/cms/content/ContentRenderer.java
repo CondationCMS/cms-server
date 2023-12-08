@@ -30,6 +30,7 @@ import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import com.github.thmarx.cms.api.utils.SectionUtil;
@@ -72,7 +73,8 @@ public class ContentRenderer {
 		var markdownContent = content.content();
 		markdownContent = context.renderContext().contentTags().replace(markdownContent);
 		
-		Optional<ContentNode> contentNode = db.getContent().byUri(context.uri());
+		var uri = PathUtil.toRelativeFile(contentFile, db.getFileSystem().resolve("content/"));
+		Optional<ContentNode> contentNode = db.getContent().byUri(uri);
 		
 		TemplateEngine.Model model = new TemplateEngine.Model(contentFile, contentNode.isPresent() ? contentNode.get() : null);
 		model.values.put("meta", content.meta());

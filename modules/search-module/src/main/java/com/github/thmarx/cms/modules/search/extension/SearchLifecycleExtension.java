@@ -23,6 +23,7 @@ package com.github.thmarx.cms.modules.search.extension;
  */
 import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
+import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.modules.search.SearchEngine;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
@@ -61,6 +62,9 @@ public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 		}
 		
 		getContext().getEventBus().register(ContentChangedEvent.class, (event) -> {
+			reindexContext();
+		});
+		getContext().getEventBus().register(TemplateChangedEvent.class, (event) -> {
 			reindexContext();
 		});
 	}

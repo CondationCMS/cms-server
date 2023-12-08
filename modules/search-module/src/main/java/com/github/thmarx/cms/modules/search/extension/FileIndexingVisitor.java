@@ -22,6 +22,7 @@ package com.github.thmarx.cms.modules.search.extension;
  * #L%
  */
 import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.api.utils.SectionUtil;
@@ -77,7 +78,7 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 			
 			var content = getContent(file);
 
-			if (content.isPresent()) {
+			if (content.isPresent() && Constants.ContentTypes.HTML.equals(content.get().contentType())) {
 				final Document parsedContent = Jsoup.parse(content.get().content());
 				
 				if (noindex(parsedContent)) {

@@ -94,6 +94,7 @@ public class JettyServer implements HttpServer {
 				log.debug("shutting down vhost : " + host.getHostnames());
 				host.shutdown();
 			});
+			timer.cancel();
 		}));
 
 		HttpConfiguration httpConfig = new HttpConfiguration();

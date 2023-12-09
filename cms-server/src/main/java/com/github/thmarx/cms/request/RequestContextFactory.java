@@ -22,8 +22,14 @@ package com.github.thmarx.cms.request;
  * #L%
  */
 
-import com.github.thmarx.cms.Startup;
+import com.github.thmarx.cms.api.ServerContext;
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
+import com.github.thmarx.cms.api.request.features.RequestFeature;
+import com.github.thmarx.cms.api.request.features.SitePropertiesFeatures;
+import com.github.thmarx.cms.api.request.features.ThemeFeature;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.extensions.ExtensionManager;
@@ -42,11 +48,11 @@ public class RequestContextFactory {
 	private final Supplier<MarkdownRenderer> markdownRenderer;
 	private final ExtensionManager extensionManager;
 	private final Theme theme;
+	private final SiteProperties siteProperties;
 
-	
-	
-	public RequestContext create (String uri, Map<String, List<String>> queryParameters) throws IOException {
-	
+	public RequestContext create (
+			String uri, Map<String, List<String>> queryParameters) throws IOException {
+		
 		var requestTheme = new RequestTheme(theme);
 		
 		RequestExtensions requestExtensions = extensionManager.newContext(requestTheme);
@@ -56,8 +62,15 @@ public class RequestContextFactory {
 				new ContentTags(requestExtensions.getTags()), 
 				requestTheme);
 		
-		RequestContext requestContext = new RequestContext(uri, queryParameters, requestExtensions, renderContext);
+		var context = new RequestContext();
+		context.add(RequestFeature.class, new RequestFeature(uri, queryParameters));
+		context.add(RequestExtensions.class, requestExtensions);
+		context.add(ThemeFeature.class, new ThemeFeature(requestTheme));
+		context.add(RenderContext.class, renderContext);
+		context.add(IsDevModeFeature.class, new IsDevModeFeature(ServerContext.IS_DEV));
+		context.add(SitePropertiesFeatures.class, new SitePropertiesFeatures(siteProperties));
 		
-		return requestContext;
+		return context;
 	}
+	
 }

@@ -22,7 +22,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 
-import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.git.RepositoryManager;
 import com.github.thmarx.cms.server.HttpServer;
@@ -49,7 +49,7 @@ public class Startup {
 
 		ServerProperties properties = PropertiesLoader.serverProperties(Path.of("server.yaml"));
 		
-		PreviewContext.IS_DEV = properties.dev();
+		ServerContext.IS_DEV = properties.dev();
 
 		initGitRepositoryManager();
 		

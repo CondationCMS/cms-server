@@ -79,9 +79,12 @@ public class MarkedMarkdownRenderer implements MarkdownRenderer {
 
 	private String preview() {
 		return """
-			var PreviewContext = Java.type('com.github.thmarx.cms.api.PreviewContext');
-			
-			if (PreviewContext.IS_PREVIEW.get()) {
+			var ThreadLocalRequestContext = Java.type('com.github.thmarx.cms.api.request.ThreadLocalRequestContext');
+            var IsPreviewFeature = Java.type('com.github.thmarx.cms.api.request.features.IsPreviewFeature');
+		
+            let requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
+         
+			if (requestContext != null && requestContext.has(IsPreviewFeature.class) && requestContext.get(IsPreviewFeature.class).isPreview()) {
                 const cleanUrl = (href) => {
                   try {
                     href = encodeURI(href).replace(/%25/g, '%');

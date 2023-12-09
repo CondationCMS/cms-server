@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.request;
+package com.github.thmarx.cms.api.request.features;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -21,7 +21,7 @@ package com.github.thmarx.cms.request;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.github.thmarx.cms.api.request.Feature;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -31,13 +31,8 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public record RequestContext (
-		String uri, 
-		Map<String, List<String>> queryParameters, 
-		RequestExtensions extensions,
-		RenderContext renderContext
-		) implements AutoCloseable {
-	
+public record RequestFeature(String uri, Map<String, List<String>> queryParameters) implements Feature {
+
 	public String getQueryParameter(String name, final String defaultValue) {
 		if (!queryParameters.containsKey(name)) {
 			return defaultValue;
@@ -56,11 +51,5 @@ public record RequestContext (
 			log.error(null, e);
 		}
 		return defaultValue;
-	}
-	
-	@Override
-	public void close () throws Exception {
-		extensions.close();
-		renderContext.close();
 	}
 }

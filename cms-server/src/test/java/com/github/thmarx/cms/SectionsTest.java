@@ -77,7 +77,7 @@ public class SectionsTest extends TemplateEngineTest {
 		List<ContentNode> listSections = db.getContent().listSections(db.getFileSystem().resolve("content/page.md"));
 		Assertions.assertThat(listSections).hasSize(4);
 
-		Map<String, List<ContentRenderer.Section>> renderSections = contentRenderer.renderSections(listSections, requestContext());
+		Map<String, List<ContentRenderer.Section>> renderSections = contentRenderer.renderSections(listSections, TestHelper.requestContext());
 
 		Assertions.assertThat(renderSections)
 				.hasSize(1)

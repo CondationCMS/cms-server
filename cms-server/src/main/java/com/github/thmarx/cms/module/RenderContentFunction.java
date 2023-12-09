@@ -24,6 +24,7 @@ package com.github.thmarx.cms.module;
 
 import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.content.ContentResponse;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,9 @@ public class RenderContentFunction implements BiFunction<String, Map<String, Lis
 	public Optional<ContentResponse> apply(String uri, Map<String, List<String>> parameters) {
 		try (
 				var requestContext = requestContextFactory.get().create(uri, parameters);) {
-
+			
+			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(false));
+			
 			return contentResolver.get().getContent(requestContext);
 		} catch (Exception e) {
 			log.error("", e);

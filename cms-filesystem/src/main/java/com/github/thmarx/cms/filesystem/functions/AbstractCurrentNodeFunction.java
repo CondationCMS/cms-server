@@ -21,11 +21,12 @@ package com.github.thmarx.cms.filesystem.functions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -64,9 +65,19 @@ public abstract class AbstractCurrentNodeFunction {
 
 		var url = sb.toString();
 
-		url =  "".equals(url) ? "/" : url;
-		
-		return url + (PreviewContext.IS_PREVIEW.get() ? "?preview" : "");
+		url = "".equals(url) ? "/" : url;
+
+		return url + (isPreview() ? "?preview" : "");
+	}
+
+	protected boolean isPreview() {
+		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null
+				&& ThreadLocalRequestContext.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
+			ThreadLocalRequestContext.REQUEST_CONTEXT.get().get(IsPreviewFeature.class).isPreview();
+
+		}
+
+		return false;
 	}
 
 	protected Optional<ContentParser.Content> parse(Path node) {

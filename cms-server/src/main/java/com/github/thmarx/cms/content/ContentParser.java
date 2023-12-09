@@ -24,7 +24,7 @@ package com.github.thmarx.cms.content;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.ServerContext;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -50,7 +50,7 @@ public class ContentParser implements com.github.thmarx.cms.api.content.ContentP
 	public ContentParser() {
 		var builder = Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(1));
-		if (PreviewContext.IS_DEV) {
+		if (ServerContext.IS_DEV) {
 			builder.maximumSize(0);
 		}
 		contentCache = builder.build();

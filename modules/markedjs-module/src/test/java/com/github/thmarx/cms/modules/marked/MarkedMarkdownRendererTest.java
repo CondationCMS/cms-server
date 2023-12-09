@@ -21,7 +21,9 @@ package com.github.thmarx.cms.modules.marked;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Engine;
@@ -72,37 +74,43 @@ public class MarkedMarkdownRendererTest {
 
 	@Test
 	public void test_link_preview() {
+		RequestContext context = new RequestContext();
+		context.add(IsPreviewFeature.class, new IsPreviewFeature(true));
+		ThreadLocalRequestContext.REQUEST_CONTEXT.set(context);
 		try {
-			PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
 			var result = sut.render("[Link text Here](/internal/url)");
 			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"/internal/url?preview\">Link text Here</a></p>");
 		} finally {
-			PreviewContext.IS_PREVIEW.remove();
+			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}
 	}
 
 	@Test
 	public void test_link_preview_append() {
+		RequestContext context = new RequestContext();
+		context.add(IsPreviewFeature.class, new IsPreviewFeature(true));
+		ThreadLocalRequestContext.REQUEST_CONTEXT.set(context);
 		try {
-			PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
 			var result = sut.render("[Link text Here](/internal/url?hello=world)");
 			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"/internal/url?hello=world&preview\">Link text Here</a></p>");
 		} finally {
-			PreviewContext.IS_PREVIEW.remove();
+			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}
 	}
 
 	@Test
 	public void test_link_preview_extern() {
+		RequestContext context = new RequestContext();
+		context.add(IsPreviewFeature.class, new IsPreviewFeature(true));
+		ThreadLocalRequestContext.REQUEST_CONTEXT.set(context);
 		try {
-			PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
 			var result = sut.render("[Link text Here](http://external.org/url?hello=world)");
 			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"http://external.org/url?hello=world\">Link text Here</a></p>");
 
 			result = sut.render("[Link text Here](https://external.org/url?hello=world)");
 			Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><a href=\"https://external.org/url?hello=world\">Link text Here</a></p>");
 		} finally {
-			PreviewContext.IS_PREVIEW.remove();
+			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}
 	}
 

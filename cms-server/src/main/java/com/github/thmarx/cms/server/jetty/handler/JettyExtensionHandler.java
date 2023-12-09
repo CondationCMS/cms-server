@@ -22,10 +22,14 @@ package com.github.thmarx.cms.server.jetty.handler;
  * #L%
  */
 
-import com.github.thmarx.cms.extensions.ExtensionManager;
+import com.github.thmarx.cms.api.ServerContext;
+import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
 import com.github.thmarx.cms.request.RequestContextFactory;
+import com.github.thmarx.cms.request.RequestExtensions;
 import com.github.thmarx.cms.server.jetty.extension.JettyHttpHandlerWrapper;
+import com.github.thmarx.cms.utils.HTTPUtil;
 import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -48,15 +52,26 @@ public class JettyExtensionHandler extends Handler.Abstract {
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		try (var requestContext = requestContextFactory.create(request.getHttpURI().getPath(), Map.of())) {
+			
+			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
+			var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+			if (ServerContext.IS_DEV && queryParameters.containsKey("preview")) {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(true));
+			} else {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(false));
+			}
+			
 			String extension = getExtensionName(request);
 			var method = request.getMethod();
-			Optional<HttpHandlerExtension> findHttpHandler = requestContext.extensions().findHttpHandler(method, extension);
+			Optional<HttpHandlerExtension> findHttpHandler = requestContext.get(RequestExtensions.class).findHttpHandler(method, extension);
 			if (findHttpHandler.isEmpty()) {
 				response.setStatus(404);
 				callback.succeeded();
 				return false;
 			}
 			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
+		} finally {
+			
 		}
 		
 	}

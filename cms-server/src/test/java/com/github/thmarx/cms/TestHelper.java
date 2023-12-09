@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.github.thmarx.cms;
 
 /*-
@@ -27,9 +23,12 @@ package com.github.thmarx.cms;
  */
 
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
+import com.github.thmarx.cms.api.request.features.RequestFeature;
 import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.request.RenderContext;
-import com.github.thmarx.cms.request.RequestContext;
 import com.github.thmarx.cms.request.RequestExtensions;
 import com.github.thmarx.cms.theme.DefaultTheme;
 import java.util.Map;
@@ -50,11 +49,15 @@ public abstract class TestHelper {
 	
 	public static RequestContext requestContext(String uri) {
 		var markdownRenderer = TestHelper.getRenderer();
-		return new RequestContext(
-				uri, 
-				Map.of(), 
-				new RequestExtensions(null, null), 
-				new RenderContext(markdownRenderer, new ContentTags(Map.of()), DefaultTheme.EMPTY));
+		RequestContext context = new RequestContext();
+		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
+		context.add(RequestExtensions.class, new RequestExtensions(null, null));
+		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ContentTags(Map.of()), DefaultTheme.EMPTY));
+		
+		context.add(IsPreviewFeature.class, new IsPreviewFeature(false));
+		context.add(IsDevModeFeature.class, new IsDevModeFeature(false));
+		
+		return context;
 	}
 
 }

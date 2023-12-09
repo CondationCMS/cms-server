@@ -181,7 +181,7 @@ public class VHost {
 		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), db, siteProperties, () -> moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, db);
 
-		this.requestContextFactory = new RequestContextFactory(() -> resolveMarkdownRenderer(), extensionManager, getTheme());
+		this.requestContextFactory = new RequestContextFactory(() -> resolveMarkdownRenderer(), extensionManager, getTheme(), siteProperties);
 
 		this.moduleManager.initModules();
 

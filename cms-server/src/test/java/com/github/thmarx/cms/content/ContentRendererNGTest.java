@@ -92,7 +92,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 						</body>
                      </html>
                      """;
-		var content = contentRenderer.render(Path.of("hosts/test/content/test.md"), requestContext());
+		var content = contentRenderer.render(Path.of("hosts/test/content/test.md"), TestHelper.requestContext());
 		
 		Assertions.assertThat(content).isEqualToIgnoringWhitespace(expectedHTML);
 	}
@@ -109,7 +109,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
                      	</body>
                      </html>
                      """;
-		var content = contentRenderer.render(Path.of("hosts/test/content/products/test.md"), requestContext());
+		var content = contentRenderer.render(Path.of("hosts/test/content/products/test.md"), TestHelper.requestContext());
 		
 		Assertions.assertThat(content).isEqualToIgnoringWhitespace(expectedHTML);
 	}

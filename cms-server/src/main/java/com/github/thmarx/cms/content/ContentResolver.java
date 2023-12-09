@@ -25,8 +25,9 @@ package com.github.thmarx.cms.content;
 import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.features.RequestFeature;
 import com.github.thmarx.cms.api.utils.PathUtil;
-import com.github.thmarx.cms.request.RequestContext;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -83,13 +84,13 @@ public class ContentResolver {
 	
 	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
 		String path;
-		if (Strings.isNullOrEmpty(context.uri())) {
+		if (Strings.isNullOrEmpty(context.get(RequestFeature.class).uri())) {
 			path = "";
-		} else if (context.uri().startsWith("/")) {
+		} else if (context.get(RequestFeature.class).uri().startsWith("/")) {
 			// remove leading slash
-			path = context.uri().substring(1);
+			path = context.get(RequestFeature.class).uri().substring(1);
 		} else {
-			path = context.uri();
+			path = context.get(RequestFeature.class).uri();
 		}
 		
 

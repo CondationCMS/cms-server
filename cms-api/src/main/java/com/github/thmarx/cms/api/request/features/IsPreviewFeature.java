@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api;
+package com.github.thmarx.cms.api.request.features;
 
 /*-
  * #%L
@@ -22,13 +22,12 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
+import com.github.thmarx.cms.api.request.Feature;
+
 /**
  *
  * @author t.marx
  */
-public class PreviewContext {
-	
-	public static ThreadLocal<Boolean> IS_PREVIEW = ThreadLocal.withInitial(() -> false);
-	
-	public static boolean IS_DEV = true;
+public record IsPreviewFeature(boolean isPreview) implements Feature {
+
 }

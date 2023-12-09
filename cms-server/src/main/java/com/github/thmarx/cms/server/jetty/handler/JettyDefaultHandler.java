@@ -21,9 +21,11 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.PreviewContext;
+import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.content.ContentResponse;
+import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.utils.HTTPUtil;
 import java.util.Optional;
@@ -53,8 +55,12 @@ public class JettyDefaultHandler extends Handler.Abstract {
 		try (
 				var requestContext = requestContextFactory.create(uri, queryParameters)) {
 			
-			if (PreviewContext.IS_DEV && queryParameters.containsKey("preview")) {
-				PreviewContext.IS_PREVIEW.set(Boolean.TRUE);
+			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
+			
+			if (ServerContext.IS_DEV && queryParameters.containsKey("preview")) {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(true));
+			} else {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(false));
 			}
 			
 			Optional<ContentResponse> content = contentResolver.getContent(requestContext);
@@ -89,7 +95,7 @@ public class JettyDefaultHandler extends Handler.Abstract {
 			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
 			callback.succeeded();
 		} finally {
-			PreviewContext.IS_PREVIEW.remove();
+			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}
 		return true;
 	}

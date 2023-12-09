@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.template;
+package com.github.thmarx.cms.api.request;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -21,24 +21,34 @@ package com.github.thmarx.cms.template;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.TestHelper;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
-import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.request.features.RequestFeature;
-import com.github.thmarx.cms.content.ContentTags;
-import com.github.thmarx.cms.request.RenderContext;
-import com.github.thmarx.cms.request.RequestExtensions;
-import com.github.thmarx.cms.theme.DefaultTheme;
-import java.util.Map;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public abstract class TemplateEngineTest {
-
+public class RequestContextTest {
+	
+	@Test
+	public void testSomeMethod() {
+		var context = new RequestContext();
+		Assertions.assertThat(context.has(TestFeature.class)).isFalse();
+		
+		TestFeature tf = new TestFeature();
+		
+		context.add(TestFeature.class, tf);
+		
+		Assertions.assertThat(context.has(TestFeature.class)).isTrue();
+		
+		TestFeature tf2 = context.get(TestFeature.class);
+		
+		Assertions.assertThat(tf2).isNotNull().isEqualTo(tf);
+	}
 	
 	
-
+	public static class TestFeature implements Feature {
+		
+	}
 }

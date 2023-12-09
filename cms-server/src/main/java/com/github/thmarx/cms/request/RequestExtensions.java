@@ -23,6 +23,7 @@ package com.github.thmarx.cms.request;
  */
 
 import com.github.thmarx.cms.api.extensions.http.ExtensionHttpHandler;
+import com.github.thmarx.cms.api.request.Feature;
 import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
 import com.github.thmarx.cms.extensions.TemplateFunctionExtension;
@@ -43,7 +44,7 @@ import org.graalvm.polyglot.Context;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class RequestExtensions implements AutoCloseable {
+public class RequestExtensions implements AutoCloseable, Feature {
 
 	@Getter
 	private final List<HttpHandlerExtension> httpHandlerExtensions = new ArrayList<>();

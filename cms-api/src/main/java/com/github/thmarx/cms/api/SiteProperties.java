@@ -54,4 +54,8 @@ public class SiteProperties extends ThemeProperties {
 	public String theme () {
 		return (String) properties.get("theme");
 	}
+	
+	public String defaultContentType () {
+		return (String)getSubMap("content").getOrDefault("type", Constants.DEFAULT_CONTENT_TYPE);
+	}
 }

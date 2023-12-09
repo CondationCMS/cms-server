@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.request;
+package com.github.thmarx.cms.api.request;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -21,11 +21,8 @@ package com.github.thmarx.cms.request;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.github.thmarx.cms.content.ContentTags;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.request.Feature;
-import com.github.thmarx.cms.api.theme.Theme;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -33,13 +30,37 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public record RenderContext(MarkdownRenderer markdownRenderer, ContentTags contentTags, Theme theme) 
-		implements AutoCloseable, Feature {
+public class RequestContext implements AutoCloseable {
+
+	public Map<Class<? extends Feature>, Feature> features = new HashMap<>();
+
+	public RequestContext () {
+	}
+	
+	public boolean has(Class<? extends Feature> featureClass) {
+		return features.containsKey(featureClass);
+	}
+
+	public <T extends Feature> void add(Class<T> featureClass, T feature) {
+		features.put(featureClass, feature);
+	}
+
+	public <T extends Feature> T get(Class<T> featureClass) {
+		return (T) features.get(featureClass);
+	}
 
 	@Override
 	public void close() throws Exception {
-		markdownRenderer.close();
+		features.values()
+				.stream()
+				.filter(AutoCloseable.class::isInstance)
+				.forEach(feature -> {
+					try {
+
+					} catch (Exception e) {
+						log.error(null, e);
+					}
+				});
 	}
-	
-	
+
 }

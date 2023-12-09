@@ -37,6 +37,10 @@ import org.yaml.snakeyaml.Yaml;
  */
 public abstract class PropertiesLoader {
 	
+	public static Map<String, Object> rawProperties (Path path) throws IOException {
+		return new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
+	}
+	
 	public static SiteProperties hostProperties (Path path) throws IOException {
 		Map<String, Object> properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
 		return new SiteProperties(properties);

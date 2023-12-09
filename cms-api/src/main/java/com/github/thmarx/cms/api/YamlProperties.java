@@ -37,6 +37,10 @@ public class YamlProperties {
 		this.properties = properties;
 	}
 	
+	public void update (final Map<String, Object> properties) {
+		properties.putAll(properties);
+	}
+	
 	public Object get(final String name) {
 		return properties.get(name);
 	}

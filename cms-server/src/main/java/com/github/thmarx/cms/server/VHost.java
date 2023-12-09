@@ -119,8 +119,17 @@ public class VHost {
 		return DefaultTheme.EMPTY;
 	}
 
+	public void updateProperties() {
+		try {
+			var props = db.getFileSystem().resolve("site.yaml");
+			siteProperties.update(PropertiesLoader.rawProperties(props));
+		} catch (IOException e) {
+			log.error(null, e);
+		}
+	}
+
 	public void init(Path modules) throws IOException {
-		
+
 		contentParser = new ContentParser();
 
 		this.db = new FileDB(hostBase, eventBus, (file) -> {
@@ -131,7 +140,7 @@ public class VHost {
 				throw new RuntimeException(ioe);
 			}
 		});
-		((FileDB)db).init();
+		((FileDB) db).init();
 
 		var props = db.getFileSystem().resolve("site.yaml");
 		siteProperties = PropertiesLoader.hostProperties(props);
@@ -141,14 +150,14 @@ public class VHost {
 		try {
 			getTemplateEngine();
 		} catch (Exception e) {
-			log.error(null , e);
+			log.error(null, e);
 			try {
 				db.close();
 			} catch (Exception ex) {
 			}
 			throw e;
 		}
-		
+
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
 						"org.slf4j",
@@ -230,7 +239,7 @@ public class VHost {
 		if (theme_engine != null && engine != null && !theme_engine.equals(engine)) {
 			throw new RuntimeException("site template engine does not match theme template engine");
 		}
-		
+
 		return theme_engine != null ? theme_engine : engine;
 	}
 

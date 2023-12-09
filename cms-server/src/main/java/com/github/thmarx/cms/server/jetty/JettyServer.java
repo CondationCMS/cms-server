@@ -72,7 +72,11 @@ public class JettyServer implements HttpServer {
 					host.init(Path.of(Constants.Folders.MODULES));
 					vhosts.add(host);
 					
-					SiteConfig siteConfig = new SiteConfig(props, Files.getLastModifiedTime(props).toMillis());
+					SiteConfig siteConfig = new SiteConfig(
+							props, 
+							Files.getLastModifiedTime(props).toMillis(),
+							() -> host.updateProperties()
+					);
 					timer.schedule(siteConfig, TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(1));
 				} catch (IOException ex) {
 					log.error(null, ex);
@@ -134,6 +138,7 @@ public class JettyServer implements HttpServer {
 
 		public final Path config;
 		public long lastModified;
+		public Runnable onChange;
 		
 		@Override
 		public void run() {
@@ -143,6 +148,7 @@ public class JettyServer implements HttpServer {
 				if (tempMod != lastModified) {
 					System.out.println("modified: " + config.getFileName().toString());
 					lastModified = tempMod;
+					onChange.run();
 				}
 			} catch (IOException ex) {
 				log.error(null, ex);

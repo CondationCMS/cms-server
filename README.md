@@ -10,6 +10,9 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 * **FEATURE** Pages can redirect to external web sites
 * **FEATURE** unpublish_date meta field
+* **FEATURE** Detected and reload site properties
+* **FEATURE** Support for different content types to generate *json* or *html*, default content type is *text/html*
+* **FEATURE** New site property *content.type* to set default content type
 
 ## 2.16.0
 * **FEATURE** Enable gfm and anchors in markedjs module [#113](https://github.com/thmarx/cms/issues/113)

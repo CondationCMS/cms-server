@@ -33,6 +33,7 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  *
@@ -66,6 +67,19 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 		return (String) ((Map<String, Object>) data
 				.getOrDefault("content", Map.of()))
 				.getOrDefault("type", defaultContentType);
+	}
+	
+	public boolean hasMetaValue (final String field) {
+		return NodeUtil.getValue(data, field) != null;
+	}
+	
+	public <T> T getMetaValue (final String field, final T defaultValue) {
+		return NodeUtil.getValue(data, field, defaultValue);
+	}
+	
+	public <T> Optional<T> getMetaValue (final String field, final Class<T> type) {
+		var value = NodeUtil.getValue(data, field);
+		return Optional.ofNullable((T)value);
 	}
 
 	public boolean isDirectory() {

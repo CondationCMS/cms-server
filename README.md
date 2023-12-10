@@ -13,6 +13,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Detected and reload site properties
 * **FEATURE** Support for different content types to generate *json* or *html*, default content type is *text/html*
 * **FEATURE** New site property *content.type* to set default content type
+* **FEATuRE** New meta field *excerpt* to add custom excerpt
 
 ## 2.16.0
 * **FEATURE** Enable gfm and anchors in markedjs module [#113](https://github.com/thmarx/cms/issues/113)

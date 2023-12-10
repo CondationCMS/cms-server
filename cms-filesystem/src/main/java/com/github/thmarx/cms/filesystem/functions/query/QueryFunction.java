@@ -52,7 +52,7 @@ public class QueryFunction extends AbstractCurrentNodeFunction {
 				var temp_path = db.getFileSystem().resolve("content/").resolve(node.uri());
 				var url = toUrl(node.uri());
 				var md = parse(temp_path);
-				var excerpt = markdownRenderer.excerpt(md.get().content(), excerptLength);
+				var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, markdownRenderer);
 				final Node navNode = new Node(name, url, excerpt, node.data());
 
 				return navNode;

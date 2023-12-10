@@ -23,6 +23,7 @@ package com.github.thmarx.cms.api.utils;
  */
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -35,10 +36,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NodeUtil {
 
-	public static Predicate<ContentNode> contentTypeFiler (final String contentType) {
+	public static Predicate<ContentNode> contentTypeFiler(final String contentType) {
 		return (ContentNode node) -> contentType.equals(node.contentType());
 	}
-	
+
 	public static String getName(ContentNode node) {
 
 		Map<String, Object> menu = (Map<String, Object>) node.data().getOrDefault(Constants.MetaFields.MENU, Collections.EMPTY_MAP);
@@ -63,7 +64,7 @@ public class NodeUtil {
 
 		return Constants.DEFAULT_MENU_VISIBILITY;
 	}
-	
+
 	public static Double getMenuPosition(ContentNode node) {
 
 		Map<String, Object> menu = (Map<String, Object>) node.data().getOrDefault(Constants.MetaFields.MENU, Collections.EMPTY_MAP);
@@ -75,7 +76,7 @@ public class NodeUtil {
 
 		return Constants.DEFAULT_MENU_POSITION;
 	}
-	
+
 	public static Object getValue(final Map<String, Object> map, final String field) {
 		String[] keys = field.split("\\.");
 		Map subMap = map;
@@ -84,7 +85,7 @@ public class NodeUtil {
 		}
 		return subMap.get(keys[keys.length - 1]);
 	}
-	
+
 	public static <T> T getValue(final Map<String, Object> map, final String field, final T defaultValue) {
 		String[] keys = field.split("\\.");
 		Map<String, Object> subMap = map;
@@ -92,5 +93,19 @@ public class NodeUtil {
 			subMap = (Map<String, Object>) subMap.getOrDefault(keys[i], Collections.emptyMap());
 		}
 		return (T) subMap.getOrDefault(keys[keys.length - 1], defaultValue);
+	}
+
+	public static String excerpt(final ContentNode node, final String markdown, final int length, final MarkdownRenderer renderer) {
+		if (node.hasMetaValue(Constants.MetaFields.EXCERPT)) {
+			return elipsis(node.getMetaValue(Constants.MetaFields.EXCERPT, ""), length);
+		}
+		return renderer.excerpt(markdown, length);
+	}
+
+	public static String elipsis(final String text, final int length) {
+		return text.codePoints()
+				.limit(length)
+				.collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+				.toString();
 	}
 }

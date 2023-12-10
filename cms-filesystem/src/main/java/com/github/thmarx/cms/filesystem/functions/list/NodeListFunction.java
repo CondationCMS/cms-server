@@ -138,7 +138,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 						var temp_path = contentBase.resolve(node.uri());
 						var name = NodeUtil.getName(node);
 						var md = parse(temp_path);
-						var excerpt = markdownRenderer.excerpt(md.get().content(), excerptLength);
+						var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, markdownRenderer);
 						final Node navNode = new Node(name, getUrl(temp_path), excerpt, node.contentType(), node.data());
 						navNodes.add(navNode);
 					});

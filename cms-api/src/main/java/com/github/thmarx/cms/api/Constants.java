@@ -37,6 +37,7 @@ public abstract class Constants {
 		public static final String UNPUBLISH_DATE = "unpublish_date";
 		
 		public static final String TITLE = "title";
+		public static final String EXCERPT = "excerpt";
 		
 		public static final String MENU = "menu";
 		public static final String MENU_VISIBLE = "visible";

@@ -23,3 +23,8 @@ media:
       height: 512
       format: webp
       compression: true
+    - name: test2
+      width: 72
+      height: 72
+      format: webp
+      compression: true

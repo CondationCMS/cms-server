@@ -36,6 +36,7 @@ import com.github.thmarx.cms.api.extensions.TemplateEngineProviderExtentionPoint
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.api.eventbus.EventListener;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
+import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
@@ -123,6 +124,8 @@ public class VHost {
 		try {
 			var props = db.getFileSystem().resolve("site.yaml");
 			siteProperties.update(PropertiesLoader.rawProperties(props));
+			
+			eventBus.publish(new SitePropertiesChanged());
 		} catch (IOException e) {
 			log.error(null, e);
 		}

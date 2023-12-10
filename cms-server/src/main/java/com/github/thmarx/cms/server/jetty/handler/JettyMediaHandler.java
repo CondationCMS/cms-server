@@ -21,7 +21,6 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.Startup;
 import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.media.Media;
 import com.github.thmarx.cms.media.MediaManager;
@@ -32,6 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.io.Content;
@@ -48,6 +48,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class JettyMediaHandler extends Handler.Abstract {
 
+	@Getter
 	private final MediaManager mediaManager;
 
 	@Override

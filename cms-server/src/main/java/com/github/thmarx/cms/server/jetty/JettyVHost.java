@@ -22,6 +22,7 @@ package com.github.thmarx.cms.server.jetty;
  * #L%
  */
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
@@ -73,7 +74,9 @@ public class JettyVHost extends VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
 		
-		JettyMediaHandler mediaHandler = new JettyMediaHandler(new MediaManager(assetBase, db.getFileSystem().resolve("temp"), getTheme(), siteProperties));
+		var assetsMediaManager = new MediaManager(assetBase, db.getFileSystem().resolve("temp"), getTheme(), siteProperties);
+		getEventBus().register(SitePropertiesChanged.class, assetsMediaManager);
+		final JettyMediaHandler mediaHandler = new JettyMediaHandler(assetsMediaManager);
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
@@ -116,7 +119,9 @@ public class JettyVHost extends VHost {
 		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		
-		JettyMediaHandler mediaHandler = new JettyMediaHandler(new MediaManager(getTheme().assetsPath(), db.getFileSystem().resolve("temp"), getTheme(), siteProperties));
+		final MediaManager themeAssetsMediaManager = new MediaManager(getTheme().assetsPath(), db.getFileSystem().resolve("temp"), getTheme(), siteProperties);
+		getEventBus().register(SitePropertiesChanged.class, themeAssetsMediaManager);
+		JettyMediaHandler mediaHandler = new JettyMediaHandler(themeAssetsMediaManager);
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 		
 		return new ContextHandler(pathMappingsHandler, "/themes/" + getTheme().getName());

@@ -24,6 +24,8 @@ package com.github.thmarx.cms.media;
 
 import com.github.thmarx.cms.api.media.Media;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.eventbus.EventListener;
+import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.media.MediaFormat;
 import com.github.thmarx.cms.api.theme.Theme;
 import java.io.File;
@@ -44,7 +46,7 @@ import net.coobird.thumbnailator.geometry.Positions;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MediaManager {
+public class MediaManager implements EventListener<SitePropertiesChanged> {
 
 	private final Path assetBase;
 	private final Path tempFolder;
@@ -143,5 +145,11 @@ public class MediaManager {
 		}
 
 		return mediaFormats;
+	}
+
+	@Override
+	public void consum(SitePropertiesChanged event) {
+		this.mediaFormats = null;
+		getMediaFormats();
 	}
 }

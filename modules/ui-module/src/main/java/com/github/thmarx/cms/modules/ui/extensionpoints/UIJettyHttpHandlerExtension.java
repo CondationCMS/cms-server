@@ -34,6 +34,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileSystem;
+import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,9 +58,15 @@ public class UIJettyHttpHandlerExtension extends JettyHttpHandlerExtensionPoint 
 			
 			final Map<String, String> env = new HashMap<>();
 			final String[] array = resource.toURI().toString().split("!");
+			try {
+				return FileSystems.getFileSystem(URI.create(array[0]));
+			} catch (FileSystemNotFoundException fsnfe) {
+				
+			}
+			
 			return FileSystems.newFileSystem(URI.create(array[0]), env);
 			
-		} catch (URISyntaxException | IOException ex) {
+		} catch (URISyntaxException | IOException  ex) {
 			log.error("", ex);
 			throw new RuntimeException(ex);
 		}

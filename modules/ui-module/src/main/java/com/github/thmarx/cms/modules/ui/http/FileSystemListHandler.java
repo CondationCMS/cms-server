@@ -23,13 +23,10 @@ package com.github.thmarx.cms.modules.ui.http;
  */
 
 import com.github.thmarx.cms.modules.ui.services.FileSystemService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -40,11 +37,11 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class FileSystemListHandler extends Handler.Abstract {
+public class FileSystemListHandler extends JettyHandler {
 
 	private final FileSystemService fileSystemService;
 	
-	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	
 	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

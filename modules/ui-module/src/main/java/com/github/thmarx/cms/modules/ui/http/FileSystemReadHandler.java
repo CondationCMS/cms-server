@@ -22,15 +22,11 @@ package com.github.thmarx.cms.modules.ui.http;
  * #L%
  */
 import com.github.thmarx.cms.modules.ui.services.FileSystemService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -41,11 +37,9 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class FileSystemReadHandler extends Handler.Abstract {
+public class FileSystemReadHandler extends JettyHandler {
 
 	private final FileSystemService fileSystemService;
-
-	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -69,16 +63,6 @@ public class FileSystemReadHandler extends Handler.Abstract {
 		Content.Sink.write(response, true, content, callback);
 
 		return true;
-	}
-
-	public String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
 	}
 
 }

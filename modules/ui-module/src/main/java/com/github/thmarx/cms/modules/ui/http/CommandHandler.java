@@ -21,15 +21,16 @@ package com.github.thmarx.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.modules.ui.services.CommandService;
 import com.github.thmarx.cms.modules.ui.services.FileSystemService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -40,32 +41,34 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class FileSystemWriteHandler extends JettyHandler {
+public class CommandHandler extends JettyHandler {
 
-	private final FileSystemService fileSystemService;
+	private final CommandService commandService;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		if (!request.getMethod().equalsIgnoreCase("PUT")) {
+		if (!request.getMethod().equalsIgnoreCase("POST")) {
 			Response.writeError(request, response, callback, HttpStatus.METHOD_NOT_ALLOWED_405, "");
 			return true;
 		}
 
-		String path = "";
-		var fields = Request.extractQueryParameters(request);
-		if (fields.getNames().contains("path")) {
-			path = fields.getValue("path");
-		}
-
-		String content = getBody(request);
-		fileSystemService.writeToFile(path, content);
-
-		response.setStatus(200);
+		String body = getBody(request);
+		Optional<?> result = commandService.execute(body);
+		
+		
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-		callback.succeeded();
+		if (result.isPresent() && result.get() != null) {
+			response.setStatus(200);
+			Content.Sink.write(response, true, GSON.toJson(result.get()), callback);
+		} else {
+			response.setStatus(404);
+			callback.succeeded();
+		}
+		
 
 		return true;
 	}
 
+	
 }

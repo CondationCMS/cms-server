@@ -23,6 +23,7 @@ package com.github.thmarx.cms.modules.ui.extensionpoints;
  */
 
 import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.modules.ui.services.CommandService;
 import com.github.thmarx.cms.modules.ui.services.FileSystemService;
 import com.github.thmarx.cms.modules.ui.services.FileUserService;
 import com.github.thmarx.cms.modules.ui.services.UserService;
@@ -39,6 +40,8 @@ public class UILifecycleExtension extends ModuleLifeCycleExtension<CMSModuleCont
 	public static UserService userService;
 	public static FileSystemService fileSystemService;
 	
+	public static CommandService commandService;
+	
 	@Override
 	public void init() {
 	}
@@ -47,6 +50,8 @@ public class UILifecycleExtension extends ModuleLifeCycleExtension<CMSModuleCont
 	public void activate() {
 		userService = new FileUserService(configuration.getDataDir().getAbsolutePath());
 		fileSystemService = new FileSystemService(getContext().getDb());
+		commandService = new CommandService();
+		commandService.register("test", (cmd) -> "Hallo Leute!");
 	}
 
 	@Override

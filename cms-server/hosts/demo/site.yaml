@@ -11,6 +11,7 @@ modules:
   active:
     - markedjs-module
     - seo-module
+    - ui-module
 media:
   formats:
     - name: small
@@ -28,7 +29,3 @@ media:
       height: 72
       format: webp
       compression: true
-#    - pebble-module
-    - thymeleaf-module
-#    - freemarker-module
-    - ui-module

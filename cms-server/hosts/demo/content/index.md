@@ -1,8 +1,10 @@
 ---
 title: Startseite
 template: start.html
+search:
+    index: false
 ---
 
 # Demo Project
 
-![TestBild!](/assets/images/test.jpg "Test bild")
+![TestBild!](/media/images/test.jpg?format=small "Test bild")

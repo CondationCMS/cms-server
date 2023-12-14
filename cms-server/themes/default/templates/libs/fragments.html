@@ -1,0 +1,81 @@
+<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="header">
+	<title th:text="${meta.title}"></title>
+	<link rel="canonical" th:href="${site.get('baseurl')} + ${requestContext.uri}" />
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="/themes/default/assets/bootstrap-5.3.2/css/bootstrap.min.css" defer />
+	<link href="/themes/default/assets/bootstrap-icons-1.11.1/bootstrap-icons.min.css" rel="stylesheet" />
+	<script src="/themes/default/assets/prism-1.29.0/prism.js" defer></script>
+	<link rel="stylesheet" href="/themes/default/assets/prism-1.29.0/prism.css" defer />
+
+	<th:block th:each="css : ${theme.assets.css()}">
+		<link rel="stylesheet" th:href="${css}" defer />
+	</th:block>
+
+	<th:block th:each="js : ${theme.assets.js()}">
+		<script th:src="${js}" defer></script>
+	</th:block>
+
+</th:block>
+
+<body>
+
+	<nav class="navbar navbar-expand-lg bg-body-tertiary" th:fragment="navigation">
+		<div class="container-fluid">
+			<a class="navbar-brand" href="/">Demo-Project</a>
+			<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll"
+				aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			<div class="collapse navbar-collapse" id="navbarScroll">
+				<ul th:with="nodes=${navigation.list('/')}" class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll"
+					style="--bs-scroll-height: 100px;">
+					<li th:each="node : ${nodes}" th:if="${node.path} != '/'" class="nav-item">
+						<a th:attr="aria-current=${node.current ? 'page' : ''}"
+							th:classappend="${node.current}? 'active'" class="nav-link" th:href="${node.path}"
+							th:text="${node.name}"></a>
+					</li>
+				</ul>
+
+			</div>
+		</div>
+	</nav>
+
+	<nav aria-label="breadcrumb" th:fragment="breadcrumb">
+		<ol class="breadcrumb">
+			<th:block th:each="node,iterStat : ${navigation.path()}">
+				<li 
+				th:classappend="${node.current}? 'active'" 
+				class="breadcrumb-item"
+				th:attr="aria-current=${iterStat.last ? 'page' : ''}"
+				>
+					<a th:if="!${iterStat.last}" th:href="${node.path}" th:text="${node.name}"></a>
+					<span th:if="${iterStat.last}" th:text="${node.name}"></span>
+				</li>
+			</th:block>
+		</ol>
+	</nav>
+
+	<div class="container" th:fragment="footer">
+		<footer class="py-3 my-4">
+			<ul th:with="nodes=${navigation.list('/')}" class="nav justify-content-center border-bottom pb-3 mb-3">
+				<li th:each="node : ${nodes}" th:if="${node.path} != '/'" class="nav-item">
+					<a th:attr="aria-current=${node.current ? 'page' : ''}" th:classappend="${node.current}? 'active'"
+						class="nav-link px-2 text-muted" th:href="${node.path}" th:text="${node.name}"></a>
+				</li>
+			</ul>
+			<p class="text-center text-muted">© 2023 NoCompany, No-Inc</p>
+		</footer>
+	</div>
+
+	<th:block th:fragment="footer_scripts">
+		<script src="/themes/default/assets/bootstrap-5.3.2/js/bootstrap.bundle.min.js"></script>
+	</th:block>
+
+</body>
+
+</html>

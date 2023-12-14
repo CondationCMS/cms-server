@@ -6,20 +6,23 @@ package com.github.thmarx.cms.server.jetty;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.ServerProperties;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,9 +32,14 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.github.thmarx.cms.server.HttpServer;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -51,6 +59,7 @@ public class JettyServer implements HttpServer {
 
 	private final ServerProperties properties;
 	private Server server;
+	private Timer timer = new Timer(true);
 
 	@Override
 	public void startup() throws IOException {
@@ -60,8 +69,15 @@ public class JettyServer implements HttpServer {
 			if (Files.exists(props)) {
 				try {
 					var host = new JettyVHost(hostPath, properties);
-					host.init(Path.of("modules"));
+					host.init(Path.of(Constants.Folders.MODULES));
 					vhosts.add(host);
+					
+					SiteConfig siteConfig = new SiteConfig(
+							props, 
+							Files.getLastModifiedTime(props).toMillis(),
+							() -> host.updateProperties()
+					);
+					timer.schedule(siteConfig, TimeUnit.MINUTES.toMillis(1), TimeUnit.MINUTES.toMillis(1));
 				} catch (IOException ex) {
 					log.error(null, ex);
 				}
@@ -70,7 +86,7 @@ public class JettyServer implements HttpServer {
 		
 		ContextHandlerCollection handlers = new ContextHandlerCollection();
 		vhosts.forEach(host -> {
-			log.debug("add virtual host : " + host.getHostname());
+			log.debug("add virtual host : " + host.getHostnames());
 			var httpHandler = host.httpHandler();
 			handlers.addHandler(httpHandler);
 		});
@@ -79,9 +95,10 @@ public class JettyServer implements HttpServer {
 			log.debug("shutting down");
 
 			vhosts.forEach(host -> {
-				log.debug("shutting down vhost : " + host.getHostname());
+				log.debug("shutting down vhost : " + host.getHostnames());
 				host.shutdown();
 			});
+			timer.cancel();
 		}));
 
 		HttpConfiguration httpConfig = new HttpConfiguration();
@@ -115,4 +132,27 @@ public class JettyServer implements HttpServer {
 		server.stop();
 	}
 
+	@Slf4j
+	@AllArgsConstructor
+	public static class SiteConfig extends TimerTask {
+
+		public final Path config;
+		public long lastModified;
+		public Runnable onChange;
+		
+		@Override
+		public void run() {
+			try {
+				var tempMod = Files.getLastModifiedTime(config).toMillis();
+				
+				if (tempMod != lastModified) {
+					System.out.println("modified: " + config.getFileName().toString());
+					lastModified = tempMod;
+					onChange.run();
+				}
+			} catch (IOException ex) {
+				log.error(null, ex);
+			}
+		}
+	}
 }

@@ -9,11 +9,11 @@ Keep in mind, that the nodelist function does not return the hole rendered HTML 
 ```html
 <!-- example for a blog overview page  -->
 <div
-	th:with='page = ${nodeList.from("/blog/*").sort("published").reverse(true).page(1).size(5).list()}'>
+	th:with='page = ${nodeList.from("/blog/*").sort("publish_date").reverse(true).page(1).size(5).list()}'>
 	<th:block th:each="entry : ${page.items}">
 		<h2 th:text="${entry.name}"></h2>
 		<p th:text="${entry.content}"></p>
-		<u th:text="${#dates.format(entry.meta['published'], 'dd-MM-yyyy HH:mm')}"></u>
+		<u th:text="${#dates.format(entry.meta['publish_date'], 'dd-MM-yyyy HH:mm')}"></u>
 		<a th:href="${entry.path}">goto</a>
 	</th:block>
 </div>

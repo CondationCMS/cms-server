@@ -1,7 +1,7 @@
 ---
 title: Startseite
 template: start.ftl
-draft: true
+published: false
 ---
 
 Und hier der Inhalt

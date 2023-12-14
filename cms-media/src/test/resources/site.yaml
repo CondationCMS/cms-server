@@ -1,0 +1,30 @@
+hostname: 
+  - localhost
+  - localhost1
+baseurl: "http://localhost:1010"
+language: en
+test: HAllo
+markdown:
+  engine: markedjs
+theme: default
+modules:
+  active:
+    - markedjs-module
+    - seo-module
+media:
+  formats:
+    - name: small
+      width: 256
+      height: 256
+      format: webp
+      compression: true
+    - name: big
+      width: 512
+      height: 512
+      format: webp
+      compression: true
+    - name: test2
+      width: 72
+      height: 72
+      format: webp
+      compression: true

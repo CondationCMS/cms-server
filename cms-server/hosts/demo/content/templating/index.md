@@ -1,6 +1,7 @@
 ---
 title: Templates & Engines
 template: content.html
+published: false
 menu: 
     title: Templating
     position: 20

@@ -6,24 +6,31 @@ package com.github.thmarx.cms.template.functions.list;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import com.github.thmarx.cms.ContentParser;
+import com.github.thmarx.cms.api.db.Page;
+import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.TestHelper;
+import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
-import com.github.thmarx.cms.filesystem.FileSystem;
+import com.github.thmarx.cms.filesystem.FileDB;
+import com.github.thmarx.cms.filesystem.functions.list.Node;
+import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -39,19 +46,27 @@ import org.junit.jupiter.api.Test;
 public class NodeListFunctionBuilderNGTest {
 	
 	static NodeListFunctionBuilder nodeList;
-	static FileSystem fileSystem;
+	static FileDB db;
+	
+	static ContentParser parser = new ContentParser();
+	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 	
 	@BeforeAll
 	static void setup () throws IOException {
-		fileSystem = new FileSystem(Path.of("hosts/test"), new DefaultEventBus());
-		fileSystem.init();
-		ContentParser parser = new ContentParser(fileSystem);
-		var markdownRenderer = TestHelper.getRenderer();
-		nodeList = new NodeListFunctionBuilder(fileSystem, fileSystem.resolve("content/").resolve("index.md"), parser, markdownRenderer);
+		
+		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+			try {
+				return parser.parseMeta(file);
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		});
+		db.init();
+		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), parser, markdownRenderer);
 	}
 	@AfterAll
-	static void close () {
-		fileSystem.shutdown();
+	static void close () throws Exception {
+		db.close();
 	}
 
 	@Test
@@ -64,7 +79,7 @@ public class NodeListFunctionBuilderNGTest {
 	public void test_blog_entry_sorted() {
 		Page<Node> page = nodeList.from("/blog/*")
 				.page(1).size(10)
-				.sort("published")
+				.sort(Constants.MetaFields.PUBLISH_DATE)
 				.list();
 		Assertions.assertThat(page.getItems()).hasSize(2);
 		Assertions.assertThat(page.getItems().get(0).name()).isEqualTo("September");
@@ -75,7 +90,7 @@ public class NodeListFunctionBuilderNGTest {
 	public void test_blog_entry_sorted_reverse() {
 		Page<Node> page = nodeList.from("/blog/*")
 				.page(1).size(10)
-				.sort("published")
+				.sort(Constants.MetaFields.PUBLISH_DATE)
 				.reverse(true)
 				.list();
 		Assertions.assertThat(page.getItems()).hasSize(2);
@@ -130,5 +145,32 @@ public class NodeListFunctionBuilderNGTest {
 						"/nodelist/folder2",
 						"/nodelist/folder2/test"
 				);
+	}
+	
+	@Test
+	void test_from_subfolder () {
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/nodelist2/index.md"), parser, markdownRenderer);
+		Page<Node> page = nodeList.from("./sub_folder/*").page(1).size(10).list();
+		var nodeUris = page.getItems().stream().map(Node::path).collect(Collectors.toList());
+		Assertions.assertThat(nodeUris)
+				.containsExactlyInAnyOrder(
+						"/nodelist2/sub_folder/folder1", 
+						"/nodelist2/sub_folder/folder1/test",
+						"/nodelist2/sub_folder/folder2",
+						"/nodelist2/sub_folder/folder2/test"
+				);
+	}
+	
+	@Test
+	void test_json () {
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/index.md"), parser, markdownRenderer);
+		Page<Node> page = nodeList.from("./json").page(1).size(10).list();
+		Assertions.assertThat(page.getItems()).hasSize(1);
+		Assertions.assertThat(page.getItems().getFirst().name()).isEqualTo("HTML");
+		
+		page = nodeList.from("./json").page(1).size(10).json().list();
+		
+		Assertions.assertThat(page.getItems()).hasSize(1);
+		Assertions.assertThat(page.getItems().getFirst().name()).isEqualTo("JSON");
 	}
 }

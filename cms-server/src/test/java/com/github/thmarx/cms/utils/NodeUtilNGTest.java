@@ -6,21 +6,25 @@ package com.github.thmarx.cms.utils;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import com.github.thmarx.cms.Constants;
+import com.github.thmarx.cms.api.utils.NodeUtil;
+import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -37,7 +41,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_default_name() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of());
+		ContentNode node = new ContentNode("/", "index", Map.of());
 
 		var name = NodeUtil.getName(node);
 
@@ -46,7 +50,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_title() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"title", "The Title"
 		));
 
@@ -57,7 +61,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_title_if_emtpy_menu() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"title", "The Title",
 				"menu", Map.of(
 				)
@@ -70,7 +74,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getName_returns_menu_title() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"title", "The Title",
 				"menu", Map.of(
 						"title", "Menu title"
@@ -84,7 +88,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getMenuPosition() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"menu", Map.of(
 						"position", 1.5
 				)
@@ -95,7 +99,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getDefaultMenuPosition() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "index", Map.of(
 				"menu", Map.of()
 		));
 		var position = NodeUtil.getMenuPosition(node);
@@ -104,7 +108,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getDefaultMenuPositionNoMenuMap() {
-		MetaData.MetaNode node = new MetaData.MetaNode("/", "index", Map.of());
+		ContentNode node = new ContentNode("/", "index", Map.of());
 		var position = NodeUtil.getMenuPosition(node);
 		Assertions.assertThat(position).isEqualTo(Constants.DEFAULT_MENU_POSITION);
 	}

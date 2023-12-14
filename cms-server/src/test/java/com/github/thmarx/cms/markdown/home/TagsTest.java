@@ -6,30 +6,23 @@ package com.github.thmarx.cms.markdown.home;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -38,14 +31,43 @@ import org.junit.jupiter.api.Test;
  */
 public class TagsTest {
 
-	@Test
-	public void tag() {
-		Pattern bold = Pattern.compile("\\[{2}(.*?)\\]{2}");
-
-		var matcher = bold.matcher("[[method]]");
-		matcher.matches();
-		System.out.println(matcher.group(1));
-	}
-
 	
+	@Test
+	public void tag_no_parameters() {
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher("[[youtube]]");
+		matcher.matches();
+		System.out.println("tag: " + matcher.group("tag"));
+	}
+	
+	@Test
+	public void tag_with_parameters() {
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher("[[youtube videoid='the-id']]");
+		matcher.matches();
+		System.out.println("tag: " + matcher.group("tag"));
+		System.out.println("params: " + matcher.group("params"));
+	}
+	
+	@Test
+	public void tag_with_multiple_parameters() {
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher("[[youtube videoid='the-id' param='other']]");
+		matcher.matches();
+		System.out.println("tag: " + matcher.group("tag"));
+		System.out.println("params: " + matcher.group("params"));
+	}
+	
+	@Test
+	public void multiple_tag_with_multiple_parameters() {
+		
+		var content = """
+                [[youtube videoid='the-id' param='other']]
+                Here is some other content.
+                [[youtube videoid='other-id' param='another']]
+                """;
+		
+		var matcher = TagReplacer.TAG_PARAMS_PATTERN.matcher(content);
+		while (matcher.find()) {
+			System.out.println("tag: " + matcher.group("tag"));
+			System.out.println("params: " + matcher.group("params"));
+		}
+	}
 }

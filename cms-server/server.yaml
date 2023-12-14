@@ -1,5 +1,4 @@
 server:
     port: 1010
     ip: "127.0.0.1"
-    engine: jetty
 dev: true

@@ -6,36 +6,29 @@ package com.github.thmarx.cms.server.jetty.handler;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.ContentResolver;
-import com.github.thmarx.cms.RenderContext;
-import com.github.thmarx.cms.RequestContext;
-import com.github.thmarx.cms.extensions.ExtensionManager;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.google.common.base.Strings;
-import java.net.URLDecoder;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.github.thmarx.cms.api.ServerContext;
+import com.github.thmarx.cms.content.ContentResolver;
+import com.github.thmarx.cms.api.content.ContentResponse;
+import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
+import com.github.thmarx.cms.request.RequestContextFactory;
+import com.github.thmarx.cms.utils.HTTPUtil;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.io.Content;
@@ -43,7 +36,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
-import org.graalvm.polyglot.Context;
 
 /**
  *
@@ -54,52 +46,54 @@ import org.graalvm.polyglot.Context;
 public class JettyDefaultHandler extends Handler.Abstract {
 
 	private final ContentResolver contentResolver;
-	private final ExtensionManager manager;
-
-	private final Function<Context, MarkdownRenderer> markdownRendererProvider;
-
-	public static Map<String, List<String>> queryParameters(String query) {
-		if (Strings.isNullOrEmpty(query)) {
-			return Collections.emptyMap();
-		}
-		return Pattern.compile("&")
-				.splitAsStream(query)
-				.map(s -> Arrays.copyOf(s.split("=", 2), 2))
-				.collect(Collectors.groupingBy(s -> decode(s[0]), Collectors.mapping(s -> decode(s[1]), Collectors.toList())));
-	}
-
-	private static String decode(final String encoded) {
-		return Optional.ofNullable(encoded)
-				.map(e -> URLDecoder.decode(e, StandardCharsets.UTF_8))
-				.orElse(null);
-	}
+	private final RequestContextFactory requestContextFactory;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		var uri = request.getHttpURI().getPath();
-		var queryParameters = queryParameters(request.getHttpURI().getQuery());
+		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		try (
-				var contextHolder = manager.newContext(); 
-				final MarkdownRenderer markdownRenderer = markdownRendererProvider.apply(contextHolder.getContext());) {
-
-			RequestContext context = new RequestContext(uri, queryParameters,
-					new RenderContext(contextHolder, markdownRenderer));
-			Optional<String> content = contentResolver.getContent(context);
-			response.setStatus(200);
-			if (!content.isPresent()) {
-				context = new RequestContext("/.technical/404", queryParameters,
-						new RenderContext(contextHolder, markdownRenderer));
-				content = contentResolver.getContent(context);
-				response.setStatus(404);
+				var requestContext = requestContextFactory.create(uri, queryParameters)) {
+			
+			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
+			
+			if (ServerContext.IS_DEV && queryParameters.containsKey("preview")) {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
 			}
-			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
+			
+			Optional<ContentResponse> content = contentResolver.getContent(requestContext);
+			response.setStatus(200);
 
-			Content.Sink.write(response, true, content.get(), callback);
-			//response.write(true, ByteBuffer.wrap(content.get().getBytes(StandardCharsets.UTF_8)), callback);
+			if (!content.isPresent()) {
+
+				// try to resolve static files
+				content = contentResolver.getStaticContent(uri);
+				if (content.isEmpty()) {
+					try (var errorContext = requestContextFactory.create("/.technical/404", queryParameters)) {
+						content = contentResolver.getErrorContent(errorContext);
+						response.setStatus(404);
+					}
+				}
+
+			}
+			
+			var contentResponse = content.get();
+			if (contentResponse.isRedirect()) {
+				response.getHeaders().add("Location", contentResponse.node().getRedirectLocation());
+				response.setStatus(contentResponse.node().getRedirectStatus());
+				callback.succeeded();
+			} else {
+				response.getHeaders().add("Content-Type", "%s; charset=utf-8".formatted(content.get().contentType()));
+				Content.Sink.write(response, true, content.get().content(), callback);
+			}
+			
 		} catch (Exception e) {
 			log.error("", e);
 			response.setStatus(500);
 			response.getHeaders().add("Content-Type", "text/html; charset=utf-8");
+			callback.succeeded();
+		} finally {
+			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}
 		return true;
 	}

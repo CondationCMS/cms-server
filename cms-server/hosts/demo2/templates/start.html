@@ -1,0 +1,13 @@
+<h1>featured</h1>
+{% set news = query.create("/blog").where('featured', true).get() %}
+{% for entry in news %}
+	<h2>{{entry.name}}</h2>
+{% endfor %}
+
+<h1>featured with in</h1>
+{% set news = query.create("/blog").whereIn('featured', [true, false]).get() %}
+{% for entry in news %}
+	<h2>{{entry.name}}</h2>
+{% endfor %}
+
+{{ getHello.apply("thorsten") }}

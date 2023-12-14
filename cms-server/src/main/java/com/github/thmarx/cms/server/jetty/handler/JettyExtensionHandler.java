@@ -6,23 +6,31 @@ package com.github.thmarx.cms.server.jetty.handler;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import com.github.thmarx.cms.extensions.ExtensionManager;
+import com.github.thmarx.cms.api.ServerContext;
+import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
+import com.github.thmarx.cms.request.RequestContextFactory;
+import com.github.thmarx.cms.request.RequestExtensions;
 import com.github.thmarx.cms.server.jetty.extension.JettyHttpHandlerWrapper;
+import com.github.thmarx.cms.utils.HTTPUtil;
+import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,21 +47,29 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class JettyExtensionHandler extends Handler.Abstract {
 
-	private final ExtensionManager extensionManager;
-
+	private final RequestContextFactory requestContextFactory;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		try (var context = extensionManager.newContext()) {
+		try (var requestContext = requestContextFactory.create(request.getHttpURI().getPath(), Map.of())) {
+			
+			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
+			var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+			if (ServerContext.IS_DEV && queryParameters.containsKey("preview")) {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
+			}
+			
 			String extension = getExtensionName(request);
 			var method = request.getMethod();
-			Optional<HttpHandlerExtension> findHttpHandler = context.findHttpHandler(method, extension);
+			Optional<HttpHandlerExtension> findHttpHandler = requestContext.get(RequestExtensions.class).findHttpHandler(method, extension);
 			if (findHttpHandler.isEmpty()) {
 				response.setStatus(404);
 				callback.succeeded();
 				return false;
 			}
 			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
+		} finally {
+			
 		}
 		
 	}

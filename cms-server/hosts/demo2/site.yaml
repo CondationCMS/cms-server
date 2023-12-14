@@ -1,0 +1,11 @@
+hostname: localhost2
+baseurl: "http://localhost2:1010"
+language: en
+markdown:
+  engine: markedjs
+template:
+  engine: pebble
+modules:
+  active:
+    - markedjs-module
+    - pebble-module

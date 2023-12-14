@@ -6,33 +6,38 @@ package com.github.thmarx.cms.modules.thymeleaf;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 
-import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.templatemode.TemplateMode;
 import org.thymeleaf.templateresolver.FileTemplateResolver;
+import org.thymeleaf.templateresolver.ITemplateResolver;
 
 /**
  *
@@ -41,19 +46,53 @@ import org.thymeleaf.templateresolver.FileTemplateResolver;
 
 public class ThymeleafTemplateEngine implements TemplateEngine {
 
-	private final org.thymeleaf.TemplateEngine engine;
-	private final Path templateBase;
-	private final ModuleFileSystem fileSystem;
+	private org.thymeleaf.TemplateEngine htmlEngine;
+	private org.thymeleaf.TemplateEngine jsEngine;
 	private final ServerProperties serverProperties;
+	private final DBFileSystem fileSystem;
+	private final Theme theme;
 
-	public ThymeleafTemplateEngine(final ModuleFileSystem fileSystem, final ServerProperties serverProperties) {
-		this.fileSystem = fileSystem;
-		this.templateBase = fileSystem.resolve("templates/");
+	public ThymeleafTemplateEngine(final DBFileSystem fileSystem, 
+			final ServerProperties serverProperties,
+			final Theme theme) {
+	
+		
 		this.serverProperties = serverProperties;
+		this.fileSystem = fileSystem;
+		this.theme = theme;
+		
+		initHtmlTemplateing();
+		initJSTemplateing();
+	}
+	
+	private void initHtmlTemplateing () {
+		var templateBase = fileSystem.resolve("templates/");
+		ITemplateResolver siteTemplateResolver = templateResolver(templateBase, TemplateMode.HTML);
+		ITemplateResolver themeTemplateResolver = null;
+		if (!theme.empty()) {
+			themeTemplateResolver = templateResolver(theme.templatesPath(), TemplateMode.HTML);
+		}
 
+		htmlEngine = new org.thymeleaf.TemplateEngine();
+		htmlEngine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, Optional.ofNullable(themeTemplateResolver)));
+	}
+	
+	private void initJSTemplateing () {
+		var templateBase = fileSystem.resolve("templates/");
+		ITemplateResolver siteTemplateResolver = templateResolver(templateBase, TemplateMode.JAVASCRIPT);
+		ITemplateResolver themeTemplateResolver = null;
+		if (!theme.empty()) {
+			themeTemplateResolver = templateResolver(theme.templatesPath(), TemplateMode.JAVASCRIPT);
+		}
+
+		jsEngine = new org.thymeleaf.TemplateEngine();
+		jsEngine.setTemplateResolver(new ThemeTemplateResolver(siteTemplateResolver, Optional.ofNullable(themeTemplateResolver)));
+	}
+	
+	private ITemplateResolver templateResolver (final Path templatePath, final TemplateMode mode) {
 		var templateResolver = new FileTemplateResolver();
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		templateResolver.setPrefix(this.templateBase.toString() + File.separatorChar);
+		templateResolver.setTemplateMode(mode);
+		templateResolver.setPrefix(templatePath.toString() + File.separatorChar);
 		//templateResolver.setSuffix(".html");
 		if (serverProperties.dev()) {
 			templateResolver.setCacheable(false);
@@ -61,22 +100,29 @@ public class ThymeleafTemplateEngine implements TemplateEngine {
 			templateResolver.setCacheable(true);
 			templateResolver.setCacheTTLMs(TimeUnit.MINUTES.toMillis(1));
 		}
-
-		engine = new org.thymeleaf.TemplateEngine();
-		engine.setTemplateResolver(templateResolver);
+		
+		return templateResolver;
 	}
 
 	@Override
 	public String render(String template, TemplateEngine.Model model) throws IOException {
 
 		Writer writer = new StringWriter();
-		engine.process(template, new Context(Locale.getDefault(), model.values), writer);
+		final Context context = new Context(Locale.getDefault(), model.values);
+		
+		if ("application/json".equals(model.contentNode.contentType())) {
+			jsEngine.process(template, context, writer);
+		} else {
+			htmlEngine.process(template, context, writer);
+		}
+				
+		
 		return writer.toString();
 	}
 
 	@Override
 	public void invalidateCache() {
-		engine.getCacheManager().clearAllCaches();
+		htmlEngine.getCacheManager().clearAllCaches();
 	}
 
 }

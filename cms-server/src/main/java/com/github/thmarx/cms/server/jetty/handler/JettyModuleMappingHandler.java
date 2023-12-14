@@ -6,17 +6,19 @@ package com.github.thmarx.cms.server.jetty.handler;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 import com.github.thmarx.cms.api.SiteProperties;
@@ -44,20 +46,6 @@ import org.eclipse.jetty.util.Callback;
 public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 
 	private final ModuleManager moduleManager;
-	private final SiteProperties siteProperties;
-	
-	private final Multimap<String, Mapping> moduleMappgings = ArrayListMultimap.create();
-	
-	public void init () {
-		siteProperties.activeModules().forEach((var moduleid) -> {
-			final Module module = moduleManager
-					.module(moduleid);
-			if (module.provides(JettyHttpHandlerExtensionPoint.class)) {
-				List<JettyHttpHandlerExtensionPoint> extensions = module.extensions(JettyHttpHandlerExtensionPoint.class);
-				extensions.forEach(ext -> moduleMappgings.put(moduleid, ext.getMapping()));
-			}
-		});
-	}
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -65,14 +53,17 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 			String moduleId = getModuleID(request);
 
 			var module = moduleManager.module(moduleId);
-			
-			if (!moduleMappgings.containsKey(moduleId)) {
+
+			if (!module.provides(JettyHttpHandlerExtensionPoint.class)) {
 				Response.writeError(request, response, callback, 404);
 				return false;
 			}
-			
+
 			var uri = getModuleUri(request);
-			Optional<Mapping> findFirst = moduleMappgings.get(moduleId).stream().filter(mapping -> mapping.getMatchingHandler(uri).isPresent()).findFirst();
+			Optional<Mapping> findFirst = module.extensions(JettyHttpHandlerExtensionPoint.class).stream()
+					.map(JettyHttpHandlerExtensionPoint::getMapping).
+					filter(mapping -> mapping.getMatchingHandler(uri).isPresent())
+					.findFirst();
 
 			if (findFirst.isPresent()) {
 				var mapping = findFirst.get();
@@ -82,7 +73,7 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 				}
 				return handler.handle(request, response, callback);
 			}
-			
+
 			Response.writeError(request, response, callback, 404);
 			return false;
 		} catch (Exception e) {
@@ -123,7 +114,9 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 
 	@Override
 	public List<Handler> getHandlers() {
-		return moduleMappgings.values().stream().map(mapper -> mapper.getHandlers())
+
+		return moduleManager.extensions(JettyHttpHandlerExtensionPoint.class).stream()
+				.map(JettyHttpHandlerExtensionPoint::getMapping).map(mapper -> mapper.getHandlers())
 				.flatMap(List::stream)
 				.toList();
 	}

@@ -6,26 +6,30 @@ package com.github.thmarx.cms.server.jetty;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
+import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
+import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
@@ -48,9 +52,8 @@ public class JettyVHost extends VHost {
 	}
 
 	public Handler httpHandler() {
-		var defaultHandler = new JettyDefaultHandler(contentResolver, extensionManager, (context) -> {
-			return resolveMarkdownRenderer(context);
-		});
+		
+		var defaultHandler = new JettyDefaultHandler(contentResolver, requestContextFactory);
 
 		log.debug("create assets handler for {}", assetBase.toString());
 		ResourceHandler assetsHandler = new ResourceHandler();
@@ -70,14 +73,18 @@ public class JettyVHost extends VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/"), defaultHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
+		
+		var assetsMediaManager = new MediaManager(assetBase, db.getFileSystem().resolve("temp"), getTheme(), siteProperties);
+		getEventBus().register(SitePropertiesChanged.class, assetsMediaManager);
+		final JettyMediaHandler mediaHandler = new JettyMediaHandler(assetsMediaManager);
+		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
-		defaultContextHandler.setVirtualHosts(List.of(siteProperties.hostname()));
+		defaultContextHandler.setVirtualHosts(siteProperties.hostnames());
 
-		var moduleHandler = new JettyModuleMappingHandler(moduleManager, siteProperties);
-		moduleHandler.init();
+		var moduleHandler = new JettyModuleMappingHandler(moduleManager);
 		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
-		var extensionHandler = new JettyExtensionHandler(extensionManager);
+		var extensionHandler = new JettyExtensionHandler(requestContextFactory);
 		ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extension");
 
 		ContextHandlerCollection contextCollection = new ContextHandlerCollection(
@@ -85,6 +92,10 @@ public class JettyVHost extends VHost {
 				moduleContextHandler,
 				extensionContextHandler
 		);
+		
+		if (!getTheme().empty()) {
+			contextCollection.addHandler(themeContextHandler());
+		}
 
 		GzipHandler gzipHandler = new GzipHandler(contextCollection);
 		gzipHandler.setMinGzipSize(1024);
@@ -94,5 +105,25 @@ public class JettyVHost extends VHost {
 		gzipHandler.addIncludedMimeTypes("application/javascript");
 
 		return gzipHandler;
+	}
+	
+	private ContextHandler themeContextHandler () {
+		ResourceHandler assetsHandler = new ResourceHandler();
+		assetsHandler.setDirAllowed(false);
+		assetsHandler.setBaseResource(new FileFolderPathResource(getTheme().assetsPath()));
+		if (serverProperties.dev()) {
+			assetsHandler.setCacheControl("no-cache");
+		} else {
+			assetsHandler.setCacheControl("max-age=" + TimeUnit.HOURS.toSeconds(24));
+		}
+		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
+		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
+		
+		final MediaManager themeAssetsMediaManager = new MediaManager(getTheme().assetsPath(), db.getFileSystem().resolve("temp"), getTheme(), siteProperties);
+		getEventBus().register(SitePropertiesChanged.class, themeAssetsMediaManager);
+		JettyMediaHandler mediaHandler = new JettyMediaHandler(themeAssetsMediaManager);
+		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
+		
+		return new ContextHandler(pathMappingsHandler, "/themes/" + getTheme().getName());
 	}
 }

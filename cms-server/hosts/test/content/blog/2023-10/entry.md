@@ -1,4 +1,4 @@
 ---
 title: Oktober
-published: 2023-10-01
+publish_date: 2023-10-01
 ---

@@ -6,20 +6,21 @@ package com.github.thmarx.cms.modules.marked;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,18 +38,34 @@ import org.jsoup.Jsoup;
 public class MarkedMarkdownRenderer implements MarkdownRenderer {
 
 	public final Context context;
-	
+
 	public final Value markedFunction;
 	public final Source markedSource;
-	
-	public MarkedMarkdownRenderer (final Context context) {
+	public final Source headingSource;
+
+	public MarkedMarkdownRenderer(final Context context) {
 		try {
 			this.context = context;
-			
+
 			var content = new String(MarkedMarkdownRenderer.class.getResourceAsStream("marked.min.js").readAllBytes(), StandardCharsets.UTF_8);
 			markedSource = Source.newBuilder("js", content, "marked.mjs").build();
+			
+			content = new String(MarkedMarkdownRenderer.class.getResourceAsStream("marked-gfm-heading-id.min.js").readAllBytes(), StandardCharsets.UTF_8);
+			headingSource = Source.newBuilder("js", content, "marked-gfm-heading-id.min.js").build();
+			
 			context.eval(markedSource);
-			markedFunction = context.eval("js", "(function (param) {return marked.parse(param);})");
+			context.eval(headingSource);
+
+			var markedFunctionSource = """
+                              (function (param) {
+									marked.setOptions({gfm: true});
+									marked.use(gfmHeadingId());
+									%s
+                                    return marked.parse(param);
+                              })
+                              """.formatted(preview());
+
+			markedFunction = context.eval("js", markedFunctionSource);
 		} catch (IOException ex) {
 			log.error(null, ex);
 			throw new RuntimeException(ex);
@@ -59,14 +76,58 @@ public class MarkedMarkdownRenderer implements MarkdownRenderer {
 	public void close() {
 		context.close(true);
 	}
-	
-	
-	
+
+	private String preview() {
+		return """
+			var ThreadLocalRequestContext = Java.type('com.github.thmarx.cms.api.request.ThreadLocalRequestContext');
+            var IsPreviewFeature = Java.type('com.github.thmarx.cms.api.request.features.IsPreviewFeature');
+		
+            let requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
+         
+			if (requestContext != null && requestContext.has(IsPreviewFeature.class)) {
+                const cleanUrl = (href) => {
+                  try {
+                    href = encodeURI(href).replace(/%25/g, '%');
+                  } catch (e) {
+                    return null;
+                  }
+                  return href;
+               }
+				const renderer = {
+				  link(href, title, text) {
+					  const cleanHref = cleanUrl(href);
+					  if (cleanHref === null) {
+						return text;
+					  }
+					  href = cleanHref;
+                      // is relativ internal url
+                      if (!href.startsWith("http://") && !href.startsWith("https://")) {
+						if (href.includes("?")) {
+							href += "&preview"
+					    } else {
+							href += "?preview"
+						}
+					  }
+                      
+					  let out = '<a href="' + href + '"';
+					  if (title) {
+						out += ' title="' + title + '"';
+					  }
+					  out += '>' + text + '</a>';
+					  return out;
+					}
+				}
+				marked.use({ renderer });
+         
+			}
+         """;
+	}
+
 	@Override
 	public String excerpt(String markdown, int length) {
 		var content = markedFunction.execute(markdown).asString();
 		String text = Jsoup.parse(content).text();
-		
+
 		if (text.length() <= length) {
 			return text;
 		} else {
@@ -78,5 +139,5 @@ public class MarkedMarkdownRenderer implements MarkdownRenderer {
 	public String render(String markdown) {
 		return markedFunction.execute(markdown).asString();
 	}
-	
+
 }

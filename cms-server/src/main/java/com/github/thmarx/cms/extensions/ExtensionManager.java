@@ -6,19 +6,24 @@ package com.github.thmarx.cms.extensions;
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
  * 
- *      http://www.apache.org/licenses/LICENSE-2.0
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.request.RequestExtensions;
+import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -46,16 +51,17 @@ import org.graalvm.polyglot.io.IOAccess;
 @RequiredArgsConstructor
 @Slf4j
 public class ExtensionManager implements AutoCloseable {
-
-	private final FileSystem fileSystem;
+	private final DB db;
+	private final Theme parentTheme;
 
 	@Getter
 	private Engine engine;
 
 	List<Source> sources = new ArrayList<>();
+	List<Source> theme_sources = new ArrayList<>();
 
 	private ClassLoader getClassLoader() throws IOException {
-		Path libs = fileSystem.resolve("libs/");
+		Path libs = db.getFileSystem().resolve("libs/");
 		List<URL> urls = new ArrayList<>();
 		if (Files.exists(libs)) {
 			Files.list(libs)
@@ -78,31 +84,43 @@ public class ExtensionManager implements AutoCloseable {
 					.option("engine.WarnInterpreterOnly", "false")
 					.build();
 
-			var extPath = fileSystem.resolve("extensions/");
+			if (!parentTheme.empty()) {
+				var themeExtPath = parentTheme.extensionsPath();
+				if (Files.exists(themeExtPath)) {
+					log.debug("load extensions from theme");
+					loadExtensions(themeExtPath, theme_sources);
+				}
+			}
+			var extPath = db.getFileSystem().resolve("extensions/");
 			if (Files.exists(extPath)) {
-				log.debug("try to find extensions");
-				Files.list(extPath)
-						.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
-						.forEach(extFile -> {
-							try {
-								log.debug("load extension {}", extFile.getFileName().toString());
-								Source source = Source.newBuilder(
-										"js",
-										Files.readString(extFile, StandardCharsets.UTF_8),
-										extFile.getFileName().toString() + ".mjs")
-										.encoding(StandardCharsets.UTF_8)
-										.build();
-
-								sources.add(source);
-							} catch (IOException ex) {
-								log.error("", ex);
-							}
-						});
+				log.debug("load extensions from site");
+				loadExtensions(extPath, sources);
 			}
 		}
 	}
 
-	public ExtensionHolder newContext() throws IOException {
+	protected void loadExtensions(Path extPath, List<Source> sources) throws IOException {
+		Files.list(extPath)
+				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
+				.forEach(extFile -> {
+					try {
+						log.debug("load extension {}", extFile.getFileName().toString());
+						Source source = Source.newBuilder(
+								"js",
+								Files.readString(extFile, StandardCharsets.UTF_8),
+								extFile.getFileName().toString() + ".mjs")
+								.encoding(StandardCharsets.UTF_8)
+								.build();
+
+						sources.add(source);
+					} catch (IOException ex) {
+						log.error("", ex);
+					}
+				});
+	}
+	
+
+	public RequestExtensions newContext(Theme theme) throws IOException {
 		var context = Context.newBuilder()
 				.allowAllAccess(true)
 				.allowHostClassLookup(className -> true)
@@ -110,17 +128,44 @@ public class ExtensionManager implements AutoCloseable {
 				.allowValueSharing(true)
 				.hostClassLoader(getClassLoader())
 				.allowIO(IOAccess.newBuilder()
-						.fileSystem(new ExtensionFileSystem(fileSystem.resolve("extensions/")))
+						.fileSystem(new ExtensionFileSystem(db.getFileSystem().resolve("extensions/")))
 						.build())
 				.engine(engine).build();
 
-		ExtensionHolder holder = new ExtensionHolder(context);
+		Context themeContext = null;
+		if (!theme.empty()) {
+			themeContext = Context.newBuilder()
+				.allowAllAccess(true)
+				.allowHostClassLookup(className -> true)
+				.allowHostAccess(HostAccess.ALL)
+				.allowValueSharing(true)
+				.hostClassLoader(getClassLoader())
+				.allowIO(IOAccess.newBuilder()
+						.fileSystem(new ExtensionFileSystem(theme.extensionsPath()))
+						.build())
+				.engine(engine).build();
+		}
+
+		RequestExtensions holder = new RequestExtensions(context, themeContext);
 
 		final Value bindings = context.getBindings("js");
 		bindings.putMember("extensions", holder);
-		bindings.putMember("fileSystem", fileSystem);
+		bindings.putMember("fileSystem", db.getFileSystem());
+		bindings.putMember("db", db);
+		bindings.putMember("theme", theme);
 
 		sources.forEach(context::eval);
+
+		if (!theme.empty()) {
+			final Value themeBindings = themeContext.getBindings("js");
+			themeBindings.putMember("extensions", holder);
+			themeBindings.putMember("fileSystem", db.getFileSystem());
+			themeBindings.putMember("db", db);
+			themeBindings.putMember("theme", theme);
+
+			theme_sources.forEach(themeContext::eval);
+		}
+		
 
 		return holder;
 	}

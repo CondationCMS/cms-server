@@ -21,19 +21,21 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.github.thmarx.cms.api.ServerContext;
+import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.content.TaxonomyResponse;
+import com.github.thmarx.cms.content.ContentResolver;
+import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
-import com.github.thmarx.cms.extensions.HttpHandlerExtension;
+import com.github.thmarx.cms.content.ContentRenderer;
+import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.request.RequestContextFactory;
-import com.github.thmarx.cms.request.RequestExtensions;
-import com.github.thmarx.cms.server.jetty.extension.JettyHttpHandlerWrapper;
 import com.github.thmarx.cms.utils.HTTPUtil;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -45,38 +47,52 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class JettyExtensionHandler extends Handler.Abstract {
+public class JettyTaxonomyHandler extends Handler.Abstract {
 
+	private final TaxonomyResolver taxonomyResolver;
 	private final RequestContextFactory requestContextFactory;
+	private final DB db;
 
+	private Optional<Taxonomy> getTaxonomy (final Request request) {
+		var uri = request.getHttpURI().getPath();
+		
+		var slug = uri.split("/")[1];
+		
+		return db.getTaxonomies().forSlug(slug);
+	}
+	
+	private Optional<String> getTaxonomyValue (final Request request) {
+		var uri = request.getHttpURI().getPath();
+		var uriParts = uri.split("/");
+		
+		return uriParts.length == 3 ? Optional.of(uriParts[2]) : Optional.empty();
+	}
+	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		try (var requestContext = requestContextFactory.create(request)) {			
+		try (
+				var requestContext = requestContextFactory.create(request)) {
+			
 			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
 			
-			String extension = getExtensionName(request);
-			var method = request.getMethod();
-			Optional<HttpHandlerExtension> findHttpHandler = requestContext.get(RequestExtensions.class).findHttpHandler(method, extension);
-			if (findHttpHandler.isEmpty()) {
-				response.setStatus(404);
-				callback.succeeded();
+			if (!taxonomyResolver.isTaxonomy(requestContext)) {
 				return false;
 			}
-			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
+			
+			Optional<TaxonomyResponse> taxonomyResponse = taxonomyResolver.getTaxonomyResponse(requestContext);
+			if (taxonomyResponse.isPresent()) {
+				response.setStatus(200);
+				response.getHeaders().add("Content-Type", "%s; charset=utf-8".formatted(taxonomyResponse.get().contentType()));
+				Content.Sink.write(response, true, taxonomyResponse.get().content(), callback);
+				return true;
+			}
+			
+		} catch (Exception e) {
+			log.error("", e);
 		} finally {
 			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}
-		
-	}
-
-	private String getExtensionName(Request request) {
-		var path = request.getHttpURI().getPath();
-		var contextPath = request.getContext().getContextPath();
-		path = path.replace(contextPath, "");
-		if (!path.startsWith("/")) {
-			path = "/" + path;
-		}
-		return path;
+		return false;
 	}
 
 }

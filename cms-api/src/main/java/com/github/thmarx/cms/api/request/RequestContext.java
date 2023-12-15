@@ -54,9 +54,10 @@ public class RequestContext implements AutoCloseable {
 		features.values()
 				.stream()
 				.filter(AutoCloseable.class::isInstance)
+				.map(AutoCloseable.class::cast)
 				.forEach(feature -> {
 					try {
-
+						feature.close();
 					} catch (Exception e) {
 						log.error(null, e);
 					}

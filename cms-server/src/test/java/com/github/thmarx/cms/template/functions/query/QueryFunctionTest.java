@@ -22,6 +22,7 @@ package com.github.thmarx.cms.template.functions.query;
  * #L%
  */
 import com.github.thmarx.cms.TestHelper;
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
@@ -29,6 +30,7 @@ import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -52,7 +54,7 @@ public class QueryFunctionTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		});
+		}, new SiteProperties(Map.of()));
 		db.init();
 		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
 				markdownRenderer);

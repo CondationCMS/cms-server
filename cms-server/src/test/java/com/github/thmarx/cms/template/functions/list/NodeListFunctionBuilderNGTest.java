@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
@@ -33,6 +34,7 @@ import com.github.thmarx.cms.filesystem.functions.list.Node;
 import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
@@ -60,7 +62,7 @@ public class NodeListFunctionBuilderNGTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		});
+		}, new SiteProperties(Map.of()));
 		db.init();
 		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), parser, markdownRenderer);
 	}

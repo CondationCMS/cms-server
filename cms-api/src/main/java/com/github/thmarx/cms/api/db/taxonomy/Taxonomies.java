@@ -1,6 +1,4 @@
-package com.github.thmarx.cms.api.db;
-
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
+package com.github.thmarx.cms.api.db.taxonomy;
 
 /*-
  * #%L
@@ -24,15 +22,23 @@ import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface DB extends AutoCloseable{
+public interface Taxonomies {
+
+	public Optional<Taxonomy> forSlug (String slug);
 	
-	public DBFileSystem getFileSystem();
+	public Map<String, Integer> valueCount (Taxonomy taxonomy);
 	
-	public Content getContent();
+	public Set<String> values (Taxonomy taxonomy);
 	
-	public Taxonomies getTaxonomies();
+	public List<ContentNode> withValue (Taxonomy taxonomy, Object value);
 }

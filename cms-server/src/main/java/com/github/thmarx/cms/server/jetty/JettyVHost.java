@@ -24,11 +24,12 @@ package com.github.thmarx.cms.server.jetty;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.media.MediaManager;
-import com.github.thmarx.cms.server.jetty.handler.JettyDefaultHandler;
+import com.github.thmarx.cms.server.jetty.handler.JettyContentHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
 import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
+import com.github.thmarx.cms.server.jetty.handler.JettyTaxonomyHandler;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 import lombok.extern.slf4j.Slf4j;
@@ -53,8 +54,11 @@ public class JettyVHost extends VHost {
 
 	public Handler httpHandler() {
 		
-		var defaultHandler = new JettyDefaultHandler(contentResolver, requestContextFactory);
-
+		
+		var defaultHandler = new JettyContentHandler(contentResolver, requestContextFactory);
+		var taxonomyHandler = new JettyTaxonomyHandler(taxonomyResolver, requestContextFactory, db);
+		var defaultHandlerSequence = new Handler.Sequence(taxonomyHandler, defaultHandler);
+		
 		log.debug("create assets handler for {}", assetBase.toString());
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
@@ -70,7 +74,7 @@ public class JettyVHost extends VHost {
 		faviconHandler.setBaseResource(new FileFolderPathResource(assetBase.resolve("favicon.ico")));
 
 		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
-		pathMappingsHandler.addMapping(PathSpec.from("/"), defaultHandler);
+		pathMappingsHandler.addMapping(PathSpec.from("/"), defaultHandlerSequence);
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
 		

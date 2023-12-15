@@ -1,10 +1,8 @@
-package com.github.thmarx.cms.api.db;
-
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
+package com.github.thmarx.cms.filesystem.taxonomy;
 
 /*-
  * #%L
- * cms-api
+ * cms-filesystem
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -23,16 +21,10 @@ import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 /**
- *
- * @author thmar
+ * 
+ * Template resolution:
+ * 1. taxonomy.html
+ * 2. taxonomy-taxid.html
+ * 
  */
-public interface DB extends AutoCloseable{
-	
-	public DBFileSystem getFileSystem();
-	
-	public Content getContent();
-	
-	public Taxonomies getTaxonomies();
-}

@@ -24,6 +24,7 @@ package com.github.thmarx.cms.template.functions.navigation;
 
 import com.github.thmarx.cms.content.ContentParser;
 import com.github.thmarx.cms.TestHelper;
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
@@ -32,7 +33,7 @@ import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -57,7 +58,7 @@ public class NavigationFunctionNGTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		});
+		}, new SiteProperties(Map.of()));
 		db.init();
 		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
 				markdownRenderer);

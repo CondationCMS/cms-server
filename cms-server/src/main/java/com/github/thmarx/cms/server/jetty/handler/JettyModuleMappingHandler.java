@@ -21,7 +21,6 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
 import com.github.thmarx.modules.api.Module;
@@ -66,8 +65,6 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 		try {
 			String moduleId = getModuleID(request);
 
-			var module = moduleManager.module(moduleId);
-			
 			if (!moduleMappgings.containsKey(moduleId)) {
 				Response.writeError(request, response, callback, 404);
 				return false;
@@ -86,11 +83,11 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 			}
 			
 			Response.writeError(request, response, callback, 404);
-			return false;
+			return true;
 		} catch (Exception e) {
 			log.error(null, e);
 			callback.failed(e);
-			return false;
+			return true;
 		}
 
 	}

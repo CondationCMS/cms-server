@@ -40,9 +40,9 @@ import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.media.MediaService;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
+import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.media.FileMediaService;
 import com.github.thmarx.cms.module.RenderContentFunction;
@@ -70,6 +70,7 @@ public class VHost {
 
 	protected ContentRenderer contentRenderer;
 	protected ContentResolver contentResolver;
+	protected TaxonomyResolver taxonomyResolver;
 	protected ContentParser contentParser;
 	protected TemplateEngine templateEngine;
 	protected ExtensionManager extensionManager;
@@ -137,6 +138,9 @@ public class VHost {
 
 		contentParser = new ContentParser();
 
+		var props = hostBase.resolve("site.yaml");
+		siteProperties = PropertiesLoader.hostProperties(props);
+		
 		this.db = new FileDB(hostBase, eventBus, (file) -> {
 			try {
 				return contentParser.parseMeta(file);
@@ -144,11 +148,8 @@ public class VHost {
 				log.error(null, ioe);
 				throw new RuntimeException(ioe);
 			}
-		});
+		}, siteProperties);
 		((FileDB) db).init();
-
-		var props = db.getFileSystem().resolve("site.yaml");
-		siteProperties = PropertiesLoader.hostProperties(props);
 
 		theme = loadTheme();
 
@@ -194,6 +195,7 @@ public class VHost {
 
 		contentRenderer = new ContentRenderer(contentParser, () -> resolveTemplateEngine(), db, siteProperties, () -> moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, db);
+		taxonomyResolver = new TaxonomyResolver(contentRenderer, contentParser, db);
 
 		this.requestContextFactory = new RequestContextFactory(() -> resolveMarkdownRenderer(), extensionManager, getTheme(), siteProperties, new FileMediaService(assetBase));
 

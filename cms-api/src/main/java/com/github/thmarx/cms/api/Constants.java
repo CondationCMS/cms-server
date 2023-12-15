@@ -46,6 +46,8 @@ public abstract class Constants {
 		
 		public static final String REDIRECT_STATUS = "redirect.status";
 		public static final String REDIRECT_LOCATION = "redirect.location";
+		
+		public static final String TEMPLATE = "template";
 	}
 	
 	public static class Folders {

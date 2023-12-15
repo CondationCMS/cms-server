@@ -1,10 +1,12 @@
-package com.github.thmarx.cms.api.db;
+package com.github.thmarx.cms.api.content;
 
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
+import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 
 /*-
  * #%L
- * cms-api
+ * cms-server
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -26,13 +28,15 @@ import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface DB extends AutoCloseable{
+public record TaxonomyResponse(String content, String contentType, Taxonomy taxonomy) {
+
+	public TaxonomyResponse (String content, Taxonomy taxonomy) {
+		this(content, Constants.DEFAULT_CONTENT_TYPE, taxonomy);
+	}
 	
-	public DBFileSystem getFileSystem();
-	
-	public Content getContent();
-	
-	public Taxonomies getTaxonomies();
-}
+	public TaxonomyResponse (Taxonomy taxonomy) {
+		this("", Constants.DEFAULT_CONTENT_TYPE, taxonomy);
+	}
+};

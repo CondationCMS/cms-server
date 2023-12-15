@@ -64,7 +64,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		});
+		}, new SiteProperties(Map.of()));
 		db.init();
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(db);

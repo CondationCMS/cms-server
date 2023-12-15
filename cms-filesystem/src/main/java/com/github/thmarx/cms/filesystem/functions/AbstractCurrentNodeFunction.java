@@ -21,7 +21,6 @@ package com.github.thmarx.cms.filesystem.functions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;

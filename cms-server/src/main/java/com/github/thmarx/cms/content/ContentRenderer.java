@@ -25,6 +25,7 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
@@ -36,9 +37,11 @@ import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import com.github.thmarx.cms.api.utils.SectionUtil;
+import com.github.thmarx.cms.filesystem.functions.list.Node;
 import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
 import com.github.thmarx.cms.request.RenderContext;
 import com.github.thmarx.cms.request.RequestExtensions;
+import com.github.thmarx.cms.template.NodeFunction;
 import com.github.thmarx.modules.api.ModuleManager;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -48,6 +51,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -76,11 +81,33 @@ public class ContentRenderer {
 		var markdownContent = content.content();
 		markdownContent = context.get(RenderContext.class).contentTags().replace(markdownContent);
 
+		return render(contentFile, context, sections, content.meta(), markdownContent, (model) -> {
+		});
+	}
+
+	public String renderTaxonomy(final Taxonomy taxonomy, final RequestContext context, final Map<String, Object> meta, final List<Node> nodes) throws IOException {
+		var contentFile = db.getFileSystem().resolve("content").resolve("index.md");
+
+		return render(contentFile, context, Collections.emptyMap(), meta, "", (model) -> {
+			model.values.put("taxonomy", taxonomy);
+			model.values.put("taxonomy_values", db.getTaxonomies().values(taxonomy));
+			model.values.put("nodes", nodes);
+			
+		});
+	}
+
+	public String render(final Path contentFile, final RequestContext context,
+			final Map<String, List<ContentRenderer.Section>> sections,
+			final Map<String, Object> meta, final String markdownContent, final Consumer<TemplateEngine.Model> modelExtending
+	) throws IOException {
 		var uri = PathUtil.toRelativeFile(contentFile, db.getFileSystem().resolve("content/"));
 		Optional<ContentNode> contentNode = db.getContent().byUri(uri);
 
 		TemplateEngine.Model model = new TemplateEngine.Model(contentFile, contentNode.isPresent() ? contentNode.get() : null);
-		model.values.put("meta", content.meta());
+		
+		modelExtending.accept(model);
+		
+		model.values.put("meta", meta);
 		model.values.put("content", context.get(RenderContext.class).markdownRenderer().render(markdownContent));
 		model.values.put("sections", sections);
 
@@ -91,6 +118,8 @@ public class ContentRenderer {
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
+		
+		model.values.put("nodeFN", new NodeFunction(db));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
 		model.values.put("DEV_MODE", isDevMode(context));
@@ -105,7 +134,7 @@ public class ContentRenderer {
 
 		extendModel(model);
 
-		return templates.get().render((String) content.meta().get("template"), model);
+		return templates.get().render((String) meta.get("template"), model);
 	}
 
 	protected QueryFunction createQueryFunction(final Path contentFile, final RequestContext context) {
@@ -132,6 +161,7 @@ public class ContentRenderer {
 		}
 		return false;
 	}
+
 	private boolean isDevMode(final RequestContext context) {
 		if (context.has(IsDevModeFeature.class)) {
 			return context.has(IsDevModeFeature.class);

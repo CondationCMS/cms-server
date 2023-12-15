@@ -1,6 +1,4 @@
-package com.github.thmarx.cms.api.db;
-
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
+package com.github.thmarx.cms.api.db.taxonomy;
 
 /*-
  * #%L
@@ -24,15 +22,17 @@ import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
  * #L%
  */
 
+import lombok.Data;
+
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface DB extends AutoCloseable{
-	
-	public DBFileSystem getFileSystem();
-	
-	public Content getContent();
-	
-	public Taxonomies getTaxonomies();
+@Data
+public class Taxonomy {
+	public String title;
+	public String slug;
+	public String template = "taxonomy.html";
+	public String field;
+	public boolean array = false;
 }

@@ -1,10 +1,8 @@
-package com.github.thmarx.cms.api.db;
-
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
+package com.github.thmarx.cms.template;
 
 /*-
  * #%L
- * cms-api
+ * cms-server
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -24,15 +22,22 @@ import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.utils.PathUtil;
+import lombok.RequiredArgsConstructor;
+
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface DB extends AutoCloseable{
+@RequiredArgsConstructor
+public class NodeFunction {
+	public final DB db;
 	
-	public DBFileSystem getFileSystem();
-	
-	public Content getContent();
-	
-	public Taxonomies getTaxonomies();
+	public String toUrl (final ContentNode node) {
+		var contentBase = db.getFileSystem().resolve("content/");
+		var file = contentBase.resolve(node.uri());
+		return PathUtil.toURI(file, contentBase);
+	}
 }

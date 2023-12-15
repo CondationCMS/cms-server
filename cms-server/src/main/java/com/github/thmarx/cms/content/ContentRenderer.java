@@ -42,6 +42,7 @@ import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
 import com.github.thmarx.cms.request.RenderContext;
 import com.github.thmarx.cms.request.RequestExtensions;
 import com.github.thmarx.cms.template.NodeFunction;
+import com.github.thmarx.cms.template.TaxonomyFunction;
 import com.github.thmarx.modules.api.ModuleManager;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -120,6 +121,7 @@ public class ContentRenderer {
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 		
 		model.values.put("nodeFN", new NodeFunction(db));
+		model.values.put("taxonomyFN", new TaxonomyFunction());
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
 		model.values.put("DEV_MODE", isDevMode(context));

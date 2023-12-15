@@ -16,6 +16,16 @@
 			<h2 th:utext="${title}"></h2>
 			<p th:utext="${content}"></p>
 		</div>
+		
+		<div class="row" 
+			th:if="${#maps.containsKey(meta, 'taxonomy') && #maps.containsKey(meta.taxonomy, 'tags')}"
+		>
+			TAGS:
+			<div th:each="tag: ${meta.taxonomy.tags}">
+				<a th:href="${taxonomyFN.url('tags', tag)}" th:text="${tag}" ></a>
+			</div>
+			
+		</div>
 	</div>
 
 	<th:block th:replace="libs/fragments.html :: footer"></th:block>

@@ -86,7 +86,7 @@ public class JettyServer implements HttpServer {
 		
 		ContextHandlerCollection handlers = new ContextHandlerCollection();
 		vhosts.forEach(host -> {
-			log.debug("add virtual host : " + host.getHostnames());
+			log.debug("add virtual host : " + host.hostnames());
 			var httpHandler = host.httpHandler();
 			handlers.addHandler(httpHandler);
 		});
@@ -95,7 +95,7 @@ public class JettyServer implements HttpServer {
 			log.debug("shutting down");
 
 			vhosts.forEach(host -> {
-				log.debug("shutting down vhost : " + host.getHostnames());
+				log.debug("shutting down vhost : " + host.hostnames());
 				host.shutdown();
 			});
 			timer.cancel();

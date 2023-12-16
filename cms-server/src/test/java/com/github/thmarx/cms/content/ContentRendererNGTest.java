@@ -73,7 +73,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 				() -> templates, 
 				db, 
 				new SiteProperties(Map.of()), 
-				() -> moduleManager);
+				moduleManager);
 	}
 	@AfterAll
 	public static void shutdown () throws Exception {

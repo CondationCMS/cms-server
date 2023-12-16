@@ -24,7 +24,7 @@ package com.github.thmarx.cms.request;
 
 import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.request.Feature;
+import com.github.thmarx.cms.api.featured.Feature;
 import com.github.thmarx.cms.api.theme.Theme;
 import lombok.extern.slf4j.Slf4j;
 

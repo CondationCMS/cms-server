@@ -68,7 +68,7 @@ public class SectionsTest extends TemplateEngineTest {
 				() -> templates,
 				db,
 				new SiteProperties(Map.of()),
-				() -> new MockModuleManager()
+				new MockModuleManager()
 		);
 	}
 

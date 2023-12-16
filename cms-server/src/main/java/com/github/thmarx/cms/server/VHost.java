@@ -21,19 +21,16 @@ package com.github.thmarx.cms.server;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.extensions.MarkdownRendererProviderExtentionPoint;
 import com.github.thmarx.cms.api.extensions.TemplateEngineProviderExtentionPoint;
-import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.api.eventbus.EventListener;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
@@ -41,17 +38,17 @@ import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.media.MediaService;
+import com.github.thmarx.cms.api.module.features.ContentRenderFeature;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
+import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.filesystem.FileDB;
-import com.github.thmarx.cms.media.FileMediaService;
 import com.github.thmarx.cms.module.RenderContentFunction;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.server.jetty.modules.SiteHandlerModule;
 import com.github.thmarx.cms.server.jetty.modules.SiteModule;
 import com.github.thmarx.cms.server.jetty.modules.ThemeHandlerModule;
-import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.github.thmarx.modules.manager.ModuleAPIClassLoader;
 import com.github.thmarx.modules.manager.ModuleManagerImpl;
@@ -79,17 +76,6 @@ public class VHost {
 	protected TaxonomyResolver taxonomyResolver;
 	protected TemplateEngine templateEngine;
 	
-	@Getter
-	private List<String> hostnames;
-	
-	@Getter
-	private Theme theme;
-	
-	@Getter
-	private final EventBus eventBus;
-
-	protected SiteProperties siteProperties;
-	
 	protected ModuleManager moduleManager;
 	
 	protected final ServerProperties serverProperties;
@@ -102,7 +88,6 @@ public class VHost {
 	
 	public VHost(final Path hostBase, final ServerProperties serverProperties) {
 		this.hostBase = hostBase;
-		this.eventBus = new DefaultEventBus();
 		this.serverProperties = serverProperties;
 	}
 	
@@ -115,20 +100,10 @@ public class VHost {
 		}
 	}
 	
-	private Theme loadTheme() throws IOException {
-		
-		if (siteProperties.theme() != null) {
-			Path themeFolder = serverProperties.getThemesFolder().resolve(siteProperties.theme());
-			return DefaultTheme.load(themeFolder);
-		}
-		
-		return DefaultTheme.EMPTY;
-	}
-	
 	public void updateProperties() {
 		try {
 			var props = injector.getInstance(FileDB.class).getFileSystem().resolve("site.yaml");
-			siteProperties.update(PropertiesLoader.rawProperties(props));
+			injector.getInstance(SiteProperties.class).update(PropertiesLoader.rawProperties(props));
 			
 			injector.getInstance(EventBus.class).publish(new SitePropertiesChanged());
 		} catch (IOException e) {
@@ -136,14 +111,13 @@ public class VHost {
 		}
 	}
 	
-	public void init(Path modules) throws IOException {
-		var props = hostBase.resolve("site.yaml");
-		siteProperties = PropertiesLoader.hostProperties(props);
-		theme = loadTheme();
-		
-		this.injector = Guice.createInjector(new SiteModule(hostBase, serverProperties, siteProperties, theme, eventBus),
+	public List<String> hostnames () {
+		return injector.getInstance(SiteProperties.class).hostnames();
+	}
+	
+	public void init(Path modulesPath) throws IOException {
+		this.injector = Guice.createInjector(new SiteModule(modulesPath, hostBase, serverProperties),
 				new SiteHandlerModule(), new ThemeHandlerModule());
-		
 		
 		
 		try {
@@ -167,35 +141,32 @@ public class VHost {
 						"org.eclipse.jetty",
 						"jakarta.servlet"
 				));
-		
-		this.moduleManager = ModuleManagerImpl.builder()
-				.activateModulesOnStartup(false)
-				.setClassLoader(classLoader)
-				.setInjector((instance) -> injector.injectMembers(instance))
-				.setModulesDataPath(injector.getInstance(FileDB.class).getFileSystem().resolve("modules_data").toFile())
-				.setModulesPath(modules.toFile())
-				.setContext(new CMSModuleContext(siteProperties, serverProperties, injector.getInstance(FileDB.class), eventBus,
-						new RenderContentFunction(() -> contentResolver, () -> requestContextFactory),
-						theme
-				))
-				.build();
-		
-		
-		hostnames = siteProperties.hostnames();
+		final CMSModuleContext cmsModuleContext = injector.getInstance(CMSModuleContext.class);
+		this.moduleManager = injector.getInstance(ModuleManager.class);
 				
 		var contentBase = this.injector.getInstance(Key.get(Path.class, Names.named("content")));		
 		var db = injector.getInstance(FileDB.class);
 		
-		contentRenderer = new ContentRenderer(injector.getInstance(ContentParser.class), () -> resolveTemplateEngine(), db, siteProperties, () -> moduleManager);
+		contentRenderer = new ContentRenderer(
+				injector.getInstance(ContentParser.class), 
+				() -> resolveTemplateEngine(), 
+				db, 
+				injector.getInstance(SiteProperties.class), 
+				moduleManager);
 		contentResolver = new ContentResolver(contentBase, contentRenderer, db);
 		taxonomyResolver = new TaxonomyResolver(contentRenderer, injector.getInstance(ContentParser.class), db);
 		
 		this.requestContextFactory = new RequestContextFactory(
 				() -> resolveMarkdownRenderer(), 
 				injector.getInstance(ExtensionManager.class), 
-				getTheme(), 
-				siteProperties, 
+				injector.getInstance(Theme.class), 
+				injector.getInstance(SiteProperties.class), 
 				injector.getInstance(MediaService.class)
+		);
+		
+		cmsModuleContext.add(
+				ContentRenderFeature.class, 
+				new ContentRenderFeature(new RenderContentFunction(() -> contentResolver, () -> requestContextFactory))
 		);
 		
 		this.moduleManager.initModules();
@@ -234,7 +205,8 @@ public class VHost {
 	
 	protected List<String> getActiveModules() {
 		List<String> activeModules = new ArrayList<>();
-		activeModules.addAll(siteProperties.activeModules());
+		activeModules.addAll(injector.getInstance(SiteProperties.class).activeModules());
+		var theme = injector.getInstance(Theme.class);
 		if (!theme.empty()) {
 			activeModules.addAll(theme.properties().activeModules());
 		}
@@ -242,9 +214,9 @@ public class VHost {
 	}
 	
 	private String getTemplateEngine() {
-		var engine = this.siteProperties.templateEngine();
+		var engine = this.injector.getInstance(SiteProperties.class).templateEngine();
 		
-		var theme_engine = getTheme().properties().templateEngine();
+		var theme_engine = injector.getInstance(Theme.class).properties().templateEngine();
 		if (theme_engine != null && engine != null && !theme_engine.equals(engine)) {
 			throw new RuntimeException("site template engine does not match theme template engine");
 		}
@@ -270,7 +242,7 @@ public class VHost {
 	}
 	
 	protected MarkdownRenderer resolveMarkdownRenderer() {
-		var engine = this.siteProperties.markdownEngine();
+		var engine = this.injector.getInstance(SiteProperties.class).markdownEngine();
 		
 		List<MarkdownRendererProviderExtentionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtentionPoint.class);
 		Optional<MarkdownRendererProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();

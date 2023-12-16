@@ -22,8 +22,10 @@ package com.github.thmarx.cms.server.jetty;
  * #L%
  */
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
+import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.server.jetty.handler.JettyContentHandler;
@@ -83,7 +85,7 @@ public class JettyVHost extends VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
-		defaultContextHandler.setVirtualHosts(siteProperties.hostnames());
+		defaultContextHandler.setVirtualHosts(injector.getInstance(SiteProperties.class).hostnames());
 
 		var moduleHandler = new JettyModuleMappingHandler(moduleManager, getActiveModules());
 		moduleHandler.init();
@@ -97,7 +99,7 @@ public class JettyVHost extends VHost {
 				extensionContextHandler
 		);
 		
-		if (!getTheme().empty()) {
+		if (!injector.getInstance(Theme.class).empty()) {
 			contextCollection.addHandler(themeContextHandler());
 		}
 
@@ -121,6 +123,6 @@ public class JettyVHost extends VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/assets/*"), assetsHandler);
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 		
-		return new ContextHandler(pathMappingsHandler, "/themes/" + getTheme().getName());
+		return new ContextHandler(pathMappingsHandler, "/themes/" + injector.getInstance(Theme.class).getName());
 	}
 }

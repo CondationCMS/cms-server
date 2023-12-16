@@ -67,7 +67,7 @@ public class ContentResolverTest {
 				() -> templates, 
 				db, 
 				new SiteProperties(Map.of()), 
-				() -> moduleManager);
+				moduleManager);
 		contentResolver = new ContentResolver(db.getFileSystem().resolve("content/"), contentRenderer, db);
 	}
 	@AfterAll

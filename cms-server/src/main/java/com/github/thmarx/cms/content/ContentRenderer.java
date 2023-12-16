@@ -71,7 +71,7 @@ public class ContentRenderer {
 	private final Supplier<TemplateEngine> templates;
 	private final DB db;
 	private final SiteProperties siteProperties;
-	private final Supplier<ModuleManager> moduleManager;
+	private final ModuleManager moduleManager;
 
 	public String render(final Path contentFile, final RequestContext context) throws IOException {
 		return render(contentFile, context, Collections.emptyMap());
@@ -173,7 +173,7 @@ public class ContentRenderer {
 	}
 
 	private void extendModel(final TemplateEngine.Model model) {
-		moduleManager.get().extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
+		moduleManager.extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
 	}
 
 	public Map<String, List<Section>> renderSections(final List<ContentNode> sectionNodes, final RequestContext context) throws IOException {

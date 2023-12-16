@@ -24,7 +24,7 @@ package com.github.thmarx.cms.template.functions.query;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
@@ -47,7 +47,7 @@ public class QueryFunctionTest {
 
 	@BeforeAll
 	static void init() throws IOException {
-		var contentParser = new ContentParser();
+		var contentParser = new DefaultContentParser();
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
@@ -56,7 +56,7 @@ public class QueryFunctionTest {
 			}
 		}, new SiteProperties(Map.of()));
 		db.init();
-		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
+		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), new DefaultContentParser(),
 				markdownRenderer);
 	}
 

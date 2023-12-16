@@ -21,7 +21,7 @@ package com.github.thmarx.cms;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.db.ContentNode;
@@ -52,7 +52,7 @@ public class SectionsTest extends TemplateEngineTest {
 
 	@BeforeAll
 	public static void beforeClass() throws IOException {
-		var contentParser = new ContentParser();
+		var contentParser = new DefaultContentParser();
 		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);

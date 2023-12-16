@@ -22,7 +22,7 @@ package com.github.thmarx.cms.template.functions.navigation;
  * #L%
  */
 
-import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
@@ -51,7 +51,7 @@ public class NavigationFunctionNGTest {
 
 	@BeforeAll
 	static void init() throws IOException {
-		var contentParser = new ContentParser();
+		var contentParser = new DefaultContentParser();
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
@@ -60,7 +60,7 @@ public class NavigationFunctionNGTest {
 			}
 		}, new SiteProperties(Map.of()));
 		db.init();
-		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
+		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new DefaultContentParser(),
 				markdownRenderer);
 	}
 
@@ -105,7 +105,7 @@ public class NavigationFunctionNGTest {
 	@Test
 	public void test_path() {
 
-		var sut = new NavigationFunction(db, Path.of("hosts/test/content/nav3/folder1/index.md"), new ContentParser(),
+		var sut = new NavigationFunction(db, Path.of("hosts/test/content/nav3/folder1/index.md"), new DefaultContentParser(),
 				markdownRenderer);
 		
 		List<NavNode> path = sut.path();
@@ -118,7 +118,7 @@ public class NavigationFunctionNGTest {
 	
 	@Test
 	public void test_json () {
-		var navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new ContentParser(),
+		var navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new DefaultContentParser(),
 				markdownRenderer);
 		
 		List<NavNode> list = navigationFunction.json().list("/json");

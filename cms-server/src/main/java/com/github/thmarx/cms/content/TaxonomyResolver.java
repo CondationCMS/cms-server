@@ -22,6 +22,7 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 import com.github.thmarx.cms.api.Constants;
+import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.content.TaxonomyResponse;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
@@ -56,7 +57,14 @@ public class TaxonomyResolver {
 
 	private Optional<Taxonomy> getTaxonomy(final RequestContext context) {
 		var uri = context.get(RequestFeature.class).uri();
-		var slug = uri.split("/")[1];
+		if ("/".equals(uri)) {
+			return Optional.empty();
+		}
+		var parts = uri.split("/");
+		if (parts.length == 1){
+			return Optional.empty();
+		}
+		var slug = parts[1];
 		return db.getTaxonomies().forSlug(slug);
 	}
 

@@ -43,11 +43,11 @@ import org.yaml.snakeyaml.Yaml;
  * @author t.marx
  */
 @Slf4j
-public class ContentParser implements com.github.thmarx.cms.api.content.ContentParser{
+public class DefaultContentParser implements com.github.thmarx.cms.api.content.ContentParser{
 
 	private final Cache<String, Content> contentCache;
 
-	public ContentParser() {
+	public DefaultContentParser() {
 		var builder = Caffeine.newBuilder()
 				.expireAfterWrite(Duration.ofMinutes(1));
 		if (ServerContext.IS_DEV) {

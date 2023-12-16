@@ -23,7 +23,7 @@ package com.github.thmarx.cms.template.functions.list;
  */
 
 import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.content.ContentParser;
+import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
@@ -50,7 +50,7 @@ public class NodeListFunctionBuilderNGTest {
 	static NodeListFunctionBuilder nodeList;
 	static FileDB db;
 	
-	static ContentParser parser = new ContentParser();
+	static DefaultContentParser parser = new DefaultContentParser();
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 	
 	@BeforeAll

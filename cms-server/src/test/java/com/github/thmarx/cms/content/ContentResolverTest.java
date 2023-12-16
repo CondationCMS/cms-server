@@ -51,7 +51,7 @@ public class ContentResolverTest {
 
 	@BeforeAll
 	public static void setup () throws IOException {
-				var contentParser = new ContentParser();
+				var contentParser = new DefaultContentParser();
 		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);

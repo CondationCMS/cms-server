@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.media.MediaService;
 import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.features.InjectorFeature;
 import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
 import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.api.request.features.RequestFeature;
@@ -36,6 +37,7 @@ import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.utils.HTTPUtil;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +57,7 @@ public class RequestContextFactory {
 	private final Theme theme;
 	private final SiteProperties siteProperties;
 	private final MediaService siteMediaService;
+	private final Injector injector;
 
 	public RequestContext create(
 			Request request) throws IOException {
@@ -78,6 +81,7 @@ public class RequestContextFactory {
 				requestTheme);
 
 		var context = new RequestContext();
+		context.add(InjectorFeature.class, new InjectorFeature(injector));
 		context.add(RequestFeature.class, new RequestFeature(uri, queryParameters));
 		context.add(RequestExtensions.class, requestExtensions);
 		context.add(ThemeFeature.class, new ThemeFeature(requestTheme));

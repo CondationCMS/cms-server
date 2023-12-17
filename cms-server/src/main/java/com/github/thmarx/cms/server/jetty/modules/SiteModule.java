@@ -171,7 +171,8 @@ public class SiteModule extends AbstractModule {
 				extensionManager, 
 				theme, 
 				siteProperties, 
-				mediaService
+				mediaService,
+				injector
 		);
 	}
 	

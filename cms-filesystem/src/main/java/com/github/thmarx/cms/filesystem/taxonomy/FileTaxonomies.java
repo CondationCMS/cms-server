@@ -21,6 +21,7 @@ package com.github.thmarx.cms.filesystem.taxonomy;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.Page;
@@ -55,7 +56,6 @@ public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesC
 
 	private ConcurrentMap<String, Taxonomy> taxonomies = new ConcurrentHashMap<>();
 
-	private String defaulTemplate = "taxonomy.html";
 
 	public void reloadTaxonomies() {
 		var tasList = (List<Map>) siteProperties.getOrDefault("taxonomy", Map.of()).getOrDefault("taxonomies", List.of());
@@ -65,7 +65,8 @@ public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesC
 			tax.setTitle((String) taxo.get("title"));
 			tax.setSlug((String) taxo.get("slug"));
 			tax.setField((String) taxo.get("field"));
-			tax.setTemplate((String) taxo.getOrDefault("template", defaulTemplate));
+			tax.setTemplate((String) taxo.getOrDefault("template", Constants.Taxonomy.DEFAULT_TEMPLATE));
+			tax.setSingleTemplate((String) taxo.getOrDefault("template_single", Constants.Taxonomy.DEFAULT_SINGLE_TEMPLATE));
 			tax.setArray((Boolean) taxo.getOrDefault("array", false));
 			return tax;
 		}).forEach(tax -> taxonomies.put(tax.getSlug(), tax));

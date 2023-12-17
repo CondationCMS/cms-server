@@ -90,13 +90,13 @@ public class TaxonomyResolver {
 
 			var taxonomy = taxonomyOptional.get();
 
-			String template = "taxonomy.html";
+			String template = taxonomy.getTemplate();
 			var meta = new HashMap<String, Object>();
 
 			Optional<String> value = getTaxonomyValue(context);
 			Page<Node> resultPage = Page.EMPTY;
 			if (value.isPresent()) {
-				template = "taxonomy-single.html";
+				template = taxonomy.getSingleTemplate();
 				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle() + " - " + value.get());
 				var contentPage = db.getTaxonomies().withValue(taxonomy, value.get(), page, size);
 				var nodes = contentPage.getItems().stream().map(node -> {

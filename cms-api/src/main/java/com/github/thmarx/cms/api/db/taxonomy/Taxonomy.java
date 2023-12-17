@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api.db.taxonomy;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
 import lombok.Data;
 
 /**
@@ -32,7 +33,8 @@ import lombok.Data;
 public class Taxonomy {
 	public String title;
 	public String slug;
-	public String template = "taxonomy.html";
+	public String template = Constants.Taxonomy.DEFAULT_TEMPLATE;
+	public String singleTemplate = Constants.Taxonomy.DEFAULT_SINGLE_TEMPLATE;
 	public String field;
 	public boolean array = false;
 }

@@ -24,10 +24,9 @@ package com.github.thmarx.cms.content;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.content.TaxonomyResponse;
-import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.features.RequestFeature;
 import com.github.thmarx.cms.api.utils.NodeUtil;
@@ -52,7 +51,6 @@ public class TaxonomyResolver {
 
 	private final ContentRenderer contentRenderer;
 	private final ContentParser contentParser;
-
 	private final DB db;
 
 	private Optional<Taxonomy> getTaxonomy(final RequestContext context) {
@@ -87,6 +85,8 @@ public class TaxonomyResolver {
 		}
 
 		try {
+			int page = context.get(RequestFeature.class).getQueryParameterAsInt("page", Constants.DEFAULT_PAGE);
+			int size = context.get(RequestFeature.class).getQueryParameterAsInt("size", Constants.DEFAULT_PAGE_SIZE);
 
 			var taxonomy = taxonomyOptional.get();
 
@@ -94,11 +94,12 @@ public class TaxonomyResolver {
 			var meta = new HashMap<String, Object>();
 
 			Optional<String> value = getTaxonomyValue(context);
-			List<Node> nodes = List.of();
+			Page<Node> resultPage = Page.EMPTY;
 			if (value.isPresent()) {
 				template = "taxonomy-single.html";
 				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle() + " - " + value.get());
-				nodes = db.getTaxonomies().withValue(taxonomy, value.get()).stream().map(node -> {
+				var contentPage = db.getTaxonomies().withValue(taxonomy, value.get(), page, size);
+				var nodes = contentPage.getItems().stream().map(node -> {
 					try {
 						var name = NodeUtil.getName(node);
 						final Path contentBase = db.getFileSystem().resolve("content/");
@@ -112,12 +113,13 @@ public class TaxonomyResolver {
 					}
 					return null;
 				}).filter(node -> node != null).toList();
+				resultPage.setItems(nodes);
 			} else {
 				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle());
 			}
 			meta.put(Constants.MetaFields.TEMPLATE, template);
 
-			String content = contentRenderer.renderTaxonomy(taxonomy, context, meta, nodes);
+			String content = contentRenderer.renderTaxonomy(taxonomy, context, meta, resultPage);
 
 			return Optional.of(new TaxonomyResponse(content, taxonomy));
 		} catch (Exception ex) {

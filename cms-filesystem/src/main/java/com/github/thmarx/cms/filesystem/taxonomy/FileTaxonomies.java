@@ -23,6 +23,7 @@ package com.github.thmarx.cms.filesystem.taxonomy;
  */
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 import com.github.thmarx.cms.api.eventbus.EventListener;
@@ -106,6 +107,18 @@ public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesC
 		}
 
 		return nodes;
+	}
+	
+	@Override
+	public Page<ContentNode> withValue(Taxonomy taxonomy, Object value, long page, long size) {
+		
+		if (taxonomy.isArray()) {
+			return fileSystem.query((node, index) -> node).whereContains(taxonomy.getField(), value)
+					.page(page, size);
+		} else {
+			return fileSystem.query((node, index) -> node).where(taxonomy.getField(), value)
+					.page(page, size);
+		}
 	}
 	
 	@Override

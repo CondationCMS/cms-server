@@ -46,22 +46,6 @@ import org.eclipse.jetty.util.Callback;
 public class JettyTaxonomyHandler extends Handler.Abstract {
 	private final TaxonomyResolver taxonomyResolver;
 	private final RequestContextFactory requestContextFactory;
-	private final DB db;
-
-	private Optional<Taxonomy> getTaxonomy (final Request request) {
-		var uri = request.getHttpURI().getPath();
-		
-		var slug = uri.split("/")[1];
-		
-		return db.getTaxonomies().forSlug(slug);
-	}
-	
-	private Optional<String> getTaxonomyValue (final Request request) {
-		var uri = request.getHttpURI().getPath();
-		var uriParts = uri.split("/");
-		
-		return uriParts.length == 3 ? Optional.of(uriParts[2]) : Optional.empty();
-	}
 	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

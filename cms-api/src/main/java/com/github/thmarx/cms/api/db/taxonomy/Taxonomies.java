@@ -23,6 +23,7 @@ package com.github.thmarx.cms.api.db.taxonomy;
  */
 
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.Page;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -41,4 +42,6 @@ public interface Taxonomies {
 	public Set<String> values (Taxonomy taxonomy);
 	
 	public List<ContentNode> withValue (Taxonomy taxonomy, Object value);
+	
+	public Page<ContentNode> withValue (Taxonomy taxonomy, Object value, long page, long size);
 }

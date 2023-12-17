@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.api.request.RequestContext;
@@ -87,13 +88,13 @@ public class ContentRenderer {
 		});
 	}
 
-	public String renderTaxonomy(final Taxonomy taxonomy, final RequestContext context, final Map<String, Object> meta, final List<Node> nodes) throws IOException {
+	public String renderTaxonomy(final Taxonomy taxonomy, final RequestContext context, final Map<String, Object> meta, final Page<Node> page) throws IOException {
 		var contentFile = db.getFileSystem().resolve("content").resolve("index.md");
 
 		return render(contentFile, context, Collections.emptyMap(), meta, "", (model) -> {
 			model.values.put("taxonomy", taxonomy);
 			model.values.put("taxonomy_values", db.getTaxonomies().values(taxonomy));
-			model.values.put("nodes", nodes);
+			model.values.put("page", page);
 			
 		});
 	}

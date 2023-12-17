@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.featured;
 
 /*-
  * #%L
@@ -21,8 +21,8 @@ package com.github.thmarx.cms.api.request.features;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.featured.Feature;
-import java.util.List;
+
+import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
@@ -31,25 +31,32 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public record RequestFeature(String uri, Map<String, List<String>> queryParameters) implements Feature {
-
-	public String getQueryParameter(String name, final String defaultValue) {
-		if (!queryParameters.containsKey(name)) {
-			return defaultValue;
-		}
-
-		return queryParameters.get(name).getFirst();
+public abstract class Featured {
+	public Map<Class<? extends Feature>, Feature> features = new HashMap<>();
+	
+	public boolean has(Class<? extends Feature> featureClass) {
+		return features.containsKey(featureClass);
 	}
 
-	public int getQueryParameterAsInt(String name, final int defaultValue) {
-		if (!queryParameters.containsKey(name)) {
-			return defaultValue;
-		}
-		try {
-			return Integer.parseInt(queryParameters.get(name).getFirst());
-		} catch (Exception e) {
-			log.error(null, e);
-		}
-		return defaultValue;
+	public <T extends Feature> void add(Class<T> featureClass, T feature) {
+		features.put(featureClass, feature);
+	}
+
+	public <T extends Feature> T get(Class<T> featureClass) {
+		return (T) features.get(featureClass);
+	}
+
+	public void close() throws Exception {
+		features.values()
+				.stream()
+				.filter(AutoCloseable.class::isInstance)
+				.map(AutoCloseable.class::cast)
+				.forEach(feature -> {
+					try {
+						feature.close();
+					} catch (Exception e) {
+						log.error(null, e);
+					}
+				});
 	}
 }

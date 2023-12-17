@@ -22,7 +22,7 @@ package com.github.thmarx.cms.api.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.ExtensionPoint;
 import com.github.thmarx.modules.api.ModuleConfiguration;
 import lombok.Getter;

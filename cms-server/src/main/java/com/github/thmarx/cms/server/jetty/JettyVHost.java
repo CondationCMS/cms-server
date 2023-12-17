@@ -28,12 +28,14 @@ import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.media.MediaManager;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.server.jetty.handler.JettyContentHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyExtensionHandler;
 import com.github.thmarx.cms.server.VHost;
 import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyTaxonomyHandler;
+import com.github.thmarx.modules.api.ModuleManager;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
 import java.nio.file.Path;
@@ -60,10 +62,9 @@ public class JettyVHost extends VHost {
 
 	public Handler httpHandler() {
 		
-		
-		var defaultHandler = new JettyContentHandler(contentResolver, requestContextFactory);
-		var taxonomyHandler = new JettyTaxonomyHandler(taxonomyResolver, requestContextFactory, injector.getInstance(FileDB.class));
-		var defaultHandlerSequence = new Handler.Sequence(taxonomyHandler, defaultHandler);
+		var contentHandler = injector.getInstance(JettyContentHandler.class);
+		var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
+		var defaultHandlerSequence = new Handler.Sequence(taxonomyHandler, contentHandler);
 		
 		log.debug("create assets handler for site");
 		ResourceHandler assetsHandler = injector.getInstance(Key.get(ResourceHandler.class, Names.named("site")));
@@ -87,10 +88,15 @@ public class JettyVHost extends VHost {
 		ContextHandler defaultContextHandler = new ContextHandler(pathMappingsHandler, "/");
 		defaultContextHandler.setVirtualHosts(injector.getInstance(SiteProperties.class).hostnames());
 
-		var moduleHandler = new JettyModuleMappingHandler(moduleManager, getActiveModules());
+		var moduleHandler = new JettyModuleMappingHandler(
+				injector.getInstance(ModuleManager.class), getActiveModules()
+		);
 		moduleHandler.init();
 		ContextHandler moduleContextHandler = new ContextHandler(moduleHandler, "/module");
-		var extensionHandler = new JettyExtensionHandler(requestContextFactory);
+		
+		var extensionHandler = new JettyExtensionHandler(
+				injector.getInstance(RequestContextFactory.class)
+		);
 		ContextHandler extensionContextHandler = new ContextHandler(extensionHandler, "/extension");
 
 		ContextHandlerCollection contextCollection = new ContextHandlerCollection(

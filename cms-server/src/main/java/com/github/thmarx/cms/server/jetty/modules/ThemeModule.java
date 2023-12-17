@@ -32,8 +32,8 @@ import com.github.thmarx.cms.server.jetty.FileFolderPathResource;
 import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +44,7 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class ThemeHandlerModule extends AbstractModule {
+public class ThemeModule extends AbstractModule {
 
 	@Provides
 	@Singleton

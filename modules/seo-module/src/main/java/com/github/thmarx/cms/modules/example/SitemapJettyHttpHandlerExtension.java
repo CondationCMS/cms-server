@@ -22,15 +22,11 @@ package com.github.thmarx.cms.modules.example;
  * #L%
  */
 
-import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
+import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;

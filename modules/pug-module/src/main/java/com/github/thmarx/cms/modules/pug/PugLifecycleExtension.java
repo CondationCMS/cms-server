@@ -22,7 +22,7 @@ package com.github.thmarx.cms.modules.pug;
  * #L%
  */
 
-import com.github.thmarx.cms.api.CMSModuleContext;
+import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
 

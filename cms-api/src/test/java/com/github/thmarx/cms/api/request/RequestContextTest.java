@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api.request;
  * #L%
  */
 
+import com.github.thmarx.cms.api.featured.Feature;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

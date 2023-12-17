@@ -24,11 +24,13 @@ package com.github.thmarx.cms.server.jetty.modules;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.server.jetty.FileFolderPathResource;
+import com.github.thmarx.cms.server.jetty.handler.JettyContentHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
+import com.github.thmarx.cms.server.jetty.handler.JettyTaxonomyHandler;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +44,13 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 @RequiredArgsConstructor
 public class SiteHandlerModule extends AbstractModule {
 
+	@Override
+	protected void configure() {
+		
+		bind(JettyContentHandler.class).in(Singleton.class);
+		bind(JettyTaxonomyHandler.class).in(Singleton.class);
+	}
+	
 	@Provides
 	@Singleton
 	@Named("site")

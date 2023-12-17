@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request;
+package com.github.thmarx.cms.api.module.features;
 
 /*-
  * #%L
@@ -22,8 +22,21 @@ package com.github.thmarx.cms.api.request;
  * #L%
  */
 
+import com.github.thmarx.cms.api.content.ContentResponse;
+import com.github.thmarx.cms.api.featured.Feature;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 /**
  *
  * @author t.marx
  */
-public interface Feature {}
+public record ContentRenderFeature(BiFunction<String, Map<String, List<String>>, Optional<ContentResponse>> renderContentFunction) implements Feature {
+
+	public Optional<ContentResponse> renderContentNode (String uri, Map<String, List<String>> params) {
+		return renderContentFunction().apply(uri, params);
+	}
+
+}

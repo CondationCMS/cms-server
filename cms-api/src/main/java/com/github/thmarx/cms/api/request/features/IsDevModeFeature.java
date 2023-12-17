@@ -22,7 +22,7 @@ package com.github.thmarx.cms.api.request.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.request.Feature;
+import com.github.thmarx.cms.api.featured.Feature;
 
 /**
  *

@@ -21,9 +21,9 @@ package com.github.thmarx.cms.modules.search.extension;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
+import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.cms.modules.search.SearchEngine;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;

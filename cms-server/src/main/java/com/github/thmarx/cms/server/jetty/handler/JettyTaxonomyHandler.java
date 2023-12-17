@@ -21,17 +21,13 @@ package com.github.thmarx.cms.server.jetty.handler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.TaxonomyResponse;
-import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.request.RequestContextFactory;
-import com.github.thmarx.cms.utils.HTTPUtil;
-import java.util.HashMap;
+import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,10 +41,9 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
 public class JettyTaxonomyHandler extends Handler.Abstract {
-
 	private final TaxonomyResolver taxonomyResolver;
 	private final RequestContextFactory requestContextFactory;
 	private final DB db;

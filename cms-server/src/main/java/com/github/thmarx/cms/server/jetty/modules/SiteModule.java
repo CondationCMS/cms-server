@@ -29,27 +29,29 @@ import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
+import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.media.MediaService;
-import com.github.thmarx.cms.api.module.CMSModuleContext;
+import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
+import com.github.thmarx.cms.content.ContentRenderer;
+import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.content.DefaultContentParser;
+import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.filesystem.FileDB;
 import com.github.thmarx.cms.media.FileMediaService;
 import com.github.thmarx.cms.media.MediaManager;
+import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
-import com.github.thmarx.modules.manager.ModuleAPIClassLoader;
-import com.github.thmarx.modules.manager.ModuleManagerImpl;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import jakarta.inject.Singleton;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,7 +63,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SiteModule extends AbstractModule {
 
-	private final Path modulesPath;
 	private final Path hostBase;
 	private final ServerProperties serverProperties;
 
@@ -72,40 +73,6 @@ public class SiteModule extends AbstractModule {
 		bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 	}
 
-	@Provides
-	@Singleton
-	public ModuleManager moduleManager(Injector injector, CMSModuleContext context) {
-		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
-				List.of(
-						"org.slf4j",
-						"com.github.thmarx.cms",
-						"org.apache.logging",
-						"org.graalvm.polyglot",
-						"org.graalvm.js",
-						"org.eclipse.jetty",
-						"jakarta.servlet"
-				));
-		return ModuleManagerImpl.builder()
-				.activateModulesOnStartup(false)
-				.setClassLoader(classLoader)
-				.setInjector((instance) -> injector.injectMembers(instance))
-				.setModulesDataPath(injector.getInstance(FileDB.class).getFileSystem().resolve("modules_data").toFile())
-				.setModulesPath(modulesPath.toFile())
-				.setContext(context)
-				.build();
-	}
-
-	@Provides
-	@Singleton
-	public CMSModuleContext moduleContext(SiteProperties siteProperties, ServerProperties serverProperties, FileDB db, EventBus eventBus, Theme theme) {
-		return new CMSModuleContext(
-				siteProperties,
-				serverProperties,
-				db,
-				eventBus,
-				theme
-		);
-	}
 
 	@Provides
 	@Singleton
@@ -190,5 +157,45 @@ public class SiteModule extends AbstractModule {
 	@Singleton
 	public MediaService mediaService(@Named("assets") Path assetBase) throws IOException {
 		return new FileMediaService(assetBase);
+	}
+	
+	@Provides
+	@Singleton
+	public RequestContextFactory requestContextFactory (
+			Injector injector, ExtensionManager extensionManager, Theme theme, SiteProperties siteProperties,
+			MediaService mediaService) {
+		return new RequestContextFactory(
+				() -> injector.getInstance(MarkdownRenderer.class), 
+				extensionManager, 
+				theme, 
+				siteProperties, 
+				mediaService
+		);
+	}
+	
+	@Provides
+	@Singleton
+	public ContentRenderer contentRenderer (ContentParser contentParser, Injector injector, FileDB db,
+			SiteProperties siteProperties, ModuleManager moduleManager) {
+		return new ContentRenderer(
+				contentParser, 
+				() -> injector.getInstance(TemplateEngine.class), 
+				db, 
+				siteProperties, 
+				moduleManager);
+	}
+	
+	@Provides
+	@Singleton
+	public ContentResolver contentResolver (@Named("content") Path contentBase, ContentRenderer contentRenderer,
+			FileDB db) {
+		return new ContentResolver(contentBase, contentRenderer, db);
+	}
+
+	@Provides
+	@Singleton
+	public TaxonomyResolver taxonomyResolver (ContentRenderer contentRenderer, ContentParser contentParser,
+			FileDB db) {
+		return new TaxonomyResolver(contentRenderer, contentParser, db);
 	}
 }

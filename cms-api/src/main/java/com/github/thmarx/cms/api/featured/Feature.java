@@ -1,8 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.github.thmarx.cms.api.extensions;
+package com.github.thmarx.cms.api.featured;
 
 /*-
  * #%L
@@ -26,18 +22,8 @@ package com.github.thmarx.cms.api.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.module.CMSModuleContext;
-import com.github.thmarx.cms.api.template.TemplateEngine;
-import com.github.thmarx.modules.api.ExtensionPoint;
-import com.github.thmarx.modules.api.ModuleConfiguration;
-import lombok.Getter;
-
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public abstract class TemplateModelExtendingExtentionPoint extends AbstractExtensionPoint{
-
-	public abstract void extendModel (TemplateEngine.Model model);
-	
-}
+public interface Feature {}

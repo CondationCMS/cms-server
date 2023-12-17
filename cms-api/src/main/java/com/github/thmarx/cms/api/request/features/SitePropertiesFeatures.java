@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.request.features;
  */
 
 import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.request.Feature;
+import com.github.thmarx.cms.api.featured.Feature;
 
 /**
  *

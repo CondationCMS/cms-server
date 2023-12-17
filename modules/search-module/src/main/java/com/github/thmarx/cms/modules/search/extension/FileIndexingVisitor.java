@@ -21,9 +21,10 @@ package com.github.thmarx.cms.modules.search.extension;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.CMSModuleContext;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentResponse;
+import com.github.thmarx.cms.api.module.CMSModuleContext;
+import com.github.thmarx.cms.api.module.features.ContentRenderFeature;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.modules.search.IndexDocument;
@@ -144,7 +145,8 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 
 		uri = uri.substring(0, uri.lastIndexOf("."));
 		
-		return moduleContext.getRenderContentFunction().apply(uri, Collections.emptyMap());
+		//return moduleContext.getRenderContentFunction().apply(uri, Collections.emptyMap());
+		return moduleContext.get(ContentRenderFeature.class).renderContentNode(uri, Collections.emptyMap());
 	}
 
 }

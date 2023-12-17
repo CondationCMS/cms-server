@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.utils.HTTPUtil;
+import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,9 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
 public class JettyContentHandler extends Handler.Abstract {
-
 	private final ContentResolver contentResolver;
 	private final RequestContextFactory requestContextFactory;
 

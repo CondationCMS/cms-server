@@ -40,6 +40,7 @@ import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.filesystem.FileDB;
+import com.github.thmarx.cms.filesystem.functions.taxonomy.TaxonomyFunction;
 import com.github.thmarx.cms.media.FileMediaService;
 import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.request.RequestContextFactory;
@@ -71,6 +72,7 @@ public class SiteModule extends AbstractModule {
 		bind(ServerProperties.class).toInstance(serverProperties);
 		bind(EventBus.class).to(DefaultEventBus.class).in(Singleton.class);
 		bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
+		bind(TaxonomyFunction.class).in(Singleton.class);
 	}
 
 

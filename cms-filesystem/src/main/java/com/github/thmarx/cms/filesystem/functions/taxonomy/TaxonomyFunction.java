@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.template;
+package com.github.thmarx.cms.filesystem.functions.taxonomy;
 
 /*-
  * #%L
- * cms-server
+ * cms-filesystem
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -22,13 +22,22 @@ package com.github.thmarx.cms.template;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
+import com.github.thmarx.cms.filesystem.FileDB;
+import com.google.inject.Inject;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @author t.marx
  */
+@RequiredArgsConstructor(onConstructor = @__({@Inject}))
 public class TaxonomyFunction {
 	
-	public String url (final String taxonomy, final String value) {
-		return "/%s/%s".formatted(taxonomy, value);
+	private final FileDB fileDB;
+	
+	public List<Taxonomy> taxonomies () {
+		return fileDB.getTaxonomies().all();
 	}
 }

@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.template;
+package com.github.thmarx.cms.api.request.features;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 Marx-Software
  * %%
@@ -22,22 +22,13 @@ package com.github.thmarx.cms.template;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.utils.PathUtil;
-import lombok.RequiredArgsConstructor;
+import com.github.thmarx.cms.api.featured.Feature;
+import com.google.inject.Injector;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class NodeFunction {
-	public final DB db;
-	
-	public String toUrl (final ContentNode node) {
-		var contentBase = db.getFileSystem().resolve("content/");
-		var file = contentBase.resolve(node.uri());
-		return PathUtil.toURI(file, contentBase);
-	}
+public record InjectorFeature(Injector injector) implements Feature {
+
 }

@@ -30,6 +30,8 @@ import com.github.thmarx.cms.api.eventbus.EventListener;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.utils.MapUtil;
 import com.github.thmarx.cms.filesystem.FileSystem;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +71,11 @@ public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesC
 		}).forEach(tax -> taxonomies.put(tax.getSlug(), tax));
 	}
 
+	@Override
+	public List<Taxonomy> all() {
+		return new ArrayList<>(taxonomies.values());
+	}
+	
 	@Override
 	public Optional<Taxonomy> forSlug(final String slug) {
 		return Optional.ofNullable(taxonomies.get(slug));

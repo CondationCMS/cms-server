@@ -35,6 +35,8 @@ import java.util.Set;
  */
 public interface Taxonomies {
 
+	public List<Taxonomy> all ();
+	
 	public Optional<Taxonomy> forSlug (String slug);
 	
 	public Map<String, Integer> valueCount (Taxonomy taxonomy);

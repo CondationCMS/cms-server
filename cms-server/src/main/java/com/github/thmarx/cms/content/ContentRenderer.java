@@ -30,6 +30,7 @@ import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
 import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.features.InjectorFeature;
 import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
 import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.api.request.features.RequestFeature;
@@ -41,10 +42,9 @@ import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.filesystem.functions.list.Node;
 import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
+import com.github.thmarx.cms.filesystem.functions.taxonomy.TaxonomyFunction;
 import com.github.thmarx.cms.request.RenderContext;
 import com.github.thmarx.cms.request.RequestExtensions;
-import com.github.thmarx.cms.template.NodeFunction;
-import com.github.thmarx.cms.template.TaxonomyFunction;
 import com.github.thmarx.modules.api.ModuleManager;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -55,7 +55,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -122,8 +121,7 @@ public class ContentRenderer {
 		model.values.put("site", siteProperties);
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 		
-		model.values.put("nodeFN", new NodeFunction(db));
-		model.values.put("taxonomyFN", new TaxonomyFunction());
+		model.values.put("taxonomy", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
 		model.values.put("DEV_MODE", isDevMode(context));

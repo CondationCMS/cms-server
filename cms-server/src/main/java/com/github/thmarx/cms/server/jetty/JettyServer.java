@@ -123,7 +123,7 @@ public class JettyServer implements HttpServer {
 		try {
 			server.start();		
 		} catch (Exception ex) {
-			Logger.getLogger(JettyServer.class.getName()).log(Level.SEVERE, null, ex);
+			log.error(null, ex);
 		}
 	}
 
@@ -146,7 +146,7 @@ public class JettyServer implements HttpServer {
 				var tempMod = Files.getLastModifiedTime(config).toMillis();
 				
 				if (tempMod != lastModified) {
-					System.out.println("modified: " + config.getFileName().toString());
+					log.debug("modified: " + config.getFileName().toString());
 					lastModified = tempMod;
 					onChange.run();
 				}

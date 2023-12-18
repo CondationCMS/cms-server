@@ -87,12 +87,15 @@ public class ContentRenderer {
 		});
 	}
 
-	public String renderTaxonomy(final Taxonomy taxonomy, final RequestContext context, final Map<String, Object> meta, final Page<ListNode> page) throws IOException {
+	public String renderTaxonomy(final Taxonomy taxonomy, Optional<String> taxonomyValue, final RequestContext context, final Map<String, Object> meta, final Page<ListNode> page) throws IOException {
 		var contentFile = db.getFileSystem().resolve("content").resolve("index.md");
 
 		return render(contentFile, context, Collections.emptyMap(), meta, "", (model) -> {
 			model.values.put("taxonomy", taxonomy);
 			model.values.put("taxonomy_values", db.getTaxonomies().values(taxonomy));
+			if (taxonomyValue.isPresent()) {
+				model.values.put("taxonomy_value", taxonomyValue.get());
+			}
 			model.values.put("page", page);
 			
 		});

@@ -23,13 +23,10 @@ package com.github.thmarx.cms.filesystem.taxonomy;
  */
 
 import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -80,6 +77,10 @@ public class FileTaxonomiesTest {
 		var values = taxonomies.values(tags);
 		
 		Assertions.assertThat(values).containsExactlyInAnyOrder("eins", "zwei", "drei");
+		
+		Assertions.assertThat(tags.getValues()).containsOnlyKeys("eins", "zwei");
+		Assertions.assertThat(tags.getValues().get("eins").title).isEqualTo("Eins");
+		Assertions.assertThat(tags.getValues().get("zwei").title).isEqualTo("Zwei");
 	}
 	
 	@Test

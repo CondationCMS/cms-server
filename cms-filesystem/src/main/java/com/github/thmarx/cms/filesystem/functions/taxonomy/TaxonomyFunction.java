@@ -44,4 +44,29 @@ public class TaxonomyFunction {
 	public String url (final String taxonomy, final String value) {
 		return "/%s/%s".formatted(taxonomy, value);
 	}
+	
+	public String getTitle (final String taxonomy) {
+		
+		var taxo = fileDB.getTaxonomies().forSlug(taxonomy);
+		if (taxo.isPresent()) {
+			return taxo.get().getTitle();
+		}
+		
+		return taxonomy;
+	}
+	
+	public String getTitle (final String taxonomy, String value) {
+		
+		var taxo = fileDB.getTaxonomies().forSlug(taxonomy);
+		if (taxo.isPresent()) {
+			
+			if (taxo.get().getValues().containsValue(value)) {
+				return taxo.get().getValues().get(value).getTitle();
+			} else {
+				return value;
+			}
+		}
+		
+		return taxonomy;
+	}
 }

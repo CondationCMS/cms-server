@@ -1,5 +1,9 @@
 package com.github.thmarx.cms.api.db.taxonomy;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 /*-
  * #%L
  * cms-api
@@ -22,29 +26,14 @@ package com.github.thmarx.cms.api.db.taxonomy;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Data;
-
 /**
  *
  * @author t.marx
  */
 @Data
-public class Taxonomy {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Value {
+	public String id;
 	public String title;
-	public String slug;
-	public String template = Constants.Taxonomy.DEFAULT_TEMPLATE;
-	public String singleTemplate = Constants.Taxonomy.DEFAULT_SINGLE_TEMPLATE;
-	public String field;
-	public boolean array = false;
-	public Map<String, Value> values = new HashMap<>();
-	
-	public String getValueTitle (final String value) {
-		if (values.containsKey(value)) {
-			return values.get(value).getTitle();
-		}
-		return value;
-	}
 }

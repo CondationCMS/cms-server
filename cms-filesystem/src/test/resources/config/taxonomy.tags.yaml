@@ -1,0 +1,7 @@
+## YAML Template.
+---
+values:
+    - id: eins
+      title: Eins
+    - id: zwei
+      title: Zwei

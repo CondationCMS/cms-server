@@ -93,7 +93,7 @@ public class TaxonomyResolver {
 			Page<ListNode> resultPage = Page.EMPTY;
 			if (value.isPresent()) {
 				template = taxonomy.getSingleTemplate();
-				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle() + " - " + value.get());
+				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle() + " - " + taxonomy.getValueTitle(value.get()));
 				var contentPage = db.getTaxonomies().withValue(taxonomy, value.get(), page, size);
 				var nodes = contentPage.getItems().stream().map(node -> {
 					return contentNodeMapper.toListNode(node, context);
@@ -104,7 +104,7 @@ public class TaxonomyResolver {
 			}
 			meta.put(Constants.MetaFields.TEMPLATE, template);
 
-			String content = contentRenderer.renderTaxonomy(taxonomy, context, meta, resultPage);
+			String content = contentRenderer.renderTaxonomy(taxonomy, value, context, meta, resultPage);
 
 			return Optional.of(new TaxonomyResponse(content, taxonomy));
 		} catch (Exception ex) {

@@ -15,7 +15,7 @@
 		
 		<ul th:each="value: ${taxonomy_values}">
 			<li>
-				<a th:href="${'/' + taxonomy.slug + '/' + value}" th:text="${value}"></a>
+				<a th:href="${'/' + taxonomy.slug + '/' + value}" th:text="${taxonomy.getValueTitle(value)}"></a>
 			</li>
 		</ul>
 	</div>

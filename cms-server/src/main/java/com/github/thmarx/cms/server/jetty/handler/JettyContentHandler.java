@@ -63,6 +63,7 @@ public class JettyContentHandler extends Handler.Abstract {
 				// try to resolve static files
 				content = contentResolver.getStaticContent(uri);
 				if (content.isEmpty()) {
+					log.debug("content not found {}", uri);
 					try (var errorContext = requestContextFactory.create("/.technical/404", queryParameters)) {
 						content = contentResolver.getErrorContent(errorContext);
 						response.setStatus(404);

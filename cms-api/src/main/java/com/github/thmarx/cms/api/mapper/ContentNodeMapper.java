@@ -29,6 +29,7 @@ import com.github.thmarx.cms.api.featured.Feature;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.model.ListNode;
 import com.github.thmarx.cms.api.request.RequestContext;
+import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.api.utils.NodeUtil;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.google.inject.Inject;
@@ -72,6 +73,11 @@ public class ContentNodeMapper implements Feature {
 		final Path contentBase = db.getFileSystem().resolve("content/");
 		var temp_path = contentBase.resolve(node.uri());
 		var url = PathUtil.toURI(temp_path, contentBase);
+		
+		if (context.has(IsPreviewFeature.class)) {
+			url += "?preview=true";
+		}
+		
 		var md = parse(temp_path);
 		var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, context.get(MarkdownRenderer.class));
 		return new ListNode(name, url, excerpt, node.data());

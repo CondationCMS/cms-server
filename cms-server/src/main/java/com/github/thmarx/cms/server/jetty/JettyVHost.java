@@ -107,7 +107,9 @@ public class JettyVHost extends VHost {
 			contextCollection.addHandler(themeContextHandler());
 		}
 
-		GzipHandler gzipHandler = new GzipHandler(contextCollection);
+		JettyLoggingFilterHandler logContextHandler = new JettyLoggingFilterHandler(contextCollection, injector.getInstance(SiteProperties.class));
+		
+		GzipHandler gzipHandler = new GzipHandler(logContextHandler);
 		gzipHandler.setMinGzipSize(1024);
 		gzipHandler.addIncludedMimeTypes("text/plain");
 		gzipHandler.addIncludedMimeTypes("text/html");

@@ -51,6 +51,10 @@ public class SiteProperties extends ThemeProperties {
 		return (String)getSubMap("markdown").get("engine");
 	}
 	
+	public String id () {
+		return (String) properties.getOrDefault("id", "default");
+	}
+	
 	public String theme () {
 		return (String) properties.get("theme");
 	}

@@ -2,17 +2,56 @@
 <Configuration status="WARN" monitorInterval="30">
 	<Properties>
 		<Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} - %m%n</Property>
+		<Property name="LOG_LOC">logs/</Property>
+		<Property name="MAX">5</Property>
 	</Properties>
  
 	<Appenders>
 		<Console name="console" target="SYSTEM_OUT" follow="true">
 			<PatternLayout pattern="${LOG_PATTERN}"/>
 		</Console>
+		<Routing name="Routing">
+			<Routes pattern="$${ctx:site}">
+				<Route key="$${ctx:site}">
+					<RollingFile name="FILE" 
+								 fileName="${LOG_LOC}/raw.log"
+								 filePattern="${LOG_LOC}/raw.%i.log">
+						<PatternLayout>
+							<Pattern>${LOG_PATTERN}</Pattern>
+						</PatternLayout>
+
+						<Policies>
+							<OnStartupTriggeringPolicy />
+						</Policies>
+
+						<DefaultRolloverStrategy max="${MAX}" />
+					</RollingFile>
+				</Route>
+				<Route>
+					<RollingFile name="RAW"
+								 fileName="${LOG_LOC}/${ctx:site}.log"
+								 filePattern="${LOG_LOC}/${ctx:site}.%i.log">
+						<PatternLayout>
+							<Pattern>${LOG_PATTERN}</Pattern>
+						</PatternLayout>
+
+						<Policies>
+							<OnStartupTriggeringPolicy />
+						</Policies>
+
+						<DefaultRolloverStrategy max="${MAX}" />
+					</RollingFile>
+				</Route>
+			</Routes>
+		</Routing>
 	</Appenders>
  
 	<Loggers>
 		<Logger name="com.github.thmarx.cms" level="debug" additivity="false">
 			<AppenderRef ref="console"/>
+		</Logger>
+		<Logger name="com.github.thmarx.cms" level="debug" additivity="false">
+			<appender-ref ref="Routing" />
 		</Logger>
 		<Logger name="extensions" level="debug" additivity="false">
 			<AppenderRef ref="console"/>

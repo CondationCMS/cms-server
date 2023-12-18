@@ -32,7 +32,6 @@ import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
-import com.github.thmarx.cms.api.utils.NodeUtil;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;

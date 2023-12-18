@@ -1,5 +1,5 @@
 ---
-title: Tags
+title: Content-Tags
 template: start.html
 menu: 
     position: 91

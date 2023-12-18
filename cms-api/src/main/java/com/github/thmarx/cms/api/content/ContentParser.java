@@ -22,6 +22,7 @@ package com.github.thmarx.cms.api.content;
  * #L%
  */
 
+import com.github.thmarx.cms.api.featured.Feature;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -30,7 +31,7 @@ import java.util.Map;
  *
  * @author t.marx
  */
-public interface ContentParser {
+public interface ContentParser extends Feature {
 	
 	void clearCache();
 	

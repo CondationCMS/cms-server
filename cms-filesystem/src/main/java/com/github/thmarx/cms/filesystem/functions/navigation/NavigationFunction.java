@@ -21,11 +21,14 @@ package com.github.thmarx.cms.filesystem.functions.navigation;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.model.NavNode;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
 import com.github.thmarx.cms.api.utils.NodeUtil;
@@ -47,8 +50,14 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 
 	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
 
-	public NavigationFunction(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
-		super(db, currentNode, contentParser, markdownRenderer);
+	public NavigationFunction(DB db, Path currentNode, RequestContext context) {
+		super(
+				db,
+				currentNode,
+				context.get(ContentParser.class),
+				context.get(MarkdownRenderer.class),
+				context.get(ContentNodeMapper.class),
+				context);
 	}
 
 	/**

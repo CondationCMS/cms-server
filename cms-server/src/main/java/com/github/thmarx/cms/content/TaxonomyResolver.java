@@ -22,21 +22,17 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.content.TaxonomyResponse;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.features.RequestFeature;
-import com.github.thmarx.cms.api.utils.NodeUtil;
-import com.github.thmarx.cms.api.utils.PathUtil;
-import com.github.thmarx.cms.filesystem.functions.list.Node;
-import com.github.thmarx.cms.request.RenderContext;
+import com.github.thmarx.cms.api.model.ListNode;
+import com.google.inject.Inject;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,13 +41,13 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor = @__({@Inject}))
 @Slf4j
 public class TaxonomyResolver {
 
 	private final ContentRenderer contentRenderer;
-	private final ContentParser contentParser;
 	private final DB db;
+	private final ContentNodeMapper contentNodeMapper;
 
 	private Optional<Taxonomy> getTaxonomy(final RequestContext context) {
 		var uri = context.get(RequestFeature.class).uri();
@@ -94,20 +90,14 @@ public class TaxonomyResolver {
 			var meta = new HashMap<String, Object>();
 
 			Optional<String> value = getTaxonomyValue(context);
-			Page<Node> resultPage = Page.EMPTY;
+			Page<ListNode> resultPage = Page.EMPTY;
 			if (value.isPresent()) {
 				template = taxonomy.getSingleTemplate();
 				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle() + " - " + value.get());
 				var contentPage = db.getTaxonomies().withValue(taxonomy, value.get(), page, size);
 				var nodes = contentPage.getItems().stream().map(node -> {
 					try {
-						var name = NodeUtil.getName(node);
-						final Path contentBase = db.getFileSystem().resolve("content/");
-						var temp_path = contentBase.resolve(node.uri());
-						var url = PathUtil.toURI(temp_path, contentBase);
-						var md = contentParser.parse(temp_path);
-						var excerpt = NodeUtil.excerpt(node, md.content(), Constants.DEFAULT_EXCERPT_LENGTH, context.get(RenderContext.class).markdownRenderer());
-						return new Node(name, url, excerpt, node.data());
+						return contentNodeMapper.toListNode(node, context);
 					} catch (IOException ioe) {
 						log.error(null, ioe);
 					}

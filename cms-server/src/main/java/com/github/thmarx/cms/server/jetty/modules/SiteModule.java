@@ -29,6 +29,7 @@ import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.media.MediaService;
 import com.github.thmarx.cms.api.template.TemplateEngine;
@@ -73,6 +74,8 @@ public class SiteModule extends AbstractModule {
 		bind(EventBus.class).to(DefaultEventBus.class).in(Singleton.class);
 		bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 		bind(TaxonomyFunction.class).in(Singleton.class);
+		bind(ContentNodeMapper.class).in(Singleton.class);
+		bind(TaxonomyResolver.class).in(Singleton.class);
 	}
 
 
@@ -193,12 +196,5 @@ public class SiteModule extends AbstractModule {
 	public ContentResolver contentResolver (@Named("content") Path contentBase, ContentRenderer contentRenderer,
 			FileDB db) {
 		return new ContentResolver(contentBase, contentRenderer, db);
-	}
-
-	@Provides
-	@Singleton
-	public TaxonomyResolver taxonomyResolver (ContentRenderer contentRenderer, ContentParser contentParser,
-			FileDB db) {
-		return new TaxonomyResolver(contentRenderer, contentParser, db);
 	}
 }

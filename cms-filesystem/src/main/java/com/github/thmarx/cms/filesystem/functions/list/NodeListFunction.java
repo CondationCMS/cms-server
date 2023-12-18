@@ -22,12 +22,15 @@ package com.github.thmarx.cms.filesystem.functions.list;
  * #L%
  */
 
+import com.github.thmarx.cms.api.model.ListNode;
 import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
 import com.github.thmarx.cms.api.utils.NodeUtil;
 import java.nio.file.Path;
@@ -57,32 +60,38 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 		return true;
 	};
 
-	public NodeListFunction(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
-		super(db, currentNode, contentParser, markdownRenderer);
+	public NodeListFunction(DB db, Path currentNode, RequestContext context) {
+		super(
+				db,
+				currentNode,
+				context.get(ContentParser.class),
+				context.get(MarkdownRenderer.class),
+				context.get(ContentNodeMapper.class),
+				context);
 	}
 
-	public NodeListFunction(DB db, Path currentNode, ContentParser contentParser, MarkdownRenderer markdownRenderer, boolean excludeIndexMd) {
-		this(db, currentNode, contentParser, markdownRenderer);
+	public NodeListFunction(DB db, Path currentNode, RequestContext context, boolean excludeIndexMd) {
+		this(db, currentNode, context);
 		this.excludeIndexMd = excludeIndexMd;
 	}
 
-	public Page<Node> list(String start, int page, int size, final Comparator<ContentNode> comparator, final Predicate<ContentNode> nodeFilter) {
+	public Page<ListNode> list(String start, int page, int size, final Comparator<ContentNode> comparator, final Predicate<ContentNode> nodeFilter) {
 		return list(start, page, size, Constants.DEFAULT_EXCERPT_LENGTH, comparator, nodeFilter);
 	}
 
-	public Page<Node> list(String start, int page, int size, int excerptLength, final Comparator<ContentNode> comparator, final Predicate<ContentNode> nodeFilter) {
+	public Page<ListNode> list(String start, int page, int size, int excerptLength, final Comparator<ContentNode> comparator, final Predicate<ContentNode> nodeFilter) {
 		return getNodes(start, page, size, excerptLength, comparator, nodeFilter);
 	}
 	
-	public Page<Node> list(String start, int page, int size, final Comparator<ContentNode> comparator) {
+	public Page<ListNode> list(String start, int page, int size, final Comparator<ContentNode> comparator) {
 		return list(start, page, size, Constants.DEFAULT_EXCERPT_LENGTH, comparator);
 	}
 
-	public Page<Node> list(String start, int page, int size, int excerptLength, final Comparator<ContentNode> comparator) {
+	public Page<ListNode> list(String start, int page, int size, int excerptLength, final Comparator<ContentNode> comparator) {
 		return getNodes(start, page, size, excerptLength, comparator, (node) -> true);
 	}
 	
-	Page<Node> getNodes(final String start, int page, int size, int excerptLength, final Comparator<ContentNode> comparator,
+	Page<ListNode> getNodes(final String start, int page, int size, int excerptLength, final Comparator<ContentNode> comparator,
 			final Predicate<ContentNode> nodeFilter) {
 
 		Path baseNode = null;
@@ -127,7 +136,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 					.count();
 			int skipCount = (page - 1) * size;
 
-			List<Node> navNodes = new ArrayList<>();
+			List<ListNode> navNodes = new ArrayList<>();
 			allContentNodes.stream()
 					.filter(nodeNameFilter)
 					.filter(nodeFilter)
@@ -139,12 +148,12 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 						var name = NodeUtil.getName(node);
 						var md = parse(temp_path);
 						var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, markdownRenderer);
-						final Node navNode = new Node(name, getUrl(temp_path), excerpt, node.contentType(), node.data());
+						final ListNode navNode = new ListNode(name, getUrl(temp_path), excerpt, node.contentType(), node.data());
 						navNodes.add(navNode);
 					});
 
 			int totalPages = (int) Math.ceil((float) total / size);
-			return new Page<Node>(navNodes.size(), totalPages, page, navNodes);
+			return new Page<ListNode>(navNodes.size(), totalPages, page, navNodes);
 
 		} else {
 			return getNodesFromBase(baseNode, path, page, size, comparator, nodeFilter);
@@ -176,10 +185,10 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 		return new ArrayList<>(relevantPaths);
 	}
 
-	public Page<Node> getNodesFromBase(final Path base, final String start, final int page, final int pageSize, 
+	public Page<ListNode> getNodesFromBase(final Path base, final String start, final int page, final int pageSize, 
 			final Comparator<ContentNode> comparator, final Predicate<ContentNode> nodeFilter) {
 		try {
-			List<Node> nodes = new ArrayList<>();
+			List<ListNode> nodes = new ArrayList<>();
 			final List<ContentNode> navNodes = db.getContent()
 					.listContent(base, start)
 					.stream().filter(nodeFilter)
@@ -196,12 +205,12 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 						var path = contentBase.resolve(node.uri());
 						var name = NodeUtil.getName(node);
 						var md = parse(path);
-						final Node navNode = new Node(name, getUrl(path), md.get().content(), node.contentType(), node.data());
+						final ListNode navNode = new ListNode(name, getUrl(path), md.get().content(), node.contentType(), node.data());
 						nodes.add(navNode);
 					});
 
 			int totalPages = (int) Math.ceil((float) total / pageSize);
-			return new Page<Node>(pageSize, totalPages, page, nodes);
+			return new Page<ListNode>(pageSize, totalPages, page, nodes);
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

@@ -23,7 +23,9 @@ package com.github.thmarx.cms.filesystem.functions;
  */
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
 import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import java.io.IOException;
@@ -45,6 +47,8 @@ public abstract class AbstractCurrentNodeFunction {
 	protected final Path currentNode;
 	protected final ContentParser contentParser;
 	protected final MarkdownRenderer markdownRenderer;
+	protected final ContentNodeMapper contentNodeMapper;
+	protected final RequestContext context;
 
 	protected String getUrl(Path node) {
 		StringBuilder sb = new StringBuilder();

@@ -40,4 +40,8 @@ public class TaxonomyFunction {
 	public List<Taxonomy> taxonomies () {
 		return fileDB.getTaxonomies().all();
 	}
+	
+	public String url (final String taxonomy, final String value) {
+		return "/%s/%s".formatted(taxonomy, value);
+	}
 }

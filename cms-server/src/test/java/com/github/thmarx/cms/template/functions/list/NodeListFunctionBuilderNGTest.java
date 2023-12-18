@@ -30,7 +30,7 @@ import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
-import com.github.thmarx.cms.filesystem.functions.list.Node;
+import com.github.thmarx.cms.api.model.ListNode;
 import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -64,7 +64,8 @@ public class NodeListFunctionBuilderNGTest {
 			}
 		}, new SiteProperties(Map.of()));
 		db.init();
-		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), parser, markdownRenderer);
+		
+		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), TestHelper.requestContext("/", parser, markdownRenderer));
 	}
 	@AfterAll
 	static void close () throws Exception {
@@ -73,13 +74,13 @@ public class NodeListFunctionBuilderNGTest {
 
 	@Test
 	public void test_blog_entry() {
-		Page<Node> page = nodeList.from("/blog/*").page(1).size(10).list();
+		Page<ListNode> page = nodeList.from("/blog/*").page(1).size(10).list();
 		Assertions.assertThat(page.getItems()).hasSize(2);
 	}
 	
 	@Test
 	public void test_blog_entry_sorted() {
-		Page<Node> page = nodeList.from("/blog/*")
+		Page<ListNode> page = nodeList.from("/blog/*")
 				.page(1).size(10)
 				.sort(Constants.MetaFields.PUBLISH_DATE)
 				.list();
@@ -90,7 +91,7 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	public void test_blog_entry_sorted_reverse() {
-		Page<Node> page = nodeList.from("/blog/*")
+		Page<ListNode> page = nodeList.from("/blog/*")
 				.page(1).size(10)
 				.sort(Constants.MetaFields.PUBLISH_DATE)
 				.reverse(true)
@@ -102,21 +103,21 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	public void test_prodcuts_with_index() {
-		Page<Node> page = nodeList.from("/products").page(1).size(10).index(true).list();
+		Page<ListNode> page = nodeList.from("/products").page(1).size(10).index(true).list();
 		Assertions.assertThat(page.getItems()).hasSize(2);
 	}
 	
 	@Test
 	public void test_prodcuts_without_index() {
-		Page<Node> page = nodeList.from("/products").page(1).size(10).index(false).list();
+		Page<ListNode> page = nodeList.from("/products").page(1).size(10).index(false).list();
 		Assertions.assertThat(page.getItems()).hasSize(1);
 	}
 	
 	
 	@Test
 	void list_root () {
-		Page<Node> page = nodeList.from("/nodelist").page(1).size(10).list();
-		var nodeUris = page.getItems().stream().map(Node::path).collect(Collectors.toList());
+		Page<ListNode> page = nodeList.from("/nodelist").page(1).size(10).list();
+		var nodeUris = page.getItems().stream().map(ListNode::path).collect(Collectors.toList());
 		Assertions.assertThat(nodeUris)
 				.containsExactlyInAnyOrder(
 						"/nodelist", 
@@ -127,8 +128,8 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void list_folder1 () {
-		Page<Node> page = nodeList.from("/nodelist/folder1").page(1).size(10).list();
-		var nodeUris = page.getItems().stream().map(Node::path).collect(Collectors.toList());
+		Page<ListNode> page = nodeList.from("/nodelist/folder1").page(1).size(10).list();
+		var nodeUris = page.getItems().stream().map(ListNode::path).collect(Collectors.toList());
 		Assertions.assertThat(nodeUris)
 				.containsExactlyInAnyOrder(
 						"/nodelist/folder1", 
@@ -138,8 +139,8 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void list_asterix () {
-		Page<Node> page = nodeList.from("/nodelist/*").page(1).size(10).list();
-		var nodeUris = page.getItems().stream().map(Node::path).collect(Collectors.toList());
+		Page<ListNode> page = nodeList.from("/nodelist/*").page(1).size(10).list();
+		var nodeUris = page.getItems().stream().map(ListNode::path).collect(Collectors.toList());
 		Assertions.assertThat(nodeUris)
 				.containsExactlyInAnyOrder(
 						"/nodelist/folder1", 
@@ -151,9 +152,9 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void test_from_subfolder () {
-		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/nodelist2/index.md"), parser, markdownRenderer);
-		Page<Node> page = nodeList.from("./sub_folder/*").page(1).size(10).list();
-		var nodeUris = page.getItems().stream().map(Node::path).collect(Collectors.toList());
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/nodelist2/index.md"), TestHelper.requestContext("/", parser, markdownRenderer));
+		Page<ListNode> page = nodeList.from("./sub_folder/*").page(1).size(10).list();
+		var nodeUris = page.getItems().stream().map(ListNode::path).collect(Collectors.toList());
 		Assertions.assertThat(nodeUris)
 				.containsExactlyInAnyOrder(
 						"/nodelist2/sub_folder/folder1", 
@@ -165,8 +166,8 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void test_json () {
-		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/index.md"), parser, markdownRenderer);
-		Page<Node> page = nodeList.from("./json").page(1).size(10).list();
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/index.md"), TestHelper.requestContext("/", parser, markdownRenderer));
+		Page<ListNode> page = nodeList.from("./json").page(1).size(10).list();
 		Assertions.assertThat(page.getItems()).hasSize(1);
 		Assertions.assertThat(page.getItems().getFirst().name()).isEqualTo("HTML");
 		

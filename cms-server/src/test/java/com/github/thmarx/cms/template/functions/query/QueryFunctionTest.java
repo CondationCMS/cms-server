@@ -56,8 +56,8 @@ public class QueryFunctionTest {
 			}
 		}, new SiteProperties(Map.of()));
 		db.init();
-		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), new DefaultContentParser(),
-				markdownRenderer);
+		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), 
+				TestHelper.requestContext("/", new DefaultContentParser(), markdownRenderer));
 	}
 
 	@Test

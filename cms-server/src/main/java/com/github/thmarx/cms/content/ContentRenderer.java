@@ -40,7 +40,7 @@ import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.filesystem.functions.list.NodeListFunctionBuilder;
 import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import com.github.thmarx.cms.api.utils.SectionUtil;
-import com.github.thmarx.cms.filesystem.functions.list.Node;
+import com.github.thmarx.cms.api.model.ListNode;
 import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
 import com.github.thmarx.cms.filesystem.functions.taxonomy.TaxonomyFunction;
 import com.github.thmarx.cms.request.RenderContext;
@@ -87,7 +87,7 @@ public class ContentRenderer {
 		});
 	}
 
-	public String renderTaxonomy(final Taxonomy taxonomy, final RequestContext context, final Map<String, Object> meta, final Page<Node> page) throws IOException {
+	public String renderTaxonomy(final Taxonomy taxonomy, final RequestContext context, final Map<String, Object> meta, final Page<ListNode> page) throws IOException {
 		var contentFile = db.getFileSystem().resolve("content").resolve("index.md");
 
 		return render(contentFile, context, Collections.emptyMap(), meta, "", (model) -> {
@@ -120,9 +120,9 @@ public class ContentRenderer {
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
-		
-		model.values.put("taxonomy", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
+		model.values.put("taxonomyFN", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
+		
 		model.values.put("PREVIEW_MODE", isPreview(context));
 		model.values.put("DEV_MODE", isDevMode(context));
 
@@ -140,19 +140,19 @@ public class ContentRenderer {
 	}
 
 	protected QueryFunction createQueryFunction(final Path contentFile, final RequestContext context) {
-		var queryFn = new QueryFunction(db, contentFile, contentParser, context.get(RenderContext.class).markdownRenderer());
+		var queryFn = new QueryFunction(db, contentFile, context);
 		queryFn.setContentType(siteProperties.defaultContentType());
 		return queryFn;
 	}
 
 	protected NodeListFunctionBuilder createNodeListFunction(final Path contentFile, final RequestContext context) {
-		var nlFn = new NodeListFunctionBuilder(db, contentFile, contentParser, context.get(RenderContext.class).markdownRenderer());
+		var nlFn = new NodeListFunctionBuilder(db, contentFile, context);
 		nlFn.contentType(siteProperties.defaultContentType());
 		return nlFn;
 	}
 
 	protected NavigationFunction createNavigationFunction(final Path contentFile, final RequestContext context) {
-		var navFn = new NavigationFunction(db, contentFile, contentParser, context.get(RenderContext.class).markdownRenderer());
+		var navFn = new NavigationFunction(db, contentFile, context);
 		navFn.contentType(siteProperties.defaultContentType());
 		return navFn;
 	}

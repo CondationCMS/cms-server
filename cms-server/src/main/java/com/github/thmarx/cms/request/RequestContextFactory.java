@@ -23,6 +23,8 @@ package com.github.thmarx.cms.request;
  */
 import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.content.ContentParser;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.media.MediaService;
 import com.github.thmarx.cms.api.request.RequestContext;
@@ -86,6 +88,9 @@ public class RequestContextFactory {
 		context.add(RequestExtensions.class, requestExtensions);
 		context.add(ThemeFeature.class, new ThemeFeature(requestTheme));
 		context.add(RenderContext.class, renderContext);
+		context.add(MarkdownRenderer.class, renderContext.markdownRenderer());
+		context.add(ContentParser.class, injector.getInstance(ContentParser.class));
+		context.add(ContentNodeMapper.class, injector.getInstance(ContentNodeMapper.class));
 		if (ServerContext.IS_DEV) {
 			context.add(IsDevModeFeature.class, new IsDevModeFeature());
 

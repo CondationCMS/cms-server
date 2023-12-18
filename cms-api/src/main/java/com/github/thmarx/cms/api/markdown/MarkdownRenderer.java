@@ -1,5 +1,7 @@
 package com.github.thmarx.cms.api.markdown;
 
+import com.github.thmarx.cms.api.featured.Feature;
+
 /*-
  * #%L
  * cms-server
@@ -26,7 +28,7 @@ package com.github.thmarx.cms.api.markdown;
  *
  * @author t.marx
  */
-public interface MarkdownRenderer extends AutoCloseable {
+public interface MarkdownRenderer extends AutoCloseable, Feature {
 
 	String excerpt(final String markdown, final int length);
 

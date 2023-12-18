@@ -28,7 +28,7 @@ import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
-import com.github.thmarx.cms.filesystem.functions.navigation.NavNode;
+import com.github.thmarx.cms.api.model.NavNode;
 import com.github.thmarx.cms.filesystem.functions.navigation.NavigationFunction;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -60,8 +60,8 @@ public class NavigationFunctionNGTest {
 			}
 		}, new SiteProperties(Map.of()));
 		db.init();
-		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new DefaultContentParser(),
-				markdownRenderer);
+		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), 
+				TestHelper.requestContext("/", new DefaultContentParser(), markdownRenderer));
 	}
 
 	@Test
@@ -105,8 +105,8 @@ public class NavigationFunctionNGTest {
 	@Test
 	public void test_path() {
 
-		var sut = new NavigationFunction(db, Path.of("hosts/test/content/nav3/folder1/index.md"), new DefaultContentParser(),
-				markdownRenderer);
+		var sut = new NavigationFunction(db, Path.of("hosts/test/content/nav3/folder1/index.md"), 
+				TestHelper.requestContext("/", new DefaultContentParser(), markdownRenderer));
 		
 		List<NavNode> path = sut.path();
 
@@ -118,8 +118,8 @@ public class NavigationFunctionNGTest {
 	
 	@Test
 	public void test_json () {
-		var navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), new DefaultContentParser(),
-				markdownRenderer);
+		var navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"),
+				TestHelper.requestContext("/", new DefaultContentParser(), markdownRenderer));
 		
 		List<NavNode> list = navigationFunction.json().list("/json");
 		Assertions.assertThat(list).hasSize(1);

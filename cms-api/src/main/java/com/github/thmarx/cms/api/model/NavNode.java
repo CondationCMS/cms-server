@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.filesystem.functions.navigation;
+package com.github.thmarx.cms.api.model;
 
 import java.util.Collections;
 import java.util.List;

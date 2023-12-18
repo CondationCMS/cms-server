@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.filesystem.functions.list;
+package com.github.thmarx.cms.api.model;
 
 /*-
  * #%L
@@ -30,8 +30,8 @@ import java.util.Map;
  * @author t.marx
  */
 
-public record Node (String name, String path, String content, String oontentType, Map<String, Object> meta) {
-	public Node (String name, String path, String content, Map<String, Object> meta) {
+public record ListNode (String name, String path, String content, String oontentType, Map<String, Object> meta) {
+	public ListNode (String name, String path, String content, Map<String, Object> meta) {
 		this(name, path, content, Constants.DEFAULT_CONTENT_TYPE, meta);
 	}
 }

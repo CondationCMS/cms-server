@@ -32,11 +32,9 @@ import java.util.Map;
  */
 public interface ContentQuery<T> {
 
-	ContentQuery<T> excerpt(final int excerptLength);
+	ContentQuery<T> excerpt(final long excerptLength);
 
 	Page<T> page(final long page, final long size);
-
-	Page<T> page(final int page, final int size);
 	
 	List<T> get();
 	

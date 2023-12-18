@@ -43,15 +43,6 @@ import java.util.stream.Stream;
  */
 public class Query<T> implements ContentQuery<T> {
 
-//	private final Stream<ContentNode> nodes;
-//
-//	private ExcerptMapperFunction<T> nodeMapper;
-//
-//	private IndexProviding indexProviding;
-//
-//	@Getter
-//	@Setter
-//	private boolean useSecondaryIndex = false;
 	private QueryContext<T> context;
 
 	public Query(Collection<ContentNode> nodes, IndexProviding indexProviding, BiFunction<ContentNode, Integer, T> nodeMapper) {
@@ -75,8 +66,8 @@ public class Query<T> implements ContentQuery<T> {
 	}
 
 	@Override
-	public Query<T> excerpt(final int excerptLength) {
-		context.getNodeMapper().setExcerpt(excerptLength);
+	public Query<T> excerpt(final long excerptLength) {
+		context.getNodeMapper().setExcerpt((int)excerptLength);
 		return this;
 	}
 
@@ -177,12 +168,9 @@ public class Query<T> implements ContentQuery<T> {
 		return page((int) i_page, (int) i_size);
 	}
 
+	@Override
 	public Page<T> page(final long page, final long size) {
-		return page((int) page, (int) size);
-	}
-
-	public Page<T> page(final int page, final int size) {
-		int offset = (page - 1) * size;
+		long offset = (page - 1) * size;
 
 		var filteredNodes = context.getNodes()
 				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
@@ -199,7 +187,7 @@ public class Query<T> implements ContentQuery<T> {
 				.toList();
 
 		int totalPages = (int) Math.ceil((float) total / size);
-		return new Page<T>(filteredNodes.size(), totalPages, page, filteredTargetNodes);
+		return new Page<T>(filteredNodes.size(), totalPages, (int)page, filteredTargetNodes);
 	}
 
 	@Override

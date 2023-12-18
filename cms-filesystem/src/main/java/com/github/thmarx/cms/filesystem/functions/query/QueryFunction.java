@@ -30,7 +30,6 @@ import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.filesystem.functions.AbstractCurrentNodeFunction;
 import com.github.thmarx.cms.api.model.ListNode;
 import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.utils.NodeUtil;
 import com.google.common.base.Strings;
 import java.nio.file.Path;
 import java.util.function.BiFunction;

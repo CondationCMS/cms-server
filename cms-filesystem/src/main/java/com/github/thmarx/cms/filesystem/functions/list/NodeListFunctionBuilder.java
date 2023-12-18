@@ -101,19 +101,11 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 		return this;
 	}
 	
-	public NodeListFunctionBuilder excerpt(int length) {
-		this.excerptLength = length;
-		return this;
-	}
 	public NodeListFunctionBuilder excerpt(long length) {
 		this.excerptLength = (int)length;
 		return this;
 	}
 	
-	public NodeListFunctionBuilder page(int page) {
-		this.page = page;
-		return this;
-	}
 	public NodeListFunctionBuilder page(long page) {
 		this.page = (int)page;
 		return this;
@@ -121,11 +113,6 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 	
 	public NodeListFunctionBuilder page(String page) {
 		this.page = Integer.parseInt(page.trim());
-		return this;
-	}
-
-	public NodeListFunctionBuilder size(int size) {
-		this.size = size;
 		return this;
 	}
 

@@ -113,10 +113,6 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		return getNodes(start, (int) depth);
 	}
 
-	public List<NavNode> list(final String start, final int depth) {
-		return getNodes(start, depth);
-	}
-
 	private List<NavNode> getNodes(final String start, final int depth) {
 		if (start.startsWith("/")) { // root
 			return getNodesFromBase(db.getFileSystem().resolve("content/"), start.substring(1), depth);
@@ -128,7 +124,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		return Collections.emptyList();
 	}
 
-	public List<NavNode> getSubNodesFromBaseRemoveCurrent(final Path base, final String start, final int depth, final String toRemovePath) {
+	private List<NavNode> getSubNodesFromBaseRemoveCurrent(final Path base, final String start, final int depth, final String toRemovePath) {
 		List<NavNode> nodes = getNodesFromBase(base, start, depth);
 
 		return nodes.stream().filter(node -> !node.path().equals(toRemovePath)).toList();

@@ -144,12 +144,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 					.skip(skipCount)
 					.limit(size)
 					.forEach(node -> {
-						var temp_path = contentBase.resolve(node.uri());
-						var name = NodeUtil.getName(node);
-						var md = parse(temp_path);
-						var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, markdownRenderer);
-						final ListNode navNode = new ListNode(name, getUrl(temp_path), excerpt, node.contentType(), node.data());
-						navNodes.add(navNode);
+						navNodes.add(contentNodeMapper.toListNode(node, context, excerptLength));
 					});
 
 			int totalPages = (int) Math.ceil((float) total / size);
@@ -202,11 +197,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 					.skip(skipCount)
 					.limit(pageSize)
 					.forEach(node -> {
-						var path = contentBase.resolve(node.uri());
-						var name = NodeUtil.getName(node);
-						var md = parse(path);
-						final ListNode navNode = new ListNode(name, getUrl(path), md.get().content(), node.contentType(), node.data());
-						nodes.add(navNode);
+						nodes.add(contentNodeMapper.toListNode(node, context));
 					});
 
 			int totalPages = (int) Math.ceil((float) total / pageSize);

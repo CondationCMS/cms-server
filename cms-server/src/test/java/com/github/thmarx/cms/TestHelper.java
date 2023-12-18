@@ -23,6 +23,7 @@ package com.github.thmarx.cms;
  */
 
 import com.github.thmarx.cms.api.content.ContentParser;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.features.InjectorFeature;
@@ -64,11 +65,12 @@ public abstract class TestHelper {
 		return context;
 	}
 
-	public static RequestContext requestContext(String uri, ContentParser contentParser, MarkdownRenderer markdownRenderer) {
+	public static RequestContext requestContext(String uri, ContentParser contentParser, MarkdownRenderer markdownRenderer, ContentNodeMapper contentMapper) {
 		
 		RequestContext context = requestContext(uri);
 		context.add(ContentParser.class, contentParser);
 		context.add(MarkdownRenderer.class, markdownRenderer);
+		context.add(ContentNodeMapper.class, contentMapper);
 		
 		return context;
 	}

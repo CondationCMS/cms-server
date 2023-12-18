@@ -27,6 +27,7 @@ import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.filesystem.FileDB;
@@ -65,7 +66,8 @@ public class NodeListFunctionBuilderNGTest {
 		}, new SiteProperties(Map.of()));
 		db.init();
 		
-		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), TestHelper.requestContext("/", parser, markdownRenderer));
+		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), 
+				TestHelper.requestContext("/", parser, markdownRenderer, new ContentNodeMapper(db, parser)));
 	}
 	@AfterAll
 	static void close () throws Exception {
@@ -152,7 +154,8 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void test_from_subfolder () {
-		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/nodelist2/index.md"), TestHelper.requestContext("/", parser, markdownRenderer));
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/nodelist2/index.md"), 
+				TestHelper.requestContext("/", parser, markdownRenderer, new ContentNodeMapper(db, parser)));
 		Page<ListNode> page = nodeList.from("./sub_folder/*").page(1).size(10).list();
 		var nodeUris = page.getItems().stream().map(ListNode::path).collect(Collectors.toList());
 		Assertions.assertThat(nodeUris)
@@ -166,7 +169,8 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@Test
 	void test_json () {
-		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/index.md"), TestHelper.requestContext("/", parser, markdownRenderer));
+		var nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/index.md"), 
+				TestHelper.requestContext("/", parser, markdownRenderer, new ContentNodeMapper(db, parser)));
 		Page<ListNode> page = nodeList.from("./json").page(1).size(10).list();
 		Assertions.assertThat(page.getItems()).hasSize(1);
 		Assertions.assertThat(page.getItems().getFirst().name()).isEqualTo("HTML");

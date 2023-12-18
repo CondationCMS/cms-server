@@ -60,14 +60,7 @@ public class QueryFunction extends AbstractCurrentNodeFunction {
 	private BiFunction<ContentNode, Integer, ListNode> nodeMapper() {
 		if (nodeMapper == null) {
 			nodeMapper = (node, excerptLength) -> {
-				var name = NodeUtil.getName(node);
-				var temp_path = db.getFileSystem().resolve("content/").resolve(node.uri());
-				var url = toUrl(node.uri());
-				var md = parse(temp_path);
-				var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, markdownRenderer);
-				final ListNode navNode = new ListNode(name, url, excerpt, node.data());
-
-				return navNode;
+				return context.get(ContentNodeMapper.class).toListNode(node, context, excerptLength);
 			};
 		}
 

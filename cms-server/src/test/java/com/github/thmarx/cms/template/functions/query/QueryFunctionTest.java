@@ -23,6 +23,7 @@ package com.github.thmarx.cms.template.functions.query;
  */
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
@@ -56,9 +57,11 @@ public class QueryFunctionTest {
 			}
 		}, new SiteProperties(Map.of()));
 		db.init();
+		defaultContentParser = new DefaultContentParser();
 		query = new QueryFunction(db, Path.of("hosts/test/content/nav/index.md"), 
-				TestHelper.requestContext("/", new DefaultContentParser(), markdownRenderer));
+				TestHelper.requestContext("/", defaultContentParser, markdownRenderer, new ContentNodeMapper(db, defaultContentParser)));
 	}
+	protected static DefaultContentParser defaultContentParser;
 
 	@Test
 	public void testSomeMethod() {

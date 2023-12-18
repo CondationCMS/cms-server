@@ -96,12 +96,7 @@ public class TaxonomyResolver {
 				meta.put(Constants.MetaFields.TITLE, taxonomy.getTitle() + " - " + value.get());
 				var contentPage = db.getTaxonomies().withValue(taxonomy, value.get(), page, size);
 				var nodes = contentPage.getItems().stream().map(node -> {
-					try {
-						return contentNodeMapper.toListNode(node, context);
-					} catch (IOException ioe) {
-						log.error(null, ioe);
-					}
-					return null;
+					return contentNodeMapper.toListNode(node, context);
 				}).filter(node -> node != null).toList();
 				resultPage.setItems(nodes);
 			} else {

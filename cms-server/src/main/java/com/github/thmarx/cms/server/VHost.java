@@ -24,6 +24,7 @@ package com.github.thmarx.cms.server;
 import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.PropertiesLoader;
+import com.github.thmarx.cms.api.configuration.Config;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
@@ -80,9 +81,11 @@ public class VHost {
 		}
 	}
 	
-	public void updateProperties() {
-		configuration.reload(SiteConfiguration.class);	
-		injector.getInstance(EventBus.class).publish(new SitePropertiesChanged());
+	public void reloadConfiguration(Class<? extends Config> configToReload) {
+		configuration.reload(configToReload);	
+		if (SiteConfiguration.class.equals(configToReload)) {
+			injector.getInstance(EventBus.class).publish(new SitePropertiesChanged());
+		}
 	}
 	
 	public List<String> hostnames () {

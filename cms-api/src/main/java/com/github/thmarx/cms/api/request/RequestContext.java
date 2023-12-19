@@ -21,8 +21,8 @@ package com.github.thmarx.cms.api.request;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.featured.Feature;
-import com.github.thmarx.cms.api.featured.Featured;
+import com.github.thmarx.cms.api.feature.Feature;
+import com.github.thmarx.cms.api.feature.FeatureContainer;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class RequestContext extends Featured implements AutoCloseable {
+public class RequestContext extends FeatureContainer implements AutoCloseable {
 
 	public RequestContext () {
 	}

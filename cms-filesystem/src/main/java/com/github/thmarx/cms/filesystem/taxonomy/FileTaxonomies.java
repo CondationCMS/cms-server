@@ -23,6 +23,8 @@ package com.github.thmarx.cms.filesystem.taxonomy;
  */
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
+import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
@@ -56,59 +58,18 @@ import org.yaml.snakeyaml.Yaml;
 @RequiredArgsConstructor
 public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesChanged> {
 
-	private final SiteProperties siteProperties;
+	private final Configuration configuration;
 	private final FileSystem fileSystem;
 
-	private ConcurrentMap<String, Taxonomy> taxonomies = new ConcurrentHashMap<>();
-
-
-	public void reloadTaxonomies() {
-		var tasList = (List<Map>) siteProperties.getOrDefault("taxonomy", Map.of()).getOrDefault("taxonomies", List.of());
-
-		tasList.stream().map((taxo) -> {
-			Taxonomy tax = new Taxonomy();
-			tax.setTitle((String) taxo.get("title"));
-			tax.setSlug((String) taxo.get("slug"));
-			tax.setField((String) taxo.get("field"));
-			tax.setTemplate((String) taxo.getOrDefault("template", Constants.Taxonomy.DEFAULT_TEMPLATE));
-			tax.setSingleTemplate((String) taxo.getOrDefault("template_single", Constants.Taxonomy.DEFAULT_SINGLE_TEMPLATE));
-			tax.setArray((Boolean) taxo.getOrDefault("array", false));
-			
-			loadValues(tax);
-			
-			return tax;
-		}).forEach(tax -> taxonomies.put(tax.getSlug(), tax));
-	}
-	
-	private void loadValues (Taxonomy taxonomy) {		
-		try {
-			var filename = "config/taxonomy.%s.yaml".formatted(taxonomy.getSlug());
-			var filePath = fileSystem.resolve(filename);
-			if (Files.exists(filePath)) {
-				Map<String, Object> taxoConfig = new Yaml().load(Files.readString(filePath, StandardCharsets.UTF_8));
-				List<Map<String, Object>> values = (List<Map<String, Object>>) taxoConfig.getOrDefault("values", List.of());
-				values.forEach((valueMap) -> {
-					String title = (String) valueMap.get("title");
-					String id = (String) valueMap.get("id");
-					if (!Strings.isNullOrEmpty(id) && !Strings.isNullOrEmpty(title)) {
-						var val = new Value(id, title);
-						taxonomy.getValues().put(id, val);
-					}
-				});
-			}
-		} catch (IOException ioe) {
-			log.error(null, ioe);
-		}
-	}
 
 	@Override
 	public List<Taxonomy> all() {
-		return new ArrayList<>(taxonomies.values());
+		return new ArrayList<>(configuration.get(TaxonomyConfiguration.class).getTaxonomies().values());
 	}
 	
 	@Override
 	public Optional<Taxonomy> forSlug(final String slug) {
-		return Optional.ofNullable(taxonomies.get(slug));
+		return Optional.ofNullable(configuration.get(TaxonomyConfiguration.class).getTaxonomies().get(slug));
 	}
 
 	@Override
@@ -160,6 +121,6 @@ public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesC
 	
 	@Override
 	public void consum(SitePropertiesChanged event) {
-		reloadTaxonomies();
+		configuration.reload(TaxonomyConfiguration.class);
 	}
 }

@@ -24,6 +24,8 @@ package com.github.thmarx.cms.server.jetty;
 
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
+import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -36,10 +38,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.AllArgsConstructor;
-import lombok.Data;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -68,7 +67,9 @@ public class JettyServer implements HttpServer {
 			var props = hostPath.resolve("site.yaml");
 			if (Files.exists(props)) {
 				try {
-					var host = new JettyVHost(hostPath, properties);
+					Configuration configuration = new Configuration(hostPath);
+					configuration.add(ServerConfiguration.class, new ServerConfiguration(properties));
+					var host = new JettyVHost(hostPath, configuration);
 					host.init(Path.of(Constants.Folders.MODULES));
 					vhosts.add(host);
 					

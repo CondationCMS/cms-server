@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.featured;
+package com.github.thmarx.cms.api.configuration.configs;
 
 /*-
  * #%L
@@ -22,8 +22,13 @@ package com.github.thmarx.cms.api.featured;
  * #L%
  */
 
+import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.api.configuration.Config;
+
 /**
  *
  * @author t.marx
  */
-public interface Feature {}
+public record ServerConfiguration(ServerProperties serverProperties) implements Config {
+
+}

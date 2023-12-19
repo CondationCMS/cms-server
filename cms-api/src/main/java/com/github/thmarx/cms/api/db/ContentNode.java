@@ -25,7 +25,7 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
 import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.request.features.SitePropertiesFeatures;
+import com.github.thmarx.cms.api.request.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.utils.MapUtil;
 import com.github.thmarx.cms.api.utils.SectionUtil;
 import java.time.Instant;
@@ -62,7 +62,7 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 		String defaultContentType = Constants.DEFAULT_CONTENT_TYPE;
 		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null) {
 			RequestContext requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
-			defaultContentType = requestContext.get(SitePropertiesFeatures.class).siteProperties().defaultContentType();
+			defaultContentType = requestContext.get(SitePropertiesFeature.class).siteProperties().defaultContentType();
 		}
 		return (String) ((Map<String, Object>) data
 				.getOrDefault("content", Map.of()))

@@ -60,11 +60,7 @@ public class TaxonomyFunction {
 		var taxo = fileDB.getTaxonomies().forSlug(taxonomy);
 		if (taxo.isPresent()) {
 			
-			if (taxo.get().getValues().containsValue(value)) {
-				return taxo.get().getValues().get(value).getTitle();
-			} else {
-				return value;
-			}
+			return taxo.get().getValueTitle(value);
 		}
 		
 		return taxonomy;

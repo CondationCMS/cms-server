@@ -27,7 +27,7 @@ import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.featured.Featured;
+import com.github.thmarx.cms.api.feature.FeatureContainer;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.modules.api.Context;
 import java.util.List;
@@ -42,7 +42,7 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class CMSModuleContext extends Featured implements Context {
+public class CMSModuleContext extends FeatureContainer implements Context {
 	@Getter
 	private final SiteProperties siteProperties;
 	@Getter

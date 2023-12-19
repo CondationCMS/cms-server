@@ -23,7 +23,7 @@ package com.github.thmarx.cms.request;
  */
 
 import com.github.thmarx.cms.api.extensions.http.ExtensionHttpHandler;
-import com.github.thmarx.cms.api.featured.Feature;
+import com.github.thmarx.cms.api.feature.Feature;
 import com.github.thmarx.cms.content.ContentTags;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
 import com.github.thmarx.cms.extensions.TemplateFunctionExtension;

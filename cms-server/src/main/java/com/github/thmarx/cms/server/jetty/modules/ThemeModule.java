@@ -23,6 +23,7 @@ package com.github.thmarx.cms.server.jetty.modules;
  */
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
@@ -49,8 +50,8 @@ public class ThemeModule extends AbstractModule {
 	@Provides
 	@Singleton
 	@Named("theme")
-	public MediaManager themeMediaManager (Theme theme, SiteProperties siteProperties, DB db, EventBus eventBus) throws IOException {
-		var mediaManager =  new MediaManager(theme.assetsPath(), db.getFileSystem().resolve("temp"), theme, siteProperties);
+	public MediaManager themeMediaManager (Theme theme, Configuration configuration, DB db, EventBus eventBus) throws IOException {
+		var mediaManager =  new MediaManager(theme.assetsPath(), db.getFileSystem().resolve("temp"), theme, configuration);
 		eventBus.register(SitePropertiesChanged.class, mediaManager);
 		return mediaManager;
 	}

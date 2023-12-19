@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.configuration;
 
 /*-
  * #%L
@@ -22,13 +22,14 @@ package com.github.thmarx.cms.api.request.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.media.MediaService;
-import com.github.thmarx.cms.api.feature.Feature;
+import java.io.IOException;
 
 /**
  *
  * @author t.marx
  */
-public record SiteMediaServiceFeature(MediaService mediaService) implements Feature {
-
+public interface Loader<T extends Config> {
+	T load () throws IOException;
+	
+	void reload(T config) throws IOException;
 }

@@ -42,7 +42,10 @@ public abstract class PropertiesLoader {
 	}
 	
 	public static SiteProperties hostProperties (Path path) throws IOException {
-		Map<String, Object> properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
+		Map<String, Object> properties = Map.of();
+		if (Files.exists(path)) {
+			properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
+		}
 		return new SiteProperties(properties);
 	}
 	

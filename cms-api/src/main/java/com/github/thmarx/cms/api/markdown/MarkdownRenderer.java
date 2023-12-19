@@ -1,6 +1,6 @@
 package com.github.thmarx.cms.api.markdown;
 
-import com.github.thmarx.cms.api.featured.Feature;
+import com.github.thmarx.cms.api.feature.Feature;
 
 /*-
  * #%L

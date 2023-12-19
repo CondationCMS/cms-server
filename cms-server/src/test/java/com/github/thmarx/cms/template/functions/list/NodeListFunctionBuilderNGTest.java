@@ -27,6 +27,7 @@ import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
@@ -56,14 +57,14 @@ public class NodeListFunctionBuilderNGTest {
 	
 	@BeforeAll
 	static void setup () throws IOException {
-		
+		var config = new Configuration(Path.of("hosts/test/"));
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return parser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, new SiteProperties(Map.of()));
+		}, config);
 		db.init();
 		
 		nodeList = new NodeListFunctionBuilder(db, db.getFileSystem().resolve("content/").resolve("index.md"), 

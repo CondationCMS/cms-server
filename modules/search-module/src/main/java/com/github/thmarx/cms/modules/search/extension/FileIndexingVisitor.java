@@ -145,7 +145,6 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 
 		uri = uri.substring(0, uri.lastIndexOf("."));
 		
-		//return moduleContext.getRenderContentFunction().apply(uri, Collections.emptyMap());
 		return moduleContext.get(ContentRenderFeature.class).renderContentNode(uri, Collections.emptyMap());
 	}
 

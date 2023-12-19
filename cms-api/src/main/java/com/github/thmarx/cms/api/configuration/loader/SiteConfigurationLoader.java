@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.content;
+package com.github.thmarx.cms.api.configuration.loader;
 
 /*-
  * #%L
@@ -22,24 +22,32 @@ package com.github.thmarx.cms.api.content;
  * #L%
  */
 
-import com.github.thmarx.cms.api.feature.Feature;
+import com.github.thmarx.cms.api.PropertiesLoader;
+import com.github.thmarx.cms.api.configuration.Loader;
+import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author t.marx
  */
-public interface ContentParser extends Feature {
-	
-	void clearCache();
-	
-	Content parse(final Path contentFile) throws IOException;
-	
-	Map<String, Object> parseMeta(final Path contentFile) throws IOException;
-	
-	record ContentRecord(String content, String meta) {}
+@RequiredArgsConstructor
+public class SiteConfigurationLoader implements Loader<SiteConfiguration> {
 
-	record Content(String content, Map<String, Object> meta) {}
+	private final Path hostBase;
+	
+	@Override
+	public SiteConfiguration load() throws IOException {
+		var props = hostBase.resolve("site.yaml");
+		return new SiteConfiguration(PropertiesLoader.hostProperties(props));
+	}
+
+	@Override
+	public void reload(final SiteConfiguration config) throws IOException {
+		var props = hostBase.resolve("site.yaml");
+		config.siteProperties().update(PropertiesLoader.rawProperties(props));
+	}
+	
 }

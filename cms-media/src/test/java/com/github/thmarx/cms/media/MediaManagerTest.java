@@ -24,6 +24,8 @@ package com.github.thmarx.cms.media;
 
 import com.github.thmarx.cms.api.PropertiesLoader;
 import com.github.thmarx.cms.api.ThemeProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
+import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,11 +42,14 @@ public class MediaManagerTest {
 	
 	@BeforeAll
 	public static void setup () throws IOException {
+		
+		Configuration config = new Configuration(Path.of("src/test/resources"));
+		
 		mediaManager = new MediaManager(
 				Path.of("src/test/resources/assets"), 
 				Path.of("target/"), 
 				new TestTheme(new ThemeProperties(PropertiesLoader.rawProperties(Path.of("src/test/resources/theme.yaml")))), 
-				PropertiesLoader.hostProperties(Path.of("src/test/resources/site.yaml"))
+				config
 		);
 	}
 

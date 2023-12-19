@@ -23,6 +23,7 @@ package com.github.thmarx.cms.server.jetty;
  */
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.theme.Theme;
@@ -54,8 +55,8 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 @Slf4j
 public class JettyVHost extends VHost {
 
-	public JettyVHost(Path hostBase, ServerProperties serverProperties) {
-		super(hostBase, serverProperties);
+	public JettyVHost(Path hostBase, Configuration configuration) {
+		super(hostBase, configuration);
 	}
 
 	public Handler httpHandler() {

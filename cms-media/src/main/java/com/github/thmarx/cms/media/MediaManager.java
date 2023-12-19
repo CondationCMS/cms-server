@@ -23,7 +23,8 @@ package com.github.thmarx.cms.media;
  */
 
 import com.github.thmarx.cms.api.media.MediaUtils;
-import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
+import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
 import com.github.thmarx.cms.api.eventbus.EventListener;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.media.MediaFormat;
@@ -52,7 +53,7 @@ public class MediaManager implements EventListener<SitePropertiesChanged> {
 	private final Path assetBase;
 	private final Path tempFolder;
 	private final Theme theme;
-	private final SiteProperties siteProperties;
+	private final Configuration configuration;
 
 	private Map<String, MediaFormat> mediaFormats;
 	private Path tempDirectory;
@@ -162,7 +163,7 @@ public class MediaManager implements EventListener<SitePropertiesChanged> {
 			if (!theme.empty()) {
 				mediaFormats.putAll(theme.properties().getMediaFormats());
 			}
-			mediaFormats.putAll(siteProperties.getMediaFormats());
+			mediaFormats.putAll(configuration.get(SiteConfiguration.class).siteProperties().getMediaFormats());
 		}
 
 		return mediaFormats;

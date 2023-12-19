@@ -50,9 +50,11 @@
 		<Logger name="com.github.thmarx.cms" level="debug" additivity="false">
 			<AppenderRef ref="console"/>
 		</Logger>
+		<!---
 		<Logger name="com.github.thmarx.cms" level="debug" additivity="false">
 			<appender-ref ref="Routing" />
 		</Logger>
+		-->
 		<Logger name="extensions" level="debug" additivity="false">
 			<AppenderRef ref="console"/>
 		</Logger>

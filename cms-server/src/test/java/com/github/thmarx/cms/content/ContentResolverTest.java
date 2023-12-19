@@ -21,10 +21,10 @@ package com.github.thmarx.cms.content;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.TestTemplateEngine;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import static com.github.thmarx.cms.content.ContentRendererNGTest.contentRenderer;
@@ -44,46 +44,48 @@ import org.junit.jupiter.api.Test;
  * @author t.marx
  */
 public class ContentResolverTest {
-	
+
 	static MarkdownRenderer markdownRenderer;
 	static ContentResolver contentResolver;
 	static FileDB db;
 
 	@BeforeAll
-	public static void setup () throws IOException {
-				var contentParser = new DefaultContentParser();
+	public static void setup() throws IOException {
+		var contentParser = new DefaultContentParser();
+		var config = new Configuration(Path.of("hosts/test/"));
 		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, new SiteProperties(Map.of()));
+		}, config);
 		db.init();
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(db);
-		
-		contentRenderer = new ContentRenderer(contentParser, 
-				() -> templates, 
-				db, 
-				new SiteProperties(Map.of()), 
+
+		contentRenderer = new ContentRenderer(contentParser,
+				() -> templates,
+				db,
+				new SiteProperties(Map.of()),
 				moduleManager);
 		contentResolver = new ContentResolver(db.getFileSystem().resolve("content/"), contentRenderer, db);
 	}
+
 	@AfterAll
-	public static void shutdown () throws Exception {
+	public static void shutdown() throws Exception {
 		db.close();
 	}
-	
+
 	@Test
 	public void test_hidden_folder() throws IOException {
-		
+
 		var context = TestHelper.requestContext(".technical/404");
-		
+
 		var optional = contentResolver.getContent(context);
 		Assertions.assertThat(optional).isEmpty();
 		optional = contentResolver.getErrorContent(context);
 		Assertions.assertThat(optional).isPresent();
 	}
-	
+
 }

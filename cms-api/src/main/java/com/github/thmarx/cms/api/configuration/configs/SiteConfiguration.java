@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.configuration.configs;
 
 /*-
  * #%L
@@ -22,13 +22,13 @@ package com.github.thmarx.cms.api.request.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.media.MediaService;
-import com.github.thmarx.cms.api.feature.Feature;
+import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Config;
 
 /**
  *
  * @author t.marx
  */
-public record SiteMediaServiceFeature(MediaService mediaService) implements Feature {
+public record SiteConfiguration(SiteProperties siteProperties) implements Config {
 
 }

@@ -21,35 +21,14 @@ package com.github.thmarx.cms.api.request.features;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
+import com.github.thmarx.cms.api.SiteProperties;
 import com.github.thmarx.cms.api.feature.Feature;
-import java.util.List;
-import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-@Slf4j
-public record RequestFeature(String uri, Map<String, List<String>> queryParameters) implements Feature {
+public record SitePropertiesFeature(SiteProperties siteProperties) implements Feature {
 
-	public String getQueryParameter(String name, final String defaultValue) {
-		if (!queryParameters.containsKey(name)) {
-			return defaultValue;
-		}
-
-		return queryParameters.get(name).getFirst();
-	}
-
-	public int getQueryParameterAsInt(String name, final int defaultValue) {
-		if (!queryParameters.containsKey(name)) {
-			return defaultValue;
-		}
-		try {
-			return Integer.parseInt(queryParameters.get(name).getFirst());
-		} catch (Exception e) {
-			log.error(null, e);
-		}
-		return defaultValue;
-	}
 }

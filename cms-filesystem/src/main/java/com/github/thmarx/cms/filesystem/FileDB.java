@@ -23,19 +23,17 @@ package com.github.thmarx.cms.filesystem;
  */
 
 import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.content.ContentParser;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.db.Content;
 import com.github.thmarx.cms.api.db.DB;
 import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.filesystem.taxonomy.FileTaxonomies;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
@@ -49,7 +47,7 @@ public class FileDB implements DB {
 	private final Path hostBaseDirectory;
 	private final EventBus eventBus;
 	final Function<Path, Map<String, Object>> contentParser;
-	final SiteProperties siteProperties;
+	final Configuration configuration;
 	
 	private FileSystem fileSystem;
 	private FileContent content;
@@ -62,8 +60,7 @@ public class FileDB implements DB {
 		
 		content = new FileContent(fileSystem);
 		
-		taxonomies = new FileTaxonomies(siteProperties, fileSystem);
-		taxonomies.reloadTaxonomies();
+		taxonomies = new FileTaxonomies(configuration, fileSystem);
 		eventBus.register(SitePropertiesChanged.class, taxonomies);
 	}
 		

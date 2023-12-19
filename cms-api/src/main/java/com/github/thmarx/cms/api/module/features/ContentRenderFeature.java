@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.module.features;
  */
 
 import com.github.thmarx.cms.api.content.ContentResponse;
-import com.github.thmarx.cms.api.featured.Feature;
+import com.github.thmarx.cms.api.feature.Feature;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

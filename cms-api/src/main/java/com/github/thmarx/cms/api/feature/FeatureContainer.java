@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.featured;
+package com.github.thmarx.cms.api.feature;
 
 /*-
  * #%L
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public abstract class Featured {
+public abstract class FeatureContainer {
 	public Map<Class<? extends Feature>, Feature> features = new HashMap<>();
 	
 	public boolean has(Class<? extends Feature> featureClass) {

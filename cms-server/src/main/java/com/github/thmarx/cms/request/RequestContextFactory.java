@@ -33,7 +33,7 @@ import com.github.thmarx.cms.api.request.features.IsDevModeFeature;
 import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
 import com.github.thmarx.cms.api.request.features.RequestFeature;
 import com.github.thmarx.cms.api.request.features.SiteMediaServiceFeature;
-import com.github.thmarx.cms.api.request.features.SitePropertiesFeatures;
+import com.github.thmarx.cms.api.request.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.request.features.ThemeFeature;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.content.ContentTags;
@@ -98,7 +98,7 @@ public class RequestContextFactory {
 				context.add(IsPreviewFeature.class, new IsPreviewFeature());
 			}
 		}
-		context.add(SitePropertiesFeatures.class, new SitePropertiesFeatures(siteProperties));
+		context.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
 		context.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(siteMediaService));
 
 		return context;

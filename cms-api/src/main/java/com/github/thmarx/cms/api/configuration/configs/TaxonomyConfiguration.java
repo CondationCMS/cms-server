@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.configuration.configs;
 
 /*-
  * #%L
@@ -22,13 +22,19 @@ package com.github.thmarx.cms.api.request.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.featured.Feature;
+import com.github.thmarx.cms.api.configuration.Config;
+import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
+import java.util.concurrent.ConcurrentMap;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author t.marx
  */
-public record SitePropertiesFeatures(SiteProperties siteProperties) implements Feature {
+@Data
+@RequiredArgsConstructor
+public class TaxonomyConfiguration implements Config {
+	private final ConcurrentMap<String, Taxonomy> taxonomies;
 
 }

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature;
 
 /*-
  * #%L
@@ -22,13 +22,8 @@ package com.github.thmarx.cms.api.request.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.media.MediaService;
-import com.github.thmarx.cms.api.feature.Feature;
-
 /**
  *
  * @author t.marx
  */
-public record SiteMediaServiceFeature(MediaService mediaService) implements Feature {
-
-}
+public interface Feature {}

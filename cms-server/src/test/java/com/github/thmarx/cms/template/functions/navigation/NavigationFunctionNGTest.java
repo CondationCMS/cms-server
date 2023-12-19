@@ -25,6 +25,7 @@ package com.github.thmarx.cms.template.functions.navigation;
 import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.TestHelper;
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
@@ -53,13 +54,14 @@ public class NavigationFunctionNGTest {
 	@BeforeAll
 	static void init() throws IOException {
 		var contentParser = new DefaultContentParser();
+		var config = new Configuration(Path.of("hosts/test/"));
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				return contentParser.parseMeta(file);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, new SiteProperties(Map.of()));
+		}, config);
 		db.init();
 		defaultContentParser = new DefaultContentParser();
 		navigationFunction = new NavigationFunction(db, Path.of("hosts/test/content/nav/index.md"), 

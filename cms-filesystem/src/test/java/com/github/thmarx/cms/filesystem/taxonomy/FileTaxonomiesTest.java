@@ -23,6 +23,7 @@ package com.github.thmarx.cms.filesystem.taxonomy;
  */
 
 import com.github.thmarx.cms.api.PropertiesLoader;
+import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,6 +48,8 @@ public class FileTaxonomiesTest {
 	public static void setup () throws IOException {
 		var siteProps = PropertiesLoader.hostProperties(Path.of("src/test/resources/site.yaml"));
 		
+		var config = new Configuration(Path.of("src/test/resources/"));
+		
 		fileSystem = new FileSystem(Path.of("src/test/resources"), null, (file) -> {
 			try {
 				return new Yaml().load(Files.readString(file));
@@ -56,8 +59,7 @@ public class FileTaxonomiesTest {
 		});
 		fileSystem.init();
 		
-		taxonomies = new FileTaxonomies(siteProps, fileSystem);
-		taxonomies.reloadTaxonomies();
+		taxonomies = new FileTaxonomies(config, fileSystem);
 	}
 	
 	@AfterAll

@@ -58,6 +58,7 @@ public class Configuration {
 
 	public void reload(Class<? extends Config> configClass) {
 		try {
+			log.debug("reload config + " + configClass.getSimpleName());
 			if (configClass.equals(SiteConfiguration.class)) {
 				new SiteConfigurationLoader(hostBase).reload((SiteConfiguration)configs.get(configClass));
 			} else if (configClass.equals(TaxonomyConfiguration.class)) {

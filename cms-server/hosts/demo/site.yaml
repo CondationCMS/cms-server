@@ -4,7 +4,7 @@ hostname:
   - localhost1
 baseurl: "http://localhost:1010"
 language: en
-test: HAllo
+test: Hallo1
 markdown:
   engine: markedjs
 theme: default

@@ -61,7 +61,6 @@ public class FileDB implements DB {
 		content = new FileContent(fileSystem);
 		
 		taxonomies = new FileTaxonomies(configuration, fileSystem);
-		eventBus.register(SitePropertiesChanged.class, taxonomies);
 	}
 		
 	@Override

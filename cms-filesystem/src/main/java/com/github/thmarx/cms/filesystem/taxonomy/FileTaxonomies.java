@@ -46,7 +46,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesChanged> {
+public class FileTaxonomies implements Taxonomies {
 
 	private final Configuration configuration;
 	private final FileSystem fileSystem;
@@ -106,10 +106,5 @@ public class FileTaxonomies implements Taxonomies, EventListener<SitePropertiesC
 			return fileSystem.query((node, index) -> node).where(taxonomy.getField(), value)
 					.page(page, size);
 		}
-	}
-	
-	@Override
-	public void consum(SitePropertiesChanged event) {
-		configuration.reload(TaxonomyConfiguration.class);
 	}
 }

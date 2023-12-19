@@ -81,15 +81,8 @@ public class VHost {
 	}
 	
 	public void updateProperties() {
-		try {
-			var props = injector.getInstance(FileDB.class).getFileSystem().resolve("site.yaml");
-			injector.getInstance(SiteProperties.class).update(PropertiesLoader.rawProperties(props));
-			configuration.reload(SiteConfiguration.class);
-			
-			injector.getInstance(EventBus.class).publish(new SitePropertiesChanged());
-		} catch (IOException e) {
-			log.error(null, e);
-		}
+		configuration.reload(SiteConfiguration.class);	
+		injector.getInstance(EventBus.class).publish(new SitePropertiesChanged());
 	}
 	
 	public List<String> hostnames () {

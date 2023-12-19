@@ -6,6 +6,12 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 3.1.0
+* **FEATURE** Layer for configuration abstraction [#125](https://github.com/thmarx/cms/issues/125)
+* **FEATURE** Clean up template functions [#124](https://github.com/thmarx/cms/issues/124)
+* **FEATURE** Logfiles per host [#93](https://github.com/thmarx/cms/issues/93)
+* **FEATURE** Taxonomy for string values [#4](https://github.com/thmarx/cms/issues/4)
+
 ## 3.0.3
 * **BUGFIX** If content file is not found, no 404 is thrown
 * **BUGFIX** Navigation function throws exception if index.md is missing

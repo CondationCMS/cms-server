@@ -44,6 +44,7 @@ import com.github.thmarx.cms.api.utils.SectionUtil;
 import com.github.thmarx.cms.api.model.ListNode;
 import com.github.thmarx.cms.api.feature.features.HookSystemFeature;
 import com.github.thmarx.cms.content.template.LinkFunction;
+import com.github.thmarx.cms.content.views.model.View;
 import com.github.thmarx.cms.filesystem.functions.query.QueryFunction;
 import com.github.thmarx.cms.filesystem.functions.taxonomy.TaxonomyFunction;
 import com.github.thmarx.cms.request.RenderContext;
@@ -100,6 +101,21 @@ public class ContentRenderer {
 				model.values.put("taxonomy_value", taxonomyValue.get());
 			}
 			model.values.put("page", page);
+			
+		});
+	}
+	
+	public String renderView(final Path viewFile, final View view, final RequestContext requestContext) throws IOException {
+		return render(viewFile, requestContext, Collections.emptyMap(), 
+				view.getMeta(), "", (model) -> {
+			model.values.put("nodes", view.getNodes(
+				db, 
+				viewFile, 
+				contentParser, 
+				requestContext.get(RenderContext.class).markdownRenderer(), 
+				requestContext.get(RequestExtensions.class).getContext(), 
+				requestContext.get(RequestFeature.class).queryParameters(), requestContext)
+			);
 			
 		});
 	}

@@ -6,6 +6,13 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 4.0.0
+
+* **MAINTENANCE** remove legacy theme assets [#145](https://github.com/thmarx/cms/issues/145)
+* **MAINTENANCE** refactor module context to use features [#135](https://github.com/thmarx/cms/issues/135)
+**ATTENTION:** Migration required!!!
+* **MAINTENANCE** move modules to separate repositories [#110](https://github.com/thmarx/cms/issues/110)
+
 ## 3.3.0
 
 * **FEATURE** HookSystem [#99](https://github.com/thmarx/cms/issues/99)

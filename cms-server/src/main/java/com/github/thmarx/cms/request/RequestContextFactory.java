@@ -77,23 +77,21 @@ public class RequestContextFactory {
 	public RequestContext create(
 			String uri, Map<String, List<String>> queryParameters) throws IOException {
 
-		var requestTheme = new RequestTheme(theme);
-
 		var hookSystem = injector.getInstance(HookSystem.class);
 		
-		RequestExtensions requestExtensions = extensionManager.newContext(requestTheme, hookSystem);
+		RequestExtensions requestExtensions = extensionManager.newContext(theme, hookSystem);
 
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer.get(),
 				new ShortCodes(requestExtensions.getShortCodes()),
-				requestTheme);
+				theme);
 
 		var context = new RequestContext();
 		context.add(InjectorFeature.class, new InjectorFeature(injector));
 		context.add(HookSystemFeature.class, new HookSystemFeature(hookSystem));
 		context.add(RequestFeature.class, new RequestFeature(uri, queryParameters));
 		context.add(RequestExtensions.class, requestExtensions);
-		context.add(ThemeFeature.class, new ThemeFeature(requestTheme));
+		context.add(ThemeFeature.class, new ThemeFeature(theme));
 		context.add(RenderContext.class, renderContext);
 		context.add(MarkdownRenderer.class, renderContext.markdownRenderer());
 		context.add(ContentParser.class, injector.getInstance(ContentParser.class));

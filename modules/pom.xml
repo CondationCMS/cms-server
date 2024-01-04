@@ -12,12 +12,5 @@
 	
 	<modules>
 		<module>example-module</module>
-		<module>flexmark-module</module>
-		<module>pebble-module</module>
-		<module>thymeleaf-module</module>
-		<module>markedjs-module</module>
-		<module>search-module</module>
-		<module>seo-module</module>
-		<module>forms-module</module>
 	</modules>
 </project>

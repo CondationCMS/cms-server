@@ -24,7 +24,7 @@ package com.github.thmarx.cms.server.jetty.handler;
 
 import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
+import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
 import com.github.thmarx.cms.extensions.HttpHandlerExtension;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.github.thmarx.cms.request.RequestExtensions;

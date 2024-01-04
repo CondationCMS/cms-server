@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L

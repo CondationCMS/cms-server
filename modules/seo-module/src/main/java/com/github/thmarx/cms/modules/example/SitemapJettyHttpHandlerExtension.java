@@ -24,6 +24,8 @@ package com.github.thmarx.cms.modules.example;
 
 import com.github.thmarx.cms.api.extensions.JettyHttpHandlerExtensionPoint;
 import com.github.thmarx.cms.api.extensions.Mapping;
+import com.github.thmarx.cms.api.feature.features.DBFeature;
+import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.io.IOException;
@@ -61,11 +63,11 @@ public class SitemapJettyHttpHandlerExtension extends JettyHttpHandlerExtensionP
 			
 			try (var sitemap = new SitemapGenerator(
 					Response.asBufferedOutputStream(request, response),
-					context.getSiteProperties()
+					context.get(SitePropertiesFeature.class).siteProperties()
 			)) {
 				response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/xml");
 				sitemap.start();
-				context.getDb().getContent().query((node, length) -> node).get().forEach(node -> {
+				context.get(DBFeature.class).db().getContent().query((node, length) -> node).get().forEach(node -> {
 					try {
 						sitemap.addNode(node);
 					} catch (IOException ex) {

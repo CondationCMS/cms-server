@@ -23,6 +23,9 @@ package com.github.thmarx.cms.modules.search.extension;
  */
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
+import com.github.thmarx.cms.api.feature.features.DBFeature;
+import com.github.thmarx.cms.api.feature.features.EventBusFeature;
+import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.cms.modules.search.SearchEngine;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
@@ -49,7 +52,7 @@ public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 	public void activate() {
 		searchEngine = new SearchEngine();
 		try {
-			searchEngine.open(configuration.getDataDir().toPath().resolve("index"), getContext().getSiteProperties().getOrDefault("language", "standard"));
+			searchEngine.open(configuration.getDataDir().toPath().resolve("index"), getContext().get(SitePropertiesFeature.class).siteProperties().getOrDefault("language", "standard"));
 
 			// stat reindexing
 			Thread.ofVirtual().start(() -> {
@@ -61,16 +64,16 @@ public class SearchLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 			throw new RuntimeException(e);
 		}
 		
-		getContext().getEventBus().register(ContentChangedEvent.class, (event) -> {
+		getContext().get(EventBusFeature.class).eventBus().register(ContentChangedEvent.class, (event) -> {
 			reindexContext();
 		});
-		getContext().getEventBus().register(TemplateChangedEvent.class, (event) -> {
+		getContext().get(EventBusFeature.class).eventBus().register(TemplateChangedEvent.class, (event) -> {
 			reindexContext();
 		});
 	}
 
 	protected void reindexContext() {
-		var contentPath = getContext().getDb().getFileSystem().resolve("content");
+		var contentPath = getContext().get(DBFeature.class).db().getFileSystem().resolve("content");
 		try {
 			searchEngine.clear();
 			Files.walkFileTree(contentPath, new FileIndexingVisitor(

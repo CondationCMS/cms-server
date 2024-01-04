@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L
@@ -21,14 +21,14 @@ package com.github.thmarx.cms.api.request.features;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.github.thmarx.cms.api.media.MediaService;
+import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.feature.Feature;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-public record SiteMediaServiceFeature(MediaService mediaService) implements Feature {
-
+@Slf4j
+public record EventBusFeature(EventBus eventBus) implements Feature {
 }

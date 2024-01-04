@@ -21,10 +21,10 @@ package com.github.thmarx.cms.modules.flexmark;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
+import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.request.features.SitePropertiesFeature;
 import com.vladsch.flexmark.ast.Link;
 import com.vladsch.flexmark.ext.anchorlink.AnchorLinkExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;

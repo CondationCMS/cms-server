@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L
@@ -23,12 +23,12 @@ package com.github.thmarx.cms.api.request.features;
  */
 
 import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.github.thmarx.cms.api.theme.Theme;
 
 /**
  *
  * @author t.marx
  */
-public record HookSystemFeature(HookSystem hookSystem) implements Feature {
+public record ThemeFeature(Theme theme) implements Feature {
 
 }

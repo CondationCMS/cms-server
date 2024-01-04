@@ -21,6 +21,9 @@ package com.github.thmarx.cms.modules.thymeleaf;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.feature.features.DBFeature;
+import com.github.thmarx.cms.api.feature.features.ServerPropertiesFeature;
+import com.github.thmarx.cms.api.feature.features.ThemeFeature;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
@@ -41,9 +44,9 @@ public class ThymeleafLifecycleExtension extends ModuleLifeCycleExtension<CMSMod
 	@Override
 	public void activate() {
 		templateEngine = new ThymeleafTemplateEngine(
-				getContext().getDb().getFileSystem(), 
-				getContext().getServerProperties(), 
-				getContext().getTheme()
+				getContext().get(DBFeature.class).db().getFileSystem(), 
+				getContext().get(ServerPropertiesFeature.class).serverProperties(), 
+				getContext().get(ThemeFeature.class).theme()
 		);
 	}
 

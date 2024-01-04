@@ -34,7 +34,7 @@ import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.extensions.ExtensionManager;
-import com.github.thmarx.cms.api.module.features.ContentRenderFeature;
+import com.github.thmarx.cms.api.feature.features.ContentRenderFeature;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileDB;

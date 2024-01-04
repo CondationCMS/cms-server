@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L
@@ -23,13 +23,12 @@ package com.github.thmarx.cms.api.request.features;
  */
 
 import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.feature.Feature;
 
 /**
  *
  * @author t.marx
  */
-public record ConfigurationFeature(Configuration configuration) implements Feature {
+public record SitePropertiesFeature(SiteProperties siteProperties) implements Feature {
 
 }

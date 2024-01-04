@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.module;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L
@@ -22,15 +22,13 @@ package com.github.thmarx.cms.api.module;
  * #L%
  */
 
-import com.github.thmarx.cms.api.feature.FeatureContainer;
-import com.github.thmarx.modules.api.Context;
-import lombok.RequiredArgsConstructor;
+import com.github.thmarx.cms.api.db.DB;
+import com.github.thmarx.cms.api.feature.Feature;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class CMSModuleContext extends FeatureContainer implements Context {
-	
+public record DBFeature(DB db) implements Feature {
+
 }

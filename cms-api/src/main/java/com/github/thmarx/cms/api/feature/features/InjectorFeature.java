@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L
@@ -23,12 +23,12 @@ package com.github.thmarx.cms.api.request.features;
  */
 
 import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.google.inject.Injector;
 
 /**
  *
  * @author t.marx
  */
-public record ThemeFeature(Theme theme) implements Feature {
+public record InjectorFeature(Injector injector) implements Feature {
 
 }

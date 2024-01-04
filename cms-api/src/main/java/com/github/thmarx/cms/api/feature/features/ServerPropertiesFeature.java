@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request.features;
+package com.github.thmarx.cms.api.feature.features;
 
 /*-
  * #%L
@@ -22,13 +22,13 @@ package com.github.thmarx.cms.api.request.features;
  * #L%
  */
 
+import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.api.feature.Feature;
-import com.google.inject.Injector;
 
 /**
  *
  * @author t.marx
  */
-public record InjectorFeature(Injector injector) implements Feature {
+public record ServerPropertiesFeature(ServerProperties serverProperties) implements Feature {
 
 }

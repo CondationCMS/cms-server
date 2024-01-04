@@ -24,6 +24,7 @@ package com.github.thmarx.cms.modules.forms;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.thmarx.cms.api.feature.features.DBFeature;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
@@ -61,7 +62,7 @@ public class FormsLifecycleExtension extends ModuleLifeCycleExtension<CMSModuleC
 				.expireAfterWrite(Duration.ofMinutes(5))
 				.build();
 		
-		Path formsConfig = getContext().getDb().getFileSystem().resolve("config/forms.yaml");
+		Path formsConfig = getContext().get(DBFeature.class).db().getFileSystem().resolve("config/forms.yaml");
 		try {
 			FORMSCONFIG = new Yaml().loadAs(Files.readString(formsConfig, StandardCharsets.UTF_8), FormsConfig.class);
 			

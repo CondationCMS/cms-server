@@ -22,10 +22,10 @@ package com.github.thmarx.cms.modules.marked;
  * #L%
  */
 import com.github.thmarx.cms.api.SiteProperties;
+import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
+import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.request.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.request.features.SitePropertiesFeature;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Context;

@@ -22,6 +22,9 @@ package com.github.thmarx.cms.modules.pebble;
  * #L%
  */
 
+import com.github.thmarx.cms.api.feature.features.DBFeature;
+import com.github.thmarx.cms.api.feature.features.ServerPropertiesFeature;
+import com.github.thmarx.cms.api.feature.features.ThemeFeature;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.modules.api.ModuleLifeCycleExtension;
 import com.github.thmarx.modules.api.annotation.Extension;
@@ -41,7 +44,11 @@ public class PebbleLifecycleExtension extends ModuleLifeCycleExtension<CMSModule
 
 	@Override
 	public void activate() {
-		templateEngine = new PebbleTemplateEngine(getContext().getDb(), getContext().getServerProperties(), getContext().getTheme());
+		templateEngine = new PebbleTemplateEngine(
+				getContext().get(DBFeature.class).db(), 
+				getContext().get(ServerPropertiesFeature.class).serverProperties(), 
+				getContext().get(ThemeFeature.class).theme()
+		);
 	}
 
 	@Override

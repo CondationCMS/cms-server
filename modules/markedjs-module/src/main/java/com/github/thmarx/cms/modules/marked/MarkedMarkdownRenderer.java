@@ -80,8 +80,8 @@ public class MarkedMarkdownRenderer implements MarkdownRenderer {
 	private String preview() {
 		return """
 			var ThreadLocalRequestContext = Java.type('com.github.thmarx.cms.api.request.ThreadLocalRequestContext');
-            var IsPreviewFeature = Java.type('com.github.thmarx.cms.api.request.features.IsPreviewFeature');
-			var SitePropertiesFeature = Java.type('com.github.thmarx.cms.api.request.features.SitePropertiesFeature');
+            var IsPreviewFeature = Java.type('com.github.thmarx.cms.api.feature.features.IsPreviewFeature');
+			var SitePropertiesFeature = Java.type('com.github.thmarx.cms.api.feature.features.SitePropertiesFeature');
             
             let requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
             

@@ -23,8 +23,10 @@ package com.github.thmarx.cms.modules.search.extension;
  */
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentResponse;
+import com.github.thmarx.cms.api.feature.features.ContentRenderFeature;
+import com.github.thmarx.cms.api.feature.features.DBFeature;
+import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
-import com.github.thmarx.cms.api.module.features.ContentRenderFeature;
 import com.github.thmarx.cms.api.utils.HTTPUtil;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.api.utils.SectionUtil;
@@ -77,7 +79,7 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 			}
 			
 			var uri = PathUtil.toURI(file, contentBase);
-			uri = HTTPUtil.modifyUrl(uri, moduleContext.getSiteProperties());
+			uri = HTTPUtil.modifyUrl(uri, moduleContext.get(SitePropertiesFeature.class).siteProperties());
 			
 			var content = getContent(file);
 
@@ -113,7 +115,7 @@ public class FileIndexingVisitor extends SimpleFileVisitor<Path> {
 	}
 
 	private boolean shouldIndex (Path contentFile) {
-		Optional<Map<String, Object>> meta = moduleContext.getDb().getContent().getMeta(PathUtil.toRelativeFile(contentFile, contentBase));
+		Optional<Map<String, Object>> meta = moduleContext.get(DBFeature.class).db().getContent().getMeta(PathUtil.toRelativeFile(contentFile, contentBase));
 		
 		return (Boolean)((Map<String, Object>) meta
 				.orElse(Map.of())

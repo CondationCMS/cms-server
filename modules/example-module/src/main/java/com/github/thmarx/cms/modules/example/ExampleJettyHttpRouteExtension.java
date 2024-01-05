@@ -22,14 +22,10 @@ package com.github.thmarx.cms.modules.example;
  * #L%
  */
 
-import com.github.thmarx.cms.api.extensions.HttpHandlerExtensionPoint;
-import com.github.thmarx.cms.api.extensions.Mapping;
+import com.github.thmarx.cms.api.extensions.HttpRouteExtensionPoint;
 import com.github.thmarx.modules.api.annotation.Extension;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
-import lombok.RequiredArgsConstructor;
-import org.eclipse.jetty.http.pathmap.PathSpec;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -38,28 +34,16 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@Extension(HttpHandlerExtensionPoint.class)
-public class ExampleJettyHttpHandlerExtension extends HttpHandlerExtensionPoint {
+@Extension(HttpRouteExtensionPoint.class)
+public class ExampleJettyHttpRouteExtension extends HttpRouteExtensionPoint {
 
 	@Override
-	public Mapping getMapping() {
-		Mapping mapping = new Mapping();
-		mapping.add(PathSpec.from("/world"), new ExampleHandler("Hello world!"));
-		mapping.add(PathSpec.from("/people"), new ExampleHandler("Hello people!"));
-		
-		return mapping;
+	public String getRoute() {
+		return "example/route";
 	}
-	
-	@RequiredArgsConstructor
-	public static class ExampleHandler extends Handler.Abstract {
 
-		private final String message;
-		
-		@Override
-		public boolean handle(Request request, Response response, Callback callback) throws Exception {
-			response.write(true, ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)), callback);
-			return true;
-		}
-		
+	@Override
+	public void handle(Request request, Response response, Callback callback) {
+		response.write(true, ByteBuffer.wrap("example route".getBytes(StandardCharsets.UTF_8)), callback);
 	}
 }

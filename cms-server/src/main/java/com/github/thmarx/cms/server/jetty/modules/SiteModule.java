@@ -50,6 +50,7 @@ import com.github.thmarx.cms.filesystem.functions.taxonomy.TaxonomyFunction;
 import com.github.thmarx.cms.media.FileMediaService;
 import com.github.thmarx.cms.media.MediaManager;
 import com.github.thmarx.cms.request.RequestContextFactory;
+import com.github.thmarx.cms.server.SiteConfigurationReloadTask;
 import com.github.thmarx.cms.theme.DefaultTheme;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
@@ -81,6 +82,8 @@ public class SiteModule extends AbstractModule {
 		bind(TaxonomyFunction.class).in(Singleton.class);
 		bind(ContentNodeMapper.class).in(Singleton.class);
 		bind(TaxonomyResolver.class).in(Singleton.class);
+		
+		bind(SiteConfigurationReloadTask.class).in(Singleton.class);
 	}
 
 	@Provides

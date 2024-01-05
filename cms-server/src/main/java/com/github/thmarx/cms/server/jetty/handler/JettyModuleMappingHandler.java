@@ -111,7 +111,9 @@ public class JettyModuleMappingHandler extends Handler.AbstractContainer {
 	private String getModulePath(Request request) {
 		var path = request.getHttpURI().getPath();
 		var contextPath = request.getContext().getContextPath();
-		path = path.replace(contextPath, "");
+		if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
+			path = path.replaceFirst(contextPath, "");
+		}
 
 		if (path.startsWith("/")) {
 			path = path.substring(1);

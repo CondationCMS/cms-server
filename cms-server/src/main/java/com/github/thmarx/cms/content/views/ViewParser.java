@@ -5,8 +5,11 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.representer.Representer;
 
 /*-
  * #%L
@@ -29,16 +32,22 @@ import org.yaml.snakeyaml.Yaml;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 /**
  *
  * @author t.marx
  */
 public class ViewParser {
-	
-	public static View parse (final Path viewFile) throws IOException {
-		try(var input = Files.newBufferedReader(viewFile, StandardCharsets.UTF_8)) {
-			return new Yaml().loadAs(input, View.class);
+
+	public static View parse(final Path viewFile) throws IOException {
+		try (var input = Files.newBufferedReader(viewFile, StandardCharsets.UTF_8)) {
+
+			Representer representer = new Representer(new DumperOptions());
+			representer.getPropertyUtils().setSkipMissingProperties(true);
+			LoaderOptions loaderOptions = new LoaderOptions();
+			Constructor constructor = new Constructor(View.class, loaderOptions);
+			Yaml yaml = new Yaml(constructor, representer);
+
+			return yaml.loadAs(input, View.class);
 		}
 	}
 }

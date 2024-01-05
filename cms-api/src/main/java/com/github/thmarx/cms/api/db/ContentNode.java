@@ -58,6 +58,13 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 		this(uri, name, data, false, new HashMap<String, ContentNode>(), lastmodified);
 	}
 
+	public String nodeType () {
+		return (String)data.getOrDefault(Constants.MetaFields.TYPE, Constants.NodeType.PAGE);
+	}
+	public boolean isView () {
+		return Constants.NodeType.VIEW.equals(nodeType());
+	}
+	
 	public String contentType() {
 		String defaultContentType = Constants.DEFAULT_CONTENT_TYPE;
 		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null) {

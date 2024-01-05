@@ -34,6 +34,7 @@ import com.github.thmarx.cms.server.VHost;
 import com.github.thmarx.cms.server.jetty.handler.JettyMediaHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyModuleMappingHandler;
 import com.github.thmarx.cms.server.jetty.handler.JettyTaxonomyHandler;
+import com.github.thmarx.cms.server.jetty.handler.JettyViewHandler;
 import com.github.thmarx.modules.api.ModuleManager;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
@@ -62,7 +63,8 @@ public class JettyVHost extends VHost {
 
 		var contentHandler = injector.getInstance(JettyContentHandler.class);
 		var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
-		var defaultHandlerSequence = new Handler.Sequence(taxonomyHandler, contentHandler);
+		var viewHandler = injector.getInstance(JettyViewHandler.class);
+		var defaultHandlerSequence = new Handler.Sequence(viewHandler, taxonomyHandler, contentHandler);
 
 		log.debug("create assets handler for site");
 		ResourceHandler assetsHandler = injector.getInstance(Key.get(ResourceHandler.class, Names.named("site")));

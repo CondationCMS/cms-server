@@ -22,6 +22,7 @@ package com.github.thmarx.cms.content;
  * #L%
  */
 
+import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
@@ -121,6 +122,8 @@ public class ContentResolver {
 		final ContentNode contentNode = db.getContent().byUri(uri).get();
 		if (contentNode.isRedirect()) {
 			return Optional.of(new ContentResponse(contentNode));
+		} else if (!Constants.NodeType.PAGE.equals(contentNode.nodeType())) {
+			return Optional.empty();
 		}
 		
 		try {

@@ -42,6 +42,7 @@ import com.github.thmarx.cms.content.ContentRenderer;
 import com.github.thmarx.cms.content.ContentResolver;
 import com.github.thmarx.cms.content.DefaultContentParser;
 import com.github.thmarx.cms.content.TaxonomyResolver;
+import com.github.thmarx.cms.content.ViewResolver;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.filesystem.FileDB;
@@ -212,5 +213,12 @@ public class SiteModule extends AbstractModule {
 	public ContentResolver contentResolver (@Named("content") Path contentBase, ContentRenderer contentRenderer,
 			FileDB db) {
 		return new ContentResolver(contentBase, contentRenderer, db);
+	}
+	
+	@Provides
+	@Singleton
+	public ViewResolver viewResolver (@Named("content") Path contentBase, ContentRenderer contentRenderer,
+			FileDB db) {
+		return new ViewResolver(contentBase, contentRenderer, db);
 	}
 }

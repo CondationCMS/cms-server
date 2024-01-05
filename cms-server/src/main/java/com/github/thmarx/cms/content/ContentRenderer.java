@@ -105,17 +105,18 @@ public class ContentRenderer {
 		});
 	}
 	
-	public String renderView(final Path viewFile, final View view, final RequestContext requestContext) throws IOException {
+	public String renderView(final Path viewFile, final View view, final ContentNode contentNode, final RequestContext requestContext, final Page<ListNode> page) throws IOException {
 		return render(viewFile, requestContext, Collections.emptyMap(), 
-				view.getMeta(), "", (model) -> {
-			model.values.put("nodes", view.getNodes(
-				db, 
-				viewFile, 
-				contentParser, 
-				requestContext.get(RenderContext.class).markdownRenderer(), 
-				requestContext.get(RequestExtensions.class).getContext(), 
-				requestContext.get(RequestFeature.class).queryParameters(), requestContext)
-			);
+				contentNode.data(), "", (model) -> {
+					model.values.put("page", page);
+//			model.values.put("nodes", view.getNodes(
+//				db, 
+//				viewFile, 
+//				contentParser, 
+//				requestContext.get(RenderContext.class).markdownRenderer(), 
+//				requestContext.get(RequestExtensions.class).getContext(), 
+//				requestContext.get(RequestFeature.class).queryParameters(), requestContext)
+//			);
 			
 		});
 	}

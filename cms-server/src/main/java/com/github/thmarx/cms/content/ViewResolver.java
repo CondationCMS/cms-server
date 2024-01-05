@@ -21,6 +21,7 @@ package com.github.thmarx.cms.content;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.content.ContentResponse;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.DB;
@@ -28,13 +29,11 @@ import com.github.thmarx.cms.api.request.RequestContext;
 import com.github.thmarx.cms.api.feature.features.RequestFeature;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.content.views.ViewParser;
+import com.github.thmarx.cms.request.RenderContext;
+import com.github.thmarx.cms.request.RequestExtensions;
 import com.google.common.base.Strings;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +53,10 @@ public class ViewResolver {
 	private final DB db;
 
 	public Optional<ContentResponse> getViewContent(final RequestContext context) {
+		return getViewContent(context, true);
+	}
+
+	public Optional<ContentResponse> getViewContent(final RequestContext context, final boolean checkVisibility) {
 		String path;
 		if (Strings.isNullOrEmpty(context.get(RequestFeature.class).uri())) {
 			path = "";
@@ -65,24 +68,50 @@ public class ViewResolver {
 		}
 
 		var contentPath = contentBase.resolve(path);
-		
-		try {
-			if (Files.exists(contentPath) && Files.isDirectory(contentPath)) {
-				if (isView(contentPath)) {
-					var viewFile = contentPath.resolve("view.yaml");
-					var view = ViewParser.parse(viewFile);
-					var content = contentRenderer.renderView(viewFile, view, context);
-					return Optional.of(new ContentResponse(content, null));
-				}
+		Path contentFile = null;
+		if (Files.exists(contentPath) && Files.isDirectory(contentPath)) {
+			// use index.md
+			var tempFile = contentPath.resolve("index.md");
+			if (Files.exists(tempFile)) {
+				contentFile = tempFile;
+			} else {
+				return Optional.empty();
 			}
+		} else {
+			var temp = contentBase.resolve(path + ".md");
+			if (Files.exists(temp)) {
+				contentFile = temp;
+			} else {
+				return Optional.empty();
+			}
+		}
+
+		var uri = PathUtil.toRelativeFile(contentFile, contentBase);
+		if (checkVisibility && !db.getContent().isVisible(uri)) {
+			return Optional.empty();
+		}
+
+		final ContentNode contentNode = db.getContent().byUri(uri).get();
+		if (!contentNode.isView()) {
+			return Optional.empty();
+		}
+
+		try {
+			var view = ViewParser.parse(contentFile);
+			
+			var page = view.getNodes(
+				db, 
+				contentFile, 
+				context.get(ContentParser.class), 
+				context.get(RenderContext.class).markdownRenderer(), 
+				context.get(RequestExtensions.class).getContext(), 
+				context.get(RequestFeature.class).queryParameters(), context);
+			
+			var content = contentRenderer.renderView(contentFile, view, contentNode, context, page);
+			return Optional.of(new ContentResponse(content, contentNode));
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
 		return Optional.empty();
-	}
-
-	private boolean isView(final Path path) {
-		var viewFile = path.resolve("view.yaml");
-		return Files.exists(viewFile);
 	}
 }

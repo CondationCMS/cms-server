@@ -22,9 +22,7 @@ package com.github.thmarx.cms.server.jetty.handler;
  * #L%
  */
 import com.github.thmarx.cms.api.content.ContentResponse;
-import com.github.thmarx.cms.api.content.TaxonomyResponse;
 import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.content.TaxonomyResolver;
 import com.github.thmarx.cms.content.ViewResolver;
 import com.github.thmarx.cms.request.RequestContextFactory;
 import com.google.inject.Inject;

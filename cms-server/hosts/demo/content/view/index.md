@@ -1,6 +1,7 @@
 ## YAML Template.
 ---
 template: views/test.html
+type: view
 meta:
   title: Content-Template view
 content:

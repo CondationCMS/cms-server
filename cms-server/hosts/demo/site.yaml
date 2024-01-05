@@ -13,6 +13,7 @@ modules:
     - markedj-module
     - seo-module
     - forms-module
+    - example-module
 media:
   formats:
     - name: small

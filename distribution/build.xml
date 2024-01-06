@@ -3,7 +3,7 @@
 	<property name="version">2024.01</property>
 	<property name="cms.version">4.0.0</property>
 	
-	<property name="markedj.version">v2.0.0</property>
+	<property name="markedj.version">v2.1.0</property>
 	<property name="flexmark.version">v1.0.0</property>
 	<property name="markedjs.version">v1.0.0</property>
 	<property name="pebble.version">v1.0.0</property>
@@ -44,6 +44,9 @@
 		</copy>
 		<copy todir="build/hosts">
 			<fileset dir="temp/cms-server-${cms.version}/hosts"/>
+		</copy>
+		<copy todir="build/modules/example-module">
+			<fileset dir="temp/cms-server-${cms.version}/modules/example-module"/>
 		</copy>
 		<copy todir="build/">
 			<resources>

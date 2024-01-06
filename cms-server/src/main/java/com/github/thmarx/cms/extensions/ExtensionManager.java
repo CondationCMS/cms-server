@@ -126,7 +126,7 @@ public class ExtensionManager implements AutoCloseable {
 				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
 				.map(extFile -> {
 					try {
-						log.debug("load extension {}", extFile.getFileName().toString());
+						log.trace("load extension {}", extFile.getFileName().toString());
 						return Source.newBuilder(
 								"js",
 								Files.readString(extFile, StandardCharsets.UTF_8),

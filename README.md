@@ -12,6 +12,8 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **MAINTENANCE** refactor module context to use features [#135](https://github.com/thmarx/cms/issues/135)
 **ATTENTION:** Migration required!!!
 * **MAINTENANCE** move modules to separate repositories [#110](https://github.com/thmarx/cms/issues/110)
+* **FEATURE** custom http routes [#142](https://github.com/thmarx/cms/issues/142)
+* **FEATURE** views introduced [#80](https://github.com/thmarx/cms/issues/80)
 
 ## 3.3.0
 

@@ -40,6 +40,6 @@ public record ContentResponse(String content, String contentType, ContentNode no
 	}
 	
 	public boolean isRedirect () {
-		return node.isRedirect();
+		return node != null && node.isRedirect();
 	}
 };

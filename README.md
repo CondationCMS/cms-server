@@ -6,6 +6,10 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 5.0.0
+
+* **FEATURE** Cache ResourceBundles in messages [#185](https://github.com/thmarx/cms/issues/185)
+
 ## 4.14.1
 
 * **BUGFIX** TaxonomyResolver does not set page properties correctly [#184](https://github.com/thmarx/cms/issues/184)

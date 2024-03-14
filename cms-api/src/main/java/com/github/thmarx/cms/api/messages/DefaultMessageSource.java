@@ -21,12 +21,14 @@ package com.github.thmarx.cms.api.messages;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.api.SiteProperties;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -40,17 +42,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultMessageSource implements MessageSource {
-	
+
 	final SiteProperties siteProperties;
 	final Path messageFolder;
-	
+
+	final Cache<String, ResourceBundle> bundles = CacheBuilder.newBuilder()
+			.maximumSize(10)
+			.expireAfterWrite(Duration.ofSeconds(10))
+			.build();
+
 	@Override
-	public String getLabel (final String bundle, final String label) {
+	public String getLabel(final String bundle, final String label) {
 		return getLabel(bundle, label, List.of());
 	}
-	
+
 	@Override
-	public String getLabel (final String bundle, final String label, final List<Object> data) {
+	public String getLabel(final String bundle, final String label, final List<Object> data) {
 		try {
 			var resourceBundle = fromClassLoader(bundle, siteProperties.locale());
 			if (resourceBundle != null) {
@@ -62,14 +69,17 @@ public class DefaultMessageSource implements MessageSource {
 		}
 		return "[" + label + "]";
 	}
-	
+
 	protected ResourceBundle fromClassLoader(final String bundleName) throws Exception {
-        return fromClassLoader(bundleName, Locale.getDefault());
-    }
-	
+		return fromClassLoader(bundleName, Locale.getDefault());
+	}
+
 	protected ResourceBundle fromClassLoader(final String bundleName, final Locale locale) throws Exception {
-        URL[] urls = {messageFolder.toUri().toURL()};
-        ClassLoader loader = new URLClassLoader(urls);
-        return ResourceBundle.getBundle(bundleName, locale, loader);
-    }
+		var cacheKey = "%s-%s".formatted(bundleName, locale.toLanguageTag());
+		return bundles.get(bundleName, () -> {
+			URL[] urls = {messageFolder.toUri().toURL()};
+			ClassLoader loader = new URLClassLoader(urls);
+			return ResourceBundle.getBundle(bundleName, locale, loader);
+		});
+	}
 }

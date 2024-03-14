@@ -23,12 +23,10 @@ package com.github.thmarx.cms.api.messages;
  */
 
 import com.github.thmarx.cms.api.SiteProperties;
-import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;

@@ -1,9 +1,5 @@
 package com.github.thmarx.cms.api.extensions;
 
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.util.Callback;
-
 /*-
  * #%L
  * cms-api

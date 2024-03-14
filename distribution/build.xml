@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">4.14.1</property>
+	<property name="cms.version">4.15.0</property>
 	
 	<property name="pebble.version">v1.1.0</property>
 	<property name="thymeleaf.version">v1.1.0</property>

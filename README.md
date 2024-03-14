@@ -6,7 +6,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
-## 5.0.0
+## 4.15.0
 
 * **FEATURE** Cache ResourceBundles in messages [#185](https://github.com/thmarx/cms/issues/185)
 

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms.cli.commands;
 
 /*-
  * #%L
@@ -21,11 +21,8 @@ package com.github.thmarx.cms.cli;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.AddUser;
-import com.github.thmarx.cms.cli.commands.Extension;
-import com.github.thmarx.cms.cli.commands.RemoveUser;
-import com.github.thmarx.cms.cli.commands.Startup;
-import com.github.thmarx.cms.cli.commands.Stop;
+import com.github.thmarx.cms.cli.commands.extensions.InfoCommand;
+import com.github.thmarx.cms.cli.commands.extensions.InstallCommand;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -33,13 +30,17 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Extension.class})
+@CommandLine.Command(
+		name = "extension",
+		subcommands = {
+			InfoCommand.class,
+			InstallCommand.class
+		})
 @Slf4j
-public class ServerCommand implements Runnable {
+public class Extension implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("server command");
+		System.out.println("Subcommand needed: 'install', 'deinstall' or 'info'");
 	}
 }

@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms.extensions.repository;
 
 /*-
  * #%L
- * cms-server
+ * cms-extensions
  * %%
  * Copyright (C) 2023 - 2024 Marx-Software
  * %%
@@ -21,25 +21,24 @@ package com.github.thmarx.cms.cli;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.AddUser;
-import com.github.thmarx.cms.cli.commands.Extension;
-import com.github.thmarx.cms.cli.commands.RemoveUser;
-import com.github.thmarx.cms.cli.commands.Startup;
-import com.github.thmarx.cms.cli.commands.Stop;
-import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Extension.class})
-@Slf4j
-public class ServerCommand implements Runnable {
-
-	@Override
-	public void run() {
-		System.out.println("server command");
+public class RepositoryTest {
+	
+	@Test
+	public void getInfo() {
+		Repository repository = new Repository();
+		
+		var info = repository.getInfo("test-extension");
+		
+		Assertions.assertThat(info)
+				.containsEntry("id", "test-extension");
 	}
+	
 }

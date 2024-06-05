@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms;
 
 /*-
  * #%L
@@ -21,25 +21,25 @@ package com.github.thmarx.cms.cli;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.AddUser;
-import com.github.thmarx.cms.cli.commands.Extension;
-import com.github.thmarx.cms.cli.commands.RemoveUser;
-import com.github.thmarx.cms.cli.commands.Startup;
-import com.github.thmarx.cms.cli.commands.Stop;
-import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
+
+import java.io.IOException;
+import java.util.Properties;
+import org.semver4j.Semver;
 
 /**
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Extension.class})
-@Slf4j
-public class ServerCommand implements Runnable {
+public class CMSServer {
 
-	@Override
-	public void run() {
-		System.out.println("server command");
+	public static Semver getVersion () {
+		try (var in = Startup.class.getResourceAsStream("application.properties")) {
+			Properties props = new Properties();
+			props.load(in);
+			
+			return Semver.coerce(props.getProperty("version"));
+		} catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 	}
 }

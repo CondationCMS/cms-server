@@ -32,13 +32,14 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  *
  * @author t.marx
  */
 @Slf4j
-public class Repository {
+public class RemoteRepository {
 
 	HttpClient client = HttpClient.newHttpClient();
 	
@@ -72,7 +73,7 @@ public class Repository {
 		return Optional.empty();
 	}
 	
-	public Map<String, Object> getInfo (String extension) {
+	public Optional<Extension> getInfo (String extension) {
 		try {
 			var moduleInfoUrl = "https://raw.githubusercontent.com/thmarx/extension-registry/main/%s/%s.yaml"
 					.formatted(extension, extension);
@@ -81,11 +82,12 @@ public class Repository {
 			HttpRequest request = HttpRequest.newBuilder(uri).build();
 			String content = client.send(request, BodyHandlers.ofString()).body();
 			
-			return new Yaml().load(content);
+			
+			return Optional.of(new Yaml().loadAs(content, Extension.class));
 		} catch (IOException | InterruptedException ex) {
 			log.error("", ex);
 		}
 		
-		return Collections.emptyMap();
+		return Optional.empty();
 	}
 }

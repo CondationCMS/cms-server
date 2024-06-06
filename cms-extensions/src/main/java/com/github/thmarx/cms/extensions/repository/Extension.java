@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms.extensions.repository;
 
 /*-
  * #%L
- * cms-server
+ * cms-extensions
  * %%
  * Copyright (C) 2023 - 2024 Marx-Software
  * %%
@@ -22,19 +22,20 @@ package com.github.thmarx.cms.cli;
  * #L%
  */
 
-import picocli.CommandLine;
+import lombok.Data;
 
 /**
  *
  * @author t.marx
  */
-public class CMSCli {
+@Data
+public class Extension {
 	
-	public static CommandLine getCommandLine () {
-		return new CommandLine(new ServerCommand());
-	}
-	
-	public static void main(String[] args) {
-        CMSCli.getCommandLine().execute(args);
-    }
+	private String id;
+	private String version;
+	private String name;
+	private String description;
+	private String author;
+	private String url;
+	private String compatibility;
 }

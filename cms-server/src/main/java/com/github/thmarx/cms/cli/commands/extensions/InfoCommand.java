@@ -21,10 +21,9 @@ package com.github.thmarx.cms.cli.commands.extensions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.CMSServer;
-import com.github.thmarx.cms.extensions.repository.Repository;
-import org.semver4j.Semver;
+import com.github.thmarx.cms.extensions.repository.RemoteRepository;
+import lombok.Setter;
 import picocli.CommandLine;
 
 /**
@@ -34,25 +33,31 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "info")
 public class InfoCommand implements Runnable {
 
-	Repository repository = new Repository();
-	
+	RemoteRepository repository = new RemoteRepository();
+
 	@CommandLine.Parameters(
 			paramLabel = "<extension>",
 			index = "0",
 			description = "The id of the extension."
 	)
+	@Setter
 	private String extension = "";
-	
+
 	@Override
 	public void run() {
 		System.out.println("ext info command");
-		System.out.println("module: " + repository.exists(extension));
-		if (repository.exists(extension)) {
-			var info = repository.getInfo(extension);
-			var compatibility = (String)info.get("compatibility");
-			System.out.println("server: " +  CMSServer.getVersion().getVersion());
-			System.out.println("compatibility: " +  compatibility);
-			System.out.println("compatible with server version: " + CMSServer.getVersion().satisfies(compatibility));
+		if (!repository.exists(extension)) {
+			throw new RuntimeException("Extension not available");
 		}
+		var info = repository.getInfo(extension).get();
+
+		System.out.println("extension: " + info.getId());
+		System.out.println("name: " + info.getName());
+		System.out.println("description: " + info.getDescription());
+		System.out.println("author: " + info.getAuthor());
+		System.out.println("url: " + info.getUrl());
+		System.out.println("compatibility: " + info.getCompatibility());
+		System.out.println("your server version: " + CMSServer.getVersion().getVersion());
+		System.out.println("compatibility with server version: " + CMSServer.getVersion().satisfies(info.getCompatibility()));
 	}
 }

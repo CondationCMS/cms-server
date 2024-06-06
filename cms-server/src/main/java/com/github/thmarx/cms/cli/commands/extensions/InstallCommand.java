@@ -22,7 +22,7 @@ package com.github.thmarx.cms.cli.commands.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.extensions.repository.Repository;
+import com.github.thmarx.cms.extensions.repository.RemoteRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +38,7 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "install")
 public class InstallCommand extends AbstractExtensionCommand implements Runnable {
 
-	Repository repository = new Repository();
+	RemoteRepository repository = new RemoteRepository();
 	
 	@CommandLine.Parameters(
 			paramLabel = "<extension>",

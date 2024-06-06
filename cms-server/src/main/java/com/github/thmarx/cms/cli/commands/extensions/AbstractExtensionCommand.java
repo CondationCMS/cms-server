@@ -23,7 +23,7 @@ package com.github.thmarx.cms.cli.commands.extensions;
  */
 
 import com.github.thmarx.cms.CMSServer;
-import com.github.thmarx.cms.extensions.repository.Repository;
+import com.github.thmarx.cms.extensions.repository.RemoteRepository;
 import lombok.Getter;
 
 /**
@@ -33,11 +33,14 @@ import lombok.Getter;
 public abstract class AbstractExtensionCommand {
 
 	@Getter
-	private Repository repository = new Repository();
+	private RemoteRepository repository = new RemoteRepository();
 
 	public boolean isCompatibleWithServer(String extension) {
 		var info = repository.getInfo(extension);
-		var compatibility = (String) info.get("compatibility");
-		return CMSServer.getVersion().satisfies(compatibility);
+		if (info.isEmpty()) {
+			throw new RuntimeException("extension not found");
+		}
+		
+		return CMSServer.getVersion().satisfies(info.get().getCompatibility());
 	}
 }

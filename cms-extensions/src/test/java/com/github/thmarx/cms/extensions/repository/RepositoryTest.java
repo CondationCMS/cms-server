@@ -33,12 +33,13 @@ public class RepositoryTest {
 	
 	@Test
 	public void getInfo() {
-		Repository repository = new Repository();
+		RemoteRepository repository = new RemoteRepository();
 		
 		var info = repository.getInfo("test-extension");
 		
-		Assertions.assertThat(info)
-				.containsEntry("id", "test-extension");
+		Assertions.assertThat(info).isNotEmpty();
+		
+		Assertions.assertThat(info.get().getId()).isEqualTo("test-extension");
 	}
 	
 }

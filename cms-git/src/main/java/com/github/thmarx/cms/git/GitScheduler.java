@@ -22,8 +22,6 @@ package com.github.thmarx.cms.git;
  * #L%
  */
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronScheduleBuilder;

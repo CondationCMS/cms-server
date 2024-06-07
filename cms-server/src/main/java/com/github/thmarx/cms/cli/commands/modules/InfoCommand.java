@@ -21,9 +21,7 @@ package com.github.thmarx.cms.cli.commands.modules;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.themes.AbstractThemeCommand;
 import com.github.thmarx.cms.CMSServer;
-import com.github.thmarx.cms.extensions.repository.RemoteRepository;
 import lombok.Setter;
 import picocli.CommandLine;
 
@@ -32,7 +30,7 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @CommandLine.Command(name = "info")
-public class InfoCommand extends AbstractThemeCommand implements Runnable {
+public class InfoCommand extends AbstractModuleCommand implements Runnable {
 
 	@CommandLine.Parameters(
 			paramLabel = "<module>",

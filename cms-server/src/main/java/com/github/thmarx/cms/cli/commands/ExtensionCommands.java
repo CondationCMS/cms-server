@@ -21,8 +21,8 @@ package com.github.thmarx.cms.cli.commands;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.themes.InfoCommand;
-import com.github.thmarx.cms.cli.commands.themes.GetCommand;
+import com.github.thmarx.cms.cli.commands.extensions.InfoCommand;
+import com.github.thmarx.cms.cli.commands.extensions.InstallCommand;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -31,16 +31,16 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @CommandLine.Command(
-		name = "theme",
+		name = "extension",
 		subcommands = {
 			InfoCommand.class,
-			GetCommand.class
+			InstallCommand.class
 		})
 @Slf4j
-public class Theme implements Runnable {
+public class ExtensionCommands implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Subcommand needed: 'install' or 'info'");
+		System.out.println("Subcommand needed: 'install', 'deinstall' or 'info'");
 	}
 }

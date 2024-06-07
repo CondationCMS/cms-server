@@ -39,16 +39,16 @@ public class InfoCommand extends AbstractThemeCommand implements Runnable {
 			description = "The id of the module."
 	)
 	@Setter
-	private String module = "";
+	private String theme = "";
 
 	@Override
 	public void run() {
-		if (!getRepository().exists(module)) {
-			throw new RuntimeException("Module not available");
+		if (!getRepository().exists(theme)) {
+			throw new RuntimeException("Theme not available");
 		}
-		var info = getRepository().getInfo(module).get();
+		var info = getRepository().getInfo(theme).get();
 
-		System.out.println("module: " + info.getId());
+		System.out.println("theme: " + info.getId());
 		System.out.println("name: " + info.getName());
 		System.out.println("description: " + info.getDescription());
 		System.out.println("author: " + info.getAuthor());

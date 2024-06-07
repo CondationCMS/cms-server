@@ -21,8 +21,8 @@ package com.github.thmarx.cms.cli.commands;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.themes.InfoCommand;
-import com.github.thmarx.cms.cli.commands.themes.GetCommand;
+import com.github.thmarx.cms.cli.commands.modules.InfoCommand;
+import com.github.thmarx.cms.cli.commands.modules.GetCommand;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -37,7 +37,7 @@ import picocli.CommandLine;
 			GetCommand.class
 		})
 @Slf4j
-public class Module implements Runnable {
+public class ModuleCommands implements Runnable {
 
 	@Override
 	public void run() {

@@ -22,12 +22,12 @@ package com.github.thmarx.cms.cli;
  * #L%
  */
 import com.github.thmarx.cms.cli.commands.AddUser;
-import com.github.thmarx.cms.cli.commands.Extension;
+import com.github.thmarx.cms.cli.commands.ExtensionCommands;
 import com.github.thmarx.cms.cli.commands.RemoveUser;
 import com.github.thmarx.cms.cli.commands.Startup;
 import com.github.thmarx.cms.cli.commands.Stop;
-import com.github.thmarx.cms.cli.commands.Module;
-import com.github.thmarx.cms.cli.commands.Theme;
+import com.github.thmarx.cms.cli.commands.ModuleCommands;
+import com.github.thmarx.cms.cli.commands.ThemeCommands;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -36,7 +36,7 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Extension.class, Module.class, Theme.class})
+	Startup.class, AddUser.class, RemoveUser.class, Stop.class, ExtensionCommands.class, ModuleCommands.class, ThemeCommands.class})
 @Slf4j
 public class ServerCommand implements Runnable {
 

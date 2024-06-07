@@ -1,8 +1,8 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms.extensions.repository;
 
 /*-
  * #%L
- * cms-server
+ * cms-extensions
  * %%
  * Copyright (C) 2023 - 2024 Marx-Software
  * %%
@@ -21,27 +21,22 @@ package com.github.thmarx.cms.cli;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.AddUser;
-import com.github.thmarx.cms.cli.commands.Extension;
-import com.github.thmarx.cms.cli.commands.RemoveUser;
-import com.github.thmarx.cms.cli.commands.Startup;
-import com.github.thmarx.cms.cli.commands.Stop;
-import com.github.thmarx.cms.cli.commands.Module;
-import com.github.thmarx.cms.cli.commands.Theme;
-import lombok.extern.slf4j.Slf4j;
-import picocli.CommandLine;
+
+import lombok.Data;
 
 /**
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Extension.class, Module.class, Theme.class})
-@Slf4j
-public class ServerCommand implements Runnable {
-
-	@Override
-	public void run() {
-		System.out.println("server command");
-	}
+@Data
+public class ThemeInfo {
+	
+	private String id;
+	private String version;
+	private String name;
+	private String description;
+	private String author;
+	private String url;
+	private String compatibility;
+	private String file;
 }

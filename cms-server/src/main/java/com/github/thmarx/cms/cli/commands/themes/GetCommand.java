@@ -1,4 +1,4 @@
-package com.github.thmarx.cms;
+package com.github.thmarx.cms.cli.commands.themes;
 
 /*-
  * #%L
@@ -22,43 +22,41 @@ package com.github.thmarx.cms;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import java.io.IOException;
-import java.nio.file.Files;
+import com.github.thmarx.cms.CMSServer;
 import java.nio.file.Path;
-import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.semver4j.Semver;
+import picocli.CommandLine;
 
 /**
  *
  * @author t.marx
  */
 @Slf4j
-public class CMSServer {
+@CommandLine.Command(name = "get")
+public class GetCommand extends AbstractThemeCommand implements Runnable {
 
-	public static boolean isRunning () {
-		if (!Files.exists(Path.of(Constants.PID_FILE))) {
-			return false;
-		}
-		try {
-			var pid = Files.readString(Path.of(Constants.PID_FILE));
+	@CommandLine.Parameters(
+			paramLabel = "<theme>",
+			index = "0",
+			description = "The id of the theme."
+	)
+	private String theme = "";
+	
+	@Override
+	public void run() {
+		
+		if (getRepository().exists(theme)) {
 			
-			return ProcessHandle.of(Long.parseLong(pid)).isPresent();
-		} catch (IOException ex) {
-			log.error("", ex);
+			if (!isCompatibleWithServer(theme)) {
+				throw new RuntimeException("theme is not compatible with server version");
+			}
+			
+			var info = getRepository().getInfo(theme).get();
+			
+			System.out.println("get theme");
+			System.out.println("from: " + info.getFile());
+			getRepository().download(info.getFile(), Path.of("themes/"));
 		}
-		return false;
 	}
 	
-	public static Semver getVersion () {
-		try (var in = Startup.class.getResourceAsStream("application.properties")) {
-			Properties props = new Properties();
-			props.load(in);
-			
-			return Semver.coerce(props.getProperty("version"));
-		} catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-	}
 }

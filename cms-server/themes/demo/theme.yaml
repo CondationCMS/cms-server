@@ -3,9 +3,7 @@ template:
   engine: thymeleaf
 modules:
   active:
-    - example-module
     - thymeleaf-module
-    - search-module
 media:
   formats:
     - name: small

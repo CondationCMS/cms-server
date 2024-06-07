@@ -1,25 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">4.18.1</property>
+	<property name="cms.version">4.19.0</property>
 	
 	<property name="pebble.version">v1.1.0</property>
 	<property name="thymeleaf.version">v1.1.0</property>
 	<property name="freemarker.version">v2.2.0</property>
-	<property name="seo.version">v1.2.0</property>
-	<property name="search.version">v1.2.0</property>
-	<property name="forms.version">v1.2.0</property>
 		
 	<target name="download-modules" description="--> download modules">
 		<echo>download template implementation modules</echo>
 		<get src="https://github.com/thmarx/freemarker-module/releases/download/${freemarker.version}/freemarker-module-bin.zip" dest="temp/freemarker-module-bin.zip"></get>
 		<get src="https://github.com/thmarx/pebble-module/releases/download/${pebble.version}/pebble-module-bin.zip" dest="temp/pebble-module-bin.zip"></get>
 		<get src="https://github.com/thmarx/thymeleaf-module/releases/download/${thymeleaf.version}/thymeleaf-module-bin.zip" dest="temp/thymeleaf-module-bin.zip"></get>
-		<echo>download seo module</echo>
-		<get src="https://github.com/thmarx/seo-module/releases/download/${seo.version}/seo-module-bin.zip" dest="temp/seo-module-bin.zip"></get>
-		<echo>download search module</echo>
-		<get src="https://github.com/thmarx/search-module/releases/download/${search.version}/search-module-bin.zip" dest="temp/search-module-bin.zip"></get>
-		<echo>download forms module</echo>
-		<get src="https://github.com/thmarx/forms-module/releases/download/${forms.version}/forms-module-bin.zip" dest="temp/forms-module-bin.zip"></get>
 	</target>
 	
 	<target name="unzip-modules">
@@ -27,9 +18,6 @@
 		<unzip src="temp/freemarker-module-bin.zip" dest="build/modules/" />
 		<unzip src="temp/thymeleaf-module-bin.zip" dest="build/modules/" />
 		<unzip src="temp/pebble-module-bin.zip" dest="build/modules/" />
-		<unzip src="temp/seo-module-bin.zip" dest="build/modules/" />
-		<unzip src="temp/search-module-bin.zip" dest="build/modules/" />
-		<unzip src="temp/forms-module-bin.zip" dest="build/modules/" />
 	</target>
 	
 	<target name="copy-server" description="--> copy server">

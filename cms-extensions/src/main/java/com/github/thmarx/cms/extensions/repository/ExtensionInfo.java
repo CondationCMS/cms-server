@@ -29,7 +29,7 @@ import lombok.Data;
  * @author t.marx
  */
 @Data
-public class Extension {
+public class ExtensionInfo {
 	
 	private String id;
 	private String version;

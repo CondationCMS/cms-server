@@ -27,12 +27,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  *
@@ -73,7 +70,7 @@ public class RemoteRepository {
 		return Optional.empty();
 	}
 	
-	public Optional<Extension> getInfo (String extension) {
+	public Optional<ExtensionInfo> getInfo (String extension) {
 		try {
 			var moduleInfoUrl = "https://raw.githubusercontent.com/thmarx/extension-registry/main/%s/%s.yaml"
 					.formatted(extension, extension);
@@ -83,7 +80,7 @@ public class RemoteRepository {
 			String content = client.send(request, BodyHandlers.ofString()).body();
 			
 			
-			return Optional.of(new Yaml().loadAs(content, Extension.class));
+			return Optional.of(new Yaml().loadAs(content, ExtensionInfo.class));
 		} catch (IOException | InterruptedException ex) {
 			log.error("", ex);
 		}

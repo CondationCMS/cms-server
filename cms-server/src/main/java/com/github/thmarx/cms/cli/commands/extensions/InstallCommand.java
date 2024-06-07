@@ -61,12 +61,12 @@ public class InstallCommand extends AbstractExtensionCommand implements Runnable
 		if (repository.exists(extension)) {
 			
 			if (!isCompatibleWithServer(extension)) {
-				throw new RuntimeException("module is not compatible with server version");
+				throw new RuntimeException("the extension is not compatible with server version");
 			}
 			
 			Optional<String> content = repository.getContent(extension);
 			if (content.isEmpty()) {
-				throw new RuntimeException("module content not found");
+				throw new RuntimeException("the extension content not found");
 			}
 			
 			try {

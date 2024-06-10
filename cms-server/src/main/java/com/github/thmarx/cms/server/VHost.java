@@ -94,6 +94,9 @@ public class VHost {
 	private final ScheduledExecutorService scheduledExecutorService;
 
 	@Getter
+	private Handler hostHandler;
+	
+	@Getter
 	protected Injector injector;
 
 	public VHost(final Path hostBase, final Configuration configuration, final ScheduledExecutorService scheduledExecutorService) {
@@ -114,6 +117,10 @@ public class VHost {
 		} catch (Exception ex) {
 			log.error("", ex);
 		}
+	}
+	
+	public void reload () {
+		System.out.println("reloading not implementated yet");
 	}
 
 	public void reloadConfiguration(Class<? extends Config> configToReload) {
@@ -173,7 +180,7 @@ public class VHost {
 		);
 	}
 
-	public Handler httpHandler() {
+	public Handler buildHttpHandler() {
 
 		var contentHandler = injector.getInstance(JettyContentHandler.class);
 		var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
@@ -248,7 +255,9 @@ public class VHost {
 		gzipHandler.addIncludedMimeTypes("text/css");
 		gzipHandler.addIncludedMimeTypes("application/javascript");
 
-		return gzipHandler;
+		hostHandler = gzipHandler;
+		
+		return hostHandler;
 	}
 
 	private String appendContextIfNeeded(final String path) {

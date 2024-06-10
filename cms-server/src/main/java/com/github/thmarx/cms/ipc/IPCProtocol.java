@@ -24,6 +24,7 @@ package com.github.thmarx.cms.ipc;
 
 import com.github.thmarx.cms.api.IPCProperties;
 import com.github.thmarx.cms.api.eventbus.Event;
+import com.github.thmarx.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.github.thmarx.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,14 @@ public class IPCProtocol {
 		
 		if ("shutdown".equals(command.getCommand())) {
 			eventConsumer.accept(new ServerShutdownInitiated());
+		} else if ("reload_host".equals(command.getCommand())) {
+			var hostHeader = command.getHeader("host");
+			if (!hostHeader.isPresent()) {
+				log.warn("host header not set");
+				return;
+			}
+			log.debug("trigger reload host event");
+			eventConsumer.accept(new ReloadHostEvent((String)hostHeader.get()));
 		}
 	}
 }

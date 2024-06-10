@@ -1,10 +1,10 @@
-package com.github.thmarx.cms.ipc;
+package com.github.thmarx.cms.api.eventbus.events.lifecycle;
 
 /*-
  * #%L
  * cms-server
  * %%
- * Copyright (C) 2023 - 2024 Marx-Software
+ * Copyright (C) 2023 Marx-Software
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,31 +21,11 @@ package com.github.thmarx.cms.ipc;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.github.thmarx.cms.api.eventbus.Event;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class Command {
-	
-	private Map<String, Object> headers = new HashMap<>();
-	
-	@Getter
-	public final String command;
-	
-	public Optional<Object> getHeader (String name) {
-		return Optional.ofNullable(headers.get(name));
-	}
-	
-	public Command setHeader (String name, Object value) {
-		headers.put(name, value);
-		return this;
-	}
+public record ReloadHostEvent(String host) implements Event {
 }

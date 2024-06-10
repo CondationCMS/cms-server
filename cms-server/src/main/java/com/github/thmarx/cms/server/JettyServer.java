@@ -29,6 +29,7 @@ import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
 import com.github.thmarx.cms.api.eventbus.Event;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.lifecycle.HostReadyEvent;
+import com.github.thmarx.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.github.thmarx.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.github.thmarx.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
 import com.github.thmarx.cms.eventbus.DefaultEventBus;
@@ -42,7 +43,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.github.thmarx.cms.server.VHost;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.function.Consumer;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -53,6 +53,7 @@ import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.QoSHandler;
 import org.eclipse.jetty.server.handler.ThreadLimitHandler;
+import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
@@ -65,20 +66,35 @@ public class JettyServer implements AutoCloseable {
 
 	private final ServerProperties properties;
 	private Server server;
-	
+
 	private ScheduledExecutorService scheduledExecutorService;
-	
+
 	private EventBus serverEventBus = new DefaultEventBus();
-	
-	public void fireServerEvent (Event event) {
+
+	List<VHost> vhosts = new ArrayList<>();
+	ContextHandlerCollection handlerCollection = new ContextHandlerCollection();
+
+	public void fireServerEvent(Event event) {
 		serverEventBus.publish(event);
 	}
 
+	public void reloadVHost(String vhost) {
+		log.debug("try reloading " + vhost);
+		vhosts.stream()
+				.filter(host -> host.id().equals(vhost))
+				.forEach(host -> {
+					try {
+						host.reload();
+					} catch (Exception e) {
+						log.error("", e);
+					}
+				});
+	}
+
 	public void startup() throws IOException {
-		
+
 		scheduledExecutorService = Executors.newScheduledThreadPool(1);
-		
-		List<VHost> vhosts = new ArrayList<>();
+
 		Files.list(Path.of("hosts")).forEach((hostPath) -> {
 			var props = hostPath.resolve("site.yaml");
 			if (Files.exists(props)) {
@@ -96,17 +112,20 @@ public class JettyServer implements AutoCloseable {
 			}
 		});
 
-		ContextHandlerCollection handlers = new ContextHandlerCollection();
 		vhosts.forEach(host -> {
 			log.debug("add virtual host : " + host.hostnames());
-			var httpHandler = host.httpHandler();
-			handlers.addHandler(httpHandler);
+			var httpHandler = host.buildHttpHandler();
+			handlerCollection.addHandler(httpHandler);
 		});
 
 		serverEventBus.register(ServerShutdownInitiated.class, (event) -> {
 			System.exit(0);
 		});
-		
+
+		serverEventBus.register(ReloadHostEvent.class, (event) -> {
+			reloadVHost(event.host());
+		});
+
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.debug("shutting down");
 
@@ -115,7 +134,7 @@ public class JettyServer implements AutoCloseable {
 				host.shutdown();
 			});
 			scheduledExecutorService.shutdownNow();
-			
+
 			log.debug("exit");
 		}));
 
@@ -141,25 +160,25 @@ public class JettyServer implements AutoCloseable {
 			log.info("enable application performance management");
 			ThreadLimitHandler threadLimitHandler = new ThreadLimitHandler(HttpHeader.X_FORWARDED_FOR.asString());
 			threadLimitHandler.setThreadLimit(apm.thread_limit());
-			threadLimitHandler.setHandler(handlers);
-			
+			threadLimitHandler.setHandler(handlerCollection);
+
 			QoSHandler qosHandler = new QoSHandler(threadLimitHandler);
 			qosHandler.setMaxRequestCount(apm.max_requests());
 			qosHandler.setMaxSuspend(apm.max_suspend());
-			
+
 			server.setHandler(qosHandler);
 		} else {
-			server.setHandler(handlers);
+			server.setHandler(handlerCollection);
 		}
-		
+
 		try {
 			server.start();
-			
+
 			vhosts.forEach(host -> {
 				host.getInjector().getInstance(EventBus.class).publish(new HostReadyEvent(host.id()));
 				host.getInjector().getInstance(EventBus.class).publish(new ServerReadyEvent());
 			});
-			
+
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

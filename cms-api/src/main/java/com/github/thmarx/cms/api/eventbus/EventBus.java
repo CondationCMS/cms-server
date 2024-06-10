@@ -33,5 +33,8 @@ public interface EventBus {
 	<T extends Event> void publish(final T event);
 
 	<T extends Event> void register(Class<T> eventClass, EventListener<T> listener);
+
+	public <T extends Event> void unregister(Class<T> eventClass, EventListener<T> listener);
 	
+	public void unregister(EventListener listener);
 }

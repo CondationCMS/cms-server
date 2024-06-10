@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package com.github.thmarx.cms.eventbus;
 
 /*-
@@ -34,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -42,21 +39,55 @@ import org.junit.jupiter.api.Test;
  */
 public class DefaultEventBusTest {
 	
-	static EventBus eventBus;
+	EventBus eventBus;
 	
-	@BeforeAll
-	static void setup () {
+	@BeforeEach
+	public void setup () {
 		eventBus = new DefaultEventBus();
 	}
 
 	@Test
-	public void testSomeMethod() {
+	public void register_unregister_event() {
 		var genericEvent = new GenericEvent("bla", Map.of("message", "Hello world!"));
 		var testListener = new TestListener();
 		
 		eventBus.register(GenericEvent.class, testListener);
 		
 		eventBus.publish(genericEvent);
+		
+		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
+			testListener.counter.get() == 1
+		);
+		
+		eventBus.unregister(GenericEvent.class, testListener);
+		
+		eventBus.publish(genericEvent);
+		
+		Awaitility.await().atLeast(Duration.ofSeconds(2));
+		
+		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
+			testListener.counter.get() == 1
+		);
+	}
+	
+	@Test
+	public void register_unregister_listener() {
+		var genericEvent = new GenericEvent("bla", Map.of("message", "Hello world!"));
+		var testListener = new TestListener();
+		
+		eventBus.register(GenericEvent.class, testListener);
+		
+		eventBus.publish(genericEvent);
+		
+		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
+			testListener.counter.get() == 1
+		);
+		
+		eventBus.unregister(testListener);
+		
+		eventBus.publish(genericEvent);
+		
+		Awaitility.await().atLeast(Duration.ofSeconds(2));
 		
 		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
 			testListener.counter.get() == 1

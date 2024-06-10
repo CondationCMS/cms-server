@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.Event;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -41,14 +42,27 @@ public class DefaultEventBus implements EventBus {
 		listeners = ArrayListMultimap.create();
 	}
 
+	private Multimap<Class<? extends Event>, EventListener> listeners () {
+		return ArrayListMultimap.create(listeners);
+	}
+	
 	@Override
 	public <T extends Event> void register(Class<T> eventClass, EventListener<T> listener) {
 		listeners.put(eventClass, listener);
 	}
+	
+	public <T extends Event> void unregister(Class<T> eventClass, EventListener<T> listener) {
+		if (listeners.containsKey(eventClass)) {
+			listeners.get(eventClass).remove(listener);
+		}
+	}
+	public void unregister(EventListener listener) {
+		listeners().keySet().forEach(eventClass -> unregister(eventClass, listener));
+	}
 
 	@Override
 	public <T extends Event> void publish(final T event) {
-		listeners.get(event.getClass()).forEach(listener -> {
+		listeners().get(event.getClass()).forEach(listener -> {
 			Thread.startVirtualThread(() -> {
 				try {
 					listener.consum(event);
@@ -61,7 +75,7 @@ public class DefaultEventBus implements EventBus {
 
 	@Override
 	public <T extends Event> void syncPublish(T event) {
-		listeners.get(event.getClass()).forEach(listener -> {
+		listeners().get(event.getClass()).forEach(listener -> {
 			try {
 				listener.consum(event);
 			} catch (Exception e) {

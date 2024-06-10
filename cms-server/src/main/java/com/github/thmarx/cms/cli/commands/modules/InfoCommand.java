@@ -56,5 +56,16 @@ public class InfoCommand extends AbstractModuleCommand implements Runnable {
 		System.out.println("compatibility: " + info.getCompatibility());
 		System.out.println("your server version: " + CMSServer.getVersion().getVersion());
 		System.out.println("compatibility with server version: " + CMSServer.getVersion().satisfies(info.getCompatibility()));
+		
+		System.out.println("local installed: " + isInstalled(info.getId()));
+		
+		if (isInstalled(info.getId())) {
+			var versionOpt = getLocaleModuleVersion(module);
+			if (versionOpt.isPresent()) {
+				System.out.println("installed version: " + versionOpt.get());
+			} else {
+				System.out.println("installed version: ERROR");
+			}
+		}
 	}
 }

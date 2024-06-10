@@ -37,7 +37,7 @@ import java.util.zip.ZipFile;
  *
  * @author marx
  */
-public class ModulePacker {
+public class InstallationHelper {
 
 	/**
 	 * Delets a dir recursively deleting anything inside it.
@@ -45,7 +45,7 @@ public class ModulePacker {
 	 * @param dir The dir to delete
 	 * @return true if the dir was successfully deleted
 	 */
-	protected static boolean deleteDirectory(File dir) {
+	public static boolean deleteDirectory(File dir) {
 		if (!dir.exists() || !dir.isDirectory()) {
 			return false;
 		}
@@ -62,7 +62,7 @@ public class ModulePacker {
 		return dir.delete();
 	}
 	
-	protected static boolean moveDirectoy (final File src, final File dest) {
+	public static boolean moveDirectoy (final File src, final File dest) {
 		return src.renameTo(dest);
 	}
 
@@ -74,7 +74,7 @@ public class ModulePacker {
 	 * @return the file
 	 * @throws IOException
 	 */
-	protected static File unpackArchive(File theFile, File targetDir) throws IOException {
+	public static File unpackArchive(File theFile, File targetDir) throws IOException {
 		if (!theFile.exists()) {
 			throw new IOException(theFile.getAbsolutePath() + " does not exist");
 		}

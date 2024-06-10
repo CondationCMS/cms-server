@@ -22,7 +22,7 @@ package com.github.thmarx.cms.cli.commands.themes;
  * #L%
  */
 
-import com.github.thmarx.cms.CMSServer;
+import com.github.thmarx.cms.extensions.repository.InstallationHelper;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -42,6 +42,9 @@ public class GetCommand extends AbstractThemeCommand implements Runnable {
 	)
 	private String theme = "";
 	
+	@CommandLine.Option(names = "-f", description = "force the update if theme is already installed")
+    boolean forceUpdate;
+	
 	@Override
 	public void run() {
 		
@@ -49,6 +52,14 @@ public class GetCommand extends AbstractThemeCommand implements Runnable {
 			
 			if (!isCompatibleWithServer(theme)) {
 				throw new RuntimeException("theme is not compatible with server version");
+			}
+			
+			if (isInstalled(theme) && !forceUpdate) {
+				throw new RuntimeException("theme is already installed, use -f to force an update");
+			}
+
+			if (isInstalled(theme)) {
+				InstallationHelper.deleteDirectory(getThemeFolder(theme).toFile());
 			}
 			
 			var info = getRepository().getInfo(theme).get();

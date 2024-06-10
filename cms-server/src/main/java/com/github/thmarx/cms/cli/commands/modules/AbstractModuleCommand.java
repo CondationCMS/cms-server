@@ -25,12 +25,21 @@ package com.github.thmarx.cms.cli.commands.modules;
 import com.github.thmarx.cms.CMSServer;
 import com.github.thmarx.cms.extensions.repository.ModuleInfo;
 import com.github.thmarx.cms.extensions.repository.RemoteModuleRepository;
+import java.io.IOException;
+import java.io.StringReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
+import java.util.Properties;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 public abstract class AbstractModuleCommand {
 
 	public static final String DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/thmarx/module-registry";
@@ -45,5 +54,30 @@ public abstract class AbstractModuleCommand {
 		}
 		
 		return CMSServer.getVersion().satisfies(info.get().getCompatibility());
+	}
+	
+	protected Path getModuleFolder (String theme) {
+		return Path.of("modules/" + theme);
+	}
+	
+	protected boolean isInstalled(String theme) {
+		return Files.exists(getModuleFolder(theme));
+	}
+
+	protected Optional<String> getLocaleModuleVersion(String theme) {
+		try {
+			var modulePath = getModuleFolder(theme);
+			if (!Files.exists(modulePath)) {
+				return Optional.empty();
+			}
+			
+			Properties props = new Properties();
+			props.load(new StringReader(Files.readString(modulePath.resolve("module.properties"))));
+			
+			return Optional.ofNullable(props.getProperty("version"));
+		} catch (IOException ex) {
+			log.error("", ex);
+		}
+		return Optional.empty();
 	}
 }

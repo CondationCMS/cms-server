@@ -21,29 +21,56 @@ package com.github.thmarx.cms.cli.commands.themes;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.CMSServer;
 import com.github.thmarx.cms.extensions.repository.ModuleInfo;
 import com.github.thmarx.cms.extensions.repository.RemoteModuleRepository;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 public abstract class AbstractThemeCommand {
 
 	public static final String DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/thmarx/theme-registry";
-	
+
 	@Getter
 	private RemoteModuleRepository<ModuleInfo> repository = new RemoteModuleRepository(ModuleInfo.class, DEFAULT_REGISTRY_URL);
 
-	public boolean isCompatibleWithServer(String extension) {
+	protected Path getThemeFolder (String theme) {
+		return Path.of("themes/" + theme);
+	}
+	
+	protected boolean isCompatibleWithServer(String extension) {
 		var info = repository.getInfo(extension);
 		if (info.isEmpty()) {
 			throw new RuntimeException("theme not found");
 		}
-		
+
 		return CMSServer.getVersion().satisfies(info.get().getCompatibility());
+	}
+
+	protected boolean isInstalled(String theme) {
+		return Files.exists(getThemeFolder(theme));
+	}
+
+	protected Optional<String> getLocaleThemeVersion(String theme) {
+		try {
+			var themePath = getThemeFolder(theme);
+			if (!Files.exists(themePath)) {
+				return Optional.empty();
+			}
+			new Yaml().load(Files.readString(themePath));
+		} catch (IOException ex) {
+			log.error("", ex);
+		}
+		return Optional.empty();
 	}
 }

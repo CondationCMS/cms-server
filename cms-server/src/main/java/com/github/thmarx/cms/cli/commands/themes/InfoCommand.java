@@ -22,14 +22,15 @@ package com.github.thmarx.cms.cli.commands.themes;
  * #L%
  */
 import com.github.thmarx.cms.CMSServer;
-import com.github.thmarx.cms.extensions.repository.RemoteRepository;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 @CommandLine.Command(name = "info")
 public class InfoCommand extends AbstractThemeCommand implements Runnable {
 
@@ -57,5 +58,18 @@ public class InfoCommand extends AbstractThemeCommand implements Runnable {
 		System.out.println("compatibility: " + info.getCompatibility());
 		System.out.println("your server version: " + CMSServer.getVersion().getVersion());
 		System.out.println("compatibility with server version: " + CMSServer.getVersion().satisfies(info.getCompatibility()));
+		System.out.println("local installed: " + isInstalled(info.getId()));
+		
+		if (isInstalled(info.getId())) {
+			var versionOpt = getLocaleThemeVersion(theme);
+			if (versionOpt.isPresent()) {
+				System.out.println("installed version: " + versionOpt.get());
+			} else {
+				System.out.println("installed version: ERROR");
+			}
+		}
 	}
+	
+	
+
 }

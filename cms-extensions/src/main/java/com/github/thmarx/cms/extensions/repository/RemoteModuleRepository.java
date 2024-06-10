@@ -103,9 +103,9 @@ public class RemoteModuleRepository<T> {
 
 			var downloaded = response.body();
 			
-			File moduleTempDir = ModulePacker.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
+			File moduleTempDir = InstallationHelper.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
 
-			ModulePacker.moveDirectoy(moduleTempDir, target.resolve(moduleTempDir.getName()).toFile());
+			InstallationHelper.moveDirectoy(moduleTempDir, target.resolve(moduleTempDir.getName()).toFile());
 		} catch (Exception ex) {
 			log.error("", ex);
 			throw new RuntimeException("error downloading module");

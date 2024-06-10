@@ -41,6 +41,6 @@ public class ModuleCommands implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Subcommand needed: 'install' or 'info'");
+		System.out.println("Subcommand needed: 'get' or 'info'");
 	}
 }

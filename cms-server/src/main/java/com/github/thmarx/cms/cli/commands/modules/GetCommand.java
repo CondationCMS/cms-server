@@ -21,9 +21,8 @@ package com.github.thmarx.cms.cli.commands.modules;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.github.thmarx.cms.cli.commands.themes.AbstractThemeCommand;
 import com.github.thmarx.cms.CMSServer;
+import com.github.thmarx.cms.extensions.repository.InstallationHelper;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -34,7 +33,7 @@ import picocli.CommandLine;
  */
 @Slf4j
 @CommandLine.Command(name = "get")
-public class GetCommand extends AbstractThemeCommand implements Runnable {
+public class GetCommand extends AbstractModuleCommand implements Runnable {
 
 	@CommandLine.Parameters(
 			paramLabel = "<module>",
@@ -42,27 +41,40 @@ public class GetCommand extends AbstractThemeCommand implements Runnable {
 			description = "The id of the module."
 	)
 	private String module = "";
-	
+
+	@CommandLine.Option(names = "-f", description = "force the update if module is already installed")
+	boolean forceUpdate;
+
 	@Override
 	public void run() {
-		
+
 		if (CMSServer.isRunning()) {
 			System.out.println("modules can not be modified in running system");
 			System.exit(0);
 		}
-		
+
+		if (isInstalled(module) && !forceUpdate) {
+			throw new RuntimeException("module is already installed, use -f to force an update");
+		}
+
+		if (isInstalled(module)) {
+			InstallationHelper.deleteDirectory(getModuleFolder(module).toFile());
+		}
+
 		if (getRepository().exists(module)) {
-			
+
 			if (!isCompatibleWithServer(module)) {
 				throw new RuntimeException("module is not compatible with server version");
 			}
-			
+
 			var info = getRepository().getInfo(module).get();
-			
+
 			System.out.println("get module");
 			System.out.println("from: " + info.getFile());
 			getRepository().download(info.getFile(), Path.of("modules/"));
+		} else {
+			System.out.printf("can not find module %s in registry", module);
 		}
 	}
-	
+
 }

@@ -51,11 +51,13 @@ public class DefaultEventBus implements EventBus {
 		listeners.put(eventClass, listener);
 	}
 	
+	@Override
 	public <T extends Event> void unregister(Class<T> eventClass, EventListener<T> listener) {
 		if (listeners.containsKey(eventClass)) {
 			listeners.get(eventClass).remove(listener);
 		}
 	}
+	@Override
 	public void unregister(EventListener listener) {
 		listeners().keySet().forEach(eventClass -> unregister(eventClass, listener));
 	}

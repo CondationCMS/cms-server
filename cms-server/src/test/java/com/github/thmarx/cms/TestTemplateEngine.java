@@ -22,6 +22,7 @@ package com.github.thmarx.cms;
  * #L%
  */
 import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileDB;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -57,6 +58,10 @@ public class TestTemplateEngine implements TemplateEngine {
 		
 		StringSubstitutor sub = new StringSubstitutor(values);
 		return sub.replace(templateContent);
+	}
+
+	@Override
+	public void updateTheme(Theme theme) {
 	}
 
 }

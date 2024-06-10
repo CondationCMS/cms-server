@@ -23,6 +23,7 @@ package com.github.thmarx.cms.api.template;
  */
 
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.theme.Theme;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ public interface TemplateEngine {
 	
 	public void invalidateCache();
 
+	void updateTheme (Theme theme);
+	
 	String render(final String template, final TemplateEngine.Model model) throws IOException;
 	
 	@RequiredArgsConstructor

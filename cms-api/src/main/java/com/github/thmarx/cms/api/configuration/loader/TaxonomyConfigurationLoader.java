@@ -79,7 +79,7 @@ public class TaxonomyConfigurationLoader implements Loader<TaxonomyConfiguration
 	}
 
 	@Override
-	public void reload(final TaxonomyConfiguration config) throws IOException {
+	public void reload(TaxonomyConfiguration config) throws IOException {
 		var tempConfig = load();
 		config.getTaxonomies().clear();
 		config.getTaxonomies().putAll(tempConfig.getTaxonomies());

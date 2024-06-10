@@ -50,7 +50,7 @@ public class ThemeModule extends AbstractModule {
 	@Singleton
 	@Named("theme")
 	public MediaManager themeMediaManager (Theme theme, Configuration configuration, DB db, EventBus eventBus) throws IOException {
-		var mediaManager =  new MediaManager(theme.assetsPath(), db.getFileSystem().resolve("temp"), theme, configuration);
+		var mediaManager =  new MediaManager(db.getFileSystem().resolve("temp"), theme, configuration);
 		eventBus.register(SitePropertiesChanged.class, mediaManager);
 		return mediaManager;
 	}

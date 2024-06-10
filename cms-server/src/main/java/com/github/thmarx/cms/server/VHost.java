@@ -27,6 +27,7 @@ import com.github.thmarx.cms.api.configuration.Config;
 import com.github.thmarx.cms.api.module.CMSModuleContext;
 import com.github.thmarx.cms.api.configuration.Configuration;
 import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
+import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
 import com.github.thmarx.cms.api.content.ContentParser;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.EventListener;
@@ -120,7 +121,26 @@ public class VHost {
 	}
 	
 	public void reload () {
-		System.out.println("reloading not implementated yet");
+		log.trace("reload theme");
+		
+		try {
+			
+			reloadConfiguration(SiteConfiguration.class);
+			
+			var theme = this.injector.getInstance(Theme.class);
+		
+			var themeAssetsMediaManager = this.injector.getInstance(Key.get(MediaManager.class, Names.named("theme")));
+			themeAssetsMediaManager.reloadTheme(theme);
+			
+			ResourceHandler themeAssetsHandler = this.injector.getInstance(Key.get(ResourceHandler.class, Names.named("theme")));
+			themeAssetsHandler.stop();
+			themeAssetsHandler.setBaseResource(new FileFolderPathResource(theme.assetsPath()));
+			themeAssetsHandler.start();
+			
+			this.injector.getInstance(TemplateEngine.class).updateTheme(theme);
+		} catch (Exception e) {
+			log.error("", e);
+		}
 	}
 
 	public void reloadConfiguration(Class<? extends Config> configToReload) {

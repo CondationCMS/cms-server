@@ -103,7 +103,6 @@ public class SiteModule extends AbstractModule {
 	}
 
 	@Provides
-	@Singleton
 	public Theme loadTheme(Configuration configuration, MessageSource messageSource) throws IOException {
 
 		var siteProperties = configuration.get(SiteConfiguration.class).siteProperties();

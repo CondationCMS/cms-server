@@ -22,7 +22,10 @@ package com.github.thmarx.cms.cli.commands.extensions;
  * #L%
  */
 import com.github.thmarx.cms.CMSServer;
+import com.github.thmarx.cms.extensions.repository.ExtensionInfo;
 import com.github.thmarx.cms.extensions.repository.RemoteRepository;
+import com.google.common.base.Strings;
+import java.util.Optional;
 import lombok.Setter;
 import picocli.CommandLine;
 
@@ -45,11 +48,17 @@ public class InfoCommand implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("ext info command");
-		if (!repository.exists(extension)) {
-			throw new RuntimeException("Extension not available");
+		if (Strings.isNullOrEmpty(extension)) {
+			System.err.println("please provide extension name");
+			return;
 		}
-		var info = repository.getInfo(extension).get();
+		if (!repository.exists(extension)) {
+			System.err.printf("extension %s not found\r\n", extension);
+			return;
+		}
+		
+		final Optional<ExtensionInfo> extInfo = repository.getInfo(extension);
+		var info = extInfo.get();
 
 		System.out.println("extension: " + info.getId());
 		System.out.println("name: " + info.getName());

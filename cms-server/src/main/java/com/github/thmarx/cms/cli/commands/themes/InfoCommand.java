@@ -22,6 +22,7 @@ package com.github.thmarx.cms.cli.commands.themes;
  * #L%
  */
 import com.github.thmarx.cms.CMSServer;
+import com.google.common.base.Strings;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -44,8 +45,13 @@ public class InfoCommand extends AbstractThemeCommand implements Runnable {
 
 	@Override
 	public void run() {
+		if (Strings.isNullOrEmpty(theme)) {
+			System.err.println("provide a theme name");
+			return;
+		}
 		if (!getRepository().exists(theme)) {
-			throw new RuntimeException("Theme not available");
+			System.err.printf("Theme %s not found\r\n", theme);
+			return;
 		}
 		var info = getRepository().getInfo(theme).get();
 

@@ -21,8 +21,8 @@ package com.github.thmarx.cms.cli.commands.themes;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.thmarx.cms.extensions.repository.InstallationHelper;
+import com.google.common.base.Strings;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -41,33 +41,41 @@ public class GetCommand extends AbstractThemeCommand implements Runnable {
 			description = "The id of the theme."
 	)
 	private String theme = "";
-	
+
 	@CommandLine.Option(names = "-f", description = "force the update if theme is already installed")
-    boolean forceUpdate;
-	
+	boolean forceUpdate;
+
 	@Override
 	public void run() {
-		
-		if (getRepository().exists(theme)) {
-			
-			if (!isCompatibleWithServer(theme)) {
-				throw new RuntimeException("theme is not compatible with server version");
-			}
-			
-			if (isInstalled(theme) && !forceUpdate) {
-				throw new RuntimeException("theme is already installed, use -f to force an update");
-			}
 
-			if (isInstalled(theme)) {
-				InstallationHelper.deleteDirectory(getThemeFolder(theme).toFile());
-			}
-			
-			var info = getRepository().getInfo(theme).get();
-			
-			System.out.println("get theme");
-			System.out.println("from: " + info.getFile());
-			getRepository().download(info.getFile(), Path.of("themes/"));
+		if (Strings.isNullOrEmpty(theme)) {
+			System.err.println("provide a theme name");
+			return;
 		}
+		if (!getRepository().exists(theme)) {
+			System.err.printf("Theme %s not found\r\n", theme);
+			return;
+		}
+
+		if (!isCompatibleWithServer(theme)) {
+			System.err.println("theme is not compatible with server version");
+			return;
+		}
+
+		if (isInstalled(theme) && !forceUpdate) {
+			System.err.println("theme is already installed, use -f to force an update");
+			return;
+		}
+
+		if (isInstalled(theme)) {
+			InstallationHelper.deleteDirectory(getThemeFolder(theme).toFile());
+		}
+
+		var info = getRepository().getInfo(theme).get();
+
+		System.out.println("get theme");
+		getRepository().download(info.getFile(), Path.of("themes/"));
+		System.out.println("theme downloaded");
 	}
-	
+
 }

@@ -50,11 +50,12 @@ public class GetCommand extends AbstractModuleCommand implements Runnable {
 
 		if (CMSServer.isRunning()) {
 			System.out.println("modules can not be modified in running system");
-			System.exit(0);
+			return;
 		}
 
 		if (isInstalled(module) && !forceUpdate) {
-			throw new RuntimeException("module is already installed, use -f to force an update");
+			System.err.println("module is already installed, use -f to force an update");
+			return;
 		}
 
 		if (isInstalled(module)) {
@@ -64,14 +65,15 @@ public class GetCommand extends AbstractModuleCommand implements Runnable {
 		if (getRepository().exists(module)) {
 
 			if (!isCompatibleWithServer(module)) {
-				throw new RuntimeException("module is not compatible with server version");
+				System.err.println("module is not compatible with server version");
+				return;
 			}
 
 			var info = getRepository().getInfo(module).get();
 
-			System.out.println("get module");
-			System.out.println("from: " + info.getFile());
+			System.out.printf("get module %s \r\n", module);
 			getRepository().download(info.getFile(), Path.of("modules/"));
+			System.out.println("module downloaded");
 		} else {
 			System.out.printf("can not find module %s in registry", module);
 		}

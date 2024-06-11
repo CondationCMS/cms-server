@@ -43,7 +43,8 @@ public class InfoCommand extends AbstractModuleCommand implements Runnable {
 	@Override
 	public void run() {
 		if (!getRepository().exists(module)) {
-			throw new RuntimeException("Module not available");
+			System.err.printf("module %s not found", module);
+			return;
 		}
 		var info = getRepository().getInfo(module).get();
 

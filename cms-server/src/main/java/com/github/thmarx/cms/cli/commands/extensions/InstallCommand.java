@@ -23,6 +23,7 @@ package com.github.thmarx.cms.cli.commands.extensions;
  */
 
 import com.github.thmarx.cms.extensions.repository.RemoteRepository;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,16 +49,24 @@ public class InstallCommand extends AbstractExtensionCommand implements Runnable
 	private String extension = "";
 	
 	@CommandLine.Parameters(
-			paramLabel = "<site>",
+			paramLabel = "<host>",
 			index = "1",
-			description = "Site to install extension to."
+			description = "Host to install extension to."
 	)
-	private String site = "";
+	private String host = "";
 	
 	@Override
 	public void run() {
-		System.out.println("install extension: " + extension);
-		System.out.println("module: " + repository.exists(extension));
+		
+		if (Strings.isNullOrEmpty(extension)) {
+			System.err.println("please provide extension name");
+			return;
+		}
+		if (Strings.isNullOrEmpty(host)) {
+			System.err.println("please provide install to install the extension");
+			return;
+		}
+		
 		if (repository.exists(extension)) {
 			
 			if (!isCompatibleWithServer(extension)) {
@@ -66,19 +75,21 @@ public class InstallCommand extends AbstractExtensionCommand implements Runnable
 			
 			Optional<String> content = repository.getContent(extension);
 			if (content.isEmpty()) {
-				throw new RuntimeException("the extension content not found");
+				System.err.println("the extension content not found");
+				return;
 			}
 			
 			try {
-				if (!Files.exists(Path.of("hosts/%s".formatted(site)))) {
-					throw new RuntimeException("site %s doesn't exists".formatted(site));
+				if (!Files.exists(Path.of("hosts/%s".formatted(host)))) {
+					System.err.printf("site %s doesn't exists", host);
+					return;
 				}
-				if (!Files.exists(Path.of("hosts/%s/extensions".formatted(site)))) {
-					Files.createDirectories(Path.of("hosts/%s/extensions".formatted(site)));
+				if (!Files.exists(Path.of("hosts/%s/extensions".formatted(host)))) {
+					Files.createDirectories(Path.of("hosts/%s/extensions".formatted(host)));
 				}
 				
 				Files.writeString(
-						Path.of("hosts/%s/extensions/%s.js".formatted(site, extension)),
+						Path.of("hosts/%s/extensions/%s.js".formatted(host, extension)),
 						content.get());
 			} catch (IOException ex) {
 				log.error("", ex);

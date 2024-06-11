@@ -1,5 +1,9 @@
 package com.github.thmarx.cms.api.feature.features;
 
+import com.github.thmarx.cms.api.feature.Feature;
+import com.github.thmarx.cms.api.theme.Theme;
+import lombok.AllArgsConstructor;
+
 /*-
  * #%L
  * cms-api
@@ -22,13 +26,20 @@ package com.github.thmarx.cms.api.feature.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.theme.Theme;
-
 /**
  *
  * @author t.marx
  */
-public record ThemeFeature(Theme theme) implements Feature {
+@AllArgsConstructor
+public class ThemeFeature implements Feature {
 
+	private Theme theme;
+	
+	public Theme theme () {
+		return theme;
+	}
+	
+	public void updateTheme (Theme theme) {
+		this.theme = theme;
+	}
 }

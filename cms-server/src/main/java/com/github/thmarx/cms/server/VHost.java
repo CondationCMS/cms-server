@@ -38,6 +38,7 @@ import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
 import com.github.thmarx.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.feature.features.ContentRenderFeature;
+import com.github.thmarx.cms.api.feature.features.ThemeFeature;
 import com.github.thmarx.cms.api.template.TemplateEngine;
 import com.github.thmarx.cms.api.theme.Theme;
 import com.github.thmarx.cms.filesystem.FileDB;
@@ -138,6 +139,7 @@ public class VHost {
 			themeAssetsHandler.start();
 			
 			this.injector.getInstance(TemplateEngine.class).updateTheme(theme);
+			this.injector.getInstance(CMSModuleContext.class).get(ThemeFeature.class).updateTheme(theme);
 		} catch (Exception e) {
 			log.error("", e);
 		}

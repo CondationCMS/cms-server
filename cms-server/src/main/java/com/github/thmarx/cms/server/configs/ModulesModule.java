@@ -103,16 +103,13 @@ public class ModulesModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public ModuleRequestContextFactory requestContextFactory () {
-		return new ModuleRequestContextFactory() {
-			@Override
-			public ModuleRequestContext createContext() {
-				final CMSRequestContext requestContext = new CMSRequestContext();
-				var rc = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
-				if (rc != null) {
-					requestContext.features.putAll(rc.features);
-				}
-				return requestContext;
+		return () -> {
+			final CMSRequestContext requestContext = new CMSRequestContext();
+			var rc = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
+			if (rc != null) {
+				requestContext.features.putAll(rc.features);
 			}
+			return requestContext;
 		};
 	}
 

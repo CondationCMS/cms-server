@@ -22,6 +22,8 @@ package com.github.thmarx.cms.cli.commands.themes;
  * #L%
  */
 import com.github.thmarx.cms.CMSServer;
+import com.github.thmarx.cms.api.PropertiesLoader;
+import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.extensions.repository.ModuleInfo;
 import com.github.thmarx.cms.extensions.repository.RemoteModuleRepository;
 import java.io.IOException;
@@ -61,13 +63,14 @@ public abstract class AbstractThemeCommand {
 		return Files.exists(getThemeFolder(theme));
 	}
 
-	protected Optional<String> getLocaleThemeVersion(String theme) {
+	protected Optional<Double> getLocaleThemeVersion(String theme) {
 		try {
 			var themePath = getThemeFolder(theme);
 			if (!Files.exists(themePath)) {
 				return Optional.empty();
 			}
-			new Yaml().load(Files.readString(themePath));
+			var themeProperties = new ThemeProperties(PropertiesLoader.rawProperties(themePath.resolve("theme.yaml")));
+			return Optional.ofNullable(themeProperties.version());
 		} catch (IOException ex) {
 			log.error("", ex);
 		}

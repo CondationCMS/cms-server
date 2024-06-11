@@ -40,6 +40,10 @@ public class ThemeProperties extends YamlProperties {
 		super(properties);
 	}
 
+	public Double version() {
+		return (Double)properties.get("version");
+	}
+	
 	public String templateEngine() {
 		return (String) getSubMap("template").get("engine");
 	}

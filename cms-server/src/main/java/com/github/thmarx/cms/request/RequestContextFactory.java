@@ -67,11 +67,6 @@ import org.eclipse.jetty.server.Request;
 @RequiredArgsConstructor
 public class RequestContextFactory {
 
-	private final MarkdownRenderer markdownRenderer;
-	private final ExtensionManager extensionManager;
-	private final Theme theme;
-	private final SiteProperties siteProperties;
-	private final MediaService siteMediaService;
 	private final Injector injector;
 
 	public RequestContext create(
@@ -88,6 +83,11 @@ public class RequestContextFactory {
 			String uri, Map<String, List<String>> queryParameters) throws IOException {
 
 		var hookSystem = injector.getInstance(HookSystem.class);
+		var theme = injector.getInstance(Theme.class);
+		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
+		var extensionManager = injector.getInstance(ExtensionManager.class);
+		var siteProperties = injector.getInstance(SiteProperties.class);
+		var siteMediaService = injector.getInstance(MediaService.class);
 		
 		var requestContext = new RequestContext();
 		requestContext.add(InjectorFeature.class, new InjectorFeature(injector));

@@ -8,16 +8,12 @@
 		
 	<target name="download-modules" description="--> download modules">
 		<echo>download template implementation modules</echo>
-		<get src="https://github.com/thmarx/freemarker-module/releases/download/${freemarker.version}/freemarker-module-bin.zip" dest="temp/freemarker-module-bin.zip"></get>
-		<get src="https://github.com/thmarx/pebble-module/releases/download/${pebble.version}/pebble-module-bin.zip" dest="temp/pebble-module-bin.zip"></get>
 		<get src="https://github.com/thmarx/thymeleaf-module/releases/download/${thymeleaf.version}/thymeleaf-module-bin.zip" dest="temp/thymeleaf-module-bin.zip"></get>
 	</target>
 	
 	<target name="unzip-modules">
 		<echo>unzip modules</echo>
-		<unzip src="temp/freemarker-module-bin.zip" dest="build/modules/" />
 		<unzip src="temp/thymeleaf-module-bin.zip" dest="build/modules/" />
-		<unzip src="temp/pebble-module-bin.zip" dest="build/modules/" />
 	</target>
 	
 	<target name="copy-server" description="--> copy server">

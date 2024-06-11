@@ -6,6 +6,31 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 5.0.0
+
+* **BREAKING CHANGE** Introduce module registry [#205](https://github.com/thmarx/cms/issues/205)
+* **BREAKING CHANGE** Reload host cli command [#209](https://github.com/thmarx/cms/issues/209)
+* **FEATURE** Extension management [#9](https://github.com/thmarx/cms/issues/9)
+* **FEATURE** Theme management [#208](https://github.com/thmarx/cms/issues/208)
+* **FEATURE** Module managment [#206](https://github.com/thmarx/cms/issues/206)
+
+### Highlights
+
+The new cli commands to manage extension, module and themes
+
+
+
+### Migration
+
+The base distribution contains only the thymeleaf template engine module. If any other module is use it has to be installed via the command line:
+e.q. `java -jar cms-server-5.0.0.jar module get pebble-module`
+
+The reloading of a host requires to update the template engine. For this, every template engine must implemente a `void updateTheme (Theme theme)` method.
+
+## 4.18.1
+
+Missing hook methods for scripting added
+
 ## 4.18.0
 
 * **FEATURE** Make RequestContext available in scripting [#201](https://github.com/thmarx/cms/issues/201)

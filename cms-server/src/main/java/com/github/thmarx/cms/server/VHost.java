@@ -35,6 +35,7 @@ import com.github.thmarx.cms.api.eventbus.events.ConfigurationFileChanged;
 import com.github.thmarx.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.github.thmarx.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
+import com.github.thmarx.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
 import com.github.thmarx.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
 import com.github.thmarx.cms.extensions.ExtensionManager;
 import com.github.thmarx.cms.api.feature.features.ContentRenderFeature;
@@ -140,6 +141,8 @@ public class VHost {
 			
 			this.injector.getInstance(TemplateEngine.class).updateTheme(theme);
 			this.injector.getInstance(CMSModuleContext.class).get(ThemeFeature.class).updateTheme(theme);
+			
+			injector.getInstance(EventBus.class).syncPublish(new HostReloadedEvent(id()));
 		} catch (Exception e) {
 			log.error("", e);
 		}

@@ -69,7 +69,7 @@ public abstract class AbstractThemeCommand {
 			if (!Files.exists(themePath)) {
 				return Optional.empty();
 			}
-			var themeProperties = new ThemeProperties(PropertiesLoader.rawProperties(themePath.resolve("theme.yaml")));
+			var themeProperties = PropertiesLoader.themeProperties(themePath.resolve("theme.yaml"));
 			return Optional.ofNullable(themeProperties.version());
 		} catch (IOException ex) {
 			log.error("", ex);

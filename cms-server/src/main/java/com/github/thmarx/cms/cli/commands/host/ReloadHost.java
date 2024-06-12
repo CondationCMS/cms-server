@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli.commands;
+package com.github.thmarx.cms.cli.commands.host;
 
 /*-
  * #%L
@@ -27,6 +27,7 @@ import com.github.thmarx.cms.api.PropertiesLoader;
 import com.github.thmarx.cms.api.ServerProperties;
 import com.github.thmarx.cms.ipc.Command;
 import com.github.thmarx.cms.ipc.IPCClient;
+import com.google.common.base.Strings;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -37,25 +38,35 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "stop")
+@CommandLine.Command(name = "reload")
 @Slf4j
-public class Stop implements Runnable {
+public class ReloadHost implements Runnable {
 
+	@CommandLine.Parameters(
+			paramLabel = "<host>",
+			index = "0",
+			description = "The host to reload."
+	)
+	private String host = "";
+	
 	@Override
 	public void run() {
 		try {
 			
 			Optional<ProcessHandle> handle = getCMSProcess();
 			
+			if (Strings.isNullOrEmpty(host)) {
+				System.err.println("no host specified");
+				System.exit(1);
+			}
+			
 			if (handle.isEmpty()) {
-				System.out.println("can not find cms process");
+				System.out.println("server not running");
 			} else {
 				ServerProperties properties = PropertiesLoader.serverProperties(Path.of("server.yaml"));
 				IPCClient ipcClient = new IPCClient(properties.ipc());
 				
-				ipcClient.send(new Command("shutdown"));
-				
-				Files.deleteIfExists(Path.of(Constants.PID_FILE));
+				ipcClient.send(new Command("reload_host").setHeader("host", host));
 			}
 			
 			

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms.cli.commands;
 
 /*-
  * #%L
@@ -21,13 +21,13 @@ package com.github.thmarx.cms.cli;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.cli.commands.AddUser;
+import com.github.thmarx.cms.cli.commands.server.AddUser;
 import com.github.thmarx.cms.cli.commands.ExtensionCommands;
-import com.github.thmarx.cms.cli.commands.RemoveUser;
-import com.github.thmarx.cms.cli.commands.Startup;
-import com.github.thmarx.cms.cli.commands.Stop;
+import com.github.thmarx.cms.cli.commands.HostCommands;
+import com.github.thmarx.cms.cli.commands.server.RemoveUser;
+import com.github.thmarx.cms.cli.commands.server.Startup;
+import com.github.thmarx.cms.cli.commands.server.Stop;
 import com.github.thmarx.cms.cli.commands.ModuleCommands;
-import com.github.thmarx.cms.cli.commands.ReloadHost;
 import com.github.thmarx.cms.cli.commands.ThemeCommands;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -37,7 +37,7 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, ReloadHost.class, ExtensionCommands.class, ModuleCommands.class, ThemeCommands.class})
+	Startup.class, AddUser.class, RemoveUser.class, Stop.class, HostCommands.class, ExtensionCommands.class, ModuleCommands.class, ThemeCommands.class})
 @Slf4j
 public class ServerCommand implements Runnable {
 

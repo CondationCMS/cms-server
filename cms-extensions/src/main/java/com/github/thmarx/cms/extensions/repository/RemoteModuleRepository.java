@@ -31,8 +31,6 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;

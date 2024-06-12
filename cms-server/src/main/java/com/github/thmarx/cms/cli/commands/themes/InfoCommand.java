@@ -49,30 +49,32 @@ public class InfoCommand extends AbstractThemeCommand implements Runnable {
 			System.err.println("provide a theme name");
 			return;
 		}
-		if (!getRepository().exists(theme)) {
-			System.err.printf("Theme %s not found\r\n", theme);
-			return;
-		}
-		var info = getRepository().getInfo(theme).get();
+		System.out.println("theme: " + theme);
+		if (getRepository().exists(theme)) {
+			var info = getRepository().getInfo(theme).get();
 
-		System.out.println("theme: " + info.getId());
-		System.out.println("name: " + info.getName());
-		System.out.println("description: " + info.getDescription());
-		System.out.println("author: " + info.getAuthor());
-		System.out.println("url: " + info.getUrl());
-		System.out.println("file: " + info.getFile());
-		System.out.println("compatibility: " + info.getCompatibility());
-		System.out.println("your server version: " + CMSServer.getVersion().getVersion());
-		System.out.println("compatibility with server version: " + CMSServer.getVersion().satisfies(info.getCompatibility()));
-		System.out.println("local installed: " + isInstalled(info.getId()));
+			System.out.println("name: " + info.getName());
+			System.out.println("description: " + info.getDescription());
+			System.out.println("author: " + info.getAuthor());
+			System.out.println("url: " + info.getUrl());
+			System.out.println("file: " + info.getFile());
+			System.out.println("compatibility: " + info.getCompatibility());
+			System.out.println("your server version: " + CMSServer.getVersion().getVersion());
+			System.out.println("compatibility with server version: " + CMSServer.getVersion().satisfies(info.getCompatibility()));
+			System.out.println("local installed: " + isInstalled(info.getId()));
+		} else {
+			System.out.println("repository: not found");
+		}
 		
-		if (isInstalled(info.getId())) {
+		if (isInstalled(theme)) {
 			var versionOpt = getLocaleThemeVersion(theme);
 			if (versionOpt.isPresent()) {
 				System.out.println("installed version: " + versionOpt.get());
 			} else {
 				System.out.println("installed version: ERROR");
 			}
+		} else {
+			System.out.println("locale: not found");
 		}
 	}
 	

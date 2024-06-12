@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli.commands;
+package com.github.thmarx.cms.cli.commands.server;
 
 /*-
  * #%L
@@ -31,9 +31,9 @@ import picocli.CommandLine.Parameters;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "add_user")
+@CommandLine.Command(name = "remove_user")
 @Slf4j
-public class AddUser implements Runnable {
+public class RemoveUser implements Runnable {
 
 	@CommandLine.Option(names = {"-r", "--realm"}, description = "The realm")
 	String realm = "users";
@@ -41,29 +41,19 @@ public class AddUser implements Runnable {
 	@CommandLine.Option(names = {"-h", "--host"}, description = "The host", required = true)
 	String host = null;
 	
-	@CommandLine.Option(names = {"-g", "--groups"}, description = "The groups", split = ",")
-	String[] groups = null;
-	
 	@Parameters(
 			paramLabel = "<username>",
 			index = "0",
 			description = "The username."
 	)
 	private String username = "";
-	
-	@Parameters(
-			paramLabel = "<password>",
-			index = "1",
-			description = "The username."
-	)
-	private String password = "";
 
 	@Override
 	public void run() {
 		try {
 			UserService userService = new UserService(Path.of("hosts/" + host));
 			
-			userService.addUser(UserService.Realm.of(realm), username, password, groups);
+			userService.removeUser(UserService.Realm.of(realm), username);
 			log.info("user added successfuly");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

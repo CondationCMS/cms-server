@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli;
+package com.github.thmarx.cms.cli.commands;
 
 /*-
  * #%L
@@ -21,20 +21,24 @@ package com.github.thmarx.cms.cli;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.github.thmarx.cms.cli.commands.host.ReloadHost;
+import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
 /**
  *
  * @author t.marx
  */
-public class CMSCli {
-	
-	public static CommandLine getCommandLine () {
-		return new CommandLine(new CLICommand());
+@CommandLine.Command(
+		name = "host",
+		subcommands = {
+			ReloadHost.class
+		})
+@Slf4j
+public class HostCommands implements Runnable {
+
+	@Override
+	public void run() {
+		System.out.println("Subcommand needed: 'reload'");
 	}
-	
-	public static void main(String[] args) {
-        CMSCli.getCommandLine().execute(args);
-    }
 }

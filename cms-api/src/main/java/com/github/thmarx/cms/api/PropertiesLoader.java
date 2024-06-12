@@ -22,8 +22,6 @@ package com.github.thmarx.cms.api;
  * #L%
  */
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.ServerProperties;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -47,6 +45,14 @@ public abstract class PropertiesLoader {
 			properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
 		}
 		return new SiteProperties(properties);
+	}
+	
+	public static ThemeProperties themeProperties (Path path) throws IOException {
+		Map<String, Object> properties = Map.of();
+		if (Files.exists(path)) {
+			properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
+		}
+		return new ThemeProperties(properties);
 	}
 	
 	public static ServerProperties serverProperties (Path path) throws IOException {

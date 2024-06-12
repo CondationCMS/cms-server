@@ -56,17 +56,17 @@ public abstract class AbstractModuleCommand {
 		return CMSServer.getVersion().satisfies(info.get().getCompatibility());
 	}
 	
-	protected Path getModuleFolder (String theme) {
-		return Path.of("modules/" + theme);
+	public static Path getModuleFolder (String module) {
+		return Path.of("modules/" + module);
 	}
 	
-	protected boolean isInstalled(String theme) {
-		return Files.exists(getModuleFolder(theme));
+	public static boolean isInstalled(String module) {
+		return Files.exists(getModuleFolder(module));
 	}
 
-	protected Optional<String> getLocaleModuleVersion(String theme) {
+	protected Optional<String> getLocaleModuleVersion(String module) {
 		try {
-			var modulePath = getModuleFolder(theme);
+			var modulePath = getModuleFolder(module);
 			if (!Files.exists(modulePath)) {
 				return Optional.empty();
 			}

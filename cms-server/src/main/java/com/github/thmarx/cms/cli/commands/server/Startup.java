@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.cli.commands;
+package com.github.thmarx.cms.cli.commands.server;
 
 /*-
  * #%L
@@ -26,6 +26,7 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.PropertiesLoader;
 import com.github.thmarx.cms.api.ServerContext;
 import com.github.thmarx.cms.api.ServerProperties;
+import com.github.thmarx.cms.cli.tools.ModulesUtil;
 import com.github.thmarx.cms.git.RepositoryManager;
 import com.github.thmarx.cms.ipc.IPCServer;
 import com.github.thmarx.cms.server.jetty.JettyServer;
@@ -47,6 +48,19 @@ public class Startup implements Runnable {
 	@Override
 	public void run() {
 		try {
+			
+			var modules = ModulesUtil.getRequiredModules();
+			log.trace("check required modules: " + modules);
+			if (!ModulesUtil.allInstalled(modules)) {
+				var toInstall = ModulesUtil.filterUnInstalled(modules);
+				log.error("following modules are missing");
+				toInstall.forEach(log::error);
+				log.error("install via: java cms-server.jar module get <module_id>");
+				System.exit(1);
+			} else {
+				log.trace("all required modules are intalled");
+			}
+			
 			System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
 			System.setProperty("polyglotimpl.DisableClassPathIsolation", "true");
 

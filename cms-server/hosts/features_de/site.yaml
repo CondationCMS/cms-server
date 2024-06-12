@@ -5,13 +5,9 @@ hostname:
 baseurl: "http://localhost2:1010/de/"
 language: en
 test: Hallo1
-markdown:
-  engine: markedjs
 theme: test
 modules:
   active:
-    - markedjs-module
-    - seo-module
     - forms-module
 media:
   formats:

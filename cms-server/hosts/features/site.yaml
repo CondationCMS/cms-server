@@ -7,7 +7,6 @@ test: Hallo
 theme: test
 modules:
   active:
-    - seo-module
     - forms-module
 media:
   formats:

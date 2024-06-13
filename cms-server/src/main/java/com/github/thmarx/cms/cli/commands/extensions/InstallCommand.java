@@ -91,6 +91,8 @@ public class InstallCommand extends AbstractExtensionCommand implements Runnable
 				Files.writeString(
 						Path.of("hosts/%s/extensions/%s.js".formatted(host, extension)),
 						content.get());
+				
+				System.out.printf("extension '%s' successfuly downloaded into '%s'!", extension, host);
 			} catch (IOException ex) {
 				log.error("", ex);
 			}

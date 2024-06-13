@@ -53,7 +53,6 @@ import org.eclipse.jetty.server.Slf4jRequestLogWriter;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.QoSHandler;
 import org.eclipse.jetty.server.handler.ThreadLimitHandler;
-import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
 /**
@@ -69,7 +68,7 @@ public class JettyServer implements AutoCloseable {
 
 	private ScheduledExecutorService scheduledExecutorService;
 
-	private EventBus serverEventBus = new DefaultEventBus();
+	private final EventBus serverEventBus = new DefaultEventBus();
 
 	List<VHost> vhosts = new ArrayList<>();
 	ContextHandlerCollection handlerCollection = new ContextHandlerCollection();

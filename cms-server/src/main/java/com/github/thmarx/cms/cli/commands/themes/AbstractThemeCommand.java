@@ -23,7 +23,6 @@ package com.github.thmarx.cms.cli.commands.themes;
  */
 import com.github.thmarx.cms.CMSServer;
 import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.ThemeProperties;
 import com.github.thmarx.cms.extensions.repository.ModuleInfo;
 import com.github.thmarx.cms.extensions.repository.RemoteModuleRepository;
 import java.io.IOException;
@@ -32,7 +31,6 @@ import java.nio.file.Path;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  *
@@ -46,7 +44,7 @@ public abstract class AbstractThemeCommand {
 	@Getter
 	private RemoteModuleRepository<ModuleInfo> repository = new RemoteModuleRepository(ModuleInfo.class, DEFAULT_REGISTRY_URL);
 
-	protected Path getThemeFolder (String theme) {
+	protected static Path getThemeFolder (String theme) {
 		return Path.of("themes/" + theme);
 	}
 	
@@ -59,7 +57,7 @@ public abstract class AbstractThemeCommand {
 		return CMSServer.getVersion().satisfies(info.get().getCompatibility());
 	}
 
-	protected boolean isInstalled(String theme) {
+	public static boolean isInstalled(String theme) {
 		return Files.exists(getThemeFolder(theme));
 	}
 

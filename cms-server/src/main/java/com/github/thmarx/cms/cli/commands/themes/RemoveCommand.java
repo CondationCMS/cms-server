@@ -49,11 +49,7 @@ public class RemoveCommand extends AbstractThemeCommand implements Runnable {
 			System.err.println("provide a theme name");
 			return;
 		}
-		if (!getRepository().exists(theme)) {
-			System.err.printf("Theme %s not found\r\n", theme);
-			return;
-		}
-
+		
 		if (!isInstalled(theme)) {
 			System.err.println("Theme '%s' is not installed");
 			return;

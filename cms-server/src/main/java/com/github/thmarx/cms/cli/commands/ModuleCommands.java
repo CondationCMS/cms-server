@@ -23,6 +23,7 @@ package com.github.thmarx.cms.cli.commands;
  */
 import com.github.thmarx.cms.cli.commands.modules.InfoCommand;
 import com.github.thmarx.cms.cli.commands.modules.GetCommand;
+import com.github.thmarx.cms.cli.commands.modules.RemoveCommand;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -34,13 +35,14 @@ import picocli.CommandLine;
 		name = "module",
 		subcommands = {
 			InfoCommand.class,
-			GetCommand.class
+			GetCommand.class,
+			RemoveCommand.class
 		})
 @Slf4j
 public class ModuleCommands implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Subcommand needed: 'get' or 'info'");
+		System.out.println("Subcommand needed: 'get', 'remove' or 'info'");
 	}
 }

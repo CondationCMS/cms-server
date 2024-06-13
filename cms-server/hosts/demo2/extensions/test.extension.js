@@ -28,7 +28,7 @@ $template.registerTemplateFunction(
 	(name) => "Hello " + name + "!"
 )
 
-$hooks.register(
+$hooks.registerAction(
     "test/content",
     (context) => {
         return `

@@ -45,6 +45,7 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 
 /**
  *
@@ -196,6 +197,10 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 	private void contains(String field, Object value, BooleanClause.Occur occur) {
 		var query = toQuery(field, value);
 		if (query != null) {
+			queryBuilder.add(
+					TermRangeQuery.newStringRange(field, null, null, true, true),
+					BooleanClause.Occur.FILTER
+			);
 			queryBuilder.add(query, occur);
 		}
 	}

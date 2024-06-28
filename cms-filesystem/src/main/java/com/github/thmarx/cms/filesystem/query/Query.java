@@ -31,6 +31,7 @@ import static com.github.thmarx.cms.filesystem.query.QueryUtil.filtered;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filteredWithIndex;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.sorted;
 import com.github.thmarx.cms.api.utils.NodeUtil;
+import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -151,7 +152,7 @@ public class Query<T> implements ContentQuery<T> {
 		return context.getNodes()
 				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
-				.filter(MemoryMetaData::isVisible)
+				.filter(AbstractMetaData::isVisible)
 				.map(context.getNodeMapper())
 				.toList();
 	}

@@ -24,12 +24,16 @@ package com.github.thmarx.cms.filesystem.metadata.memory;
 
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
+import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
+import com.github.thmarx.cms.filesystem.query.Query;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -38,6 +42,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,7 +51,7 @@ import java.util.stream.Stream;
  *
  * @author t.marx
  */
-public class MemoryMetaData implements IndexProviding, MetaData {
+public class MemoryMetaData extends AbstractMetaData implements IndexProviding, MetaData {
 
 	private final ConcurrentMap<String, ContentNode> nodes = new ConcurrentHashMap<>();
 
@@ -75,10 +80,12 @@ public class MemoryMetaData implements IndexProviding, MetaData {
 		secondaryIndexes.clear();
 	}
 	
+	@Override
 	public ConcurrentMap<String, ContentNode> nodes() {
 		return new ConcurrentHashMap<>(nodes);
 	}
 
+	@Override
 	public ConcurrentMap<String, ContentNode> tree() {
 		return new ConcurrentHashMap<>(tree);
 	}
@@ -146,15 +153,6 @@ public class MemoryMetaData implements IndexProviding, MetaData {
 		}
 	}
 
-	public static boolean isVisible (ContentNode node) {
-		return node != null 
-				// check if some parent is hidden
-				&& !node.uri().startsWith(".") && !node.uri().contains("/.")
-				&& node.isPublished() 
-				&& !node.isHidden() 
-				&& !node.isSection();
-	}
-	
 	@Override
 	public Optional<ContentNode> findFolder(String uri) {
 		return getFolder(uri);
@@ -224,6 +222,26 @@ public class MemoryMetaData implements IndexProviding, MetaData {
 
 	@Override
 	public void close() throws IOException {
+	}
+	
+	@Override
+	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
+		return new Query(new ArrayList<>(nodes.values()), this, nodeMapper);
+	}
+
+	@Override
+	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper) {
+
+		final String uri;
+		if (startURI.startsWith("/")) {
+			uri = startURI.substring(1);
+		} else {
+			uri = startURI;
+		}
+
+		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
+
+		return new Query(filtered, this, nodeMapper);
 	}
 
 	

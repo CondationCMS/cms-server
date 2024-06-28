@@ -58,7 +58,7 @@ public final class QueryUtil {
 		LTE;
 	}
 
-	private static Map<Operator, Filter> filters = new HashMap<>();
+	private final static Map<Operator, Filter> filters = new HashMap<>();
 
 	static {
 		filters.put(Operator.EQ, (node_value, value) -> Objects.equals(node_value, value));
@@ -89,7 +89,7 @@ public final class QueryUtil {
 		});
 	}
 
-	private static List<String> operations = List.of(
+	private static final List<String> operations = List.of(
 			"=" , "!=", ">", ">=", "<", "<=",
 			"in", "not in", "contains", "not contains"
 			);

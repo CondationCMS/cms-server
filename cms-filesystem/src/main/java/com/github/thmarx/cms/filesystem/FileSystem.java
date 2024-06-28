@@ -25,6 +25,7 @@ import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.DBFileSystem;
 import com.github.thmarx.cms.api.eventbus.EventBus;
 import com.github.thmarx.cms.api.eventbus.events.ContentChangedEvent;
@@ -33,6 +34,7 @@ import com.github.thmarx.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.github.thmarx.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.api.utils.PathUtil;
+import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import com.github.thmarx.cms.filesystem.metadata.persistent.PersistentMetaData;
 import com.github.thmarx.cms.filesystem.query.Query;
 import java.io.IOException;
@@ -79,22 +81,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		return hostBaseDirectory;
 	}
 	
-	public <T> Query<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
-		return new Query(new ArrayList<>(metaData.nodes().values()), metaData, nodeMapper);
+	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
+		return metaData.query(nodeMapper);
 	}
 
-	public <T> Query<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper) {
-
-		final String uri;
-		if (startURI.startsWith("/")) {
-			uri = startURI.substring(1);
-		} else {
-			uri = startURI;
-		}
-
-		var nodes = metaData.nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
-
-		return new Query(nodes, metaData, nodeMapper);
+	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper) {
+		return metaData.query(startURI, nodeMapper);
 	}
 
 	public boolean isVisible(final String uri) {
@@ -103,7 +95,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			return false;
 		}
 		var n = node.get();
-		return MemoryMetaData.isVisible(n);
+		return AbstractMetaData.isVisible(n);
 	}
 
 	@Override

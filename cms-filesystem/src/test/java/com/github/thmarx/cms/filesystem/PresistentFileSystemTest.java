@@ -22,6 +22,7 @@ package com.github.thmarx.cms.filesystem;
  * #L%
  */
 import com.github.thmarx.cms.api.eventbus.EventBus;
+import com.github.thmarx.cms.api.utils.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,6 +41,7 @@ public class PresistentFileSystemTest {
 
 	static FileSystem fileSystem;
 	
+	
 	@BeforeAll
 	static void setup() throws IOException {
 		
@@ -56,8 +58,12 @@ public class PresistentFileSystemTest {
 	}
 	
 	@AfterAll
-	static void shutdown () {
+	static void shutdown () throws IOException {
 		fileSystem.shutdown();
+		
+		if (Files.exists(Path.of("src/test/resources/data"))) {
+			FileUtils.deleteFolder(Path.of("src/test/resources/data"));
+		}
 	}
 
 	@Test
@@ -71,11 +77,33 @@ public class PresistentFileSystemTest {
 
 	@Test
 	public void test_query() throws IOException {
-
 		var nodes = fileSystem.query((node, i) -> node).where("featured", true).get();
-		
 		Assertions.assertThat(nodes).hasSize(2);
 	}
+	
+	@Test
+	public void test_query_in() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereIn("name", "test1", "test2").get();
+		Assertions.assertThat(nodes).hasSize(2);
+	}
+	
+	@Test
+	public void test_query_not_in() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereNotIn("name", "test1", "test2").get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
+	@Test
+	public void test_query_contains() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereContains("taxonomy.tags", "eins").get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
+	
+	@Test
+	public void test_query_contains_not() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereNotContains("taxonomy.tags", "eins").get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
+	
 
 	@Test
 	public void test_query_with_start_uri() throws IOException {

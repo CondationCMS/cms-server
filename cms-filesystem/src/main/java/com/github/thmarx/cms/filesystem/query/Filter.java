@@ -22,9 +22,6 @@ package com.github.thmarx.cms.filesystem.query;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import java.util.function.Predicate;
-
 /**
  *
  * @author thmar

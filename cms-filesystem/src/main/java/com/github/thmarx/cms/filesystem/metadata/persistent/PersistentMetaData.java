@@ -1,11 +1,35 @@
 package com.github.thmarx.cms.filesystem.metadata.persistent;
 
+/*-
+ * #%L
+ * cms-filesystem
+ * %%
+ * Copyright (C) 2023 - 2024 Marx-Software
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import com.github.thmarx.cms.filesystem.metadata.persistent.utils.FlattenMap;
 import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
+import com.github.thmarx.cms.filesystem.query.ExcerptMapperFunction;
+import com.github.thmarx.cms.filesystem.query.Query;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -18,9 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +55,6 @@ import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
-import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
@@ -100,10 +122,15 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 		}
 
 		Document document = new Document();
-		document.add(new StringField("_uri", uri, Field.Store.NO));
+		document.add(new StringField("_uri", uri, Field.Store.YES));
 		//document.add(new StringField("_source", GSON.toJson(node), Field.Store.NO));
 
 		addData(document, data);
+
+//		if (document.getField("content.type") != null) {
+			document.add(new StringField("content.type", node.contentType(), Field.Store.NO));
+//		}
+
 		try {
 			this.index.add(document);
 		} catch (IOException ex) {
@@ -142,6 +169,14 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 				document.add(new FloatField(name, floatValue, Field.Store.NO));
 			case Double doubleValue ->
 				document.add(new DoubleField(name, doubleValue, Field.Store.NO));
+			case Boolean booleanValue ->
+				document.add(
+						new IntField(
+								name,
+								booleanValue ? 1 : 0,
+								Field.Store.NO
+						)
+				);
 			case List listValue ->
 				handleList(document, name, listValue);
 			default -> {
@@ -264,6 +299,27 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 	@Override
 	public SecondaryIndex<?> getOrCreateIndex(String field, Function<ContentNode, Object> indexFunction) {
 		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	}
+
+	@Override
+	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
+		return new LuceneQuery<>(this.index, this, new ExcerptMapperFunction<>(nodeMapper));
+//		return new Query(new ArrayList<>(nodes.values()), this, nodeMapper);
+	}
+
+	@Override
+	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper) {
+
+		final String uri;
+		if (startURI.startsWith("/")) {
+			uri = startURI.substring(1);
+		} else {
+			uri = startURI;
+		}
+
+		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
+
+		return new Query(filtered, this, nodeMapper);
 	}
 
 }

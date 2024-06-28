@@ -21,6 +21,7 @@ package com.github.thmarx.cms.filesystem;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.github.thmarx.cms.api.ModuleFileSystem;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
@@ -32,6 +33,7 @@ import com.github.thmarx.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.github.thmarx.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.api.utils.PathUtil;
+import com.github.thmarx.cms.filesystem.metadata.persistent.PersistentMetaData;
 import com.github.thmarx.cms.filesystem.query.Query;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -70,7 +72,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	private Path contentBase;
 
 	@Getter
-	private final MetaData metaData = new MetaData();
+	private MetaData metaData;
 
 	@Override
 	public Path base () {
@@ -101,7 +103,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			return false;
 		}
 		var n = node.get();
-		return MetaData.isVisible(n);
+		return MemoryMetaData.isVisible(n);
 	}
 
 	@Override
@@ -147,7 +149,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 	public List<ContentNode> listDirectories(final Path base, final String start) {
 		var startPath = base.resolve(start);
-		String folder = PathUtil.toRelativePath(startPath, contentBase).toString();
+		String folder = PathUtil.toRelativePath(startPath, contentBase);
 
 		List<ContentNode> nodes = new ArrayList<>();
 
@@ -191,7 +193,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public List<ContentNode> listContent(final Path base, final String start) {
 		var startPath = base.resolve(start);
 
-		String folder = PathUtil.toRelativePath(startPath, contentBase).toString();
+		String folder = PathUtil.toRelativePath(startPath, contentBase);
 
 		if ("".equals(folder)) {
 			return metaData.listChildren("");
@@ -202,7 +204,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	public List<ContentNode> listSections(final Path contentFile) {
-		String folder = PathUtil.toRelativePath(contentFile, contentBase).toString();
+		String folder = PathUtil.toRelativePath(contentFile, contentBase);
 		String filename = contentFile.getFileName().toString();
 		filename = filename.substring(0, filename.length() - 3);
 
@@ -267,7 +269,18 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	public void init() throws IOException {
+		init(MetaData.Type.MEMORY);
+	}
+	
+	public void init(MetaData.Type metaDataType) throws IOException {
 		log.debug("init filesystem");
+		
+		if (MetaData.Type.PERSISTENT.equals(metaDataType)) {
+			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
+			this.metaData.open();
+		} else {
+			this.metaData = new MemoryMetaData();
+		}
 
 		this.contentBase = resolve("content/");
 		var templateBase = resolve("templates/");

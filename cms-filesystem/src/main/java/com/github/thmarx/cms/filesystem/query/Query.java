@@ -25,7 +25,7 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.filesystem.MetaData;
+import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filtered;
 import static com.github.thmarx.cms.filesystem.query.QueryUtil.filteredWithIndex;
@@ -151,7 +151,7 @@ public class Query<T> implements ContentQuery<T> {
 		return context.getNodes()
 				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
-				.filter(MetaData::isVisible)
+				.filter(MemoryMetaData::isVisible)
 				.map(context.getNodeMapper())
 				.toList();
 	}
@@ -179,7 +179,7 @@ public class Query<T> implements ContentQuery<T> {
 		var filteredNodes = context.getNodes()
 				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
-				.filter(MetaData::isVisible)
+				.filter(MemoryMetaData::isVisible)
 				.toList();
 
 		var total = filteredNodes.size();

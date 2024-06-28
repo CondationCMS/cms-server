@@ -25,11 +25,9 @@ package com.github.thmarx.cms.filesystem.index;
 import com.github.thmarx.cms.api.db.ContentNode;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import lombok.Builder;
 

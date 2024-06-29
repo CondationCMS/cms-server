@@ -36,7 +36,7 @@ import com.github.thmarx.cms.api.eventbus.events.TemplateChangedEvent;
 import com.github.thmarx.cms.api.utils.PathUtil;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import com.github.thmarx.cms.filesystem.metadata.persistent.PersistentMetaData;
-import com.github.thmarx.cms.filesystem.query.Query;
+import com.github.thmarx.cms.filesystem.metadata.memory.MemoryQuery;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

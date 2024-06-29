@@ -21,6 +21,7 @@ package com.github.thmarx.cms.filesystem.query;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.thmarx.cms.filesystem.metadata.memory.MemoryQuery;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.index.IndexProviding;
@@ -86,8 +87,8 @@ public class QueryPerfTest {
 		}
 	}
 
-	protected Query<ContentNode> createQuery(boolean useIndex) {
-		var query = new Query<>(nodes, indexProviding, (node, i) -> node);
+	protected MemoryQuery<ContentNode> createQuery(boolean useIndex) {
+		var query = new MemoryQuery<>(nodes, indexProviding, (node, i) -> node);
 		if (useIndex) {
 			query.enableSecondaryIndex();
 		}
@@ -102,7 +103,7 @@ public class QueryPerfTest {
 		public void test_no_index() {
 			System.out.println("run tests without index");
 			
-			Query<ContentNode> query = createQuery(false);
+			MemoryQuery<ContentNode> query = createQuery(false);
 			var nodes = query.where("article.featured", true).get();
 			Assertions.assertThat(nodes).hasSize(COUNT / 2);
 
@@ -128,7 +129,7 @@ public class QueryPerfTest {
 		public void test_use_index() {
 			System.out.println("run tests with index");
 			
-			Query<ContentNode> query = createQuery(true);
+			MemoryQuery<ContentNode> query = createQuery(true);
 			var nodes = query.where("article.featured", true).get();
 			Assertions.assertThat(nodes).hasSize(COUNT / 2);
 

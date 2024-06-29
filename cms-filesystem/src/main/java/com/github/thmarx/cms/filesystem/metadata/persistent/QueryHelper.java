@@ -1,5 +1,31 @@
 package com.github.thmarx.cms.filesystem.metadata.persistent;
 
+/*-
+ * #%L
+ * cms-filesystem
+ * %%
+ * Copyright (C) 2023 - 2024 Marx-Software
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.utils.MapUtil;
+import com.github.thmarx.cms.filesystem.metadata.memory.QueryContext;
+import com.github.thmarx.cms.filesystem.metadata.query.Queries;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -210,5 +236,23 @@ public class QueryHelper {
 			return DoubleField.newExactQuery(field, numberValue);
 		}
 		return null;
+	}
+	
+	protected static List<?> sorted(final List<?> nodes, final String field, final boolean asc) {
+
+		var tempNodes = nodes.stream().sorted(
+				(node1, node2) -> {
+					var value1 = MapUtil.getValue(((ContentNode)node1).data(), field);
+					var value2 = MapUtil.getValue(((ContentNode)node2).data(), field);
+
+					return Queries.compare(value1, value2);
+				}
+		).toList();
+
+		if (!asc) {
+			tempNodes = tempNodes.reversed();
+		}
+
+		return tempNodes;
 	}
 }

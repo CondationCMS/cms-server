@@ -28,8 +28,8 @@ import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import com.github.thmarx.cms.filesystem.metadata.persistent.utils.FlattenMap;
 import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
-import com.github.thmarx.cms.filesystem.query.ExcerptMapperFunction;
-import com.github.thmarx.cms.filesystem.query.Query;
+import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
+import com.github.thmarx.cms.filesystem.metadata.memory.MemoryQuery;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -54,8 +54,13 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.SortedDocValuesField;
+import org.apache.lucene.document.SortedNumericDocValuesField;
+import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.search.MatchAllDocsQuery;
+import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.NumericUtils;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 
@@ -125,7 +130,7 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 		document.add(new StringField("_uri", uri, Field.Store.YES));
 		//document.add(new StringField("_source", GSON.toJson(node), Field.Store.NO));
 
-		addData(document, data);
+		DocumentHelper.addData(document, data);
 
 //		if (document.getField("content.type") != null) {
 			document.add(new StringField("content.type", node.contentType(), Field.Store.NO));
@@ -137,53 +142,7 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 			log.error("", ex);
 		}
 	}
-
-	private void addData(final Document document, Map<String, Object> data) {
-		var flatten = FlattenMap.flattenMap(data);
-
-		flatten.entrySet().forEach(entry -> {
-
-			switch (entry.getValue()) {
-				case List listValue ->
-					handleList(document, entry.getKey(), listValue);
-				default -> {
-					addValue(document, entry.getKey(), entry.getValue());
-				}
-			}
-		});
-	}
-
-	private void handleList(Document document, String name, List<?> list) {
-		list.forEach(item -> addValue(document, name, item));
-	}
-
-	private void addValue(Document document, String name, Object value) {
-		switch (value) {
-			case String stringValue ->
-				document.add(new StringField(name, stringValue, Field.Store.NO));
-			case Integer intValue ->
-				document.add(new IntField(name, intValue, Field.Store.NO));
-			case Long longValue ->
-				document.add(new LongField(name, longValue, Field.Store.NO));
-			case Float floatValue ->
-				document.add(new FloatField(name, floatValue, Field.Store.NO));
-			case Double doubleValue ->
-				document.add(new DoubleField(name, doubleValue, Field.Store.NO));
-			case Boolean booleanValue ->
-				document.add(
-						new IntField(
-								name,
-								booleanValue ? 1 : 0,
-								Field.Store.NO
-						)
-				);
-			case List listValue ->
-				handleList(document, name, listValue);
-			default -> {
-			}
-		}
-	}
-
+	
 	@Override
 	public Optional<ContentNode> byUri(String uri) {
 		if (!nodes.containsKey(uri)) {
@@ -304,7 +263,6 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 	@Override
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
 		return new LuceneQuery<>(this.index, this, new ExcerptMapperFunction<>(nodeMapper));
-//		return new Query(new ArrayList<>(nodes.values()), this, nodeMapper);
 	}
 
 	@Override
@@ -319,7 +277,7 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 
 		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
 
-		return new Query(filtered, this, nodeMapper);
+		return new MemoryQuery(filtered, this, nodeMapper);
 	}
 
 }

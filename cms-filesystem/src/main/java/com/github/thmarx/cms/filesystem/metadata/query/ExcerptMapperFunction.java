@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.filesystem.query;
+package com.github.thmarx.cms.filesystem.metadata.query;
 
 /*-
  * #%L
@@ -24,32 +24,26 @@ package com.github.thmarx.cms.filesystem.query;
 
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
-import java.util.Map;
-import java.util.function.BiPredicate;
-import java.util.stream.Stream;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 /**
  *
  * @author t.marx
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class QueryContext<T> {
-
-	private Stream<ContentNode> nodes;
-
-	private ExcerptMapperFunction<T> nodeMapper;
-
-	private IndexProviding indexProviding;
-
-	private boolean useSecondaryIndex = false;
+@RequiredArgsConstructor
+public class ExcerptMapperFunction<T> implements Function<ContentNode, T> {
 	
-	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
+	private final BiFunction<ContentNode, Integer, T> nodeMapper;
+
+	@Setter
+	private int excerpt = Constants.DEFAULT_EXCERPT_LENGTH;
 	
-	private Map<String, BiPredicate<Object, Object>> queryOperations;
+	@Override
+	public T apply(ContentNode t) {
+		return nodeMapper.apply(t, excerpt);
+	}
+
 }

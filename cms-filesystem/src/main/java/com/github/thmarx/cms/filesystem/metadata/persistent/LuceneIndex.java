@@ -28,10 +28,11 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.FieldInfo;
+import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
@@ -39,6 +40,8 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
@@ -88,6 +91,25 @@ public class LuceneIndex implements AutoCloseable {
 		commit();
 	}
 
+	List<Document> query(Query query, Sort sort) throws IOException {
+		IndexSearcher searcher = nrt_manager.acquire();
+		try {
+			var topDocs = searcher.search(query, Integer.MAX_VALUE, sort);
+
+			List<Document> result = new ArrayList<>();
+			for (var scoreDoc : topDocs.scoreDocs) {
+				result.add(searcher.storedFields().document(scoreDoc.doc));
+			}
+
+			return result;
+		} catch (IOException e) {
+			log.error("", e);
+		} finally {
+			nrt_manager.release(searcher);
+		}
+		return Collections.emptyList();
+	}
+
 	List<Document> query(Query query) throws IOException {
 		IndexSearcher searcher = nrt_manager.acquire();
 		try {
@@ -122,5 +144,37 @@ public class LuceneIndex implements AutoCloseable {
 
 		final SearcherFactory sf = new SearcherFactory();
 		nrt_manager = new SearcherManager(writer, true, true, sf);
+	}
+
+	SortField.Type getFieldType(String fieldName) throws IOException {
+		IndexSearcher searcher = nrt_manager.acquire();
+		try {
+
+			var fieldInfos = FieldInfos.getMergedFieldInfos(searcher.getIndexReader());
+
+			var fieldInfo = fieldInfos.fieldInfo(fieldName);
+			if (fieldInfo == null) {
+				return null;
+			}
+
+			return switch (fieldInfo.getDocValuesType()) {
+				case NUMERIC -> SortField.Type.INT;
+				case BINARY -> SortField.Type.STRING;
+				case SORTED -> SortField.Type.STRING;
+				case SORTED_NUMERIC -> SortField.Type.INT;
+				case SORTED_SET -> SortField.Type.STRING;
+				default -> null;
+			}; // Prüfen Sie, ob das Feld integer, long, float oder double ist
+			// Diese Information ist nicht direkt in FieldInfo verfügbar,
+			// Sie müssen dies möglicherweise aus dem Kontext wissen
+			// Hier nehmen wir an, dass es ein Integer-Feld ist
+			// Ähnlich wie bei NUMERIC müssen Sie den genauen Typ kennen
+			// Hier nehmen wir an, dass es ein Integer-Feld ist
+		} catch (Exception e) {
+			log.error("", e);
+		} finally {
+			nrt_manager.release(searcher);
+		}
+		return null;
 	}
 }

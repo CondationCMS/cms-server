@@ -29,7 +29,6 @@ import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
-import com.github.thmarx.cms.filesystem.query.Query;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -226,7 +225,7 @@ public class MemoryMetaData extends AbstractMetaData implements IndexProviding, 
 	
 	@Override
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
-		return new Query(new ArrayList<>(nodes.values()), this, nodeMapper);
+		return new MemoryQuery(new ArrayList<>(nodes.values()), this, nodeMapper);
 	}
 
 	@Override
@@ -241,7 +240,7 @@ public class MemoryMetaData extends AbstractMetaData implements IndexProviding, 
 
 		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
 
-		return new Query(filtered, this, nodeMapper);
+		return new MemoryQuery(filtered, this, nodeMapper);
 	}
 
 	

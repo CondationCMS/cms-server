@@ -1,10 +1,10 @@
-package com.github.thmarx.cms.filesystem.query;
+package com.github.thmarx.cms.filesystem.metadata.query;
 
 /*-
  * #%L
  * cms-filesystem
  * %%
- * Copyright (C) 2023 Marx-Software
+ * Copyright (C) 2023 - 2024 Marx-Software
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,28 +22,9 @@ package com.github.thmarx.cms.filesystem.query;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class ExcerptMapperFunction<T> implements Function<ContentNode, T> {
-	
-	private final BiFunction<ContentNode, Integer, T> nodeMapper;
-
-	@Setter
-	private int excerpt = Constants.DEFAULT_EXCERPT_LENGTH;
-	
-	@Override
-	public T apply(ContentNode t) {
-		return nodeMapper.apply(t, excerpt);
-	}
-
+public class Query {
 }

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.filesystem.query;
+package com.github.thmarx.cms.filesystem.metadata.query;
 
 /*-
  * #%L

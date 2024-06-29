@@ -27,10 +27,9 @@ import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
-import com.github.thmarx.cms.filesystem.query.ExcerptMapperFunction;
-import com.github.thmarx.cms.filesystem.query.QueryUtil;
+import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
+import com.github.thmarx.cms.filesystem.metadata.query.Queries;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -39,16 +38,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.document.DoubleField;
-import org.apache.lucene.document.FloatField;
-import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
 
 /**
  *
@@ -56,7 +51,7 @@ import org.apache.lucene.search.TermRangeQuery;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class LuceneQuery<T> implements ContentQuery<T> {
+public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 
 	private final LuceneIndex index;
 	private final MetaData metaData;
@@ -66,15 +61,74 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 
 	private final BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 
+	enum Order {
+		ASC, DESC;
+	}
+
+	private Order sortOrder = Order.ASC;
+	private Optional<String> orderByField = Optional.empty();
+
 	@Override
 	public ContentQuery<T> excerpt(long excerptLength) {
 		nodeMapper.setExcerpt((int) excerptLength);
 		return this;
 	}
 
+	public Page<T> page(final Object page, final Object size) {
+		int i_page = Constants.DEFAULT_PAGE;
+		int i_size = Constants.DEFAULT_PAGE_SIZE;
+		if (page instanceof Integer || page instanceof Long) {
+			i_page = ((Number) page).intValue();
+		} else if (page instanceof String string) {
+			i_page = Integer.parseInt(string);
+		}
+		if (size instanceof Integer || size instanceof Long) {
+			i_size = ((Number) size).intValue();
+		} else if (size instanceof String string) {
+			i_size = Integer.parseInt(string);
+		}
+		return page((int) i_page, (int) i_size);
+	}
+
 	@Override
 	public Page<T> page(long page, long size) {
-		return null;
+
+		long offset = (page - 1) * size;
+
+		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
+
+		try {
+			var result = index.query(queryBuilder.build());
+
+			var filteredNodes = result.stream()
+					.map(document -> document.get("_uri"))
+					.map(metaData::byUri)
+					.filter(Optional::isPresent)
+					.map(Optional::get)
+					.filter(node -> !node.isDirectory())
+					.filter(AbstractMetaData::isVisible)
+					.map(nodeMapper)
+					.toList();
+
+			var total = filteredNodes.size();
+
+			if (orderByField.isPresent()) {
+				filteredNodes = (List<T>)QueryHelper.sorted(filteredNodes, orderByField.get(), Order.ASC.equals(sortOrder));
+			}
+			
+			var filteredTargetNodes = filteredNodes.stream()
+					.skip(offset)
+					.limit(size)
+					.toList();
+
+			int totalPages = (int) Math.ceil((float) total / size);
+			return new Page<>(filteredNodes.size(), totalPages, (int) page, filteredTargetNodes);
+
+		} catch (IOException ex) {
+			log.error("", ex);
+		}
+
+		return Page.EMPTY;
 	}
 
 	@Override
@@ -82,9 +136,16 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
 
 		try {
-			var result = index.query(queryBuilder.build());
+			List<Document> result;
+//			if (orderByField.isPresent()) {
+//				org.apache.lucene.search.Sort sort = new org.apache.lucene.search.Sort(
+//						new SortField("year", SortField.Type.INT, true)
+//				);
+//			} else {
+				result = index.query(queryBuilder.build());
+//			}
 
-			return result.stream()
+			var nodes = result.stream()
 					.map(document -> document.get("_uri"))
 					.map(metaData::byUri)
 					.filter(Optional::isPresent)
@@ -92,8 +153,13 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 					.filter(node -> !node.isDirectory())
 					.filter(AbstractMetaData::isVisible)
 					.map(nodeMapper).toList();
+			if (orderByField.isPresent()) {
+				return (List<T>)QueryHelper.sorted(nodes, orderByField.get(), Order.ASC.equals(sortOrder));
+			} else {
+				return nodes;
+			}
 		} catch (IOException ex) {
-			Logger.getLogger(LuceneQuery.class.getName()).log(Level.SEVERE, null, ex);
+			log.error("", ex);
 		}
 
 		return Collections.emptyList();
@@ -106,7 +172,8 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 
 	@Override
 	public Sort<T> orderby(String field) {
-		return null;
+		this.orderByField = Optional.ofNullable(field);
+		return this;
 	}
 
 	@Override
@@ -129,48 +196,48 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 
 	@Override
 	public ContentQuery<T> where(String field, Object value) {
-		return where(field, QueryUtil.Operator.EQ, value);
+		return where(field, Queries.Operator.EQ, value);
 	}
 
 	@Override
 	public ContentQuery<T> where(String field, String operator, Object value) {
-		if (QueryUtil.isDefaultOperation(operator)) {
-			return where(field, QueryUtil.operator4String(operator), value);
+		if (Queries.isDefaultOperation(operator)) {
+			return where(field, Queries.operator4String(operator), value);
 		}
 		throw new IllegalArgumentException("unknown operator " + operator);
 	}
 
 	@Override
 	public ContentQuery<T> whereContains(String field, Object value) {
-		return where(field, QueryUtil.Operator.CONTAINS, value);
+		return where(field, Queries.Operator.CONTAINS, value);
 	}
 
 	@Override
 	public ContentQuery<T> whereNotContains(String field, Object value) {
-		return where(field, QueryUtil.Operator.CONTAINS_NOT, value);
+		return where(field, Queries.Operator.CONTAINS_NOT, value);
 	}
 
 	@Override
 	public ContentQuery<T> whereIn(String field, Object... value) {
-		return where(field, QueryUtil.Operator.IN, value);
+		return where(field, Queries.Operator.IN, value);
 	}
 
 	@Override
 	public ContentQuery<T> whereIn(String field, List<Object> value) {
-		return where(field, QueryUtil.Operator.IN, value);
+		return where(field, Queries.Operator.IN, value);
 	}
 
 	@Override
 	public ContentQuery<T> whereNotIn(String field, Object... value) {
-		return where(field, QueryUtil.Operator.NOT_IN, value);
+		return where(field, Queries.Operator.NOT_IN, value);
 	}
 
 	@Override
 	public ContentQuery<T> whereNotIn(String field, List<Object> value) {
-		return where(field, QueryUtil.Operator.NOT_IN, value);
+		return where(field, Queries.Operator.NOT_IN, value);
 	}
 
-	private ContentQuery<T> where(final String field, final QueryUtil.Operator operator, final Object value) {
+	private ContentQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
 
 		switch (operator) {
 			case EQ ->
@@ -189,14 +256,25 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 				QueryHelper.lt(queryBuilder, field, value);
 			case LTE ->
 				QueryHelper.lte(queryBuilder, field, value);
-			case GT -> 
+			case GT ->
 				QueryHelper.gt(queryBuilder, field, value);
-			case GTE -> 
+			case GTE ->
 				QueryHelper.gte(queryBuilder, field, value);
 		}
 
 		return this;
 	}
 
-	
+	@Override
+	public ContentQuery<T> asc() {
+		this.sortOrder = Order.ASC;
+		return this;
+	}
+
+	@Override
+	public ContentQuery<T> desc() {
+		this.sortOrder = Order.DESC;
+		return this;
+	}
+
 }

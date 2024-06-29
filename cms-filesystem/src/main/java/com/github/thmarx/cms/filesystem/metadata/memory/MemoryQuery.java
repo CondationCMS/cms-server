@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.filesystem.query;
+package com.github.thmarx.cms.filesystem.metadata.memory;
 
 /*-
  * #%L
@@ -25,13 +25,14 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.github.thmarx.cms.filesystem.index.IndexProviding;
-import static com.github.thmarx.cms.filesystem.query.QueryUtil.filtered;
-import static com.github.thmarx.cms.filesystem.query.QueryUtil.filteredWithIndex;
-import static com.github.thmarx.cms.filesystem.query.QueryUtil.sorted;
+import static com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil.filtered;
+import static com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil.filteredWithIndex;
+import static com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil.sorted;
 import com.github.thmarx.cms.api.utils.NodeUtil;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
+import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
+import com.github.thmarx.cms.filesystem.metadata.query.Queries;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -44,107 +45,107 @@ import java.util.stream.Stream;
  * @author t.marx
  * @param <T>
  */
-public class Query<T> implements ContentQuery<T> {
+public class MemoryQuery<T> implements ContentQuery<T> {
 
 	private QueryContext<T> context;
 
-	public Query(Collection<ContentNode> nodes, IndexProviding indexProviding, BiFunction<ContentNode, Integer, T> nodeMapper) {
+	public MemoryQuery(Collection<ContentNode> nodes, IndexProviding indexProviding, BiFunction<ContentNode, Integer, T> nodeMapper) {
 		this(nodes.stream(), indexProviding, new ExcerptMapperFunction<>(nodeMapper));
 	}
 
-	public Query(Stream<ContentNode> nodes, IndexProviding indexProviding, ExcerptMapperFunction<T> nodeMapper) {
+	public MemoryQuery(Stream<ContentNode> nodes, IndexProviding indexProviding, ExcerptMapperFunction<T> nodeMapper) {
 		this(new QueryContext(nodes, nodeMapper, indexProviding, false, Constants.DEFAULT_CONTENT_TYPE, Map.of()));
 	}
 
-	public Query(QueryContext<T> context) {
+	public MemoryQuery(QueryContext<T> context) {
 		this.context = context;
 	}
 
-	public Query<T> setCustomOperators (Map<String, BiPredicate<Object, Object>> queryOperations) {
+	public MemoryQuery<T> setCustomOperators (Map<String, BiPredicate<Object, Object>> queryOperations) {
 		context.setQueryOperations(queryOperations);
 		return this;
 	}
 	
 	@Override
-	public Query<T> excerpt(final long excerptLength) {
+	public MemoryQuery<T> excerpt(final long excerptLength) {
 		context.getNodeMapper().setExcerpt((int)excerptLength);
 		return this;
 	}
 
 	@Override
-	public Query<T> where(final String field, final Object value) {
-		return where(field, QueryUtil.Operator.EQ, value);
+	public MemoryQuery<T> where(final String field, final Object value) {
+		return where(field, Queries.Operator.EQ, value);
 	}
 
 	@Override
-	public Query<T> where(final String field, final String operator, final Object value) {
-		if (QueryUtil.isDefaultOperation(operator)) {
-			return where(field, QueryUtil.operator4String(operator), value);
+	public MemoryQuery<T> where(final String field, final String operator, final Object value) {
+		if (Queries.isDefaultOperation(operator)) {
+			return where(field, Queries.operator4String(operator), value);
 		} else if (context.getQueryOperations().containsKey(operator)) {
-			return new Query<>(QueryUtil.filter_extension(context, field, value, context.getQueryOperations().get(operator)));
+			return new MemoryQuery<>(QueryUtil.filter_extension(context, field, value, context.getQueryOperations().get(operator)));
 		}
 		throw new IllegalArgumentException("unknown operator " + operator);
 	}
 
 	@Override
-	public Query<T> whereContains(final String field, final Object value) {
-		return where(field, QueryUtil.Operator.CONTAINS, value);
+	public MemoryQuery<T> whereContains(final String field, final Object value) {
+		return where(field, Queries.Operator.CONTAINS, value);
 	}
 
 	@Override
-	public Query<T> whereNotContains(final String field, final Object value) {
-		return where(field, QueryUtil.Operator.CONTAINS_NOT, value);
+	public MemoryQuery<T> whereNotContains(final String field, final Object value) {
+		return where(field, Queries.Operator.CONTAINS_NOT, value);
 	}
 
 	@Override
-	public Query<T> whereIn(final String field, final Object... value) {
-		return where(field, QueryUtil.Operator.IN, value);
+	public MemoryQuery<T> whereIn(final String field, final Object... value) {
+		return where(field, Queries.Operator.IN, value);
 	}
 
 	@Override
-	public Query<T> whereNotIn(final String field, final Object... value) {
-		return where(field, QueryUtil.Operator.NOT_IN, value);
+	public MemoryQuery<T> whereNotIn(final String field, final Object... value) {
+		return where(field, Queries.Operator.NOT_IN, value);
 	}
 
 	@Override
-	public Query<T> whereIn(final String field, final List<Object> value) {
-		return where(field, QueryUtil.Operator.IN, value);
+	public MemoryQuery<T> whereIn(final String field, final List<Object> value) {
+		return where(field, Queries.Operator.IN, value);
 	}
 
 	@Override
-	public Query<T> whereNotIn(final String field, final List<Object> value) {
-		return where(field, QueryUtil.Operator.NOT_IN, value);
+	public MemoryQuery<T> whereNotIn(final String field, final List<Object> value) {
+		return where(field, Queries.Operator.NOT_IN, value);
 	}
 
-	private Query<T> where(final String field, final QueryUtil.Operator operator, final Object value) {
+	private MemoryQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
 		if (context.isUseSecondaryIndex()) {
-			return new Query(filteredWithIndex(context, field, value, operator));
+			return new MemoryQuery(filteredWithIndex(context, field, value, operator));
 		} else {
-			return new Query(filtered(context, field, value, operator));
+			return new MemoryQuery(filtered(context, field, value, operator));
 		}
 	}
 
-	public Query<T> enableSecondaryIndex() {
+	public MemoryQuery<T> enableSecondaryIndex() {
 		context.setUseSecondaryIndex(true);
-		return new Query<>(context);
+		return new MemoryQuery<>(context);
 	}
 
 	@Override
-	public Query<T> html() {
+	public MemoryQuery<T> html() {
 		context.setContentType(Constants.ContentTypes.HTML);
-		return new Query<>(context);
+		return new MemoryQuery<>(context);
 	}
 
 	@Override
-	public Query<T> json() {
+	public MemoryQuery<T> json() {
 		context.setContentType(Constants.ContentTypes.JSON);
-		return new Query<>(context);
+		return new MemoryQuery<>(context);
 	}
 
 	@Override
-	public Query<T> contentType(String contentType) {
+	public MemoryQuery<T> contentType(String contentType) {
 		context.setContentType(contentType);
-		return new Query<>(context);
+		return new MemoryQuery<>(context);
 	}
 
 	@Override
@@ -207,12 +208,12 @@ public class Query<T> implements ContentQuery<T> {
 
 	public static record Sort<T>(String field, QueryContext context) implements ContentQuery.Sort<T> {
 
-		public Query<T> asc() {
-			return new Query(sorted(context, field, true));
+		public MemoryQuery<T> asc() {
+			return new MemoryQuery(sorted(context, field, true));
 		}
 
-		public Query<T> desc() {
-			return new Query(sorted(context, field, false));
+		public MemoryQuery<T> desc() {
+			return new MemoryQuery(sorted(context, field, false));
 		}
 	}
 }

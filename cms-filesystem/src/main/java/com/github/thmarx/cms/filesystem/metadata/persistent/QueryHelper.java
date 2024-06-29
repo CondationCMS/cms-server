@@ -24,7 +24,6 @@ package com.github.thmarx.cms.filesystem.metadata.persistent;
 
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.utils.MapUtil;
-import com.github.thmarx.cms.filesystem.metadata.memory.QueryContext;
 import com.github.thmarx.cms.filesystem.metadata.query.Queries;
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,6 +46,44 @@ import org.apache.lucene.search.TermRangeQuery;
  */
 @Slf4j
 public class QueryHelper {
+	
+	public static void exists (BooleanQuery.Builder queryBuilder, String field, Object value) {
+		if (value.getClass().isArray()) {
+			value = ((Object[])value)[1];
+		}
+		if (value instanceof String) {
+			queryBuilder.add(
+				TermRangeQuery.newStringRange(field, null, null, true, true),
+				BooleanClause.Occur.FILTER
+			);
+		} else if (value instanceof Float) {
+			queryBuilder.add(
+					FloatField.newRangeQuery(field, Float.MIN_VALUE, Float.MAX_VALUE),
+				BooleanClause.Occur.FILTER
+			);
+		} else if (value instanceof Double) {
+			queryBuilder.add(
+					DoubleField.newRangeQuery(field, Double.MIN_VALUE, Double.MAX_VALUE),
+				BooleanClause.Occur.FILTER
+			);
+		} else if (value instanceof Integer) {
+			queryBuilder.add(
+					IntField.newRangeQuery(field, Integer.MIN_VALUE, Integer.MAX_VALUE),
+				BooleanClause.Occur.FILTER
+			);
+		} else if (value instanceof Long) {
+			queryBuilder.add(
+					LongField.newRangeQuery(field, Long.MIN_VALUE, Long.MAX_VALUE),
+				BooleanClause.Occur.FILTER
+			);
+		} else if (value instanceof Boolean) {
+			queryBuilder.add(
+					IntField.newRangeQuery(field, Integer.MIN_VALUE, Integer.MAX_VALUE),
+				BooleanClause.Occur.FILTER
+			);
+		}
+	}
+	
 	public static void lt(BooleanQuery.Builder queryBuilder, String field, Object value) {
 		switch (value) {
 			case Integer numberValue -> {

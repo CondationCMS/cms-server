@@ -58,6 +58,7 @@ import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.SortedNumericDocValuesField;
 import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.util.BytesRef;
 import org.apache.lucene.util.NumericUtils;
@@ -132,12 +133,10 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 
 		DocumentHelper.addData(document, data);
 
-//		if (document.getField("content.type") != null) {
-			document.add(new StringField("content.type", node.contentType(), Field.Store.NO));
-//		}
+		document.add(new StringField("content.type", node.contentType(), Field.Store.NO));
 
 		try {
-			this.index.add(document);
+			this.index.update(new Term("_uri", uri), document);
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
@@ -239,6 +238,8 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 	@Override
 	public void clear() {
 		try {
+			nodes.clear();
+			tree.clear();
 			index.delete(new MatchAllDocsQuery());
 		} catch (IOException ex) {
 			log.error("", ex);
@@ -274,10 +275,7 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 		} else {
 			uri = startURI;
 		}
-
-		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
-
-		return new MemoryQuery(filtered, this, nodeMapper);
+		return new LuceneQuery<>(uri, this.index, this, new ExcerptMapperFunction<>(nodeMapper));
 	}
 
 }

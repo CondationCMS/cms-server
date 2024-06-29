@@ -36,7 +36,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author t.marx
  */
-public class FileSystemTest {
+public class FileSystemTest extends AbstractFileSystemTest {
 
 	static FileSystem fileSystem;
 	
@@ -60,29 +60,8 @@ public class FileSystemTest {
 		fileSystem.shutdown();
 	}
 
-	@Test
-	public void test_seconday_index() throws IOException {
-
-//		var dimension = fileSystem.createDimension("featured", (ContentNode node) -> node.data().containsKey("featured") ? (Boolean) node.data().get("featured") : false, Boolean.class);
-
-//		Assertions.assertThat(dimension.filter(Boolean.TRUE)).hasSize(2);
-//		Assertions.assertThat(dimension.filter(Boolean.FALSE)).hasSize(1);
-	}
-
-	@Test
-	public void test_query() throws IOException {
-
-		var nodes = fileSystem.query((node, i) -> node).where("featured", true).get();
-		
-		Assertions.assertThat(nodes).hasSize(2);
-	}
-
-	@Test
-	public void test_query_with_start_uri() throws IOException {
-
-		var nodes = fileSystem.query("/test", (node, i) -> node).where("featured", true).get();
-		
-		Assertions.assertThat(nodes).hasSize(1);
-		Assertions.assertThat(nodes.getFirst().uri()).isEqualTo("test/test1.md");
+	@Override
+	protected FileSystem getFileSystem() {
+		return fileSystem;
 	}
 }

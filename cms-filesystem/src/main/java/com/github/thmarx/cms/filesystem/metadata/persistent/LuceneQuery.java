@@ -34,16 +34,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TermRangeQuery;
 
 /**
  *
@@ -68,6 +67,17 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 	private Order sortOrder = Order.ASC;
 	private Optional<String> orderByField = Optional.empty();
 
+	private Optional<String> startUri = Optional.empty();
+	
+	public LuceneQuery (
+			final String startUri, 
+			final LuceneIndex index, 
+			final MetaData metaData, 
+			final ExcerptMapperFunction<T> nodeMapper) {
+		this(index, metaData, nodeMapper);
+		this.startUri = Optional.ofNullable(startUri);
+	}
+	
 	@Override
 	public ContentQuery<T> excerpt(long excerptLength) {
 		nodeMapper.setExcerpt((int) excerptLength);
@@ -97,6 +107,10 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 
 		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
 
+		if (startUri.isPresent()) {
+			queryBuilder.add(new PrefixQuery(new Term("_uri", startUri.get())), BooleanClause.Occur.FILTER);
+		}
+		
 		try {
 			var result = index.query(queryBuilder.build());
 
@@ -113,9 +127,9 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 			var total = filteredNodes.size();
 
 			if (orderByField.isPresent()) {
-				filteredNodes = (List<T>)QueryHelper.sorted(filteredNodes, orderByField.get(), Order.ASC.equals(sortOrder));
+				filteredNodes = (List<T>) QueryHelper.sorted(filteredNodes, orderByField.get(), Order.ASC.equals(sortOrder));
 			}
-			
+
 			var filteredTargetNodes = filteredNodes.stream()
 					.skip(offset)
 					.limit(size)
@@ -134,6 +148,9 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 	@Override
 	public List<T> get() {
 		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
+		if (startUri.isPresent()) {
+			queryBuilder.add(new PrefixQuery(new Term("_uri", startUri.get())), BooleanClause.Occur.FILTER);
+		}
 
 		try {
 			List<Document> result;
@@ -142,7 +159,7 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 //						new SortField("year", SortField.Type.INT, true)
 //				);
 //			} else {
-				result = index.query(queryBuilder.build());
+			result = index.query(queryBuilder.build());
 //			}
 
 			var nodes = result.stream()
@@ -154,7 +171,7 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 					.filter(AbstractMetaData::isVisible)
 					.map(nodeMapper).toList();
 			if (orderByField.isPresent()) {
-				return (List<T>)QueryHelper.sorted(nodes, orderByField.get(), Order.ASC.equals(sortOrder));
+				return (List<T>) QueryHelper.sorted(nodes, orderByField.get(), Order.ASC.equals(sortOrder));
 			} else {
 				return nodes;
 			}
@@ -239,6 +256,8 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 
 	private ContentQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
 
+		QueryHelper.exists(queryBuilder, field, value);
+		
 		switch (operator) {
 			case EQ ->
 				QueryHelper.eq(queryBuilder, field, value, BooleanClause.Occur.MUST);

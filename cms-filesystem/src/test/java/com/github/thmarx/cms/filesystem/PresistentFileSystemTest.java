@@ -37,7 +37,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author t.marx
  */
-public class PresistentFileSystemTest {
+public class PresistentFileSystemTest extends AbstractFileSystemTest {
 
 	static FileSystem fileSystem;
 	
@@ -66,59 +66,8 @@ public class PresistentFileSystemTest {
 		}
 	}
 
-	@Test
-	public void test_seconday_index() throws IOException {
-
-//		var dimension = fileSystem.createDimension("featured", (ContentNode node) -> node.data().containsKey("featured") ? (Boolean) node.data().get("featured") : false, Boolean.class);
-
-//		Assertions.assertThat(dimension.filter(Boolean.TRUE)).hasSize(2);
-//		Assertions.assertThat(dimension.filter(Boolean.FALSE)).hasSize(1);
-	}
-
-	@Test
-	public void test_query() throws IOException {
-		var nodes = fileSystem.query((node, i) -> node).where("featured", true).get();
-		Assertions.assertThat(nodes).hasSize(2);
-	}
-	
-	@Test
-	public void test_query_in() throws IOException {
-		var nodes = fileSystem.query((node, i) -> node).whereIn("name", "test1", "test2").get();
-		Assertions.assertThat(nodes).hasSize(2);
-	}
-	
-	@Test
-	public void test_query_not_in() throws IOException {
-		var nodes = fileSystem.query((node, i) -> node).whereNotIn("name", "test1", "test2").get();
-		Assertions.assertThat(nodes).hasSize(1);
-	}
-	@Test
-	public void test_query_contains() throws IOException {
-		var nodes = fileSystem.query((node, i) -> node).whereContains("taxonomy.tags", "eins").get();
-		Assertions.assertThat(nodes).hasSize(1);
-	}
-	
-	@Test
-	public void test_query_contains_not() throws IOException {
-		var nodes = fileSystem.query((node, i) -> node).whereNotContains("taxonomy.tags", "eins").get();
-		Assertions.assertThat(nodes).hasSize(1);
-	}
-	
-	@Test
-	public void test_lt_lte() throws IOException {
-		var nodes = fileSystem.query((node, i) -> node).where("number2", "<", 5).get();
-		Assertions.assertThat(nodes).hasSize(0);
-		
-		nodes = fileSystem.query((node, i) -> node).where("number2", "lte", 5).get();
-		Assertions.assertThat(nodes).hasSize(1);
-	}
-
-	@Test
-	public void test_query_with_start_uri() throws IOException {
-
-		var nodes = fileSystem.query("/test", (node, i) -> node).where("featured", true).get();
-		
-		Assertions.assertThat(nodes).hasSize(1);
-		Assertions.assertThat(nodes.getFirst().uri()).isEqualTo("test/test1.md");
+	@Override
+	protected FileSystem getFileSystem() {
+		return fileSystem;
 	}
 }

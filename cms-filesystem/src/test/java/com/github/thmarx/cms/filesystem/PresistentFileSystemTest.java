@@ -104,6 +104,14 @@ public class PresistentFileSystemTest {
 		Assertions.assertThat(nodes).hasSize(1);
 	}
 	
+	@Test
+	public void test_lt_lte() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).where("number2", "<", 5).get();
+		Assertions.assertThat(nodes).hasSize(0);
+		
+		nodes = fileSystem.query((node, i) -> node).where("number2", "lte", 5).get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
 
 	@Test
 	public void test_query_with_start_uri() throws IOException {

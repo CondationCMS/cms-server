@@ -90,8 +90,14 @@ public final class QueryUtil {
 	}
 
 	private static final List<String> operations = List.of(
-			"=" , "!=", ">", ">=", "<", "<=",
-			"in", "not in", "contains", "not contains"
+			"=" , "eq", 
+			"!=", "not eq", 
+			">", "gt",
+			">=", "gte",
+			"<", "lt",
+			"<=", "lte",
+			"in", "not in", 
+			"contains", "not contains"
 			);
 	public static boolean isDefaultOperation (final String operation) {
 		return operations.contains(operation);
@@ -104,15 +110,27 @@ public final class QueryUtil {
 		return switch (operator) {
 			case "=" ->
 				Operator.EQ;
+			case "eq" ->
+				Operator.EQ;
 			case "!=" ->
+				Operator.NOT_EQ;
+			case "not eq" ->
 				Operator.NOT_EQ;
 			case ">" ->
 				Operator.GT;
+			case "gt" ->
+				Operator.GT;
 			case ">=" ->
+				Operator.GTE;
+			case "gte" ->
 				Operator.GTE;
 			case "<" ->
 				Operator.LT;
+			case "lt" ->
+				Operator.LT;
 			case "<=" ->
+				Operator.LTE;
+			case "lte" ->
 				Operator.LTE;
 			case "in" ->
 				Operator.IN;

@@ -39,7 +39,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.document.DoubleField;
+import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -171,78 +174,29 @@ public class LuceneQuery<T> implements ContentQuery<T> {
 
 		switch (operator) {
 			case EQ ->
-				eq(field, value, BooleanClause.Occur.MUST);
+				QueryHelper.eq(queryBuilder, field, value, BooleanClause.Occur.MUST);
 			case NOT_EQ ->
-				eq(field, value, BooleanClause.Occur.MUST_NOT);
+				QueryHelper.eq(queryBuilder, field, value, BooleanClause.Occur.MUST_NOT);
 			case CONTAINS ->
-				contains(field, value, BooleanClause.Occur.MUST);
+				QueryHelper.contains(queryBuilder, field, value, BooleanClause.Occur.MUST);
 			case CONTAINS_NOT ->
-				contains(field, value, BooleanClause.Occur.MUST_NOT);
+				QueryHelper.contains(queryBuilder, field, value, BooleanClause.Occur.MUST_NOT);
 			case IN ->
-				in(field, value, BooleanClause.Occur.MUST);
+				QueryHelper.in(queryBuilder, field, value, BooleanClause.Occur.MUST);
 			case NOT_IN ->
-				in(field, value, BooleanClause.Occur.MUST_NOT);
+				QueryHelper.in(queryBuilder, field, value, BooleanClause.Occur.MUST_NOT);
+			case LT ->
+				QueryHelper.lt(queryBuilder, field, value);
+			case LTE ->
+				QueryHelper.lte(queryBuilder, field, value);
+			case GT -> 
+				QueryHelper.gt(queryBuilder, field, value);
+			case GTE -> 
+				QueryHelper.gte(queryBuilder, field, value);
 		}
 
 		return this;
 	}
 
-	private void eq(String field, Object value, BooleanClause.Occur occur) {
-		var query = toQuery(field, value);
-		if (query != null) {
-			queryBuilder.add(query, occur);
-		}
-	}
-
-	private void contains(String field, Object value, BooleanClause.Occur occur) {
-		var query = toQuery(field, value);
-		if (query != null) {
-			queryBuilder.add(
-					TermRangeQuery.newStringRange(field, null, null, true, true),
-					BooleanClause.Occur.FILTER
-			);
-			queryBuilder.add(query, occur);
-		}
-	}
-
-	private void in(String field, Object value, BooleanClause.Occur occur) {
-		if (value == null) {
-			log.warn("value is null");
-			return;
-		}
-		if (!(value instanceof List || value.getClass().isArray())) {
-			log.warn("value is not of type list");
-			return;
-		}
-
-		BooleanQuery.Builder inBuilder = new BooleanQuery.Builder();
-
-		List<?> listValues = Collections.emptyList();
-		if (value instanceof List) {
-			listValues = (List<?>) value;
-		} else if (value.getClass().isArray()) {
-			listValues = Arrays.asList((Object[]) value);
-		}
-
-		listValues.forEach(item -> {
-			inBuilder.add(toQuery(field, item), BooleanClause.Occur.SHOULD);
-		});
-
-		var inQuery = inBuilder.build();
-		if (!inQuery.clauses().isEmpty()) {
-			queryBuilder.add(inQuery, occur);
-		}
-	}
-
-	private Query toQuery(final String field, final Object value) {
-		if (value instanceof String stringValue) {
-			return new TermQuery(new Term(field, stringValue));
-		} else if (value instanceof Boolean booleanValue) {
-			return IntField.newExactQuery(
-					field,
-					booleanValue ? 1 : 0
-			);
-		}
-		return null;
-	}
+	
 }

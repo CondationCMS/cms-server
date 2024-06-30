@@ -24,8 +24,6 @@ package com.github.thmarx.cms.filesystem.query;
 import com.github.thmarx.cms.filesystem.metadata.memory.MemoryQuery;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
-import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -52,26 +50,6 @@ public class QueryPerfTest {
 	
 	private static int COUNT = 1000;
 
-	private static IndexProviding indexProviding = new IndexProviding() {
-		private ConcurrentMap<String, SecondaryIndex<?>> secondaryIndexes = new ConcurrentHashMap<>();
-
-		@Override
-		public SecondaryIndex<?> getOrCreateIndex(String field, Function<ContentNode, Object> indexFunction) {
-			System.out.println("check field: " + field);
-			System.out.println(secondaryIndexes.keySet());
-			if (!secondaryIndexes.containsKey(field)) {
-				System.out.println("build index");
-				var index = SecondaryIndex.<Object>builder()
-						.indexFunction(indexFunction)
-						.build();
-				index.addAll(nodes);
-				secondaryIndexes.put(field, index);
-			}
-
-			return secondaryIndexes.get(field);
-		}
-	};
-
 	@BeforeAll
 	public static void setup() {
 		System.out.println("build elements");
@@ -87,11 +65,9 @@ public class QueryPerfTest {
 		}
 	}
 
-	protected MemoryQuery<ContentNode> createQuery(boolean useIndex) {
-		var query = new MemoryQuery<>(nodes, indexProviding, (node, i) -> node);
-		if (useIndex) {
-			query.enableSecondaryIndex();
-		}
+	protected MemoryQuery<ContentNode> createQuery() {
+		var query = new MemoryQuery<>(nodes, (node, i) -> node);
+		
 		return query;
 	}
 
@@ -103,7 +79,7 @@ public class QueryPerfTest {
 		public void test_no_index() {
 			System.out.println("run tests without index");
 			
-			MemoryQuery<ContentNode> query = createQuery(false);
+			MemoryQuery<ContentNode> query = createQuery();
 			var nodes = query.where("article.featured", true).get();
 			Assertions.assertThat(nodes).hasSize(COUNT / 2);
 
@@ -129,7 +105,7 @@ public class QueryPerfTest {
 		public void test_use_index() {
 			System.out.println("run tests with index");
 			
-			MemoryQuery<ContentNode> query = createQuery(true);
+			MemoryQuery<ContentNode> query = createQuery();
 			var nodes = query.where("article.featured", true).get();
 			Assertions.assertThat(nodes).hasSize(COUNT / 2);
 

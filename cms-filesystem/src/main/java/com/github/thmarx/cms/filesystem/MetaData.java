@@ -24,7 +24,6 @@ package com.github.thmarx.cms.filesystem;
 
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.ContentQuery;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -36,7 +35,7 @@ import java.util.function.BiFunction;
  *
  * @author t.marx
  */
-public interface MetaData extends IndexProviding {
+public interface MetaData {
 	
 	public enum Type {
 		MEMORY, PERSISTENT

@@ -25,11 +25,8 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.filesystem.MetaData;
-import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
-import com.github.thmarx.cms.filesystem.metadata.persistent.utils.FlattenMap;
 import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
-import com.github.thmarx.cms.filesystem.metadata.memory.MemoryQuery;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -49,19 +46,10 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FloatField;
-import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.SortedDocValuesField;
-import org.apache.lucene.document.SortedNumericDocValuesField;
-import org.apache.lucene.document.SortedSetDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.MatchAllDocsQuery;
-import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.NumericUtils;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 
@@ -254,11 +242,6 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 	@Override
 	public Map<String, ContentNode> tree() {
 		return tree;
-	}
-
-	@Override
-	public SecondaryIndex<?> getOrCreateIndex(String field, Function<ContentNode, Object> indexFunction) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 
 	@Override

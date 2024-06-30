@@ -25,9 +25,7 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import static com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil.filtered;
-import static com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil.filteredWithIndex;
 import static com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil.sorted;
 import com.github.thmarx.cms.api.utils.NodeUtil;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
@@ -49,12 +47,12 @@ public class MemoryQuery<T> extends ExtendableQuery<T> {
 
 	private QueryContext<T> context;
 
-	public MemoryQuery(Collection<ContentNode> nodes, IndexProviding indexProviding, BiFunction<ContentNode, Integer, T> nodeMapper) {
-		this(nodes.stream(), indexProviding, new ExcerptMapperFunction<>(nodeMapper));
+	public MemoryQuery(Collection<ContentNode> nodes, BiFunction<ContentNode, Integer, T> nodeMapper) {
+		this(nodes.stream(), new ExcerptMapperFunction<>(nodeMapper));
 	}
 
-	public MemoryQuery(Stream<ContentNode> nodes, IndexProviding indexProviding, ExcerptMapperFunction<T> nodeMapper) {
-		this(new QueryContext(nodes, nodeMapper, indexProviding, false, Constants.DEFAULT_CONTENT_TYPE));
+	public MemoryQuery(Stream<ContentNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
+		this(new QueryContext(nodes, nodeMapper, Constants.DEFAULT_CONTENT_TYPE));
 	}
 
 	public MemoryQuery(QueryContext<T> context) {
@@ -113,17 +111,9 @@ public class MemoryQuery<T> extends ExtendableQuery<T> {
 	}
 
 	private MemoryQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
-		if (context.isUseSecondaryIndex()) {
-			return new MemoryQuery(filteredWithIndex(context, field, value, operator));
-		} else {
-			return new MemoryQuery(filtered(context, field, value, operator));
-		}
+		return new MemoryQuery(filtered(context, field, value, operator));
 	}
 
-	public MemoryQuery<T> enableSecondaryIndex() {
-		context.setUseSecondaryIndex(true);
-		return new MemoryQuery<>(context);
-	}
 
 	@Override
 	public MemoryQuery<T> html() {

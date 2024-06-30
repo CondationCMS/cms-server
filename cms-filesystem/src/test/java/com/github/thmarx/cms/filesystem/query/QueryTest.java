@@ -24,8 +24,6 @@ package com.github.thmarx.cms.filesystem.query;
 import com.github.thmarx.cms.filesystem.metadata.memory.MemoryQuery;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
-import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -47,23 +45,6 @@ import org.junit.jupiter.api.Test;
 public class QueryTest {
 
 	private static Collection<ContentNode> nodes;
-
-	private IndexProviding indexProviding = new IndexProviding() {
-		private ConcurrentMap<String, SecondaryIndex<?>> secondaryIndexes = new ConcurrentHashMap<>();
-
-		@Override
-		public SecondaryIndex<?> getOrCreateIndex(String field, Function<ContentNode, Object> indexFunction) {
-			if (!secondaryIndexes.containsKey(field)) {
-				var index = SecondaryIndex.<Object>builder()
-						.indexFunction(indexFunction)
-						.build();
-				index.addAll(nodes);
-				secondaryIndexes.put(field, index);
-			}
-
-			return secondaryIndexes.get(field);
-		}
-	};
 
 	@BeforeAll
 	public static void setup() {
@@ -102,7 +83,7 @@ public class QueryTest {
 	}
 
 	protected MemoryQuery<ContentNode> createQuery() {
-		var query = new MemoryQuery<>(nodes, indexProviding, (node, i) -> node);
+		var query = new MemoryQuery<>(nodes, (node, i) -> node);
 		query.addCustomOperators("none", (node_value, value) -> false);
 
 		return query;

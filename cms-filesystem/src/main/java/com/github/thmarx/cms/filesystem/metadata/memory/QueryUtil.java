@@ -23,7 +23,6 @@ package com.github.thmarx.cms.filesystem.metadata.memory;
  */
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.utils.MapUtil;
-import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import com.github.thmarx.cms.filesystem.metadata.query.Queries;
 import java.util.List;
 import java.util.Map;
@@ -64,18 +63,6 @@ public final class QueryUtil {
 		context.setNodes(tempNodes.stream());
 
 		return context;
-	}
-
-	public static QueryContext<?> filteredWithIndex(final QueryContext<?> context, final String field, final Object value, final Queries.Operator operator) {
-
-		if (Queries.Operator.EQ.equals(operator)) {
-			SecondaryIndex<Object> index = (SecondaryIndex<Object>) context.getIndexProviding().getOrCreateIndex(field, node -> MapUtil.getValue(node.data(), field));
-			context.setNodes(context.getNodes().filter(node -> index.eq(node, value)));
-			return context;
-		} else {
-			context.setNodes(context.getNodes().filter(createPredicate(field, value, operator)));
-			return context;
-		}
 	}
 
 	public static QueryContext filtered(final QueryContext context, final String field, final Object value, final Queries.Operator operator) {

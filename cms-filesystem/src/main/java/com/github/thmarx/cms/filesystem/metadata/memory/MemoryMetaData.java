@@ -26,8 +26,6 @@ import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.filesystem.MetaData;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
-import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import com.google.common.base.Strings;
 import java.io.IOException;
@@ -50,33 +48,16 @@ import java.util.stream.Stream;
  *
  * @author t.marx
  */
-public class MemoryMetaData extends AbstractMetaData implements IndexProviding, MetaData {
+public class MemoryMetaData extends AbstractMetaData implements MetaData {
 
 	private final ConcurrentMap<String, ContentNode> nodes = new ConcurrentHashMap<>();
 
 	private final ConcurrentMap<String, ContentNode> tree = new ConcurrentHashMap<>();
 	
-	private final ConcurrentMap<String, SecondaryIndex<?>> secondaryIndexes = new ConcurrentHashMap<>();
-	
-	@Override
-	public SecondaryIndex<?> getOrCreateIndex (final String field, Function<ContentNode, Object> indexFunction) {
-		
-		if (!secondaryIndexes.containsKey(field)) {
-			var index = SecondaryIndex.<Object>builder()
-					.indexFunction(indexFunction)
-					.build();
-			index.addAll(nodes.values());
-			secondaryIndexes.put(field, index);
-		}
-		
-		return secondaryIndexes.get(field);
-	}
-	
 	@Override
 	public void clear() {
 		nodes.clear();
 		tree.clear();
-		secondaryIndexes.clear();
 	}
 	
 	@Override
@@ -188,8 +169,6 @@ public class MemoryMetaData extends AbstractMetaData implements IndexProviding, 
 		} else {
 			tree.put(node.name(), node);
 		}
-		
-		secondaryIndexes.values().forEach(index -> index.add(node));
 	}
 
 	@Override
@@ -211,8 +190,6 @@ public class MemoryMetaData extends AbstractMetaData implements IndexProviding, 
 		} else {
 			tree.remove(name);
 		}
-		
-		secondaryIndexes.values().forEach(index -> index.remove(node));
 	}
 
 	@Override
@@ -225,7 +202,7 @@ public class MemoryMetaData extends AbstractMetaData implements IndexProviding, 
 	
 	@Override
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
-		return new MemoryQuery(new ArrayList<>(nodes.values()), this, nodeMapper);
+		return new MemoryQuery(new ArrayList<>(nodes.values()), nodeMapper);
 	}
 
 	@Override
@@ -240,7 +217,7 @@ public class MemoryMetaData extends AbstractMetaData implements IndexProviding, 
 
 		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
 
-		return new MemoryQuery(filtered, this, nodeMapper);
+		return new MemoryQuery(filtered, nodeMapper);
 	}
 
 	

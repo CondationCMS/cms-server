@@ -24,10 +24,7 @@ package com.github.thmarx.cms.filesystem.metadata.memory;
 
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.filesystem.index.IndexProviding;
 import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
-import java.util.Map;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -46,9 +43,5 @@ public class QueryContext<T> {
 
 	private ExcerptMapperFunction<T> nodeMapper;
 
-	private IndexProviding indexProviding;
-
-	private boolean useSecondaryIndex = false;
-	
 	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
 }

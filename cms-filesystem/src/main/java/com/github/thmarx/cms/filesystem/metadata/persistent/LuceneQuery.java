@@ -36,7 +36,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +72,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
 	private Optional<String> startUri = Optional.empty();
 	
-	private List<Predicate<T>> extensionOperations = new ArrayList<>();
+	private List<Predicate<ContentNode>> extensionOperations = new ArrayList<>();
 	
 	public LuceneQuery (
 			final String startUri, 
@@ -127,22 +126,29 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 					.map(Optional::get)
 					.filter(node -> !node.isDirectory())
 					.filter(AbstractMetaData::isVisible)
-					.map(nodeMapper)
 					.toList();
 
 			if (!extensionOperations.isEmpty()) {
-				var nstream = filteredNodes.stream();
-				extensionOperations.forEach(predicate -> nstream.filter(predicate));
-				filteredNodes = nstream.toList();
+				filteredNodes = filteredNodes.stream()
+						.filter((node) -> {
+							return extensionOperations.stream()
+									.map(predicate -> predicate.test(node))
+									.filter(value -> !value)
+									.count() == 0;
+						})
+						.toList();
 			}
-			
 			var total = filteredNodes.size();
 
+			var contentNodes = filteredNodes.stream()
+					.map(nodeMapper)
+					.toList();
+			
 			if (orderByField.isPresent()) {
-				filteredNodes = (List<T>) QueryHelper.sorted(filteredNodes, orderByField.get(), Order.ASC.equals(sortOrder));
+				contentNodes = (List<T>) QueryHelper.sorted(contentNodes, orderByField.get(), Order.ASC.equals(sortOrder));
 			}
 
-			var filteredTargetNodes = filteredNodes.stream()
+			var filteredTargetNodes = contentNodes.stream()
 					.skip(offset)
 					.limit(size)
 					.toList();
@@ -181,18 +187,27 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 					.map(Optional::get)
 					.filter(node -> !node.isDirectory())
 					.filter(AbstractMetaData::isVisible)
-					.map(nodeMapper).toList();
+					.toList();
 			
 			if (!extensionOperations.isEmpty()) {
-				var nstream = nodes.stream();
-				extensionOperations.forEach(predicate -> nstream.filter(predicate));
-				nodes = nstream.toList();
+				nodes = nodes.stream()
+						.filter((node) -> {
+							return extensionOperations.stream()
+									.map(predicate -> predicate.test(node))
+									.filter(value -> !value)
+									.count() == 0;
+						})
+						.toList();
 			}
+			
+			var contentNodes = nodes.stream()
+					.map(nodeMapper)
+					.toList();
 			
 			if (orderByField.isPresent()) {
 				return (List<T>) QueryHelper.sorted(nodes, orderByField.get(), Order.ASC.equals(sortOrder));
 			} else {
-				return nodes;
+				return contentNodes;
 			}
 		} catch (IOException ex) {
 			log.error("", ex);
@@ -241,12 +256,12 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 			return where(field, Queries.operator4String(operator), value);
 		} else if (getContext().getQueryOperations().containsKey(operator)) {
 			extensionOperations.add(
-					(Predicate<T>)Queries.createExtensionPredicate(
+					(Predicate<ContentNode>) Queries.createExtensionPredicate(
 							field, 
 							value, 
 							getContext().getQueryOperations().get(operator)
-					)
-			);
+					));
+			return this;
 		}
 		throw new IllegalArgumentException("unknown operator " + operator);
 	}

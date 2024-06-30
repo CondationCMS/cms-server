@@ -65,23 +65,23 @@ public class DocumentHelper {
 		switch (value) {
 			case String stringValue -> {
 				document.add(new StringField(name, stringValue, Field.Store.NO));
-				document.add(new SortedSetDocValuesField(name, new BytesRef(stringValue)));
+//				document.add(new SortedSetDocValuesField(name, new BytesRef(stringValue)));
 			}
 			case Integer intValue -> {
 				document.add(new IntField(name, intValue, Field.Store.NO));
-				document.add(new SortedNumericDocValuesField(name, intValue));
+//				document.add(new SortedNumericDocValuesField(name, intValue));
 			}
 			case Long longValue -> {
 				document.add(new LongField(name, longValue, Field.Store.NO));
-				document.add(new SortedNumericDocValuesField(name, longValue));
+//				document.add(new SortedNumericDocValuesField(name, longValue));
 			}
 			case Float floatValue -> {
 				document.add(new FloatField(name, floatValue, Field.Store.NO));
-				document.add(new SortedNumericDocValuesField(name, NumericUtils.floatToSortableInt(floatValue)));
+//				document.add(new SortedNumericDocValuesField(name, NumericUtils.floatToSortableInt(floatValue)));
 			}
 			case Double doubleValue -> {
 				document.add(new DoubleField(name, doubleValue, Field.Store.NO));
-				document.add(new SortedNumericDocValuesField(name, NumericUtils.doubleToSortableLong(doubleValue)));
+//				document.add(new SortedNumericDocValuesField(name, NumericUtils.doubleToSortableLong(doubleValue)));
 			}
 			case Boolean booleanValue -> {
 				var intValue = booleanValue ? 1 : 0;
@@ -92,7 +92,7 @@ public class DocumentHelper {
 								Field.Store.NO
 						)
 				);
-				document.add(new SortedNumericDocValuesField(name, intValue));
+//				document.add(new SortedNumericDocValuesField(name, intValue));
 			}
 			case List listValue ->
 				handleList(document, name, listValue);

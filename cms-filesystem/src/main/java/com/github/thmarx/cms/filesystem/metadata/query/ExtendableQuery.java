@@ -1,6 +1,7 @@
 package com.github.thmarx.cms.filesystem.metadata.query;
 
 import com.github.thmarx.cms.api.db.ContentQuery;
+import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiPredicate;
@@ -28,6 +29,8 @@ import lombok.Getter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
+import com.github.thmarx.cms.api.db.ContentNode;
 
 /**
  *

@@ -103,9 +103,7 @@ public class QueryTest {
 
 	protected MemoryQuery<ContentNode> createQuery() {
 		var query = new MemoryQuery<>(nodes, indexProviding, (node, i) -> node);
-		query.setCustomOperators(Map.of(
-				"none", (node_value, value) -> false
-		));
+		query.addCustomOperators("none", (node_value, value) -> false);
 
 		return query;
 	}

@@ -24,16 +24,9 @@ package com.github.thmarx.cms.filesystem.metadata.memory;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.utils.MapUtil;
 import com.github.thmarx.cms.filesystem.index.SecondaryIndex;
-import com.github.thmarx.cms.filesystem.metadata.query.Filter;
 import com.github.thmarx.cms.filesystem.metadata.query.Queries;
-import com.google.common.base.Strings;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -108,20 +101,10 @@ public final class QueryUtil {
 	}
 
 	protected static QueryContext filter_extension(final QueryContext context, final String field, final Object value, final BiPredicate<Object, Object> predicate) {
-		context.setNodes(context.getNodes().filter(createExtensionPredicate(field, value, predicate)));
+		context.setNodes(context.getNodes().filter(Queries.createExtensionPredicate(field, value, predicate)));
 		return context;
 	}
 
-	private static Predicate<? super ContentNode> createExtensionPredicate(final String field, final Object value, final BiPredicate<Object, Object> predicate) {
-		return (node) -> {
-			var node_value = MapUtil.getValue(node.data(), field);
-
-			if (node_value == null) {
-				return false;
-			}
-			
-			return predicate.test(node_value, value);
-		};
-	}
+	
 	
 }

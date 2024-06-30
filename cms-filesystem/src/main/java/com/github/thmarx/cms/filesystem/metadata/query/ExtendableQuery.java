@@ -1,5 +1,12 @@
 package com.github.thmarx.cms.filesystem.metadata.query;
 
+import com.github.thmarx.cms.api.db.ContentQuery;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.BiPredicate;
+import lombok.Data;
+import lombok.Getter;
+
 /*-
  * #%L
  * cms-filesystem
@@ -26,5 +33,23 @@ package com.github.thmarx.cms.filesystem.metadata.query;
  *
  * @author t.marx
  */
-public class Query {
+public abstract class ExtendableQuery<T> implements ContentQuery<T> {
+	
+	@Getter
+	private final Context context = new Context();
+
+	public ContentQuery<T> addCustomOperators (String operator, BiPredicate<Object, Object> queryOperations) {
+		context.queryOperations.put(operator, queryOperations);
+		return this;
+	}
+	
+	public ContentQuery<T> addAllCustomOperators (Map<String, BiPredicate<Object, Object>> queryOperations) {
+		context.queryOperations.putAll(queryOperations);
+		return this;
+	}
+	
+	@Data
+	public static class Context {
+		private final Map<String, BiPredicate<Object, Object>> queryOperations = new HashMap<>();
+	}
 }

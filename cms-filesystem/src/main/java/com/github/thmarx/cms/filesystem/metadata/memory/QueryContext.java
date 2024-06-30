@@ -51,6 +51,4 @@ public class QueryContext<T> {
 	private boolean useSecondaryIndex = false;
 	
 	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
-	
-	private Map<String, BiPredicate<Object, Object>> queryOperations;
 }

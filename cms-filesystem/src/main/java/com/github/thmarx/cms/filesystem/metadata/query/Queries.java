@@ -22,8 +22,9 @@ package com.github.thmarx.cms.filesystem.metadata.query;
  * #L%
  */
 
+import com.github.thmarx.cms.api.db.ContentNode;
+import com.github.thmarx.cms.api.utils.MapUtil;
 import com.google.common.base.Strings;
-import static java.lang.Integer.compare;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -31,6 +32,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 /**
  *
@@ -169,5 +172,17 @@ public class Queries {
 		}
 
 		return 0;
+	}
+	
+	public static Predicate<? super ContentNode> createExtensionPredicate(final String field, final Object value, final BiPredicate<Object, Object> predicate) {
+		return (node) -> {
+			var node_value = MapUtil.getValue(node.data(), field);
+
+			if (node_value == null) {
+				return false;
+			}
+			
+			return predicate.test(node_value, value);
+		};
 	}
 }

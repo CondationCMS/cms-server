@@ -22,7 +22,9 @@ package com.github.thmarx.cms.filesystem;
  * #L%
  */
 
+import com.github.thmarx.cms.filesystem.metadata.query.ExtendableQuery;
 import java.io.IOException;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -88,5 +90,18 @@ public abstract class AbstractFileSystemTest {
 		
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.getFirst().uri()).isEqualTo("test/test1.md");
+	}
+	
+	@Test
+	public void test_custom_operation() throws IOException {
+
+		var query = getFileSystem().query((node, i) -> node);
+		var nodes = query.get();
+		Assertions.assertThat(nodes).hasSize(3);
+		
+		query = getFileSystem().query((node, i) -> node);
+		((ExtendableQuery)query).addCustomOperators("none", (value1, value2) -> false);
+		nodes = query.where("featured", "none").get();
+		Assertions.assertThat(nodes).hasSize(0);
 	}
 }

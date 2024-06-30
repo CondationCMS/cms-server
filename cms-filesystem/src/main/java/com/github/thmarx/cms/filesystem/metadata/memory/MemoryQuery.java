@@ -33,11 +33,11 @@ import com.github.thmarx.cms.api.utils.NodeUtil;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import com.github.thmarx.cms.filesystem.metadata.query.Queries;
+import com.github.thmarx.cms.filesystem.metadata.query.ExtendableQuery;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
 import java.util.stream.Stream;
 
 /**
@@ -45,7 +45,7 @@ import java.util.stream.Stream;
  * @author t.marx
  * @param <T>
  */
-public class MemoryQuery<T> implements ContentQuery<T> {
+public class MemoryQuery<T> extends ExtendableQuery<T> {
 
 	private QueryContext<T> context;
 
@@ -54,16 +54,11 @@ public class MemoryQuery<T> implements ContentQuery<T> {
 	}
 
 	public MemoryQuery(Stream<ContentNode> nodes, IndexProviding indexProviding, ExcerptMapperFunction<T> nodeMapper) {
-		this(new QueryContext(nodes, nodeMapper, indexProviding, false, Constants.DEFAULT_CONTENT_TYPE, Map.of()));
+		this(new QueryContext(nodes, nodeMapper, indexProviding, false, Constants.DEFAULT_CONTENT_TYPE));
 	}
 
 	public MemoryQuery(QueryContext<T> context) {
 		this.context = context;
-	}
-
-	public MemoryQuery<T> setCustomOperators (Map<String, BiPredicate<Object, Object>> queryOperations) {
-		context.setQueryOperations(queryOperations);
-		return this;
 	}
 	
 	@Override
@@ -81,8 +76,8 @@ public class MemoryQuery<T> implements ContentQuery<T> {
 	public MemoryQuery<T> where(final String field, final String operator, final Object value) {
 		if (Queries.isDefaultOperation(operator)) {
 			return where(field, Queries.operator4String(operator), value);
-		} else if (context.getQueryOperations().containsKey(operator)) {
-			return new MemoryQuery<>(QueryUtil.filter_extension(context, field, value, context.getQueryOperations().get(operator)));
+		} else if (getContext().getQueryOperations().containsKey(operator)) {
+			return new MemoryQuery<>(QueryUtil.filter_extension(context, field, value, getContext().getQueryOperations().get(operator)));
 		}
 		throw new IllegalArgumentException("unknown operator " + operator);
 	}

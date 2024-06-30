@@ -29,11 +29,15 @@ import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import com.github.thmarx.cms.filesystem.metadata.query.Queries;
+import com.github.thmarx.cms.filesystem.metadata.query.ExtendableQuery;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.Document;
@@ -42,15 +46,15 @@ import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
 
 /**
  *
  * @author t.marx
+ * @param <T>
  */
 @Slf4j
 @RequiredArgsConstructor
-public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
+public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.Sort<T> {
 
 	private final LuceneIndex index;
 	private final MetaData metaData;
@@ -68,6 +72,8 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 	private Optional<String> orderByField = Optional.empty();
 
 	private Optional<String> startUri = Optional.empty();
+	
+	private List<Predicate<T>> extensionOperations = new ArrayList<>();
 	
 	public LuceneQuery (
 			final String startUri, 
@@ -124,6 +130,12 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 					.map(nodeMapper)
 					.toList();
 
+			if (!extensionOperations.isEmpty()) {
+				var nstream = filteredNodes.stream();
+				extensionOperations.forEach(predicate -> nstream.filter(predicate));
+				filteredNodes = nstream.toList();
+			}
+			
 			var total = filteredNodes.size();
 
 			if (orderByField.isPresent()) {
@@ -170,6 +182,13 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 					.filter(node -> !node.isDirectory())
 					.filter(AbstractMetaData::isVisible)
 					.map(nodeMapper).toList();
+			
+			if (!extensionOperations.isEmpty()) {
+				var nstream = nodes.stream();
+				extensionOperations.forEach(predicate -> nstream.filter(predicate));
+				nodes = nstream.toList();
+			}
+			
 			if (orderByField.isPresent()) {
 				return (List<T>) QueryHelper.sorted(nodes, orderByField.get(), Order.ASC.equals(sortOrder));
 			} else {
@@ -220,6 +239,14 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 	public ContentQuery<T> where(String field, String operator, Object value) {
 		if (Queries.isDefaultOperation(operator)) {
 			return where(field, Queries.operator4String(operator), value);
+		} else if (getContext().getQueryOperations().containsKey(operator)) {
+			extensionOperations.add(
+					(Predicate<T>)Queries.createExtensionPredicate(
+							field, 
+							value, 
+							getContext().getQueryOperations().get(operator)
+					)
+			);
 		}
 		throw new IllegalArgumentException("unknown operator " + operator);
 	}
@@ -255,7 +282,7 @@ public class LuceneQuery<T> implements ContentQuery<T>, ContentQuery.Sort<T> {
 	}
 
 	private ContentQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
-
+		
 		QueryHelper.exists(queryBuilder, field, value);
 		
 		switch (operator) {

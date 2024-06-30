@@ -24,6 +24,7 @@ package com.github.thmarx.cms.api.db;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiPredicate;
 
 /**
  *

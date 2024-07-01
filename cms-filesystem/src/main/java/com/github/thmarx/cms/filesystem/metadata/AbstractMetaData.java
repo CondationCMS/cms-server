@@ -119,7 +119,8 @@ public abstract class AbstractMetaData implements MetaData {
 
 		Optional<ContentNode> parentFolder;
 		if (parts.length == 1) {
-			parentFolder = getFolder(uri);
+			//parentFolder = getFolder(uri);
+			parentFolder = Optional.empty();
 		} else {
 			var parentPath = Arrays.copyOfRange(parts, 0, parts.length - 1);
 			var parentUri = String.join("/", parentPath);

@@ -39,7 +39,6 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.MatchAllDocsQuery;
-import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 
 /**

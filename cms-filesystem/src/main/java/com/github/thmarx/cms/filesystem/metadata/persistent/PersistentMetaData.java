@@ -55,9 +55,6 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	private LuceneIndex index;
 	private MVStore store;
 
-	MVMap<String, ContentNode> nodes;
-	MVMap<String, ContentNode> tree;
-
 	@Override
 	public void open() throws IOException {
 
@@ -119,23 +116,12 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 
 	@Override
 	public void clear() {
+		super.clear();
 		try {
-			nodes.clear();
-			tree.clear();
 			index.delete(new MatchAllDocsQuery());
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
-	}
-
-	@Override
-	public Map<String, ContentNode> nodes() {
-		return nodes;
-	}
-
-	@Override
-	public Map<String, ContentNode> tree() {
-		return tree;
 	}
 
 	@Override

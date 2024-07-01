@@ -40,26 +40,11 @@ import java.util.function.BiFunction;
  */
 public class MemoryMetaData extends AbstractMetaData {
 
-	private final ConcurrentMap<String, ContentNode> nodes = new ConcurrentHashMap<>();
-
-	private final ConcurrentMap<String, ContentNode> tree = new ConcurrentHashMap<>();
-	
-	@Override
-	public void clear() {
-		nodes.clear();
-		tree.clear();
+	public MemoryMetaData () {
+		nodes = new ConcurrentHashMap<>();
+		tree = new ConcurrentHashMap<>();
 	}
 	
-	@Override
-	public ConcurrentMap<String, ContentNode> nodes() {
-		return new ConcurrentHashMap<>(nodes);
-	}
-
-	@Override
-	public ConcurrentMap<String, ContentNode> tree() {
-		return new ConcurrentHashMap<>(tree);
-	}
-
 	@Override
 	public void addFile(final String uri, final Map<String, Object> data, final LocalDate lastModified) {
 

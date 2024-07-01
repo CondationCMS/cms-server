@@ -32,6 +32,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,6 +43,27 @@ import java.util.stream.Stream;
  * @author t.marx
  */
 public abstract class AbstractMetaData implements MetaData {
+	
+	protected ConcurrentMap<String, ContentNode> nodes;
+
+	protected ConcurrentMap<String, ContentNode> tree;
+	
+	@Override
+	public void clear() {
+		nodes.clear();
+		tree.clear();
+	}
+	
+	@Override
+	public ConcurrentMap<String, ContentNode> nodes() {
+		return new ConcurrentHashMap<>(nodes);
+	}
+
+	@Override
+	public ConcurrentMap<String, ContentNode> tree() {
+		return new ConcurrentHashMap<>(tree);
+	}
+	
 	public static boolean isVisible (ContentNode node) {
 		return node != null 
 				// check if some parent is hidden

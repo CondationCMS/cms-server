@@ -71,18 +71,18 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	private Optional<String> orderByField = Optional.empty();
 
 	private Optional<String> startUri = Optional.empty();
-	
+
 	private List<Predicate<ContentNode>> extensionOperations = new ArrayList<>();
-	
-	public LuceneQuery (
-			final String startUri, 
-			final LuceneIndex index, 
-			final MetaData metaData, 
+
+	public LuceneQuery(
+			final String startUri,
+			final LuceneIndex index,
+			final MetaData metaData,
 			final ExcerptMapperFunction<T> nodeMapper) {
 		this(index, metaData, nodeMapper);
 		this.startUri = Optional.ofNullable(startUri);
 	}
-	
+
 	@Override
 	public ContentQuery<T> excerpt(long excerptLength) {
 		nodeMapper.setExcerpt((int) excerptLength);
@@ -110,75 +110,30 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
 		long offset = (page - 1) * size;
 
-		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
+		var result = queryNodes();
 
-		if (startUri.isPresent()) {
-			queryBuilder.add(new PrefixQuery(new Term("_uri", startUri.get())), BooleanClause.Occur.FILTER);
-		}
-		
-		try {
-			var result = index.query(queryBuilder.build());
+		var filteredTargetNodes = result.nodes.stream()
+				.skip(offset)
+				.limit(size)
+				.toList();
 
-			var filteredNodes = result.stream()
-					.map(document -> document.get("_uri"))
-					.map(metaData::byUri)
-					.filter(Optional::isPresent)
-					.map(Optional::get)
-					.filter(node -> !node.isDirectory())
-					.filter(AbstractMetaData::isVisible)
-					.toList();
-
-			if (!extensionOperations.isEmpty()) {
-				filteredNodes = filteredNodes.stream()
-						.filter((node) -> {
-							return extensionOperations.stream()
-									.map(predicate -> predicate.test(node))
-									.filter(value -> !value)
-									.count() == 0;
-						})
-						.toList();
-			}
-			var total = filteredNodes.size();
-
-			var contentNodes = filteredNodes.stream()
-					.map(nodeMapper)
-					.toList();
-			
-			if (orderByField.isPresent()) {
-				contentNodes = (List<T>) QueryHelper.sorted(contentNodes, orderByField.get(), Order.ASC.equals(sortOrder));
-			}
-
-			var filteredTargetNodes = contentNodes.stream()
-					.skip(offset)
-					.limit(size)
-					.toList();
-
-			int totalPages = (int) Math.ceil((float) total / size);
-			return new Page<>(filteredNodes.size(), totalPages, (int) page, filteredTargetNodes);
-
-		} catch (IOException ex) {
-			log.error("", ex);
-		}
-
-		return Page.EMPTY;
+		int totalPages = (int) Math.ceil((float) result.total / size);
+		return new Page<>(result.total, size, totalPages, (int) page, filteredTargetNodes);
 	}
 
 	@Override
 	public List<T> get() {
+		return queryNodes().nodes;
+	}
+
+	private NodeResult<T> queryNodes() {
 		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
 		if (startUri.isPresent()) {
 			queryBuilder.add(new PrefixQuery(new Term("_uri", startUri.get())), BooleanClause.Occur.FILTER);
 		}
 
 		try {
-			List<Document> result;
-//			if (orderByField.isPresent()) {
-//				org.apache.lucene.search.Sort sort = new org.apache.lucene.search.Sort(
-//						new SortField("year", SortField.Type.INT, true)
-//				);
-//			} else {
-			result = index.query(queryBuilder.build());
-//			}
+			List<Document> result = index.query(queryBuilder.build());
 
 			var nodes = result.stream()
 					.map(document -> document.get("_uri"))
@@ -188,7 +143,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 					.filter(node -> !node.isDirectory())
 					.filter(AbstractMetaData::isVisible)
 					.toList();
-			
+
 			if (!extensionOperations.isEmpty()) {
 				nodes = nodes.stream()
 						.filter((node) -> {
@@ -199,21 +154,19 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 						})
 						.toList();
 			}
-			
+
 			var contentNodes = nodes.stream()
 					.map(nodeMapper)
 					.toList();
-			
-			if (orderByField.isPresent()) {
-				return (List<T>) QueryHelper.sorted(nodes, orderByField.get(), Order.ASC.equals(sortOrder));
-			} else {
-				return contentNodes;
-			}
+
+			var total = nodes.size();
+
+			return new NodeResult<>(total, contentNodes);
+
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
-
-		return Collections.emptyList();
+		return new NodeResult<>(0, Collections.emptyList());
 	}
 
 	@Override
@@ -257,8 +210,8 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 		} else if (getContext().getQueryOperations().containsKey(operator)) {
 			extensionOperations.add(
 					(Predicate<ContentNode>) Queries.createExtensionPredicate(
-							field, 
-							value, 
+							field,
+							value,
 							getContext().getQueryOperations().get(operator)
 					));
 			return this;
@@ -297,9 +250,9 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	}
 
 	private ContentQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
-		
+
 		QueryHelper.exists(queryBuilder, field, value);
-		
+
 		switch (operator) {
 			case EQ ->
 				QueryHelper.eq(queryBuilder, field, value, BooleanClause.Occur.MUST);
@@ -338,4 +291,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 		return this;
 	}
 
+	private record NodeResult<T>(int total, List<T> nodes) {
+
+	}
 }

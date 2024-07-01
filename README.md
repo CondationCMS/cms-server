@@ -6,6 +6,11 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 5.1.0
+
+* **FEATURE** Persitent index for metadata [#217](https://github.com/thmarx/cms/issues/217)
+	**Attention**: Refactoring of the page objects requires a migration of your templates
+
 ## 5.0.0
 
 * **FEATURE** Correction for the shortcode syntax [#216](https://github.com/thmarx/cms/issues/216)

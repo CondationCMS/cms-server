@@ -160,8 +160,8 @@ public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
 	}
 
 	@Override
-	public Page<T> page(final long page, final long size) {
-		long offset = (page - 1) * size;
+	public Page<T> page(final long page, final long pageSize) {
+		long offset = (page - 1) * pageSize;
 
 		var filteredNodes = context.getNodes()
 				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
@@ -169,21 +169,21 @@ public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
 				.filter(MemoryMetaData::isVisible)
 				.toList();
 
-		var total = filteredNodes.size();
+		var totalItems = filteredNodes.size();
 
 		var filteredTargetNodes = filteredNodes.stream()
 				.skip(offset)
-				.limit(size)
+				.limit(pageSize)
 				.map(context.getNodeMapper())
 				.toList();
 
-		int totalPages = (int) Math.ceil((float) total / size);
-		return new Page<T>(filteredNodes.size(), totalPages, (int)page, filteredTargetNodes);
+		int totalPages = (int) Math.ceil((float) totalItems / pageSize);
+		return new Page<>(totalItems, pageSize, totalPages, (int)page, filteredTargetNodes);
 	}
 
 	@Override
 	public Sort<T> orderby(final String field) {
-		return new Sort<T>(field, context);
+		return new Sort<>(field, context);
 	}
 
 	@Override

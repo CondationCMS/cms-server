@@ -52,7 +52,7 @@ public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
 	}
 
 	public MemoryQuery(Stream<ContentNode> nodes, ExcerptMapperFunction<T> nodeMapper) {
-		this(new QueryContext(nodes, nodeMapper, Constants.DEFAULT_CONTENT_TYPE));
+		this(new QueryContext<>(nodes, nodeMapper, Constants.DEFAULT_CONTENT_TYPE));
 	}
 
 	public MemoryQuery(QueryContext<T> context) {
@@ -111,7 +111,7 @@ public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
 	}
 
 	private MemoryQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
-		return new MemoryQuery(filtered(context, field, value, operator));
+		return new MemoryQuery<>(filtered(context, field, value, operator));
 	}
 
 

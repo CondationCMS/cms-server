@@ -27,6 +27,7 @@ import com.github.thmarx.cms.api.db.ContentQuery;
 import com.github.thmarx.cms.api.db.Page;
 import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
+import com.github.thmarx.cms.filesystem.metadata.memory.QueryUtil;
 import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import com.github.thmarx.cms.filesystem.metadata.query.Queries;
 import com.github.thmarx.cms.filesystem.metadata.query.ExtendableQuery;
@@ -126,7 +127,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 		return queryNodes().nodes;
 	}
 
-	private NodeResult<T> queryNodes() {
+	private List<ContentNode> queryContentNodes() {
 		queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
 		if (startUri.isPresent()) {
 			queryBuilder.add(new PrefixQuery(new Term("_uri", startUri.get())), BooleanClause.Occur.FILTER);
@@ -135,7 +136,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 		try {
 			List<Document> result = index.query(queryBuilder.build());
 
-			var nodes = result.stream()
+			var contentNodes = result.stream()
 					.map(document -> document.get("_uri"))
 					.map(metaData::byUri)
 					.filter(Optional::isPresent)
@@ -145,7 +146,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 					.toList();
 
 			if (!extensionOperations.isEmpty()) {
-				nodes = nodes.stream()
+				contentNodes = contentNodes.stream()
 						.filter((node) -> {
 							return extensionOperations.stream()
 									.map(predicate -> predicate.test(node))
@@ -154,24 +155,29 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 						})
 						.toList();
 			}
-
-			var contentNodes = nodes.stream()
-					.map(nodeMapper)
-					.toList();
-
-			var total = nodes.size();
-
-			return new NodeResult<>(total, contentNodes);
-
+			return contentNodes;
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
-		return new NodeResult<>(0, Collections.emptyList());
+		return Collections.emptyList();
+	}
+
+	private NodeResult<T> queryNodes() {
+		var contentNodes = queryContentNodes();
+
+		var mappedContentNodes = contentNodes.stream()
+				.map(nodeMapper)
+				.toList();
+
+		var total = contentNodes.size();
+
+		return new NodeResult<>(total, mappedContentNodes);
 	}
 
 	@Override
 	public Map<Object, List<ContentNode>> groupby(String field) {
-		return Collections.emptyMap();
+		var nodes = queryContentNodes();
+		return QueryUtil.groupby(nodes.stream(), field);
 	}
 
 	@Override

@@ -25,29 +25,20 @@ package com.github.thmarx.cms.filesystem.metadata.memory;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.ContentQuery;
-import com.github.thmarx.cms.filesystem.MetaData;
 import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *
  * @author t.marx
  */
-public class MemoryMetaData extends AbstractMetaData implements MetaData {
+public class MemoryMetaData extends AbstractMetaData {
 
 	private final ConcurrentMap<String, ContentNode> nodes = new ConcurrentHashMap<>();
 
@@ -70,91 +61,6 @@ public class MemoryMetaData extends AbstractMetaData implements MetaData {
 	}
 
 	@Override
-	public void createDirectory(final String uri) {
-		if (Strings.isNullOrEmpty(uri)) {
-			return;
-		}
-		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		ContentNode n = new ContentNode(uri, parts[parts.length - 1], Map.of(), true);
-
-		Optional<ContentNode> parentFolder;
-		if (parts.length == 1) {
-			parentFolder = getFolder(uri);
-		} else {
-			var parentPath = Arrays.copyOfRange(parts, 0, parts.length - 1);
-			var parentUri = String.join("/", parentPath);
-			parentFolder = getFolder(parentUri);
-		}
-
-		if (parentFolder.isPresent()) {
-			parentFolder.get().children().put(n.name(), n);
-		} else {
-			tree.put(n.name(), n);
-		}
-	}
-
-	@Override
-	public List<ContentNode> listChildren(String uri) {
-		if ("".equals(uri)) {
-			return tree.values().stream()
-					.filter(node -> !node.isHidden())
-					.map(this::mapToIndex)
-					.filter(node -> node != null)
-					.filter(MemoryMetaData::isVisible)
-					.collect(Collectors.toList());
-
-		} else {
-			Optional<ContentNode> findFolder = findFolder(uri);
-			if (findFolder.isPresent()) {
-				return findFolder.get().children().values()
-						.stream()
-						.filter(node -> !node.isHidden())
-						.map(this::mapToIndex)
-						.filter(node -> node != null)
-						.filter(MemoryMetaData::isVisible)
-						.collect(Collectors.toList());
-			}
-		}
-		return Collections.emptyList();
-	}
-
-	protected ContentNode mapToIndex(ContentNode node) {
-		if (node.isDirectory()) {
-			var tempNode = node.children().entrySet().stream().filter((entry)
-					-> entry.getKey().equals("index.md")
-			).findFirst();
-			if (tempNode.isPresent()) {
-				return tempNode.get().getValue();
-			}
-			return null;
-		} else {
-			return node;
-		}
-	}
-
-	@Override
-	public Optional<ContentNode> findFolder(String uri) {
-		return getFolder(uri);
-	}
-
-	private Optional<ContentNode> getFolder(String uri) {
-		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-
-		final AtomicReference<ContentNode> folder = new AtomicReference<>(null);
-		Stream.of(parts).forEach(part -> {
-			if (part.endsWith(".md")) {
-				return;
-			}
-			if (folder.get() == null) {
-				folder.set(tree.get(part));
-			} else {
-				folder.set(folder.get().children().get(part));
-			}
-		});
-		return Optional.ofNullable(folder.get());
-	}
-
-	@Override
 	public void addFile(final String uri, final Map<String, Object> data, final LocalDate lastModified) {
 
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
@@ -168,14 +74,6 @@ public class MemoryMetaData extends AbstractMetaData implements MetaData {
 		} else {
 			tree.put(node.name(), node);
 		}
-	}
-
-	@Override
-	public Optional<ContentNode> byUri(final String uri) {
-		if (!nodes.containsKey(uri)) {
-			return Optional.empty();
-		}
-		return Optional.of(nodes.get(uri));
 	}
 
 	void remove(String uri) {

@@ -41,7 +41,7 @@ public final class QueryUtil {
 
 	
 
-	protected static Map<Object, List<ContentNode>> groupby(final Stream<ContentNode> nodes, final String field) {
+	public static Map<Object, List<ContentNode>> groupby(final Stream<ContentNode> nodes, final String field) {
 		return nodes.collect(Collectors.groupingBy((node) -> MapUtil.getValue(node.data(), field)));
 	}
 

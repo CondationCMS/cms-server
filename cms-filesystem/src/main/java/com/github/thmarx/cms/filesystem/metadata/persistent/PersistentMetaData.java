@@ -24,24 +24,14 @@ package com.github.thmarx.cms.filesystem.metadata.persistent;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.api.db.ContentQuery;
-import com.github.thmarx.cms.filesystem.MetaData;
-import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
+import com.github.thmarx.cms.filesystem.metadata.AbstractMetaData;
 import com.github.thmarx.cms.filesystem.metadata.query.ExcerptMapperFunction;
-import com.google.common.base.Strings;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.Document;
@@ -58,14 +48,12 @@ import org.h2.mvstore.MVStore;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class PersistentMetaData implements AutoCloseable, MetaData {
+public class PersistentMetaData extends AbstractMetaData implements AutoCloseable {
 
 	private final Path hostPath;
 
 	private LuceneIndex index;
 	private MVStore store;
-
-	private static final Gson GSON = new Gson();
 
 	MVMap<String, ContentNode> nodes;
 	MVMap<String, ContentNode> tree;
@@ -126,99 +114,6 @@ public class PersistentMetaData implements AutoCloseable, MetaData {
 			this.index.update(new Term("_uri", uri), document);
 		} catch (IOException ex) {
 			log.error("", ex);
-		}
-	}
-	
-	@Override
-	public Optional<ContentNode> byUri(String uri) {
-		if (!nodes.containsKey(uri)) {
-			return Optional.empty();
-		}
-		return Optional.of(nodes.get(uri));
-	}
-
-	@Override
-	public void createDirectory(String uri) {
-		if (Strings.isNullOrEmpty(uri)) {
-			return;
-		}
-		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		ContentNode n = new ContentNode(uri, parts[parts.length - 1], Map.of(), true);
-
-		Optional<ContentNode> parentFolder;
-		if (parts.length == 1) {
-			parentFolder = getFolder(uri);
-		} else {
-			var parentPath = Arrays.copyOfRange(parts, 0, parts.length - 1);
-			var parentUri = String.join("/", parentPath);
-			parentFolder = getFolder(parentUri);
-		}
-
-		if (parentFolder.isPresent()) {
-			parentFolder.get().children().put(n.name(), n);
-		} else {
-			tree.put(n.name(), n);
-		}
-	}
-
-	@Override
-	public Optional<ContentNode> findFolder(String uri) {
-		return getFolder(uri);
-	}
-
-	private Optional<ContentNode> getFolder(String uri) {
-		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-
-		final AtomicReference<ContentNode> folder = new AtomicReference<>(null);
-		Stream.of(parts).forEach(part -> {
-			if (part.endsWith(".md")) {
-				return;
-			}
-			if (folder.get() == null) {
-				folder.set(tree.get(part));
-			} else {
-				folder.set(folder.get().children().get(part));
-			}
-		});
-		return Optional.ofNullable(folder.get());
-	}
-
-	@Override
-	public List<ContentNode> listChildren(String uri) {
-		if ("".equals(uri)) {
-			return tree.values().stream()
-					.filter(node -> !node.isHidden())
-					.map(this::mapToIndex)
-					.filter(node -> node != null)
-					.filter(MemoryMetaData::isVisible)
-					.collect(Collectors.toList());
-
-		} else {
-			Optional<ContentNode> findFolder = findFolder(uri);
-			if (findFolder.isPresent()) {
-				return findFolder.get().children().values()
-						.stream()
-						.filter(node -> !node.isHidden())
-						.map(this::mapToIndex)
-						.filter(node -> node != null)
-						.filter(MemoryMetaData::isVisible)
-						.collect(Collectors.toList());
-			}
-		}
-		return Collections.emptyList();
-	}
-
-	protected ContentNode mapToIndex(ContentNode node) {
-		if (node.isDirectory()) {
-			var tempNode = node.children().entrySet().stream().filter((entry)
-					-> entry.getKey().equals("index.md")
-			).findFirst();
-			if (tempNode.isPresent()) {
-				return tempNode.get().getValue();
-			}
-			return null;
-		} else {
-			return node;
 		}
 	}
 

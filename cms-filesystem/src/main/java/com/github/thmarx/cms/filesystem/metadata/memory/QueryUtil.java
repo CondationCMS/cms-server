@@ -70,7 +70,7 @@ public final class QueryUtil {
 		return context;
 	}
 
-	private static Predicate<? super ContentNode> createPredicate(final String field, final Object value, final Queries.Operator operator) {
+	private static Predicate<ContentNode> createPredicate(final String field, final Object value, final Queries.Operator operator) {
 		return (node) -> {
 			var node_value = MapUtil.getValue(node.data(), field);
 

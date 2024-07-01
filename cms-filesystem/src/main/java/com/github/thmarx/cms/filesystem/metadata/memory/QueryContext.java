@@ -33,6 +33,7 @@ import lombok.NoArgsConstructor;
 /**
  *
  * @author t.marx
+ * @param <T>
  */
 @Data
 @AllArgsConstructor

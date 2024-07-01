@@ -194,11 +194,11 @@ public class MemoryQuery<T> extends ExtendableQuery<T> {
 	public static record Sort<T>(String field, QueryContext context) implements ContentQuery.Sort<T> {
 
 		public MemoryQuery<T> asc() {
-			return new MemoryQuery(sorted(context, field, true));
+			return new MemoryQuery<T>(sorted(context, field, true));
 		}
 
 		public MemoryQuery<T> desc() {
-			return new MemoryQuery(sorted(context, field, false));
+			return new MemoryQuery<T>(sorted(context, field, false));
 		}
 	}
 }

@@ -122,7 +122,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.2.0-jre</version>
+				<version>33.2.1-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.inject</groupId>
@@ -196,7 +196,7 @@
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.25.3</version>
+				<version>3.26.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -222,6 +222,16 @@
 				<groupId>org.awaitility</groupId>
 				<artifactId>awaitility</artifactId>
 				<version>4.2.1</version>
+			</dependency>
+			<dependency>
+				<groupId>info.picocli</groupId>
+				<artifactId>picocli</artifactId>
+				<version>4.7.6</version>
+			</dependency>
+			<dependency>
+				<groupId>org.semver4j</groupId>
+				<artifactId>semver4j</artifactId>
+				<version>5.3.0</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -308,7 +318,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.2.5</version>
+					<version>3.3.0</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -334,7 +344,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-deploy-plugin</artifactId>
-						<version>3.1.1</version>
+						<version>3.1.2</version>
 					</plugin>
 				</plugins>
 			</build>

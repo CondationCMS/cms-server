@@ -84,7 +84,7 @@ public class MemoryMetaData extends AbstractMetaData {
 	
 	@Override
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
-		return new MemoryQuery(new ArrayList<>(nodes.values()), nodeMapper);
+		return new MemoryQuery<T>(new ArrayList<>(nodes.values()), nodeMapper);
 	}
 
 	@Override
@@ -99,7 +99,7 @@ public class MemoryMetaData extends AbstractMetaData {
 
 		var filtered = getNodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
 
-		return new MemoryQuery(filtered, nodeMapper);
+		return new MemoryQuery<T>(filtered, nodeMapper);
 	}
 
 	

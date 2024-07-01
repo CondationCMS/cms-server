@@ -43,7 +43,7 @@ import java.util.stream.Stream;
  * @author t.marx
  * @param <T>
  */
-public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
+public class MemoryQuery<T> extends ExtendableQuery<T> {
 
 	private QueryContext<T> context;
 
@@ -191,7 +191,7 @@ public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
 		return QueryUtil.groupby(context.getNodes(), field);
 	}
 
-	public static record Sort<T extends ContentNode>(String field, QueryContext context) implements ContentQuery.Sort<T> {
+	public static record Sort<T>(String field, QueryContext context) implements ContentQuery.Sort<T> {
 
 		public MemoryQuery<T> asc() {
 			return new MemoryQuery(sorted(context, field, true));

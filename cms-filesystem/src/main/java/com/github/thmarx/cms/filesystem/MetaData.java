@@ -60,6 +60,6 @@ public interface MetaData {
 
 	Map<String, ContentNode> getTree();
 	
-	<T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper);
-	<T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper);
+	<Q> ContentQuery<Q> query(final BiFunction<ContentNode, Integer, Q> nodeMapper);
+	<Q> ContentQuery<Q> query(final String startURI, final BiFunction<ContentNode, Integer, Q> nodeMapper);
 }

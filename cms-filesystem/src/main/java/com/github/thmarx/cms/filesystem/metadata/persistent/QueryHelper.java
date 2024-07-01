@@ -275,7 +275,7 @@ public class QueryHelper {
 		return null;
 	}
 	
-	protected static List<?> sorted(final List<?> nodes, final String field, final boolean asc) {
+	protected static List<? extends ContentNode> sorted(final List<? extends ContentNode> nodes, final String field, final boolean asc) {
 
 		var tempNodes = nodes.stream().sorted(
 				(node1, node2) -> {

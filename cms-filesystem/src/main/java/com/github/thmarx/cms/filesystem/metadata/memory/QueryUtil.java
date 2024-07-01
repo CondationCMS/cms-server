@@ -45,7 +45,7 @@ public final class QueryUtil {
 		return nodes.collect(Collectors.groupingBy((node) -> MapUtil.getValue(node.data(), field)));
 	}
 
-	protected static QueryContext<?> sorted(final QueryContext<?> context, final String field, final boolean asc) {
+	protected static <T extends ContentNode> QueryContext<T> sorted(final QueryContext<T> context, final String field, final boolean asc) {
 
 		var tempNodes = context.getNodes().sorted(
 				(node1, node2) -> {

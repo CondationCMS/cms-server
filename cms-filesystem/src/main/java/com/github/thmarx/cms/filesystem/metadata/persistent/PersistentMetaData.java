@@ -58,13 +58,13 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	@Override
 	public void open() throws IOException {
 
-		Files.createDirectories(hostPath.resolve("data/store"));
-		Files.createDirectories(hostPath.resolve("data/index"));
+		Files.createDirectories(hostPath.resolve("data/metadata/store"));
+		Files.createDirectories(hostPath.resolve("data/metadata/index"));
 
 		index = new LuceneIndex();
-		index.open(hostPath.resolve("data/index"));
+		index.open(hostPath.resolve("data/metadata/index"));
 
-		store = MVStore.open(hostPath.resolve("data/store/data").toString());
+		store = MVStore.open(hostPath.resolve("data/metadata/store/data.db").toString());
 
 		nodes = store.openMap("nodes");
 		tree = store.openMap("tree");

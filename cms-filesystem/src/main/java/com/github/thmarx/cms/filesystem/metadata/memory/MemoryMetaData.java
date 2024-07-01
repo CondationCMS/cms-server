@@ -31,7 +31,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiFunction;
 
 /**
@@ -39,11 +38,6 @@ import java.util.function.BiFunction;
  * @author t.marx
  */
 public class MemoryMetaData extends AbstractMetaData {
-
-	public MemoryMetaData () {
-		nodes = new ConcurrentHashMap<>();
-		tree = new ConcurrentHashMap<>();
-	}
 	
 	@Override
 	public void addFile(final String uri, final Map<String, Object> data, final LocalDate lastModified) {
@@ -62,7 +56,7 @@ public class MemoryMetaData extends AbstractMetaData {
 	}
 
 	void remove(String uri) {
-		var node = nodes.remove(uri);
+		nodes.remove(uri);
 
 		var folder = getFolder(uri);
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
@@ -76,10 +70,16 @@ public class MemoryMetaData extends AbstractMetaData {
 
 	@Override
 	public void open() throws IOException {
+		if (nodes == null) {
+			nodes = new ConcurrentHashMap<>();
+			tree = new ConcurrentHashMap<>();
+		}
 	}
 
 	@Override
 	public void close() throws IOException {
+		nodes = null;
+		tree = null;
 	}
 	
 	@Override
@@ -97,7 +97,7 @@ public class MemoryMetaData extends AbstractMetaData {
 			uri = startURI;
 		}
 
-		var filtered = nodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
+		var filtered = getNodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
 
 		return new MemoryQuery(filtered, nodeMapper);
 	}

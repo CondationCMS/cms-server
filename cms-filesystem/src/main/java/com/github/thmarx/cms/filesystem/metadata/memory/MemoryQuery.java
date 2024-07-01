@@ -166,7 +166,7 @@ public class MemoryQuery<T extends ContentNode> extends ExtendableQuery<T> {
 		var filteredNodes = context.getNodes()
 				.filter(NodeUtil.contentTypeFiler(context.getContentType()))
 				.filter(node -> !node.isDirectory())
-				.filter(MemoryMetaData::isVisible)
+				.filter(AbstractMetaData::isVisible)
 				.toList();
 
 		var totalItems = filteredNodes.size();

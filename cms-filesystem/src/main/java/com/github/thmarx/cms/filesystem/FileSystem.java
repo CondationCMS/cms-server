@@ -145,7 +145,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		List<ContentNode> nodes = new ArrayList<>();
 
 		if ("".equals(folder)) {
-			metaData.tree().values()
+			metaData.getTree().values()
 					.stream()
 					.filter(node -> node.isDirectory())
 					.forEach((node) -> {
@@ -156,7 +156,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			var parts = folder.split("\\/");
 			for (var part : parts) {
 				if (node == null) {
-					node = metaData.tree().get(part);
+					node = metaData.getTree().get(part);
 				} else {
 					node = node.children().get(part);
 				}
@@ -170,7 +170,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 						});
 			}
 		} else {
-			metaData.tree().get(folder).children().values()
+			metaData.getTree().get(folder).children().values()
 					.stream()
 					.filter(node -> node.isDirectory())
 					.forEach((node) -> {
@@ -205,7 +205,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		final Pattern isOrderedSectionOf = Constants.SECTION_ORDERED_OF_PATTERN.apply(filename);
 
 		if ("".equals(folder)) {
-			metaData.tree().values()
+			metaData.getTree().values()
 					.stream()
 					.filter(node -> !node.isHidden())
 					.filter(node -> node.isPublished())
@@ -232,7 +232,6 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 							nodes.add(node);
 						});
 			}
-
 		}
 
 		return nodes;
@@ -268,10 +267,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		
 		if (MetaData.Type.PERSISTENT.equals(metaDataType)) {
 			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
-			this.metaData.open();
 		} else {
 			this.metaData = new MemoryMetaData();
 		}
+		this.metaData.open();
 
 		this.contentBase = resolve("content/");
 		var templateBase = resolve("templates/");

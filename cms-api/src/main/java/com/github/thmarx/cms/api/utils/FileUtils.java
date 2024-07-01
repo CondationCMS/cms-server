@@ -34,6 +34,8 @@ import java.util.Comparator;
  */
 public class FileUtils {
 
+	private FileUtils () {}
+	
 	public static void deleteFolder(Path pathToBeDeleted) throws IOException {
 		Files.walk(pathToBeDeleted)
 				.sorted(Comparator.reverseOrder())

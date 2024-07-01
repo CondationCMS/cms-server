@@ -25,7 +25,6 @@ package com.github.thmarx.cms.filesystem.metadata;
 import com.github.thmarx.cms.api.Constants;
 import com.github.thmarx.cms.api.db.ContentNode;
 import com.github.thmarx.cms.filesystem.MetaData;
-import com.github.thmarx.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,7 +34,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -50,17 +48,25 @@ public abstract class AbstractMetaData implements MetaData {
 	
 	@Override
 	public void clear() {
-		nodes.clear();
-		tree.clear();
+		if (nodes != null) {
+			nodes.clear();
+			tree.clear();
+		}
 	}
 	
 	@Override
-	public ConcurrentMap<String, ContentNode> nodes() {
+	public ConcurrentMap<String, ContentNode> getNodes() {
+		if (nodes == null) {
+			return new ConcurrentHashMap<>();
+		}
 		return new ConcurrentHashMap<>(nodes);
 	}
 
 	@Override
-	public ConcurrentMap<String, ContentNode> tree() {
+	public ConcurrentMap<String, ContentNode> getTree() {
+		if (tree == null) {
+			return new ConcurrentHashMap<>();
+		}
 		return new ConcurrentHashMap<>(tree);
 	}
 	
@@ -75,10 +81,10 @@ public abstract class AbstractMetaData implements MetaData {
 	
 	@Override
 	public Optional<ContentNode> byUri(String uri) {
-		if (!nodes().containsKey(uri)) {
+		if (!nodes.containsKey(uri)) {
 			return Optional.empty();
 		}
-		return Optional.of(nodes().get(uri));
+		return Optional.of(nodes.get(uri));
 	}
 	
 	@Override
@@ -95,7 +101,7 @@ public abstract class AbstractMetaData implements MetaData {
 				return;
 			}
 			if (folder.get() == null) {
-				folder.set(tree().get(part));
+				folder.set(getTree().get(part));
 			} else {
 				folder.set(folder.get().children().get(part));
 			}
@@ -123,19 +129,19 @@ public abstract class AbstractMetaData implements MetaData {
 		if (parentFolder.isPresent()) {
 			parentFolder.get().children().put(n.name(), n);
 		} else {
-			tree().put(n.name(), n);
+			tree.put(n.name(), n);
 		}
 	}
 
 	@Override
 	public List<ContentNode> listChildren(String uri) {
 		if ("".equals(uri)) {
-			return tree().values().stream()
+			return getTree().values().stream()
 					.filter(node -> !node.isHidden())
 					.map(this::mapToIndex)
 					.filter(node -> node != null)
-					.filter(MemoryMetaData::isVisible)
-					.collect(Collectors.toList());
+					.filter(AbstractMetaData::isVisible)
+					.toList();
 
 		} else {
 			Optional<ContentNode> findFolder = findFolder(uri);
@@ -145,8 +151,8 @@ public abstract class AbstractMetaData implements MetaData {
 						.filter(node -> !node.isHidden())
 						.map(this::mapToIndex)
 						.filter(node -> node != null)
-						.filter(MemoryMetaData::isVisible)
-						.collect(Collectors.toList());
+						.filter(AbstractMetaData::isVisible)
+						.toList();
 			}
 		}
 		return Collections.emptyList();

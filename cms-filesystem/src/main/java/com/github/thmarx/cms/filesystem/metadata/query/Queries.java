@@ -174,7 +174,7 @@ public class Queries {
 		return 0;
 	}
 	
-	public static Predicate<? super ContentNode> createExtensionPredicate(final String field, final Object value, final BiPredicate<Object, Object> predicate) {
+	public static Predicate<ContentNode> createExtensionPredicate(final String field, final Object value, final BiPredicate<Object, Object> predicate) {
 		return (node) -> {
 			var node_value = MapUtil.getValue(node.data(), field);
 

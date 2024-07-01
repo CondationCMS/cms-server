@@ -8,12 +8,9 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 ## 5.1.0
 
-
-## 5.1.0
-
-* **FEATURE** Persitent index for metadata [#217](https://github.com/thmarx/cms/issues/217)
+* **FEATURE** Persitent index for metadata [#217](https://github.com/thmarx/cms/issues/217)  
 	**Attention**: Refactoring of the page objects requires a migration of your templates
-* **FEATURE** Correction for the shortcode syntax [#216](https://github.com/thmarx/cms/issues/216)
+* **FEATURE** Correction for the shortcode syntax [#216](https://github.com/thmarx/cms/issues/216)  
 	The comma to separate the parameters is not needed anymore.
 * **FEATURE** Markdown support for multiline list items [#215](https://github.com/thmarx/cms/issues/215)
 * **FEATURE** New taxonomies added at runtime are reloaded when using the cli comman *host reload* [#213](https://github.com/thmarx/cms/issues/213)

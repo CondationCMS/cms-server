@@ -23,8 +23,8 @@ package com.condation.cms.server.configs;
  */
 
 
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.ServerProperties;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.ServerProperties;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;

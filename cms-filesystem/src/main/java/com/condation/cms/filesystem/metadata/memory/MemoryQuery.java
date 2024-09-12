@@ -22,11 +22,11 @@ package com.condation.cms.filesystem.metadata.memory;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.ContentQuery;
-import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.api.utils.NodeUtil;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.utils.NodeUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import static com.condation.cms.filesystem.metadata.memory.QueryUtil.filtered;
 import static com.condation.cms.filesystem.metadata.memory.QueryUtil.sorted;

@@ -24,7 +24,7 @@ package com.condation.cms.cli.tools;
 
 
 
-import com.github.thmarx.cms.api.PropertiesLoader;
+import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.cli.commands.themes.AbstractThemeCommand;
 import com.google.common.base.Strings;
 import java.io.IOException;

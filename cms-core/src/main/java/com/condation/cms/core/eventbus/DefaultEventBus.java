@@ -22,9 +22,9 @@ package com.condation.cms.core.eventbus;
  * #L%
  */
 
-import com.github.thmarx.cms.api.eventbus.Event;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.eventbus.EventListener;
+import com.condation.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.EventListener;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.extern.slf4j.Slf4j;

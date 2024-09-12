@@ -23,22 +23,22 @@ package com.condation.cms;
  */
 
 
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.feature.features.ContentNodeMapperFeature;
-import com.github.thmarx.cms.api.feature.features.ContentParserFeature;
-import com.github.thmarx.cms.api.feature.features.HookSystemFeature;
-import com.github.thmarx.cms.api.feature.features.InjectorFeature;
-import com.github.thmarx.cms.api.feature.features.MarkdownRendererFeature;
-import com.github.thmarx.cms.api.feature.features.RequestFeature;
-import com.github.thmarx.cms.api.feature.features.ServerPropertiesFeature;
-import com.github.thmarx.cms.api.feature.features.SiteMediaServiceFeature;
-import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
-import com.github.thmarx.cms.api.hooks.HookSystem;
-import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
+import com.condation.cms.api.feature.features.ContentParserFeature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.feature.features.MarkdownRendererFeature;
+import com.condation.cms.api.feature.features.RequestFeature;
+import com.condation.cms.api.feature.features.ServerPropertiesFeature;
+import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.mapper.ContentNodeMapper;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.RenderContext;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.extensions.hooks.DBHooks;

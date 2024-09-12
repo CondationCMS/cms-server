@@ -23,7 +23,7 @@ package com.condation.cms;
  */
 
 
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.markdown.MarkdownRenderer;
 
 /**
  *

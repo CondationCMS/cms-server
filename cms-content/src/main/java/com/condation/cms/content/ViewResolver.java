@@ -21,15 +21,15 @@ package com.condation.cms.content;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.content.ContentResponse;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
-import com.github.thmarx.cms.api.feature.features.ContentParserFeature;
-import com.github.thmarx.cms.api.feature.features.CurrentNodeFeature;
-import com.github.thmarx.cms.api.feature.features.RequestFeature;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.feature.features.ContentParserFeature;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.RequestFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.content.views.ViewParser;
 import com.condation.cms.extensions.request.RequestExtensions;
 import com.google.common.base.Strings;

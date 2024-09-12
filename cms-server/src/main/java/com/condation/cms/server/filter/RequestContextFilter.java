@@ -23,7 +23,7 @@ package com.condation.cms.server.filter;
  */
 
 
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.request.RequestContextFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;

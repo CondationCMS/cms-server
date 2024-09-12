@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.utils;
+package com.condation.cms.api.utils;
 
 /*-
  * #%L
@@ -21,7 +21,7 @@ package com.github.thmarx.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;

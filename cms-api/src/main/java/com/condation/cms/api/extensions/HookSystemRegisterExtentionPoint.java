@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.extensions;
+package com.condation.cms.api.extensions;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.extensions;
  */
 
 
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.HookSystem;
 
 /**
  * ExtensionPoint for modules to register hooks.

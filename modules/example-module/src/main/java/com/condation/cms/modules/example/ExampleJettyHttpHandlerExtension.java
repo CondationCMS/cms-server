@@ -23,11 +23,11 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.HttpHandler;
-import com.github.thmarx.cms.api.extensions.HttpHandlerExtensionPoint;
-import com.github.thmarx.cms.api.extensions.Mapping;
-import com.github.thmarx.cms.api.feature.features.HookSystemFeature;
-import com.github.thmarx.cms.api.hooks.ActionContext;
+import com.condation.cms.api.extensions.HttpHandler;
+import com.condation.cms.api.extensions.HttpHandlerExtensionPoint;
+import com.condation.cms.api.extensions.Mapping;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.hooks.ActionContext;
 import com.condation.modules.api.annotation.Extension;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

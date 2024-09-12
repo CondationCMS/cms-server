@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.request;
+package com.condation.cms.api.request;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package com.github.thmarx.cms.api.request;
  * #L%
  */
 
-import com.github.thmarx.cms.api.feature.FeatureContainer;
+import com.condation.cms.api.feature.FeatureContainer;
 import lombok.extern.slf4j.Slf4j;
 
 /**

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.configuration;
+package com.condation.cms.api.configuration;
 
 /*-
  * #%L
@@ -22,15 +22,15 @@ package com.github.thmarx.cms.api.configuration;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
-import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
-import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.eventbus.events.ConfigurationFileChanged;
-import com.github.thmarx.cms.api.scheduler.CronJobContext;
-import com.github.thmarx.cms.api.scheduler.CronJobScheduler;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.ConfigurationFileChanged;
+import com.condation.cms.api.scheduler.CronJobContext;
+import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.nio.file.Files;

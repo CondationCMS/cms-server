@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.utils;
+package com.condation.cms.api.utils;
 
 /*-
  * #%L
@@ -22,9 +22,9 @@ package com.github.thmarx.cms.api.utils;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.markdown.MarkdownRenderer;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Predicate;

@@ -24,9 +24,9 @@ package com.condation.cms.cli.commands.server;
 
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.ServerProperties;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.ServerProperties;
 import com.condation.cms.ipc.Command;
 import com.condation.cms.ipc.IPCClient;
 import java.nio.file.Files;

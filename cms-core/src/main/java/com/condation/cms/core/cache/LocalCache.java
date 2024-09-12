@@ -25,7 +25,7 @@ package com.condation.cms.core.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
-import com.github.thmarx.cms.api.cache.ICache;
+import com.condation.cms.api.cache.ICache;
 import java.io.Serializable;
 import java.util.function.Function;
 

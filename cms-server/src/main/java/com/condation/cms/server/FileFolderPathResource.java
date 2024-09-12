@@ -23,7 +23,7 @@ package com.condation.cms.server;
  */
 
 
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;

@@ -23,8 +23,8 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.HttpRouteExtensionPoint;
-import com.github.thmarx.cms.api.feature.features.RequestFeature;
+import com.condation.cms.api.extensions.HttpRouteExtensionPoint;
+import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.modules.api.annotation.Extension;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

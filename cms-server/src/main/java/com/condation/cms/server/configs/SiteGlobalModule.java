@@ -23,13 +23,13 @@ package com.condation.cms.server.configs;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.cache.CacheManager;
-import com.github.thmarx.cms.api.cache.CacheProvider;
-import com.github.thmarx.cms.api.extensions.CacheProviderExtentionPoint;
-import com.github.thmarx.cms.api.hooks.HookSystem;
-import com.github.thmarx.cms.api.scheduler.CronJobContext;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.CacheProvider;
+import com.condation.cms.api.extensions.CacheProviderExtentionPoint;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;

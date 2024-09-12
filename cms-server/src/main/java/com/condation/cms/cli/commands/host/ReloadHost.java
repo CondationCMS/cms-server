@@ -24,9 +24,9 @@ package com.condation.cms.cli.commands.host;
 
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.ServerProperties;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.ServerProperties;
 import com.condation.cms.ipc.Command;
 import com.condation.cms.ipc.IPCClient;
 import com.google.common.base.Strings;

@@ -24,7 +24,7 @@ package com.condation.cms.extensions;
 
 
 import com.condation.cms.extensions.GlobalExtensions;
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.HookSystem;
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Context;

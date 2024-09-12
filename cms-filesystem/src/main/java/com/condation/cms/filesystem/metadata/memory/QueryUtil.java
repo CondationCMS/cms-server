@@ -22,8 +22,8 @@ package com.condation.cms.filesystem.metadata.memory;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.utils.MapUtil;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.metadata.query.Queries;
 import java.util.List;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api;
+package com.condation.cms.api;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.github.thmarx.cms.api;
  */
 
 
-import com.github.thmarx.cms.api.media.MediaFormat;
-import com.github.thmarx.cms.api.media.MediaUtils;
+import com.condation.cms.api.media.MediaFormat;
+import com.condation.cms.api.media.MediaUtils;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;

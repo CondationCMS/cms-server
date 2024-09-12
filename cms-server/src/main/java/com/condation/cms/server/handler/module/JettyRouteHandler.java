@@ -23,8 +23,8 @@ package com.condation.cms.server.handler.module;
  */
 
 
-import com.github.thmarx.cms.api.extensions.HttpRouteExtensionPoint;
-import com.github.thmarx.cms.api.utils.RequestUtil;
+import com.condation.cms.api.extensions.HttpRouteExtensionPoint;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Inject;
 import java.util.Optional;

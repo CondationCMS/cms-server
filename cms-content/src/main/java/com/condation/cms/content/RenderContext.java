@@ -23,10 +23,10 @@ package com.condation.cms.content;
  */
 
 
-import com.github.thmarx.cms.api.annotations.FeatureScope;
-import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.theme.Theme;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import lombok.extern.slf4j.Slf4j;
 

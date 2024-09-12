@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.extensions;
+package com.condation.cms.api.extensions;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.github.thmarx.cms.api.extensions;
  */
 
 
-import com.github.thmarx.cms.api.module.CMSModuleContext;
-import com.github.thmarx.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.modules.api.ExtensionPoint;
 import com.condation.modules.api.ModuleConfiguration;
 import lombok.Getter;

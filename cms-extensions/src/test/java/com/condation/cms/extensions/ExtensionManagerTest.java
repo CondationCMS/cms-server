@@ -23,13 +23,13 @@ package com.condation.cms.extensions;
  */
 
 import com.condation.cms.extensions.ExtensionManager;
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.feature.features.AuthFeature;
-import com.github.thmarx.cms.api.feature.features.HookSystemFeature;
-import com.github.thmarx.cms.api.hooks.HookSystem;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.feature.features.AuthFeature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.theme.Theme;
 import com.condation.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Path;

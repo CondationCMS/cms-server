@@ -24,7 +24,7 @@ package com.condation.cms.server.filter;
 
 
 
-import com.github.thmarx.cms.api.SiteProperties;
+import com.condation.cms.api.SiteProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.ThreadContext;
 import org.eclipse.jetty.server.Handler;

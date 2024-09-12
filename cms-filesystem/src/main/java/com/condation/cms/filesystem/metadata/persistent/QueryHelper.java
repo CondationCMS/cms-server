@@ -23,8 +23,8 @@ package com.condation.cms.filesystem.metadata.persistent;
  */
 
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.utils.MapUtil;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.metadata.query.Queries;
 import java.util.Arrays;
 import java.util.Collections;

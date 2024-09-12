@@ -24,7 +24,7 @@ package com.condation.cms.core.messages;
 
 
 import com.condation.cms.core.messages.DefaultMessageSource;
-import com.github.thmarx.cms.api.SiteProperties;
+import com.condation.cms.api.SiteProperties;
 import java.nio.file.Path;
 import java.util.Map;
 import org.assertj.core.api.Assertions;

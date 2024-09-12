@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.configuration;
+package com.condation.cms.api.configuration;
 
 /*-
  * #%L
@@ -23,11 +23,11 @@ package com.github.thmarx.cms.api.configuration;
  */
 
 
-import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
-import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
-import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
-import com.github.thmarx.cms.api.configuration.loader.SiteConfigurationLoader;
-import com.github.thmarx.cms.api.configuration.loader.TaxonomyConfigurationLoader;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.api.configuration.loader.SiteConfigurationLoader;
+import com.condation.cms.api.configuration.loader.TaxonomyConfigurationLoader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;

@@ -23,7 +23,7 @@ package com.condation.cms.content.shortcodes;
  */
 
 
-import com.github.thmarx.cms.api.model.Parameter;
+import com.condation.cms.api.model.Parameter;
 import java.util.*;
 import java.util.function.Function;
 import java.util.regex.*;

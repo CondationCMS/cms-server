@@ -23,8 +23,8 @@ package com.condation.cms.media;
  */
 
 
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.theme.Theme;
 import java.nio.file.Path;
 
 /**

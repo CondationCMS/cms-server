@@ -24,8 +24,8 @@ package com.condation.cms.utils;
 
 
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.theme.Theme;
 import java.util.ArrayList;
 import java.util.List;
 

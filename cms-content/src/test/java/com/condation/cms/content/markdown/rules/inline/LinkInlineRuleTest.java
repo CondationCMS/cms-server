@@ -23,10 +23,10 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 import com.condation.cms.content.markdown.rules.inline.LinkInlineRule;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

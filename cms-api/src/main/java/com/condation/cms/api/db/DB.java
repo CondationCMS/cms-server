@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db;
+package com.condation.cms.api.db;
 
 /*-
  * #%L
@@ -22,8 +22,8 @@ package com.github.thmarx.cms.api.db;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.cms.ReadyOnlyFileSystem;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
+import com.condation.cms.api.db.cms.ReadyOnlyFileSystem;
+import com.condation.cms.api.db.taxonomy.Taxonomies;
 
 
 /**

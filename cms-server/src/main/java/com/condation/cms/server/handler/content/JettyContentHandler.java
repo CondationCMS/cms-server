@@ -23,10 +23,10 @@ package com.condation.cms.server.handler.content;
  */
 
 
-import com.github.thmarx.cms.api.content.ContentResponse;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
-import com.github.thmarx.cms.api.utils.RequestUtil;
+import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.server.filter.RequestContextFilter;

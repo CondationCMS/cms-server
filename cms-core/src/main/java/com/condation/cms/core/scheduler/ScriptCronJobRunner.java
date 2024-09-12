@@ -24,8 +24,8 @@ package com.condation.cms.core.scheduler;
 
 
 
-import com.github.thmarx.cms.api.scheduler.CronJob;
-import com.github.thmarx.cms.api.scheduler.CronJobContext;
+import com.condation.cms.api.scheduler.CronJob;
+import com.condation.cms.api.scheduler.CronJobContext;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import org.quartz.Job;

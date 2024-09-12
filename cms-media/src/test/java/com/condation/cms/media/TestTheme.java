@@ -23,9 +23,9 @@ package com.condation.cms.media;
  */
 
 
-import com.github.thmarx.cms.api.ThemeProperties;
-import com.github.thmarx.cms.api.messages.MessageSource;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.ThemeProperties;
+import com.condation.cms.api.messages.MessageSource;
+import com.condation.cms.api.theme.Theme;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 

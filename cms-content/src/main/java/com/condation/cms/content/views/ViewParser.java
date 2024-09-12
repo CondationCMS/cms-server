@@ -29,7 +29,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.representer.Representer;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 /**
  *
  * @author t.marx

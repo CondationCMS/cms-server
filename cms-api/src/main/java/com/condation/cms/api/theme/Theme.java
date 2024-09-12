@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.theme;
+package com.condation.cms.api.theme;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.github.thmarx.cms.api.theme;
  */
 
 
-import com.github.thmarx.cms.api.ThemeProperties;
-import com.github.thmarx.cms.api.messages.MessageSource;
+import com.condation.cms.api.ThemeProperties;
+import com.condation.cms.api.messages.MessageSource;
 import java.nio.file.Path;
 
 /**

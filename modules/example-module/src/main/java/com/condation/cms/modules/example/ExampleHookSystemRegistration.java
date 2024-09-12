@@ -23,8 +23,8 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.HookSystemRegisterExtentionPoint;
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.condation.cms.api.extensions.HookSystemRegisterExtentionPoint;
+import com.condation.cms.api.hooks.HookSystem;
 import com.condation.modules.api.annotation.Extension;
 
 /**

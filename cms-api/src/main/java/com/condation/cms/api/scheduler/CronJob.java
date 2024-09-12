@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.scheduler;
+package com.condation.cms.api.scheduler;
 
 /*-
  * #%L

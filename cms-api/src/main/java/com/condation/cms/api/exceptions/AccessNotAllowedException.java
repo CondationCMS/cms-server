@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.exceptions;
+package com.condation.cms.api.exceptions;
 
 /*-
  * #%L

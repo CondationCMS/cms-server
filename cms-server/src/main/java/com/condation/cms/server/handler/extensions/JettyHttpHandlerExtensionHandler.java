@@ -23,7 +23,7 @@ package com.condation.cms.server.handler.extensions;
  */
 
 
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.hooks.ServerHooks;
 import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;

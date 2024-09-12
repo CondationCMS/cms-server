@@ -23,8 +23,8 @@ package com.condation.cms.core.messages;
  */
 
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.messages.MessageSource;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.messages.MessageSource;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;

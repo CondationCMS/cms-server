@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.feature.features;
+package com.condation.cms.api.feature.features;
 
 /*-
  * #%L
@@ -23,10 +23,10 @@ package com.github.thmarx.cms.api.feature.features;
  */
 
 
-import com.github.thmarx.cms.api.annotations.FeatureScope;
-import com.github.thmarx.cms.api.content.ContentResponse;
-import com.github.thmarx.cms.api.content.RenderContentFunction;
-import com.github.thmarx.cms.api.feature.Feature;
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.content.RenderContentFunction;
+import com.condation.cms.api.feature.Feature;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

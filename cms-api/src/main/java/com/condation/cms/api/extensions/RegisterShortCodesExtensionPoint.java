@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.extensions;
+package com.condation.cms.api.extensions;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.extensions;
  */
 
 
-import com.github.thmarx.cms.api.model.Parameter;
+import com.condation.cms.api.model.Parameter;
 import java.util.Map;
 import java.util.function.Function;
 

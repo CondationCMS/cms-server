@@ -24,9 +24,9 @@ package com.condation.cms.eventbus;
 
 
 
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.eventbus.EventListener;
-import com.github.thmarx.cms.api.eventbus.events.GenericEvent;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.EventListener;
+import com.condation.cms.api.eventbus.events.GenericEvent;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import java.time.Duration;
 import java.util.Map;

@@ -23,8 +23,8 @@ package com.condation.cms.content.template.functions;
  */
 
 
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import lombok.RequiredArgsConstructor;
 
 /**

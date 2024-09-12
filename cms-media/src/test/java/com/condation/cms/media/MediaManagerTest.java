@@ -25,11 +25,11 @@ package com.condation.cms.media;
 
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.media.MediaManager;
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.ThemeProperties;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.ThemeProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

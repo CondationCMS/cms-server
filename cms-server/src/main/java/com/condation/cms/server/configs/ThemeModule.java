@@ -23,12 +23,12 @@ package com.condation.cms.server.configs;
  */
 
 
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
+import com.condation.cms.api.theme.Theme;
 import com.condation.cms.media.ThemeMediaManager;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.FileFolderPathResource;

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db.cms;
+package com.condation.cms.api.db.cms;
 
 /*-
  * #%L
@@ -23,10 +23,10 @@ package com.github.thmarx.cms.api.db.cms;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.DBFileSystem;
-import com.github.thmarx.cms.api.exceptions.AccessNotAllowedException;
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.DBFileSystem;
+import com.condation.cms.api.exceptions.AccessNotAllowedException;
+import com.condation.cms.api.utils.PathUtil;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 

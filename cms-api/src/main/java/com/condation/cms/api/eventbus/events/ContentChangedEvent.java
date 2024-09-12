@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.eventbus.events;
+package com.condation.cms.api.eventbus.events;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.eventbus.events;
  */
 
 
-import com.github.thmarx.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.Event;
 import java.nio.file.Path;
 
 /**

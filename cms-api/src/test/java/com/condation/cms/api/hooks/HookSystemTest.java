@@ -23,7 +23,7 @@ package com.condation.cms.api.hooks;
  */
 
 
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.HookSystem;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

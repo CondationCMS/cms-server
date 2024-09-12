@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.media;
+package com.condation.cms.api.media;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.media;
  */
 
 
-import com.github.thmarx.cms.api.media.meta.Meta;
+import com.condation.cms.api.media.meta.Meta;
 
 /**
  *

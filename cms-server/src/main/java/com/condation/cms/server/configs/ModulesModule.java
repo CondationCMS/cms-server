@@ -23,28 +23,28 @@ package com.condation.cms.server.configs;
  */
 
 
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.extensions.HookSystemRegisterExtentionPoint;
-import com.github.thmarx.cms.api.extensions.MarkdownRendererProviderExtentionPoint;
-import com.github.thmarx.cms.api.extensions.TemplateEngineProviderExtentionPoint;
-import com.github.thmarx.cms.api.feature.features.ConfigurationFeature;
-import com.github.thmarx.cms.api.feature.features.CronJobSchedulerFeature;
-import com.github.thmarx.cms.api.feature.features.DBFeature;
-import com.github.thmarx.cms.api.feature.features.EventBusFeature;
-import com.github.thmarx.cms.api.feature.features.ModuleManagerFeature;
-import com.github.thmarx.cms.api.feature.features.ServerPropertiesFeature;
-import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
-import com.github.thmarx.cms.api.feature.features.ThemeFeature;
-import com.github.thmarx.cms.api.hooks.HookSystem;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.module.CMSModuleContext;
-import com.github.thmarx.cms.api.module.CMSRequestContext;
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.template.TemplateEngine;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.extensions.HookSystemRegisterExtentionPoint;
+import com.condation.cms.api.extensions.MarkdownRendererProviderExtentionPoint;
+import com.condation.cms.api.extensions.TemplateEngineProviderExtentionPoint;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.feature.features.CronJobSchedulerFeature;
+import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
+import com.condation.cms.api.feature.features.ServerPropertiesFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.feature.features.ThemeFeature;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.template.TemplateEngine;
+import com.condation.cms.api.theme.Theme;
 import com.condation.cms.content.markdown.module.CMSMarkdownRenderer;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
 import com.condation.cms.filesystem.FileDB;
@@ -82,7 +82,7 @@ public class ModulesModule extends AbstractModule {
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
 						"org.slf4j",
-						"com.github.thmarx.cms",
+						"com.condation.cms",
 						"org.apache.logging",
 						"org.graalvm.polyglot",
 						"org.graalvm.js",

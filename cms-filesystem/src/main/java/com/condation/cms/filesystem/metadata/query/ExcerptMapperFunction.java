@@ -23,8 +23,8 @@ package com.condation.cms.filesystem.metadata.query;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;

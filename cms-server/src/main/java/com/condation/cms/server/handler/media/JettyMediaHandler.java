@@ -23,9 +23,9 @@ package com.condation.cms.server.handler.media;
  */
 
 
-import com.github.thmarx.cms.api.ServerContext;
-import com.github.thmarx.cms.api.media.MediaUtils;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.ServerContext;
+import com.condation.cms.api.media.MediaUtils;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.media.MediaManager;
 import java.io.IOException;
 import java.nio.ByteBuffer;

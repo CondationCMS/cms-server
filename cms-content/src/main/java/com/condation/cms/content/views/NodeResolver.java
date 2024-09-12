@@ -22,14 +22,14 @@ package com.condation.cms.content.views;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.db.ContentQuery;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.model.ListNode;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.model.ListNode;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.views.model.View;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.query.QueryFunction;
@@ -39,7 +39,7 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.graalvm.polyglot.Context;
 import org.yaml.snakeyaml.Yaml;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 
 /**
  *

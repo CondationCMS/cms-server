@@ -23,9 +23,9 @@ package com.condation.cms.integration.tests;
  */
 
 
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
-import com.github.thmarx.cms.api.eventbus.EventBus;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Files;

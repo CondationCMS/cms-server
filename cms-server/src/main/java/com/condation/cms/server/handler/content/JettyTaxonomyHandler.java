@@ -23,8 +23,8 @@ package com.condation.cms.server.handler.content;
  */
 
 
-import com.github.thmarx.cms.api.content.TaxonomyResponse;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.content.TaxonomyResponse;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.server.filter.RequestContextFilter;
 import com.google.inject.Inject;

@@ -23,7 +23,7 @@ package com.condation.cms.core.configuration;
  */
 
 
-import com.github.thmarx.cms.api.PropertiesLoader;
+import com.condation.cms.api.PropertiesLoader;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.Optional;

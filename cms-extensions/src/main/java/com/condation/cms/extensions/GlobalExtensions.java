@@ -23,7 +23,7 @@ package com.condation.cms.extensions;
  */
 
 
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.HookSystem;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;

@@ -22,14 +22,14 @@ package com.condation.cms.integration.tests;
  * #L%
  */
 
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.configuration.ConfigurationManagement;
-import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
-import com.github.thmarx.cms.api.eventbus.Event;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.eventbus.EventListener;
-import com.github.thmarx.cms.api.scheduler.CronJobContext;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.ConfigurationManagement;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.EventListener;
+import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import com.condation.cms.filesystem.FileDB;
 import java.io.IOException;

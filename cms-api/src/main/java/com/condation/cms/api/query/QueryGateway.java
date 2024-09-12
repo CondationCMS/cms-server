@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.query;
+package com.condation.cms.api.query;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.query;
  */
 
 
-import com.github.thmarx.cms.api.annotations.Experimental;
+import com.condation.cms.api.annotations.Experimental;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;

@@ -23,8 +23,8 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.RegisterShortCodesExtensionPoint;
-import com.github.thmarx.cms.api.model.Parameter;
+import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
+import com.condation.cms.api.model.Parameter;
 import com.condation.modules.api.annotation.Extension;
 import java.util.HashMap;
 import java.util.Map;

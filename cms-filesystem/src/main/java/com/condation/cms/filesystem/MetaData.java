@@ -23,8 +23,8 @@ package com.condation.cms.filesystem;
  */
 
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.ContentQuery;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;

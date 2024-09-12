@@ -24,8 +24,8 @@ package com.condation.cms.module;
 
 
 
-import com.github.thmarx.cms.api.content.ContentResponse;
-import com.github.thmarx.cms.api.content.RenderContentFunction;
+import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.content.RenderContentFunction;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
 import java.util.List;

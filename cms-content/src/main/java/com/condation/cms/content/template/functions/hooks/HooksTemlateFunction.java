@@ -23,9 +23,9 @@ package com.condation.cms.content.template.functions.hooks;
  */
 
 
-import com.github.thmarx.cms.api.hooks.ActionContext;
-import com.github.thmarx.cms.api.hooks.FilterContext;
-import com.github.thmarx.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.ActionContext;
+import com.condation.cms.api.hooks.FilterContext;
+import com.condation.cms.api.hooks.HookSystem;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

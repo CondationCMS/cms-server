@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db;
+package com.condation.cms.api.db;
 
 /*-
  * #%L
@@ -22,13 +22,13 @@ package com.github.thmarx.cms.api.db;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.utils.MapUtil;
-import com.github.thmarx.cms.api.utils.SectionUtil;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.utils.MapUtil;
+import com.condation.cms.api.utils.SectionUtil;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;

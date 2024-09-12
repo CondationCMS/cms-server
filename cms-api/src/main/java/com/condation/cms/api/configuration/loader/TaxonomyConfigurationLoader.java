@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.configuration.loader;
+package com.condation.cms.api.configuration.loader;
 
 /*-
  * #%L
@@ -22,11 +22,11 @@ package com.github.thmarx.cms.api.configuration.loader;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.configuration.Loader;
-import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
-import com.github.thmarx.cms.api.db.taxonomy.Value;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.configuration.Loader;
+import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.api.db.taxonomy.Taxonomy;
+import com.condation.cms.api.db.taxonomy.Value;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

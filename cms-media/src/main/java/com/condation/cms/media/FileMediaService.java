@@ -23,9 +23,9 @@ package com.condation.cms.media;
  */
 
 
-import com.github.thmarx.cms.api.media.Media;
-import com.github.thmarx.cms.api.media.MediaService;
-import com.github.thmarx.cms.api.media.meta.Meta;
+import com.condation.cms.api.media.Media;
+import com.condation.cms.api.media.MediaService;
+import com.condation.cms.api.media.meta.Meta;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

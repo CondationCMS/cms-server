@@ -23,17 +23,17 @@ package com.condation.cms.server;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.configuration.ConfigurationManagement;
-import com.github.thmarx.cms.api.configuration.configs.ServerConfiguration;
-import com.github.thmarx.cms.api.eventbus.Event;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.eventbus.events.lifecycle.HostReadyEvent;
-import com.github.thmarx.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
-import com.github.thmarx.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
-import com.github.thmarx.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.ConfigurationManagement;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.server.VHost;
 import com.google.inject.Injector;

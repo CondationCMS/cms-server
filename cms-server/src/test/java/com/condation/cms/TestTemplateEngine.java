@@ -23,8 +23,8 @@ package com.condation.cms;
  */
 
 
-import com.github.thmarx.cms.api.template.TemplateEngine;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.template.TemplateEngine;
+import com.condation.cms.api.theme.Theme;
 import com.condation.cms.filesystem.FileDB;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

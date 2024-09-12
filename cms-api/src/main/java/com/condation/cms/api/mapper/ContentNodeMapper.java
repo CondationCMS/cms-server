@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.mapper;
+package com.condation.cms.api.mapper;
 
 /*-
  * #%L
@@ -21,17 +21,17 @@ package com.github.thmarx.cms.api.mapper;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
-import com.github.thmarx.cms.api.feature.features.MarkdownRendererFeature;
-import com.github.thmarx.cms.api.model.ListNode;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
-import com.github.thmarx.cms.api.utils.NodeUtil;
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.feature.features.MarkdownRendererFeature;
+import com.condation.cms.api.model.ListNode;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.NodeUtil;
+import com.condation.cms.api.utils.PathUtil;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.util.Optional;

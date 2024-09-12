@@ -23,7 +23,7 @@ package com.condation.cms.api.utils;
  */
 
 
-import com.github.thmarx.cms.api.utils.MapUtil;
+import com.condation.cms.api.utils.MapUtil;
 import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;

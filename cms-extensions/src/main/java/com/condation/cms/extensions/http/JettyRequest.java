@@ -22,7 +22,7 @@ package com.condation.cms.extensions.http;
  * #L%
  */
 
-import com.github.thmarx.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.HTTPUtil;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

@@ -23,7 +23,7 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.ContentQueryOperatorExtensionPoint;
+import com.condation.cms.api.extensions.ContentQueryOperatorExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
 import java.util.function.BiPredicate;
 

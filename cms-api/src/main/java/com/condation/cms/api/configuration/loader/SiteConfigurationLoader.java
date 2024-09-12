@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.configuration.loader;
+package com.condation.cms.api.configuration.loader;
 
 /*-
  * #%L
@@ -23,10 +23,10 @@ package com.github.thmarx.cms.api.configuration.loader;
  */
 
 
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.configuration.Loader;
-import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.configuration.Loader;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

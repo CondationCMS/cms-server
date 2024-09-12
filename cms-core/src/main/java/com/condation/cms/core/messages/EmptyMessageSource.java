@@ -22,7 +22,7 @@ package com.condation.cms.core.messages;
  * #L%
  */
 
-import com.github.thmarx.cms.api.messages.MessageSource;
+import com.condation.cms.api.messages.MessageSource;
 import java.util.List;
 
 

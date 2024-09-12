@@ -23,7 +23,7 @@ package com.condation.cms.extensions;
  */
 
 
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.theme.Theme;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;

@@ -23,7 +23,7 @@ package com.condation.cms.content.template.functions.taxonomy;
  */
 
 
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
+import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.filesystem.FileDB;
 import com.google.inject.Inject;
 import java.util.Collections;

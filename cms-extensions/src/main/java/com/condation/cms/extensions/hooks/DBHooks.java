@@ -23,12 +23,12 @@ package com.condation.cms.extensions.hooks;
  */
 
 
-import com.github.thmarx.cms.api.annotations.Experimental;
-import com.github.thmarx.cms.api.annotations.FeatureScope;
-import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.feature.features.HookSystemFeature;
-import com.github.thmarx.cms.api.hooks.Hooks;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.annotations.Experimental;
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.hooks.Hooks;
+import com.condation.cms.api.request.RequestContext;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 

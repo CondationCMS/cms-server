@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db;
+package com.condation.cms.api.db;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package com.github.thmarx.cms.api.db;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db.taxonomy;
+package com.condation.cms.api.db.taxonomy;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.github.thmarx.cms.api.db.taxonomy;
  */
 
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.Page;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.Page;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

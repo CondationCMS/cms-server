@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.module;
+package com.condation.cms.api.module;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.module;
  */
 
 
-import com.github.thmarx.cms.api.feature.FeatureContainer;
+import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.modules.api.Context;
 import lombok.RequiredArgsConstructor;
 

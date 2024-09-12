@@ -22,8 +22,8 @@ package com.condation.cms.content;
  * #L%
  */
 
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.Collections;

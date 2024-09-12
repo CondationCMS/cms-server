@@ -22,7 +22,7 @@ package com.condation.cms.filesystem.metadata.persistent;
  * #L%
  */
 
-import com.github.thmarx.cms.api.utils.FileUtils;
+import com.condation.cms.api.utils.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

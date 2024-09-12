@@ -22,13 +22,13 @@ package com.condation.cms.content;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
-import com.github.thmarx.cms.api.model.ListNode;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.db.taxonomy.Taxonomy;
+import com.condation.cms.api.model.ListNode;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.content.views.model.View;
 import java.io.IOException;
 import java.util.List;

@@ -23,8 +23,8 @@ package com.condation.cms.api.db;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
 import java.util.Calendar;
 import java.util.Map;
 import org.assertj.core.api.Assertions;

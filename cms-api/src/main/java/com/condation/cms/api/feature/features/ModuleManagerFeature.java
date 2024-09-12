@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.feature.features;
+package com.condation.cms.api.feature.features;
 
 /*-
  * #%L
@@ -22,8 +22,8 @@ package com.github.thmarx.cms.api.feature.features;
  * #L%
  */
 
-import com.github.thmarx.cms.api.annotations.FeatureScope;
-import com.github.thmarx.cms.api.feature.Feature;
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
 import com.condation.modules.api.ModuleManager;
 
 /**

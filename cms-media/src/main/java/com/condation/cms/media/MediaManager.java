@@ -23,13 +23,13 @@ package com.condation.cms.media;
  */
 
 
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.configuration.configs.SiteConfiguration;
-import com.github.thmarx.cms.api.eventbus.EventListener;
-import com.github.thmarx.cms.api.eventbus.events.SitePropertiesChanged;
-import com.github.thmarx.cms.api.media.MediaFormat;
-import com.github.thmarx.cms.api.media.MediaUtils;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.eventbus.EventListener;
+import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
+import com.condation.cms.api.media.MediaFormat;
+import com.condation.cms.api.media.MediaUtils;
+import com.condation.cms.api.theme.Theme;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;

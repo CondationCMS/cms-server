@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.template;
+package com.condation.cms.api.template;
 
 /*-
  * #%L
@@ -22,9 +22,9 @@ package com.github.thmarx.cms.api.template;
  * #L%
  */
 
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.theme.Theme;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;

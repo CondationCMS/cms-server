@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.eventbus.events.lifecycle;
+package com.condation.cms.api.eventbus.events.lifecycle;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package com.github.thmarx.cms.api.eventbus.events.lifecycle;
  * #L%
  */
 
-import com.github.thmarx.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.Event;
 
 /**
  *

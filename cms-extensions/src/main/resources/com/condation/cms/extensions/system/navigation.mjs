@@ -1,1 +1,1 @@
-export const NavNode = Java.type("com.github.thmarx.cms.api.model.NavNode").class
+export const NavNode = Java.type("com.condation.cms.api.model.NavNode").class

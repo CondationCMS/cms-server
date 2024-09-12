@@ -24,8 +24,8 @@ package com.condation.cms.filesystem;
 
 import com.condation.cms.filesystem.FileSystem;
 import com.condation.cms.filesystem.MetaData;
-import com.github.thmarx.cms.api.eventbus.EventBus;
-import com.github.thmarx.cms.api.utils.FileUtils;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.utils.FileUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

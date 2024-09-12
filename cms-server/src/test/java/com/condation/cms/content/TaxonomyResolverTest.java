@@ -26,12 +26,12 @@ package com.condation.cms.content;
 
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.TaxonomyResolver;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
-import com.github.thmarx.cms.api.feature.features.RequestFeature;
-import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.taxonomy.Taxonomies;
+import com.condation.cms.api.db.taxonomy.Taxonomy;
+import com.condation.cms.api.feature.features.RequestFeature;
+import com.condation.cms.api.mapper.ContentNodeMapper;
+import com.condation.cms.api.request.RequestContext;
 import java.util.Map;
 import java.util.Optional;
 import org.assertj.core.api.Assertions;

@@ -22,7 +22,7 @@ package com.condation.cms.filesystem;
  * #L%
  */
 
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.PathUtil;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;

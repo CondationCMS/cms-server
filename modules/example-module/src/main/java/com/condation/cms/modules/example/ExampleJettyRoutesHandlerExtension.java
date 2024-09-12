@@ -23,9 +23,9 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.HttpHandler;
-import com.github.thmarx.cms.api.extensions.HttpRoutesExtensionPoint;
-import com.github.thmarx.cms.api.extensions.Mapping;
+import com.condation.cms.api.extensions.HttpHandler;
+import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
+import com.condation.cms.api.extensions.Mapping;
 import com.condation.modules.api.annotation.Extension;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;

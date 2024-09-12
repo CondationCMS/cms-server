@@ -23,8 +23,8 @@ package com.condation.cms.filesystem.metadata;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.filesystem.MetaData;
 import com.google.common.base.Strings;
 import java.util.Arrays;

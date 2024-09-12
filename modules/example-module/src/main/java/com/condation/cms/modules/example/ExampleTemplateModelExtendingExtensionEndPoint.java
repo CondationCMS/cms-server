@@ -23,8 +23,8 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.github.thmarx.cms.api.extensions.TemplateModelExtendingExtentionPoint;
-import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.condation.cms.api.extensions.TemplateModelExtendingExtentionPoint;
+import com.condation.cms.api.template.TemplateEngine;
 import com.condation.modules.api.annotation.Extension;
 import java.util.List;
 import java.util.UUID;

@@ -24,10 +24,10 @@ package com.condation.cms.ipc;
 
 
 
-import com.github.thmarx.cms.api.IPCProperties;
-import com.github.thmarx.cms.api.eventbus.Event;
-import com.github.thmarx.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
-import com.github.thmarx.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.IPCProperties;
+import com.condation.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
 import java.util.function.Consumer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

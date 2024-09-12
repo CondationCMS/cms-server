@@ -24,7 +24,7 @@ package com.condation.cms.cli.commands.themes;
 
 
 import com.condation.cms.CMSServer;
-import com.github.thmarx.cms.api.PropertiesLoader;
+import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.extensions.repository.ModuleInfo;
 import com.condation.cms.extensions.repository.RemoteModuleRepository;
 import java.io.IOException;

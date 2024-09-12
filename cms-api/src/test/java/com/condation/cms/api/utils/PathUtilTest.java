@@ -22,7 +22,7 @@ package com.condation.cms.api.utils;
  * #L%
  */
 
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;

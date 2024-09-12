@@ -23,7 +23,7 @@ package com.condation.cms.content.views.model;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
+import com.condation.cms.api.Constants;
 import lombok.Data;
 
 /**

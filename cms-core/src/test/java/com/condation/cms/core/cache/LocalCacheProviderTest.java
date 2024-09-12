@@ -24,8 +24,8 @@ package com.condation.cms.core.cache;
 
 
 import com.condation.cms.core.cache.LocalCacheProvider;
-import com.github.thmarx.cms.api.cache.CacheManager;
-import com.github.thmarx.cms.api.cache.ICache;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.ICache;
 import java.time.Duration;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

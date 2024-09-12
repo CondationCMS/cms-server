@@ -23,9 +23,9 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 import com.github.slugify.Slugify;
-import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
 import com.condation.cms.content.markdown.InlineRenderer;

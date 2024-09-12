@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db.cms;
+package com.condation.cms.api.db.cms;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.github.thmarx.cms.api.db.cms;
  */
 
 
-import com.github.thmarx.cms.api.exceptions.AccessNotAllowedException;
-import com.github.thmarx.cms.api.utils.PathUtil;
+import com.condation.cms.api.exceptions.AccessNotAllowedException;
+import com.condation.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

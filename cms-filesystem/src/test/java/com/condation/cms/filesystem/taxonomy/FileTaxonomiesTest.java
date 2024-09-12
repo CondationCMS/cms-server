@@ -24,9 +24,9 @@ package com.condation.cms.filesystem.taxonomy;
 
 
 import com.condation.cms.filesystem.taxonomy.FileTaxonomies;
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.eventbus.EventBus;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Files;

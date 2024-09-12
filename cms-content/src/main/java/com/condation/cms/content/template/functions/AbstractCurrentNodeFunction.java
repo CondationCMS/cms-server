@@ -21,15 +21,15 @@ package com.condation.cms.content.template.functions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
-import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.mapper.ContentNodeMapper;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.mapper.ContentNodeMapper;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

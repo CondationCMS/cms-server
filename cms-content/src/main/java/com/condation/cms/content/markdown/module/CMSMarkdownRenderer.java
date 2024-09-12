@@ -23,7 +23,7 @@ package com.condation.cms.content.markdown.module;
  */
 
 import com.github.slugify.Slugify;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.content.markdown.CMSMarkdown;
 import com.condation.cms.content.markdown.Options;
 import com.condation.cms.content.markdown.rules.block.BlockquoteBlockRule;

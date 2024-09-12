@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db.taxonomy;
+package com.condation.cms.api.db.taxonomy;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.db.taxonomy;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
+import com.condation.cms.api.Constants;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;

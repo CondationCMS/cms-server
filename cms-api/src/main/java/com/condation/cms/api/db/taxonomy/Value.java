@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.db.taxonomy;
+package com.condation.cms.api.db.taxonomy;
 
 /*-
  * #%L

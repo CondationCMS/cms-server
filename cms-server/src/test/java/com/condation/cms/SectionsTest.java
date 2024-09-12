@@ -23,15 +23,15 @@ package com.condation.cms;
  */
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.cache.CacheManager;
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.cms.NIOReadOnlyFile;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.template.TemplateEngine;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.cms.NIOReadOnlyFile;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.Section;

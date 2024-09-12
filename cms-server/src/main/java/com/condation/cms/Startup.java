@@ -24,9 +24,9 @@ package com.condation.cms;
 
 
 
-import com.github.thmarx.cms.api.PropertiesLoader;
-import com.github.thmarx.cms.api.ServerContext;
-import com.github.thmarx.cms.api.ServerProperties;
+import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.api.ServerContext;
+import com.condation.cms.api.ServerProperties;
 import com.condation.cms.git.RepositoryManager;
 import com.condation.cms.server.JettyServer;
 import java.io.IOException;

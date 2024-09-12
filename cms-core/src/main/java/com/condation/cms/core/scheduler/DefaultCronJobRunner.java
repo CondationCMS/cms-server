@@ -24,8 +24,8 @@ package com.condation.cms.core.scheduler;
 
 
 
-import com.github.thmarx.cms.api.scheduler.CronJob;
-import com.github.thmarx.cms.api.scheduler.CronJobContext;
+import com.condation.cms.api.scheduler.CronJob;
+import com.condation.cms.api.scheduler.CronJobContext;
 import static com.condation.cms.core.scheduler.SingleCronJobRunner.DATA_CONTEXT;
 import static com.condation.cms.core.scheduler.SingleCronJobRunner.DATA_CRONJOB;
 import org.quartz.Job;

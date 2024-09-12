@@ -23,8 +23,8 @@ package com.condation.cms.api.request;
  */
 
 
-import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.request.RequestContext;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

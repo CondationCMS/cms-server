@@ -22,8 +22,8 @@ package com.condation.cms.media;
  * #L%
  */
 
-import com.github.thmarx.cms.api.media.MediaFormat;
-import com.github.thmarx.cms.api.media.MediaUtils;
+import com.condation.cms.api.media.MediaFormat;
+import com.condation.cms.api.media.MediaUtils;
 import com.luciad.imageio.webp.WebPWriteParam;
 import java.awt.Color;
 import java.awt.Image;

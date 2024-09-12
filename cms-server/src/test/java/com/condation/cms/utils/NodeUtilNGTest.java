@@ -24,9 +24,9 @@ package com.condation.cms.utils;
 
 
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.utils.NodeUtil;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.utils.NodeUtil;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

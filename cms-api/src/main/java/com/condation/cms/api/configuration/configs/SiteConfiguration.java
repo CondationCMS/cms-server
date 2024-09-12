@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.configuration.configs;
+package com.condation.cms.api.configuration.configs;
 
 /*-
  * #%L
@@ -23,8 +23,8 @@ package com.github.thmarx.cms.api.configuration.configs;
  */
 
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.configuration.Config;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.configuration.Config;
 
 /**
  *

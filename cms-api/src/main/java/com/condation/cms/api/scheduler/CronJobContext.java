@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.scheduler;
+package com.condation.cms.api.scheduler;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api.scheduler;
  */
 
 
-import com.github.thmarx.cms.api.feature.FeatureContainer;
+import com.condation.cms.api.feature.FeatureContainer;
 
 /**
  *

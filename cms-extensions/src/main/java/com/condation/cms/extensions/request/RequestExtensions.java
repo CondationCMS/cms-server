@@ -23,9 +23,9 @@ package com.condation.cms.extensions.request;
  */
 
 
-import com.github.thmarx.cms.api.annotations.FeatureScope;
-import com.github.thmarx.cms.api.feature.Feature;
-import com.github.thmarx.cms.api.model.Parameter;
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.TemplateFunctionExtension;
 import com.condation.cms.extensions.TemplateSupplierExtension;

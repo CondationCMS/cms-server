@@ -24,7 +24,7 @@ package com.condation.cms;
 
 
 
-import com.github.thmarx.cms.api.Constants;
+import com.condation.cms.api.Constants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

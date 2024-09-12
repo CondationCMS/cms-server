@@ -22,9 +22,9 @@ package com.condation.cms.filesystem.metadata.persistent;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.ContentQuery;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import java.io.IOException;

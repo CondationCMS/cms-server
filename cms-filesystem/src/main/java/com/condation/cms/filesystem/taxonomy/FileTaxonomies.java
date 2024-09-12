@@ -22,13 +22,13 @@ package com.condation.cms.filesystem.taxonomy;
  * #L%
  */
 
-import com.github.thmarx.cms.api.configuration.Configuration;
-import com.github.thmarx.cms.api.configuration.configs.TaxonomyConfiguration;
-import com.github.thmarx.cms.api.db.ContentNode;
-import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomies;
-import com.github.thmarx.cms.api.db.taxonomy.Taxonomy;
-import com.github.thmarx.cms.api.utils.MapUtil;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.taxonomy.Taxonomies;
+import com.condation.cms.api.db.taxonomy.Taxonomy;
+import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.FileSystem;
 import java.util.ArrayList;
 import java.util.HashSet;

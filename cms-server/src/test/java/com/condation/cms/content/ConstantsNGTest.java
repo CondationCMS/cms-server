@@ -24,7 +24,7 @@ package com.condation.cms.content;
 
 
 
-import com.github.thmarx.cms.api.Constants;
+import com.condation.cms.api.Constants;
 import java.util.regex.Matcher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

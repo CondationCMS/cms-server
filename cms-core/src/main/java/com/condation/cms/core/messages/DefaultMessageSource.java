@@ -22,8 +22,8 @@ package com.condation.cms.core.messages;
  * #L%
  */
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.messages.MessageSource;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.messages.MessageSource;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import java.net.URL;

@@ -22,19 +22,19 @@ package com.condation.cms.content.views.model;
  * #L%
  */
 
-import com.github.thmarx.cms.api.content.ContentParser;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.db.Page;
-import com.github.thmarx.cms.api.markdown.MarkdownRenderer;
-import com.github.thmarx.cms.api.model.ListNode;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.markdown.MarkdownRenderer;
+import com.condation.cms.api.model.ListNode;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.views.NodeResolver;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import lombok.Data;
 import org.graalvm.polyglot.Context;
-import com.github.thmarx.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 
 /**
  *

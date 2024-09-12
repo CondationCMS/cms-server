@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.utils;
+package com.condation.cms.api.utils;
 
 /*-
  * #%L
@@ -22,10 +22,10 @@ package com.github.thmarx.cms.api.utils;
  * #L%
  */
 
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.feature.features.SitePropertiesFeature;
-import com.github.thmarx.cms.api.request.RequestContext;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.RequestContext;
 import com.google.common.base.Strings;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

@@ -22,10 +22,10 @@ package com.condation.cms.extensions;
  * #L%
  */
 
-import com.github.thmarx.cms.api.ServerProperties;
-import com.github.thmarx.cms.api.db.DB;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.theme.Theme;
 import com.condation.cms.extensions.request.RequestExtensions;
 import java.io.IOException;
 import java.net.MalformedURLException;

@@ -24,7 +24,7 @@ package com.condation.cms.content.shortcodes;
 
 
 import com.condation.cms.content.shortcodes.ShortCodes;
-import com.github.thmarx.cms.api.model.Parameter;
+import com.condation.cms.api.model.Parameter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;

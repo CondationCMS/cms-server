@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.utils;
+package com.condation.cms.api.utils;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package com.github.thmarx.cms.api.utils;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
+import com.condation.cms.api.Constants;
 
 /**
  *

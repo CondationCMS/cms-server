@@ -24,7 +24,7 @@ package com.condation.cms.ipc;
 
 
 
-import com.github.thmarx.cms.api.IPCProperties;
+import com.condation.cms.api.IPCProperties;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Map;

@@ -23,10 +23,10 @@ package com.condation.cms.api.query;
  */
 
 
-import com.github.thmarx.cms.api.query.Query;
-import com.github.thmarx.cms.api.query.QueryGateway;
-import com.github.thmarx.cms.api.query.QueryHandler;
-import com.github.thmarx.cms.api.query.QueryProvider;
+import com.condation.cms.api.query.Query;
+import com.condation.cms.api.query.QueryGateway;
+import com.condation.cms.api.query.QueryHandler;
+import com.condation.cms.api.query.QueryProvider;
 import com.google.auto.service.AutoService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

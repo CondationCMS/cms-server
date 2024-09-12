@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.configuration;
+package com.condation.cms.api.configuration;
 
 /*-
  * #%L

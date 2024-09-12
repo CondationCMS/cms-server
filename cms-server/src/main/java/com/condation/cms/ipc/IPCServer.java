@@ -24,8 +24,8 @@ package com.condation.cms.ipc;
 
 
 
-import com.github.thmarx.cms.api.IPCProperties;
-import com.github.thmarx.cms.api.eventbus.Event;
+import com.condation.cms.api.IPCProperties;
+import com.condation.cms.api.eventbus.Event;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.function.Consumer;

@@ -23,9 +23,9 @@ package com.condation.cms.extensions.hooks;
  */
 
 
-import com.github.thmarx.cms.api.hooks.HookSystem;
-import com.github.thmarx.cms.api.hooks.Hooks;
-import com.github.thmarx.cms.api.scheduler.CronJobScheduler;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.Hooks;
+import com.condation.cms.api.scheduler.CronJobScheduler;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 

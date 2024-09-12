@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api;
+package com.condation.cms.api;
 
 /*-
  * #%L
@@ -23,7 +23,7 @@ package com.github.thmarx.cms.api;
  */
 
 
-import com.github.thmarx.cms.api.annotations.Experimental;
+import com.condation.cms.api.annotations.Experimental;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 

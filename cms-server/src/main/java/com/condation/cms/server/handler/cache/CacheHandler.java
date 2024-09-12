@@ -23,10 +23,10 @@ package com.condation.cms.server.handler.cache;
  */
 
 
-import com.github.thmarx.cms.api.cache.CacheManager;
-import com.github.thmarx.cms.api.cache.ICache;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
-import com.github.thmarx.cms.api.utils.RequestUtil;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.ICache;
+import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.RequestUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;

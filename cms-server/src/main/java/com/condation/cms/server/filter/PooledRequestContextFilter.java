@@ -23,15 +23,15 @@ package com.condation.cms.server.filter;
  */
 
 
-import com.github.thmarx.cms.api.PerformanceProperties;
-import com.github.thmarx.cms.api.ServerContext;
-import com.github.thmarx.cms.api.annotations.Experimental;
-import com.github.thmarx.cms.api.feature.features.IsPreviewFeature;
-import com.github.thmarx.cms.api.feature.features.RequestFeature;
-import com.github.thmarx.cms.api.request.RequestContext;
-import com.github.thmarx.cms.api.request.ThreadLocalRequestContext;
-import com.github.thmarx.cms.api.utils.HTTPUtil;
-import com.github.thmarx.cms.api.utils.RequestUtil;
+import com.condation.cms.api.PerformanceProperties;
+import com.condation.cms.api.ServerContext;
+import com.condation.cms.api.annotations.Experimental;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.RequestFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.request.RequestContextFactory;
 import java.io.Closeable;
 import java.io.IOException;

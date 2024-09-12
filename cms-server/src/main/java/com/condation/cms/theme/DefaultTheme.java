@@ -21,13 +21,13 @@ package com.condation.cms.theme;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.SiteProperties;
-import com.github.thmarx.cms.api.ThemeProperties;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.ThemeProperties;
 import com.condation.cms.core.messages.EmptyMessageSource;
-import com.github.thmarx.cms.api.messages.MessageSource;
+import com.condation.cms.api.messages.MessageSource;
 import com.condation.cms.core.messages.ThemeMessageSource;
-import com.github.thmarx.cms.api.theme.Theme;
+import com.condation.cms.api.theme.Theme;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

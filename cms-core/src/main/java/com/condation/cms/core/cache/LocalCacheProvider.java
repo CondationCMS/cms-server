@@ -25,9 +25,9 @@ package com.condation.cms.core.cache;
 
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.thmarx.cms.api.cache.CacheManager;
-import com.github.thmarx.cms.api.cache.CacheProvider;
-import com.github.thmarx.cms.api.cache.ICache;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.CacheProvider;
+import com.condation.cms.api.cache.ICache;
 import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;

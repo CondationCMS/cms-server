@@ -1,4 +1,4 @@
-package com.github.thmarx.cms.api.eventbus;
+package com.condation.cms.api.eventbus;
 
 /*-
  * #%L

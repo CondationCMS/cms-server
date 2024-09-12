@@ -23,7 +23,7 @@ package com.condation.cms.extensions.hooks;
  */
 
 
-import com.github.thmarx.cms.api.model.Parameter;
+import com.condation.cms.api.model.Parameter;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;

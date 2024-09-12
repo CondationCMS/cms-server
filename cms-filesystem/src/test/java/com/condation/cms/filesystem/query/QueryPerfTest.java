@@ -22,8 +22,8 @@ package com.condation.cms.filesystem.query;
  * #L%
  */
 
-import com.github.thmarx.cms.api.Constants;
-import com.github.thmarx.cms.api.db.ContentNode;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.filesystem.metadata.memory.MemoryQuery;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

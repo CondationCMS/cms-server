@@ -83,6 +83,7 @@ public class ModulesModule extends AbstractModule {
 				List.of(
 						"org.slf4j",
 						"com.condation.cms",
+						"com.condation.modules",
 						"org.apache.logging",
 						"org.graalvm.polyglot",
 						"org.graalvm.js",

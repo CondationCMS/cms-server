@@ -1,4 +1,4 @@
-package com.condation.cms.content;
+package com.condation.cms.api;
 
 /*-
  * #%L
@@ -24,7 +24,6 @@ package com.condation.cms.content;
 
 
 
-import com.condation.cms.api.Constants;
 import java.util.regex.Matcher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -82,7 +81,16 @@ public class ConstantsNGTest {
 		var pattern = Constants.SECTION_ORDERED_OF_PATTERN.apply("page");
 		
 		var matcher = pattern.matcher("page.left.10.md");
-		matcher.matches();
 		Assertions.assertThat(matcher.matches()).isTrue();
+		
+		pattern = Constants.SECTION_ORDERED_OF_PATTERN.apply("other");
+		
+		matcher = pattern.matcher("page.left.10.md");
+		Assertions.assertThat(matcher.matches()).isFalse();
+	}
+	
+	@Test
+	void test_taxonomies () {
+		Assertions.assertThat(Constants.TAXONOMY_VALUE.matcher("taxonomy.tags.yaml")).matches();
 	}
 }

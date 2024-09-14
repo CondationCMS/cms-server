@@ -80,18 +80,18 @@ public abstract class Constants {
 	
 	public static final String SPLIT_PATH_PATTERN = Pattern.quote("/");
 	
-	public static final Pattern TAXONOMY_VALUE = Pattern.compile("taxonomy\\.([a-zA-Z0-9]+[a-zA-Z0-9-]*)\\.yaml");
+	public static final Pattern TAXONOMY_VALUE = Pattern.compile("taxonomy\\.([a-zA-Z0-9-]+)\\.yaml");
 	
-	public static final Pattern SECTION_PATTERN = Pattern.compile("\\w+[a-zA-Z0-9-]*\\.(?<section>[a-zA-Z0-9]+[a-zA-Z0-9-]*)\\.md");
+	public static final Pattern SECTION_PATTERN = Pattern.compile("\\w+\\.(?<section>[a-zA-Z0-9-]+)\\.md");
 	
 	public static final Function<String, Pattern> SECTION_OF_PATTERN = (fileName) -> {
-		return Pattern.compile("%s\\.([a-zA-Z0-9]+[a-zA-Z0-9-]*)\\.md".formatted(fileName));
+		return Pattern.compile("%s\\.(?<section>[a-zA-Z0-9-]+)\\.md".formatted(Pattern.quote(fileName)));
 	};
 	
-	public static final Pattern SECTION_ORDERED_PATTERN = Pattern.compile("\\w+[a-zA-Z0-9-]*\\.(?<section>[a-zA-Z0-9]+[a-zA-Z0-9-]*)\\.(?<index>[0-9]+[0-9]*)\\.md");
+	public static final Pattern SECTION_ORDERED_PATTERN = Pattern.compile("[\\w-]+\\.(?<section>[a-zA-Z0-9-]+)\\.(?<index>\\d+)\\.md");
 	
 	public static final Function<String, Pattern> SECTION_ORDERED_OF_PATTERN = (fileName) -> {
-		return Pattern.compile("%s\\.([a-zA-Z0-9]+[a-zA-Z0-9-]*)\\.[0-9]+[0-9]*\\.md".formatted(fileName));
+		return Pattern.compile("%s\\.[a-zA-Z0-9-]+\\.[0-9]+\\.md".formatted(Pattern.quote(fileName)));
 	};
 	
 	public static final int DEFAULT_SECTION_ORDERED_INDEX = 0;

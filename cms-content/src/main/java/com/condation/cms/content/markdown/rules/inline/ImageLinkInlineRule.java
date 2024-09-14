@@ -21,7 +21,6 @@ package com.condation.cms.content.markdown.rules.inline;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.github.slugify.Slugify;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
@@ -41,18 +40,15 @@ public class ImageLinkInlineRule implements InlineElementRule {
 	static final String IMAGE_PATTERN = "!\\[(?<alt>.*?)\\]\\((?<image>.*?)( \"(?<title>.*)\")?\\)";
 	static final Pattern PATTERN = Pattern.compile("\\[(" + IMAGE_PATTERN + ")\\]\\((?<url>.*?)\\)");
 
-	
-	
 	@Override
 	public InlineBlock next(String md) {
 		var matcher = PATTERN.matcher(md);
-		
+
 		if (matcher.find()) {
 			var href = matcher.group("url");
 			var title = matcher.group("title");
 			var imageSrc = matcher.group("image");
 			var alt = matcher.group("alt");
-			
 
 			var id = SLUG.slugify(alt);
 
@@ -78,28 +74,29 @@ public class ImageLinkInlineRule implements InlineElementRule {
 
 			return new ImageLinkBlock(matcher.start(), matcher.end(), href, id, imageSrc, alt, title);
 		}
-		
+
 		return null;
 	}
-	
-	private boolean isInternalUrl (final String href) {
+
+	private boolean isInternalUrl(final String href) {
 		return !href.startsWith("http") && !href.startsWith("https");
 	}
 
-	public static record ImageLinkBlock(int start, int end, String href, String id, String imageSrc, String alt, String title) 
+	public static record ImageLinkBlock(int start, int end, String href, String id, String imageSrc, String alt, String title)
 			implements InlineBlock {
+
 		@Override
 		public String render() {
-			
+
 			if (title != null && !"".equals(title)) {
-				return "<a href=\"%s\" id=\"%s\" ><img src=\"%s\" alt=\"%s\" title=\"%s\" /></a>".formatted(
-					href,
-					id,
-					imageSrc,
-					alt,
-					title);
+				return "<a href=\"%s\" id=\"%s\"><img src=\"%s\" alt=\"%s\" title=\"%s\" /></a>".formatted(
+						href,
+						id,
+						imageSrc,
+						alt,
+						title);
 			}
-			
+
 			return "<a href=\"%s\" id=\"%s\" ><img src=\"%s\" alt=\"%s\" /></a>".formatted(
 					href,
 					id,

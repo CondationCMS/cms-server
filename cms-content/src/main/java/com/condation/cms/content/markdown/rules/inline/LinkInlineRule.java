@@ -38,10 +38,7 @@ public class LinkInlineRule implements InlineElementRule {
 
 	static final Slugify SLUG = Slugify.builder().build();
 
-//	static final Pattern PATTERN = Pattern.compile("\\[(.*?)\\]\\((.*?)\\)");
-	static final Pattern PATTERN = Pattern.compile("\\[(?<text>.*?)\\]\\((?<url>.*?)( \"(?<title>.*)\")?\\)");
-
-	
+	static final Pattern PATTERN = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<url>[^\\s)]+)(?: \"(?<title>[^\"]*)\")?\\)");
 	
 	@Override
 	public InlineBlock next(String md) {

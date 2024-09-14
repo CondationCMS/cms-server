@@ -28,7 +28,6 @@ import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
-import com.condation.cms.content.markdown.InlineRenderer;
 import java.util.regex.Pattern;
 
 /**

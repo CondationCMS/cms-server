@@ -23,7 +23,6 @@ package com.condation.cms.content.shortcodes;
  */
 
 
-import com.condation.cms.content.shortcodes.ShortCodeParser;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 

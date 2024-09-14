@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public class ImageInlineRule implements InlineElementRule {
 	
-	public static final Pattern PATTERN = Pattern.compile("!\\[(?<alt>.*?)\\]\\((?<url>.*?)( \"(?<title>.*)\")?\\)");
+	public static final Pattern PATTERN = Pattern.compile("!\\[(?<alt>[^\\]]*)\\]\\((?<url>[^\\s)]+)(?: \"(?<title>[^\"]*)\")?\\)");
 
 	@Override
 	public InlineBlock next(String md) {

@@ -21,8 +21,6 @@ package com.condation.cms.content.markdown.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.content.markdown.utils.StringUtils;
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
@@ -35,8 +33,8 @@ import org.junit.jupiter.params.provider.CsvSource;
  * @author t.marx
  */
 public class StringUtilsTest {
-	
-@ParameterizedTest
+
+	@ParameterizedTest
 	@CsvSource({
 		"\\!test\\!,&#33;test&#33;",
 		"\\|test\\|,&#124;test&#124;",
@@ -58,4 +56,60 @@ public class StringUtilsTest {
 		Assertions.assertThat(result).isEqualTo(expected);
 	}
 	
+	 @Test
+    void removeLeadingPipe_ShouldRemoveLeadingPipes() {
+        // Test mit führenden Pipes
+        String input = "||test";
+        String result = StringUtils.removeLeadingPipe(input);
+        Assertions.assertThat(result).isEqualTo("test");
+
+        // Test ohne führende Pipes
+        input = "test||";
+        result = StringUtils.removeLeadingPipe(input);
+        Assertions.assertThat(result).isEqualTo("test||");
+
+        // Test mit nur Pipes
+        input = "||||";
+        result = StringUtils.removeLeadingPipe(input);
+        Assertions.assertThat(result).isEqualTo("");  // Alles wird entfernt, da alle Pipes führend sind
+
+        // Test mit leerem String
+        input = "";
+        result = StringUtils.removeLeadingPipe(input);
+        Assertions.assertThat(result).isEqualTo("");
+
+        // Test mit Pipes und Leerzeichen
+        input = "|| test ||";
+        result = StringUtils.removeLeadingPipe(input);
+        Assertions.assertThat(result).isEqualTo(" test ||");
+    }
+
+    @Test
+    void removeTrailingPipe_ShouldRemoveTrailingPipes() {
+        // Test mit nachfolgenden Pipes
+        String input = "test||";
+        String result = StringUtils.removeTrailingPipe(input);
+        Assertions.assertThat(result).isEqualTo("test");
+
+        // Test ohne nachfolgende Pipes
+        input = "||test";
+        result = StringUtils.removeTrailingPipe(input);
+        Assertions.assertThat(result).isEqualTo("||test");
+
+        // Test mit nur Pipes
+        input = "||||";
+        result = StringUtils.removeTrailingPipe(input);
+        Assertions.assertThat(result).isEqualTo("");  // Alles wird entfernt, da alle Pipes nachfolgend sind
+
+        // Test mit leerem String
+        input = "";
+        result = StringUtils.removeTrailingPipe(input);
+        Assertions.assertThat(result).isEqualTo("");
+
+        // Test mit Pipes und Leerzeichen
+        input = "|| test ||";
+        result = StringUtils.removeTrailingPipe(input);
+        Assertions.assertThat(result).isEqualTo("|| test ");
+    }
+
 }

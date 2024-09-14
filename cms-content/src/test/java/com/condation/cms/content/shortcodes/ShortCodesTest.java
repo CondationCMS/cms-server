@@ -23,7 +23,6 @@ package com.condation.cms.content.shortcodes;
  */
 
 
-import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.api.model.Parameter;
 import java.util.HashMap;
 import java.util.Map;

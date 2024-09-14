@@ -23,7 +23,6 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 
-import com.condation.cms.content.markdown.rules.inline.ImageInlineRule;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

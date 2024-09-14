@@ -21,23 +21,20 @@ package com.condation.cms.content.markdown.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.google.common.hash.Hasher;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
-
 
 /**
  *
  * @author t.marx
  */
 public class StringUtils {
-	
+
 	private static final Map<String, String> ESCAPE = new HashMap<>();
-	
+
 	private static final String AMP_PLACEHOLDER = "AMP#PLACE#HOLDER";
-	
+
 	static {
 		ESCAPE.put("\\\\#", AMP_PLACEHOLDER + "#35;");
 		ESCAPE.put("\\\\\\*", AMP_PLACEHOLDER + "#42;");
@@ -53,15 +50,16 @@ public class StringUtils {
 		ESCAPE.put("\\\\\\)", AMP_PLACEHOLDER + "#41;");
 		ESCAPE.put("\\\\\\+", AMP_PLACEHOLDER + "#43;");
 		ESCAPE.put("\\\\-", AMP_PLACEHOLDER + "#45;");
-		ESCAPE.put("\\\\\\.", AMP_PLACEHOLDER +"#46;");
-		ESCAPE.put("\\\\!", AMP_PLACEHOLDER +"#33;");
-		ESCAPE.put("\\\\\\|", AMP_PLACEHOLDER +"#124;");
+		ESCAPE.put("\\\\\\.", AMP_PLACEHOLDER + "#46;");
+		ESCAPE.put("\\\\!", AMP_PLACEHOLDER + "#33;");
+		ESCAPE.put("\\\\\\|", AMP_PLACEHOLDER + "#124;");
 	}
-	
-	public static String unescape (String html) {
+
+	public static String unescape(String html) {
 		return html.replaceAll(AMP_PLACEHOLDER, "&");
 	}
-	public static String escape (String md) {
+
+	public static String escape(String md) {
 		AtomicReference<String> escaped = new AtomicReference<>(md);
 		ESCAPE.entrySet().forEach(entry -> {
 			escaped.updateAndGet(value -> value.replaceAll(entry.getKey(), entry.getValue()));
@@ -70,10 +68,10 @@ public class StringUtils {
 	}
 
 	public static String removeLeadingPipe(String s) {
-		return s.replaceAll("^\\|+(?!$)", "");
+		return s.replaceAll("^\\|+", "");
 	}
 
 	public static String removeTrailingPipe(String s) {
-		return s.replaceAll("(?!^)\\|+$", "");
+		return s.replaceAll("\\|+$", "");
 	}
 }

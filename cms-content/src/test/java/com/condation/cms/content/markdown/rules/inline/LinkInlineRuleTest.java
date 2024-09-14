@@ -22,7 +22,6 @@ package com.condation.cms.content.markdown.rules.inline;
  * #L%
  */
 
-import com.condation.cms.content.markdown.rules.inline.LinkInlineRule;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;

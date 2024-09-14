@@ -42,4 +42,10 @@ public class ImageLinkInlineRuleTest {
 				.isEqualToIgnoringWhitespace("<a href=\"https://google.com\" id=\"testbild\"><img src=\"test.jpg\" alt=\"TestBild\" title=\"image title\" /></a>");
 	}
 	
+	@Test
+	public void no_title() {
+		var result = SUT.next("[![TestBild](test.jpg)](https://google.com)");
+		Assertions.assertThat(result.render())
+				.isEqualToIgnoringWhitespace("<a href=\"https://google.com\" id=\"testbild\"><img src=\"test.jpg\" alt=\"TestBild\"/></a>");
+	}
 }

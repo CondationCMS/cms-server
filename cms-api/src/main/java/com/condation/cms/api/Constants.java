@@ -25,11 +25,14 @@ package com.condation.cms.api;
 
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author t.marx
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public abstract class Constants {
 	
 	public static final String PID_FILE = "cms.pid";

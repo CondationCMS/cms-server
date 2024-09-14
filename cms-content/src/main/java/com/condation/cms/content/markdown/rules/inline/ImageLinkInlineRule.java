@@ -37,7 +37,7 @@ public class ImageLinkInlineRule implements InlineElementRule {
 
 	static final Slugify SLUG = Slugify.builder().build();
 
-	static final String IMAGE_PATTERN = "!\\[(?<alt>.*?)\\]\\((?<image>.*?)( \"(?<title>.*)\")?\\)";
+	static final String IMAGE_PATTERN = "!\\[(?<alt>[^\\[\\]]*)\\]\\((?<image>[^\\s\\)]+)(?: \"(?<title>[^\"]*)\")?\\)";
 	static final Pattern PATTERN = Pattern.compile("\\[(" + IMAGE_PATTERN + ")\\]\\((?<url>.*?)\\)");
 
 	@Override

@@ -76,12 +76,44 @@ public class RequestContextFactory {
 	private final Injector injector;
 
 	public RequestContext createContext () {
-		return new RequestContext();
+		var requestContext = new RequestContext();
+		
+		var theme = injector.getInstance(Theme.class);
+		var siteProperties = injector.getInstance(SiteProperties.class);
+		var siteMediaService = injector.getInstance(MediaService.class);
+
+		requestContext.add(InjectorFeature.class, new InjectorFeature(injector));
+
+		requestContext.add(ThemeFeature.class, new ThemeFeature(theme));
+		requestContext.add(ContentParserFeature.class, new ContentParserFeature(injector.getInstance(ContentParser.class)));
+		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(injector.getInstance(ContentNodeMapper.class)));
+		if (ServerContext.IS_DEV) {
+			requestContext.add(IsDevModeFeature.class, new IsDevModeFeature());
+		}
+		requestContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
+		requestContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(
+				injector.getInstance(Configuration.class)
+						.get(ServerConfiguration.class).serverProperties()
+		));
+		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
+		requestContext.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(siteMediaService));
+
+		requestContext.add(ServerHooks.class, new ServerHooks(requestContext));
+		requestContext.add(TemplateHooks.class, new TemplateHooks(requestContext));
+		requestContext.add(DBHooks.class, new DBHooks(requestContext));
+		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
+
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(injector.getInstance(HookSystem.class)));
+		
+		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(injector.getInstance(MarkdownRenderer.class)));
+		
+		return requestContext;
 	}
 	
 	public void initContext (RequestContext requestContext, Request request) throws Exception {
 		var uri = RequestUtil.getContentPath(request);
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+		var theme = requestContext.get(ThemeFeature.class).theme();
 		
 		requestContext.add(RequestFeature.class, new RequestFeature(request.getContext().getContextPath(), uri, queryParameters, request));
 		if (ServerContext.IS_DEV) {
@@ -90,10 +122,44 @@ public class RequestContextFactory {
 			}
 		}
 		
-		init(requestContext);
+		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
+		var extensionManager = injector.getInstance(ExtensionManager.class);
+		
+		initHookSystem(requestContext);
+
+		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
+
+		RenderContext renderContext = new RenderContext(
+				markdownRenderer,
+				initShortCodes(requestExtensions, requestContext),
+				theme);
+		requestContext.add(RenderContext.class, renderContext);
+
+		requestContext.add(RequestExtensions.class, requestExtensions);
 	}
 	
-	public RequestContext init(RequestContext requestContext) throws IOException {
+	private HookSystem initHookSystem(RequestContext requestContext) {
+		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
+		var moduleManager = injector.getInstance(ModuleManager.class);
+		moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+
+		return hookSystem;
+	}
+
+	private ShortCodes initShortCodes(RequestExtensions requestExtensions, RequestContext requestContext) {
+		var codes = requestExtensions.getShortCodes();
+
+		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
+				.forEach(extension -> codes.putAll(extension.shortCodes()));
+
+		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
+
+		return new ShortCodes(wrapper.getShortCodes());
+	}
+	
+	
+	
+	private RequestContext init(RequestContext requestContext) throws IOException {
 
 		var theme = injector.getInstance(Theme.class);
 		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);

@@ -193,7 +193,7 @@ public class ModulesModule extends AbstractModule {
 	 * @return 
 	 */
 	@Provides
-	public HookSystem hookSystem(final ModuleManager moduleManager) {
+	public HookSystem hookSystem() {
 		var hookSystem = new HookSystem();
 		return hookSystem;
 	}

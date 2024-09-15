@@ -79,10 +79,8 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 	@Override
 	public boolean handle(Request httpRequest, Response rspns, Callback clbck) throws Exception {
 		var requestContextPoolable = requestContextPool.claim(new Timeout(Duration.ofSeconds(1)));
+		var requestContext = requestContextPoolable.requestContext;
 		try {
-
-			var requestContext = requestContextPoolable.requestContext;
-
 			var uri = RequestUtil.getContentPath(httpRequest);
 			var queryParameters = HTTPUtil.queryParameters(httpRequest.getHttpURI().getQuery());
 			var contextPath = httpRequest.getContext().getContextPath();
@@ -99,6 +97,8 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 			return super.handle(httpRequest, rspns, clbck);
 
 		} finally {
+			requestContext.features.remove(RequestFeature.class);
+			requestContext.features.remove(IsPreviewFeature.class);
 			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 			requestContextPoolable.release();
 		}
@@ -113,7 +113,7 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 		@Override
 		public RequestContextPoolable allocate(Slot slot) throws Exception {
 			log.info("allocate");
-			return new RequestContextPoolable(slot, requestContextFactory.create());
+			return new RequestContextPoolable(slot, requestContextFactory.createContext());
 		}
 
 		@Override

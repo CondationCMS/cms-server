@@ -21,8 +21,10 @@ package com.condation.cms.server.filter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.request.RequestContextFactory;
+import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -40,6 +42,7 @@ public class InitRequestContextFilter extends Handler.Abstract {
 
 	public static final String REQUEST_CONTEXT = "_requestContext";
 
+	@Inject
 	public InitRequestContextFilter(final RequestContextFactory requestContextFactory) {
 		super();
 		this.requestContextFactory = requestContextFactory;
@@ -49,9 +52,14 @@ public class InitRequestContextFilter extends Handler.Abstract {
 	public boolean handle(final Request httpRequest, final Response rspns, final Callback clbck) throws Exception {
 		var requestContext = (RequestContext)httpRequest.getAttribute(REQUEST_CONTEXT);
 
+		if (requestContext.has(AlreadyInitialized.class)) {
+			return false;
+		}
 		requestContextFactory.initContext(requestContext, httpRequest);
-		
+		requestContext.add(AlreadyInitialized.class, new AlreadyInitialized());
 		return false;
 	}
+	
+	private record AlreadyInitialized() implements Feature{};
 
 }

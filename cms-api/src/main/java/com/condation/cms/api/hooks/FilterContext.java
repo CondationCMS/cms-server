@@ -1,5 +1,9 @@
 package com.condation.cms.api.hooks;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.experimental.Accessors;
+
 /*-
  * #%L
  * cms-api
@@ -22,13 +26,13 @@ package com.condation.cms.api.hooks;
  * #L%
  */
 
-
-import java.util.List;
-
 /**
  *
  * @author t.marx
  */
-public record FilterContext<T>(List<T> values) implements HookContext {
-	
+@AllArgsConstructor
+@Data
+@Accessors(fluent = true)
+public class FilterContext<T> implements HookContext {
+	private T value;
 }

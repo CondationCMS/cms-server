@@ -26,7 +26,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +43,15 @@ public class HookSystem {
 	Multimap<String, Action> actions = ArrayListMultimap.create();
 	
 	Multimap<String, Filter> filters = ArrayListMultimap.create();
+	
+	private HookSystem (HookSystem source) {
+		this.actions.putAll(source.actions);
+		this.filters.putAll(source.filters);
+	}
+	
+	public HookSystem clone () {
+		return new HookSystem(this);
+	}
 
 	public <T> void registerAction(final String name, final ActionFunction<T> hookFunction) {
 		registerAction(name, hookFunction, 10);
@@ -93,18 +101,17 @@ public class HookSystem {
 	 * @param parameters
 	 * @return 
 	 */
-	public <T> FilterContext<T> filter(final String name, final List<T> parameters) {
+	public <T> FilterContext<T> filter(final String name, final T parameters) {
 		final FilterContext<T> returnContext = new FilterContext(
-				new ArrayList<>(parameters)
+				parameters
 		);
 		filters.get(name).stream()
 				.sorted((h1, h2) -> Integer.compare(h1.priority(), h2.priority()))
 				.forEach((var action) -> {
 					try {
-						var context = new FilterContext(new ArrayList<>(returnContext.values()));
+						var context = new FilterContext(returnContext.value());
 						var result = action.function().apply(context);
-						returnContext.values().clear();
-						returnContext.values().addAll((List<T>)result);
+						returnContext.value((T)result);
 					} catch (Exception e) {
 						log.error("error on filter", e);
 					}

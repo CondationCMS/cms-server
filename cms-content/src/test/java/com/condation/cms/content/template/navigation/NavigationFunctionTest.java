@@ -108,10 +108,10 @@ public class NavigationFunctionTest {
 	@Test
 	public void test_hook_path() {
 		var hookCalled = new AtomicBoolean(false);
-		hookSystem.registerFilter("system/navigation/test/path", (FilterContext<NavNode> parameters) -> {
+		hookSystem.registerFilter("system/navigation/test/path", (FilterContext<List<NavNode>> parameters) -> {
 			hookCalled.set(true);
 			
-			var nodes = (List<NavNode>) parameters.values();
+			var nodes = parameters.value();
 			
 			nodes.add(0, new NavNode("test", "test", false));
 			

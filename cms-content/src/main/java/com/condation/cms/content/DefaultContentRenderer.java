@@ -45,6 +45,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
+import com.condation.cms.content.pipeline.ContentPipelineFactory;
 import com.condation.cms.content.views.model.View;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
@@ -130,25 +131,9 @@ public class DefaultContentRenderer implements ContentRenderer {
 	}
 
 	private String renderMarkdown(final String rawContent, final RequestContext context) {
-		Map<String, Object> map = new HashMap<>();
-
-		map.put("USERNAME", getFeatureValueOrDefault(
-				context,
-				AuthFeature.class,
-				(feature) -> feature.username(),
-				"")
-		);
-
-		// replace variables
-		String content = StringSubstitutor.replace(rawContent, map);
-
-		// render markdown
-		content = context.get(RenderContext.class).markdownRenderer().render(content);
+		var pipeline = ContentPipelineFactory.create(context);
 		
-		// replace shortcodes
-		content = context.get(RenderContext.class).shortCodes().replace(content);
-		
-		return content;
+		return pipeline.process(rawContent);
 	}
 
 	@Override

@@ -1,8 +1,8 @@
-package com.condation.cms.api.hooks;
+package com.condation.cms.content.pipeline;
 
 /*-
  * #%L
- * cms-api
+ * cms-content
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,15 +22,26 @@ package com.condation.cms.api.hooks;
  * #L%
  */
 
-
-import java.util.function.Function;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.request.RequestContext;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
  *
- * @author t.marx
- * @param <T>
+ * @author thmar
  */
-@FunctionalInterface
-public interface FilterFunction<T> extends Function<FilterContext<T>, T> {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ContentPipelineFactory {
+	
+	public static ContentPipeline create (final RequestContext requestContext) {
+		
+		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
+		var pipeline = new ContentPipeline(hookSystem.clone(), requestContext);
+		pipeline.init();
+		
+		return pipeline;
+	}
+	
 	
 }

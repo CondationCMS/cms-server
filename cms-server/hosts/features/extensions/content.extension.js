@@ -18,3 +18,5 @@ $hooks.registerAction("system/content/shortcodes", (context) => {
 	return null;
 })
 
+//$hooks.registerFilter("system/content/filter", (context) => "OH NO!")
+

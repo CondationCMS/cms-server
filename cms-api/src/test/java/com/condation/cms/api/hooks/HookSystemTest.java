@@ -24,6 +24,7 @@ package com.condation.cms.api.hooks;
 
 
 import com.condation.cms.api.hooks.HookSystem;
+import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -95,18 +96,18 @@ public class HookSystemTest {
 	
 	@Test
 	public void test_filter_reversed () {
-		hookSystem.registerFilter("test/list", (context) -> context.values().reversed());
+		hookSystem.registerFilter("test/list", (context) -> ((List<String>)context.value()).reversed());
 		var context = hookSystem.filter("test/list", List.of("1", "2", "3"));
-		Assertions.assertThat(context.values()).containsExactly("3", "2", "1");
+		Assertions.assertThat(context.value()).containsExactly("3", "2", "1");
 	}
 	
 	@Test
 	public void test_filter_remove () {
-		hookSystem.registerFilter("test/list", (context) -> {
-			context.values().remove("2");
-			return context.values();
+		hookSystem.registerFilter("test/list", (FilterContext<List<String>> context) -> {
+			context.value().remove("2");
+			return context.value();
 		});
-		var context = hookSystem.filter("test/list", List.of("1", "2", "3"));
-		Assertions.assertThat(context.values()).containsExactly("1", "3");
+		var context = hookSystem.filter("test/list", new ArrayList<>(List.of("1", "2", "3")));
+		Assertions.assertThat(context.value()).containsExactly("1", "3");
 	}
 }

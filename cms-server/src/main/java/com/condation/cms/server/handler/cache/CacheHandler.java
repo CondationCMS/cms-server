@@ -25,8 +25,6 @@ package com.condation.cms.server.handler.cache;
 
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
-import com.condation.cms.api.utils.HTTPUtil;
-import com.condation.cms.api.utils.RequestUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -36,7 +34,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.lucene.index.IndexReader;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;

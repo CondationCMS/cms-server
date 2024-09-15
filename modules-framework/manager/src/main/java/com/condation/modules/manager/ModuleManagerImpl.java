@@ -21,7 +21,6 @@ package com.condation.modules.manager;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.modules.api.Context;
 import com.condation.modules.api.ExtensionPoint;
 import com.condation.modules.api.ManagerConfiguration;
@@ -119,7 +118,8 @@ public class ModuleManagerImpl implements ModuleManager {
 	 * Creates a new ModuleManager instance.
 	 *
 	 * @param modulesPath the path where the installed modules are located.
-	 * @param modulesDataPath the path where the modules data directory is located.
+	 * @param modulesDataPath the path where the modules data directory is
+	 * located.
 	 * @param context the context
 	 * @param classLoader the classloader
 	 * @return
@@ -132,7 +132,8 @@ public class ModuleManagerImpl implements ModuleManager {
 	 * Creates a new ModuleManager instance.
 	 *
 	 * @param modulesPath the path where the installed modules are located.
-	 * @param modulesDataPath the path where the modules data directory is located.
+	 * @param modulesDataPath the path where the modules data directory is
+	 * located.
 	 * @param context the context
 	 * @param injector Injector for dependency injection
 	 * @return A new ModuleManager.
@@ -145,7 +146,8 @@ public class ModuleManagerImpl implements ModuleManager {
 	 * Creates a ne ModuleManager instance.
 	 *
 	 * @param modulesPath the path where the installed modules are located.
-	 * @param modulesDataPath the path where the modules data directory is located.
+	 * @param modulesDataPath the path where the modules data directory is
+	 * located.
 	 * @param context the context
 	 * @param classLoader the classloader
 	 * @param injector Injector for dependency injection
@@ -173,6 +175,8 @@ public class ModuleManagerImpl implements ModuleManager {
 
 	final ModuleRequestContextFactory requestContextFactory;
 
+	final ModuleServiceLoader systemExtensionLoader;
+
 	public ModuleManagerImpl() {
 		this.modulesDataPath = null;
 		this.modulesPath = null;
@@ -181,6 +185,7 @@ public class ModuleManagerImpl implements ModuleManager {
 		this.context = null;
 		this.injector = null;
 		this.requestContextFactory = null;
+		this.systemExtensionLoader = null;
 	}
 
 	private ModuleManagerImpl(final Builder builder) {
@@ -207,6 +212,9 @@ public class ModuleManagerImpl implements ModuleManager {
 		configuration.getModules().values().stream().filter((mc) -> (!allUsedModuleIDs.contains(mc.getId()))).forEach((mc) -> {
 			configuration.remove(mc.getId());
 		});
+
+		systemExtensionLoader = ModuleServiceLoader.create(globalClassLoader.getParent());
+
 	}
 
 	@Override
@@ -264,7 +272,8 @@ public class ModuleManagerImpl implements ModuleManager {
 	}
 
 	/**
-	 * Returns a module by id. All the modules are loaded correctly so you can get extensions.
+	 * Returns a module by id. All the modules are loaded correctly so you can
+	 * get extensions.
 	 *
 	 * @param id The id of the module.
 	 * @return The module for the given id or null.
@@ -319,7 +328,8 @@ public class ModuleManagerImpl implements ModuleManager {
 	 * activates a module.
 	 *
 	 * @param moduleId
-	 * @return returns true if the module is correctly or allready installed, otherwise false
+	 * @return returns true if the module is correctly or allready installed,
+	 * otherwise false
 	 * @throws java.io.IOException
 	 */
 	@Override
@@ -431,10 +441,27 @@ public class ModuleManagerImpl implements ModuleManager {
 			if (!moduleExt.isEmpty()) {
 				extensions.addAll(moduleExt);
 			}
-//			if (m.provides(extensionClass)) {
-//				extensions.addAll(m.extensions(extensionClass));
-//			}
 		});
+		// system modules
+		systemExtensionLoader.get(extensionClass)
+				.stream()
+				.map(ext -> {
+					ext.setContext(context);
+					
+					if (requestContextFactory != null) {
+						ext.setRequestContext(requestContextFactory.createContext());
+					}
+
+					if (injector != null) {
+						injector.inject(ext);
+					}
+
+					ext.init();
+
+					return ext;
+				})
+				.forEach(extensions::add);
+
 		return extensions;
 	}
 

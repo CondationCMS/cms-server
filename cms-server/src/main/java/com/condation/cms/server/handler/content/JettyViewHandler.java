@@ -26,7 +26,7 @@ package com.condation.cms.server.handler.content;
 import com.condation.cms.api.content.ContentResponse;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ViewResolver;
-import com.condation.cms.server.filter.RequestContextFilter;
+import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class JettyViewHandler extends Handler.Abstract {
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var requestContext = (RequestContext) request.getAttribute(RequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 		try {
 
 			Optional<ContentResponse> viewResponse = viewResolver.getViewContent(requestContext);

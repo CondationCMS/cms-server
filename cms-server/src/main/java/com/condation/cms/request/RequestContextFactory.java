@@ -21,8 +21,6 @@ package com.condation.cms.request;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
@@ -48,7 +46,6 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
@@ -76,10 +73,27 @@ import org.eclipse.jetty.server.Request;
 @RequiredArgsConstructor
 public class RequestContextFactory {
 
-	
 	private final Injector injector;
 
-	public RequestContext create() throws IOException {
+	public RequestContext createContext () {
+		return new RequestContext();
+	}
+	
+	public void initContext (RequestContext requestContext, Request request) throws Exception {
+		var uri = RequestUtil.getContentPath(request);
+		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+		
+		requestContext.add(RequestFeature.class, new RequestFeature(request.getContext().getContextPath(), uri, queryParameters, request));
+		if (ServerContext.IS_DEV) {
+			if (queryParameters.containsKey("preview")) {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
+			}
+		}
+		
+		init(requestContext);
+	}
+	
+	public RequestContext init(RequestContext requestContext) throws IOException {
 
 		var theme = injector.getInstance(Theme.class);
 		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
@@ -87,9 +101,8 @@ public class RequestContextFactory {
 		var siteProperties = injector.getInstance(SiteProperties.class);
 		var siteMediaService = injector.getInstance(MediaService.class);
 
-		var requestContext = new RequestContext();
 		requestContext.add(InjectorFeature.class, new InjectorFeature(injector));
-		
+
 		requestContext.add(ThemeFeature.class, new ThemeFeature(theme));
 		requestContext.add(ContentParserFeature.class, new ContentParserFeature(injector.getInstance(ContentParser.class)));
 		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(injector.getInstance(ContentNodeMapper.class)));
@@ -110,9 +123,9 @@ public class RequestContextFactory {
 		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
 
 		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupHookSystem(requestContext)));
-		
+
 		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
-		
+
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer,
 				createShortCodes(requestExtensions, requestContext),
@@ -120,14 +133,57 @@ public class RequestContextFactory {
 		requestContext.add(RenderContext.class, renderContext);
 		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(renderContext.markdownRenderer()));
 
-
 		requestContext.add(RequestExtensions.class, requestExtensions);
 
-		
-		
 		return requestContext;
 	}
 	
+	public RequestContext create() throws IOException {
+
+		var theme = injector.getInstance(Theme.class);
+		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
+		var extensionManager = injector.getInstance(ExtensionManager.class);
+		var siteProperties = injector.getInstance(SiteProperties.class);
+		var siteMediaService = injector.getInstance(MediaService.class);
+
+		var requestContext = new RequestContext();
+		requestContext.add(InjectorFeature.class, new InjectorFeature(injector));
+
+		requestContext.add(ThemeFeature.class, new ThemeFeature(theme));
+		requestContext.add(ContentParserFeature.class, new ContentParserFeature(injector.getInstance(ContentParser.class)));
+		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(injector.getInstance(ContentNodeMapper.class)));
+		if (ServerContext.IS_DEV) {
+			requestContext.add(IsDevModeFeature.class, new IsDevModeFeature());
+		}
+		requestContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
+		requestContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(
+				injector.getInstance(Configuration.class)
+						.get(ServerConfiguration.class).serverProperties()
+		));
+		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
+		requestContext.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(siteMediaService));
+
+		requestContext.add(ServerHooks.class, new ServerHooks(requestContext));
+		requestContext.add(TemplateHooks.class, new TemplateHooks(requestContext));
+		requestContext.add(DBHooks.class, new DBHooks(requestContext));
+		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
+
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupHookSystem(requestContext)));
+
+		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
+
+		RenderContext renderContext = new RenderContext(
+				markdownRenderer,
+				createShortCodes(requestExtensions, requestContext),
+				theme);
+		requestContext.add(RenderContext.class, renderContext);
+		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(renderContext.markdownRenderer()));
+
+		requestContext.add(RequestExtensions.class, requestExtensions);
+
+		return requestContext;
+	}
+
 	public RequestContext create(
 			Request request) throws IOException {
 
@@ -149,34 +205,32 @@ public class RequestContextFactory {
 			String uri, Map<String, List<String>> queryParameters, Optional<Request> request) throws IOException {
 
 		var requestContext = create();
-		
+
 		requestContext.add(RequestFeature.class, new RequestFeature(contextPath, uri, queryParameters, request.orElse(null)));
 		if (ServerContext.IS_DEV) {
 			if (queryParameters.containsKey("preview")) {
 				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
 			}
 		}
-		
+
 		return requestContext;
 	}
 
 	/**
-	 * Has to run as one of the last steps, because we need the requestContext to be filled
+	 * Has to run as one of the last steps, because we need the requestContext
+	 * to be filled
+	 *
 	 * @param requestContext
-	 * @return 
+	 * @return
 	 */
-	private HookSystem setupHookSystem (RequestContext requestContext) {
+	private HookSystem setupHookSystem(RequestContext requestContext) {
 		var hookSystem = injector.getInstance(HookSystem.class);
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		try {
-			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
-			moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
-		} finally {
-			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
-		}
+		moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+
 		return hookSystem;
 	}
-	
+
 	private ShortCodes createShortCodes(RequestExtensions requestExtensions, RequestContext requestContext) {
 		var codes = requestExtensions.getShortCodes();
 

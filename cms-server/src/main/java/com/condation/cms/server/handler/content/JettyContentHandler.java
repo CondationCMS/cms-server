@@ -29,7 +29,7 @@ import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
-import com.condation.cms.server.filter.RequestContextFilter;
+import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class JettyContentHandler extends Handler.Abstract {
 //		var uri = request.getHttpURI().getPath();
 		var uri = RequestUtil.getContentPath(request);
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
-		var requestContext = (RequestContext) request.getAttribute(RequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 
 		try {
 			Optional<ContentResponse> content = contentResolver.getContent(requestContext);

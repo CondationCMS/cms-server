@@ -9,3 +9,5 @@ menu:
 ## Search
 
 Hallo ${USERNAME}
+
+Hello [[username /]]

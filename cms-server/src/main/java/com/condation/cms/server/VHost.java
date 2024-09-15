@@ -73,7 +73,8 @@ import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.cms.server.handler.module.JettyRouteHandler;
 import com.condation.cms.server.handler.module.JettyRoutesHandler;
 import com.condation.cms.server.FileFolderPathResource;
-import com.condation.cms.server.filter.RequestContextFilter;
+import com.condation.cms.server.filter.CreateRequestContextFilter;
+import com.condation.cms.server.filter.InitRequestContextFilter;
 import com.condation.cms.server.filter.RequestLoggingFilter;
 import com.condation.cms.utils.SiteUtils;
 import com.condation.modules.api.ModuleManager;
@@ -246,9 +247,11 @@ public class VHost {
 		var routesHandler = injector.getInstance(JettyRoutesHandler.class);
 		var extensionRouteHandler = injector.getInstance(JettyExtensionRouteHandler.class);
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
+		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
 
 		var defaultHandlerSequence = new Handler.Sequence(
 				authHandler,
+				initContextHandler,
 				routeHandler,
 				routesHandler,
 				extensionRouteHandler,
@@ -321,7 +324,7 @@ public class VHost {
 		if (performance.pool_enabled()) {
 			return new PooledRequestContextFilter(handler, injector.getInstance(RequestContextFactory.class), performance);
 		}
-		return new RequestContextFilter(handler, injector.getInstance(RequestContextFactory.class));
+		return new CreateRequestContextFilter(handler, injector.getInstance(RequestContextFactory.class));
 	}
 
 	private String appendContextIfNeeded(final String path) {

@@ -19,6 +19,11 @@
 			<artifactId>cms-filesystem</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.condation.cms.module.framework</groupId>
+			<artifactId>modules-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>

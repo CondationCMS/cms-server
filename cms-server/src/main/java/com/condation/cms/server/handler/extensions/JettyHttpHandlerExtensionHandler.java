@@ -28,7 +28,7 @@ import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.hooks.ServerHooks;
 import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
 import com.condation.cms.extensions.request.RequestExtensions;
-import com.condation.cms.server.filter.RequestContextFilter;
+import com.condation.cms.server.filter.CreateRequestContextFilter;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +49,7 @@ public class JettyHttpHandlerExtensionHandler extends Handler.Abstract {
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var requestContext = (RequestContext) request.getAttribute(RequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 
 		String extension = getExtensionName(request);
 		var method = request.getMethod();

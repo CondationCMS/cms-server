@@ -21,9 +21,7 @@ package com.condation.cms.server.filter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.request.RequestContextFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
@@ -36,29 +34,24 @@ import org.eclipse.jetty.util.Callback;
  * @author t.marx
  */
 @Slf4j
-public class RequestContextFilter extends Handler.Wrapper {
+public class InitRequestContextFilter extends Handler.Abstract {
 
 	private final RequestContextFactory requestContextFactory;
 
 	public static final String REQUEST_CONTEXT = "_requestContext";
 
-	public RequestContextFilter(final Handler handler, final RequestContextFactory requestContextFactory) {
-		super(handler);
+	public InitRequestContextFilter(final RequestContextFactory requestContextFactory) {
+		super();
 		this.requestContextFactory = requestContextFactory;
 	}
 
 	@Override
 	public boolean handle(final Request httpRequest, final Response rspns, final Callback clbck) throws Exception {
-		try (var requestContext = requestContextFactory.create(httpRequest)) {
+		var requestContext = (RequestContext)httpRequest.getAttribute(REQUEST_CONTEXT);
 
-			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
-
-			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
-
-			return super.handle(httpRequest, rspns, clbck);
-		} finally {
-			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
-		}
+		requestContextFactory.initContext(requestContext, httpRequest);
+		
+		return false;
 	}
 
 }

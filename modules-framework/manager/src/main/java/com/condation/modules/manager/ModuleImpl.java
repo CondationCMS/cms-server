@@ -73,8 +73,6 @@ public class ModuleImpl implements Module {
 
 	Map<Class, List> extensions = new HashMap<>();
 	
-	private ConcurrentMap<Class, ServiceLoader<?>> serviceLoaders = new ConcurrentHashMap<>();
-
 	private ModuleServiceLoader moduleServiceLoader;
 	
 	protected ModuleImpl(final File moduleDir, final File modulesDataDir, final Context context,
@@ -135,14 +133,6 @@ public class ModuleImpl implements Module {
 		ServiceLoader<? extends ExtensionPoint> serviceLoader = ServiceLoader.load(extensionClass, classloader);
 		return serviceLoader.iterator().hasNext();
 	}
-
-	private synchronized <T extends ExtensionPoint> ServiceLoader<T> getServiceLoader (Class<T> extensionClass) {
-		if (!serviceLoaders.containsKey(extensionClass)) {
-			serviceLoaders.put(extensionClass, ServiceLoader.load(extensionClass, classloader));
-		}
-		
-		return (ServiceLoader<T>) serviceLoaders.get(extensionClass);
-	}
 	
 	@Override
 	public <T extends ExtensionPoint> List<T> extensions(Class<T> extensionClass) {
@@ -164,27 +154,6 @@ public class ModuleImpl implements Module {
 
 			return ext;
 		}).toList();
-		
-		/*
-		ServiceLoader<T> loader = ServiceLoader.load(extensionClass, classloader);
-		return loader.stream().map(value -> {
-			var ext = value.get();
-			ext.setContext(context);
-			ext.setConfiguration(configuration);
-
-			if (requestContextFactory != null) {
-				ext.setRequestContext(requestContextFactory.createContext());
-			}
-
-			if (injector != null) {
-				injector.inject(ext);
-			}
-
-			ext.init();
-
-			return ext;
-		}).toList();
-		*/
 	}
 
 	@Override

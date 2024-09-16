@@ -43,7 +43,7 @@ public class RemoteRepository {
 	
 	public boolean exists (String extension) {
 		try {
-			var moduleInfoUrl = "https://raw.githubusercontent.com/thmarx/extension-registry/main/%s/%s.yaml"
+			var moduleInfoUrl = "https://raw.githubusercontent.com/CondationCMS/extension-registry/main/%s/%s.yaml"
 					.formatted(extension, extension);
 			
 			URI uri = URI.create(moduleInfoUrl);
@@ -58,7 +58,7 @@ public class RemoteRepository {
 	
 	public Optional<String> getContent (String extension) {
 		try {
-			var moduleInfoUrl = "https://raw.githubusercontent.com/thmarx/extension-registry/main/%s/%s.js"
+			var moduleInfoUrl = "https://raw.githubusercontent.com/CondationCMS/extension-registry/main/%s/%s.js"
 					.formatted(extension, extension);
 			
 			URI uri = URI.create(moduleInfoUrl);
@@ -73,7 +73,7 @@ public class RemoteRepository {
 	
 	public Optional<ExtensionInfo> getInfo (String extension) {
 		try {
-			var moduleInfoUrl = "https://raw.githubusercontent.com/thmarx/extension-registry/main/%s/%s.yaml"
+			var moduleInfoUrl = "https://raw.githubusercontent.com/CondationCMS/extension-registry/main/%s/%s.yaml"
 					.formatted(extension, extension);
 			
 			URI uri = URI.create(moduleInfoUrl);

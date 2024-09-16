@@ -40,7 +40,7 @@ public class RemoteModuleRepositoryTest {
 
 	RemoteModuleRepository<ModuleInfo> moduleRepository = new RemoteModuleRepository<>(
 			ModuleInfo.class,
-			"https://raw.githubusercontent.com/thmarx/module-registry"
+			"https://raw.githubusercontent.com/CondationCMS/module-registry"
 			);
 
 	@Test

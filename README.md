@@ -6,6 +6,15 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 6.0.0
+
+This is the first version under the new condation organization.
+
+* **BREAKING CHANGE** All packages moved from com.github.thmarx to com.condation.
+* **BREAKING CHANGE** The content substitution of ${USERNAME} has been removed in favor of the new [[username /]] shortcode.
+* **BREAKING CHANGE** Script extension can only use hooks. The old deprecated stuff has been removed.
+
+
 ## 5.3.1
 
 * **BUG** NullPointer if site doesn't use a theme [#237](https://github.com/thmarx/cms/issues/237)

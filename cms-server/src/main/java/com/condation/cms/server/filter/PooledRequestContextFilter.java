@@ -93,9 +93,6 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
 
 			return super.handle(httpRequest, rspns, clbck);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
 		} finally {
 			requestContext.features.remove(RequestFeature.class);
 			requestContext.features.remove(IsPreviewFeature.class);

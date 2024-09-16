@@ -31,7 +31,6 @@ import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
-import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,7 +91,6 @@ public class JettyContentHandler extends Handler.Abstract {
 			}
 
 		} catch (Exception e) {
-			e.printStackTrace();
 			log.error("error handling content", e);
 			response.setStatus(500);
 			response.getHeaders().add(HttpHeader.CONTENT_TYPE, "text/html; charset=utf-8");

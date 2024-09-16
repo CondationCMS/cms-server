@@ -91,7 +91,6 @@ public class CacheHandler extends Handler.Wrapper {
 						name,
 						value);
 			});
-
 			Content.Sink.write(response, true, cached.body, callback);
 
 			return true;

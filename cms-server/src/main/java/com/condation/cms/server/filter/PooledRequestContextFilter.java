@@ -21,8 +21,6 @@ package com.condation.cms.server.filter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.PerformanceProperties;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.annotations.Experimental;
@@ -64,7 +62,7 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 	Pool<RequestContextPoolable> requestContextPool;
 
 	private final PerformanceProperties properties;
-	
+
 	public PooledRequestContextFilter(final Handler handler, final RequestContextFactory requestContextFactory,
 			final PerformanceProperties properties) {
 		super(handler);
@@ -75,7 +73,7 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 				.setSize(properties.pool_size())
 				.build();
 	}
-	 
+
 	@Override
 	public boolean handle(Request httpRequest, Response rspns, Callback clbck) throws Exception {
 		var requestContextPoolable = requestContextPool.claim(new Timeout(Duration.ofSeconds(1)));
@@ -95,7 +93,9 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
 
 			return super.handle(httpRequest, rspns, clbck);
-
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
 		} finally {
 			requestContext.features.remove(RequestFeature.class);
 			requestContext.features.remove(IsPreviewFeature.class);
@@ -103,7 +103,6 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 			requestContextPoolable.release();
 		}
 	}
-
 
 	@RequiredArgsConstructor
 	private static class RequestContextAllocator implements Allocator<RequestContextPoolable> {

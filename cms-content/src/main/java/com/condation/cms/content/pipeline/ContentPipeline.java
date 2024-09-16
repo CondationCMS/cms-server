@@ -23,18 +23,14 @@ package com.condation.cms.content.pipeline;
  */
 
 import com.condation.cms.api.feature.Feature;
-import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.hooks.Hooks;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.RenderContext;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.text.StringSubstitutor;
 
 /**
  *
@@ -47,27 +43,12 @@ public class ContentPipeline {
 	private final RequestContext requestContext;
 	
 	void init () {
-		hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::substitute, 10);
 		hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::markdown, 20);
 		hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::shortCodes, 30);
 	}
 	
 	public String process (String rawContent) {
 		return hookSystem.filter(Hooks.CONTENT_FILTER.hook(), rawContent).value();
-	}
-	
-	private String substitute (FilterContext<String> context) {
-		Map<String, Object> map = new HashMap<>();
-
-		map.put("USERNAME", getFeatureValueOrDefault(
-				requestContext,
-				AuthFeature.class,
-				(feature) -> feature.username(),
-				"")
-		);
-
-		// replace variables
-		return StringSubstitutor.replace(context.value(), map);
 	}
 	
 	private String markdown (FilterContext<String> context) {

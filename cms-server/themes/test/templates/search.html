@@ -23,6 +23,7 @@
 	<div class="container">
 		<div th:if="USERNAME != null">
 			Hallo <span th:text="${USERNAME}"></span>
+			Hello [(${shortCodes.call('username')})]
 		</div>
 		<div class="row">
 			<div class="input-group mb-3">

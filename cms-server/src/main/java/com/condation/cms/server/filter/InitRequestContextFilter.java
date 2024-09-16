@@ -50,16 +50,22 @@ public class InitRequestContextFilter extends Handler.Abstract {
 
 	@Override
 	public boolean handle(final Request httpRequest, final Response rspns, final Callback clbck) throws Exception {
-		var requestContext = (RequestContext)httpRequest.getAttribute(REQUEST_CONTEXT);
+		try {
+			var requestContext = (RequestContext) httpRequest.getAttribute(REQUEST_CONTEXT);
 
-		if (requestContext.has(AlreadyInitialized.class)) {
-			return false;
+			if (requestContext.has(AlreadyInitialized.class)) {
+				return false;
+			}
+			requestContextFactory.initContext(requestContext, httpRequest);
+			requestContext.add(AlreadyInitialized.class, new AlreadyInitialized());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		requestContextFactory.initContext(requestContext, httpRequest);
-		requestContext.add(AlreadyInitialized.class, new AlreadyInitialized());
 		return false;
 	}
-	
-	private record AlreadyInitialized() implements Feature{};
+
+	private record AlreadyInitialized() implements Feature {
+	}
+;
 
 }

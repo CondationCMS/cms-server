@@ -47,11 +47,11 @@
 	</Appenders>
  
 	<Loggers>
-		<Logger name="com.github.thmarx.cms" level="error" additivity="false">
+		<Logger name="com.condation.cms" level="error" additivity="false">
 			<AppenderRef ref="console"/>
 		</Logger>
 		<!---
-		<Logger name="com.github.thmarx.cms" level="debug" additivity="false">
+		<Logger name="com.condation.cms" level="debug" additivity="false">
 			<appender-ref ref="Routing" />
 		</Logger>
 		-->

@@ -50,7 +50,7 @@ public class ModuleAPIClassLoader extends ClassLoader {
 		List<String> temp = apiPackages != null ? apiPackages : new ArrayList<>();
 		this.apiPackages = temp.stream().map(c -> !c.endsWith(".") ? c + "." : c).collect(Collectors.toList());
 
-		this.apiPackages.add("com.github.thmarx.modules.api.");
+		this.apiPackages.add("com.condation.modules.api.");
 		this.apiPackages.add("java.");
 		this.apiPackages.add("javax.");
 		this.apiPackages.add("com.sun.");

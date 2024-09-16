@@ -13,7 +13,7 @@
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs>server start</exec.appArgs>
-                <exec.mainClass>com.github.thmarx.cms.cli.CMSCli</exec.mainClass>
+                <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>
@@ -30,7 +30,7 @@
                 <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs>server start</exec.appArgs>
-                <exec.mainClass>com.github.thmarx.cms.cli.CMSCli</exec.mainClass>
+                <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
             </properties>
@@ -47,7 +47,7 @@
             <properties>
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.mainClass>com.github.thmarx.cms.cli.CMSCli</exec.mainClass>
+                <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <exec.appArgs>server start</exec.appArgs>
             </properties>
@@ -63,7 +63,7 @@
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.appArgs>stop</exec.appArgs>
-                <exec.mainClass>com.github.thmarx.cms.cli.CMSCli</exec.mainClass>
+                <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
             </properties>
         </action>

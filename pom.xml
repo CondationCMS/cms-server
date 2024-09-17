@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.condation.cms</groupId>
 	<artifactId>cms-parent</artifactId>
-	<version>6.0.0-SNAPSHOT</version>
+	<version>6.0.0</version>
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,12 +32,30 @@
 	<organization>
 		<name>CondationCMS</name>
 	</organization>
+	<url>https://condation.com</url>
+	<description>
+		A lightweight, Java-based flat-file CMS designed for simplicity and speed. It allows easy content management without the need for a database.
+	</description>
+
 	<licenses>
 		<license>
 			<name>GPL v3</name>
 			<url>https://www.gnu.org/licenses/gpl-3.0.html</url>
 		</license>
 	</licenses>
+	<scm>
+		<url>https://github.com/CondationCMS/cms</url>
+	</scm>
+	<developers>
+		<developer>
+			<id>thmarx</id>
+			<email>thorsten.marx1@gmail.com</email>
+			<name>Thorsten Marx</name>
+			<roles>
+				<role>Lead</role>
+			</roles>
+		</developer>
+	</developers>
 	
 	<dependencyManagement>
 		<dependencies>
@@ -143,7 +161,7 @@
 			<dependency>
 				<groupId>com.h2database</groupId>
 				<artifactId>h2-mvstore</artifactId>
-				<version>2.3.230</version>
+				<version>2.3.232</version>
 			</dependency>
 
 			<dependency>
@@ -329,6 +347,51 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>3.10.0</version>
+				<configuration>
+					<failOnError>false</failOnError>
+				</configuration>
+				<executions>
+					<execution>
+						<id>bundle-sources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>3.2.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 		<pluginManagement>
 			<plugins>
@@ -346,22 +409,17 @@
 			<id>dist</id>
 		</profile>
 		<profile>
-			<id>deploy</id>
-			<distributionManagement>
-				<repository>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-					<id>marx-software-ftp</id>
-					<url>ftps://maven.marx-software.de</url>
-				</repository>
-			</distributionManagement>
+			<id>release</id>
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-deploy-plugin</artifactId>
-						<version>3.1.2</version>
+						<groupId>org.sonatype.central</groupId>
+						<artifactId>central-publishing-maven-plugin</artifactId>
+						<version>0.5.0</version>
+						<extensions>true</extensions>
+						<configuration>
+							<publishingServerId>central</publishingServerId>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

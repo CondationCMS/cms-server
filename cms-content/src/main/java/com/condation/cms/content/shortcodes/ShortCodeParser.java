@@ -35,7 +35,7 @@ public class ShortCodeParser {
 
 	private static final String SHORTCODE_REGEX = "\\[\\[(\\w+)([^\\]]*)\\]\\](.*?)\\[\\[\\/\\1\\]\\]|\\[\\[(\\w+)([^\\]]*)\\s*\\/\\]\\]";
 	private static final Pattern SHORTCODE_PATTERN = Pattern.compile(SHORTCODE_REGEX, Pattern.DOTALL);
-private static final Pattern PARAM_PATTERN = Pattern.compile("(\\w+)=(\"[^\"]*\"|'[^']*')");
+	private static final Pattern PARAM_PATTERN = Pattern.compile("(\\w+)=(\"[^\"]*\"|'[^']*')");
 
 	public static List<Match> parseShortcodes(String text) {
 		List<Match> shortcodes = new ArrayList<>();

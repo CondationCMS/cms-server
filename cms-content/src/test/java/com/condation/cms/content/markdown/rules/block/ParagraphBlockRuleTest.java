@@ -1,4 +1,4 @@
-package com.condation.cms.content.markdown.rules;
+package com.condation.cms.content.markdown.rules.block;
 
 /*-
  * #%L

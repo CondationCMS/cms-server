@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class CodeBlockRule implements BlockElementRule {
 
 	protected static final Pattern PATTERN = Pattern.compile(
-			"^(`{3})(?<lang>[a-zA-Z0-9]*)?$\n(?<code>[\\s\\S]*?)\n^(`{3})$",
+			"^(`{3})(?<lang>[a-zA-Z0-9]+)?$\n(?<code>[\\s\\S]*?)\n^(`{3})$",
 			Pattern.MULTILINE | Pattern.DOTALL | Pattern.UNIX_LINES);
 	
 	@Override

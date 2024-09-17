@@ -37,8 +37,9 @@ import java.util.regex.Pattern;
 public class DefinitionListBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"(?<content>((^.+)\n(: .+(\\n|\\Z))+)+)",
+			"(?<content>(^.+?\n(: .+?(\n|\\Z))+)+)", 
 			Pattern.MULTILINE);
+
 
 	@Override
 	public Block next(String md) {

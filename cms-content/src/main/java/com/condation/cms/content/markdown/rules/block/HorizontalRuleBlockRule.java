@@ -35,9 +35,8 @@ import java.util.regex.Pattern;
 public class HorizontalRuleBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"^(\\*|\\-|_){3,}(\\n|\\Z)",
-			Pattern.MULTILINE | Pattern.DOTALL);
-	
+			"^([\\*\\-_]){3,}(\\n|\\Z)", Pattern.MULTILINE | Pattern.DOTALL);
+
 
 	@Override
 	public Block next(String md) {

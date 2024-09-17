@@ -38,11 +38,11 @@ import java.util.stream.Stream;
 public class ListBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN_ORDERED_LIST = Pattern.compile(
-			"^[0-9]+\\. (.+?)(^\n|\\Z)",
+			"^[0-9]+\\. (.+?)((^\n)|\\Z)",
 			Pattern.MULTILINE | Pattern.DOTALL);
 
 	private static final Pattern PATTERN_UNORDERED_LIST = Pattern.compile(
-			"^[-\\*\\+]{1} (.+?)(^\n|\\Z)",
+			"^[-\\*\\+]{1} (.+?)((^\n)|\\Z)",
 			Pattern.MULTILINE | Pattern.DOTALL);
 
 	@Override

@@ -41,7 +41,7 @@ import java.util.stream.Stream;
 public class TableBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"(^[\\|]{1}(.+?))(^\n|\\Z)",
+			"(^[\\|]{1}(.+?))((^\n)|\\Z)",
 			Pattern.MULTILINE | Pattern.DOTALL);
 
 	private static final Pattern HEADER_DELIMITER = Pattern.compile("-{3,}");

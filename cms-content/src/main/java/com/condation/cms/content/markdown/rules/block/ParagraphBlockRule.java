@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 public class ParagraphBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"(\\A|^\\n|\\Z)(?<content>.+?)(^\\n|\\Z)",
+			"(\\A|(^\n)|\\Z)(?<content>.+?)((^\n)|\\Z)",
 			Pattern.MULTILINE | Pattern.DOTALL);
 	
 	

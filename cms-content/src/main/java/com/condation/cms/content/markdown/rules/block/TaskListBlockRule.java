@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class TaskListBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"(^- \\[([ x]?)\\] (.+?)\n)+(^\\n|\\Z)",
+			"(^- \\[([ x]?)\\] (.+?)\n)+((^\n)|\\Z)",
 			Pattern.MULTILINE);
 
 	private static final Pattern CHECKED_PATTERN = Pattern.compile(

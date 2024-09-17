@@ -58,12 +58,6 @@ public class JettyExtensionRouteHandler extends Handler.Abstract {
 		if (findHttpHandler.isPresent()) {
 			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
 		}
-		
-		findHttpHandler = requestContext.get(RequestExtensions.class).findHttpRouteHandler(method, extension);
-		if (findHttpHandler.isPresent()) {
-			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
-
-		}
 		return false;
 	}
 

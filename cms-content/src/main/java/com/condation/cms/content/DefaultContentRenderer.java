@@ -184,14 +184,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 		context.get(TemplateHooks.class).getTemplateFunctions().getRegisterTemplateFunctions().forEach(service -> {
 			model.values.put(service.name(), service.function());
 		});
-		
-		context.get(RequestExtensions.class).getRegisterTemplateSupplier().forEach(service -> {
-			model.values.put(service.name(), service.supplier());
-		});
-
-		context.get(RequestExtensions.class).getRegisterTemplateFunctions().forEach(service -> {
-			model.values.put(service.name(), service.function());
-		});
 
 		extendModel(model);
 
@@ -202,7 +194,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		Map<String, BiPredicate<Object, Object>> customOperators = new HashMap<>();
 
-		customOperators.putAll(context.get(RequestExtensions.class).getQueryOperations());
 		customOperators.putAll( context.get(DBHooks.class).getQueryOperations().getOperations() );
 
 		moduleManager

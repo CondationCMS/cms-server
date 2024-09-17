@@ -1,5 +1,4 @@
 import { $hooks } from 'system/hooks.mjs';
-import { $shortcodes } from 'system/shortcodes.mjs';
 
 
 $hooks.registerAction("system/content/shortcodes", (context) => {

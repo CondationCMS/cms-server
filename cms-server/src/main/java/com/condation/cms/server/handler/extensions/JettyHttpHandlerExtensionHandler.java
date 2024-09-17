@@ -62,12 +62,6 @@ public class JettyHttpHandlerExtensionHandler extends Handler.Abstract {
 			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
 		}
 		
-		findHttpHandler = requestContext.get(RequestExtensions.class).findHttpHandler(method, extension);
-		
-		if (findHttpHandler.isPresent()) {
-			return new JettyHttpHandlerWrapper(findHttpHandler.get().handler()).handle(request, response, callback);
-		}
-		
 		// no extension found
 		response.setStatus(404);
 		callback.succeeded();

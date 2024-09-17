@@ -1,13 +1,5 @@
 import { UTF_8 } from 'system/charsets.mjs';
 import { $hooks } from 'system/hooks.mjs';
-import { $http } from 'system/http.mjs';
-import { $routes } from 'system/routes.mjs';
-
-// callable via /extensions/test
-$http.get("/test", (request, response) => {
-	response.addHeader("Content-Type", "text/html; charset=utf-8")
-	response.write("ich bin einen test extension!öäü", UTF_8)
-})
 
 $hooks.registerAction("system/server/http/extension", (context) => {
 	context.arguments().get("httpExtensions").add(
@@ -19,11 +11,6 @@ $hooks.registerAction("system/server/http/extension", (context) => {
 			}
 	)
 	return null;
-})
-
-$routes.get("/hello-extension", (request, response) => {
-	response.addHeader("Content-Type", "text/html; charset=utf-8")
-	response.write("extension route", UTF_8)
 })
 
 $hooks.registerAction("system/server/http/route", (context) => {

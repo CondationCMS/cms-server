@@ -45,6 +45,7 @@ import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.media.MediaService;
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
@@ -60,9 +61,11 @@ import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.server.Request;
 
@@ -147,7 +150,7 @@ public class RequestContextFactory {
 	}
 
 	private ShortCodes initShortCodes(RequestExtensions requestExtensions, RequestContext requestContext) {
-		var codes = requestExtensions.getShortCodes();
+		Map<String, Function<Parameter, String>> codes = new HashMap<>();
 
 		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
 				.forEach(extension -> codes.putAll(extension.shortCodes()));
@@ -298,7 +301,7 @@ public class RequestContextFactory {
 	}
 
 	private ShortCodes createShortCodes(RequestExtensions requestExtensions, RequestContext requestContext) {
-		var codes = requestExtensions.getShortCodes();
+		Map<String, Function<Parameter, String>> codes = new HashMap<>();
 
 		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
 				.forEach(extension -> codes.putAll(extension.shortCodes()));

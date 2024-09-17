@@ -1,12 +1,5 @@
-import { $template } from 'system/template.mjs';
 import { $hooks } from 'system/hooks.mjs';
 
-/*
-$template.registerTemplateSupplier(
-	"myName",
-	() => "Thorsten"
-)
- */
 $hooks.registerAction("system/template/supplier", (context) => {
 	context.arguments().get("suppliers").add(
 			"myName",
@@ -15,12 +8,6 @@ $hooks.registerAction("system/template/supplier", (context) => {
 	return null;
 })
 
-/*
-$template.registerTemplateFunction(
-	"getHello",
-	(name) => "Hello " + name + "!"
-)
- */
 $hooks.registerAction("system/template/function", (context) => {
 	context.arguments().get("functions").add(
 			"getHello",

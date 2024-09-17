@@ -3,6 +3,6 @@ import { NavNode } from 'system/navigation.mjs';
 
 $hooks.registerFilter("system/navigation/top/list", (context) => {
 	var nodes = context.value()
-	nodes.add(2, new NavNode("Hello-Extension", "/hello-extension"))
+	nodes.add(2, new NavNode("Hello-Extension", "/hello-route"))
 	return nodes
 })

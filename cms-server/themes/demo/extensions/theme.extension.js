@@ -1,6 +1,9 @@
-import { $shortcodes } from 'system/shortcodes.mjs';
+import { $hooks } from 'system/hooks.mjs';
 
-$shortcodes.register(
-	"theme_name",
-	(params) => `Hello, I'm your <b>default</b> theme.`
-)
+$hooks.registerAction("system/content/shortcodes", (context) => {
+	context.arguments().get("shortCodes").put(
+			"theme_name",
+			(params) => `Hello, I'm your <b>default</b> theme.`
+	)
+	return null;
+})

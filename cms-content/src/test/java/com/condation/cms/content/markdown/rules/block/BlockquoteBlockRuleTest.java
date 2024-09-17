@@ -37,7 +37,7 @@ public class BlockquoteBlockRuleTest {
 	BlockquoteBlockRule sut = new BlockquoteBlockRule();
 
 	@Test
-	public void testSomeMethod() {
+	public void testBlockRule() {
 		
 		String input = "\n> block 1\n> block 2";
 		

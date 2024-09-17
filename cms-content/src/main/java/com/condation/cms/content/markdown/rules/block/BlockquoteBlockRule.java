@@ -37,7 +37,7 @@ import java.util.regex.Pattern;
 public class BlockquoteBlockRule implements BlockElementRule {
 
 	private static final Pattern PATTERN = Pattern.compile(
-			"^> (.+?)(^\n|\\Z)",
+			"^> (.+?)((^\n)|\\Z)",
 			Pattern.MULTILINE | Pattern.DOTALL);
 
 	@Override

@@ -21,8 +21,6 @@ package com.condation.cms.extensions.repository;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -31,9 +29,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.SystemUtils;
 import org.yaml.snakeyaml.Yaml;
 
 /**
@@ -94,14 +94,22 @@ public class RemoteModuleRepository<T> {
 
 		try {
 			Path tempDirectory = Files.createTempDirectory("modules");
+			if (SystemUtils.IS_OS_UNIX) {
+				Files.setPosixFilePermissions(tempDirectory, PosixFilePermissions.fromString("rwx------"));
+			} else {
+				var f = tempDirectory.toFile();
+				f.setReadable(true, true);
+				f.setWritable(true, true);
+				f.setExecutable(true, true);
+			}
 
 			var request = HttpRequest.newBuilder(URI.create(url)).GET().build();
 			HttpResponse<Path> response = client.send(
-					request, 
+					request,
 					HttpResponse.BodyHandlers.ofFile(tempDirectory.resolve(System.currentTimeMillis() + ".zip")));
 
 			var downloaded = response.body();
-			
+
 			File moduleTempDir = InstallationHelper.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
 
 			InstallationHelper.moveDirectoy(moduleTempDir, target.resolve(moduleTempDir.getName()).toFile());

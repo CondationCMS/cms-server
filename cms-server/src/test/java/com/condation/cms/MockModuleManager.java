@@ -63,16 +63,6 @@ public class MockModuleManager implements ModuleManager {
 	}
 
 	@Override
-	public String installModule(URI uri) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-	}
-
-	@Override
-	public boolean uninstallModule(String string, boolean bln) throws IOException {
-		return true;
-	}
-
-	@Override
 	public Module module(String string) {
 		return null;
 	}

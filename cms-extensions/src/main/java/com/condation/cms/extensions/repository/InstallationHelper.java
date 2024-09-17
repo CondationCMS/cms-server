@@ -21,9 +21,6 @@ package com.condation.cms.extensions.repository;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,6 +36,10 @@ import java.util.zip.ZipFile;
  * @author marx
  */
 public class InstallationHelper {
+
+	private final static int THRESHOLD_ENTRIES = 1000;
+	private final static int THRESHOLD_SIZE = 100_000_000;
+	private final static double THRESHOLD_RATIO = 10;
 
 	/**
 	 * Delets a dir recursively deleting anything inside it.
@@ -62,8 +63,8 @@ public class InstallationHelper {
 		}
 		return dir.delete();
 	}
-	
-	public static boolean moveDirectoy (final File src, final File dest) {
+
+	public static boolean moveDirectoy(final File src, final File dest) {
 		return src.renameTo(dest);
 	}
 
@@ -84,8 +85,15 @@ public class InstallationHelper {
 		}
 		boolean found = false;
 		String moduleid = null;
+
+		int totalSizeArchive = 0;
+		int totalEntryArchive = 0;
+
 		try (ZipFile zipFile = new ZipFile(theFile)) {
 			for (Enumeration entries = zipFile.entries(); entries.hasMoreElements();) {
+
+				totalEntryArchive++;
+
 				ZipEntry entry = (ZipEntry) entries.nextElement();
 				File file = new File(targetDir, File.separator + entry.getName());
 				if (entry.isDirectory() && !found) {
@@ -96,24 +104,41 @@ public class InstallationHelper {
 					throw new IOException("Could not create directory: " + file.getParentFile());
 				}
 				if (!entry.isDirectory()) {
-					copyInputStream(zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(file)));
+					int totalSizeEntry = copyInputStream(entry, zipFile.getInputStream(entry), new BufferedOutputStream(new FileOutputStream(file)));
+					totalSizeArchive += totalSizeEntry;
 				} else if (!buildDirectory(file)) {
 					throw new IOException("Could not create directory: " + file);
+				}
+				if (totalSizeArchive > THRESHOLD_SIZE) {
+					// the uncompressed data size is too much for the application resource capacity
+					throw new InstallationSecurityException("max size (%d bytes) reached".formatted(THRESHOLD_SIZE));
+				}
+
+				if (totalEntryArchive > THRESHOLD_ENTRIES) {
+					// too much entries in this archive, can lead to inodes exhaustion of the system
+					throw new InstallationSecurityException("max entries (%d) reached".formatted(THRESHOLD_ENTRIES));
 				}
 			}
 		}
 		return new File(targetDir, moduleid);
 	}
 
-	private static void copyInputStream(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int len = in.read(buffer);
-		while (len >= 0) {
-			out.write(buffer, 0, len);
-			len = in.read(buffer);
+	private static int copyInputStream(ZipEntry ze, InputStream in, OutputStream out) throws IOException {
+		int totalSizeEntry = 0;
+		try (in; out) {
+			byte[] buffer = new byte[1024];
+			int len = -1;
+			while ((len = in.read(buffer)) > 0) {
+				totalSizeEntry += len;
+				out.write(buffer, 0, len);
+
+				double compressionRatio = totalSizeEntry / ze.getCompressedSize();
+				if (compressionRatio > THRESHOLD_RATIO) {
+					throw new InstallationSecurityException("compression ratio () to high, maybe zip bomb detected".formatted(THRESHOLD_RATIO));
+				}
+			}
 		}
-		in.close();
-		out.close();
+		return totalSizeEntry;
 	}
 
 	private static boolean buildDirectory(File file) {

@@ -25,9 +25,7 @@ package com.condation.modules.api;
 
 
 
-import com.condation.modules.api.Module;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 /**
@@ -71,25 +69,6 @@ public interface ModuleManager extends AutoCloseable {
 	 */
 	<T extends ExtensionPoint> List<T> extensions(Class<T> extensionClass);
 
-	/**
-	 * install a new module.
-	 *
-	 * @param moduleURI
-	 * @return the id of the newly installed module.
-	 * @throws IOException
-	 */
-	String installModule(final URI moduleURI) throws IOException;
-
-	/**
-	 * uninstall module,
-	 *
-	 * @param moduleId the ID of the module
-	 * @param deleteData should the data directory of the module be deleted too.
-	 * @return
-	 * @throws IOException
-	 */
-	boolean uninstallModule(final String moduleId, final boolean deleteData) throws IOException;
-	
 	public Module module(final String id);
 	
 	/**

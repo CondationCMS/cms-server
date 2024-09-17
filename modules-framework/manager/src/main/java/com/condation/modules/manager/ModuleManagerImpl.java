@@ -31,9 +31,6 @@ import com.condation.modules.api.ModuleManager;
 import com.condation.modules.api.ModuleRequestContextFactory;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -361,69 +358,6 @@ public class ModuleManagerImpl implements ModuleManager {
 		configuration.get(moduleId).setActive(false);
 		return true;
 
-	}
-
-	/**
-	 * install a new module.
-	 *
-	 * @param moduleURI
-	 * @return the id of the newly installed module.
-	 * @throws IOException
-	 */
-	@Override
-	public String installModule(final URI moduleURI) throws IOException {
-
-		Path tempDirectory = Files.createTempDirectory("modules");
-		File moduleTempDir = ModulePacker.unpackArchive(new File(moduleURI), tempDirectory.toFile());
-		File moduleData = modulesDataPath;
-		ModuleImpl tempModule = new ModuleImpl(moduleTempDir, moduleData, this.context,
-				this.injector, this.requestContextFactory);
-		if (getModuleIds().contains(tempModule.getId())) {
-			deactivateModule(tempModule.getId());
-			uninstallModule(tempModule.getId(), false);
-		}
-		ModulePacker.moveDirectoy(moduleTempDir, new File(this.modulesPath, moduleTempDir.getName()));
-		File moduleDir = new File(this.modulesPath, moduleTempDir.getName());
-
-		ModuleImpl module = new ModuleImpl(moduleDir, moduleData, this.context,
-				this.injector, this.requestContextFactory);
-
-		ManagerConfiguration.ModuleConfig config = configuration.get(module.getId());
-		if (config == null) {
-			config = new ManagerConfiguration.ModuleConfig(module.getId()).setModuleDir(moduleDir.getName());
-		}
-		config.setActive(false);
-		configuration.add(config);
-
-		return module.getId();
-	}
-
-	/**
-	 * uninstall module,
-	 *
-	 * @param moduleId the ID of the module
-	 * @param deleteData should the data directory of the module be deleted too.
-	 * @return
-	 * @throws IOException
-	 */
-	@Override
-	public boolean uninstallModule(final String moduleId, final boolean deleteData) throws IOException {
-		if (configuration.get(moduleId) != null && configuration.get(moduleId).isActive()) {
-			throw new IOException("module must be deactivated first");
-		} else if (configuration.get(moduleId) == null) {
-			return true;
-		}
-
-		configuration.remove(moduleId);
-
-		boolean deleted = ModulePacker.deleteDirectory(new File(modulesPath, moduleId));
-
-		File moduleData = new File(modulesDataPath, moduleId);
-		if (deleteData && deleted && moduleData.exists()) {
-			deleted = ModulePacker.deleteDirectory(moduleData);
-		}
-
-		return deleted;
 	}
 
 	/**

@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  */
 public class NewlineInlineRule implements InlineElementRule {
 	
-	private static final Pattern PATTERN = Pattern.compile(" {2,}$", Pattern.MULTILINE);
+	private static final Pattern PATTERN = Pattern.compile(" {2,}+$", Pattern.MULTILINE);
 
 	@Override
 	public InlineBlock next(String md) {

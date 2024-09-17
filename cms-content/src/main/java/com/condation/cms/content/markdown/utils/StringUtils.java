@@ -72,6 +72,6 @@ public class StringUtils {
 	}
 
 	public static String removeTrailingPipe(String s) {
-		return s.replaceAll("\\|+$", "");
+		return s.replaceAll("\\|++$", "");
 	}
 }

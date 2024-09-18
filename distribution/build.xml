@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">6.0.0</property>
+	<property name="cms.version">6.0.1</property>
 	
 	<property name="thymeleaf.version">v2.0.0</property>
 		

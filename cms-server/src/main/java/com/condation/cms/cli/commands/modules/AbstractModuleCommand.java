@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractModuleCommand {
 
-	public static final String DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/thmarx/module-registry";
+	public static final String DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/CondationCMS/module-registry";
 	
 	@Getter
 	private RemoteModuleRepository<ModuleInfo> repository = new RemoteModuleRepository(ModuleInfo.class, DEFAULT_REGISTRY_URL);

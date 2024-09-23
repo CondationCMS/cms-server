@@ -23,8 +23,8 @@ package com.condation.cms.content.markdown.rules.block;
  */
 
 
-import com.condation.cms.content.markdown.rules.block.HeadingBlockRule;
 import com.condation.cms.content.markdown.Block;
+import com.github.slugify.Slugify;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -38,6 +38,8 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class HeadingBlockRuleTest {
 
 	private HeadingBlockRule sut = new HeadingBlockRule();
+	
+	private static final Slugify SLUG = Slugify.builder().build();	
 
 	@ParameterizedTest
 	@CsvSource({
@@ -58,6 +60,7 @@ public class HeadingBlockRuleTest {
 				.isInstanceOf(HeadingBlockRule.HeadingBlock.class)
 				.asInstanceOf(InstanceOfAssertFactories.type(HeadingBlockRule.HeadingBlock.class))
 				.hasFieldOrPropertyWithValue("level", level)
+				.hasFieldOrPropertyWithValue("id", SLUG.slugify(heading))
 				.hasFieldOrPropertyWithValue("heading", heading);
 	}
 
@@ -73,6 +76,8 @@ public class HeadingBlockRuleTest {
 				.isNotNull()
 				.isInstanceOf(HeadingBlockRule.HeadingBlock.class)
 				.asInstanceOf(InstanceOfAssertFactories.type(HeadingBlockRule.HeadingBlock.class))
-				.hasFieldOrPropertyWithValue("heading", heading);
+				.hasFieldOrPropertyWithValue("heading", heading)
+				.hasFieldOrPropertyWithValue("id", "heading")
+				;
 	}
 }

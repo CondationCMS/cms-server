@@ -145,7 +145,7 @@ public class CMSMarkdownTest extends MarkdownTest {
 
 		var result = SUT.render(input);
 		System.out.println(result);
-		Assertions.assertThat(result).isEqualToIgnoringNewLines("<p>before</p><blockquote><h3>line 1</h3><p>line 2</p><p></p></blockquote><p>after</p>");
+		Assertions.assertThat(result).isEqualToIgnoringNewLines("<p>before</p><blockquote><h3 id=\"line-1\">line 1</h3><p>line 2</p><p></p></blockquote><p>after</p>");
 	}
 
 	@Test

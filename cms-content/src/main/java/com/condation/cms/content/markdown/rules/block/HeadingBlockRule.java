@@ -21,10 +21,10 @@ package com.condation.cms.content.markdown.rules.block;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.content.markdown.Block;
 import com.condation.cms.content.markdown.BlockElementRule;
 import com.condation.cms.content.markdown.InlineRenderer;
+import com.github.slugify.Slugify;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,25 +37,29 @@ public class HeadingBlockRule implements BlockElementRule {
 	private static final Pattern PATTERN = Pattern.compile(
 			"(?<level>^#{1,6})(?<heading>.+?)(\\n|\\Z)",
 			Pattern.MULTILINE | Pattern.DOTALL);
-	
+
+	private static final Slugify SLUG = Slugify.builder().build();
 
 	@Override
 	public Block next(String md) {
 		Matcher matcher = PATTERN.matcher(md);
 		if (matcher.find()) {
-			return new HeadingBlock(matcher.start(), matcher.end(), 
-					matcher.group("heading").trim(), matcher.group("level").trim().length());
+			return new HeadingBlock(matcher.start(), matcher.end(),
+					matcher.group("heading").trim(), matcher.group("level").trim().length(),
+					SLUG.slugify(matcher.group("heading").trim())
+			);
 		}
 		return null;
 	}
 
-	public static record HeadingBlock(int start, int end, String heading, int level) implements Block {
+	public static record HeadingBlock(int start, int end, String heading, int level, String id) implements Block {
 
 		@Override
 		public String render(InlineRenderer inlineRenderer) {
-			return "<h%d>%s</h%d>".formatted(
-					level, 
-					heading, 
+			return "<h%d id=\"%s\">%s</h%d>".formatted(
+					level,
+					id,
+					heading,
 					level
 			);
 		}

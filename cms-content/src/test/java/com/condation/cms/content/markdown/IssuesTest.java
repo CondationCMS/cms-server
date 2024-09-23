@@ -25,13 +25,13 @@ package com.condation.cms.content.markdown;
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.RepeatedTest;
 
 /**
  *
  * @author t.marx
  */
-public class ListIssuesTest extends MarkdownTest {
+public class IssuesTest extends MarkdownTest {
 
 	static CMSMarkdown SUT;
 
@@ -40,17 +40,17 @@ public class ListIssuesTest extends MarkdownTest {
 		SUT = new CMSMarkdown(Options.all());
 	}
 
-		@Test
-	void test_dot_issue_183() throws IOException {
+	@RepeatedTest(1)
+	public void issue_with_multiple_code_blocks() throws IOException {
 
-		String md = "1. **first** sentence. second sentence.\n1. item 2";
-		String expected = """
-                    <ol><li><strong>first</strong> sentence. second sentence.</li><li>item 2</li></ol>
-                    """;
+		var md = load("issues/issue.code-with-shortcode.md").trim();
+		var expected = load("issues/issue.code-with-shortcode.html");
+		expected = removeComments(expected);
 
-		String html = SUT.render(md);
-
-		
-		Assertions.assertThat(html).isEqualToIgnoringWhitespace(expected);
+		var result = SUT.render(md);
+		result = "<div>" + result + "</div>";
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace(expected);
 	}
+
+	
 }

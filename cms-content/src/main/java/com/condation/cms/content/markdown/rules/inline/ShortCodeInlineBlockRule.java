@@ -25,6 +25,8 @@ package com.condation.cms.content.markdown.rules.inline;
 
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
+import static com.condation.cms.content.shortcodes.ShortCodeParser.PARAM_PATTERN;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,6 +43,7 @@ public class ShortCodeInlineBlockRule implements InlineElementRule {
 	
 	@Override
 	public InlineBlock next(final String md) {
+		/*
 		Matcher matcher = TAG_PARAMS_PATTERN_SHORT.matcher(md);
 		if (matcher.find()) {
 			return new ShortCodeInlineBlock(matcher.start(), matcher.end(), 
@@ -53,6 +56,32 @@ public class ShortCodeInlineBlockRule implements InlineElementRule {
 					matcher.group("tag"), matcher.group("params"), matcher.group("content")
 			);
 		}
+		*/
+		
+		Matcher matcher = ShortCodeParser.SHORTCODE_PATTERN.matcher(md);
+		if (matcher.find()) {
+			String name = matcher.group(1) != null ? matcher.group(1) : matcher.group(4);
+			String params = matcher.group(2) != null ? matcher.group(2).trim() : matcher.group(5).trim();
+			String content = matcher.group(3) != null ? matcher.group(3).trim() : "";
+
+			ShortCodeParser.Match match = new ShortCodeParser.Match(name, matcher.start(), matcher.end());
+			match.setContent(content);
+			match.getParameters().put("content", content);
+
+			/*
+			Matcher paramMatcher = PARAM_PATTERN.matcher(params);
+
+			while (paramMatcher.find()) {
+				String key = paramMatcher.group(1);
+				String value = paramMatcher.group(2);
+				// Remove the surrounding quotes
+				value = value.substring(1, value.length() - 1);
+				match.getParameters().put(key, value);
+			}
+			*/
+			return new ShortCodeInlineBlock(matcher.start(), matcher.end(), name, params, content);
+		}
+		
 		return null;
 	}
 

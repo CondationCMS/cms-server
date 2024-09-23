@@ -23,7 +23,6 @@ package com.condation.cms.content.markdown.rules.block;
  */
 
 
-import com.condation.cms.content.markdown.rules.block.CodeBlockRule;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

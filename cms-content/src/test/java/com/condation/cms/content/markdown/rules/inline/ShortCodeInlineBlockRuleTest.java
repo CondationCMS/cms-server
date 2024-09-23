@@ -24,14 +24,10 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 
-import com.condation.cms.content.markdown.rules.inline.ShortCodeInlineBlockRule;
-import com.condation.cms.content.markdown.Block;
 import com.condation.cms.content.markdown.InlineBlock;
-import com.condation.cms.content.markdown.rules.block.ShortCodeBlockRule;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *

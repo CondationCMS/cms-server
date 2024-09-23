@@ -26,7 +26,7 @@ package com.condation.cms.content.markdown.rules.block;
 import com.condation.cms.content.markdown.Block;
 import com.condation.cms.content.markdown.BlockElementRule;
 import com.condation.cms.content.markdown.InlineRenderer;
-import com.google.common.html.HtmlEscapers;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,8 +41,12 @@ public class ShortCodeBlockRule implements BlockElementRule {
 	public static final Pattern TAG_PARAMS_PATTERN_LONG = Pattern.compile("^(\\[{2})(?<tag>[a-z_A-Z0-9]+)( (?<params>.*?))?\\]{2}(?<content>.*)\\[{2}/\\k<tag>\\]{2}",
 			Pattern.MULTILINE | Pattern.DOTALL | Pattern.UNIX_LINES);
 	
+	public static final Pattern SHORTCODE_PATTERN = Pattern.compile("^" + ShortCodeParser.SHORTCODE_REGEX, 
+			Pattern.DOTALL | Pattern.MULTILINE);
+	
 	@Override
 	public Block next(final String md) {
+		/*
 		Matcher matcher = TAG_PARAMS_PATTERN_SHORT.matcher(md);
 		if (matcher.find()) {
 			return new ShortCodeBlock(matcher.start(), matcher.end(), 
@@ -55,6 +59,20 @@ public class ShortCodeBlockRule implements BlockElementRule {
 					matcher.group("tag"), matcher.group("params"), matcher.group("content")
 			);
 		}
+		*/
+		Matcher matcher = SHORTCODE_PATTERN.matcher(md);
+		if (matcher.matches()) {
+			String name = matcher.group(1) != null ? matcher.group(1) : matcher.group(4);
+			String params = matcher.group(2) != null ? matcher.group(2).trim() : matcher.group(5).trim();
+			String content = matcher.group(3) != null ? matcher.group(3).trim() : "";
+
+			ShortCodeParser.Match match = new ShortCodeParser.Match(name, matcher.start(), matcher.end());
+			match.setContent(content);
+			match.getParameters().put("content", content);
+			
+			return new ShortCodeBlock(matcher.start(), matcher.end(), name, params, content);
+		}
+		
 		return null;
 	}
 

@@ -23,9 +23,7 @@ package com.condation.cms.content.markdown.rules.block;
  */
 
 
-import com.condation.cms.content.markdown.rules.block.ShortCodeBlockRule;
 import com.condation.cms.content.markdown.Block;
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -73,5 +71,24 @@ public class ShortCodeBlockRuleTest {
 				;
 
 		Assertions.assertThat(next.render((content) -> content)).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
+	}
+	
+	@Test
+	void test_issue () {
+		String md = "[[video type=\"youtube\" id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\" /]]";
+
+		Block next = sut.next(md);
+
+		Assertions.assertThat(next)
+				.isNotNull()
+				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class)
+				.asInstanceOf(InstanceOfAssertFactories.type(ShortCodeBlockRule.ShortCodeBlock.class))
+				.hasFieldOrPropertyWithValue("tag", "video")
+				.hasFieldOrPropertyWithValue("params", "type=\"youtube\" id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\"")
+				;
+
+		Assertions.assertThat(next.render((content) -> content))
+				.isEqualTo("[[video type=\"youtube\" id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\"]][[/video]]");
+
 	}
 }

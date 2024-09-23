@@ -22,8 +22,6 @@ package com.condation.cms.content.markdown;
  * #L%
  */
 
-import com.condation.cms.content.markdown.Options;
-import com.condation.cms.content.markdown.CMSMarkdown;
 import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;

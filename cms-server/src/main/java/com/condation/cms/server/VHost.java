@@ -282,11 +282,11 @@ public class VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
 		pathMappingsHandler.addMapping(PathSpec.from("/" + JettyModuleHandler.PATH + "/*"),
-				requestContextFilter(injector.getInstance(JettyModuleHandler.class), injector)
+				createModuleHandler()
 		);
 
 		pathMappingsHandler.addMapping(PathSpec.from("/" + JettyHttpHandlerExtensionHandler.PATH + "/*"),
-				requestContextFilter(injector.getInstance(JettyHttpHandlerExtensionHandler.class), injector)
+				createExtensionHandler()
 		);
 
 		ContextHandler defaultContextHandler = new ContextHandler(
@@ -317,6 +317,30 @@ public class VHost {
 		hostHandler = gzipHandler;
 
 		return hostHandler;
+	}
+	
+	private Handler.Wrapper createExtensionHandler() {
+		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
+		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
+		var extensionHandler = injector.getInstance(JettyHttpHandlerExtensionHandler.class);
+		var handlerSequence = new Handler.Sequence(
+				authHandler,
+				initContextHandler,
+				extensionHandler
+		);
+		return requestContextFilter(handlerSequence, injector);
+	}
+	
+	private Handler.Wrapper createModuleHandler() {
+		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
+		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
+		var modulehandler = injector.getInstance(JettyModuleHandler.class);
+		var handlerSequence = new Handler.Sequence(
+				authHandler,
+				initContextHandler,
+				modulehandler
+		);
+		return requestContextFilter(handlerSequence, injector);
 	}
 
 	private Handler.Wrapper requestContextFilter(Handler handler, Injector injector) {

@@ -80,6 +80,10 @@ public class SiteProperties extends ThemeProperties {
 		return (String)getSubMap("content").getOrDefault("type", Constants.DEFAULT_CONTENT_TYPE);
 	}
 	
+	public List<String> contentPipeline () {
+		return (List<String>)getSubMap("content").getOrDefault("pipeline", Constants.DEFAULT_CONTENT_PIPELINE);
+	}
+	
 	public String cacheEngine() {
 		return (String) getSubMap("cache").getOrDefault("engine", Constants.DEFAULT_CACHE_ENGINE);
 	}

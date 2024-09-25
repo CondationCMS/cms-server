@@ -23,6 +23,7 @@ package com.condation.cms.api;
  */
 
 
+import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 import lombok.AccessLevel;
@@ -105,6 +106,7 @@ public abstract class Constants {
 	public static final int DEFAULT_PAGE_SIZE = 5;
 	
 	public static final String DEFAULT_CONTENT_TYPE = ContentTypes.HTML;
+	public static final List<String> DEFAULT_CONTENT_PIPELINE = List.of("markdown", "shortcode");
 	
 	public static final int DEFAULT_REDIRECT_STATUS = 301;
 	

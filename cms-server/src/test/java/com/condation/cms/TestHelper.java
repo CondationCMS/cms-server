@@ -25,7 +25,10 @@ package com.condation.cms;
 
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
 import com.condation.cms.api.feature.features.ContentParserFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
@@ -67,6 +70,8 @@ public abstract class TestHelper {
 	public static RequestContext requestContext(String uri) {
 		var markdownRenderer = TestHelper.getRenderer();
 		RequestContext context = new RequestContext();
+		
+		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
 		context.add(RequestExtensions.class, new RequestExtensions(null));
 		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ShortCodes(Map.of()), DefaultTheme.EMPTY));
@@ -79,9 +84,17 @@ public abstract class TestHelper {
 		context.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(null));
 		context.add(ContentParserFeature.class, new ContentParserFeature(null));
 		
-		context.add(SitePropertiesFeature.class, new SitePropertiesFeature(new SiteProperties(Map.of(
+		final SiteProperties siteProperties = new SiteProperties(Map.of(
 				"context_path", "/"
-		))));
+		));
+		context.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
+		
+		Configuration config = Mockito.mock(Configuration.class);
+		SiteConfiguration siteConfig = Mockito.mock(SiteConfiguration.class);
+		Mockito.when(siteConfig.siteProperties()).thenReturn(siteProperties);
+		Mockito.when(config.get(SiteConfiguration.class)).thenReturn(siteConfig);
+		context.add(ConfigurationFeature.class, new ConfigurationFeature(config));
+		
 		context.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(new ServerProperties(Map.of(
 		))));
 		

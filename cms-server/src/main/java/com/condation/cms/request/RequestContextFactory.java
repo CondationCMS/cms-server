@@ -40,6 +40,7 @@ import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.feature.features.TemplateEngineFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.mapper.ContentNodeMapper;
@@ -47,6 +48,7 @@ import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
@@ -109,6 +111,7 @@ public class RequestContextFactory {
 		requestContext.add(HookSystemFeature.class, new HookSystemFeature(injector.getInstance(HookSystem.class)));
 		
 		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(injector.getInstance(MarkdownRenderer.class)));
+		requestContext.add(TemplateEngineFeature.class, new TemplateEngineFeature(injector.getInstance(TemplateEngine.class)));
 		
 		return requestContext;
 	}
@@ -134,7 +137,7 @@ public class RequestContextFactory {
 
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer,
-				initShortCodes(requestExtensions, requestContext),
+				initShortCodes(requestContext),
 				theme);
 		requestContext.add(RenderContext.class, renderContext);
 
@@ -149,7 +152,7 @@ public class RequestContextFactory {
 		return hookSystem;
 	}
 
-	private ShortCodes initShortCodes(RequestExtensions requestExtensions, RequestContext requestContext) {
+	private ShortCodes initShortCodes(RequestContext requestContext) {
 		Map<String, Function<Parameter, String>> codes = new HashMap<>();
 
 		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
@@ -158,53 +161,6 @@ public class RequestContextFactory {
 		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
 
 		return new ShortCodes(wrapper.getShortCodes());
-	}
-	
-	
-	
-	private RequestContext init(RequestContext requestContext) throws IOException {
-
-		var theme = injector.getInstance(Theme.class);
-		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
-		var extensionManager = injector.getInstance(ExtensionManager.class);
-		var siteProperties = injector.getInstance(SiteProperties.class);
-		var siteMediaService = injector.getInstance(MediaService.class);
-
-		requestContext.add(InjectorFeature.class, new InjectorFeature(injector));
-
-		requestContext.add(ThemeFeature.class, new ThemeFeature(theme));
-		requestContext.add(ContentParserFeature.class, new ContentParserFeature(injector.getInstance(ContentParser.class)));
-		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(injector.getInstance(ContentNodeMapper.class)));
-		if (ServerContext.IS_DEV) {
-			requestContext.add(IsDevModeFeature.class, new IsDevModeFeature());
-		}
-		requestContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
-		requestContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(
-				injector.getInstance(Configuration.class)
-						.get(ServerConfiguration.class).serverProperties()
-		));
-		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
-		requestContext.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(siteMediaService));
-
-		requestContext.add(ServerHooks.class, new ServerHooks(requestContext));
-		requestContext.add(TemplateHooks.class, new TemplateHooks(requestContext));
-		requestContext.add(DBHooks.class, new DBHooks(requestContext));
-		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
-
-		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupHookSystem(requestContext)));
-
-		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
-
-		RenderContext renderContext = new RenderContext(
-				markdownRenderer,
-				createShortCodes(requestExtensions, requestContext),
-				theme);
-		requestContext.add(RenderContext.class, renderContext);
-		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(renderContext.markdownRenderer()));
-
-		requestContext.add(RequestExtensions.class, requestExtensions);
-
-		return requestContext;
 	}
 	
 	public RequestContext create() throws IOException {
@@ -237,38 +193,31 @@ public class RequestContextFactory {
 		requestContext.add(DBHooks.class, new DBHooks(requestContext));
 		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
 
-		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupHookSystem(requestContext)));
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupHookSystem()));
 
 		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
 
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer,
-				createShortCodes(requestExtensions, requestContext),
+				createShortCodes(requestContext),
 				theme);
 		requestContext.add(RenderContext.class, renderContext);
-		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(renderContext.markdownRenderer()));
+		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(markdownRenderer));
+		requestContext.add(TemplateEngineFeature.class, new TemplateEngineFeature(injector.getInstance(TemplateEngine.class)));
 
 		requestContext.add(RequestExtensions.class, requestExtensions);
 
 		return requestContext;
 	}
 
-	public RequestContext create(
-			Request request) throws IOException {
-
-//		var uri = request.getHttpURI().getPath();
-		var uri = RequestUtil.getContentPath(request);
-		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
-
-		return create(request.getContext().getContextPath(), uri, queryParameters, Optional.of(request));
-	}
-
+	// used
 	public RequestContext create(
 			String contextPath,
 			String uri, Map<String, List<String>> queryParameters) throws IOException {
 		return create(contextPath, uri, queryParameters, Optional.empty());
 	}
 
+	// used
 	public RequestContext create(
 			String contextPath,
 			String uri, Map<String, List<String>> queryParameters, Optional<Request> request) throws IOException {
@@ -292,7 +241,7 @@ public class RequestContextFactory {
 	 * @param requestContext
 	 * @return
 	 */
-	private HookSystem setupHookSystem(RequestContext requestContext) {
+	private HookSystem setupHookSystem() {
 		var hookSystem = injector.getInstance(HookSystem.class);
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
@@ -300,7 +249,7 @@ public class RequestContextFactory {
 		return hookSystem;
 	}
 
-	private ShortCodes createShortCodes(RequestExtensions requestExtensions, RequestContext requestContext) {
+	private ShortCodes createShortCodes(RequestContext requestContext) {
 		Map<String, Function<Parameter, String>> codes = new HashMap<>();
 
 		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)

@@ -42,6 +42,10 @@ public interface TemplateEngine {
 	
 	String render(final String template, final TemplateEngine.Model model) throws IOException;
 	
+	default String renderFromString(final String templateString, final TemplateEngine.Model model) throws IOException {
+		return templateString;
+	}
+	
 	@RequiredArgsConstructor
 	public static class Model {
 		public final Map<String, Object> values = new HashMap<>();

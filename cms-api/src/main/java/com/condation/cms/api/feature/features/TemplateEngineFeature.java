@@ -1,8 +1,8 @@
-package com.condation.cms.content.pipeline;
+package com.condation.cms.api.feature.features;
 
 /*-
  * #%L
- * cms-content
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,27 +22,16 @@ package com.condation.cms.content.pipeline;
  * #L%
  */
 
-import com.condation.cms.api.feature.features.HookSystemFeature;
-import com.condation.cms.api.request.RequestContext;
+
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.template.TemplateEngine;
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ContentPipelineFactory {
-	
-	public static ContentPipeline create (final RequestContext requestContext, final TemplateEngine.Model model) {
-		
-		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
-		var pipeline = new ContentPipeline(hookSystem.clone(), requestContext, model);
-		pipeline.init();
-		
-		return pipeline;
-	}
-	
-	
+@FeatureScope({FeatureScope.Scope.REQUEST})
+public record TemplateEngineFeature(TemplateEngine templateEngine) implements Feature {
+
 }

@@ -49,7 +49,6 @@ import com.condation.cms.content.pipeline.ContentPipelineFactory;
 import com.condation.cms.content.views.model.View;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
-import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
@@ -129,8 +128,8 @@ public class DefaultContentRenderer implements ContentRenderer {
 		return defaultValue;
 	}
 
-	private String renderMarkdown(final String rawContent, final RequestContext context) {
-		var pipeline = ContentPipelineFactory.create(context);
+	private String renderMarkdown(final String rawContent, final RequestContext context, final TemplateEngine.Model model) {
+		var pipeline = ContentPipelineFactory.create(context, model);
 		
 		return pipeline.process(rawContent);
 	}
@@ -149,9 +148,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 		modelExtending.accept(model);
 
 		model.values.put("meta", meta);
-		model.values.put("content",
-				renderMarkdown(rawContent, context)
-		);
 		model.values.put("sections", sections);
 
 		model.values.put("shortCodes", createShortCodeFunction(context));
@@ -187,6 +183,10 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		extendModel(model);
 
+		model.values.put("content",
+				renderMarkdown(rawContent, context, model)
+		);
+		
 		return templates.get().render((String) meta.get("template"), model);
 	}
 

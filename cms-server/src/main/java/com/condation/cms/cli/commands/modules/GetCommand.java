@@ -24,7 +24,9 @@ package com.condation.cms.cli.commands.modules;
 
 
 import com.condation.cms.CMSServer;
+import static com.condation.cms.cli.commands.modules.AbstractModuleCommand.createModulesFolder;
 import com.condation.cms.extensions.repository.InstallationHelper;
+import java.io.IOException;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -53,6 +55,13 @@ public class GetCommand extends AbstractModuleCommand implements Runnable {
 		if (CMSServer.isRunning()) {
 			System.out.println("modules can not be modified in running system");
 			return;
+		}
+		
+		try {
+			createModulesFolder();
+		} catch (IOException ex) {
+			log.error("", ex);
+			throw new RuntimeException(ex);
 		}
 
 		if (isInstalled(module) && !forceUpdate) {

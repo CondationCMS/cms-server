@@ -24,6 +24,7 @@ package com.condation.cms.cli.commands.modules;
 import com.condation.cms.CMSServer;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.extensions.repository.InstallationHelper;
+import java.io.IOException;
 import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -47,6 +48,13 @@ public class GetAllCommand extends AbstractModuleCommand implements Runnable {
 			return;
 		}
 
+		try {
+			createModulesFolder();
+		} catch (IOException ex) {
+			log.error("", ex);
+			throw new RuntimeException(ex);
+		}
+		
 		var modules = ModulesUtil.getRequiredModules();
 		log.trace("check required modules: " + modules);
 		if (!ModulesUtil.allInstalled(modules) && !forceUpdate) {

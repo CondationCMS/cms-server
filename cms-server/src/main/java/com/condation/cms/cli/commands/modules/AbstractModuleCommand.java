@@ -61,6 +61,13 @@ public abstract class AbstractModuleCommand {
 		return Path.of("modules/" + module);
 	}
 	
+	public static void createModulesFolder () throws IOException {
+		var modPath = Path.of("modules/");
+		if (!Files.exists(modPath)) {
+			Files.createDirectories(modPath);
+		}
+	}
+	
 	public static boolean isInstalled(String module) {
 		return Files.exists(getModuleFolder(module));
 	}

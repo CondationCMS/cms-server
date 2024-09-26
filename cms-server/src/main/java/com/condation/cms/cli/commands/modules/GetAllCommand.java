@@ -49,10 +49,13 @@ public class GetAllCommand extends AbstractModuleCommand implements Runnable {
 
 		var modules = ModulesUtil.getRequiredModules();
 		log.trace("check required modules: " + modules);
-		if (!ModulesUtil.allInstalled(modules)) {
+		if (!ModulesUtil.allInstalled(modules) && !forceUpdate) {
 			var toInstall = ModulesUtil.filterUnInstalled(modules);
 			System.out.println("following modules are missing and will be installed: " + String.join(", ", toInstall));
 			toInstall.forEach(this::installModule);
+		} else if (forceUpdate) {
+			System.out.println("following modules wil be installed or updated: " + String.join(", ", modules));
+			modules.forEach(this::installModule);
 		} else {
 			System.out.println("all required modules are intalled");
 		}

@@ -23,6 +23,7 @@ package com.condation.cms.cli.commands;
  */
 
 
+import com.condation.cms.cli.commands.modules.GetAllCommand;
 import com.condation.cms.cli.commands.modules.GetCommand;
 import com.condation.cms.cli.commands.modules.InfoCommand;
 import com.condation.cms.cli.commands.modules.RemoveCommand;
@@ -38,13 +39,14 @@ import picocli.CommandLine;
 		subcommands = {
 			InfoCommand.class,
 			GetCommand.class,
-			RemoveCommand.class
+			RemoveCommand.class,
+			GetAllCommand.class
 		})
 @Slf4j
 public class ModuleCommands implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Subcommand needed: 'get', 'remove' or 'info'");
+		System.out.println("Subcommand needed: 'get', 'get-all', 'remove' or 'info'");
 	}
 }

@@ -1,3 +1,7 @@
+<div>
+{{ content | raw}}
+</div>
+
 <h1>featured</h1>
 {% set news = query.create("/blog").where('featured', true).get() %}
 {% for entry in news %}

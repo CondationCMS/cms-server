@@ -8,6 +8,6 @@ modules:
     - pebble-module
 content:
   pipeline:
+    - template
     - markdown
     - shortcode
-    - template

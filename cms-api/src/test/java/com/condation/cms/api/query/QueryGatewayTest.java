@@ -23,11 +23,6 @@ package com.condation.cms.api.query;
  */
 
 
-import com.condation.cms.api.query.Query;
-import com.condation.cms.api.query.QueryGateway;
-import com.condation.cms.api.query.QueryHandler;
-import com.condation.cms.api.query.QueryProvider;
-import com.google.auto.service.AutoService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -69,25 +64,5 @@ public class QueryGatewayTest {
 			return "hello " + query.name();
 		}
 		
-	}
-	
-	@AutoService(QueryProvider.class)
-	public static class SecondQueryProvider implements QueryProvider<SecondQueryProvider.SecondQuery, String> {
-
-		@Override
-		public Class<? extends Query<String>> queryClass() {
-			return SecondQuery.class;
-		}
-
-		@Override
-		public QueryHandler<SecondQuery, String> handler() {
-			return (query) -> {
-				return "hello " + query.name();
-			};
-		}
-		
-		public static record SecondQuery(String name) implements Query<String> {
-			
-		}
-	}
+	}	
 }

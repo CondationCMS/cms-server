@@ -12,7 +12,6 @@
 		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
-			<version>7.0.0.202409031743-r</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -26,7 +25,6 @@
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>
 			<artifactId>quartz</artifactId>
-			<version>2.3.2</version>
 			<exclusions>
 				<exclusion>
 					<groupId>com.zaxxer</groupId>

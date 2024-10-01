@@ -21,8 +21,6 @@ package com.condation.cms.server.configs;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
@@ -40,6 +38,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.util.resource.ResourceFactory;
 
 /**
  *
@@ -50,12 +49,12 @@ public class ThemeModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public ThemeMediaManager themeMediaManager (Theme theme, Configuration configuration, DB db, EventBus eventBus) throws IOException {
-		var mediaManager =  new ThemeMediaManager(db.getFileSystem().resolve("temp"), theme, configuration);
+	public ThemeMediaManager themeMediaManager(Theme theme, Configuration configuration, DB db, EventBus eventBus) throws IOException {
+		var mediaManager = new ThemeMediaManager(db.getFileSystem().resolve("temp"), theme, configuration);
 		eventBus.register(SitePropertiesChanged.class, mediaManager);
 		return mediaManager;
 	}
-	
+
 	@Provides
 	@Singleton
 	@Named("theme")
@@ -69,7 +68,16 @@ public class ThemeModule extends AbstractModule {
 	public ResourceHandler resourceHandler(Theme theme, ServerProperties serverProperties) {
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
-		assetsHandler.setBaseResource(new FileFolderPathResource(theme.assetsPath()));
+
+		if (theme.getParentTheme() != null) {
+			assetsHandler.setBaseResource(ResourceFactory.combine(
+					new FileFolderPathResource(theme.assetsPath()),
+					new FileFolderPathResource(theme.getParentTheme().assetsPath())
+			));
+		} else {
+			assetsHandler.setBaseResource(new FileFolderPathResource(theme.assetsPath()));
+		}
+
 		if (serverProperties.dev()) {
 			assetsHandler.setCacheControl("no-cache");
 		} else {

@@ -1,4 +1,4 @@
-package com.condation.cms.theme;
+package com.condation.cms.core.theme;
 
 /*-
  * #%L
@@ -22,6 +22,7 @@ package com.condation.cms.theme;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.ThemeProperties;
 import com.condation.cms.core.messages.EmptyMessageSource;
@@ -52,13 +53,28 @@ public class DefaultTheme implements Theme {
 	private final ThemeProperties properties;
 	private final MessageSource messages;
 	private boolean empty = false;
+	
+	private Theme parent;
 
 	private DefaultTheme(final Path themePath, final ThemeProperties themeProperties, final boolean empty, final MessageSource messages) {
 		this(themePath, themeProperties, messages);
 		this.empty = empty;
 	}
 
-	public static Theme load(Path themePath, SiteProperties siteProperties, MessageSource siteMessages) throws IOException {
+	public static Theme load(
+			Path themePath, 
+			SiteProperties siteProperties, 
+			MessageSource siteMessages, 
+			ServerProperties serverProperties) throws IOException {
+		
+		return load(themePath, siteProperties, siteMessages, serverProperties, true);
+	}
+	
+	private static Theme load(
+			Path themePath, 
+			SiteProperties siteProperties, 
+			MessageSource siteMessages, 
+			ServerProperties serverProperties, boolean withParent) throws IOException {
 		Yaml yaml = new Yaml();
 		Path themeYaml = themePath.resolve("theme.yaml");
 
@@ -66,8 +82,21 @@ public class DefaultTheme implements Theme {
 
 		var content = Files.readString(themeYaml, StandardCharsets.UTF_8);
 		Map<String, Object> config = (Map<String, Object>) yaml.load(content);
+		
+		final ThemeProperties themeProperties = new ThemeProperties(config);
+		final DefaultTheme defaultTheme = new DefaultTheme(themePath, themeProperties, messages);
+		if (withParent && themeProperties.parent() != null) {
+			var parentTheme = DefaultTheme.load(
+					serverProperties.getThemesFolder().resolve(themeProperties.parent()), 
+					siteProperties, 
+					messages,
+					serverProperties,
+					false
+			);
+			defaultTheme.parent = parentTheme;
+		}
 
-		return new DefaultTheme(themePath, new ThemeProperties(config), messages);
+		return defaultTheme;
 	}
 
 	@Override
@@ -112,6 +141,53 @@ public class DefaultTheme implements Theme {
 
 	@Override
 	public MessageSource getMessages() {
+		if (parent != null) {
+			return parent.getMessages();
+		}
 		return messages;
+	}
+
+	@Override
+	public Theme getParentTheme() {
+		return parent;
+	}
+
+	
+	public Path resolve(String path, Path override, Path parent) {
+		var resolved = override.resolve(path);
+		if (resolved != null) {
+			return resolved;
+		}
+		if (parent == null) {
+			return null;
+		}
+		return parent.resolve(path);
+	}
+	
+	@Override
+	public Path resolveExtension(String path) {
+		return resolve(
+				path, 
+				extensionsPath(),
+				getParentTheme() != null ? getParentTheme().extensionsPath() : null
+		);
+	}
+
+	@Override
+	public Path resolveAsset(String path) {
+		return resolve(
+				path, 
+				assetsPath(),
+				getParentTheme() != null ? getParentTheme().assetsPath() : null
+		);
+	}
+
+	@Override
+	public Path resolveTemplate(String path) {
+		return resolve(
+				path, 
+				templatesPath(),
+				getParentTheme() != null ? getParentTheme().templatesPath() : null
+		);
 	}
 }

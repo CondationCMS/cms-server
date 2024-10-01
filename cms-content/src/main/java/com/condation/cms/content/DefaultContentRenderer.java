@@ -160,8 +160,9 @@ public class DefaultContentRenderer implements ContentRenderer {
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 
 		model.values.put("taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
-		model.values.put("messages", context.get(InjectorFeature.class).injector().getInstance(MessageSource.class));
-
+		//model.values.put("messages", context.get(InjectorFeature.class).injector().getInstance(MessageSource.class));
+		model.values.put("messages", context.get(RenderContext.class).theme().getMessages());
+		
 		model.values.put("hooks", context.get(HookSystemFeature.class).hookSystem());
 
 		model.values.put("links", new LinkFunction(context));

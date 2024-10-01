@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +50,7 @@ import net.coobird.thumbnailator.geometry.Positions;
 @Slf4j
 public abstract class MediaManager implements EventListener<SitePropertiesChanged> {
 
-	protected Path assetBase;
+	protected List<Path> assetBase;
 	protected Path tempFolder;
 	protected Theme theme;
 	protected Configuration configuration;
@@ -57,13 +58,24 @@ public abstract class MediaManager implements EventListener<SitePropertiesChange
 	protected Map<String, MediaFormat> mediaFormats;
 	protected Path tempDirectory;
 	
-	
+	protected MediaManager (List<Path> assetPath, Path tempFolder, Theme theme, Configuration configuration) {
+		this.assetBase = assetPath;
+		this.tempFolder = tempFolder;
+		this.theme = theme;
+		this.configuration = configuration;
+	}
 	
 	public abstract void reloadTheme (Theme updateTheme);
 	
 	
 	public Path resolve (String uri) {
-		return assetBase.resolve(uri);
+		for (Path assets : assetBase) {
+			var resolved = assets.resolve(uri);
+			if (Files.exists(resolved)) {
+				return resolved;
+			}
+		}
+		return null;
 	}
 	
 	public boolean hasMediaFormat (String format) {
@@ -85,9 +97,9 @@ public abstract class MediaManager implements EventListener<SitePropertiesChange
 
 	public Optional<byte[]> getScaledContent(final String mediaPath, final MediaFormat mediaFormat) throws IOException {
 
-		Path resolve = assetBase.resolve(mediaPath);
+		Path resolve = resolve(mediaPath);
 
-		if (Files.exists(resolve)) {
+		if (resolve != null) {
 			Optional<byte[]> tempContent = getTempContent(mediaPath, mediaFormat);
 			if (tempContent.isPresent()) {
 				return tempContent;

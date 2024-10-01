@@ -21,7 +21,6 @@ package com.condation.cms.extensions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.request.RequestContext;
@@ -78,27 +77,10 @@ public class ExtensionManager {
 		return new URLClassLoader(urls.toArray(URL[]::new), ClassLoader.getSystemClassLoader());
 	}
 
-	protected void loadExtensions(final Path extPath, final List<Source> sources) throws IOException {
-		Files.list(extPath)
-				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
-				.forEach(extFile -> {
-					try {
-						log.debug("load extension {}", extFile.getFileName().toString());
-						Source source = Source.newBuilder(
-								"js",
-								Files.readString(extFile, StandardCharsets.UTF_8),
-								extFile.getFileName().toString() + ".mjs")
-								.encoding(StandardCharsets.UTF_8)
-								.build();
-
-						sources.add(source);
-					} catch (IOException ex) {
-						log.error("", ex);
-					}
-				});
-	}
-
 	protected void loadExtensions(final Path extPath, final Consumer<Source> loader) throws IOException {
+		if (!Files.exists(extPath)) {
+			return;
+		}
 		Files.list(extPath)
 				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
 				.map(extFile -> {
@@ -118,7 +100,7 @@ public class ExtensionManager {
 				}).filter(source -> source != null)
 				.forEach(loader);
 	}
-	
+
 	public RequestExtensions newContext(Theme theme, RequestContext requestContext) throws IOException {
 		var context = Context.newBuilder()
 				.allowAllAccess(true)
@@ -136,24 +118,17 @@ public class ExtensionManager {
 		final Value bindings = context.getBindings("js");
 		setUpBinding(bindings, requestExtensions, theme, requestContext);
 
-		var extPath = db.getFileSystem().resolve("extensions/");
-		if (Files.exists(extPath)) {
-			log.debug("load extensions from site");
-			loadExtensions(extPath, context::eval);
-		}
 		
-		if (!theme.empty()) {
-			var themeExtPath = theme.extensionsPath();
-			if (Files.exists(themeExtPath)) {
-				log.debug("load extensions from theme");
-				loadExtensions(themeExtPath, context::eval);
-			}
+		List<Path> extPaths = getExtensionPaths(theme);
+		for (var extPath : extPaths) {
+			log.debug("load extensions from " + extPath);
+			loadExtensions(extPath, context::eval);
 		}
 
 		return requestExtensions;
 	}
-	
-	private void setUpBinding (Value bindings, 
+
+	private void setUpBinding(Value bindings,
 			RequestExtensions requestExtensions, Theme theme, RequestContext requestContext) {
 		bindings.putMember("extensions", requestExtensions);
 		bindings.putMember("fileSystem", db.getFileSystem());
@@ -163,5 +138,18 @@ public class ExtensionManager {
 //		bindings.putMember("hooks", requestContext.get(HookSystemFeature.class).hookSystem());
 		bindings.putMember("requestContext", requestContext);
 		bindings.putMember("ENV", serverProperties.env());
+	}
+
+	private List<Path> getExtensionPaths(Theme theme) {
+		var extPaths = new ArrayList<Path>();
+		extPaths.add(db.getFileSystem().resolve("extensions/"));
+	
+		if (theme.getParentTheme() != null) {
+			extPaths.add(theme.getParentTheme().extensionsPath());
+		}
+		if (!theme.empty() && theme.extensionsPath() != null) {
+			extPaths.add(theme.extensionsPath());
+		}
+		return extPaths;
 	}
 }

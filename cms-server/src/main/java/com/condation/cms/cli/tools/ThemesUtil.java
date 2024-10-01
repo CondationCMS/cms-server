@@ -51,6 +51,14 @@ public class ThemesUtil {
 	}
 	
 	public static Set<String> getRequiredThemes () {
+		var themes = getRequiredSiteThemes();
+		
+		themes.addAll(getRequiredParentThemes());
+		
+		return themes;
+	}
+	
+	public static Set<String> getRequiredSiteThemes () {
 		Set<String> requiredThemes = new HashSet<>();
 		try {
 			Files.list(Path.of("hosts/"))
@@ -71,6 +79,33 @@ public class ThemesUtil {
 		}
 		
 		return requiredThemes;
+	}
+	
+	private static Set<String> getRequiredParentThemes () {
+		Set<String> requiredThemes = new HashSet<>();
+		try {
+			Files.list(Path.of("themes/"))
+					.filter(ThemesUtil::isTheme)
+					.map(host -> host.resolve("theme.yaml"))
+					.forEach(themeConfig -> {
+						try {
+							var themeProperties = PropertiesLoader.themeProperties(themeConfig);
+							if (!Strings.isNullOrEmpty(themeProperties.parent())) {
+								requiredThemes.add(themeProperties.parent());
+							}
+						} catch (IOException ex) {
+							log.error("", ex);
+						}
+					});
+		} catch (IOException ex) {
+			log.error("", ex);
+		}
+		
+		return requiredThemes;
+	}
+	
+	public static boolean isTheme(Path host) {
+		return Files.exists(host.resolve("theme.yaml"));
 	}
 	
 	public static boolean isHost(Path host) {

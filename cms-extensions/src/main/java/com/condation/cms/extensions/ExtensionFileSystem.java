@@ -55,17 +55,17 @@ public class ExtensionFileSystem implements FileSystem {
 
 	@Override
 	public Path parsePath(URI uri) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public Path parsePath(String path) {
-		if (path.startsWith("system/")) {
+		if (path.startsWith("system/") || path.startsWith("system\\")) {
 			return Path.of(path);
 		}
 		var resolved = siteExtensionPath.resolve(path);
 		if (!Files.exists(resolved) && !theme.empty() ) {
-			resolved = theme.extensionsPath().resolve(path);
+			resolved = theme.resolveExtension(path);
 		}
 		return resolved;
 	}
@@ -76,17 +76,17 @@ public class ExtensionFileSystem implements FileSystem {
 
 	@Override
 	public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	@Override
 	public void delete(Path path) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 	@Override
 	public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
-		if (path.startsWith("system/")) {
+		if (path.startsWith("system/") || path.startsWith("system\\")) {
 			var localPath = path.toString().replaceAll("\\\\", "/");
 			InputStream resourceAsStream = ExtensionFileSystem.class.getResourceAsStream(localPath);
 			
@@ -101,7 +101,7 @@ public class ExtensionFileSystem implements FileSystem {
 
 	@Override
 	public DirectoryStream<Path> newDirectoryStream(Path dir, DirectoryStream.Filter<? super Path> filter) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
@@ -116,7 +116,7 @@ public class ExtensionFileSystem implements FileSystem {
 
 	@Override
 	public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet."); 
 	}
 
 }

@@ -1,7 +1,6 @@
 name: test
 template:
   engine: thymeleaf
-parent: parent
 modules:
   active:
     - example-module

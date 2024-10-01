@@ -26,6 +26,8 @@ package com.condation.cms.media;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.theme.Theme;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -33,15 +35,21 @@ import java.nio.file.Path;
  */
 public class ThemeMediaManager extends MediaManager {
 	public ThemeMediaManager(Path tempFolder, Theme theme, Configuration configuration) {
-		this.assetBase = theme.assetsPath();
-		this.tempFolder = tempFolder;
-		this.theme = theme;
-		this.configuration = configuration;
+		super(getThemeAssetPath(theme), tempFolder, theme, configuration);
+	}
+	
+	private static List<Path> getThemeAssetPath (Theme theme) {
+		List<Path> assetBases = new ArrayList<>();
+		assetBases.add(theme.assetsPath());
+		if (theme.getParentTheme() != null) {
+			assetBases.add(theme.getParentTheme().assetsPath());
+		}
+		return assetBases;
 	}
 	
 	@Override
 	public void reloadTheme (Theme updateTheme) {
-		this.assetBase = updateTheme.assetsPath();
+		this.assetBase = getThemeAssetPath(updateTheme);
 		this.theme = updateTheme;
 		this.mediaFormats = null;
 	}

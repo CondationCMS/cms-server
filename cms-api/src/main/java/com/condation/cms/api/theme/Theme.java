@@ -46,6 +46,12 @@ public interface Theme {
 	
 	ThemeProperties properties();
 	
+	Theme getParentTheme ();
+	
+	Path resolveExtension (String path);
+	Path resolveAsset (String path);
+	Path resolveTemplate (String path);
+	
 	/**
 	 * empty theme is used for sites without configured theme
 	 * @return 

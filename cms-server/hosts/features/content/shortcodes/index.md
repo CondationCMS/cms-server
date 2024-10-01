@@ -20,3 +20,7 @@ Or call a shortcode provided by a module
 [[example /]]
 
 \[\[example /\]\]
+
+## Parent theme
+
+[[parent_name /]]

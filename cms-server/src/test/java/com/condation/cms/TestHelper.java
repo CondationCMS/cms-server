@@ -48,7 +48,7 @@ import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.media.FileMediaService;
-import com.condation.cms.theme.DefaultTheme;
+import com.condation.cms.core.theme.DefaultTheme;
 import com.google.inject.Injector;
 import java.util.Map;
 import org.mockito.Mockito;

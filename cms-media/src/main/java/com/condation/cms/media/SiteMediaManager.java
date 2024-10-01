@@ -26,6 +26,7 @@ package com.condation.cms.media;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.theme.Theme;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  *
@@ -33,10 +34,7 @@ import java.nio.file.Path;
  */
 public class SiteMediaManager extends MediaManager {
 	public SiteMediaManager(Path assetBase, Path tempFolder, Theme theme, Configuration configuration) {
-		this.assetBase = assetBase;
-		this.tempFolder = tempFolder;
-		this.theme = theme;
-		this.configuration = configuration;
+		super(List.of(assetBase), tempFolder, theme, configuration);
 	}
 
 	@Override

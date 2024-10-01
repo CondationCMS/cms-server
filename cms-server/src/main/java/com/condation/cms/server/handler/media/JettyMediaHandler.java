@@ -64,7 +64,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 			if ("##original##".equalsIgnoreCase(formatValue)) {
 				var mediaPath = getRelativeMediaPath(request);
 				Path assetPath = mediaManager.resolve(mediaPath);
-				if (Files.exists(assetPath)) {
+				if (assetPath != null) {
 					var bytes = Files.readAllBytes(assetPath);
 					var mimetype = Files.probeContentType(assetPath);
 
@@ -99,6 +99,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 			callback.failed(e);
 		}
 		response.setStatus(404);
+		callback.succeeded();
 		return true;
 	}
 

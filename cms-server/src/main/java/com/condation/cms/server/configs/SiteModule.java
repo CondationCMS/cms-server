@@ -66,7 +66,7 @@ import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
-import com.condation.cms.theme.DefaultTheme;
+import com.condation.cms.core.theme.DefaultTheme;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
@@ -121,7 +121,7 @@ public class SiteModule extends AbstractModule {
 
 		if (siteProperties.theme() != null) {
 			Path themeFolder = serverProperties.getThemesFolder().resolve(siteProperties.theme());
-			return DefaultTheme.load(themeFolder, siteProperties, messageSource);
+			return DefaultTheme.load(themeFolder, siteProperties, messageSource, serverProperties);
 		}
 
 		return DefaultTheme.EMPTY;

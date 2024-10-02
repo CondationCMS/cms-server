@@ -62,7 +62,7 @@ public class DefaultMessageSource implements MessageSource {
 	public String getLabel(final String bundle, final String label, final List<Object> data) {
 		try {
 			var resourceBundle = fromClassLoader(bundle, siteProperties.locale());
-			if (resourceBundle != null) {
+			if (resourceBundle != null && resourceBundle.containsKey(label)) {
 				var messageFormat = new MessageFormat(resourceBundle.getString(label), siteProperties.locale());
 				return messageFormat.format(data.toArray());
 			}

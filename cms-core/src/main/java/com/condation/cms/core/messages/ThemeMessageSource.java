@@ -48,7 +48,7 @@ public class ThemeMessageSource extends DefaultMessageSource {
 	public String getLabel (final String bundle, final String label) {
 		
 		var message = priorizedMessageSource.getLabel(bundle, label);
-		if (!("[" + label + "]").equals(label)) {
+		if (!("[" + label + "]").equals(message)) {
 			return message;
 		}
 		
@@ -59,16 +59,16 @@ public class ThemeMessageSource extends DefaultMessageSource {
 	@Override
 	public String getLabel (final String bundle, final String label, final List<Object> data) {
 		
-		var message = priorizedMessageSource.getLabel(bundle, bundle, data);
-		if (!("[" + label + "]").equals(label)) {
+		var message = priorizedMessageSource.getLabel(bundle, label, data);
+		if (!("[" + label + "]").equals(message)) {
 			return message;
 		}
 		
 		try {
 			var resourceBundle = fromClassLoader(bundle, siteProperties.locale());
-			if (resourceBundle != null) {
+			if (resourceBundle != null && resourceBundle.containsKey(label)) {
 				var messageFormat = new MessageFormat(resourceBundle.getString(label), siteProperties.locale());
-				return messageFormat.format(data);
+				return messageFormat.format(data.toArray());
 			}
 		} catch (Exception e) {
 			log.error("bundle not found", bundle);

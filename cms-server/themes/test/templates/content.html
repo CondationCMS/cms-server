@@ -11,7 +11,9 @@
 		<nav th:replace="libs/fragments.html :: navigation"></nav>
 
 		<div id="content">
-			<h3>Overridden template from parent</h3>
+			<div class="conainter">
+				<h3>Overridden template from parent</h3>
+			</div>
 			
 			<div class="container" th:utext="${content}"></div>
 
@@ -21,6 +23,13 @@
 				</th:block>
 			</div>
 
+			<div class="conainter">
+				<h3>Messages</h3>
+				<h3 th:text="${messages.getLabel('labels', 'message.theme.child')}">message.theme.child</h3>
+				<h3 th:text="${messages.getLabel('labels', 'message.theme.parent')}">message.theme.parent</h3>
+				<h3 th:text="${messages.getLabel('labels', 'message.site')}">message.site</h3>
+			</div>
+			
 		</div>
 
 		<th:block th:replace="libs/fragments.html :: footer"></th:block>

@@ -23,6 +23,7 @@ package com.condation.cms.cli.commands;
  */
 
 
+import com.condation.cms.cli.commands.themes.GetAllCommand;
 import com.condation.cms.cli.commands.themes.GetCommand;
 import com.condation.cms.cli.commands.themes.InfoCommand;
 import com.condation.cms.cli.commands.themes.RemoveCommand;
@@ -38,6 +39,7 @@ import picocli.CommandLine;
 		subcommands = {
 			InfoCommand.class,
 			GetCommand.class,
+			GetAllCommand.class,
 			RemoveCommand.class
 		})
 @Slf4j
@@ -45,6 +47,6 @@ public class ThemeCommands implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("Subcommand needed: 'get', 'remove' or 'info'");
+		System.out.println("Subcommand needed: 'get', 'get-all', 'remove' or 'info'");
 	}
 }

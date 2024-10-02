@@ -1,32 +1,34 @@
 <!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 
-<head>
-	<th:block th:replace="libs/fragments.html :: header">
-	</th:block>
-</head>
+	<head>
+		<th:block th:replace="libs/fragments.html :: header">
+		</th:block>
+	</head>
 
-<body>
+	<body>
 
-	<nav th:replace="libs/fragments.html :: navigation"></nav>
+		<nav th:replace="libs/fragments.html :: navigation"></nav>
 
-	<div id="content">
-		<div class="container" th:utext="${content}"></div>
+		<div id="content">
+			<h3>Overridden template from parent</h3>
+			
+			<div class="container" th:utext="${content}"></div>
 
-		<div class="container" th:if="${sections.containsKey('part')}">
-			<th:block th:each="part : ${sections.get('part')}">
-				<th:block th:utext="${part.content}"></th:block>
-			</th:block>
+			<div class="container" th:if="${sections.containsKey('part')}">
+				<th:block th:each="part : ${sections.get('part')}">
+					<th:block th:utext="${part.content}"></th:block>
+				</th:block>
+			</div>
+
 		</div>
 
-	</div>
+		<th:block th:replace="libs/fragments.html :: footer"></th:block>
 
-	<th:block th:replace="libs/fragments.html :: footer"></th:block>
+	</body>
 
-</body>
+	<script th:replace="libs/fragments.html :: footer_scripts">
 
-<script th:replace="libs/fragments.html :: footer_scripts">
-
-</script>
+	</script>
 
 </html>

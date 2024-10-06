@@ -1,4 +1,4 @@
-package com.condation.cms.api.annotations;
+package com.condation.cms.api.feature.features;
 
 /*-
  * #%L
@@ -22,28 +22,14 @@ package com.condation.cms.api.annotations;
  * #L%
  */
 
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.messaging.Messaging;
 
 /**
  *
  * @author t.marx
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE })
-public @interface FeatureScope {
-	
-	public FeatureScope.Scope[] value() default {};
-	
-	public enum Scope {
-		REQUEST,
-		GLOBAL,
-		MODULE
-	}
+@FeatureScope({FeatureScope.Scope.GLOBAL, FeatureScope.Scope.MODULE})
+public record MessagingFeature(Messaging messaging) implements Feature {
 }
-

@@ -48,8 +48,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__({
-	@Inject}))
+@RequiredArgsConstructor
 public class ConfigurationManagement {
 
 	final DB db;

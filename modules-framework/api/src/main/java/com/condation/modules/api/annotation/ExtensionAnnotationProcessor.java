@@ -25,7 +25,6 @@ package com.condation.modules.api.annotation;
 
 
 
-import com.google.auto.service.AutoService;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,7 +54,6 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 @SupportedAnnotationTypes("com.condation.modules.api.annotation.Extension")
-@AutoService(Processor.class)
 public class ExtensionAnnotationProcessor extends AbstractProcessor implements Processor {
 
 	@Override

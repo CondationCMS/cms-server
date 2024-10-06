@@ -1,4 +1,4 @@
-package com.condation.cms.eventbus;
+package com.condation.cms.core.eventbus;
 
 /*-
  * #%L
@@ -27,7 +27,6 @@ package com.condation.cms.eventbus;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.eventbus.events.GenericEvent;
-import com.condation.cms.core.eventbus.DefaultEventBus;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -49,47 +48,13 @@ public class DefaultEventBusTest {
 	}
 
 	@Test
-	public void register_unregister_event() {
+	public void register_event() {
 		var genericEvent = new GenericEvent("bla", Map.of("message", "Hello world!"));
 		var testListener = new TestListener();
 		
 		eventBus.register(GenericEvent.class, testListener);
 		
 		eventBus.publish(genericEvent);
-		
-		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
-			testListener.counter.get() == 1
-		);
-		
-		eventBus.unregister(GenericEvent.class, testListener);
-		
-		eventBus.publish(genericEvent);
-		
-		Awaitility.await().atLeast(Duration.ofSeconds(2));
-		
-		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
-			testListener.counter.get() == 1
-		);
-	}
-	
-	@Test
-	public void register_unregister_listener() {
-		var genericEvent = new GenericEvent("bla", Map.of("message", "Hello world!"));
-		var testListener = new TestListener();
-		
-		eventBus.register(GenericEvent.class, testListener);
-		
-		eventBus.publish(genericEvent);
-		
-		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
-			testListener.counter.get() == 1
-		);
-		
-		eventBus.unregister(testListener);
-		
-		eventBus.publish(genericEvent);
-		
-		Awaitility.await().atLeast(Duration.ofSeconds(2));
 		
 		Awaitility.await().atMost(Duration.ofSeconds(2)).until(() -> 
 			testListener.counter.get() == 1

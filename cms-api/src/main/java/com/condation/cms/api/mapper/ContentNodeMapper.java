@@ -42,8 +42,7 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor(onConstructor = @__({
-	@Inject}))
+@RequiredArgsConstructor()
 @Slf4j
 public class ContentNodeMapper {
 

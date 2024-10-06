@@ -1,8 +1,8 @@
-package com.condation.cms.api.annotations;
+package com.condation.cms.api.messaging;
 
 /*-
  * #%L
- * cms-api
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,28 +22,14 @@ package com.condation.cms.api.annotations;
  * #L%
  */
 
-
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
+ * 
+ * Messaging is a framework for communication between modules and cms components.
+ * Objects are serialized to json and deserialized to overcome the classloader.
  *
  * @author t.marx
  */
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE })
-public @interface FeatureScope {
+public interface Messaging {
 	
-	public FeatureScope.Scope[] value() default {};
-	
-	public enum Scope {
-		REQUEST,
-		GLOBAL,
-		MODULE
-	}
+	Topic topic (String name);
 }
-

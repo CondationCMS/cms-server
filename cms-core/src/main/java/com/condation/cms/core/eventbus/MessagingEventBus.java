@@ -25,8 +25,8 @@ package com.condation.cms.core.eventbus;
 import com.condation.cms.api.eventbus.Event;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.condation.cms.api.messaging.Messaging;
+import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,44 +34,29 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class DefaultEventBus implements EventBus {
+public class MessagingEventBus implements EventBus {
 
-	public final Multimap<Class<? extends Event>, EventListener> listeners;
+	private final Messaging messaging;
 
-	public DefaultEventBus() {
-		listeners = ArrayListMultimap.create();
+	@Inject
+	public MessagingEventBus(final Messaging messaging) {
+		this.messaging = messaging;
 	}
 
-	private Multimap<Class<? extends Event>, EventListener> listeners () {
-		return ArrayListMultimap.create(listeners);
-	}
-	
 	@Override
 	public <T extends Event> void register(Class<T> eventClass, EventListener<T> listener) {
-		listeners.put(eventClass, listener);
+		messaging.topic(eventClass.getName()).listen((data) -> {
+			listener.consum(data);
+		}, eventClass);
 	}
 
 	@Override
 	public <T extends Event> void publish(final T event) {
-		listeners().get(event.getClass()).forEach(listener -> {
-			Thread.startVirtualThread(() -> {
-				try {
-					listener.consum(event);
-				} catch (Exception e) {
-					log.error(null, e);
-				}
-			});
-		});
+		messaging.topic(event.getClass().getName()).send(event);
 	}
 
 	@Override
 	public <T extends Event> void syncPublish(T event) {
-		listeners().get(event.getClass()).forEach(listener -> {
-			try {
-				listener.consum(event);
-			} catch (Exception e) {
-				log.error(null, e);
-			}
-		});
+		publish(event);
 	}
 }

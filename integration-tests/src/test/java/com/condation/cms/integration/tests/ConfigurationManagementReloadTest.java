@@ -141,13 +141,5 @@ public class ConfigurationManagementReloadTest {
 		@Override
 		public <T extends Event> void register(Class<T> eventClass, EventListener<T> listener) {
 		}
-
-		@Override
-		public <T extends Event> void unregister(Class<T> eventClass, EventListener<T> listener) {
-		}
-
-		@Override
-		public void unregister(EventListener listener) {
-		}
 	}
 }

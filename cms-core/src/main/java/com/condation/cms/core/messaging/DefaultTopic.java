@@ -1,4 +1,4 @@
-package com.condation.cms.core.eventbus;
+package com.condation.cms.core.messaging;
 
 /*-
  * #%L
@@ -21,12 +21,10 @@ package com.condation.cms.core.eventbus;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.condation.cms.api.eventbus.Event;
-import com.condation.cms.api.eventbus.EventBus;
-import com.condation.cms.api.eventbus.EventListener;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
+import com.condation.cms.api.messaging.Topic;
+import com.condation.cms.api.messaging.Listener;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,29 +32,35 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class DefaultEventBus implements EventBus {
+public final class DefaultTopic implements Topic {
 
-	public final Multimap<Class<? extends Event>, EventListener> listeners;
+	private final List<ListenerHolder> listeners;
 
-	public DefaultEventBus() {
-		listeners = ArrayListMultimap.create();
+	String name;
+
+	record ListenerHolder<T>(Listener<T> listener, Class<T> dataType) {
+
 	}
 
-	private Multimap<Class<? extends Event>, EventListener> listeners () {
-		return ArrayListMultimap.create(listeners);
-	}
+	;
 	
-	@Override
-	public <T extends Event> void register(Class<T> eventClass, EventListener<T> listener) {
-		listeners.put(eventClass, listener);
+	protected DefaultTopic(String name) {
+		this.name = name;
+		listeners = new ArrayList<>();
 	}
 
 	@Override
-	public <T extends Event> void publish(final T event) {
-		listeners().get(event.getClass()).forEach(listener -> {
+	public <RT> void listen(Listener<RT> listener, Class<RT> dataType) {
+		listeners.add(new ListenerHolder(listener, dataType));
+	}
+
+	@Override
+	public void send(Object data) {
+		listeners.forEach((listener) -> {
 			Thread.startVirtualThread(() -> {
 				try {
-					listener.consum(event);
+					String dataString = DefaultMessaging.GSON.toJson(data);
+					listener.listener.receive(DefaultMessaging.GSON.fromJson(dataString, listener.dataType));
 				} catch (Exception e) {
 					log.error(null, e);
 				}
@@ -65,13 +69,15 @@ public class DefaultEventBus implements EventBus {
 	}
 
 	@Override
-	public <T extends Event> void syncPublish(T event) {
-		listeners().get(event.getClass()).forEach(listener -> {
+	public void sendSync(Object data) {
+		listeners.forEach((listener) -> {
 			try {
-				listener.consum(event);
+				String dataString = DefaultMessaging.GSON.toJson(data);
+				listener.listener.receive(DefaultMessaging.GSON.fromJson(dataString, listener.dataType));
 			} catch (Exception e) {
 				log.error(null, e);
 			}
 		});
 	}
+
 }

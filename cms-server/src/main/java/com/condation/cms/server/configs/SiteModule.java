@@ -39,6 +39,7 @@ import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.feature.features.MessagingFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
@@ -46,6 +47,7 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.core.messages.DefaultMessageSource;
 import com.condation.cms.api.messages.MessageSource;
+import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
@@ -65,6 +67,8 @@ import com.condation.cms.media.FileMediaService;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
+import com.condation.cms.core.eventbus.MessagingEventBus;
+import com.condation.cms.core.messaging.DefaultMessaging;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
 import com.condation.cms.core.theme.DefaultTheme;
 import com.condation.modules.api.ModuleManager;
@@ -93,11 +97,17 @@ public class SiteModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(Configuration.class).toInstance(configuration);
-		bind(EventBus.class).to(DefaultEventBus.class).in(Singleton.class);
+		bind(Messaging.class).to(DefaultMessaging.class).in(Singleton.class);
+		bind(EventBus.class).to(MessagingEventBus.class).in(Singleton.class);
 		bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 		bind(TaxonomyFunction.class).in(Singleton.class);
-		bind(ContentNodeMapper.class).in(Singleton.class);
 		bind(TaxonomyResolver.class).in(Singleton.class);
+	}
+	
+	@Provides
+	@Singleton
+	public ContentNodeMapper contentNodeMapper (DB db, ContentParser contentParser) {
+		return new ContentNodeMapper(db, contentParser);
 	}
 	
 	@Provides
@@ -256,13 +266,14 @@ public class SiteModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public CronJobContext cronJobContext(SiteProperties siteProperties, ServerProperties serverProperties, FileDB db, EventBus eventBus, Theme theme,
-			Configuration configuration) {
+			Configuration configuration, Messaging messaging) {
 		final CronJobContext cronJobContext = new CronJobContext();
 		cronJobContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
 		cronJobContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(serverProperties));
 		cronJobContext.add(DBFeature.class, new DBFeature(db));
 		cronJobContext.add(EventBusFeature.class, new EventBusFeature(eventBus));
 		cronJobContext.add(ThemeFeature.class, new ThemeFeature(theme));
+		cronJobContext.add(MessagingFeature.class, new MessagingFeature(messaging));
 		cronJobContext.add(ConfigurationFeature.class, new ConfigurationFeature(configuration));
 		
 		return cronJobContext;

@@ -23,6 +23,7 @@ package com.condation.cms.core.messaging;
  */
 
 import com.condation.cms.api.messaging.Messaging;
+import com.condation.cms.api.messaging.Topic;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.awaitility.Awaitility;
@@ -46,12 +47,12 @@ public class DefaultMessagingTest {
 	public void testSomeMethod() {
 		
 		AtomicBoolean received = new AtomicBoolean(false);
-		messaging.topic("test/test").listen((data) -> {
+		messaging.topic("test/test").subscribe((data) -> {
 			System.out.println(data.value);
 			received.set(true);
 		}, AnotherObject.class);
 		
-		messaging.topic("test/test").send(new DataObject("Hello CondationCMS!"));
+		messaging.topic("test/test").publish(new DataObject("Hello CondationCMS!"), Topic.Mode.SYNC);
 		
 		Awaitility.await()
 				.atMost(Duration.ofSeconds(1))

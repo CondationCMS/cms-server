@@ -25,6 +25,7 @@ import com.condation.cms.api.messaging.Topic;
 import com.condation.cms.api.messaging.Listener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -50,34 +51,31 @@ public final class DefaultTopic implements Topic {
 	}
 
 	@Override
-	public <RT> void listen(Listener<RT> listener, Class<RT> dataType) {
-		listeners.add(new ListenerHolder(listener, dataType));
+	public <RT> void subscribe(Listener<RT> listener, Class<RT> dataType) {
+		listeners.add(new ListenerHolder<>(listener, dataType));
 	}
 
 	@Override
-	public void send(Object data) {
-		listeners.forEach((listener) -> {
-			Thread.startVirtualThread(() -> {
-				try {
-					String dataString = DefaultMessaging.GSON.toJson(data);
-					listener.listener.receive(DefaultMessaging.GSON.fromJson(dataString, listener.dataType));
-				} catch (Exception e) {
-					log.error(null, e);
-				}
-			});
-		});
-	}
+	public void publish(final Object data, Mode mode) {
 
-	@Override
-	public void sendSync(Object data) {
 		listeners.forEach((listener) -> {
-			try {
-				String dataString = DefaultMessaging.GSON.toJson(data);
-				listener.listener.receive(DefaultMessaging.GSON.fromJson(dataString, listener.dataType));
-			} catch (Exception e) {
-				log.error(null, e);
+			if (Mode.SYNC.equals(mode)) {
+				sendMessage(data, listener);
+			} else {
+				Thread.startVirtualThread(() -> {
+					sendMessage(data, listener);
+				});
 			}
 		});
 	}
 
+	private void sendMessage(final Object data, ListenerHolder listener) {
+		try {
+			String dataString = DefaultMessaging.GSON.toJson(data);
+			Object payload = DefaultMessaging.GSON.fromJson(dataString, listener.dataType);
+			listener.listener.receive(payload);
+		} catch (Exception e) {
+			log.error(null, e);
+		}
+	}
 }

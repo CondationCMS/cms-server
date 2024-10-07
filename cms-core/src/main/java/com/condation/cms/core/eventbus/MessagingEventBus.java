@@ -45,14 +45,14 @@ public class MessagingEventBus implements EventBus {
 
 	@Override
 	public <T extends Event> void register(Class<T> eventClass, EventListener<T> listener) {
-		messaging.topic(eventClass.getName()).listen((data) -> {
+		messaging.topic(eventClass.getName()).subscribe((data) -> {
 			listener.consum(data);
 		}, eventClass);
 	}
 
 	@Override
 	public <T extends Event> void publish(final T event) {
-		messaging.topic(event.getClass().getName()).send(event);
+		messaging.topic(event.getClass().getName()).publish(event);
 	}
 
 	@Override

@@ -28,9 +28,33 @@ package com.condation.cms.api.messaging;
  */
 public interface Topic {
 
-	<RT> void listen(Listener<RT> listener, Class<RT> dataType);
+	public static enum Mode {
+		ASYNC, SYNC;
+	}
 	
-	void send(Object object);
+	/**
+	 * Subscribe to a topic.
+	 * 
+	 * @param <RT>
+	 * @param listener
+	 * @param dataType 
+	 */
+	<RT> void subscribe(Listener<RT> listener, Class<RT> dataType);
 	
-	void sendSync (Object object);
+	/**
+	 * Publish a message on the topic with mode.
+	 * 
+	 * @param object
+	 * @param mode 
+	 */
+	void publish(Object object, Mode mode);
+	
+	/**
+	 * Publish a message on the topic with default mode: Mode.ASYNC
+	 * 
+	 * @param object
+	 */
+	default void publish (Object object) {
+		publish(object, Topic.Mode.ASYNC);
+	}
 }

@@ -180,6 +180,8 @@ public class VHost {
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		var contentResolver = injector.getInstance(ContentResolver.class);
 		var requestContextFactory = injector.getInstance(RequestContextFactory.class);
+		// start configuration managment
+		injector.getInstance(ConfigurationManagement.class);
 
 		cmsModuleContext.add(
 				ContentRenderFeature.class,

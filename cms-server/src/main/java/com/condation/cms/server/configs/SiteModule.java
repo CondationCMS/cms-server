@@ -59,7 +59,6 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
-import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.filesystem.MetaData;

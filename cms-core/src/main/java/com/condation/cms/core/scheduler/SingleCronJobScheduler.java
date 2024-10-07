@@ -23,6 +23,7 @@ package com.condation.cms.core.scheduler;
  */
 
 
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.scheduler.CronJob;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.scheduler.CronJobScheduler;
@@ -35,9 +36,9 @@ import org.quartz.Scheduler;
  */
 @Slf4j
 public class SingleCronJobScheduler extends AbstractCronJobScheduler implements CronJobScheduler {
-
-	public SingleCronJobScheduler(Scheduler scheduler, CronJobContext context) {
-		super(scheduler, context);
+	
+	public SingleCronJobScheduler(Scheduler scheduler, CronJobContext context, SiteProperties siteProperties) {
+		super(scheduler, context, siteProperties);
 	}
 	
 	@Override

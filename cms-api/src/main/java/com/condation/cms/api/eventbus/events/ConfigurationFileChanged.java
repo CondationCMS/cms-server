@@ -21,7 +21,6 @@ package com.condation.cms.api.eventbus.events;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.configuration.Config;
 import com.condation.cms.api.eventbus.Event;
 
@@ -29,5 +28,17 @@ import com.condation.cms.api.eventbus.Event;
  *
  * @author t.marx
  */
-public record ConfigurationFileChanged(Class<? extends Config> clazz) implements Event {
+public record ConfigurationFileChanged(String configurationClassName) implements Event {
+
+	public ConfigurationFileChanged(Class<? extends Config> configClass) {
+		this(configClass.getName());
+	}
+
+	public Class clazz() {
+		try {
+			return Class.forName(configurationClassName);
+		} catch (ClassNotFoundException ex) {
+			throw new RuntimeException("", ex);
+		}
+	}
 }

@@ -23,6 +23,7 @@ package com.condation.cms.integration.tests;
  */
 
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.ConfigurationManagement;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
@@ -71,8 +72,10 @@ public class ConfigurationManagementReloadTest {
 	static void setup() throws IOException, SchedulerException {
 
 		var serverProps = Mockito.mock(ServerProperties.class);
+		var siteProps = Mockito.mock(SiteProperties.class);
 		
 		Mockito.when(serverProps.env()).thenReturn("dev");
+		Mockito.when(siteProps.id()).thenReturn("site");
 		
 		configuration = new Configuration(Path.of("reload/"));
 		configuration.add(ServerConfiguration.class, new ServerConfiguration(serverProps));
@@ -85,7 +88,11 @@ public class ConfigurationManagementReloadTest {
 		scheduler.start();
 
 		
-		configurationManagement = new ConfigurationManagement(db, configuration, new SingleCronJobScheduler(scheduler, new CronJobContext()), eventBus);
+		configurationManagement = new ConfigurationManagement(
+				db, 
+				configuration, 
+				new SingleCronJobScheduler(scheduler, new CronJobContext(), siteProps), 
+				eventBus);
 		configurationManagement.init("0/5 * * * * ?");
 	}
 	

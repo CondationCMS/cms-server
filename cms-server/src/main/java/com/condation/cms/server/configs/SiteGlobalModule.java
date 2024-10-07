@@ -95,13 +95,13 @@ public class SiteGlobalModule implements com.google.inject.Module {
 	
 	@Provides
 	@Singleton
-	public SiteCronJobScheduler cronJobScheduler (Scheduler scheduler, CronJobContext context) {
-		return new SiteCronJobScheduler(scheduler, context);
+	public SiteCronJobScheduler cronJobScheduler (Scheduler scheduler, CronJobContext context, SiteProperties siteProperties) {
+		return new SiteCronJobScheduler(scheduler, context, siteProperties);
 	}
 	@Provides
 	@Singleton
-	public SingleCronJobScheduler singleCronJobScheduler (Scheduler scheduler, CronJobContext context) {
-		return new SingleCronJobScheduler(scheduler, context);
+	public SingleCronJobScheduler singleCronJobScheduler (Scheduler scheduler, CronJobContext context, SiteProperties siteProperties) {
+		return new SingleCronJobScheduler(scheduler, context, siteProperties);
 	}
 	
 	@Provides

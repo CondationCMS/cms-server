@@ -23,6 +23,7 @@ package com.condation.cms.core.scheduler;
  */
 
 
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.scheduler.CronJob;
 import com.condation.cms.api.scheduler.CronJobContext;
 import lombok.RequiredArgsConstructor;
@@ -48,18 +49,22 @@ public class AbstractCronJobScheduler {
 
 	private final Scheduler scheduler;
 	private final CronJobContext context;
+	private final SiteProperties siteProperties;
 	
 	protected void schedule(
 			String cronExpression, 
 			String name, 
 			CronJob job, 
 			Class<? extends Job> jobClass) {
+		
+		var identity = "%s-%s".formatted(siteProperties.id(), name);
+		
 		JobDataMap data = new JobDataMap();
 		data.put(SingleCronJobRunner.DATA_CRONJOB, job);
 		data.put(SingleCronJobRunner.DATA_CONTEXT, context);
 		JobDetail jobDetail = JobBuilder
 				.newJob(jobClass)
-				.withIdentity(name)
+				.withIdentity(identity)
 				.usingJobData(data)
 				.build();
 		

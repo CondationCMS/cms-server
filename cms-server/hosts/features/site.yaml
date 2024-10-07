@@ -3,7 +3,7 @@ hostname:
   - localhost2
 baseurl: "http://localhost2:1010"
 language: en
-test: Hallo12
+test: Hallo
 theme: test
 cache:
     content: true

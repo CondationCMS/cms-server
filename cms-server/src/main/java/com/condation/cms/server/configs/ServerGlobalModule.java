@@ -34,7 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.graalvm.polyglot.Engine;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SchedulerFactory;
 import org.quartz.impl.DirectSchedulerFactory;
 import org.quartz.simpl.RAMJobStore;
 import org.quartz.simpl.SimpleThreadPool;

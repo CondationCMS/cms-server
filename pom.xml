@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.condation.cms</groupId>
 	<artifactId>cms-parent</artifactId>
-	<version>6.3.0</version>
+	<version>6.3.1</version>
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -264,7 +264,7 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.11.1</version>
+				<version>5.11.2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -361,7 +361,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.0</version>
+					<version>3.5.1</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

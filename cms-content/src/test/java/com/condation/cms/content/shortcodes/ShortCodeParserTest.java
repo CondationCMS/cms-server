@@ -23,17 +23,18 @@ package com.condation.cms.content.shortcodes;
  */
 
 
+import com.condation.cms.content.ContentBaseTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-public class ShortCodeParserTest {
+public class ShortCodeParserTest extends ContentBaseTest {
 
 	@Test
 	public void testParseShortcodes_singleShortcodeWithContent() {
 		String text = "This is a text with a shortcode [[code1 param1=\"value1\" param2=\"value2\"]]This is content[[/code1]].";
-		List<ShortCodeParser.Match> shortcodes = ShortCodeParser.parseShortcodes(text);
+		List<ShortCodeParser.Match> shortcodes = getShortCodeParser().parseShortcodes(text);
 
 		assertEquals(1, shortcodes.size());
 
@@ -47,7 +48,7 @@ public class ShortCodeParserTest {
 	@Test
 	public void testParseShortcodes_multipleShortcodes() {
 		String text = "This is a text with a shortcode [[code1 param1=\"value1\" param2=\"value2\"]]This is content[[/code1]] and another one [[code2 param1=\"value1\" param3=\"value3\" /]].";
-		List<ShortCodeParser.Match> shortcodes = ShortCodeParser.parseShortcodes(text);
+		List<ShortCodeParser.Match> shortcodes = getShortCodeParser().parseShortcodes(text);
 
 		assertEquals(2, shortcodes.size());
 
@@ -67,7 +68,7 @@ public class ShortCodeParserTest {
 	@Test
 	public void testParseShortcodes_multipleShortcodes2() {
 		String text = "This is a text with a shortcode [[code1 param1=\"value1\" param2=\"value2\" ]]This is content[[/code1]] and another one [[code2 param1=\"value1\" param3=\"value3\"/]].";
-		List<ShortCodeParser.Match> shortcodes = ShortCodeParser.parseShortcodes(text);
+		List<ShortCodeParser.Match> shortcodes = getShortCodeParser().parseShortcodes(text);
 
 		assertEquals(2, shortcodes.size());
 
@@ -87,7 +88,7 @@ public class ShortCodeParserTest {
 	@Test
 	public void testParseShortcodes_noShortcodes() {
 		String text = "This text has no shortcodes.";
-		List<ShortCodeParser.Match> shortcodes = ShortCodeParser.parseShortcodes(text);
+		List<ShortCodeParser.Match> shortcodes = getShortCodeParser().parseShortcodes(text);
 
 		assertEquals(0, shortcodes.size());
 	}
@@ -95,7 +96,7 @@ public class ShortCodeParserTest {
 	@Test
 	public void testParseShortcodes_emptyParameters() {
 		String text = "This is a text with a shortcode [[code1]][[/code1]] and another one [[code2 /]].";
-		List<ShortCodeParser.Match> shortcodes = ShortCodeParser.parseShortcodes(text);
+		List<ShortCodeParser.Match> shortcodes = getShortCodeParser().parseShortcodes(text);
 
 		assertEquals(2, shortcodes.size());
 
@@ -111,7 +112,7 @@ public class ShortCodeParserTest {
 	@Test
 	public void testParseShortcodes_malformedShortcodes() {
 		String text = "This is a text with a malformed shortcode [[code1 param1=\"value1\" param2=\"value2\" .";
-		List<ShortCodeParser.Match> shortcodes = ShortCodeParser.parseShortcodes(text);
+		List<ShortCodeParser.Match> shortcodes = getShortCodeParser().parseShortcodes(text);
 
 		assertEquals(0, shortcodes.size());
 	}

@@ -23,20 +23,22 @@ package com.condation.cms.content.shortcodes;
  */
 
 
+import com.condation.cms.content.ContentBaseTest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public class ShortCodeParserReplaceTest {
+public class ShortCodeParserReplaceTest extends ContentBaseTest {
 	
 	static ShortCodeParser.Codes tags;
 	
-	@BeforeAll
-	public static void init () {
+	@BeforeEach
+	public void init () {
 		
 		tags = new ShortCodeParser.Codes();
 		
@@ -61,16 +63,16 @@ public class ShortCodeParserReplaceTest {
 
 	@Test
 	void simpleTest () {
-		var result = ShortCodeParser.replace("[[youtube    /]]", tags);
+		var result = getShortCodeParser().replace("[[youtube    /]]", tags);
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 		
-		result = ShortCodeParser.replace("[[youtube/]]", tags);
+		result = getShortCodeParser().replace("[[youtube/]]", tags);
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 	}
 	
 	@Test
 	void simple_with_text_before_and_After () {
-		var result = ShortCodeParser.replace("before [[youtube /]] after", tags);
+		var result = getShortCodeParser().replace("before [[youtube /]] after", tags);
 		Assertions.assertThat(result).isEqualTo("before <video src=''></video> after");
 	}
 	
@@ -85,7 +87,7 @@ public class ShortCodeParserReplaceTest {
                 some text after
                 """;
 		
-		var result = ShortCodeParser.replace(content, tags);
+		var result = getShortCodeParser().replace(content, tags);
 		
 		var expected = """
                 some text before
@@ -100,32 +102,32 @@ public class ShortCodeParserReplaceTest {
 	
 	@Test
 	void unknown_tag () {
-		var result = ShortCodeParser.replace("before [[vimeo id='TEST' /]] after", tags);
+		var result = getShortCodeParser().replace("before [[vimeo id='TEST' /]] after", tags);
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before  after");
 	}
 	
 	@Test
 	void hello_from () {
-		var result = ShortCodeParser.replace("[[hello_from name='Thorsten' from='Bochum' /]]", tags);
+		var result = getShortCodeParser().replace("[[hello_from name='Thorsten' from='Bochum' /]]", tags);
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = ShortCodeParser.replace("[[hello_from name='Thorsten' from='Bochum'    /]]", tags);
+		result = getShortCodeParser().replace("[[hello_from name='Thorsten' from='Bochum'    /]]", tags);
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = ShortCodeParser.replace("[[hello_from name='Thorsten' from='Bochum' /]]", tags);
+		result = getShortCodeParser().replace("[[hello_from name='Thorsten' from='Bochum' /]]", tags);
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
 	@Test
 	void test_long () {
-		var result = ShortCodeParser.replace("[[mark]]Important[[/mark]]", tags);
+		var result = getShortCodeParser().replace("[[mark]]Important[[/mark]]", tags);
 		
 		Assertions.assertThat(result).isEqualTo("<mark>Important</mark>");
 	}
 	
 	@Test
 	void test_long_with_params () {
-		var result = ShortCodeParser.replace("[[mark2 class='test-class']]Important[[/mark2]]", tags);
+		var result = getShortCodeParser().replace("[[mark2 class='test-class']]Important[[/mark2]]", tags);
 		
 		Assertions.assertThat(result).isEqualTo("<mark class='test-class'>Important</mark>");
 	}
@@ -141,7 +143,7 @@ public class ShortCodeParserReplaceTest {
                 some text after
                 """;
 		
-		var result = ShortCodeParser.replace(content,tags);
+		var result = getShortCodeParser().replace(content,tags);
 		
 		var expected = """
                 some text before
@@ -162,7 +164,7 @@ public class ShortCodeParserReplaceTest {
 		var expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
               """;
-		var result = ShortCodeParser.replace(input, tags);
+		var result = getShortCodeParser().replace(input, tags);
 		Assertions.assertThat(result).isEqualTo(expected);
 		
 		input = """
@@ -171,7 +173,7 @@ public class ShortCodeParserReplaceTest {
 		expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
               """;
-		result = ShortCodeParser.replace(input, tags);
+		result = getShortCodeParser().replace(input, tags);
 		Assertions.assertThat(result).isEqualTo(expected);
 	}
 }

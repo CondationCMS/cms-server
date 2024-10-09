@@ -23,11 +23,13 @@ package com.condation.cms.content.template.shortcode;
  */
 
 
+import com.condation.cms.content.ContentBaseTest;
 import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -37,9 +39,9 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
  *
  * @author t.marx
  */
-public class ThymeleafShortCodeTemplateFunctionTest {
+public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
 
-	static ShortCodes shortCodes;
+	ShortCodes shortCodes;
 
 	static TemplateEngine templateEngine;
 
@@ -51,11 +53,14 @@ public class ThymeleafShortCodeTemplateFunctionTest {
 
 		templateEngine = new TemplateEngine();
 		templateEngine.setTemplateResolver(templateResolver);
-
+	}
+	
+	@BeforeEach
+	public void setupShortCodes() {
 		shortCodes = new ShortCodes(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
-		));
+		), getShortCodeParser());
 	}
 
 	@Test

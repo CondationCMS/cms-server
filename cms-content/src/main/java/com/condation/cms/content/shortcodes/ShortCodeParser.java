@@ -29,15 +29,22 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jexl3.JexlEngine;
 
 @Slf4j
 public class ShortCodeParser {
+	
+	JexlEngine engine;
 
 	public static final String SHORTCODE_REGEX = "\\[\\[(\\w+)([^\\]]*)\\]\\](.*?)\\[\\[\\/\\1\\]\\]|\\[\\[(\\w+)([^\\]]*)\\s*\\/\\]\\]";
 	public static final Pattern SHORTCODE_PATTERN = Pattern.compile(SHORTCODE_REGEX, Pattern.DOTALL);
 	public static final Pattern PARAM_PATTERN = Pattern.compile("(\\w+)=(\"[^\"]*\"|'[^']*')");
 
-	public static List<Match> parseShortcodes(String text) {
+	public ShortCodeParser (JexlEngine engine) {
+		this.engine = engine;
+	}
+	
+	public List<Match> parseShortcodes(String text) {
 		List<Match> shortcodes = new ArrayList<>();
 		Matcher matcher = SHORTCODE_PATTERN.matcher(text);
 
@@ -67,17 +74,16 @@ public class ShortCodeParser {
 		return shortcodes;
 	}
 
-	public static String replace(String content, Codes codes) {
-		String newContent = "";
-
+	public String replace(String content, Codes codes) {
+		StringBuilder newContent = new StringBuilder();
 		int lastPosition = 0;
 		var matches = parseShortcodes(content);
-		for (var match : matches) {
 
-			newContent += content.substring(lastPosition, match.getStart());
+		for (var match : matches) {
+			newContent.append(content, lastPosition, match.getStart());
 
 			try {
-				newContent += codes.get(match.getName()).apply(match.getParameters());
+				newContent.append(codes.get(match.getName()).apply(match.getParameters()));
 			} catch (Exception e) {
 				log.error("error executing shortcode", e);
 			}
@@ -86,10 +92,10 @@ public class ShortCodeParser {
 		}
 
 		if (content.length() > lastPosition) {
-			newContent += content.substring(lastPosition);
+			newContent.append(content.substring(lastPosition));
 		}
 
-		return newContent;
+		return newContent.toString();
 	}
 
 	@RequiredArgsConstructor

@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jexl3.JexlEngine;
 
 /**
  *
@@ -38,14 +39,16 @@ import lombok.extern.slf4j.Slf4j;
 public class ShortCodes {
 
 	private final ShortCodeParser.Codes codes;
+	private final ShortCodeParser parser;
 
-	public ShortCodes (Map<String, Function<Parameter, String>> codes) {
+	public ShortCodes (Map<String, Function<Parameter, String>> codes, ShortCodeParser shortCodeParser) {
+		this.parser = shortCodeParser;
 		this.codes = new ShortCodeParser.Codes();
 		this.codes.addAll(codes);
 	}
 	
 	public String replace (final String content) {
-		return ShortCodeParser.replace(content, codes);
+		return parser.replace(content, codes);
 	}
 	
 	public String execute (String name, Map<String, Object> parameters) {

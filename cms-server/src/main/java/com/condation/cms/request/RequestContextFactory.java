@@ -53,6 +53,7 @@ import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.RenderContext;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.extensions.hooks.ContentHooks;
@@ -159,8 +160,10 @@ public class RequestContextFactory {
 				.forEach(extension -> codes.putAll(extension.shortCodes()));
 
 		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
+		
+		var parser = injector.getInstance(ShortCodeParser.class);
 
-		return new ShortCodes(wrapper.getShortCodes());
+		return new ShortCodes(wrapper.getShortCodes(), parser);
 	}
 	
 	public RequestContext create() throws IOException {
@@ -256,8 +259,8 @@ public class RequestContextFactory {
 				.forEach(extension -> codes.putAll(extension.shortCodes()));
 
 		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
-
-		return new ShortCodes(wrapper.getShortCodes());
+		var parser = injector.getInstance(ShortCodeParser.class);
+		return new ShortCodes(wrapper.getShortCodes(), parser);
 	}
 
 }

@@ -24,23 +24,25 @@ package com.condation.cms.content.shortcodes;
 
 
 import com.condation.cms.api.model.Parameter;
+import com.condation.cms.content.ContentBaseTest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public class ShortCodesTest {
+public class ShortCodesTest extends ContentBaseTest {
 	
 	static ShortCodes shortCodes;
 	
-	@BeforeAll
-	public static void init () {
+	@BeforeEach
+	public void init () {
 		Map<String, Function<Parameter, String>> tags = new HashMap<>();
 		tags.put(
 				"youtube", 
@@ -59,7 +61,7 @@ public class ShortCodesTest {
 				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("content"))
 		);
 		
-		shortCodes = new ShortCodes(tags);
+		shortCodes = new ShortCodes(tags, getShortCodeParser());
 	}
 	
 

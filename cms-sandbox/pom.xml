@@ -9,6 +9,6 @@
     <artifactId>cms-sandbox</artifactId>
     <packaging>pom</packaging>
     <modules>
-
+        <module>tests</module>
     </modules>
 </project>

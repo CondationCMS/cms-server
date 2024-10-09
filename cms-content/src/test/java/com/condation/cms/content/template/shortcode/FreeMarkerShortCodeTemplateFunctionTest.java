@@ -23,6 +23,7 @@ package com.condation.cms.content.template.shortcode;
  */
 
 
+import com.condation.cms.content.ContentBaseTest;
 import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import freemarker.template.Configuration;
@@ -34,29 +35,33 @@ import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public class FreeMarkerShortCodeTemplateFunctionTest {
+public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
 
 	static Configuration cfg;
 	
-	static ShortCodes shortCodes;
+	ShortCodes shortCodes;
 	
 	@BeforeAll
 	public static void setup() {
 		cfg = new Configuration(Configuration.VERSION_2_3_33);
 		cfg.setDefaultEncoding("UTF-8");
-		
+	}
+
+	@BeforeEach
+	public void setupShortCodes() {
 		shortCodes = new ShortCodes(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
-		));
+		), getShortCodeParser());
 	}
-
+	
 	@Test
 	public void testSomeMethod() throws Exception {
 		String templateString = "${shortCode.call('echo')}";

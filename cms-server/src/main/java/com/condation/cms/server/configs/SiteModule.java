@@ -59,6 +59,7 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.filesystem.MetaData;
@@ -107,6 +108,12 @@ public class SiteModule extends AbstractModule {
 	@Singleton
 	public ContentNodeMapper contentNodeMapper (DB db, ContentParser contentParser) {
 		return new ContentNodeMapper(db, contentParser);
+	}
+	
+	@Provides
+	@Singleton
+	public ShortCodeParser shortCodeParser (DB db, ContentParser contentParser) {
+		return new ShortCodeParser(null);
 	}
 	
 	@Provides

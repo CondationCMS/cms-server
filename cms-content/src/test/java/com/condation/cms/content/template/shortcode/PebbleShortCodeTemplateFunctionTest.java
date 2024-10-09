@@ -23,6 +23,7 @@ package com.condation.cms.content.template.shortcode;
  */
 
 
+import com.condation.cms.content.ContentBaseTest;
 import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import io.pebbletemplates.pebble.PebbleEngine;
@@ -34,15 +35,16 @@ import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public class PebbleShortCodeTemplateFunctionTest {
+public class PebbleShortCodeTemplateFunctionTest extends ContentBaseTest {
 
-	static ShortCodes shortCodes;
+	ShortCodes shortCodes;
 
 	static PebbleEngine engine;
 
@@ -51,11 +53,13 @@ public class PebbleShortCodeTemplateFunctionTest {
 		engine = new PebbleEngine.Builder()
 				.loader(new StringLoader())
 				.build();
-
+	}
+	@BeforeEach
+	public void setupShortCodes() {
 		shortCodes = new ShortCodes(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
-		));
+		), getShortCodeParser());
 	}
 
 	@Test

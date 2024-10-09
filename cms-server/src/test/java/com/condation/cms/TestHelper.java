@@ -72,7 +72,6 @@ public abstract class TestHelper {
 		var markdownRenderer = TestHelper.getRenderer();
 		RequestContext context = new RequestContext();
 		
-		Jex
 		var shortCodeParser = new ShortCodeParser(null);
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));

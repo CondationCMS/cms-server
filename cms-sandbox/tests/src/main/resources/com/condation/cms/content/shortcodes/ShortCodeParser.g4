@@ -24,4 +24,9 @@ param: TAG_NAME EQUALS value ;
 value: TAG_STRING | TAG_NUMBER;
 content: (~SINGLE_OPEN_BRAKET | SPACE | DASH)+ ; 
 
-text: (.)+?  { _input.LA(1) != '[' || _input.LA(2) != '[' }? ;
+text2: 
+    (.)+?  { _input.LA(1) != '[' || _input.LA(2) != '[' }? 
+    ;
+text
+    : (~'[' | ('[' { _input.LA(1) != '[' }?))+
+    ;

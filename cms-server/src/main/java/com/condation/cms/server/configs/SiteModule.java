@@ -59,7 +59,7 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
-import com.condation.cms.content.shortcodes.ShortCodeParser;
+import com.condation.cms.content.shortcodes.TagParser;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.filesystem.MetaData;
@@ -113,7 +113,7 @@ public class SiteModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public ShortCodeParser shortCodeParser (Configuration configuration) {
+	public TagParser tagParser (Configuration configuration) {
 		var engine = new JexlBuilder()
 				.strict(true)
 				.cache(512);
@@ -126,7 +126,7 @@ public class SiteModule extends AbstractModule {
 			engine.silent(true);
 		}
 		
-		return new ShortCodeParser(engine.create());
+		return new TagParser(engine.create());
 	}
 	
 	@Provides

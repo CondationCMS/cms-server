@@ -22,49 +22,32 @@ package com.condation.cms.content.shortcodes;
  * #L%
  */
 
-
 import com.condation.cms.api.model.Parameter;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-@Slf4j
-@RequiredArgsConstructor
-public class ShortCodes {
+public class TagMap {
 
-	private final TagMap tagMap;
-	private final TagParser parser;
+	private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
 
-	public ShortCodes (Map<String, Function<Parameter, String>> codes, TagParser tagParser) {
-		this.parser = tagParser;
-		this.tagMap = new TagMap();
-		this.tagMap.putAll(codes);
+	public void put(String codeName, Function<Parameter, String> function) {
+		tags.put(codeName, function);
+	}
+
+	public void putAll(Map<String, Function<Parameter, String>> tags) {
+		this.tags.putAll(tags);
 	}
 	
-	public String replace (final String content) {
-		return parser.parse(content, tagMap);
+	public boolean has(String codeName) {
+		return tags.containsKey(codeName);
 	}
-	
-	public String execute (String name, Map<String, Object> parameters) {
-		if (!tagMap.has(name)) {
-			return "";
-		}
-		try {
-			Parameter params;
-			if (parameters != null) {
-				params = new Parameter(parameters);
-			} else {
-				params = new Parameter();
-			}
-			return tagMap.get(name).apply(params);
-		} catch (Exception e) {
-			log.error("",e);
-		}
-		return "";
+
+	public Function<Parameter, String> get(String codeName) {
+		return tags.getOrDefault(codeName, (params) -> "");
 	}
 }

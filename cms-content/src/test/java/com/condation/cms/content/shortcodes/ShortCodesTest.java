@@ -52,15 +52,15 @@ public class ShortCodesTest extends ContentBaseTest {
 		
 		tags.put(
 				"mark",
-				params -> "<mark>%s</mark>".formatted(params.get("content"))
+				params -> "<mark>%s</mark>".formatted(params.get("_content"))
 		);
 		
 		tags.put(
 				"mark2",
-				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("content"))
+				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("_content"))
 		);
 		
-		shortCodes = new ShortCodes(tags, getShortCodeParser());
+		shortCodes = new ShortCodes(tags, getTagParser());
 	}
 	
 
@@ -106,18 +106,18 @@ public class ShortCodesTest extends ContentBaseTest {
 	@Test
 	void unknown_tag () {
 		var result = shortCodes.replace("before [[vimeo id='TEST' /]] after");
-		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before  after");
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before [[vimeo id='TEST' /]] after");
 	}
 	
 	@Test
 	void hello_from () {
-		var result = shortCodes.replace("[[hello_from name='Thorsten',from='Bochum' /]]");
+		var result = shortCodes.replace("[[hello_from name=\"Thorsten\" from=\"Bochum\" /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = shortCodes.replace("[[hello_from name='Thorsten',from='Bochum'    /]]");
+		result = shortCodes.replace("[[hello_from name='Thorsten' from='Bochum'    /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = shortCodes.replace("[[hello_from name='Thorsten', from='Bochum' /]]");
+		result = shortCodes.replace("[[hello_from name='Thorsten' from='Bochum' /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
@@ -162,7 +162,7 @@ public class ShortCodesTest extends ContentBaseTest {
 	@Test
 	void multiple_hello () {
 		var input = """
-              [[hello_from name='Thorsten',from='Bochum']][[/hello_from]][[hello_from name='Thorsten',from='Bochum']][[/hello_from]]
+              [[hello_from name='Thorsten' from='Bochum']][[/hello_from]][[hello_from name='Thorsten' from='Bochum']][[/hello_from]]
               """;
 		var expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
@@ -171,7 +171,7 @@ public class ShortCodesTest extends ContentBaseTest {
 		Assertions.assertThat(result).isEqualTo(expected);
 		
 		input = """
-              [[hello_from name='Thorsten',from='Bochum'/]][[hello_from name='Thorsten',from='Bochum'/]]
+              [[hello_from name='Thorsten' from='Bochum'/]][[hello_from name='Thorsten' from='Bochum'/]]
               """;
 		expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>

@@ -53,8 +53,8 @@ import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.RenderContext;
-import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.content.shortcodes.TagParser;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.extensions.hooks.ContentHooks;
 import com.condation.cms.extensions.hooks.DBHooks;
@@ -161,7 +161,7 @@ public class RequestContextFactory {
 
 		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
 		
-		var parser = injector.getInstance(ShortCodeParser.class);
+		var parser = injector.getInstance(TagParser.class);
 
 		return new ShortCodes(wrapper.getShortCodes(), parser);
 	}
@@ -259,7 +259,7 @@ public class RequestContextFactory {
 				.forEach(extension -> codes.putAll(extension.shortCodes()));
 
 		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
-		var parser = injector.getInstance(ShortCodeParser.class);
+		var parser = injector.getInstance(TagParser.class);
 		return new ShortCodes(wrapper.getShortCodes(), parser);
 	}
 

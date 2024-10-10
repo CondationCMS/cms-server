@@ -23,6 +23,7 @@ package com.condation.cms.content;
  */
 
 import com.condation.cms.content.shortcodes.ShortCodeParser;
+import com.condation.cms.content.shortcodes.TagParser;
 import org.apache.commons.jexl3.JexlBuilder;
 
 /**
@@ -33,10 +34,21 @@ public abstract class ContentBaseTest {
 	
 	private ShortCodeParser shortCodeParser;
 	
+	private TagParser tagParser;
+	
+	public TagParser getTagParser () {
+		if (tagParser == null) {
+			tagParser = new TagParser(
+					new JexlBuilder().cache(512).strict(true).silent(false).create()
+			);
+		}
+		
+		return tagParser;
+	}
+	
 	public ShortCodeParser getShortCodeParser () {
 		if (shortCodeParser == null) {
 			shortCodeParser = new ShortCodeParser(
-					new JexlBuilder().cache(512).strict(true).silent(false).create()
 			);
 		}
 		

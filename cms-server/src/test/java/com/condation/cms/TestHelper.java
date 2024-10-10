@@ -45,6 +45,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.RenderContext;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.content.shortcodes.TagParser;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.extensions.request.RequestExtensions;
@@ -73,7 +74,7 @@ public abstract class TestHelper {
 		var markdownRenderer = TestHelper.getRenderer();
 		RequestContext context = new RequestContext();
 		
-		var shortCodeParser = new ShortCodeParser(new JexlBuilder().create());
+		var shortCodeParser = new TagParser(new JexlBuilder().create());
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
 		context.add(RequestExtensions.class, new RequestExtensions(null));

@@ -60,7 +60,7 @@ public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
 		shortCodes = new ShortCodes(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
-		), getShortCodeParser());
+		), getTagParser());
 	}
 
 	@Test

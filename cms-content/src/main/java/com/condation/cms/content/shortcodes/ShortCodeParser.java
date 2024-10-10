@@ -38,15 +38,12 @@ import org.apache.commons.jexl3.MapContext;
 @Slf4j
 public class ShortCodeParser {
 
-	JexlEngine engine;
-
 	public static final String SHORTCODE_REGEX = "\\[\\[(\\w+)([^\\]]*)\\]\\](.*?)\\[\\[\\/\\1\\]\\]|\\[\\[(\\w+)([^\\]]*)\\s*\\/\\]\\]";
 	public static final Pattern SHORTCODE_PATTERN = Pattern.compile(SHORTCODE_REGEX, Pattern.DOTALL);
 	//public static final Pattern PARAM_PATTERN = Pattern.compile("(\\w+)=(\"[^\"]*\"|'[^']*')");
 	public static final Pattern PARAM_PATTERN = Pattern.compile("(\\w+)=((\"[^\"]*\"|'[^']*'|\\[[^\\]]*\\]))");
 
-	public ShortCodeParser(JexlEngine engine) {
-		this.engine = engine;
+	public ShortCodeParser() {
 	}
 
 	public List<Match> parseShortcodes(String text) {
@@ -68,36 +65,13 @@ public class ShortCodeParser {
 				String key = paramMatcher.group(1);
 				String value = paramMatcher.group(2);
 				value = value.substring(1, value.length() - 1); // Entfernt die Anführungszeichen oder Klammern bei Arrays
-
-				// Prüfe, ob es ein Array ist und nutze JEXL zur Auswertung
-				Object evaluatedValue = evaluateExpression(value);
-				match.getParameters().put(key, evaluatedValue);
+				match.getParameters().put(key, value);
 			}
 
 			shortcodes.add(match);
 		}
 
 		return shortcodes;
-	}
-
-	private Object evaluateExpression(String value) {
-		try {
-			JexlExpression expression = engine.createExpression(value);
-			JexlContext context = new MapContext();
-			var parsedValue = expression.evaluate(context);
-			if (parsedValue.getClass().isArray()) {
-				int length = Array.getLength(parsedValue);
-				List<Object> list = new ArrayList<>(length);
-				for (int i = 0; i < length; i++) {
-					list.add(Array.get(parsedValue, i));  // Holen des Elements am Index i
-				}
-				return list;
-			} else {
-				return parsedValue;
-			}
-		} catch (Exception e) {
-			return value;
-		}
 	}
 
 	public String replace(String content, Codes codes) {

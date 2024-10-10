@@ -21,7 +21,6 @@
 		<module>cms-filesystem</module>
 		<module>cms-media</module>
 		<module>cms-git</module>
-		<module>cms-sandbox</module>
 		<module>cms-content</module>
 		<module>cms-extensions</module>
 		<module>cms-auth</module>

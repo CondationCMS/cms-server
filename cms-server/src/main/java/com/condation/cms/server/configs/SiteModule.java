@@ -81,6 +81,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jexl3.JexlBuilder;
 import org.graalvm.polyglot.Engine;
 
 /**
@@ -112,8 +113,20 @@ public class SiteModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public ShortCodeParser shortCodeParser (DB db, ContentParser contentParser) {
-		return new ShortCodeParser(null);
+	public ShortCodeParser shortCodeParser (Configuration configuration) {
+		var engine = new JexlBuilder()
+				.strict(true)
+				.cache(512);
+		
+		boolean IS_DEV = configuration.get(ServerConfiguration.class).serverProperties().dev();
+		
+		if (IS_DEV) {
+			engine.silent(false);
+		} else {
+			engine.silent(true);
+		}
+		
+		return new ShortCodeParser(engine.create());
 	}
 	
 	@Provides

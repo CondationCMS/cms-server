@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -179,5 +178,12 @@ public class ShortCodesTest extends ContentBaseTest {
               """;
 		result = shortCodes.replace(input);
 		Assertions.assertThat(result).isEqualTo(expected);
+	}
+	
+	@Test
+	void test_mismathc() {
+		var result = shortCodes.replace("[[mark1 class='test-class']]Important[[/mark2]]");
+		
+		Assertions.assertThat(result).isEqualTo("[[mark1 class='test-class']]Important[[/mark2]]");
 	}
 }

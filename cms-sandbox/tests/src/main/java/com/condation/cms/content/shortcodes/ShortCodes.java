@@ -50,7 +50,7 @@ public class ShortCodes {
     }
 
     // Listener class to process shortcodes
-    public static class ShortCodeListenerImpl extends ShortCodeBaseListener {
+    public static class ShortCodeListenerImpl extends ShortCodeParserBaseListener {
         private final Codes codes;
         private final StringBuilder result = new StringBuilder(); // Stores the final output
 

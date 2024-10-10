@@ -52,6 +52,7 @@ import com.condation.cms.media.FileMediaService;
 import com.condation.cms.core.theme.DefaultTheme;
 import com.google.inject.Injector;
 import java.util.Map;
+import org.apache.commons.jexl3.JexlBuilder;
 import org.mockito.Mockito;
 
 /**
@@ -72,7 +73,7 @@ public abstract class TestHelper {
 		var markdownRenderer = TestHelper.getRenderer();
 		RequestContext context = new RequestContext();
 		
-		var shortCodeParser = new ShortCodeParser(null);
+		var shortCodeParser = new ShortCodeParser(new JexlBuilder().create());
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
 		context.add(RequestExtensions.class, new RequestExtensions(null));

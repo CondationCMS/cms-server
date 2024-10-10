@@ -88,7 +88,7 @@ public class ShortCodesTest {
 	
 	@Test
 	public void expressions() {
-		String result = shortCodes.parseShortcodes("[[exp value=\"5\"/]]", codes);
+		String result = shortCodes.parseShortcodes("[[exp value=\"${5+4}\"/]]", codes);
 		Assertions.assertThat(result).isEqualTo("expression: 9");
 	}
 	
@@ -108,5 +108,11 @@ public class ShortCodesTest {
 	public void parameters_with_content() {
 		String result = shortCodes.parseShortcodes("[[param param1=\"5\"]]Hello[[/param]]", codes);
 		Assertions.assertThat(result).isEqualTo("param: 5");
+	}
+	
+	@Test
+	public void shortCode_in_text() {
+		String result = shortCodes.parseShortcodes("Hello [[content]]CondationCMS[[/content]]!", codes);
+		Assertions.assertThat(result).isEqualTo("Hello CondationCMS!");
 	}
 }

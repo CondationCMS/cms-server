@@ -62,16 +62,6 @@ public class ShortCodes {
 		public void enterText(ShortCodeParser.TextContext ctx) {
 			result.append(ctx.getText());
 		}
-//
-//		@Override
-//		public void enterOpeningTag(ShortCodeParser.OpeningTagContext ctx) {
-//			System.out.println("enterOpeningTag: " + ctx.NAME());
-//		}
-//
-//		@Override
-//		public void enterClosingTag(ShortCodeParser.ClosingTagContext ctx) {
-//			System.out.println("enterClosingTag: " + ctx.NAME());
-//		}
 
 //		@Override
 //		public void enterSelfClosingTag(ShortCodeParser.SelfClosingTagContext ctx) {
@@ -86,22 +76,22 @@ public class ShortCodes {
 //            }
 //		}
 		
-//        @Override
-//        public void enterShortcodeWithContent(ShortCodeParser.ShortcodeWithContentContext ctx) {
-//			System.out.println("enterShortcodeWithContent: " + ctx.openingTag().NAME());
-//			
-//            String name = ctx.openingTag().NAME().getText();
-//            Map<String, Object> parameters = parseParams(ctx.openingTag().params());
-//            String content = ctx.content() != null ? ctx.content().getText() : "";
-//
-//            // Apply shortcode function if exists
-//            if (codes.hasCode(name)) {
-//                parameters.put("content", content); // Pass content as parameter
-//                result.append(codes.get(name).apply(parameters));
-//            } else {
-//                result.append(ctx.getText()); // No shortcode function found, append raw text
-//            }
-//        }
+        @Override
+        public void enterShortcodeWithContent(ShortCodeParser.ShortcodeWithContentContext ctx) {
+			System.out.println("enterShortcodeWithContent: " + ctx.openingTag().TAG_NAME());
+			
+            String name = ctx.openingTag().TAG_NAME().getText();
+            Map<String, Object> parameters = parseParams(ctx.openingTag().params());
+            String content = ctx.content() != null ? ctx.content().getText() : "";
+
+            // Apply shortcode function if exists
+            if (codes.hasCode(name)) {
+                parameters.put("content", content); // Pass content as parameter
+                result.append(codes.get(name).apply(parameters));
+            } else {
+                result.append(ctx.getText()); // No shortcode function found, append raw text
+            }
+        }
 
         @Override
         public void enterSelfClosingShortcode(ShortCodeParser.SelfClosingShortcodeContext ctx) {
@@ -133,12 +123,13 @@ public class ShortCodes {
         // Methode, um Ausdrücke innerhalb von ${} zu erkennen und mit JEXL auszuwerten
         private Object evaluateIfExpression(String rawValue) {
             // Prüfen, ob der Wert im Format ${expression} vorliegt
-            if (rawValue.startsWith("${") && rawValue.endsWith("}")) {
-                String expression = rawValue.substring(2, rawValue.length() - 1);
+			var testValue = rawValue.replace("\"", "");
+            if (testValue.startsWith("${") && testValue.endsWith("}")) {
+				String expression = testValue.substring(2, testValue.length() - 1);
                 return evaluateExpression(expression);
             } else {
                 // Normaler Text
-                return rawValue.replace("\"", ""); // Entfernt eventuell vorhandene Anführungszeichen
+                return testValue;// Entfernt eventuell vorhandene Anführungszeichen
             }
         }
 

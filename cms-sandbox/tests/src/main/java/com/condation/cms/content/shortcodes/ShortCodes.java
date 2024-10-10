@@ -62,42 +62,50 @@ public class ShortCodes {
 		public void enterText(ShortCodeParser.TextContext ctx) {
 			result.append(ctx.getText());
 		}
+//
+//		@Override
+//		public void enterOpeningTag(ShortCodeParser.OpeningTagContext ctx) {
+//			System.out.println("enterOpeningTag: " + ctx.NAME());
+//		}
+//
+//		@Override
+//		public void enterClosingTag(ShortCodeParser.ClosingTagContext ctx) {
+//			System.out.println("enterClosingTag: " + ctx.NAME());
+//		}
 
-		@Override
-		public void enterOpeningTag(ShortCodeParser.OpeningTagContext ctx) {
-			System.out.println("enterOpeningTag: " + ctx.NAME());
-		}
-
-		@Override
-		public void enterClosingTag(ShortCodeParser.ClosingTagContext ctx) {
-			System.out.println("enterClosingTag: " + ctx.NAME());
-		}
-
-		@Override
-		public void enterSelfClosingTag(ShortCodeParser.SelfClosingTagContext ctx) {
-			System.out.println("enterSelfClosingTag: " + ctx.NAME());
-		}
+//		@Override
+//		public void enterSelfClosingTag(ShortCodeParser.SelfClosingTagContext ctx) {
+//			String name = ctx.TAG_NAME().getText();
+//            Map<String, Object> parameters = parseParams(ctx.params());
+//
+//            // Apply shortcode function if exists
+//            if (codes.hasCode(name)) {
+//                result.append(codes.get(name).apply(parameters));
+//            } else {
+//                result.append(ctx.getText()); // No shortcode function found, append raw text
+//            }
+//		}
 		
-        @Override
-        public void enterShortcodeWithContent(ShortCodeParser.ShortcodeWithContentContext ctx) {
-			System.out.println("enterShortcodeWithContent: " + ctx.openingTag().NAME());
-			
-            String name = ctx.openingTag().NAME().getText();
-            Map<String, Object> parameters = parseParams(ctx.openingTag().params());
-            String content = ctx.content() != null ? ctx.content().getText() : "";
-
-            // Apply shortcode function if exists
-            if (codes.hasCode(name)) {
-                parameters.put("content", content); // Pass content as parameter
-                result.append(codes.get(name).apply(parameters));
-            } else {
-                result.append(ctx.getText()); // No shortcode function found, append raw text
-            }
-        }
+//        @Override
+//        public void enterShortcodeWithContent(ShortCodeParser.ShortcodeWithContentContext ctx) {
+//			System.out.println("enterShortcodeWithContent: " + ctx.openingTag().NAME());
+//			
+//            String name = ctx.openingTag().NAME().getText();
+//            Map<String, Object> parameters = parseParams(ctx.openingTag().params());
+//            String content = ctx.content() != null ? ctx.content().getText() : "";
+//
+//            // Apply shortcode function if exists
+//            if (codes.hasCode(name)) {
+//                parameters.put("content", content); // Pass content as parameter
+//                result.append(codes.get(name).apply(parameters));
+//            } else {
+//                result.append(ctx.getText()); // No shortcode function found, append raw text
+//            }
+//        }
 
         @Override
         public void enterSelfClosingShortcode(ShortCodeParser.SelfClosingShortcodeContext ctx) {
-            String name = ctx.selfClosingTag().NAME().getText();
+            String name = ctx.selfClosingTag().TAG_NAME().getText();
             Map<String, Object> parameters = parseParams(ctx.selfClosingTag().params());
 
             // Apply shortcode function if exists
@@ -113,7 +121,7 @@ public class ShortCodes {
             Map<String, Object> params = new HashMap<>();
             if (ctx != null) {
                 for (ShortCodeParser.ParamContext paramCtx : ctx.param()) {
-                    String key = paramCtx.NAME().getText();
+                    String key = paramCtx.TAG_NAME().getText();
                     String rawValue = paramCtx.value().getText();
                     Object value = evaluateIfExpression(rawValue);
                     params.put(key, value);

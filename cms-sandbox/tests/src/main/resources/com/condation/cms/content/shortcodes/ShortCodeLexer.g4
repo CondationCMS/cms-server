@@ -5,6 +5,7 @@ TAG_OPENING_BRACKET: '[[';
 EQUALS : '=' ;
 SPACE : ' ' ;
 SINGLE_OPEN_BRAKET : '[' ;
+DASH : '-' ;
 
 
 TAG_CLOSING_BRACKET: ']]';

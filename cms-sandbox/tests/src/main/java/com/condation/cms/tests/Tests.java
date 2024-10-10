@@ -23,7 +23,6 @@ package com.condation.cms.tests;
  */
 
 import java.util.Arrays;
-import java.util.List;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlContext;
 import org.apache.commons.jexl3.JexlEngine;

@@ -27,6 +27,3 @@ content: (~SINGLE_OPEN_BRAKET | SPACE | DASH)+ ;
 text2: 
     (.)+?  { _input.LA(1) != '[' || _input.LA(2) != '[' }? 
     ;
-text
-    : (~'[' | ('[' { _input.LA(1) != '[' }?))+
-    ;

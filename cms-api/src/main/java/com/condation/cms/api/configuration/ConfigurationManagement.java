@@ -114,7 +114,6 @@ public class ConfigurationManagement {
 	
 	
 	public void update(CronJobContext jobContext) {
-		System.out.println("update");
 		log.trace("check for modified configurations {}", db.getFileSystem().resolve(".").toString());
 		getConfigurations().forEach(config -> {
 			try {

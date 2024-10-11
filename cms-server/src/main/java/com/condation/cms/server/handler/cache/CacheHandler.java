@@ -96,7 +96,7 @@ public class CacheHandler extends Handler.Wrapper {
 			return true;
 		}
 
-		final MyResponse cacheResponse = new MyResponse(request, response);
+		final CacheResponseWrapper cacheResponse = new CacheResponseWrapper(request, response);
 		return super.handle(request, cacheResponse, new Callback.Nested(callback) {
 			@Override
 			public void succeeded() {
@@ -138,13 +138,13 @@ public class CacheHandler extends Handler.Wrapper {
 
 	}
 
-	private class MyResponse extends Response.Wrapper {
+	private class CacheResponseWrapper extends Response.Wrapper {
 
 		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
-		final HttpFields.Mutable httpFields = HttpFields.build();
+//		final HttpFields.Mutable httpFields = HttpFields.build();
 
-		public MyResponse(Request request, Response wrapped) {
+		public CacheResponseWrapper(Request request, Response wrapped) {
 			super(request, wrapped);
 		}
 
@@ -152,10 +152,10 @@ public class CacheHandler extends Handler.Wrapper {
 			return bout.toString(StandardCharsets.UTF_8);
 		}
 
-		@Override
-		public HttpFields.Mutable getHeaders() {
-			return httpFields;
-		}
+//		@Override
+//		public HttpFields.Mutable getHeaders() {
+//			return httpFields;
+//		}
 
 		@Override
 		public void write(boolean last, ByteBuffer byteBuffer, Callback callback) {

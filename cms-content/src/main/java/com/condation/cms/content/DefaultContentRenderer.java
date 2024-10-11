@@ -120,15 +120,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		});
 	}
 
-	private <F extends Feature> Object getFeatureValueOrDefault(RequestContext context,
-			Class<F> feature, Function<F, Object> valueFunction, Object defaultValue) {
-		if (context.has(feature)) {
-			return valueFunction.apply(context.get(feature));
-		}
-		return defaultValue;
-	}
-
-	private String renderMarkdown(final String rawContent, final RequestContext context, final TemplateEngine.Model model) {
+	private String renderContent(final String rawContent, final RequestContext context, final TemplateEngine.Model model) {
 		var pipeline = ContentPipelineFactory.create(context, model);
 		
 		return pipeline.process(rawContent);
@@ -190,7 +182,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		extendModel(model);
 
 		model.values.put("content",
-				renderMarkdown(rawContent, context, model)
+				renderContent(rawContent, context, model)
 		);
 		
 		return templates.get().render((String) meta.get("template"), model);

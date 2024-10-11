@@ -9,7 +9,7 @@ menu:
 
 [[hello name='Thorsten'/]]
 
-[[name_age name='Thorsten' age="46" /]]
+[[name_age name='Thorsten' age="${40+6+1}" /]]
 
 Or call a shortcode provided by the default theme
 

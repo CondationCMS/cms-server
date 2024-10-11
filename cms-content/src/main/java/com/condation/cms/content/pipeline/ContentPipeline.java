@@ -90,12 +90,4 @@ public class ContentPipeline {
 			return context.value();
 		}
 	}
-
-	private <F extends Feature> Object getFeatureValueOrDefault(RequestContext context,
-			Class<F> feature, Function<F, Object> valueFunction, Object defaultValue) {
-		if (context.has(feature)) {
-			return valueFunction.apply(context.get(feature));
-		}
-		return defaultValue;
-	}
 }

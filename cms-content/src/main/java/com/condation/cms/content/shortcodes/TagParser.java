@@ -23,7 +23,8 @@ package com.condation.cms.content.shortcodes;
  */
 
 import com.condation.cms.api.model.Parameter;
-import java.util.*;
+import java.util.Collections;
+import java.util.Map;
 import java.util.function.Function;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.MapContext;
@@ -37,12 +38,16 @@ public class TagParser {
 	}
 
 	public String parse(String text, TagMap tagHandlers) {
+		return parse(text, tagHandlers, Collections.emptyMap());
+	}
+	
+	public String parse(String text, TagMap tagHandlers, Map<String, Object> contextModel) {
 		StringBuilder result = new StringBuilder();
 		int i = 0;
 		while (i < text.length()) {
 			if (text.charAt(i) == '[' && i + 1 < text.length() && text.charAt(i + 1) == '[') {
 				int tagStart = i;
-				i = parseTag(text, i, result, tagHandlers);
+				i = parseTag(text, i, result, tagHandlers, contextModel);
 				if (i == tagStart) { // Kein gültiger Tag gefunden, füge '[[' hinzu.
 					result.append("[[");
 					i += 2;
@@ -55,7 +60,7 @@ public class TagParser {
 		return result.toString();
 	}
 
-	private int parseTag(String text, int index, StringBuilder result, TagMap tagHandlers) {
+	private int parseTag(String text, int index, StringBuilder result, TagMap tagHandlers, Map<String, Object> contextModel) {
 		int endTagIndex = findTagEnd(text, index);
 		if (endTagIndex == -1) {
 			return index; // Kein schließendes ']]' gefunden
@@ -72,7 +77,7 @@ public class TagParser {
 		String tagName = spaceIndex == -1 ? tagContent : tagContent.substring(0, spaceIndex);
 		Parameter attributes = spaceIndex == -1 
 				? new Parameter() 
-				: parseAttributes(tagContent.substring(spaceIndex + 1));
+				: parseAttributes(tagContent.substring(spaceIndex + 1), contextModel);
 
 		int closingTagIndex = -1;
 		if (!isSelfClosing) {
@@ -104,7 +109,7 @@ public class TagParser {
 		return -1; // Kein schließendes ']]' gefunden
 	}
 
-	private Parameter parseAttributes(String attributesString) {
+	private Parameter parseAttributes(String attributesString, Map<String, Object> contextModel) {
 		Parameter attributes = new Parameter();
 		StringBuilder key = new StringBuilder();
 		StringBuilder value = new StringBuilder();
@@ -119,7 +124,7 @@ public class TagParser {
 				if (readingKey) {
 					readingKey = false;
 				} else {
-					attributes.put(key.toString().trim(), parseValue(value.toString().trim()));
+					attributes.put(key.toString().trim(), parseValue(value.toString().trim(), contextModel));
 					key.setLength(0);
 					value.setLength(0);
 					readingKey = true;
@@ -135,13 +140,13 @@ public class TagParser {
 
 		// Letztes Attribut verarbeiten
 		if (key.length() > 0 && value.length() > 0) {
-			attributes.put(key.toString().trim(), parseValue(value.toString().trim()));
+			attributes.put(key.toString().trim(), parseValue(value.toString().trim(), contextModel));
 		}
 
 		return attributes;
 	}
 
-	private Object parseValue(String value) {
+	private Object parseValue(String value, Map<String, Object> contextModel) {
 		if (value.matches("\\d+")) {
 			return Integer.valueOf(value);
 		} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
@@ -150,7 +155,7 @@ public class TagParser {
 			String expressionString = value.substring(2, value.length() - 1);
 			
 			var expression = engine.createExpression(expressionString);
-			return expression.evaluate(new MapContext());
+			return expression.evaluate(new MapContext(contextModel));
 		}
 		return value;
 	}

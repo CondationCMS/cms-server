@@ -24,6 +24,7 @@ package com.condation.cms.content.shortcodes;
 
 
 import com.condation.cms.api.model.Parameter;
+import java.util.Collections;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,11 @@ public class ShortCodes {
 	}
 	
 	public String replace (final String content) {
-		return parser.parse(content, tagMap);
+		return replace(content, Collections.emptyMap());
+	}
+	
+	public String replace (final String content, Map<String, Object> contextModel) {
+		return parser.parse(content, tagMap, contextModel);
 	}
 	
 	public String execute (String name, Map<String, Object> parameters) {

@@ -44,15 +44,14 @@ import lombok.extern.slf4j.Slf4j;
  * @author thmar
  */
 @Slf4j
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 public class ContentPipeline {
 
 	private final HookSystem hookSystem;
 	private final RequestContext requestContext;
-
 	private final TemplateEngine.Model model;
 	
-	void init() {
+	protected void init() {
 
 		List<String> pipeline = requestContext.get(ConfigurationFeature.class)
 				.configuration().get(SiteConfiguration.class)
@@ -78,7 +77,7 @@ public class ContentPipeline {
 	}
 
 	private String processShortCodes(FilterContext<String> context) {
-		return requestContext.get(RenderContext.class).shortCodes().replace(context.value());
+		return requestContext.get(RenderContext.class).shortCodes().replace(context.value(), model.values);
 	}
 
 	private String processTemplate(FilterContext<String> context) {

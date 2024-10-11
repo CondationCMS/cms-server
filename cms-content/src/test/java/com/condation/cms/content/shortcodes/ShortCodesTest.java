@@ -60,6 +60,11 @@ public class ShortCodesTest extends ContentBaseTest {
 				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("_content"))
 		);
 		
+		tags.put(
+				"exp",
+				params -> "<span>%s</span>".formatted(params.get("expression"))
+		);
+		
 		shortCodes = new ShortCodes(tags, getTagParser());
 	}
 	
@@ -181,9 +186,20 @@ public class ShortCodesTest extends ContentBaseTest {
 	}
 	
 	@Test
-	void test_mismathc() {
+	void test_mismach() {
 		var result = shortCodes.replace("[[mark1 class='test-class']]Important[[/mark2]]");
 		
 		Assertions.assertThat(result).isEqualTo("[[mark1 class='test-class']]Important[[/mark2]]");
+	}
+	
+	@Test
+	void test_expression() {
+		var result = shortCodes.replace("[[exp expression='${meta.title}' /]]",
+				Map.of(
+						"meta", Map.of("title", "CondationCMS")
+				)
+		);
+		
+		Assertions.assertThat(result).isEqualTo("<span>CondationCMS</span>");
 	}
 }

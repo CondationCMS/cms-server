@@ -102,9 +102,6 @@ public class CacheHandler extends Handler.Wrapper {
 			public void succeeded() {
 				if (response.getStatus() == 200
 						&& matchesContentType(cacheResponse.getHeaders().get(HttpHeader.CONTENT_TYPE))) {
-					response.getHeaders().add(
-							HttpHeader.CONTENT_TYPE,
-							cacheResponse.getHeaders().get(HttpHeader.CONTENT_TYPE));
 
 					var body = cacheResponse.getContent();
 
@@ -142,8 +139,6 @@ public class CacheHandler extends Handler.Wrapper {
 
 		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
-//		final HttpFields.Mutable httpFields = HttpFields.build();
-
 		public CacheResponseWrapper(Request request, Response wrapped) {
 			super(request, wrapped);
 		}
@@ -151,11 +146,6 @@ public class CacheHandler extends Handler.Wrapper {
 		public String getContent() {
 			return bout.toString(StandardCharsets.UTF_8);
 		}
-
-//		@Override
-//		public HttpFields.Mutable getHeaders() {
-//			return httpFields;
-//		}
 
 		@Override
 		public void write(boolean last, ByteBuffer byteBuffer, Callback callback) {

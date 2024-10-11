@@ -25,7 +25,6 @@ package com.condation.cms.content.shortcodes;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 
 /**
@@ -106,6 +105,18 @@ public class TagParserTest {
 	public void parameters_number() {
 		String result = tagParser.parse("[[param param1=5 /]]", tagMap);
 		Assertions.assertThat(result).isEqualTo("param: 5");
+	}
+	
+	@Test
+	public void parameters_boolean_true() {
+		String result = tagParser.parse("[[param param1=true /]]", tagMap);
+		Assertions.assertThat(result).isEqualTo("param: true");
+	}
+	
+	@Test
+	public void parameters_boolean_false() {
+		String result = tagParser.parse("[[param param1=false /]]", tagMap);
+		Assertions.assertThat(result).isEqualTo("param: false");
 	}
 	
 	@Test

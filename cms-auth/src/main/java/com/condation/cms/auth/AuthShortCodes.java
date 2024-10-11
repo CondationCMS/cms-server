@@ -41,7 +41,8 @@ public class AuthShortCodes extends RegisterShortCodesExtensionPoint {
 	@Override
 	public Map<String, Function<Parameter, String>> shortCodes() {
 		return Map.of(
-				"username", this::getUserName
+				"username", this::getUserName,
+				"cms:username", this::getUserName
 		);
 	}
 	

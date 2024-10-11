@@ -25,6 +25,7 @@ package com.condation.cms.content.markdown.rules.inline;
 
 
 import com.condation.cms.content.markdown.InlineBlock;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
@@ -46,12 +47,15 @@ public class ShortCodeInlineBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class)
-				.asInstanceOf(InstanceOfAssertFactories.type(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class))
-				.hasFieldOrPropertyWithValue("tag", "link")
-				.hasFieldOrPropertyWithValue("params", "url=\"https://google.de/\"")
-				.hasFieldOrPropertyWithValue("content", "Google")
-				;
+				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class);
+		
+		var tag = (ShortCodeInlineBlockRule.ShortCodeInlineBlock)next;
+		Assertions.assertThat(tag.tagInfo())
+				.hasFieldOrPropertyWithValue("name", "link")
+				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
+						"url", "https://google.de/",
+						"_content", "Google"
+				));
 
 		Assertions.assertThat(next.render()).isEqualTo("[[link url=\"https://google.de/\"]]Google[[/link]]");
 	}
@@ -65,12 +69,15 @@ public class ShortCodeInlineBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class)
-				.asInstanceOf(InstanceOfAssertFactories.type(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class))
-				.hasFieldOrPropertyWithValue("tag", "link")
-				.hasFieldOrPropertyWithValue("params", "url=\"https://google.de/\"")
-				;
+				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class);
 
+		var tag = (ShortCodeInlineBlockRule.ShortCodeInlineBlock)next;
+		Assertions.assertThat(tag.tagInfo())
+				.hasFieldOrPropertyWithValue("name", "link")
+				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
+						"url", "https://google.de/"
+				));
+		
 		Assertions.assertThat(next.render()).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
 	}
 	

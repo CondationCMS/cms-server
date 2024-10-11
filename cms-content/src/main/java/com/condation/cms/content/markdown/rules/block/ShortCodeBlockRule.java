@@ -21,14 +21,12 @@ package com.condation.cms.content.markdown.rules.block;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.content.markdown.Block;
 import com.condation.cms.content.markdown.BlockElementRule;
 import com.condation.cms.content.markdown.InlineRenderer;
-import com.condation.cms.content.shortcodes.ShortCodeParser;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.condation.cms.content.shortcodes.TagMap;
+import com.condation.cms.content.shortcodes.TagParser;
+import java.util.List;
 
 /**
  *
@@ -36,55 +34,77 @@ import java.util.regex.Pattern;
  */
 public class ShortCodeBlockRule implements BlockElementRule {
 
-	public static final Pattern TAG_PARAMS_PATTERN_SHORT = Pattern.compile("^(\\[{2})(?<tag>[a-z_A-Z0-9]+)( (?<params>.*?))?\\p{Blank}*/\\]{2}",
-			Pattern.MULTILINE | Pattern.DOTALL | Pattern.UNIX_LINES);
-	public static final Pattern TAG_PARAMS_PATTERN_LONG = Pattern.compile("^(\\[{2})(?<tag>[a-z_A-Z0-9]+)( (?<params>.*?))?\\]{2}(?<content>.*)\\[{2}/\\k<tag>\\]{2}",
-			Pattern.MULTILINE | Pattern.DOTALL | Pattern.UNIX_LINES);
-	
-	public static final Pattern SHORTCODE_PATTERN = Pattern.compile("^" + ShortCodeParser.SHORTCODE_REGEX, 
-			Pattern.DOTALL | Pattern.MULTILINE);
-	
+	private static final TagParser tagParser = new TagParser(null);
+
 	@Override
 	public Block next(final String md) {
-		/*
-		Matcher matcher = TAG_PARAMS_PATTERN_SHORT.matcher(md);
-		if (matcher.find()) {
-			return new ShortCodeBlock(matcher.start(), matcher.end(), 
-					matcher.group("tag"), matcher.group("params"), ""
-			);
-		}
-		matcher = TAG_PARAMS_PATTERN_LONG.matcher(md);
-		if (matcher.find()) {
-			return new ShortCodeBlock(matcher.start(), matcher.end(), 
-					matcher.group("tag"), matcher.group("params"), matcher.group("content")
-			);
-		}
-		*/
-		Matcher matcher = SHORTCODE_PATTERN.matcher(md);
-		if (matcher.matches()) {
-			String name = matcher.group(1) != null ? matcher.group(1) : matcher.group(4);
-			String params = matcher.group(2) != null ? matcher.group(2).trim() : matcher.group(5).trim();
-			String content = matcher.group(3) != null ? matcher.group(3).trim() : "";
 
-			ShortCodeParser.Match match = new ShortCodeParser.Match(name, matcher.start(), matcher.end());
-			match.setContent(content);
-			match.getParameters().put("content", content);
-			
-			return new ShortCodeBlock(matcher.start(), matcher.end(), name, params, content);
+		List<TagParser.TagInfo> tags = tagParser.findTags(md, new TagMap() {
+			@Override
+			public boolean has(String codeName) {
+				return true;
+			}
+		}).stream()
+				.filter(tag -> isStandaloneInLine(md, tag))
+				.toList();
+		if (tags.isEmpty()) {
+			return null;
 		}
-		
-		return null;
+		var tag = tags.getFirst();
+		return new ShortCodeBlock(
+				tag.startIndex(),
+				tag.endIndex(),
+				tag);
+
 	}
 
-	
-	public static record ShortCodeBlock (int start, int end, String tag, String params, String content) implements Block {
+	public static record ShortCodeBlock(int start, int end, TagParser.TagInfo tagInfo) implements Block {
 
 		@Override
 		public String render(InlineRenderer inlineRenderer) {
-			return "[[%s %s]]%s[[/%s]]".formatted(tag, params, content, tag);
+			List<String> params = tagInfo.rawAttributes()
+					.entrySet().stream()
+					.filter(entry -> !entry.getKey().equals("_content"))
+					.sorted((entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()))
+					.map(entry -> {
+						return "%s=%s".formatted(entry.getKey(), parseValue((String) entry.getValue()));
+					}).toList();
+			return "[[%s %s]]%s[[/%s]]"
+					.formatted(
+							tagInfo.name(),
+							String.join(" ", params),
+							tagInfo.rawAttributes().getOrDefault("_content", ""),
+							tagInfo.name()
+					);
 		}
-		
-		
 	}
-	
+
+	private static Object parseValue(String value) {
+		if (value.matches("\\d+")) {
+			return value;
+		} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
+			return value;
+		}
+		return "\"" + value + "\"";
+	}
+
+	public boolean isStandaloneInLine(String text, TagParser.TagInfo tag) {
+		var startIndex = tag.startIndex();
+		var endIndex = tag.endIndex();
+		// Prüfe, ob die Indizes gültig sind
+		if (startIndex < 0 || endIndex > text.length() || startIndex >= endIndex) {
+			throw new IllegalArgumentException("Ungültige Indizes");
+		}
+
+		// Finde die Position des Textausschnitts
+		String before = text.substring(0, startIndex);
+		String after = text.substring(endIndex);
+
+		// Prüfe, ob vor und nach dem Ausschnitt ein Zeilenumbruch oder nichts steht
+		boolean beforeIsLineBreak = before.isEmpty() || before.endsWith("\n") || before.endsWith("\r\n");
+		boolean afterIsLineBreak = after.isEmpty() || after.startsWith("\n") || after.startsWith("\r\n");
+
+		return beforeIsLineBreak && afterIsLineBreak;
+	}
+
 }

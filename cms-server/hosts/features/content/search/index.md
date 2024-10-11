@@ -8,4 +8,4 @@ menu:
 
 ## Search
 
-Hello [[username /]]
+Hello [[cms:username /]]

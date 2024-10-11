@@ -56,6 +56,10 @@ public class TagParserTest {
 			return "param: " + params.get("param1");
 		});
 		
+		tagMap.put("ns1:print", params -> {
+			return "message: " + params.get("message");
+		});
+		
 		this.tagParser = new TagParser(new JexlBuilder().create());
 	}
 
@@ -131,4 +135,12 @@ public class TagParserTest {
 		Assertions.assertThat(result).isEqualTo("Hello CondationCMS!");
 	}
 	
+	@Test
+	public void namespace() {
+		String result = tagParser.parse("[[ns1:print message='Hello CondationCMS']][[/ns1:print]]", tagMap);
+		Assertions.assertThat(result).isEqualTo("message: Hello CondationCMS");
+		
+		result = tagParser.parse("[[ns1:print message='Hello CondationCMS' /]]", tagMap);
+		Assertions.assertThat(result).isEqualTo("message: Hello CondationCMS");
+	}
 }

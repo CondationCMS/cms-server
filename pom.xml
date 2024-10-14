@@ -176,12 +176,12 @@
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-core</artifactId>
-				<version>9.12.0</version>
+				<version>10.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-analysis-common</artifactId>
-				<version>9.12.0</version>
+				<version>10.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>
@@ -243,7 +243,7 @@
 			<dependency>
 				<groupId>com.github.chrisvest</groupId>
 				<artifactId>stormpot</artifactId>
-				<version>3.2</version>
+				<version>4.0</version>
 			</dependency>
 
 

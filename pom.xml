@@ -12,6 +12,7 @@
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.14</jetty.version>
+		<lucene.version>10.0.0</lucene.version>
 	</properties>
 	<modules>
 		<module>cms-api</module>
@@ -176,12 +177,17 @@
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-core</artifactId>
-				<version>10.0.0</version>
+				<version>${lucene.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.lucene</groupId>
 				<artifactId>lucene-analysis-common</artifactId>
-				<version>10.0.0</version>
+				<version>${lucene.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.lucene</groupId>
+				<artifactId>lucene-backward-codecs</artifactId>
+				<version>${lucene.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.h2database</groupId>

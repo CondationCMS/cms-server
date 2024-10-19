@@ -1,0 +1,15 @@
+server:
+    port: 1010
+    ip: "127.0.0.1"
+env: dev
+test: only in yaml
+ipc:
+  port: 6868
+  password: test_pwd
+apm:
+  enabled: false
+  max_requests: 100
+  thread_limit: 10
+# experimental settings
+performance:
+  pool_enabled: false

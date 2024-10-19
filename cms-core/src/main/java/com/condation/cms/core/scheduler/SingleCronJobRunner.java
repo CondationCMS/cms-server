@@ -41,7 +41,7 @@ public class SingleCronJobRunner implements Job {
 	public static final String DATA_CRONJOB = "cronjob";
 	public static final String DATA_CONTEXT = "context";
 	
-	private static Lock lock = new ReentrantLock(true);
+	private static final Lock lock = new ReentrantLock(true);
 	
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {

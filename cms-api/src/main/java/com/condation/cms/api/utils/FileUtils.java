@@ -21,12 +21,13 @@ package com.condation.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Comparator;
 
 /**
@@ -35,12 +36,20 @@ import java.util.Comparator;
  */
 public class FileUtils {
 
-	private FileUtils () {}
-	
+	private FileUtils() {
+	}
+
 	public static void deleteFolder(Path pathToBeDeleted) throws IOException {
 		Files.walk(pathToBeDeleted)
 				.sorted(Comparator.reverseOrder())
 				.map(Path::toFile)
 				.forEach(File::delete);
+	}
+
+	public static void touch(Path path) throws IOException{
+		long timeMillis = System.currentTimeMillis();
+		FileTime accessFileTime = FileTime.fromMillis(timeMillis);
+		Files.setAttribute(path, "lastAccessTime", accessFileTime);
+		Files.setLastModifiedTime(path, accessFileTime);
 	}
 }

@@ -6,5 +6,5 @@ package com.condation.cms.configuration;
  */
 public interface ReloadStrategy {
 	
-	void register (Configuration configuration);
+	void register (IConfiguration configuration);
 }

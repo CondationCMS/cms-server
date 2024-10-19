@@ -8,8 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.tomlj.Toml;
@@ -38,14 +36,16 @@ public class TomlConfigSource implements ConfigSource {
 	private TomlTable result;
 
 	private final Path tomlFile;
-	
+
 	private long lastModified = 0;
 
 	private TomlConfigSource(Path tomlFile, TomlTable result) {
 		this.tomlFile = tomlFile;
 		this.result = result;
 		try {
-			this.lastModified = Files.getLastModifiedTime(tomlFile).toMillis();
+			if (Files.exists(tomlFile)) {
+				this.lastModified = Files.getLastModifiedTime(tomlFile).toMillis();
+			}
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
@@ -57,7 +57,7 @@ public class TomlConfigSource implements ConfigSource {
 			return false;
 		}
 		try {
-			
+
 			var modified = Files.getLastModifiedTime(tomlFile).toMillis();
 			if (modified <= lastModified) {
 				return false;
@@ -74,6 +74,7 @@ public class TomlConfigSource implements ConfigSource {
 	public String getString(String field) {
 		return result.getString(field);
 	}
+
 	@Override
 	public Object get(String field) {
 		return result.get(field);

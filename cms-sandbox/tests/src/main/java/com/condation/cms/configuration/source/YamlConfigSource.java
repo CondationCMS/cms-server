@@ -40,7 +40,9 @@ public class YamlConfigSource implements ConfigSource {
 		this.configFile = configFile;
 		
 		try {
-			this.lastModified = Files.getLastModifiedTime(configFile).toMillis();
+			if (Files.exists(configFile)) {
+				this.lastModified = Files.getLastModifiedTime(configFile).toMillis();
+			}
 		} catch (IOException ioe) {
 			log.error("", ioe);
 		}

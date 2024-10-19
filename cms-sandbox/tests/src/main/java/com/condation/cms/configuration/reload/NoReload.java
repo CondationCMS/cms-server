@@ -1,6 +1,6 @@
 package com.condation.cms.configuration.reload;
 
-import com.condation.cms.configuration.Configuration;
+import com.condation.cms.configuration.IConfiguration;
 import com.condation.cms.configuration.ReloadStrategy;
 
 /**
@@ -10,6 +10,6 @@ import com.condation.cms.configuration.ReloadStrategy;
 public class NoReload implements ReloadStrategy {
 
 	@Override
-	public void register(Configuration configuration) {
+	public void register(IConfiguration configuration) {
 	}	
 }

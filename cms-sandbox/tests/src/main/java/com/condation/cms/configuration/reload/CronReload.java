@@ -1,8 +1,7 @@
 package com.condation.cms.configuration.reload;
 
-import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.scheduler.CronJobScheduler;
-import com.condation.cms.configuration.Configuration;
+import com.condation.cms.configuration.IConfiguration;
 import com.condation.cms.configuration.ReloadStrategy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +18,7 @@ public class CronReload implements ReloadStrategy {
 	private final CronJobScheduler scheduler;
 	
 	@Override
-	public void register(Configuration configuration) {
+	public void register(IConfiguration configuration) {
 		scheduler.schedule(cronExpression, configuration.id(), (context) -> {
 			log.trace("reload of config %s triggered", configuration.id());
 			System.out.println("reload");

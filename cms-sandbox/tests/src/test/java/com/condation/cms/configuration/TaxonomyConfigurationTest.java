@@ -38,7 +38,10 @@ public class TaxonomyConfigurationTest {
 	public void testSomeMethod() {
 		var taxonomies = configuration.getTaxonomies();
 		
-		Assertions.assertThat(taxonomies).hasSize(2);
+		Assertions.assertThat(taxonomies)
+				.hasSize(2)
+				.containsKey("tags");
+		Assertions.assertThat(taxonomies.get("tags").getValues()).hasSize(3);
 	}
 	
 }

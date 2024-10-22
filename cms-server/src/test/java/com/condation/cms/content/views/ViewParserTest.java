@@ -23,10 +23,8 @@ package com.condation.cms.content.views;
  */
 
 
-import com.condation.cms.content.views.ViewParser;
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.Page;
@@ -36,7 +34,6 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.DefaultContentParser;
-import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import java.io.IOException;
@@ -74,7 +71,7 @@ public class ViewParserTest {
 	static void setup () throws IOException {
 		
 		var hostBase = Path.of("hosts/test/");
-		var config = new Configuration(Path.of("hosts/test/"));
+		var config = new Configuration();
 		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

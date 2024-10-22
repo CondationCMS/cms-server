@@ -62,7 +62,7 @@ public class NodeListFunctionBuilderNGTest {
 	@BeforeAll
 	static void setup () throws IOException {
 		
-		var config = new Configuration(Path.of("hosts/test/"));
+		var config = new Configuration();
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

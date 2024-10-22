@@ -27,15 +27,16 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
-import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
@@ -69,6 +70,9 @@ import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.configs.SimpleConfiguration;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.eventbus.MessagingEventBus;
 import com.condation.cms.core.messaging.DefaultMessaging;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
@@ -81,6 +85,8 @@ import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jexl3.JexlBuilder;
@@ -95,11 +101,9 @@ import org.graalvm.polyglot.Engine;
 public class SiteModule extends AbstractModule {
 
 	private final Path hostBase;
-	private final Configuration configuration;
 
 	@Override
 	protected void configure() {
-		bind(Configuration.class).toInstance(configuration);
 		bind(Messaging.class).to(DefaultMessaging.class).in(Singleton.class);
 		bind(EventBus.class).to(MessagingEventBus.class).in(Singleton.class);
 		bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
@@ -133,9 +137,40 @@ public class SiteModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public ConfigManagement configurationManagement(DB db, Configuration configuration, SiteCronJobScheduler scheduler, EventBus eventBus) throws IOException {
+	public ConfigManagement configurationManagement(DB db, SiteCronJobScheduler scheduler, EventBus eventBus) throws IOException {
 		ConfigManagement cm = ConfigurationFactory.create(db, eventBus, scheduler);
 		return cm;
+	}
+	
+	@Provides
+	public Configuration configuration (ConfigManagement configManagement) {
+		Configuration configuration = new Configuration();
+		
+		configuration.add(
+				ServerConfiguration.class, 
+				new ServerConfiguration(new ExtendedServerProperties((SimpleConfiguration) configManagement.get("server").get()))
+		);
+		
+		configuration.add(
+				SiteConfiguration.class, 
+				new SiteConfiguration(new ExtendedSiteProperties((SimpleConfiguration) configManagement.get("site").get()))
+		);
+		configuration.add(
+				TaxonomyConfiguration.class, 
+				new TaxonomyConfiguration(
+						((com.condation.cms.core.configuration.configs.TaxonomyConfiguration) configManagement.get("taxonomy")
+								.get()).getTaxonomies()
+				)
+		);
+		configuration.add(
+				MediaConfiguration.class, 
+				new MediaConfiguration(
+						((com.condation.cms.core.configuration.configs.MediaConfiguration) configManagement.get("media")
+								.get()).getMediaFormats()
+				)
+		);
+		
+		return configuration;
 	}
 	
 	@Provides

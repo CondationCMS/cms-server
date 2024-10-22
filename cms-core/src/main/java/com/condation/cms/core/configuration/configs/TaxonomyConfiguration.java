@@ -86,7 +86,7 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 		return new Builder(eventBus);
 	}
 	
-	public Map<String, Taxonomy> getTaxonomies () {
+	public ConcurrentMap<String, Taxonomy> getTaxonomies () {
 		return taxonomies;
 	}
 

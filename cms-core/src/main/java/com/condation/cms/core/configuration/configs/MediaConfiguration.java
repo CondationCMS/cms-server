@@ -29,9 +29,13 @@ import com.condation.cms.core.configuration.IConfiguration;
 import com.condation.cms.core.configuration.ReloadStrategy;
 import com.condation.cms.core.configuration.reload.NoReload;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
+import com.condation.cms.api.media.MediaFormat;
+import com.condation.cms.api.media.MediaUtils;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -83,6 +87,21 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 		return getList("formats", Format.class);
 	}
 	
+	public List<MediaFormat> getMediaFormats () {
+		return getFormats().stream().map(format -> {
+			return new MediaFormat(format.name, format.width, format.height, MediaUtils.Format.PNG, format.compression);
+		}).toList();
+	}
+	
+	private MediaUtils.Format toFormat (String format) {
+		return switch (format) {
+			case "png" -> MediaUtils.Format.PNG;
+			case "webp" -> MediaUtils.Format.WEBP;
+			case "jpeg" -> MediaUtils.Format.JPEG;
+			default -> throw new AssertionError();
+		};
+	}
+	
 	public static MediaConfiguration.Builder builder (EventBus eventBus) {
 		return new MediaConfiguration.Builder(eventBus);
 	}
@@ -120,12 +139,6 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 		public MediaConfiguration build () {
 			return new MediaConfiguration(this);
 		}
-	}
-	
-	@Data
-	@NoArgsConstructor
-	public static class MediaFormats {
-		private List<Format> formats;
 	}
 	
 	@Data

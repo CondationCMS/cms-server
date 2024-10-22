@@ -23,25 +23,16 @@ package com.condation.cms.api.configuration;
  */
 
 
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
-import com.condation.cms.api.configuration.configs.SiteConfiguration;
-import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
 @Slf4j
 public class Configuration {
-
-	private final Path hostBase;
 
 	private Map<Class<? extends Config>, Config> configs = new HashMap<>();
 

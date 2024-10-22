@@ -92,16 +92,13 @@ public class JettyServer implements AutoCloseable {
 
 	public void startup() throws IOException {
 
-//		scheduledExecutorService = Executors.newScheduledThreadPool(1);
 		var properties = globalInjector.getInstance(ServerProperties.class);
 
 		Files.list(Path.of("hosts")).forEach((hostPath) -> {
 			var props = hostPath.resolve("site.yaml");
 			if (Files.exists(props)) {
 				try {
-					Configuration configuration = new Configuration(hostPath);
-					configuration.add(ServerConfiguration.class, new ServerConfiguration(properties));
-					var host = new VHost(hostPath, configuration);
+					var host = new VHost(hostPath);
 					host.init(Path.of(Constants.Folders.MODULES), globalInjector);
 					vhosts.add(host);
 				} catch (IOException ex) {

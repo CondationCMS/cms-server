@@ -26,6 +26,7 @@ package com.condation.cms.core.messages;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,7 +52,7 @@ public class ThemeMessageSourceTest {
 	
 	@BeforeEach
 	public void setup() {
-		Mockito.when(siteProperties.language()).thenReturn("de");
+		Mockito.when(siteProperties.locale()).thenReturn(Locale.getDefault());
 		messageSource = new DefaultMessageSource(
 				siteProperties, 
 				Path.of("src/test/resources/messages")

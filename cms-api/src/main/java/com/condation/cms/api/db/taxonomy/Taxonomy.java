@@ -27,11 +27,13 @@ import com.condation.cms.api.Constants;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author t.marx
  */
+@NoArgsConstructor
 @Data
 public class Taxonomy {
 	public String title;
@@ -41,6 +43,12 @@ public class Taxonomy {
 	public String field;
 	public boolean array = false;
 	public Map<String, Value> values = new HashMap<>();
+
+	public Taxonomy(String title, String slug, String field) {
+		this.title = title;
+		this.slug = slug;
+		this.field = field;
+	}
 	
 	public String getValueTitle (final String value) {
 		if (values.containsKey(value)) {

@@ -98,8 +98,6 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 @Slf4j
 public class VHost {
 
-	protected final Configuration configuration;
-
 	private final Path hostBase;
 
 	@Getter
@@ -108,13 +106,12 @@ public class VHost {
 	@Getter
 	protected Injector injector;
 
-	public VHost(final Path hostBase, final Configuration configuration) {
+	public VHost(final Path hostBase) {
 		this.hostBase = hostBase;
-		this.configuration = configuration;
 	}
 
 	public String id() {
-		return configuration.get(SiteConfiguration.class).siteProperties().id();
+		return injector.getInstance(Configuration.class).get(SiteConfiguration.class).siteProperties().id();
 	}
 
 	public void shutdown() {
@@ -159,7 +156,7 @@ public class VHost {
 	public void init(Path modulesPath, Injector globalInjector) throws IOException {
 		this.injector = globalInjector.createChildInjector(
 				new SiteGlobalModule(),
-				new SiteModule(hostBase, configuration),
+				new SiteModule(hostBase),
 				new ModulesModule(modulesPath),
 				new SiteHandlerModule(),
 				new ThemeModule());
@@ -224,7 +221,7 @@ public class VHost {
 	public Handler buildHttpHandler() {
 
 		Handler contentHandler = null;
-		if (configuration.get(SiteConfiguration.class).siteProperties().cacheContent()) {
+		if (injector.getInstance(Configuration.class).get(SiteConfiguration.class).siteProperties().cacheContent()) {
 			contentHandler = new CacheHandler(injector.getInstance(JettyContentHandler.class), injector.getInstance(CacheManager.class));
 		} else {
 			contentHandler = injector.getInstance(JettyContentHandler.class);
@@ -333,7 +330,7 @@ public class VHost {
 	}
 
 	private Handler.Wrapper requestContextFilter(Handler handler, Injector injector) {
-		var performance = configuration.get(ServerConfiguration.class).serverProperties().performance();
+		var performance = injector.getInstance(Configuration.class).get(ServerConfiguration.class).serverProperties().performance();
 		if (performance.pool_enabled()) {
 			return new PooledRequestContextFilter(handler, injector.getInstance(RequestContextFactory.class), performance);
 		}

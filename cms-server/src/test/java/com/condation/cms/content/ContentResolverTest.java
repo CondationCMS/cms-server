@@ -64,7 +64,7 @@ public class ContentResolverTest {
 	public static void setup() throws IOException {
 		var contentParser = new DefaultContentParser();
 		var hostBase = Path.of("hosts/test/");
-		var config = new Configuration(Path.of("hosts/test/"));
+		var config = new Configuration();
 		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

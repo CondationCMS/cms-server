@@ -58,7 +58,7 @@ public class NavigationFunctionNGTest {
 	@BeforeAll
 	static void init() throws IOException {
 		var contentParser = new DefaultContentParser();
-		var config = new Configuration(Path.of("hosts/test/"));
+		var config = new Configuration();
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

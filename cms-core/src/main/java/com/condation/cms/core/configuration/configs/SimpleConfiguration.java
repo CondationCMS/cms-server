@@ -43,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class SimpleConfiguration implements IConfiguration {
+public class SimpleConfiguration extends AbstractConfiguration implements IConfiguration {
 
 	private final List<ConfigSource> sources;
 	private final ReloadStrategy reloadStrategy;
@@ -56,6 +56,11 @@ public class SimpleConfiguration implements IConfiguration {
 		this.eventBus = builder.eventBus;
 		this.id = builder.id;
 		reloadStrategy.register(this);
+	}
+
+	@Override
+	public List<ConfigSource> getSources() {
+		return sources;
 	}
 
 	@Override
@@ -134,29 +139,6 @@ public class SimpleConfiguration implements IConfiguration {
 					MapUtil.deepMerge(result, sourceMap);
 				});
 		return result;
-	}
-	
-	public List<Object> getList (String field) {
-		List<Object> result = new ArrayList<>();
-		sources.stream()
-				.filter(ConfigSource::exists)
-				.map(config -> config.getList(field))
-				.forEach(result::addAll);
-		return result;
-	}
-	
-	public <T> List<T> getList(String field, Class<T> aClass) {
-		try {
-			var list = getList(field);
-			
-			return list.stream()
-					.map(item -> GSONProvider.GSON.toJson(item))
-					.map(item -> GSONProvider.GSON.fromJson(item, aClass))
-					.collect(Collectors.toList());
-		} catch (Exception ex) {
-			log.error("", ex);
-			throw new RuntimeException(ex);
-		}
 	}
 	
 	public <T> T get(String field, Class<T> aClass) {

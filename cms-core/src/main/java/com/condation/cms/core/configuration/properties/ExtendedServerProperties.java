@@ -51,7 +51,8 @@ public class ExtendedServerProperties extends ServerProperties {
 
 	@Override
 	public IPCProperties ipc() {
-		return new IPCProperties(configuration.get("ipc"));
+//		return new IPCProperties(configuration.get("ipc"));
+		return configuration.get("ipc", ExtendedIPCProperties.class);
 	}
 
 	@Override

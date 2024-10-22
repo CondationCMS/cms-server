@@ -26,6 +26,7 @@ import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.db.taxonomy.Value;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.core.configuration.ConfigSource;
+import com.condation.cms.core.configuration.GSONProvider;
 import com.condation.cms.core.configuration.IConfiguration;
 import com.condation.cms.core.configuration.ReloadStrategy;
 import com.condation.cms.core.configuration.reload.NoReload;
@@ -52,15 +53,13 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class TaxonomyConfiguration implements IConfiguration {
+public class TaxonomyConfiguration extends AbstractConfiguration implements IConfiguration {
 
 	private final List<ConfigSource> sources;
 	private final ReloadStrategy reloadStrategy;
 	private final EventBus eventBus;
 	private final String id;
 
-	private final Gson GSON;
-	
 	private ConcurrentMap<String, Taxonomy> taxonomies = new ConcurrentHashMap<>();
 	
 	public TaxonomyConfiguration(Builder builder) {
@@ -70,11 +69,12 @@ public class TaxonomyConfiguration implements IConfiguration {
 		this.id = builder.id;
 		reloadStrategy.register(this);
 		
-		GSON = new GsonBuilder()
-				.enableComplexMapKeySerialization()
-				.create();
-		
 		reload();
+	}
+
+	@Override
+	protected List<ConfigSource> getSources() {
+		return sources;
 	}
 
 	@Override
@@ -106,29 +106,6 @@ public class TaxonomyConfiguration implements IConfiguration {
 		});
 	}
 	
-	private List<Object> getList (String field) {
-		List<Object> result = new ArrayList<>();
-		sources.stream()
-				.filter(ConfigSource::exists)
-				.map(config -> config.getList(field))
-				.forEach(result::addAll);
-		return result;
-	}
-	
-	private <T> List<T> getList(String field, Class<T> aClass) {
-		try {
-			var list = getList(field);
-			
-			return list.stream()
-					.map(item -> GSON.toJson(item))
-					.map(item -> GSON.fromJson(item, aClass))
-					.collect(Collectors.toList());
-		} catch (Exception ex) {
-			log.error("", ex);
-			throw new RuntimeException(ex);
-		}
-	}
-
 	private void loadValues(Taxonomy taxonomy) {
 		try {
 			var yamlFile = "configs/taxonomy.%s.yaml".formatted(taxonomy.getSlug());
@@ -152,11 +129,11 @@ public class TaxonomyConfiguration implements IConfiguration {
 		}
 	}
 	private String toJson(Object item) throws JsonSyntaxException {
-		return GSON.toJson(item);
+		return GSONProvider.GSON.toJson(item);
 	}
 	
 	private Value fromJson(String item) throws JsonSyntaxException {
-		return GSON.fromJson(item, Value.class);
+		return GSONProvider.GSON.fromJson(item, Value.class);
 	}
 	
 	public static class Builder {

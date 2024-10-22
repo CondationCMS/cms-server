@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class MediaConfiguration implements IConfiguration {
+public class MediaConfiguration extends AbstractConfiguration implements IConfiguration {
 
 	private final List<ConfigSource> sources;
 	private final ReloadStrategy reloadStrategy;
@@ -60,6 +60,11 @@ public class MediaConfiguration implements IConfiguration {
 	}
 
 	@Override
+	public List<ConfigSource> getSources() {
+		return sources;
+	}
+	
+	@Override
 	public String id () {
 		return id;
 	}
@@ -72,28 +77,7 @@ public class MediaConfiguration implements IConfiguration {
 			}
 		});
 	}
-	public List<Object> getList (String field) {
-		List<Object> result = new ArrayList<>();
-		sources.stream()
-				.filter(ConfigSource::exists)
-				.map(config -> config.getList(field))
-				.forEach(result::addAll);
-		return result;
-	}
 	
-	public <T> List<T> getList(String field, Class<T> aClass) {
-		try {
-			var list = getList(field);
-			
-			return list.stream()
-					.map(item -> GSONProvider.GSON.toJson(item))
-					.map(item -> GSONProvider.GSON.fromJson(item, aClass))
-					.collect(Collectors.toList());
-		} catch (Exception ex) {
-			log.error("", ex);
-			throw new RuntimeException(ex);
-		}
-	}
 	
 	public List<Format> getFormats () {
 		return getList("formats", Format.class);

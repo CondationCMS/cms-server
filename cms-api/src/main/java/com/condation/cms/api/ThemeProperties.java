@@ -36,7 +36,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class ThemeProperties extends YamlProperties {
+public class ThemeProperties extends MapProperties {
 
 	public ThemeProperties(final Map<String, Object> properties) {
 		super(properties);

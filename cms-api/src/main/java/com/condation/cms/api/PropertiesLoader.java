@@ -55,9 +55,4 @@ public abstract class PropertiesLoader {
 		}
 		return new ThemeProperties(properties);
 	}
-	
-	public static ServerProperties serverProperties (Path path) throws IOException {
-		Map<String, Object> properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
-		return new ServerProperties(properties);
-	}
 }

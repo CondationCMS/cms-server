@@ -22,14 +22,25 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author t.marx
  */
-public interface IConfiguration {
+public interface ConfigSource {
 
-	String id();
-
-	void reload();
+	default boolean reload () {
+		return false;
+	}
 	
+	boolean exists ();
+	
+	String getString (final String field);	
+	
+	Object get (String field);
+	
+	Map<String, Object> getMap (String field);
+	List<Object> getList (String field);
 }

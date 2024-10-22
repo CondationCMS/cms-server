@@ -1,4 +1,4 @@
-package com.condation.cms.core.configuration;
+package com.condation.cms.core.configuration.reload;
 
 /*-
  * #%L
@@ -22,14 +22,16 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import com.condation.cms.core.configuration.IConfiguration;
+import com.condation.cms.core.configuration.ReloadStrategy;
+
 /**
  *
  * @author t.marx
  */
-public interface IConfiguration {
+public class NoReload implements ReloadStrategy {
 
-	String id();
-
-	void reload();
-	
+	@Override
+	public void register(IConfiguration configuration) {
+	}	
 }

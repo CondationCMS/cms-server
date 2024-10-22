@@ -22,14 +22,16 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 /**
  *
  * @author t.marx
  */
-public interface IConfiguration {
-
-	String id();
-
-	void reload();
+public class GSONProvider {
 	
+	public static final Gson GSON = new GsonBuilder()
+			.enableComplexMapKeySerialization()
+			.create();
 }

@@ -130,7 +130,7 @@ public class NavigationFunctionNGTest {
 	}
 	
 	@Test
-	public void test_json () {
+	public void test_json () throws IOException {
 		var navigationFunction = new NavigationFunction(db, 
 				db.getReadOnlyFileSystem().contentBase().resolve("nav/index.md"),
 				TestHelper.requestContext("/", defaultContentParser, markdownRenderer, new ContentNodeMapper(db, defaultContentParser)));

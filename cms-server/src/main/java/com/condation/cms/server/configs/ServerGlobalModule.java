@@ -23,13 +23,13 @@ package com.condation.cms.server.configs;
  */
 
 
-import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import java.io.IOException;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import org.graalvm.polyglot.Engine;
 import org.quartz.Scheduler;
@@ -73,7 +73,7 @@ public class ServerGlobalModule implements com.google.inject.Module {
 
 	@Provides
 	public ServerProperties serverProperties() throws IOException {
-		return PropertiesLoader.serverProperties(Path.of("server.yaml"));
+		return new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null));
 	}
 	
 	@Provides

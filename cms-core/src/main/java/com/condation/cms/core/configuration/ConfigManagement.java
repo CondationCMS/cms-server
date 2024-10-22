@@ -22,14 +22,27 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  *
  * @author t.marx
  */
-public interface IConfiguration {
-
-	String id();
-
-	void reload();
+public class ConfigManagement {
 	
+	private final Map<String, IConfiguration> configurations = new HashMap<>();
+
+	public boolean has (String key) {
+		return configurations.containsKey(key);
+	}
+	
+	public <T extends IConfiguration> void add (String key, T configuration) {
+		configurations.put(key, configuration);
+	}
+	
+	public <T extends IConfiguration> Optional<T> get (String key) {
+		return Optional.ofNullable((T)configurations.get(key));
+	}
 }

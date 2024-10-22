@@ -26,10 +26,7 @@ package com.condation.cms.core.configuration;
  *
  * @author t.marx
  */
-public interface IConfiguration {
-
-	String id();
-
-	void reload();
+public interface ReloadStrategy {
 	
+	void register (IConfiguration configuration);
 }

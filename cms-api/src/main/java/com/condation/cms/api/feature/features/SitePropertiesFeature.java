@@ -28,9 +28,12 @@ import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
 
 /**
+ * 
+ * use ConfigurationFeature instead
  *
  * @author t.marx
  */
+@Deprecated(since = "6.5.0")
 @FeatureScope({FeatureScope.Scope.GLOBAL, FeatureScope.Scope.MODULE, FeatureScope.Scope.REQUEST})
 public record SitePropertiesFeature(SiteProperties siteProperties) implements Feature {
 

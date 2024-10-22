@@ -37,7 +37,7 @@ public class IPCProperties {
 	private final Map<String, Object> properties;
 	
 	public int port () {
-		return (int) properties.getOrDefault("port", 6868);
+		return ((Number) properties.getOrDefault("port", 6868)).intValue();
 	}
 	
 	public Optional<String> password () {

@@ -23,17 +23,15 @@ package com.condation.cms.media;
  */
 
 
-import com.condation.cms.media.SiteMediaManager;
-import com.condation.cms.media.MediaManager;
 import com.condation.cms.api.PropertiesLoader;
-import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.ThemeProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -49,7 +47,7 @@ public class MediaManagerTest {
 	public static void setup () throws IOException {
 		
 		Configuration config = new Configuration(Path.of("src/test/resources"));
-		var serverConfig = new ServerConfiguration(new ServerProperties(Map.of()));
+		var serverConfig = new ServerConfiguration(new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null)));
 		config.add(ServerConfiguration.class, serverConfig);
 		
 		mediaManager = new SiteMediaManager(

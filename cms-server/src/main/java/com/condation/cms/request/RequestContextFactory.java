@@ -25,6 +25,7 @@ import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.extensions.HookSystemRegisterExtentionPoint;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
@@ -85,7 +86,7 @@ public class RequestContextFactory {
 		var requestContext = new RequestContext();
 		
 		var theme = injector.getInstance(Theme.class);
-		var siteProperties = injector.getInstance(SiteProperties.class);
+//		var siteProperties = injector.getInstance(SiteProperties.class);
 		var siteMediaService = injector.getInstance(MediaService.class);
 
 		requestContext.add(InjectorFeature.class, new InjectorFeature(injector));
@@ -96,12 +97,15 @@ public class RequestContextFactory {
 		if (ServerContext.IS_DEV) {
 			requestContext.add(IsDevModeFeature.class, new IsDevModeFeature());
 		}
-		requestContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
-		requestContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(
-				injector.getInstance(Configuration.class)
-						.get(ServerConfiguration.class).serverProperties()
-		));
-		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
+		final Configuration configuration = injector.getInstance(Configuration.class);
+		requestContext.add(ConfigurationFeature.class, new ConfigurationFeature(configuration));
+		requestContext.add(ServerPropertiesFeature.class, 
+				new ServerPropertiesFeature(
+				configuration.get(ServerConfiguration.class).serverProperties()));
+		requestContext.add(SitePropertiesFeature.class, 
+				new SitePropertiesFeature(
+						configuration.get(SiteConfiguration.class).siteProperties()));
+		
 		requestContext.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(siteMediaService));
 
 		requestContext.add(ServerHooks.class, new ServerHooks(requestContext));

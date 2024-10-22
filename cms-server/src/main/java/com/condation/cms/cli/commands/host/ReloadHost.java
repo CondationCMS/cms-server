@@ -27,6 +27,8 @@ package com.condation.cms.cli.commands.host;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.ipc.Command;
 import com.condation.cms.ipc.IPCClient;
 import com.google.common.base.Strings;
@@ -65,7 +67,8 @@ public class ReloadHost implements Runnable {
 			if (handle.isEmpty()) {
 				System.out.println("server not running");
 			} else {
-				ServerProperties properties = PropertiesLoader.serverProperties(Path.of("server.yaml"));
+				ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null));
+				
 				IPCClient ipcClient = new IPCClient(properties.ipc());
 				
 				ipcClient.send(new Command("reload_host").setHeader("host", host));

@@ -1,0 +1,23 @@
+env = "prod"
+
+[server]
+port = 1010
+ip = "127.0.0.1"
+
+[ipc]
+port = 6868
+password = "test_pwd"
+
+[apm]
+enabled = false
+max_requests = 100
+thread_limit = 10
+
+[performance]
+pool_enabled = false
+
+[list]
+test = ["eins", "zwei"]
+
+[map]
+test = {"key1"="value2", "key2"="value2"}

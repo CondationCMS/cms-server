@@ -66,7 +66,7 @@ public class ViewParserTest {
 	static RequestContext requestContext;
 	
 	@BeforeEach
-	void setup_test () {
+	void setup_test () throws IOException {
 		requestContext = TestHelper.requestContext("", parser, markdownRenderer, new ContentNodeMapper(db, parser));
 	}
 	

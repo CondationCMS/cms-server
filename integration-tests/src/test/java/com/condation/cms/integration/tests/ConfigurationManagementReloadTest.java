@@ -22,6 +22,9 @@ package com.condation.cms.integration.tests;
  * #L%
  */
 
+import com.condation.cms.api.APMProperties;
+import com.condation.cms.api.IPCProperties;
+import com.condation.cms.api.PerformanceProperties;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;

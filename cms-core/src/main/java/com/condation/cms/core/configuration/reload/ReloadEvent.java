@@ -1,4 +1,4 @@
-package com.condation.cms.core.configuration;
+package com.condation.cms.core.configuration.reload;
 
 /*-
  * #%L
@@ -22,14 +22,12 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import com.condation.cms.api.eventbus.Event;
+
 /**
  *
  * @author t.marx
  */
-public interface IConfiguration {
+public record ReloadEvent(String name) implements Event {
 
-	String id();
-
-	void reload();
-	
 }

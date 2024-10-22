@@ -1,4 +1,4 @@
-package com.condation.cms.core.configuration;
+package com.condation.cms.core.configuration.reload;
 
 /*-
  * #%L
@@ -22,14 +22,29 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import com.condation.cms.api.scheduler.CronJobScheduler;
+import com.condation.cms.core.configuration.IConfiguration;
+import com.condation.cms.core.configuration.ReloadStrategy;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  *
  * @author t.marx
  */
-public interface IConfiguration {
+@Slf4j
+@RequiredArgsConstructor
+public class CronReload implements ReloadStrategy {
 
-	String id();
-
-	void reload();
+	private final String cronExpression;
+	private final CronJobScheduler scheduler;
 	
+	@Override
+	public void register(IConfiguration configuration) {
+		scheduler.schedule(cronExpression, configuration.id(), (context) -> {
+			log.trace("reload of config %s triggered", configuration.id());
+			System.out.println("reload");
+			configuration.reload();
+		});
+	}	
 }

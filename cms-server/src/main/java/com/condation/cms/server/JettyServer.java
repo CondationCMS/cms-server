@@ -33,6 +33,7 @@ import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.google.inject.Injector;
 import java.io.IOException;
@@ -89,14 +90,13 @@ public class JettyServer implements AutoCloseable {
 					}
 				});
 	}
-
+	
 	public void startup() throws IOException {
 
 		var properties = globalInjector.getInstance(ServerProperties.class);
 
 		Files.list(Path.of("hosts")).forEach((hostPath) -> {
-			var props = hostPath.resolve("site.yaml");
-			if (Files.exists(props)) {
+			if (SiteUtil.isSite(hostPath)) {
 				try {
 					var host = new VHost(hostPath);
 					host.init(Path.of(Constants.Folders.MODULES), globalInjector);

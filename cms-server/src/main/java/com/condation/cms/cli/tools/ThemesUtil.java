@@ -24,6 +24,7 @@ package com.condation.cms.cli.tools;
 
 
 
+import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.cli.commands.themes.AbstractThemeCommand;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
@@ -68,7 +69,9 @@ public class ThemesUtil {
 					.map(host -> host.resolve("site.yaml"))
 					.forEach(site -> {
 						try {
-							var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
+							var hostProperties = new ExtendedSiteProperties(
+									ConfigurationFactory.siteConfiguration("bla", site.getParent())
+							);
 							if (!Strings.isNullOrEmpty(hostProperties.theme())) {
 								requiredThemes.add(hostProperties.theme());
 							}
@@ -111,6 +114,6 @@ public class ThemesUtil {
 	}
 	
 	public static boolean isHost(Path host) {
-		return Files.exists(host.resolve("site.yaml"));
+		return SiteUtil.isSite(host);
 	}
 }

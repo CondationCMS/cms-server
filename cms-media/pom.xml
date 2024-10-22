@@ -23,6 +23,11 @@
 			<artifactId>cms-core</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>

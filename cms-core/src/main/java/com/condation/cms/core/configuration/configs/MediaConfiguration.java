@@ -28,7 +28,7 @@ import com.condation.cms.core.configuration.GSONProvider;
 import com.condation.cms.core.configuration.IConfiguration;
 import com.condation.cms.core.configuration.ReloadStrategy;
 import com.condation.cms.core.configuration.reload.NoReload;
-import com.condation.cms.core.configuration.reload.ReloadEvent;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +73,7 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 	public void reload () {
 		sources.forEach(source -> {
 			if (source.reload()) {
-				eventBus.publish(new ReloadEvent(id));				
+				eventBus.publish(new ConfigurationReloadEvent(id));				
 			}
 		});
 	}
@@ -104,6 +104,11 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 		
 		public Builder addSource(ConfigSource source) {
 			sources.add(source);
+			return this;
+		}
+		
+		public Builder addAllSources (List<ConfigSource> sources) {
+			this.sources.addAll(sources);
 			return this;
 		}
 		

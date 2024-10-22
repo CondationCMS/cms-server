@@ -30,7 +30,7 @@ import com.condation.cms.core.configuration.GSONProvider;
 import com.condation.cms.core.configuration.IConfiguration;
 import com.condation.cms.core.configuration.ReloadStrategy;
 import com.condation.cms.core.configuration.reload.NoReload;
-import com.condation.cms.core.configuration.reload.ReloadEvent;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.core.configuration.source.TomlConfigSource;
 import com.condation.cms.core.configuration.source.YamlConfigSource;
 import com.google.gson.Gson;
@@ -95,7 +95,7 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 		taxonomies.clear();
 		sources.forEach(source -> {
 			if (source.reload()) {
-				eventBus.publish(new ReloadEvent(id));				
+				eventBus.publish(new ConfigurationReloadEvent(id));				
 			}
 			
 			var taxos = getList("taxonomies", Taxonomy.class);

@@ -27,7 +27,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
-import com.condation.cms.api.configuration.ConfigurationManagement;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
@@ -35,6 +34,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
@@ -67,6 +67,8 @@ import com.condation.cms.media.FileMediaService;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
+import com.condation.cms.core.configuration.ConfigManagement;
+import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.eventbus.MessagingEventBus;
 import com.condation.cms.core.messaging.DefaultMessaging;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
@@ -131,9 +133,8 @@ public class SiteModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public ConfigurationManagement configurationManagement(DB db, Configuration configuration, SiteCronJobScheduler scheduler, EventBus eventBus) throws IOException {
-		ConfigurationManagement cm = new ConfigurationManagement(db, configuration, scheduler, eventBus);
-		cm.init();
+	public ConfigManagement configurationManagement(DB db, Configuration configuration, SiteCronJobScheduler scheduler, EventBus eventBus) throws IOException {
+		ConfigManagement cm = ConfigurationFactory.create(db, eventBus, scheduler);
 		return cm;
 	}
 	
@@ -238,7 +239,7 @@ public class SiteModule extends AbstractModule {
 	@Singleton
 	public SiteMediaManager siteMediaManager(DB db, @Named("assets") Path assetBase, Theme theme, Configuration configuration, EventBus eventbus) throws IOException {
 		var mediaManager = new SiteMediaManager(assetBase, db.getFileSystem().resolve("temp"), theme, configuration);
-		eventbus.register(SitePropertiesChanged.class, mediaManager);
+		eventbus.register(ConfigurationReloadEvent.class, mediaManager);
 		return mediaManager;
 	}
 

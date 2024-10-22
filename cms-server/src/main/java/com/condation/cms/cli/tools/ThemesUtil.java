@@ -24,8 +24,10 @@ package com.condation.cms.cli.tools;
 
 
 
-import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.cli.commands.themes.AbstractThemeCommand;
+import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
+import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -66,7 +68,7 @@ public class ThemesUtil {
 					.map(host -> host.resolve("site.yaml"))
 					.forEach(site -> {
 						try {
-							var hostProperties = PropertiesLoader.hostProperties(site);
+							var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
 							if (!Strings.isNullOrEmpty(hostProperties.theme())) {
 								requiredThemes.add(hostProperties.theme());
 							}
@@ -89,7 +91,7 @@ public class ThemesUtil {
 					.map(host -> host.resolve("theme.yaml"))
 					.forEach(themeConfig -> {
 						try {
-							var themeProperties = PropertiesLoader.themeProperties(themeConfig);
+							var themeProperties = new ExtendedThemeProperties(ConfigurationFactory.themeConfiguration("theme", themeConfig.getFileName().toString()));
 							if (!Strings.isNullOrEmpty(themeProperties.parent())) {
 								requiredThemes.add(themeProperties.parent());
 							}

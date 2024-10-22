@@ -21,7 +21,6 @@ package com.condation.cms.core.configuration;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.db.DB;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.api.eventbus.EventBus;
@@ -44,23 +43,68 @@ import java.util.List;
  */
 public class ConfigurationFactory {
 
-	public static ConfigManagement create (DB db, EventBus eventBus, CronJobScheduler cronScheduler) throws IOException {
+	public static ConfigManagement create(DB db, EventBus eventBus, CronJobScheduler cronScheduler) throws IOException {
 		ConfigManagement management = new ConfigManagement();
-		
+
 		final SimpleConfiguration serverConfiguration = serverConfiguration(eventBus);
-		final SimpleConfiguration siteConfiguration = siteConfiguration(eventBus, serverConfiguration.getString("env", "dev"), db, cronScheduler);
-		final TaxonomyConfiguration taxonomyConfiguration = taxonomyConfiguration(eventBus, db);
-		final MediaConfiguration mediaConfiguration = mediaConfiguration(eventBus, db);
+		final SimpleConfiguration siteConfiguration = siteConfiguration(
+				eventBus, 
+				serverConfiguration.getString("env", "dev"), 
+				db.getFileSystem().hostBase(), 
+				new CronReload("0/10 * * * * ?", cronScheduler)
+		);
+		final TaxonomyConfiguration taxonomyConfiguration = taxonomyConfiguration(
+				eventBus, 
+				db,
+				new CronReload("0/10 * * * * ?", cronScheduler)
+		);
+
+		final SimpleConfiguration themeConfiguration = themeConfiguration(
+				"theme", 
+				eventBus, 
+				siteConfiguration.getString("theme", "null")
+		);
+		final SimpleConfiguration parentThemeConfiguration = themeConfiguration(
+				"parent-theme", 
+				eventBus, 
+				themeConfiguration.getString("parent", "null")
+		);
+		
+		final MediaConfiguration mediaConfiguration = mediaConfiguration(
+				eventBus, 
+				db,
+				List.of(
+						siteConfiguration.getString("theme", "null"),
+						themeConfiguration.getString("parent", "null")
+				)
+		);
 		
 		management.add(serverConfiguration.id(), serverConfiguration);
 		management.add(siteConfiguration.id(), siteConfiguration);
 		management.add(taxonomyConfiguration.id(), taxonomyConfiguration);
 		management.add(mediaConfiguration.id(), mediaConfiguration);
+		management.add(themeConfiguration.id(), themeConfiguration);
+		management.add(themeConfiguration.id(), parentThemeConfiguration);
 		
 		return management;
 	}
-	
-	public static SimpleConfiguration serverConfiguration (EventBus eventBus) throws IOException {
+
+	public static SimpleConfiguration themeConfiguration(String id, String themePath) throws IOException {
+		return themeConfiguration(id, null, themePath);
+	}
+	private static SimpleConfiguration themeConfiguration(String id, EventBus eventBus, String theme) throws IOException {
+		return SimpleConfiguration.builder(eventBus)
+				.id(id)
+				.reloadStrategy(new NoReload())
+				.addSource(YamlConfigSource.build(Path.of("themes/%s/theme.yaml".formatted(theme))))
+				.addSource(TomlConfigSource.build(Path.of("themes/%s/theme.toml".formatted(theme))))
+				.build();
+	}
+
+	public static SimpleConfiguration serverConfiguration() throws IOException {
+		return serverConfiguration(null);
+	}
+	private static SimpleConfiguration serverConfiguration(EventBus eventBus) throws IOException {
 		return SimpleConfiguration.builder(eventBus)
 				.id("server")
 				.reloadStrategy(new NoReload())
@@ -68,44 +112,59 @@ public class ConfigurationFactory {
 				.addSource(TomlConfigSource.build(Path.of("server.toml")))
 				.build();
 	}
-	
-	private static MediaConfiguration mediaConfiguration (EventBus eventBus, DB db) throws IOException {
+
+	private static MediaConfiguration mediaConfiguration(EventBus eventBus, DB db, List<String> themes) throws IOException {
+		List<ConfigSource> themeSources = new ArrayList<>();
+		for (String theme : themes) {
+			themeSources.add(
+					YamlConfigSource.build(Path.of("themes/%s/config/media.yaml".formatted(theme))));
+			themeSources.add(
+					TomlConfigSource.build(Path.of("themes/%s/config/media.toml".formatted(theme))));
+		};
+		
+		themeSources.add(YamlConfigSource.build(db.getFileSystem().resolve("config/media.yaml")));
+		themeSources.add(TomlConfigSource.build(db.getFileSystem().resolve("config/media.toml")));
+		
 		return MediaConfiguration.builder(eventBus)
 				.id("media")
 				.reloadStrategy(new NoReload())
-				.addSource(YamlConfigSource.build(db.getFileSystem().resolve("config/media.yaml")))
-				.addSource(TomlConfigSource.build(db.getFileSystem().resolve("config/media.toml")))
+				.addAllSources(themeSources)
 				.build();
 	}
+
+	public static SimpleConfiguration siteConfiguration(String env, Path hostBase) throws IOException {
+		return siteConfiguration(null, env, hostBase, new NoReload());
+	}
 	
-	private static SimpleConfiguration siteConfiguration (EventBus eventBus, String env, DB db, CronJobScheduler cronScheduler) throws IOException {
-		
+	private static SimpleConfiguration siteConfiguration(EventBus eventBus, String env, Path siteBase, ReloadStrategy reloadStrategy) throws IOException {
+
 		List<ConfigSource> siteSources = new ArrayList<>();
-		siteSources.add(YamlConfigSource.build(db.getFileSystem().resolve("site.yaml")));
-		siteSources.add(TomlConfigSource.build(db.getFileSystem().resolve("site.toml")));
-		
-		var envFile = db.getFileSystem().resolve("site-%s.yaml".formatted(env));
+		siteSources.add(YamlConfigSource.build(siteBase.resolve("site.yaml")));
+		siteSources.add(TomlConfigSource.build(siteBase.resolve("site.toml")));
+
+		var envFile = siteBase.resolve("site-%s.yaml".formatted(env));
 		if (Files.exists(envFile)) {
 			siteSources.add(YamlConfigSource.build(envFile));
 		}
-		envFile = db.getFileSystem().resolve("site-%s.toml".formatted(env));
+		envFile = siteBase.resolve("site-%s.toml".formatted(env));
 		if (Files.exists(envFile)) {
 			siteSources.add(TomlConfigSource.build(envFile));
 		}
-		
+
 		var config = SimpleConfiguration.builder(eventBus)
 				.id("site")
-				.reloadStrategy(new CronReload("0/10 * * * * ?", cronScheduler));
-		
+				.reloadStrategy(reloadStrategy);
+
 		siteSources.forEach(config::addSource);
-		
+
 		return config.build();
 	}
-	
-	private static TaxonomyConfiguration taxonomyConfiguration (EventBus eventBus, DB db) throws IOException {
-		
+
+	private static TaxonomyConfiguration taxonomyConfiguration(EventBus eventBus, DB db, ReloadStrategy reloadStrategy) throws IOException {
+
 		return TaxonomyConfiguration.builder(eventBus)
 				.id("taxonomy")
+				.reloadStrategy(reloadStrategy)
 				.addSource(YamlConfigSource.build(db.getFileSystem().resolve("config/taxonomy.yaml")))
 				.addSource(TomlConfigSource.build(db.getFileSystem().resolve("config/taxonomy.toml")))
 				.build();

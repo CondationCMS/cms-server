@@ -45,4 +45,8 @@ public class ConfigManagement {
 	public <T extends IConfiguration> Optional<T> get (String key) {
 		return Optional.ofNullable((T)configurations.get(key));
 	}
+	
+	public void reload () {
+		configurations.values().forEach(IConfiguration::reload);
+	}
 }

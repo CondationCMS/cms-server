@@ -42,5 +42,6 @@ public interface ConfigSource {
 	Object get (String field);
 	
 	Map<String, Object> getMap (String field);
+	
 	List<Object> getList (String field);
 }

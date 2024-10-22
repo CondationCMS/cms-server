@@ -22,39 +22,23 @@ package com.condation.cms.api;
  * #L%
  */
 
-
-import com.condation.cms.api.annotations.Experimental;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
-
 /**
  * Application Performance Management Properties
  *
  * @author t.marx
  */
-@Experimental(since = "5.3.0")
-@RequiredArgsConstructor
-public class PerformanceProperties {
-	private final Map<String, Object> properties;
+public interface PerformanceProperties {
 	
-	public boolean pool_enabled () {
-		return (boolean) properties.getOrDefault("pool_enabled", Boolean.FALSE);
-	}
+	public boolean pool_enabled ();
 	/**
 	 * pool size per site
 	 * 
 	 * @return 
 	 */
-	public int pool_size () {
-		return (int) properties.getOrDefault("pool_size", 10);
-	}
+	public int pool_size ();
 	
 	
-	public int pool_expire () {
-		return (int) properties.getOrDefault("pool_expire", 10);
-	}
+	public int pool_expire ();
 	
-	public int request_workers () {
-		return (int) properties.getOrDefault("request_workers", 200);
-	}
+	public int request_workers ();
 }

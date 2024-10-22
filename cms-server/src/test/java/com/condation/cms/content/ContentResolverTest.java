@@ -41,6 +41,7 @@ import static com.condation.cms.content.ContentRendererNGTest.moduleManager;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.condation.cms.test.TestSiteProperties;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class ContentResolverTest {
 		contentRenderer = new DefaultContentRenderer(contentParser,
 				() -> templates,
 				db,
-				new SiteProperties(Map.of()),
+				new TestSiteProperties(Map.of()),
 				moduleManager);
 		contentResolver = new ContentResolver(contentRenderer, db);
 	}

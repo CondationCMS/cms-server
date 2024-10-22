@@ -23,8 +23,10 @@ package com.condation.cms.cli.tools;
  */
 
 
-import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.cli.commands.modules.AbstractModuleCommand;
+import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
+import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -60,7 +62,7 @@ public class ModulesUtil {
 						.map(host -> host.resolve("site.yaml"))
 						.forEach(site -> {
 							try {
-								var hostProperties = PropertiesLoader.hostProperties(site);
+								var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
 								requiredModules.addAll(hostProperties.activeModules());
 							} catch (IOException ex) {
 								log.error("", ex);
@@ -71,10 +73,10 @@ public class ModulesUtil {
 				Files.list(themes)
 						.filter(ModulesUtil::isTheme)
 						.map(host -> host.resolve("theme.yaml"))
-						.forEach(site -> {
+						.forEach(themeConfig -> {
 							try {
-								var hostProperties = PropertiesLoader.themeProperties(site);
-								requiredModules.addAll(hostProperties.activeModules());
+								var themeProperties = new ExtendedThemeProperties(ConfigurationFactory.themeConfiguration("theme", themeConfig.getFileName().toString()));
+								requiredModules.addAll(themeProperties.activeModules());
 							} catch (IOException ex) {
 								log.error("", ex);
 							}

@@ -38,7 +38,7 @@ public abstract class AbstractConfiguration {
 	
 	abstract protected List<ConfigSource> getSources ();
 	
-	protected List<Object> getList (String field) {
+	public List<Object> getList (String field) {
 		List<Object> result = new ArrayList<>();
 		getSources().stream()
 				.filter(ConfigSource::exists)
@@ -47,7 +47,7 @@ public abstract class AbstractConfiguration {
 		return result;
 	}
 	
-	protected <T> List<T> getList(String field, Class<T> aClass) {
+	public <T> List<T> getList(String field, Class<T> aClass) {
 		try {
 			var list = getList(field);
 			

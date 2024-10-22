@@ -1,4 +1,4 @@
-package com.condation.cms.api;
+package com.condation.cms.test;
 
 /*-
  * #%L
@@ -23,6 +23,8 @@ package com.condation.cms.api;
  */
 
 
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.ThemeProperties;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -45,7 +47,7 @@ public abstract class PropertiesLoader {
 		if (Files.exists(path)) {
 			properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
 		}
-		return new SiteProperties(properties);
+		return new TestSiteProperties(properties);
 	}
 	
 	public static ThemeProperties themeProperties (Path path) throws IOException {
@@ -53,6 +55,6 @@ public abstract class PropertiesLoader {
 		if (Files.exists(path)) {
 			properties = new Yaml().load(Files.readString(path, StandardCharsets.UTF_8));
 		}
-		return new ThemeProperties(properties);
+		return new TestThemeProperties(properties);
 	}
 }

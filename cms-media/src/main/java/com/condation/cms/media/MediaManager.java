@@ -24,8 +24,10 @@ package com.condation.cms.media;
 
 
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.eventbus.EventListener;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.api.media.MediaUtils;
@@ -48,7 +50,7 @@ import net.coobird.thumbnailator.geometry.Positions;
  * @author t.marx
  */
 @Slf4j
-public abstract class MediaManager implements EventListener<SitePropertiesChanged> {
+public abstract class MediaManager implements EventListener<ConfigurationReloadEvent> {
 
 	protected List<Path> assetBase;
 	protected Path tempFolder;
@@ -176,10 +178,9 @@ public abstract class MediaManager implements EventListener<SitePropertiesChange
 		if (mediaFormats == null) {
 			Map<String, MediaFormat> tempFormats = new HashMap<>();
 
-			if (!theme.empty()) {
-				tempFormats.putAll(theme.properties().getMediaFormats());
-			}
-			tempFormats.putAll(configuration.get(SiteConfiguration.class).siteProperties().getMediaFormats());
+			configuration.get(MediaConfiguration.class).getFormats().forEach(format -> {
+				tempFormats.put(format.name(), format);
+			});
 			mediaFormats = tempFormats;
 		}
 
@@ -187,7 +188,10 @@ public abstract class MediaManager implements EventListener<SitePropertiesChange
 	}
 
 	@Override
-	public void consum(SitePropertiesChanged event) {
+	public void consum(ConfigurationReloadEvent event) {
+		if (!"media".equals(event.name())) {
+			return;
+		}
 		this.mediaFormats = null;
 		getMediaFormats();
 	}

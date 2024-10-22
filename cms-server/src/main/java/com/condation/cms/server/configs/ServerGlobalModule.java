@@ -73,7 +73,7 @@ public class ServerGlobalModule implements com.google.inject.Module {
 
 	@Provides
 	public ServerProperties serverProperties() throws IOException {
-		return new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null));
+		return new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
 	}
 	
 	@Provides

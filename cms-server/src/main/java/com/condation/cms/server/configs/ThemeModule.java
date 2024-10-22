@@ -25,6 +25,7 @@ import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.media.ThemeMediaManager;
@@ -51,7 +52,7 @@ public class ThemeModule extends AbstractModule {
 	@Singleton
 	public ThemeMediaManager themeMediaManager(Theme theme, Configuration configuration, DB db, EventBus eventBus) throws IOException {
 		var mediaManager = new ThemeMediaManager(db.getFileSystem().resolve("temp"), theme, configuration);
-		eventBus.register(SitePropertiesChanged.class, mediaManager);
+		eventBus.register(ConfigurationReloadEvent.class, mediaManager);
 		return mediaManager;
 	}
 

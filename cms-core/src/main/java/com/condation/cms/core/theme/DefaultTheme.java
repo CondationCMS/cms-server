@@ -47,7 +47,7 @@ import org.yaml.snakeyaml.Yaml;
 @RequiredArgsConstructor
 public class DefaultTheme implements Theme {
 
-	public static final Theme EMPTY = new DefaultTheme(null, new ThemeProperties(Collections.emptyMap()), true, new EmptyMessageSource());
+	public static final Theme EMPTY = new DefaultTheme(null, new EmptyThemeProperties(Map.of()), true, new EmptyMessageSource());
 
 	private final Path themePath;
 	private final ThemeProperties properties;
@@ -83,7 +83,7 @@ public class DefaultTheme implements Theme {
 		var content = Files.readString(themeYaml, StandardCharsets.UTF_8);
 		Map<String, Object> config = (Map<String, Object>) yaml.load(content);
 		
-		final ThemeProperties themeProperties = new ThemeProperties(config);
+		final ThemeProperties themeProperties = new EmptyThemeProperties(config);
 		final DefaultTheme defaultTheme = new DefaultTheme(themePath, themeProperties, messages);
 		if (withParent && themeProperties.parent() != null) {
 			var parentTheme = DefaultTheme.load(
@@ -111,7 +111,7 @@ public class DefaultTheme implements Theme {
 
 	@Override
 	public String getName() {
-		return (String) properties.get("name");
+		return (String) properties.name();
 	}
 
 	@Override

@@ -32,16 +32,9 @@ import lombok.RequiredArgsConstructor;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class IPCProperties {
-	private final Map<String, Object> properties;
+public interface IPCProperties {
+	public int port ();
 	
-	public int port () {
-		return ((Number) properties.getOrDefault("port", 6868)).intValue();
-	}
-	
-	public Optional<String> password () {
-		return Optional.ofNullable((String)properties.get("password"));
-	}
+	public Optional<String> password ();
 	
 }

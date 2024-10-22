@@ -25,24 +25,36 @@ package com.condation.cms.core.messages;
 
 import com.condation.cms.core.messages.DefaultMessageSource;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  *
  * @author t.marx
  */
+@ExtendWith(MockitoExtension.class)
 public class MessageSourceTest {
 
 	private static DefaultMessageSource messageSource;
 	
-	@BeforeAll
-	public static void setup() {
+	@Mock
+	private ExtendedSiteProperties siteProperties;
+	
+	@BeforeEach
+	public void setup() {
+		Mockito.when(siteProperties.locale()).thenReturn(Locale.getDefault());
 		messageSource = new DefaultMessageSource(
-				new SiteProperties(Map.of("language", "de")), 
+				siteProperties, 
 				Path.of("src/test/resources/messages")
 		);
 	}

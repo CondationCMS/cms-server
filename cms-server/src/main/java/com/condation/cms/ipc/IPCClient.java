@@ -52,10 +52,4 @@ public class IPCClient {
 			out.write(IPCCOMMANDS.toJsonString(command));
 		}
 	}
-	
-	public static void main (String...args) throws Exception {
-		new IPCClient(new IPCProperties(
-				Map.of("port", 6868, "password", "test_pwd")
-		)).send(new Command("shutdown"));
-	}
 }

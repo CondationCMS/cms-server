@@ -39,6 +39,7 @@ import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.template.TemplateEngineTest;
+import com.condation.cms.test.TestSiteProperties;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -78,7 +79,7 @@ public class SectionsTest extends TemplateEngineTest {
 		contentRenderer = new DefaultContentRenderer(contentParser,
 				() -> templates,
 				db,
-				new SiteProperties(Map.of()),
+				new TestSiteProperties(Map.of()),
 				new MockModuleManager()
 		);
 	}

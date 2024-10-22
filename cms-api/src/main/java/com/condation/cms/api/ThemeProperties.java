@@ -23,63 +23,21 @@ package com.condation.cms.api;
  */
 
 
-import com.condation.cms.api.media.MediaFormat;
-import com.condation.cms.api.media.MediaUtils;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-@Slf4j
-public class ThemeProperties extends MapProperties {
+public interface ThemeProperties {
 
-	public ThemeProperties(final Map<String, Object> properties) {
-		super(properties);
-	}
-
-	public Double version() {
-		return (Double)properties.get("version");
-	}
-
-	public String parent() {
-		return (String)properties.get("parent");
-	}
+	public String name();
 	
-	public String templateEngine() {
-		return (String) getSubMap("template").get("engine");
-	}
+	public Double version();
 
-	public List<String> activeModules() {
-		return (List<String>) getSubMap("modules").getOrDefault("active", List.of());
-	}
+	public String parent();
+	
+	public String templateEngine();
 
-	public Map<String, MediaFormat> getMediaFormats() {
-		Map<String, MediaFormat> mediaFormats = new HashMap<>();
-		Map<String, Object> media = (Map<String, Object>) properties.getOrDefault("media", Collections.emptyMap());
-		List<Map<String, Object>> formats = (List<Map<String, Object>>) media.getOrDefault("formats", Collections.emptyList());
-		formats.forEach(map -> {
-			try {
-				var mediaFormat = new MediaFormat(
-						(String) map.get("name"),
-						(int) map.get("width"),
-						(int) map.get("height"),
-						MediaUtils.format4String((String) map.get("format")),
-						(boolean) map.get("compression"),
-						(boolean) map.getOrDefault("cropped", false)
-				);
-				mediaFormats.put(mediaFormat.name(), mediaFormat);
-			} catch (Exception e) {
-				log.error("error createing format " + map.get("name"), e);
-			}
-
-		});
-
-		return mediaFormats;
-	}
-
+	public List<String> activeModules();
 }

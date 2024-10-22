@@ -24,7 +24,8 @@ package com.condation.cms.cli.commands.themes;
 
 
 import com.condation.cms.CMSServer;
-import com.condation.cms.api.PropertiesLoader;
+import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import com.condation.cms.extensions.repository.ModuleInfo;
 import com.condation.cms.extensions.repository.RemoteModuleRepository;
 import java.io.IOException;
@@ -69,7 +70,9 @@ public abstract class AbstractThemeCommand {
 			if (!Files.exists(themePath)) {
 				return Optional.empty();
 			}
-			var themeProperties = PropertiesLoader.themeProperties(themePath.resolve("theme.yaml"));
+			var themeProperties = new ExtendedThemeProperties(
+					ConfigurationFactory.themeConfiguration("theme", theme)
+			);
 			return Optional.ofNullable(themeProperties.version());
 		} catch (IOException ex) {
 			log.error("", ex);

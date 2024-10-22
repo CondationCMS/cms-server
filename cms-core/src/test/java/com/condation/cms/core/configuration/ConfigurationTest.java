@@ -31,7 +31,7 @@ import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.core.configuration.reload.CronReload;
-import com.condation.cms.core.configuration.reload.ReloadEvent;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -109,7 +109,7 @@ public class ConfigurationTest {
 		
 		Thread.sleep(Duration.ofSeconds(20));
 		
-		Mockito.verify(eventBus, Mockito.atLeast(1)).publish(new ReloadEvent("test-config"));
+		Mockito.verify(eventBus, Mockito.atLeast(1)).publish(new ConfigurationReloadEvent("test-config"));
 	}
 	
 	@Test

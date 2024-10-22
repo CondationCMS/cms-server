@@ -25,7 +25,6 @@ package com.condation.cms.cli.commands.server;
 
 
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
@@ -54,7 +53,7 @@ public class Stop implements Runnable {
 			if (handle.isEmpty()) {
 				System.out.println("can not find cms process");
 			} else {
-				ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null));
+				ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
 				IPCClient ipcClient = new IPCClient(properties.ipc());
 				
 				ipcClient.send(new Command("shutdown"));

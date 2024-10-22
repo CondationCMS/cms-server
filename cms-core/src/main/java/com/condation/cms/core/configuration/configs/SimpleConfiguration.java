@@ -29,13 +29,12 @@ import com.condation.cms.core.configuration.GSONProvider;
 import com.condation.cms.core.configuration.IConfiguration;
 import com.condation.cms.core.configuration.ReloadStrategy;
 import com.condation.cms.core.configuration.reload.NoReload;
-import com.condation.cms.core.configuration.reload.ReloadEvent;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -79,12 +78,12 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 	public void reload () {
 		sources.forEach(source -> {
 			if (source.reload() && eventBus != null) {
-				eventBus.publish(new ReloadEvent(id));
+				eventBus.publish(new ConfigurationReloadEvent(id));
 			}
 		});
 	}
 	
-	private <T> T getValue (String field, Class<T> typeClass) {
+	public <T> T getValue (String field, Class<T> typeClass) {
 		var value = sources.reversed().stream()
 				.filter(ConfigSource::exists)
 				.map(config -> config.get(field))
@@ -93,6 +92,14 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 				.map(typeClass::cast)
 				.findFirst();
 		return value.isPresent() ? value.get() : null;
+	}
+	
+	public Boolean getBooleam (String field) {
+		return getValue(field, Boolean.class);
+	}
+	public Boolean getBoolean (String field, boolean defaultValue) {
+		var value = getValue(field, Boolean.class);
+		return value != null ? value : defaultValue;
 	}
 	
 	public String getString (String field) {

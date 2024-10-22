@@ -22,29 +22,47 @@ package com.condation.cms.core.configuration.properties;
  * #L%
  */
 
-import com.condation.cms.api.IPCProperties;
-import java.util.Collections;
-import java.util.Optional;
+import com.condation.cms.api.ThemeProperties;
+import com.condation.cms.core.configuration.configs.SimpleConfiguration;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author t.marx
  */
-public class ExtendedIPCProperties implements IPCProperties {
-
-	private int port = 6868;
-	private String password = null;
-
-	public ExtendedIPCProperties() {
+public class ExtendedThemeProperties implements ThemeProperties {
+	
+	private final SimpleConfiguration configuration;
+	
+	public ExtendedThemeProperties(SimpleConfiguration configuration) {
+		this.configuration = configuration;
 	}
 
 	@Override
-	public int port() {
-		return port;
+	public Double version() {
+		return configuration.getDouble("version");
 	}
 
 	@Override
-	public Optional<String> password() {
-		return Optional.ofNullable(password);
+	public String parent() {
+		return configuration.getString("parent");
 	}
+	
+	@Override
+	public String name() {
+		return configuration.getString("name");
+	}
+
+	@Override
+	public String templateEngine() {
+		return configuration.getString("template.engine");
+	}
+
+	@Override
+	public List<String> activeModules() {
+		return configuration.getList("modules.active", String.class);
+	}
+	
+	
 }

@@ -23,8 +23,6 @@ package com.condation.cms.filesystem.taxonomy;
  */
 
 
-import com.condation.cms.filesystem.taxonomy.FileTaxonomies;
-import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.filesystem.FileSystem;
@@ -50,8 +48,6 @@ public class FileTaxonomiesTest {
 	
 	@BeforeAll
 	public static void setup () throws IOException {
-		var siteProps = PropertiesLoader.hostProperties(Path.of("src/test/resources/site.yaml"));
-		
 		var config = new Configuration(Path.of("src/test/resources/"));
 		
 		var eventBus = Mockito.mock(EventBus.class);

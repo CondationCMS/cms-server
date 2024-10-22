@@ -24,23 +24,20 @@ package com.condation.cms.content;
 
 
 
-import com.condation.cms.content.DefaultContentRenderer;
-import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.MockModuleManager;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
-import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.template.TemplateEngine;
-import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.template.TemplateEngineTest;
+import com.condation.cms.test.TestSiteProperties;
 import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -85,7 +82,7 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 		contentRenderer = new DefaultContentRenderer(contentParser, 
 				() -> templates, 
 				db, 
-				new SiteProperties(Map.of()), 
+				new TestSiteProperties(Map.of()), 
 				moduleManager);
 	}
 	@AfterAll

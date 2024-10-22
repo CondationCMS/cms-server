@@ -28,47 +28,21 @@ import java.util.Map;
  *
  * @author t.marx
  */
-public class ServerProperties extends MapProperties {
+public interface ServerProperties  {
 
-	public ServerProperties(final Map<String, Object> properties) {
-		super(properties);
-	}
+	public boolean dev();
 
-	public boolean dev() {
-		return !Constants.Environments.PROD.equals(env());
-	}
+	public String env();
 
-	public String env() {
-		if (System.getenv().containsKey("CMS_ENV")) {
-			return System.getenv("CMS_ENV");
-		}
-		if (System.getProperties().containsKey("cms.env")) {
-			return System.getProperty("cms.env");
-		}
-		return (String) properties.getOrDefault("env", Constants.Environments.PROD);
-	}
+	public String serverIp();
 
-	public String serverIp() {
-		return (String) getSubMap("server").getOrDefault("ip", "127.0.0.1");
-	}
+	public int serverPort();
 
-	public int serverPort() {
-		return (int) getSubMap("server").getOrDefault("port", 8080);
-	}
+	public Path getThemesFolder();
 
-	public Path getThemesFolder() {
-		return Path.of("themes/");
-	}
+	public APMProperties apm();
 
-	public APMProperties apm() {
-		return new APMProperties(getSubMap("apm"));
-	}
+	public IPCProperties ipc();
 
-	public IPCProperties ipc() {
-		return new IPCProperties(getSubMap("ipc"));
-	}
-
-	public PerformanceProperties performance() {
-		return new PerformanceProperties(getSubMap("performance"));
-	}
+	public PerformanceProperties performance();
 }

@@ -1,4 +1,4 @@
-package com.condation.cms.core.configuration.reload;
+package com.condation.cms.api.eventbus.events;
 
 /*-
  * #%L
@@ -28,6 +28,6 @@ import com.condation.cms.api.eventbus.Event;
  *
  * @author t.marx
  */
-public record ReloadEvent(String name) implements Event {
+public record ConfigurationReloadEvent(String name) implements Event {
 
 }

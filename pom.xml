@@ -27,6 +27,7 @@
 		<module>cms-auth</module>
 		<module>integration-tests</module>
 		<module>cms-core</module>
+	 <module>cms-test</module>
 	</modules>
 	<inceptionYear>2023</inceptionYear>
 	<organization>
@@ -98,6 +99,11 @@
 			<dependency>
 				<groupId>com.condation.cms</groupId>
 				<artifactId>cms-git</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.condation.cms</groupId>
+				<artifactId>cms-test</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>

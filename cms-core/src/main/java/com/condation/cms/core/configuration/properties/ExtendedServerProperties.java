@@ -29,35 +29,32 @@ import com.condation.cms.api.PerformanceProperties;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.nio.file.Path;
-import java.util.Map;
 
 /**
  *
  * @author t.marx
  */
-public class ExtendedServerProperties extends ServerProperties {
+public class ExtendedServerProperties implements ServerProperties {
 	
 	private final SimpleConfiguration configuration;
 	
 	public ExtendedServerProperties(SimpleConfiguration configuration) {
-		super(Map.of());
 		this.configuration = configuration;
 	}
 
 	@Override
 	public PerformanceProperties performance() {
-		return new PerformanceProperties(configuration.get("performance"));
+		return configuration.get("performance", ExtendedPerformanceProperties.class);
 	}
 
 	@Override
 	public IPCProperties ipc() {
-//		return new IPCProperties(configuration.get("ipc"));
 		return configuration.get("ipc", ExtendedIPCProperties.class);
 	}
 
 	@Override
 	public APMProperties apm() {
-		return new APMProperties(configuration.get("apm"));
+		return configuration.get("apm", ExtendedAPMProperties.class);
 	}
 
 	@Override

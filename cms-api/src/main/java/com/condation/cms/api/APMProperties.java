@@ -24,34 +24,19 @@ package com.condation.cms.api;
 
 
 import java.time.Duration;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Application Performance Management Properties
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class APMProperties {
-	private final Map<String, Object> properties;
+public interface APMProperties {
 	
-	public boolean enabled () {
-		return (boolean) properties.getOrDefault("enabled", Boolean.FALSE);
-	}
+	public boolean enabled ();
 	
-	public int max_requests () {
-		return (int) properties.getOrDefault("max_requests", 100);
-	}
+	public int max_requests ();
 	
-	public int thread_limit () {
-		return (int) properties.getOrDefault("thread_limit", 10);
-	}
+	public int thread_limit ();
 	
-	public Duration max_suspend () {
-		if (!properties.containsKey("max_suspend")) {
-			return Duration.ZERO;
-		}
-		return Duration.parse((String) properties.get("max_suspend"));
-	}
+	public Duration max_suspend ();
 }

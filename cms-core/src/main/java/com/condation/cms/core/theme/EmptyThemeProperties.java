@@ -1,8 +1,8 @@
-package com.condation.cms.api;
+package com.condation.cms.core.theme;
 
 /*-
  * #%L
- * cms-api
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,38 +22,43 @@ package com.condation.cms.api;
  * #L%
  */
 
-
+import com.condation.cms.api.ThemeProperties;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author t.marx
  */
-public interface SiteProperties extends ThemeProperties {
-	
-	public List<String> hostnames ();
-	
-	public String markdownEngine ();
-	
-	public String contextPath ();
-	
-	public String id ();
-	
-	public String theme ();
+@RequiredArgsConstructor
+public class EmptyThemeProperties implements ThemeProperties {
 
-	public String queryIndexMode ();
+	private final Map<String, Object> properties;
 	
-	public Locale locale ();
+	@Override
+	public Double version() {
+		return (Double) properties.get("versions");
+	}
+
+	@Override
+	public String parent() {
+		return (String) properties.get("parent");
+	}
+
+	@Override
+	public String name() {
+		return (String) properties.get("name");
+	}
 	
-	public String language();
+	@Override
+	public String templateEngine() {
+		return (String) properties.get("template.engine");
+	}
+
+	@Override
+	public List<String> activeModules() {
+		return (List<String>) properties.getOrDefault("modules.active", List.of());
+	}
 	
-	public String defaultContentType ();
-	
-	public List<String> contentPipeline ();
-	
-	public String cacheEngine();
-	
-	public boolean cacheContent();
 }

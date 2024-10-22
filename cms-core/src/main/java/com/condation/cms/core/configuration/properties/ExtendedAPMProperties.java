@@ -1,8 +1,8 @@
-package com.condation.cms.api.configuration;
+package com.condation.cms.core.configuration.properties;
 
 /*-
  * #%L
- * cms-api
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,15 +22,40 @@ package com.condation.cms.api.configuration;
  * #L%
  */
 
-
-import java.io.IOException;
+import com.condation.cms.api.APMProperties;
+import com.condation.cms.api.IPCProperties;
+import java.time.Duration;
+import java.util.Collections;
+import java.util.Optional;
 
 /**
  *
  * @author t.marx
  */
-public interface Loader<T extends Config> {
-	T load () throws IOException;
+public class ExtendedAPMProperties implements APMProperties {
+
+	private boolean enabled = false;
+	private int max_requests = 100;
+	private int thread_limit = 10;
+	private Duration max_suspended = Duration.ZERO;
 	
-	void reload(T config) throws IOException;
+	@Override
+	public boolean enabled() {
+		return enabled;
+	}
+
+	@Override
+	public int max_requests() {
+		return max_requests;
+	}
+
+	@Override
+	public int thread_limit() {
+		return thread_limit;
+	}
+
+	@Override
+	public Duration max_suspend() {
+		return max_suspended;
+	}
 }

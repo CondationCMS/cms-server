@@ -26,8 +26,6 @@ package com.condation.cms.api.configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
-import com.condation.cms.api.configuration.loader.SiteConfigurationLoader;
-import com.condation.cms.api.configuration.loader.TaxonomyConfigurationLoader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -52,40 +50,6 @@ public class Configuration {
 	}
 
 	public <T extends Config> T get(Class<T> configClass) {
-		if (!configs.containsKey(configClass)) {
-			loadConfig(configClass);
-		}
 		return (T) configs.get(configClass);
 	}
-
-	public void reload(Class<? extends Config> configClass) {
-		try {
-			log.debug("reload config + " + configClass.getSimpleName());
-			if (configClass.equals(SiteConfiguration.class)) {
-				var env = get(ServerConfiguration.class).serverProperties().env();
-				new SiteConfigurationLoader(hostBase, env).reload((SiteConfiguration)configs.get(configClass));
-			} else if (configClass.equals(TaxonomyConfiguration.class)) {
-				new TaxonomyConfigurationLoader(hostBase).reload((TaxonomyConfiguration)configs.get(configClass));
-			}
-			
-		} catch (IOException e) {
-			log.error(null, e);
-			throw new RuntimeException(e);
-		}
-	}
-	
-	private void loadConfig(Class<? extends Config> configClass) {
-		try {
-			if (configClass.equals(SiteConfiguration.class)) {
-				var env = get(ServerConfiguration.class).serverProperties().env();
-				configs.put(configClass, new SiteConfigurationLoader(hostBase, env).load());
-			} else if (configClass.equals(TaxonomyConfiguration.class)) {
-				configs.put(configClass, new TaxonomyConfigurationLoader(hostBase).load());
-			}
-		} catch (IOException e) {
-			log.error(null, e);
-			throw new RuntimeException(e);
-		}
-	}
-
 }

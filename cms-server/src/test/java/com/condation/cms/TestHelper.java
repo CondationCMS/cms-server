@@ -51,6 +51,7 @@ import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.media.FileMediaService;
 import com.condation.cms.core.theme.DefaultTheme;
+import com.condation.cms.test.TestSiteProperties;
 import com.google.inject.Injector;
 import java.io.IOException;
 import java.util.Map;
@@ -89,7 +90,7 @@ public abstract class TestHelper {
 		context.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(null));
 		context.add(ContentParserFeature.class, new ContentParserFeature(null));
 		
-		final SiteProperties siteProperties = new SiteProperties(Map.of(
+		final SiteProperties siteProperties = new TestSiteProperties(Map.of(
 				"context_path", "/"
 		));
 		context.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
@@ -102,7 +103,7 @@ public abstract class TestHelper {
 		
 		context.add(
 				ServerPropertiesFeature.class, 
-				new ServerPropertiesFeature(new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null)))
+				new ServerPropertiesFeature(new ExtendedServerProperties(ConfigurationFactory.serverConfiguration()))
 		);
 		
 		context.add(TemplateHooks.class, new TemplateHooks(context));
@@ -118,7 +119,7 @@ public abstract class TestHelper {
 		context.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(markdownRenderer));
 		context.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(contentMapper));
 		context.add(HookSystemFeature.class, new HookSystemFeature(new HookSystem()));
-		context.add(SitePropertiesFeature.class, new SitePropertiesFeature(new SiteProperties(Map.of(
+		context.add(SitePropertiesFeature.class, new SitePropertiesFeature(new TestSiteProperties(Map.of(
 				"context_path", "/"
 		))));
 

@@ -23,12 +23,12 @@ package com.condation.cms.media;
  */
 
 
-import com.condation.cms.api.PropertiesLoader;
 import com.condation.cms.api.ThemeProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.test.PropertiesLoader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -47,13 +47,13 @@ public class MediaManagerTest {
 	public static void setup () throws IOException {
 		
 		Configuration config = new Configuration(Path.of("src/test/resources"));
-		var serverConfig = new ServerConfiguration(new ExtendedServerProperties(ConfigurationFactory.serverConfiguration(null)));
+		var serverConfig = new ServerConfiguration(new ExtendedServerProperties(ConfigurationFactory.serverConfiguration()));
 		config.add(ServerConfiguration.class, serverConfig);
 		
 		mediaManager = new SiteMediaManager(
 				Path.of("src/test/resources/assets"), 
 				Path.of("target/"), 
-				new TestTheme(new ThemeProperties(PropertiesLoader.rawProperties(Path.of("src/test/resources/theme.yaml")))), 
+				new TestTheme(PropertiesLoader.themeProperties(Path.of("src/test/resources/theme.yaml"))), 
 				config
 		);
 	}

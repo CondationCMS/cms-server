@@ -25,20 +25,17 @@ package com.condation.cms.server;
 
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
-import com.condation.cms.api.configuration.Config;
 import com.condation.cms.api.configuration.Configuration;
-import com.condation.cms.api.configuration.ConfigurationManagement;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
-import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.eventbus.events.ConfigurationFileChanged;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
-import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
 import com.condation.cms.api.feature.features.ContentRenderFeature;
@@ -47,6 +44,7 @@ import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.content.ContentResolver;
+import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.extensions.GlobalExtensions;
 import com.condation.cms.extensions.hooks.GlobalHooks;
 import com.condation.cms.filesystem.FileDB;
@@ -132,10 +130,7 @@ public class VHost {
 		log.trace("reload theme");
 
 		try {
-
-			reloadConfiguration(SiteConfiguration.class);
-			reloadConfiguration(TaxonomyConfiguration.class);
-			injector.getInstance(ConfigurationManagement.class).reload();
+			injector.getInstance(ConfigManagement.class).reload();
 
 			var theme = this.injector.getInstance(Theme.class);
 
@@ -157,13 +152,6 @@ public class VHost {
 		}
 	}
 
-	public void reloadConfiguration(Class<? extends Config> configToReload) {
-		configuration.reload(configToReload);
-		if (SiteConfiguration.class.equals(configToReload)) {
-			injector.getInstance(EventBus.class).publish(new SitePropertiesChanged());
-		}
-	}
-
 	public List<String> hostnames() {
 		return injector.getInstance(SiteProperties.class).hostnames();
 	}
@@ -181,7 +169,7 @@ public class VHost {
 		var contentResolver = injector.getInstance(ContentResolver.class);
 		var requestContextFactory = injector.getInstance(RequestContextFactory.class);
 		// start configuration managment
-		injector.getInstance(ConfigurationManagement.class);
+		injector.getInstance(ConfigManagement.class);
 
 		cmsModuleContext.add(
 				ContentRenderFeature.class,
@@ -210,7 +198,8 @@ public class VHost {
 			injector.getInstance(TemplateEngine.class).invalidateCache();
 		});
 		injector.getInstance(EventBus.class).register(ConfigurationFileChanged.class,
-				(event) -> reloadConfiguration(event.clazz()));
+				(event) -> injector.getInstance(ConfigManagement.class).reload()
+		);
 
 		initSiteGlobals();
 	}
@@ -277,7 +266,7 @@ public class VHost {
 		pathMappingsHandler.addMapping(PathSpec.from("/favicon.ico"), faviconHandler);
 
 		var assetsMediaManager = this.injector.getInstance(SiteMediaManager.class);
-		injector.getInstance(EventBus.class).register(SitePropertiesChanged.class, assetsMediaManager);
+		injector.getInstance(EventBus.class).register(ConfigurationReloadEvent.class, assetsMediaManager);
 		final JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("site")));
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 
@@ -363,7 +352,7 @@ public class VHost {
 
 	private ContextHandler themeContextHandler() {
 		final MediaManager themeAssetsMediaManager = this.injector.getInstance(ThemeMediaManager.class);
-		injector.getInstance(EventBus.class).register(SitePropertiesChanged.class, themeAssetsMediaManager);
+		injector.getInstance(EventBus.class).register(ConfigurationReloadEvent.class, themeAssetsMediaManager);
 		JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("theme")));
 		ResourceHandler assetsHandler = this.injector.getInstance(Key.get(ResourceHandler.class, Names.named("theme")));
 

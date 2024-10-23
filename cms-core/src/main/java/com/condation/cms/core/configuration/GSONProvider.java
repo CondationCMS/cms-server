@@ -21,17 +21,46 @@ package com.condation.cms.core.configuration;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import java.io.IOException;
+import java.time.Duration;
 
 /**
  *
  * @author t.marx
  */
 public class GSONProvider {
-	
+
 	public static final Gson GSON = new GsonBuilder()
 			.enableComplexMapKeySerialization()
+			.registerTypeAdapter(Duration.class, new DurationTypeAdapter())
 			.create();
+
+	public static class DurationTypeAdapter extends TypeAdapter<Duration> {
+
+		@Override
+		public void write(JsonWriter out, Duration value) throws IOException {
+			if (value == null) {
+				out.nullValue();
+			} else {
+				// Schreibe die Duration als ISO-8601 String (z.B. "PT1H30M" für 1 Stunde 30 Minuten)
+				out.value(value.toString());
+			}
+		}
+
+		@Override
+		public Duration read(JsonReader in) throws IOException {
+			if (in.peek() == com.google.gson.stream.JsonToken.NULL) {
+				in.nextNull();
+				return null;
+			} else {
+				// Lese den ISO-8601 String und konvertiere ihn zurück zu einer Duration
+				return Duration.parse(in.nextString());
+			}
+		}
+	}
 }

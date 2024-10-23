@@ -26,7 +26,6 @@ import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
-import com.condation.cms.api.eventbus.events.SitePropertiesChanged;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.media.ThemeMediaManager;
 import com.condation.cms.server.handler.media.JettyMediaHandler;

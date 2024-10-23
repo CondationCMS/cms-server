@@ -21,8 +21,6 @@ package com.condation.cms.server.configs;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
@@ -60,6 +58,7 @@ import com.google.inject.Singleton;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -99,15 +98,15 @@ public class ModulesModule extends AbstractModule {
 				.setContext(context)
 				.requestContextFactory(requestContextFactory)
 				.build();
-		
+
 		context.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManager));
-		
+
 		return moduleManager;
 	}
-	
+
 	@Provides
 	@Singleton
-	public ModuleRequestContextFactory requestContextFactory () {
+	public ModuleRequestContextFactory requestContextFactory() {
 		return () -> {
 			final CMSRequestContext requestContext = new CMSRequestContext();
 			var rc = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
@@ -131,22 +130,23 @@ public class ModulesModule extends AbstractModule {
 		cmsModuleContext.add(ThemeFeature.class, new ThemeFeature(theme));
 		cmsModuleContext.add(ConfigurationFeature.class, new ConfigurationFeature(configuration));
 		cmsModuleContext.add(CronJobSchedulerFeature.class, new CronJobSchedulerFeature(cronJobScheduler));
-		
+
 		return cmsModuleContext;
 	}
 
 	@Provides
 	@Singleton
-	public CMSMarkdownRenderer defaultMarkdownRenderer () {
+	public CMSMarkdownRenderer defaultMarkdownRenderer() {
 		return new CMSMarkdownRenderer();
 	}
-	
+
 	/**
 	 * The markedjs markdown renderer is implemented using graaljs, so we need a fresh instance for every request
+	 *
 	 * @param siteProperties
 	 * @param moduleManager
 	 * @param defaultMarkdownRenderer
-	 * @return 
+	 * @return
 	 */
 	@Provides
 	@Singleton
@@ -160,19 +160,24 @@ public class ModulesModule extends AbstractModule {
 		if (extOpt.isPresent()) {
 			return extOpt.get().getRenderer();
 		}
-		
+
 		return defaultMarkdownRenderer;
 	}
 
 	private String getTemplateEngine(SiteProperties siteProperties, Theme theme) {
-		var engine = siteProperties.templateEngine();
+		var site_engine = siteProperties.templateEngine();
 
 		var theme_engine = theme.properties().templateEngine();
-		if (theme_engine != null && engine != null && !theme_engine.equals(engine)) {
-			throw new RuntimeException("site template engine does not match theme template engine");
-		}
+		var parent_engine = theme.getParentTheme() != null ? theme.getParentTheme().properties().templateEngine() : null;
 
-		return theme_engine != null ? theme_engine : engine;
+		Optional<String> used_engine = Stream.of(site_engine, theme_engine, parent_engine)
+				.filter(engine -> engine != null)
+				.distinct()
+				.reduce((e1, e2) -> {
+					throw new RuntimeException("Detected usage of different template engines in site and themes.");
+				});
+		
+		return used_engine.orElseThrow(() -> new RuntimeException("No template engine configured"));
 	}
 
 	@Provides
@@ -189,10 +194,11 @@ public class ModulesModule extends AbstractModule {
 			throw new RuntimeException("no template engine found");
 		}
 	}
-	
+
 	/**
 	 * new HookSystem for each request
-	 * @return 
+	 *
+	 * @return
 	 */
 	@Provides
 	public HookSystem hookSystem() {

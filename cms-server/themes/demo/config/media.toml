@@ -13,9 +13,9 @@ format = "webp"
 compression = true
 
 [[formats]]
-name = "test2"
-width = 72
-height = 72
+name = "cropped"
+width = 512
+height = 256
 format = "webp"
 compression = true
-
+cropped = true

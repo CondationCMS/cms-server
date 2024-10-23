@@ -22,11 +22,8 @@ package com.condation.cms.test;
  * #L%
  */
 
-import com.condation.cms.api.Constants;
-import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.ThemeProperties;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -41,6 +38,11 @@ public class TestThemeProperties implements ThemeProperties {
 		this.values = values;
 	}
 
+	@Override
+	public Object get(String field) {
+		return values.get(field);
+	}
+	
 	@Override
 	public String name() {
 		return (String)values.get("name");

@@ -104,11 +104,11 @@ public class YamlConfigSource implements ConfigSource {
 
 	@Override
 	public Map<String, Object> getMap(String field) {
-		return (Map<String, Object>) result.getOrDefault(field, Collections.emptyMap());
+		return MapUtil.getValue(result, field, Collections.emptyMap());
 	}
 	@Override
 	public List<Object> getList(String field) {
-		return (List<Object>) result.getOrDefault(field, Collections.emptyList());
+		return MapUtil.getValue(result, field, Collections.emptyList());
 	}
 
 	@Override

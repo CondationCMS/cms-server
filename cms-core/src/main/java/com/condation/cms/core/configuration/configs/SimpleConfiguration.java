@@ -83,6 +83,15 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 		});
 	}
 	
+	public Object get (String field) {
+		var value = sources.reversed().stream()
+				.filter(ConfigSource::exists)
+				.map(config -> config.get(field))
+				.filter(cv -> cv != null)
+				.findFirst();
+		return value.isPresent() ? value.get() : null;
+	}
+	
 	public <T> T getValue (String field, Class<T> typeClass) {
 		var value = sources.reversed().stream()
 				.filter(ConfigSource::exists)
@@ -137,7 +146,7 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 		return value != null ? value : defaultValue;
 	}
 
-	public Map<String, Object> get (String field) {
+	public Map<String, Object> getMap (String field) {
 		Map<String, Object> result = new HashMap<>();
 		sources.stream()
 				.filter(ConfigSource::exists)
@@ -150,7 +159,7 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 	
 	public <T> T get(String field, Class<T> aClass) {
 		try {
-			var map = get(field);
+			var map = getMap(field);
 			var json_string = GSONProvider.GSON.toJson(map);
 			
 			return GSONProvider.GSON.fromJson(json_string, aClass);

@@ -32,12 +32,11 @@ import java.util.Locale;
  *
  * @author t.marx
  */
-public class ExtendedSiteProperties extends ExtendedThemeProperties implements SiteProperties {
+public class ExtendedSiteProperties implements SiteProperties {
 	
 	private final SimpleConfiguration configuration;
 	
 	public ExtendedSiteProperties(SimpleConfiguration configuration) {
-		super(configuration);
 		this.configuration = configuration;
 	}
 
@@ -118,5 +117,20 @@ public class ExtendedSiteProperties extends ExtendedThemeProperties implements S
 	@Override
 	public boolean cacheContent() {
 		return configuration.getBoolean("cache.content", Constants.DEFAULT_CONTENT_CACHE_ENABLED);
+	}
+	
+	@Override
+	public String templateEngine() {
+		return configuration.getString("template.engine");
+	}
+
+	@Override
+	public List<String> activeModules() {
+		return configuration.getList("modules.active", String.class);
+	}
+	
+	@Override
+	public Object get (String field) {
+		return configuration.get(field);
 	}
 }

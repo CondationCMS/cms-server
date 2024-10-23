@@ -23,10 +23,7 @@ package com.condation.cms.core.configuration.properties;
  */
 
 import com.condation.cms.api.APMProperties;
-import com.condation.cms.api.IPCProperties;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Optional;
 
 /**
  *

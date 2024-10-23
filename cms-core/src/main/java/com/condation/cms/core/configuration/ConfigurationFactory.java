@@ -43,19 +43,19 @@ import java.util.List;
  */
 public class ConfigurationFactory {
 
-	public static ConfigManagement create(DB db, EventBus eventBus, CronJobScheduler cronScheduler) throws IOException {
+	public static ConfigManagement create(Path hostBase, EventBus eventBus, CronJobScheduler cronScheduler) throws IOException {
 		ConfigManagement management = new ConfigManagement();
 
 		final SimpleConfiguration serverConfiguration = serverConfiguration(eventBus);
 		final SimpleConfiguration siteConfiguration = siteConfiguration(
 				eventBus, 
 				serverConfiguration.getString("env", "dev"), 
-				db.getFileSystem().hostBase(), 
+				hostBase,
 				new CronReload("0/10 * * * * ?", cronScheduler)
 		);
 		final TaxonomyConfiguration taxonomyConfiguration = taxonomyConfiguration(
 				eventBus, 
-				db,
+				hostBase,
 				new CronReload("0/10 * * * * ?", cronScheduler)
 		);
 
@@ -72,7 +72,7 @@ public class ConfigurationFactory {
 		
 		final MediaConfiguration mediaConfiguration = mediaConfiguration(
 				eventBus, 
-				db,
+				hostBase,
 				List.of(
 						siteConfiguration.getString("theme", "null"),
 						themeConfiguration.getString("parent", "null")
@@ -113,7 +113,7 @@ public class ConfigurationFactory {
 				.build();
 	}
 
-	private static MediaConfiguration mediaConfiguration(EventBus eventBus, DB db, List<String> themes) throws IOException {
+	private static MediaConfiguration mediaConfiguration(EventBus eventBus, Path hostBase, List<String> themes) throws IOException {
 		List<ConfigSource> themeSources = new ArrayList<>();
 		for (String theme : themes) {
 			themeSources.add(
@@ -122,8 +122,8 @@ public class ConfigurationFactory {
 					TomlConfigSource.build(Path.of("themes/%s/config/media.toml".formatted(theme))));
 		};
 		
-		themeSources.add(YamlConfigSource.build(db.getFileSystem().resolve("config/media.yaml")));
-		themeSources.add(TomlConfigSource.build(db.getFileSystem().resolve("config/media.toml")));
+		themeSources.add(YamlConfigSource.build(hostBase.resolve("config/media.yaml")));
+		themeSources.add(TomlConfigSource.build(hostBase.resolve("config/media.toml")));
 		
 		return MediaConfiguration.builder(eventBus)
 				.id("media")
@@ -160,13 +160,13 @@ public class ConfigurationFactory {
 		return config.build();
 	}
 
-	private static TaxonomyConfiguration taxonomyConfiguration(EventBus eventBus, DB db, ReloadStrategy reloadStrategy) throws IOException {
+	private static TaxonomyConfiguration taxonomyConfiguration(EventBus eventBus, Path hostBase, ReloadStrategy reloadStrategy) throws IOException {
 
 		return TaxonomyConfiguration.builder(eventBus)
 				.id("taxonomy")
 				.reloadStrategy(reloadStrategy)
-				.addSource(YamlConfigSource.build(db.getFileSystem().resolve("config/taxonomy.yaml")))
-				.addSource(TomlConfigSource.build(db.getFileSystem().resolve("config/taxonomy.toml")))
+				.addSource(YamlConfigSource.build(hostBase.resolve("config/taxonomy.yaml")))
+				.addSource(TomlConfigSource.build(hostBase.resolve("config/taxonomy.toml")))
 				.build();
 	}
 }

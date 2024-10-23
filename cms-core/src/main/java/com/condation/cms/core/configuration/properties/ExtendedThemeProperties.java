@@ -24,7 +24,6 @@ package com.condation.cms.core.configuration.properties;
 
 import com.condation.cms.api.ThemeProperties;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -62,6 +61,11 @@ public class ExtendedThemeProperties implements ThemeProperties {
 	@Override
 	public List<String> activeModules() {
 		return configuration.getList("modules.active", String.class);
+	}
+	
+	@Override
+	public Object get (String field) {
+		return configuration.get(field);
 	}
 	
 	

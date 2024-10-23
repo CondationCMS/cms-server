@@ -105,6 +105,8 @@ public class VHost {
 
 	@Getter
 	protected Injector injector;
+	
+	private final Configuration configuration = new Configuration();
 
 	public VHost(final Path hostBase) {
 		this.hostBase = hostBase;
@@ -156,17 +158,18 @@ public class VHost {
 	public void init(Path modulesPath, Injector globalInjector) throws IOException {
 		this.injector = globalInjector.createChildInjector(
 				new SiteGlobalModule(),
-				new SiteModule(hostBase),
+				new SiteModule(hostBase, this.configuration),
 				new ModulesModule(modulesPath),
 				new SiteHandlerModule(),
 				new ThemeModule());
 
+		// start configuration managment
+		injector.getInstance(ConfigManagement.class).initConfiguration(configuration);
+		
 		final CMSModuleContext cmsModuleContext = injector.getInstance(CMSModuleContext.class);
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		var contentResolver = injector.getInstance(ContentResolver.class);
 		var requestContextFactory = injector.getInstance(RequestContextFactory.class);
-		// start configuration managment
-		injector.getInstance(ConfigManagement.class);
 
 		cmsModuleContext.add(
 				ContentRenderFeature.class,

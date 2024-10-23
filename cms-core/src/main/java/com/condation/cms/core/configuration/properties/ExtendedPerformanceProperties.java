@@ -31,25 +31,28 @@ import com.condation.cms.api.PerformanceProperties;
 public class ExtendedPerformanceProperties implements PerformanceProperties {
 
 	private boolean pool_enabled = false;
+	private int pool_size = 10;
+	private int pool_expire = 10;
+	private int request_workers = 200;
 	
 	@Override
 	public boolean pool_enabled() {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return pool_enabled;
 	}
 
 	@Override
 	public int pool_size() {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return pool_size;
 	}
 
 	@Override
 	public int pool_expire() {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return pool_expire;
 	}
 
 	@Override
 	public int request_workers() {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return request_workers;
 	}
 
 	

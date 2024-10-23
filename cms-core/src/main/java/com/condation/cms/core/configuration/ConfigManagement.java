@@ -22,6 +22,14 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.core.configuration.configs.MediaConfiguration;
+import com.condation.cms.core.configuration.configs.SimpleConfiguration;
+import com.condation.cms.core.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -48,5 +56,32 @@ public class ConfigManagement {
 	
 	public void reload () {
 		configurations.values().forEach(IConfiguration::reload);
+	}
+	
+	public void initConfiguration (Configuration configuration) {
+		configuration.add(
+				ServerConfiguration.class, 
+				new ServerConfiguration(new ExtendedServerProperties((SimpleConfiguration) get("server").get()))
+		);
+		
+		configuration.add(
+				SiteConfiguration.class, 
+				new SiteConfiguration(new ExtendedSiteProperties((SimpleConfiguration) get("site").get()))
+		);
+		configuration.add(
+				com.condation.cms.api.configuration.configs.TaxonomyConfiguration.class, 
+				new com.condation.cms.api.configuration.configs.TaxonomyConfiguration(
+						((com.condation.cms.core.configuration.configs.TaxonomyConfiguration) get("taxonomy")
+								.get()).getTaxonomies()
+				)
+		);
+		configuration.add(
+				com.condation.cms.api.configuration.configs.MediaConfiguration.class, 
+				new com.condation.cms.api.configuration.configs.MediaConfiguration(
+						((com.condation.cms.core.configuration.configs.MediaConfiguration) get("media")
+								.get()).getMediaFormats()
+				)
+		);
+		
 	}
 }

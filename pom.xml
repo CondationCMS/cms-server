@@ -362,6 +362,11 @@
 								<artifactId>auto-service</artifactId>
 								<version>1.1.1</version>
 							</path>
+							<path>
+								<groupId>com.condation.cms.module.framework</groupId>
+								<artifactId>modules-api</artifactId>
+								<version>${project.version}</version>
+							</path>
 						</annotationProcessorPaths>
 					</configuration>
 				</plugin>

@@ -40,4 +40,6 @@ public interface ThemeProperties {
 	public String templateEngine();
 
 	public List<String> activeModules();
+	
+	public Object get (String field);
 }

@@ -40,6 +40,11 @@ public class EmptyThemeProperties implements ThemeProperties {
 	public Double version() {
 		return (Double) properties.get("versions");
 	}
+	
+	@Override
+	public Object get(String field) {
+		return properties.get(field);
+	}
 
 	@Override
 	public String parent() {

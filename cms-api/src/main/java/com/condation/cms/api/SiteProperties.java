@@ -25,13 +25,12 @@ package com.condation.cms.api;
 
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 /**
  *
  * @author t.marx
  */
-public interface SiteProperties extends ThemeProperties {
+public interface SiteProperties {
 	
 	public List<String> hostnames ();
 	
@@ -40,6 +39,8 @@ public interface SiteProperties extends ThemeProperties {
 	public String contextPath ();
 	
 	public String id ();
+	
+	public Object get (String field);
 	
 	public String theme ();
 
@@ -56,4 +57,8 @@ public interface SiteProperties extends ThemeProperties {
 	public String cacheEngine();
 	
 	public boolean cacheContent();
+	
+	public String templateEngine();
+
+	public List<String> activeModules();
 }

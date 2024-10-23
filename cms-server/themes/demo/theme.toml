@@ -1,0 +1,8 @@
+name = "demo"
+version = 1
+
+[template]
+engine = "thymeleaf"
+
+[modules]
+active = [ "thymeleaf-module" ]

@@ -81,6 +81,11 @@ public class TestSiteProperties implements SiteProperties {
 	}
 
 	@Override
+	public Object get(String field) {
+		return values.get(field);
+	}
+	
+	@Override
 	public String defaultContentType() {
 		return (String) values.getOrDefault("content.type", Constants.DEFAULT_CONTENT_TYPE);
 	}
@@ -98,21 +103,6 @@ public class TestSiteProperties implements SiteProperties {
 	@Override
 	public boolean cacheContent() {
 		return (boolean) values.getOrDefault("content.cache", false);
-	}
-
-	@Override
-	public String name() {
-		return (String)values.get("name");
-	}
-
-	@Override
-	public Double version() {
-		return (Double)values.get("version");
-	}
-
-	@Override
-	public String parent() {
-		return (String)values.get("parent");
 	}
 
 	@Override

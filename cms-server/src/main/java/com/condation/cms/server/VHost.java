@@ -32,7 +32,6 @@ import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
-import com.condation.cms.api.eventbus.events.ConfigurationFileChanged;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
@@ -197,9 +196,6 @@ public class VHost {
 			log.debug("invalidate template cache");
 			injector.getInstance(TemplateEngine.class).invalidateCache();
 		});
-		injector.getInstance(EventBus.class).register(ConfigurationFileChanged.class,
-				(event) -> injector.getInstance(ConfigManagement.class).reload()
-		);
 
 		initSiteGlobals();
 	}

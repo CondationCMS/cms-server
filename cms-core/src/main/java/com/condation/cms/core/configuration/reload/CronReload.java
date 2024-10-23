@@ -43,7 +43,6 @@ public class CronReload implements ReloadStrategy {
 	public void register(IConfiguration configuration) {
 		scheduler.schedule(cronExpression, configuration.id(), (context) -> {
 			log.trace("reload of config %s triggered", configuration.id());
-			System.out.println("reload");
 			configuration.reload();
 		});
 	}	

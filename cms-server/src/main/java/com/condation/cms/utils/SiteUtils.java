@@ -46,4 +46,8 @@ public abstract class SiteUtils {
 		}
 		return activeModules;
 	}
+	
+	public static String getRequiredTheme(SiteProperties siteProperties, Theme theme) {
+		return siteProperties.theme();
+	}
 }

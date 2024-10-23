@@ -28,6 +28,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.cli.tools.ModulesUtil;
+import com.condation.cms.cli.tools.ThemesUtil;
 import com.condation.cms.git.RepositoryManager;
 import com.condation.cms.ipc.IPCServer;
 import com.condation.cms.server.configs.ServerGlobalModule;
@@ -54,23 +55,14 @@ public class Startup implements Runnable {
 	public void run() {
 		try {
 			
-			var modules = ModulesUtil.getRequiredModules();
-			log.trace("check required modules: " + modules);
-			if (!ModulesUtil.allInstalled(modules)) {
-				var toInstall = ModulesUtil.filterUnInstalled(modules);
-				log.error("following modules are missing");
-				toInstall.forEach(log::error);
-				log.error("install via: java cms-server.jar module get <module_id>");
-				System.exit(1);
-			} else {
-				log.trace("all required modules are intalled");
-			}
-			
 			System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
 			System.setProperty("polyglotimpl.DisableClassPathIsolation", "true");
 
 			var globalInjector = Guice.createInjector(new ServerGlobalModule());
 			ServerProperties properties = globalInjector.getInstance(ServerProperties.class);
+			
+			checkInstalledModules();
+			checkInstalledThemes();
 			
 			printStartup(properties);
 
@@ -87,6 +79,34 @@ public class Startup implements Runnable {
 			writePidFile();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+	}
+
+	private void checkInstalledThemes () {
+		var requiredThemes = ThemesUtil.getRequiredThemes();
+		log.trace("check required themes: " + requiredThemes);
+		if (!ThemesUtil.allInstalled(requiredThemes)) {
+			var toInstall = ThemesUtil.filterUnInstalled(requiredThemes);
+			log.error("following themes are missing");
+			toInstall.forEach(log::error);
+			log.error("install via: java cms-server.jar theme get <module_id>");
+			System.exit(1);
+		} else {
+			log.trace("all required themes are intalled");
+		}
+	}
+	
+	private void checkInstalledModules() {
+		var modules = ModulesUtil.getRequiredModules();
+		log.trace("check required modules: " + modules);
+		if (!ModulesUtil.allInstalled(modules)) {
+			var toInstall = ModulesUtil.filterUnInstalled(modules);
+			log.error("following modules are missing");
+			toInstall.forEach(log::error);
+			log.error("install via: java cms-server.jar module get <module_id>");
+			System.exit(1);
+		} else {
+			log.trace("all required modules are intalled");
 		}
 	}
 	

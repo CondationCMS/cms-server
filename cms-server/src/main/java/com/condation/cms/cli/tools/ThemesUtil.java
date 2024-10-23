@@ -66,11 +66,10 @@ public class ThemesUtil {
 		try {
 			Files.list(Path.of("hosts/"))
 					.filter(ThemesUtil::isHost)
-					.map(host -> host.resolve("site.yaml"))
 					.forEach(site -> {
 						try {
 							var hostProperties = new ExtendedSiteProperties(
-									ConfigurationFactory.siteConfiguration("bla", site.getParent())
+									ConfigurationFactory.siteConfiguration("bla", site)
 							);
 							if (!Strings.isNullOrEmpty(hostProperties.theme())) {
 								requiredThemes.add(hostProperties.theme());
@@ -91,7 +90,6 @@ public class ThemesUtil {
 		try {
 			Files.list(Path.of("themes/"))
 					.filter(ThemesUtil::isTheme)
-					.map(host -> host.resolve("theme.yaml"))
 					.forEach(themeConfig -> {
 						try {
 							var themeProperties = new ExtendedThemeProperties(ConfigurationFactory.themeConfiguration("theme", themeConfig.getFileName().toString()));

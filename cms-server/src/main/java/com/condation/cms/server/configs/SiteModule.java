@@ -68,6 +68,8 @@ import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.configs.SimpleConfiguration;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.eventbus.MessagingEventBus;
 import com.condation.cms.core.messaging.DefaultMessaging;
@@ -138,37 +140,6 @@ public class SiteModule extends AbstractModule {
 		
 		return cm;
 	}
-	
-//	@Provides
-//	@Singleton
-//	public Configuration configuration (ConfigManagement cm) {
-//		var configuration = new Configuration();
-//		configuration.add(
-//				ServerConfiguration.class, 
-//				new ServerConfiguration(new ExtendedServerProperties((SimpleConfiguration) cm.get("server").get()))
-//		);
-//		
-//		configuration.add(
-//				SiteConfiguration.class, 
-//				new SiteConfiguration(new ExtendedSiteProperties((SimpleConfiguration) cm.get("site").get()))
-//		);
-//		configuration.add(
-//				com.condation.cms.api.configuration.configs.TaxonomyConfiguration.class, 
-//				new com.condation.cms.api.configuration.configs.TaxonomyConfiguration(
-//						((com.condation.cms.core.configuration.configs.TaxonomyConfiguration) cm.get("taxonomy")
-//								.get()).getTaxonomies()
-//				)
-//		);
-//		configuration.add(
-//				com.condation.cms.api.configuration.configs.MediaConfiguration.class, 
-//				new com.condation.cms.api.configuration.configs.MediaConfiguration(
-//						((com.condation.cms.core.configuration.configs.MediaConfiguration) cm.get("media")
-//								.get()).getMediaFormats()
-//				)
-//		);
-//		
-//		return configuration;
-//	}
 	
 	@Provides
 	public SiteProperties siteProperties(ServerProperties serverProperties) throws IOException {

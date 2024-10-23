@@ -27,7 +27,7 @@
 		<module>cms-auth</module>
 		<module>integration-tests</module>
 		<module>cms-core</module>
-	 <module>cms-test</module>
+		<module>cms-test</module>
 	</modules>
 	<inceptionYear>2023</inceptionYear>
 	<organization>
@@ -362,11 +362,6 @@
 								<artifactId>auto-service</artifactId>
 								<version>1.1.1</version>
 							</path>
-							<path>
-								<groupId>com.condation.cms.module.framework</groupId>
-								<artifactId>modules-api</artifactId>
-								<version>${project.version}</version>
-							</path>
 						</annotationProcessorPaths>
 					</configuration>
 				</plugin>
@@ -468,6 +463,25 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<annotationProcessorPaths>
+						<path>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+							<version>1.18.34</version>
+						</path>
+						<path>
+							<groupId>com.google.auto.service</groupId>
+							<artifactId>auto-service</artifactId>
+							<version>1.1.1</version>
+						</path>
+					</annotationProcessorPaths>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	
@@ -501,6 +515,30 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-compiler-plugin</artifactId>
+						<version>3.13.0</version>
+						<configuration>
+							<annotationProcessorPaths>
+								<path>
+									<groupId>org.projectlombok</groupId>
+									<artifactId>lombok</artifactId>
+									<version>1.18.34</version>
+								</path>
+								<path>
+									<groupId>com.google.auto.service</groupId>
+									<artifactId>auto-service</artifactId>
+									<version>1.1.1</version>
+								</path>
+								<path>
+									<groupId>com.condation.cms.module.framework</groupId>
+									<artifactId>modules-api</artifactId>
+									<version>${project.version}</version>
+								</path>
+							</annotationProcessorPaths>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

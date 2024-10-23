@@ -1,0 +1,5 @@
+id = "demo-site"
+hostname = [ "localhost" ]
+baseurl = "http://localhost:1010"
+language = "en"
+theme = "demo"

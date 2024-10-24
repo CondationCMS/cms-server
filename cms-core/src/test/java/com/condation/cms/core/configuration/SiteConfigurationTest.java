@@ -32,7 +32,7 @@ import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.core.configuration.reload.CronReload;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
-import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -56,7 +56,7 @@ import org.quartz.impl.StdSchedulerFactory;
  * @author t.marx
  */
 @ExtendWith(MockitoExtension.class)
-public class ConfigurationTest {
+public class SiteConfigurationTest {
 
 	SimpleConfiguration configuration;
 	
@@ -69,6 +69,8 @@ public class ConfigurationTest {
 	@Mock
 	EventBus eventBus;
 	
+	private ExtendedSiteProperties extSiteProperties;
+	
 	@BeforeEach
 	public void setup() throws IOException, SchedulerException {
 		scheduler = StdSchedulerFactory.getDefaultScheduler();
@@ -78,9 +80,11 @@ public class ConfigurationTest {
 		configuration = SimpleConfiguration.builder(eventBus)
 				.id("test-config")
 				.reloadStrategy(new CronReload("0/10 * * * * ?", cronScheduler))
-				.addSource(YamlConfigSource.build(Path.of("configs/server.yaml")))
-				.addSource(TomlConfigSource.build(Path.of("configs/server.toml")))
+				.addSource(YamlConfigSource.build(Path.of("configs/site.yaml")))
+				.addSource(TomlConfigSource.build(Path.of("configs/site.toml")))
 				.build();
+		
+		extSiteProperties = new ExtendedSiteProperties(configuration);
 	}
 	
 	@AfterEach
@@ -90,50 +94,11 @@ public class ConfigurationTest {
 	}
 
 	@Test
-	public void test_env() {
-		var env = configuration.getString("env");
+	public void test_hostname() {
+		var hostnames = extSiteProperties.hostnames();
 		
-		Assertions.assertThat(env).isEqualTo("prod");
+		Assertions.assertThat(hostnames).contains("localhost", "condation.com");
 	}
 
-	@Test
-	public void test_from_yaml() {
-		var env = configuration.getString("test");
-		
-		Assertions.assertThat(env).isEqualTo("only in yaml");
-	}
 	
-	@Test
-	public void test_reload () throws InterruptedException, IOException {
-		
-		FileUtils.touch(Path.of("configs/server.toml"));
-		
-		Thread.sleep(Duration.ofSeconds(20));
-		
-		Mockito.verify(eventBus, Mockito.atLeast(1)).publish(new ConfigurationReloadEvent("test-config"));
-	}
-	
-	@Test
-	public void test_object () {
-		var server = configuration.get("server", Server.class);
-		
-		Assertions.assertThat(server).isNotNull();
-		Assertions.assertThat(server.ip).isEqualTo("127.0.0.1");
-		Assertions.assertThat(server.port).isEqualTo(1010);
-	}
-	
-	@Test
-	public void test_properties () {
-		var serverProperties = new ExtendedServerProperties(configuration);
-		
-		Assertions.assertThat(serverProperties.serverIp()).isEqualTo("127.0.0.1");
-		Assertions.assertThat(serverProperties.serverPort()).isEqualTo(1010);
-	}
-	
-	@Data
-	@NoArgsConstructor
-	public static class Server {
-		private int port;
-		private String ip;
-	}
 }

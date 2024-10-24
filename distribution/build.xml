@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">7.0.0</property>
+	<property name="cms.version">7.1.1</property>
 	
-	<property name="thymeleaf.version">v2.1.0</property>
+	<property name="thymeleaf.version">v3.0.0</property>
 		
 	<target name="download-modules" description="--> download modules">
 		<echo>download template implementation modules</echo>
@@ -28,7 +28,7 @@
 		<copy todir="build/">
 			<resources>
 				<file file="temp/cms-server-${cms.version}/cms-server-${cms.version}.jar"/>
-				<file file="temp/cms-server-${cms.version}/server.yaml"/>
+				<file file="temp/cms-server-${cms.version}/server.toml"/>
 				<file file="temp/cms-server-${cms.version}/log4j2.xml"/>
 				<file file="../LICENSE"/>
 			</resources>

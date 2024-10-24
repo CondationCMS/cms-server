@@ -11,7 +11,7 @@
 		<fileSet>
 			<directory>${project.basedir}</directory>
 			<includes>
-				<include>server.yaml</include>
+				<include>server.toml</include>
 				<include>log4j2.xml</include>
 			</includes>
 		</fileSet>

@@ -64,12 +64,16 @@ public class ExtendedServerProperties implements ServerProperties {
 
 	@Override
 	public int serverPort() {
-		return configuration.getInteger("server.port", 8080);
+//		return configuration.getInteger("server.port", 8080);
+		var server = configuration.get("server", Server.class);
+		return server.port();
 	}
 
 	@Override
 	public String serverIp() {
-		return configuration.getString("server.ip", "127.0.0.1");
+//		return configuration.getString("server.ip", "127.0.0.1");
+		var server = configuration.get("server", Server.class);
+		return server.ip();
 	}
 
 	@Override
@@ -88,6 +92,7 @@ public class ExtendedServerProperties implements ServerProperties {
 		return !Constants.Environments.PROD.equals(env());
 	}
 	
-	
-	
+	public static record Server (int port, String ip) {
+		
+	}
 }

@@ -1,0 +1,12 @@
+id = "condation"
+hostname = [ "condation.com", "localhost" ]
+baseurl = "https://condation.com"
+
+[template]
+engine = "pebble"
+
+[index]
+persistent = true
+
+[modules]
+active = [ "pebble-module", "seo-module" ]

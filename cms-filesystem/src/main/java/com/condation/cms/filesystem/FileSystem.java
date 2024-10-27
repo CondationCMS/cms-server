@@ -311,8 +311,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		fileWatcher.getPublisher(templateBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
 			@Override
 			public void onNext(FileEvent item) {
-				eventBus.publish(new TemplateChangedEvent(item.file().toPath()));
-				eventBus.publish(new InvalidateTemplateCacheEvent());
+				try {
+					eventBus.publish(new TemplateChangedEvent(item.file().toPath()));
+					eventBus.publish(new InvalidateTemplateCacheEvent());
+				} catch (Exception e) {
+					log.error("", e);
+				}
 				this.subscription.request(1);
 			}
 		});

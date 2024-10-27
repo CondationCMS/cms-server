@@ -7,8 +7,8 @@ test: Hallo
 theme: test
 cache:
     content: true
-query:
-  index:
+index:
+  query:
     mode: PERSISTENT
 modules:
   active:

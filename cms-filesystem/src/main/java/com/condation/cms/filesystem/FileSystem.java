@@ -313,6 +313,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			public void onNext(FileEvent item) {
 				eventBus.publish(new TemplateChangedEvent(item.file().toPath()));
 				eventBus.publish(new InvalidateTemplateCacheEvent());
+				this.subscription.request(1);
 			}
 		});
 

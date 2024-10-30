@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">7.1.1</property>
+	<property name="cms.version">7.1.2</property>
 	
 	<property name="thymeleaf.version">v3.0.0</property>
 		
@@ -16,20 +16,20 @@
 	
 	<target name="copy-server" description="--> copy server">
 		<unzip src="../cms-server/target/cms-server-${cms.version}.zip" dest="temp/" />
-		<copy todir="build/themes">
-			<fileset dir="temp/cms-server-${cms.version}/themes"/>
+		<copy todir="build/themes/demo">
+			<fileset dir="../test-server/themes/demo"/>
 		</copy>
 		<copy todir="build/lib">
 			<fileset dir="temp/cms-server-${cms.version}/lib"/>
 		</copy>
-		<copy todir="build/hosts">
-			<fileset dir="temp/cms-server-${cms.version}/hosts"/>
+		<copy todir="build/hosts/demo">
+			<fileset dir="../test-server/hosts/demo"/>
 		</copy>
 		<copy todir="build/">
 			<resources>
 				<file file="temp/cms-server-${cms.version}/cms-server-${cms.version}.jar"/>
-				<file file="temp/cms-server-${cms.version}/server.toml"/>
-				<file file="temp/cms-server-${cms.version}/log4j2.xml"/>
+				<file file="../test-server/server.toml"/>
+				<file file="../test-server/log4j2.xml"/>
 				<file file="../LICENSE"/>
 			</resources>
 		</copy>

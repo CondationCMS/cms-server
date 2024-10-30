@@ -9,26 +9,26 @@
 	</formats>
 	<fileSets>
 		<fileSet>
-			<directory>${project.basedir}</directory>
+			<directory>${project.basedir}../test-server</directory>
 			<includes>
 				<include>server.toml</include>
 				<include>log4j2.xml</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.basedir}/hosts</directory>
+			<directory>${project.basedir}../test-server/hosts</directory>
 			<includes>
 				<include>demo/**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.basedir}/themes</directory>
+			<directory>${project.basedir}../test-server/themes</directory>
 			<includes>
 				<include>demo/**/*</include>
 			</includes>
 		</fileSet>
 		<fileSet>
-			<directory>${project.basedir}/modules</directory>
+			<directory>${project.basedir}../test-server/modules</directory>
 			<includes>
 				<include>**/*</include>
 			</includes>

@@ -1,5 +1,8 @@
 package com.condation.cms.cli.commands.server;
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-server
@@ -53,7 +56,7 @@ public class RemoveUser implements Runnable {
 	@Override
 	public void run() {
 		try {
-			UserService userService = new UserService(Path.of("hosts/" + host));
+			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
 			
 			userService.removeUser(UserService.Realm.of(realm), username);
 			log.info("user added successfuly");

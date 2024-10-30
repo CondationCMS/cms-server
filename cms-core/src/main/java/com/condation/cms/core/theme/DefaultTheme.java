@@ -1,5 +1,9 @@
 package com.condation.cms.core.theme;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Map;
+
 /*-
  * #%L
  * cms-server
@@ -25,22 +29,15 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.ThemeProperties;
-import com.condation.cms.core.messages.EmptyMessageSource;
 import com.condation.cms.api.messages.MessageSource;
-import com.condation.cms.core.messages.ThemeMessageSource;
 import com.condation.cms.api.theme.Theme;
-import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Collections;
-import java.util.Map;
+import com.condation.cms.core.messages.EmptyMessageSource;
+import com.condation.cms.core.messages.ThemeMessageSource;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.yaml.snakeyaml.Yaml;
 
 /**
  *

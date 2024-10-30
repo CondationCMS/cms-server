@@ -1,8 +1,8 @@
-package com.condation.cms.cli;
+package com.condation.cms.api.utils;
 
 /*-
  * #%L
- * cms-server
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,36 +22,23 @@ package com.condation.cms.cli;
  * #L%
  */
 
-
-import java.io.File;
 import java.nio.file.Path;
 
-import com.condation.cms.api.utils.ServerUtil;
+public final class ServerUtil {
 
-import picocli.CommandLine;
+    private ServerUtil(){}
 
-/**
- *
- * @author t.marx
- */
-public class CMSCli {
-
-	static {
-		File log4j2File = ServerUtil.getPath("log4j2.xml").toFile();
-		if (log4j2File.exists()) {
-			System.setProperty("log4j2.configurationFile", log4j2File.toURI().toString());
-			if (System.getProperty("cms-logs-folder") == null) {
-				var relative = Path.of(".").relativize(ServerUtil.getPath("logs/"));
-				System.setProperty("cms-logs-folder", relative.toString());
-			}
+    public static Path getHome () {
+        if (System.getenv().containsKey("CMS_HOME")) {
+			return Path.of(System.getenv("CMS_HOME"));
 		}
-	}
+		if (System.getProperties().containsKey("cms.home")) {
+			return Path.of(System.getProperties().getProperty("cms.home"));
+		}
+        return Path.of(".");
+    }
 
-	public static CommandLine getCommandLine() {
-		return new CommandLine(new CLICommand());
-	}
-
-	public static void main(String[] args) {
-		CMSCli.getCommandLine().execute(args);
-	}
+    public static Path getPath (String path) {
+        return getHome().resolve(path);
+    }
 }

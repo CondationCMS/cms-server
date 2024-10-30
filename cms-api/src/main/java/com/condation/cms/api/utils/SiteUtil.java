@@ -24,6 +24,11 @@ package com.condation.cms.api.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.theme.Theme;
 
 /**
  *
@@ -37,5 +42,22 @@ public class SiteUtil {
 	public static boolean isSite(Path check) {
 		return Files.exists(check.resolve("site.yaml"))
 				|| Files.exists(check.resolve("site.toml"));
+	}
+
+	public static List<String> getActiveModules(SiteProperties siteProperties, Theme theme) {
+		List<String> activeModules = new ArrayList<>();
+		activeModules.addAll(siteProperties.activeModules());
+		if (!theme.empty()) {
+			activeModules.addAll(theme.properties().activeModules());
+			
+			if (theme.getParentTheme() != null) {
+				activeModules.addAll(theme.getParentTheme().properties().activeModules());
+			}
+		}
+		return activeModules;
+	}
+	
+	public static String getRequiredTheme(SiteProperties siteProperties, Theme theme) {
+		return siteProperties.theme();
 	}
 }

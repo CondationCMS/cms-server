@@ -22,6 +22,7 @@ package com.condation.cms.cli.commands.modules;
  * #L%
  */
 import com.condation.cms.CMSServer;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.extensions.repository.InstallationHelper;
 import java.io.IOException;
@@ -89,7 +90,7 @@ public class GetAllCommand extends AbstractModuleCommand implements Runnable {
 			var info = getRepository().getInfo(module).get();
 
 			System.out.printf("get module %s \r\n", module);
-			getRepository().download(info.getFile(), Path.of("modules/"));
+			getRepository().download(info.getFile(), ServerUtil.getPath("modules/"));
 			System.out.println("module downloaded");
 			return true;
 		} else {

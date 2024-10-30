@@ -1,5 +1,8 @@
 package com.condation.cms.cli.commands.themes;
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-server
@@ -72,7 +75,7 @@ public class GetAllCommand extends AbstractThemeCommand implements Runnable {
 		var info = getRepository().getInfo(theme).get();
 
 		System.out.println("get theme");
-		getRepository().download(info.getFile(), Path.of("themes/"));
+		getRepository().download(info.getFile(), ServerUtil.getPath(Constants.Folders.THEMES));
 		System.out.println("theme downloaded");
 	}
 

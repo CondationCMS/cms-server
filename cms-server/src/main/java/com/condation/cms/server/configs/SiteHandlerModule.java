@@ -28,6 +28,7 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.media.SiteMediaManager;
@@ -43,7 +44,6 @@ import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.cms.server.handler.module.JettyRouteHandler;
 import com.condation.cms.server.handler.module.JettyRoutesHandler;
 import com.condation.cms.server.FileFolderPathResource;
-import com.condation.cms.utils.SiteUtils;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -94,7 +94,7 @@ public class SiteHandlerModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public JettyModuleHandler moduleHandler(Theme theme, ModuleManager moduleManager, SiteProperties siteProperties) throws IOException {
-		return new JettyModuleHandler(moduleManager, SiteUtils.getActiveModules(siteProperties, theme));
+		return new JettyModuleHandler(moduleManager, SiteUtil.getActiveModules(siteProperties, theme));
 	}
 	
 	@Provides

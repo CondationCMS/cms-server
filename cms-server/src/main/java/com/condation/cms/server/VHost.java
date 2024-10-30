@@ -1,5 +1,17 @@
 package com.condation.cms.server;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+
+import org.eclipse.jetty.http.pathmap.PathSpec;
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.ContextHandler;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.handler.PathMappingsHandler;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
+
 /*-
  * #%L
  * cms-server
@@ -42,6 +54,7 @@ import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.extensions.GlobalExtensions;
@@ -57,38 +70,28 @@ import com.condation.cms.server.configs.SiteGlobalModule;
 import com.condation.cms.server.configs.SiteHandlerModule;
 import com.condation.cms.server.configs.SiteModule;
 import com.condation.cms.server.configs.ThemeModule;
+import com.condation.cms.server.filter.CreateRequestContextFilter;
+import com.condation.cms.server.filter.InitRequestContextFilter;
 import com.condation.cms.server.filter.PooledRequestContextFilter;
+import com.condation.cms.server.filter.RequestLoggingFilter;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
 import com.condation.cms.server.handler.cache.CacheHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
 import com.condation.cms.server.handler.content.JettyViewHandler;
-import com.condation.cms.server.handler.extensions.JettyHttpHandlerExtensionHandler;
 import com.condation.cms.server.handler.extensions.JettyExtensionRouteHandler;
+import com.condation.cms.server.handler.extensions.JettyHttpHandlerExtensionHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.cms.server.handler.module.JettyRouteHandler;
 import com.condation.cms.server.handler.module.JettyRoutesHandler;
-import com.condation.cms.server.filter.CreateRequestContextFilter;
-import com.condation.cms.server.filter.InitRequestContextFilter;
-import com.condation.cms.server.filter.RequestLoggingFilter;
-import com.condation.cms.utils.SiteUtils;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.List;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.http.pathmap.PathSpec;
-import org.eclipse.jetty.server.Handler;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.PathMappingsHandler;
-import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 
 /**
  *
@@ -134,7 +137,7 @@ public class VHost {
 
 			this.injector.getInstance(SiteMediaManager.class).reloadTheme(theme);
 
-			this.injector.getInstance(ThemeMediaManager.class).reloadTheme(theme);;
+			this.injector.getInstance(ThemeMediaManager.class).reloadTheme(theme);
 
 			ResourceHandler themeAssetsHandler = this.injector.getInstance(Key.get(ResourceHandler.class, Names.named("theme")));
 			themeAssetsHandler.stop();
@@ -211,7 +214,7 @@ public class VHost {
 	}
 
 	protected List<String> getActiveModules() {
-		return SiteUtils.getActiveModules(
+		return SiteUtil.getActiveModules(
 				injector.getInstance(SiteProperties.class),
 				injector.getInstance(Theme.class)
 		);

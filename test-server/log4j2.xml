@@ -2,7 +2,7 @@
 <Configuration status="WARN" monitorInterval="30">
 	<Properties>
 		<Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} - %m%n</Property>
-		<Property name="LOG_LOC">logs/</Property>
+		<Property name="LOG_LOC">${sys:cms-logs-folder}</Property>
 		<Property name="MAX">5</Property>
 	</Properties>
  

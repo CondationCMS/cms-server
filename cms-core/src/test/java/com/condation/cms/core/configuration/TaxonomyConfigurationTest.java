@@ -52,6 +52,7 @@ public class TaxonomyConfigurationTest {
 	public void setup() throws IOException, SchedulerException {
 		configuration = TaxonomyConfiguration.builder(eventBus)
 				.id("taxonomy-config")
+				.hostBase(Path.of("."))
 				.addSource(YamlConfigSource.build(Path.of("configs/taxonomy.yaml")))
 				.addSource(TomlConfigSource.build(Path.of("configs/taxonomy.toml")))
 				.build();

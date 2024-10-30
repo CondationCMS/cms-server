@@ -25,6 +25,7 @@ package com.condation.cms.cli.commands.modules;
 
 
 import com.condation.cms.CMSServer;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.extensions.repository.ModuleInfo;
 import com.condation.cms.extensions.repository.RemoteModuleRepository;
 import java.io.IOException;
@@ -58,11 +59,11 @@ public abstract class AbstractModuleCommand {
 	}
 	
 	public static Path getModuleFolder (String module) {
-		return Path.of("modules/" + module);
+		return ServerUtil.getPath("modules/" + module);
 	}
 	
 	public static void createModulesFolder () throws IOException {
-		var modPath = Path.of("modules/");
+		var modPath = ServerUtil.getPath("modules/");
 		if (!Files.exists(modPath)) {
 			Files.createDirectories(modPath);
 		}

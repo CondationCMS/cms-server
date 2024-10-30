@@ -1,5 +1,8 @@
 package com.condation.cms.cli.commands.extensions;
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-server
@@ -82,16 +85,17 @@ public class InstallCommand extends AbstractExtensionCommand implements Runnable
 			}
 			
 			try {
-				if (!Files.exists(Path.of("hosts/%s".formatted(host)))) {
+				var hostsBase = ServerUtil.getPath(Constants.Folders.HOSTS);
+				if (!Files.exists(hostsBase.resolve("%s".formatted(host)))) {
 					System.err.printf("site %s doesn't exists", host);
 					return;
 				}
-				if (!Files.exists(Path.of("hosts/%s/extensions".formatted(host)))) {
-					Files.createDirectories(Path.of("hosts/%s/extensions".formatted(host)));
+				if (!Files.exists(hostsBase.resolve("%s/extensions".formatted(host)))) {
+					Files.createDirectories(hostsBase.resolve("%s/extensions".formatted(host)));
 				}
 				
 				Files.writeString(
-						Path.of("hosts/%s/extensions/%s.js".formatted(host, extension)),
+						hostsBase.resolve("%s/extensions/%s.js".formatted(host, extension)),
 						content.get());
 				
 				System.out.printf("extension '%s' successfuly downloaded into '%s'!", extension, host);

@@ -1,5 +1,7 @@
 package com.condation.cms.git.tasks;
 
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-git
@@ -47,7 +49,7 @@ public class CloneTask implements Task<Boolean> {
 	@Override
 	public Boolean call() throws Exception {
 		
-		Path targetFolder = Path.of(repo.getFolder());
+		Path targetFolder = ServerUtil.getPath(repo.getFolder());
 		if (Files.exists(targetFolder)) {
 			log.trace("repository already cloned");
 			return Boolean.TRUE;
@@ -62,7 +64,7 @@ public class CloneTask implements Task<Boolean> {
 		try {
 			result = Git.cloneRepository()
 				.setURI(repo.getUri())
-				.setDirectory(new File(repo.getFolder()))
+				.setDirectory(targetFolder.toFile())
 				.setBranchesToClone(Arrays.asList("refs/heads/" + repo.getBranch()))
 				.setBranch("refs/heads/" + repo.getBranch())
 				.setCredentialsProvider(credentialProvider)

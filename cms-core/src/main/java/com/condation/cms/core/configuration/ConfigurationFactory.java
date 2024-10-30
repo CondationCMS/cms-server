@@ -1,5 +1,6 @@
 package com.condation.cms.core.configuration;
 
+import com.condation.cms.api.Constants;
 /*-
  * #%L
  * tests
@@ -25,6 +26,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.scheduler.CronJobScheduler;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.configs.MediaConfiguration;
 import com.condation.cms.core.configuration.configs.TaxonomyConfiguration;
 import com.condation.cms.core.configuration.reload.CronReload;
@@ -93,11 +95,12 @@ public class ConfigurationFactory {
 		return themeConfiguration(id, null, themePath);
 	}
 	private static SimpleConfiguration themeConfiguration(String id, EventBus eventBus, String theme) throws IOException {
+		var themeBase = ServerUtil.getPath(Constants.Folders.THEMES);
 		return SimpleConfiguration.builder(eventBus)
 				.id(id)
 				.reloadStrategy(new NoReload())
-				.addSource(YamlConfigSource.build(Path.of("themes/%s/theme.yaml".formatted(theme))))
-				.addSource(TomlConfigSource.build(Path.of("themes/%s/theme.toml".formatted(theme))))
+				.addSource(YamlConfigSource.build(themeBase.resolve("%s/theme.yaml".formatted(theme))))
+				.addSource(TomlConfigSource.build(themeBase.resolve("%s/theme.toml".formatted(theme))))
 				.build();
 	}
 
@@ -108,18 +111,19 @@ public class ConfigurationFactory {
 		return SimpleConfiguration.builder(eventBus)
 				.id("server")
 				.reloadStrategy(new NoReload())
-				.addSource(YamlConfigSource.build(Path.of("server.yaml")))
-				.addSource(TomlConfigSource.build(Path.of("server.toml")))
+				.addSource(YamlConfigSource.build(ServerUtil.getPath("server.yaml")))
+				.addSource(TomlConfigSource.build(ServerUtil.getPath("server.toml")))
 				.build();
 	}
 
 	private static MediaConfiguration mediaConfiguration(EventBus eventBus, Path hostBase, List<String> themes) throws IOException {
+		var themeBase = ServerUtil.getPath(Constants.Folders.THEMES);
 		List<ConfigSource> themeSources = new ArrayList<>();
 		for (String theme : themes) {
 			themeSources.add(
-					YamlConfigSource.build(Path.of("themes/%s/config/media.yaml".formatted(theme))));
+					YamlConfigSource.build(themeBase.resolve("%s/config/media.yaml".formatted(theme))));
 			themeSources.add(
-					TomlConfigSource.build(Path.of("themes/%s/config/media.toml".formatted(theme))));
+					TomlConfigSource.build(themeBase.resolve("%s/config/media.toml".formatted(theme))));
 		};
 		
 		themeSources.add(YamlConfigSource.build(hostBase.resolve("config/media.yaml")));
@@ -165,6 +169,7 @@ public class ConfigurationFactory {
 		return TaxonomyConfiguration.builder(eventBus)
 				.id("taxonomy")
 				.reloadStrategy(reloadStrategy)
+				.hostBase(hostBase)
 				.addSource(YamlConfigSource.build(hostBase.resolve("config/taxonomy.yaml")))
 				.addSource(TomlConfigSource.build(hostBase.resolve("config/taxonomy.toml")))
 				.build();

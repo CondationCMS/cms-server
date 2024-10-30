@@ -33,6 +33,7 @@ import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.google.inject.Injector;
@@ -95,11 +96,11 @@ public class JettyServer implements AutoCloseable {
 
 		var properties = globalInjector.getInstance(ServerProperties.class);
 
-		Files.list(Path.of("hosts")).forEach((hostPath) -> {
+		Files.list(ServerUtil.getPath(Constants.Folders.HOSTS)).forEach((hostPath) -> {
 			if (SiteUtil.isSite(hostPath)) {
 				try {
 					var host = new VHost(hostPath);
-					host.init(Path.of(Constants.Folders.MODULES), globalInjector);
+					host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
 					vhosts.add(host);
 				} catch (IOException ex) {
 					log.error(null, ex);

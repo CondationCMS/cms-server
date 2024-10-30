@@ -1,5 +1,7 @@
 package com.condation.cms.git.tasks;
 
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-git
@@ -45,7 +47,7 @@ public class FetchTask implements Task<Boolean> {
 	@Override
 	public Boolean call() throws Exception {
 
-		Path targetFolder = Path.of(repo.getFolder());
+		Path targetFolder = ServerUtil.getPath(repo.getFolder());
 		if (!Files.exists(targetFolder)) {
 			log.trace("target folder does not exists");
 			return Boolean.FALSE;
@@ -56,7 +58,7 @@ public class FetchTask implements Task<Boolean> {
 				repo.getCredentials().getPassword()
 		);
 
-		Git git_repo = Git.open(new File(repo.getFolder()));
+		Git git_repo = Git.open(targetFolder.toFile());
 		try {
 
 			var result = git_repo.fetch()

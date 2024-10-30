@@ -1,5 +1,8 @@
 package com.condation.cms.cli.tools;
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-server
@@ -64,7 +67,7 @@ public class ThemesUtil {
 	public static Set<String> getRequiredSiteThemes () {
 		Set<String> requiredThemes = new HashSet<>();
 		try {
-			Files.list(Path.of("hosts/"))
+			Files.list(ServerUtil.getPath(Constants.Folders.HOSTS))
 					.filter(ThemesUtil::isHost)
 					.forEach(site -> {
 						try {
@@ -88,7 +91,7 @@ public class ThemesUtil {
 	private static Set<String> getRequiredParentThemes () {
 		Set<String> requiredThemes = new HashSet<>();
 		try {
-			Files.list(Path.of("themes/"))
+			Files.list(ServerUtil.getPath(Constants.Folders.THEMES))
 					.filter(ThemesUtil::isTheme)
 					.forEach(themeConfig -> {
 						try {

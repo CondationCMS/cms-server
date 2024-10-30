@@ -1,5 +1,8 @@
 package com.condation.cms.cli.tools;
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 /*-
  * #%L
  * cms-server
@@ -55,8 +58,8 @@ public class ModulesUtil {
 		Set<String> requiredModules = new HashSet<>();
 		try {
 
-			var hosts = Path.of("hosts/");
-			var themes = Path.of("themes/");
+			var hosts = ServerUtil.getPath(Constants.Folders.HOSTS);
+			var themes = ServerUtil.getPath(Constants.Folders.THEMES);
 			if (Files.exists(hosts)) {
 				Files.list(hosts)
 						.filter(ModulesUtil::isHost)

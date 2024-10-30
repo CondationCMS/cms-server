@@ -26,6 +26,7 @@ package com.condation.cms.cli.commands.server;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.ipc.Command;
@@ -58,7 +59,7 @@ public class Stop implements Runnable {
 				
 				ipcClient.send(new Command("shutdown"));
 				
-				Files.deleteIfExists(Path.of(Constants.PID_FILE));
+				Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
 			}
 			
 			
@@ -68,10 +69,11 @@ public class Stop implements Runnable {
 	}
 	
 	private static Optional<ProcessHandle> getCMSProcess () throws Exception {
-		if (!Files.exists(Path.of(Constants.PID_FILE))) {
+		var pidFile = ServerUtil.getPath(Constants.PID_FILE);
+		if (!Files.exists(pidFile)) {
 			return Optional.empty();
 		}
-		var pid = Files.readString(Path.of(Constants.PID_FILE));
+		var pid = Files.readString(pidFile);
 		return ProcessHandle.of(Long.parseLong(pid.trim()));
 	}
 

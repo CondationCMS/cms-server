@@ -24,6 +24,9 @@ package com.condation.cms.cli.commands.modules;
 
 
 import com.condation.cms.CMSServer;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 import static com.condation.cms.cli.commands.modules.AbstractModuleCommand.createModulesFolder;
 import com.condation.cms.extensions.repository.InstallationHelper;
 import java.io.IOException;
@@ -83,7 +86,7 @@ public class GetCommand extends AbstractModuleCommand implements Runnable {
 			var info = getRepository().getInfo(module).get();
 
 			System.out.printf("get module %s \r\n", module);
-			getRepository().download(info.getFile(), Path.of("modules/"));
+			getRepository().download(info.getFile(), ServerUtil.getPath(Constants.Folders.MODULES));
 			System.out.println("module downloaded");
 		} else {
 			System.out.printf("can not find module %s in registry", module);

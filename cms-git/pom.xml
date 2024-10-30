@@ -10,6 +10,10 @@
 	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jgit</groupId>
 			<artifactId>org.eclipse.jgit</artifactId>
 		</dependency>

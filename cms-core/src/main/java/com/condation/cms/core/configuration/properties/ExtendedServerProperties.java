@@ -27,6 +27,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.IPCProperties;
 import com.condation.cms.api.PerformanceProperties;
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.nio.file.Path;
 
@@ -59,7 +60,7 @@ public class ExtendedServerProperties implements ServerProperties {
 
 	@Override
 	public Path getThemesFolder() {
-		return Path.of("themes/");
+		return ServerUtil.getPath(Constants.Folders.THEMES);
 	}
 
 	@Override

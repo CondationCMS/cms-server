@@ -25,6 +25,8 @@ package com.condation.cms;
 
 
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,11 +42,12 @@ import org.semver4j.Semver;
 public class CMSServer {
 
 	public static boolean isRunning () {
-		if (!Files.exists(Path.of(Constants.PID_FILE))) {
+		var pidFile = ServerUtil.getPath(Constants.PID_FILE);
+		if (!Files.exists(pidFile)) {
 			return false;
 		}
 		try {
-			var pid = Files.readString(Path.of(Constants.PID_FILE));
+			var pid = Files.readString(pidFile);
 			
 			return ProcessHandle.of(Long.parseLong(pid)).isPresent();
 		} catch (IOException ex) {

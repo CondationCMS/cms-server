@@ -27,6 +27,7 @@ package com.condation.cms.cli.commands.server;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.cli.tools.ThemesUtil;
 import com.condation.cms.git.RepositoryManager;
@@ -112,12 +113,12 @@ public class Startup implements Runnable {
 	
 	
 	private static void writePidFile () throws IOException {
-		Files.deleteIfExists(Path.of(Constants.PID_FILE));
-		Files.writeString(Path.of(Constants.PID_FILE), String.valueOf(ProcessHandle.current().pid()));
+		Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
+		Files.writeString(ServerUtil.getPath(Constants.PID_FILE), String.valueOf(ProcessHandle.current().pid()));
 	}
 
 	private static void initGitRepositoryManager(Injector globaInjector) throws IOException {
-		Path gitConfig = Path.of("git.yaml");
+		Path gitConfig = ServerUtil.getPath("git.yaml");
 		if (!Files.exists(gitConfig)) {
 			log.info("no repository configuration found");
 			return;

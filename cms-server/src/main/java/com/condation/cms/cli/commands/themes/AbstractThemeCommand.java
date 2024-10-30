@@ -24,6 +24,8 @@ package com.condation.cms.cli.commands.themes;
 
 
 import com.condation.cms.CMSServer;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import com.condation.cms.extensions.repository.ModuleInfo;
@@ -48,7 +50,7 @@ public abstract class AbstractThemeCommand {
 	private RemoteModuleRepository<ModuleInfo> repository = new RemoteModuleRepository(ModuleInfo.class, DEFAULT_REGISTRY_URL);
 
 	protected static Path getThemeFolder (String theme) {
-		return Path.of("themes/" + theme);
+		return ServerUtil.getPath(Constants.Folders.THEMES).resolve(theme);
 	}
 	
 	protected boolean isCompatibleWithServer(String extension) {

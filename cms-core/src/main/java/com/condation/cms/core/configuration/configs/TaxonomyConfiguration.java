@@ -56,6 +56,7 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 	private final ReloadStrategy reloadStrategy;
 	private final EventBus eventBus;
 	private final String id;
+	private final Path hostBase;
 
 	private ConcurrentMap<String, Taxonomy> taxonomies = new ConcurrentHashMap<>();
 	
@@ -64,6 +65,7 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 		this.reloadStrategy = builder.reloadStrategy;
 		this.eventBus = builder.eventBus;
 		this.id = builder.id;
+		this.hostBase = builder.hostBase;
 		reloadStrategy.register(this);
 		
 		reload();
@@ -109,8 +111,8 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 			var tomlFile = "configs/taxonomy.%s.toml".formatted(taxonomy.getSlug());
 			
 			var valueSrc = List.of(
-					YamlConfigSource.build(Path.of(yamlFile)),
-					TomlConfigSource.build(Path.of(tomlFile))
+					YamlConfigSource.build(hostBase.resolve(yamlFile)),
+					TomlConfigSource.build(hostBase.resolve(tomlFile))
 			);
 			
 			var values = valueSrc.stream()
@@ -138,11 +140,17 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 		private ReloadStrategy reloadStrategy = new NoReload();
 		private String id = UUID.randomUUID().toString();
 		private final EventBus eventBus;
+		private Path hostBase;
 		
 		public Builder (EventBus eventbus) {
 			this.eventBus = eventbus;
 		}
 		
+		public Builder hostBase (Path hostBase) {
+			this.hostBase = hostBase;
+			return this;
+		}
+
 		public Builder id (String uniqueId) {
 			this.id = uniqueId;
 			return this;

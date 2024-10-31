@@ -297,16 +297,8 @@ public class SiteModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public CronJobContext cronJobContext(SiteProperties siteProperties, ServerProperties serverProperties, FileDB db, EventBus eventBus, Theme theme,
-			Configuration configuration, Messaging messaging) {
+	public CronJobContext cronJobContext() {
 		final CronJobContext cronJobContext = new CronJobContext();
-		cronJobContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
-		cronJobContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(serverProperties));
-		cronJobContext.add(DBFeature.class, new DBFeature(db));
-		cronJobContext.add(EventBusFeature.class, new EventBusFeature(eventBus));
-		cronJobContext.add(ThemeFeature.class, new ThemeFeature(theme));
-		cronJobContext.add(MessagingFeature.class, new MessagingFeature(messaging));
-		cronJobContext.add(ConfigurationFeature.class, new ConfigurationFeature(configuration));
 		
 		return cronJobContext;
 	}

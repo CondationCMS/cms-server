@@ -37,6 +37,7 @@ import com.condation.cms.extensions.GlobalExtensions;
 import com.condation.cms.extensions.hooks.GlobalHooks;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Binder;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
@@ -124,5 +125,11 @@ public class SiteGlobalModule implements com.google.inject.Module {
 			return extOpt.get().getCacheProvider();
 		}
 		return new LocalCacheProvider();
+	}
+
+	@Provides
+	@Singleton
+	public SiteConfigInitializer siteConfigInitializer (Injector injector) {
+		return new SiteConfigInitializer(injector);
 	}
 }

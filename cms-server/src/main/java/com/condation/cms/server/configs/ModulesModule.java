@@ -120,17 +120,8 @@ public class ModulesModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public CMSModuleContext moduleContext(SiteProperties siteProperties, ServerProperties serverProperties, FileDB db, EventBus eventBus, Theme theme,
-			Configuration configuration, SiteCronJobScheduler cronJobScheduler, Messaging messaging) {
+	public CMSModuleContext moduleContext() {
 		final CMSModuleContext cmsModuleContext = new CMSModuleContext();
-		cmsModuleContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
-		cmsModuleContext.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(serverProperties));
-		cmsModuleContext.add(DBFeature.class, new DBFeature(db));
-		cmsModuleContext.add(EventBusFeature.class, new EventBusFeature(eventBus));
-		cmsModuleContext.add(MessagingFeature.class, new MessagingFeature(messaging));
-		cmsModuleContext.add(ThemeFeature.class, new ThemeFeature(theme));
-		cmsModuleContext.add(ConfigurationFeature.class, new ConfigurationFeature(configuration));
-		cmsModuleContext.add(CronJobSchedulerFeature.class, new CronJobSchedulerFeature(cronJobScheduler));
 
 		return cmsModuleContext;
 	}
@@ -142,7 +133,7 @@ public class ModulesModule extends AbstractModule {
 	}
 
 	/**
-	 * The markedjs markdown renderer is implemented using graaljs, so we need a fresh instance for every request
+	 * 
 	 *
 	 * @param siteProperties
 	 * @param moduleManager

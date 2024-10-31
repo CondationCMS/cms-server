@@ -66,6 +66,7 @@ import com.condation.cms.media.ThemeMediaManager;
 import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.server.configs.ModulesModule;
+import com.condation.cms.server.configs.SiteConfigInitializer;
 import com.condation.cms.server.configs.SiteGlobalModule;
 import com.condation.cms.server.configs.SiteHandlerModule;
 import com.condation.cms.server.configs.SiteModule;
@@ -167,17 +168,10 @@ public class VHost {
 
 		// start configuration managment
 		injector.getInstance(ConfigManagement.class).initConfiguration(configuration);
+		// run site initializer
+		injector.getInstance(SiteConfigInitializer.class).init();
 		
-		final CMSModuleContext cmsModuleContext = injector.getInstance(CMSModuleContext.class);
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		var contentResolver = injector.getInstance(ContentResolver.class);
-		var requestContextFactory = injector.getInstance(RequestContextFactory.class);
-
-		cmsModuleContext.add(
-				ContentRenderFeature.class,
-				new ContentRenderFeature(new DefaultRenderContentFunction(contentResolver, requestContextFactory))
-		);
-
 		moduleManager.initModules();
 		List<String> activeModules = getActiveModules();
 		activeModules.stream()

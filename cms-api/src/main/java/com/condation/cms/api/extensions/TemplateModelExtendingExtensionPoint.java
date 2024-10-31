@@ -22,16 +22,10 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
+import com.condation.cms.api.template.TemplateEngine;
 
-import com.condation.cms.api.cache.CacheProvider;
+public abstract class TemplateModelExtendingExtensionPoint extends AbstractExtensionPoint{
 
-/**
- *
- * @author t.marx
- */
-public abstract class CacheProviderExtentionPoint extends AbstractExtensionPoint {
-
-	public abstract String getName ();
-	public abstract CacheProvider getCacheProvider ();
+	public abstract void extendModel (TemplateEngine.Model model);
 	
 }

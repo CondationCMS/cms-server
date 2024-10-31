@@ -1,5 +1,10 @@
 package com.condation.cms.modules.example;
 
+import java.util.List;
+import java.util.UUID;
+
+import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
+
 /*-
  * #%L
  * example-module
@@ -22,19 +27,16 @@ package com.condation.cms.modules.example;
  * #L%
  */
 
-
-import com.condation.cms.api.extensions.TemplateModelExtendingExtentionPoint;
+ 
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.modules.api.annotation.Extension;
-import java.util.List;
-import java.util.UUID;
 
 /**
  *
  * @author thmar
  */
-@Extension(TemplateModelExtendingExtentionPoint.class)
-public class ExampleTemplateModelExtendingExtensionEndPoint extends TemplateModelExtendingExtentionPoint {
+@Extension(TemplateModelExtendingExtensionPoint.class)
+public class ExampleTemplateModelExtendingExtensionEndPoint extends TemplateModelExtendingExtensionPoint {
 
 	@Override
 	public void extendModel(TemplateEngine.Model model) {

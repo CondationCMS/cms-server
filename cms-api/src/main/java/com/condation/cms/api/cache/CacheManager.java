@@ -23,7 +23,6 @@ package com.condation.cms.api.cache;
  */
 
 
-import java.io.Serializable;
 import java.time.Duration;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
@@ -36,11 +35,11 @@ import lombok.RequiredArgsConstructor;
 public class CacheManager {
 	private final CacheProvider cacheProvider;
 	
-	public <K extends Serializable, V extends Serializable> ICache<K, V> get (String name, CacheConfig config) {
+	public <K, V> ICache<K, V> get (String name, CacheConfig config) {
 		return cacheProvider.getCache(name, config);
 	}
 	
-	public <K extends Serializable, V extends Serializable> ICache<K, V> get (String name, CacheConfig config, Function<K, V> loader) {
+	public <K, V> ICache<K, V> get (String name, CacheConfig config, Function<K, V> loader) {
 		return cacheProvider.getCache(name, config, loader);
 	}
 	

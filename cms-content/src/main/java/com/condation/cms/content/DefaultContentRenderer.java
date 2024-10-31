@@ -29,6 +29,7 @@ import com.condation.cms.api.db.Page;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.extensions.ContentQueryOperatorExtensionPoint;
+import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
 import com.condation.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
@@ -225,6 +226,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 	private void extendModel(final TemplateEngine.Model model) {
 		moduleManager.extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
+		moduleManager.extensions(TemplateModelExtendingExtensionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
 	}
 
 	@Override

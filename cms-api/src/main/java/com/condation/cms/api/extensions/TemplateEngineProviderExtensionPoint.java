@@ -22,19 +22,14 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-
-import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.template.TemplateEngine;
 
 /**
- * ExtensionPoint for modules to register hooks.
- *
- * @deprecated  As of release 7.2.0, replaced by {@link HookSystemRegisterExtensionPoint}
- * 
- * @author thmar
+ * ExtensionPoint to register TemplateEngines
  */
-@Deprecated(since = "7.2.0", forRemoval = true)
-public abstract class HookSystemRegisterExtentionPoint extends AbstractExtensionPoint{
+public abstract class TemplateEngineProviderExtensionPoint extends AbstractExtensionPoint {
 
-	public abstract void register (final HookSystem hookSystem);
+	public abstract String getName ();
+	public abstract TemplateEngine getTemplateEngine ();
 	
 }

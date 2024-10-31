@@ -23,13 +23,13 @@ package com.condation.cms.core.messages;
  */
 
 
-import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Locale;
-import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,18 +50,22 @@ public class ThemeMessageSourceTest {
 	@Mock
 	ExtendedSiteProperties siteProperties;
 	
+	CacheManager cacheManager = new CacheManager(new LocalCacheProvider());
+	
 	@BeforeEach
 	public void setup() {
 		Mockito.when(siteProperties.locale()).thenReturn(Locale.getDefault());
 		messageSource = new DefaultMessageSource(
 				siteProperties, 
-				Path.of("src/test/resources/messages")
+				Path.of("src/test/resources/messages"),
+				cacheManager.get("messages", new CacheManager.CacheConfig(10l, Duration.ofMinutes(1)))
 		);
 		
 		themeMessageSource = new ThemeMessageSource(
 				siteProperties, 
 				Path.of("src/test/resources/parent_messages"), 
-				messageSource
+				messageSource,
+				cacheManager.get("theme-messages", new CacheManager.CacheConfig(10l, Duration.ofMinutes(1)))
 		);
 	}
 

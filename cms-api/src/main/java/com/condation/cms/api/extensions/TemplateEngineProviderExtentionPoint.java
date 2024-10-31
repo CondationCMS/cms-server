@@ -27,8 +27,11 @@ import com.condation.cms.api.template.TemplateEngine;
 
 /**
  *
+ * @deprecated  As of release 7.2.0, replaced by {@link TemplateEngineProviderExtensionPoint}
+ * 
  * @author t.marx
  */
+@Deprecated(since = "7.2.0", forRemoval = true)
 public abstract class TemplateEngineProviderExtentionPoint extends AbstractExtensionPoint {
 
 	public abstract String getName ();

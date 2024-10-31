@@ -27,7 +27,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.CacheProvider;
-import com.condation.cms.api.extensions.CacheProviderExtentionPoint;
+import com.condation.cms.api.extensions.CacheProviderExtensionPoint;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.core.cache.LocalCacheProvider;
@@ -117,8 +117,8 @@ public class SiteGlobalModule implements com.google.inject.Module {
 		if (Constants.DEFAULT_CACHE_ENGINE.equals(cacheEngine)) {
 			return new LocalCacheProvider();
 		}
-		List<CacheProviderExtentionPoint> extensions = moduleManager.extensions(CacheProviderExtentionPoint.class);
-		Optional<CacheProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(cacheEngine)).findFirst();
+		List<CacheProviderExtensionPoint> extensions = moduleManager.extensions(CacheProviderExtensionPoint.class);
+		Optional<CacheProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(cacheEngine)).findFirst();
 
 		if (extOpt.isPresent()) {
 			return extOpt.get().getCacheProvider();

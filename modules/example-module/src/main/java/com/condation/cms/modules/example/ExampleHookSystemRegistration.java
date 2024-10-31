@@ -1,5 +1,7 @@
 package com.condation.cms.modules.example;
 
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
+
 /*-
  * #%L
  * example-module
@@ -23,7 +25,6 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.condation.cms.api.extensions.HookSystemRegisterExtentionPoint;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.modules.api.annotation.Extension;
 
@@ -31,8 +32,8 @@ import com.condation.modules.api.annotation.Extension;
  *
  * @author t.marx
  */
-@Extension(HookSystemRegisterExtentionPoint.class)
-public class ExampleHookSystemRegistration extends HookSystemRegisterExtentionPoint {
+@Extension(HookSystemRegisterExtensionPoint.class)
+public class ExampleHookSystemRegistration extends HookSystemRegisterExtensionPoint {
 
 	@Override
 	public void register(HookSystem hookSystem) {

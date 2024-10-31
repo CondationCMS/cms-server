@@ -25,7 +25,8 @@ import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.eventbus.EventBus;
-import com.condation.cms.api.extensions.MarkdownRendererProviderExtentionPoint;
+import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
+import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
 import com.condation.cms.api.extensions.TemplateEngineProviderExtentionPoint;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.CronJobSchedulerFeature;
@@ -154,8 +155,8 @@ public class ModulesModule extends AbstractModule {
 			CMSMarkdownRenderer defaultMarkdownRenderer) {
 		var engine = siteProperties.markdownEngine();
 
-		List<MarkdownRendererProviderExtentionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtentionPoint.class);
-		Optional<MarkdownRendererProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
+		List<MarkdownRendererProviderExtensionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtensionPoint.class);
+		Optional<MarkdownRendererProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
 
 		if (extOpt.isPresent()) {
 			return extOpt.get().getRenderer();
@@ -185,14 +186,21 @@ public class ModulesModule extends AbstractModule {
 	public TemplateEngine resolveTemplateEngine(SiteProperties siteProperties, Theme theme, ModuleManager moduleManager) {
 		var engine = getTemplateEngine(siteProperties, theme);
 
-		List<TemplateEngineProviderExtentionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
-		Optional<TemplateEngineProviderExtentionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
+		List<TemplateEngineProviderExtensionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtensionPoint.class);
+		Optional<TemplateEngineProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
 
 		if (extOpt.isPresent()) {
 			return extOpt.get().getTemplateEngine();
-		} else {
-			throw new RuntimeException("no template engine found");
 		}
+
+		List<TemplateEngineProviderExtentionPoint> extensionsLegacy = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
+		Optional<TemplateEngineProviderExtentionPoint> extLegacyOpt = extensionsLegacy.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
+
+		if (extLegacyOpt.isPresent()) {
+			return extLegacyOpt.get().getTemplateEngine();
+		}
+		
+		throw new RuntimeException("no template engine found");
 	}
 
 	/**

@@ -24,10 +24,12 @@ package com.condation.cms.core.messages;
 
 
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.messages.MessageSource;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -37,17 +39,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ThemeMessageSource extends DefaultMessageSource {
 
-	final MessageSource priorizedMessageSource;
+	final MessageSource prioritizedMessageSource;
 
-	public ThemeMessageSource(SiteProperties siteProperties, Path messageFolder, MessageSource priorizedMessageSource) {
-		super(siteProperties, messageFolder);
-		this.priorizedMessageSource = priorizedMessageSource;
+	public ThemeMessageSource(
+			SiteProperties siteProperties, 
+			Path messageFolder, 
+			MessageSource prioritizedMessageSource,
+			ICache<String, String> cache) {
+		super(siteProperties, messageFolder, cache);
+		this.prioritizedMessageSource = prioritizedMessageSource;
 	}
 	
 	@Override
 	public String getLabel (final String bundle, final String label) {
 		
-		var message = priorizedMessageSource.getLabel(bundle, label);
+		var message = prioritizedMessageSource.getLabel(bundle, label);
 		if (!("[" + label + "]").equals(message)) {
 			return message;
 		}
@@ -59,17 +65,17 @@ public class ThemeMessageSource extends DefaultMessageSource {
 	@Override
 	public String getLabel (final String bundle, final String label, final List<Object> data) {
 		
-		var message = priorizedMessageSource.getLabel(bundle, label, data);
+		var message = prioritizedMessageSource.getLabel(bundle, label, data);
 		if (!("[" + label + "]").equals(message)) {
 			return message;
 		}
 		
 		try {
-			var resourceBundle = fromClassLoader(bundle, siteProperties.locale());
-			if (resourceBundle != null && resourceBundle.containsKey(label)) {
-				var messageFormat = new MessageFormat(resourceBundle.getString(label), siteProperties.locale());
-				return messageFormat.format(data.toArray());
+			if (!messages.contains(label)) {
+				fromClassLoader(bundle, siteProperties.locale());
 			}
+			var messageFormat = new MessageFormat(messages.get(label), siteProperties.locale());
+			return messageFormat.format(data.toArray());
 		} catch (Exception e) {
 			log.error("bundle not found", bundle);
 		}

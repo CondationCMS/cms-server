@@ -21,8 +21,6 @@ package com.condation.cms.core.cache;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.condation.cms.api.cache.CacheManager;
@@ -40,39 +38,37 @@ import java.util.function.Function;
 public class LocalCacheProvider implements CacheProvider {
 
 	private final ConcurrentMap<String, ICache> caches = new ConcurrentHashMap<>();
-	
-	private <K extends Serializable, V extends Serializable> Cache<K,V> buildCache (CacheManager.CacheConfig config) {
+
+	private <K, V> Cache<K, V> buildCache(CacheManager.CacheConfig config) {
 		var cache = Caffeine.newBuilder();
-		
-		if (config.maxSize() != null)  {
+
+		if (config.maxSize() != null) {
 			cache.maximumSize(config.maxSize());
 		}
 		if (config.lifeTime() != null) {
 			cache.expireAfterAccess(config.lifeTime());
 			cache.expireAfterWrite(config.lifeTime());
 		}
-		
+
 		return cache.build();
-	}
-	
-	@Override
-	public <K extends Serializable, V extends Serializable> ICache<K, V> getCache(String name, CacheManager.CacheConfig config) {
-		if (!caches.containsKey(name)) {
-			caches.putIfAbsent(name, new LocalCache(
-					buildCache(config), 
-					(key) -> null));
-		}
-		return caches.get(name);
 	}
 
 	@Override
-	public <K extends Serializable, V extends Serializable> ICache<K, V> getCache(String name, CacheManager.CacheConfig config, Function<K, V> loader) {
-		if (!caches.containsKey(name)) {
-			caches.putIfAbsent(name, new LocalCache(
-					buildCache(config), 
-					loader));
-		}
-		return caches.get(name);
+	public <K, V> ICache<K, V> getCache(String name, CacheManager.CacheConfig config) {
+		return caches.computeIfAbsent(name, (cacheName)
+				-> new LocalCache(
+						buildCache(config),
+						(key) -> null)
+		);
 	}
-	
+
+	@Override
+	public <K, V> ICache<K, V> getCache(String name, CacheManager.CacheConfig config, Function<K, V> loader) {
+		return caches.computeIfAbsent(name, (cacheName)
+				-> new LocalCache(
+						buildCache(config),
+						loader)
+		);
+	}
+
 }

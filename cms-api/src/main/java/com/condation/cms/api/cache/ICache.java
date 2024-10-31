@@ -31,7 +31,7 @@ import java.io.Serializable;
  * @param <K>
  * @param <V>
  */
-public interface ICache<K extends Serializable, V extends Serializable> {
+public interface ICache<K, V> {
 	
 	void put (K key, V value);
 	

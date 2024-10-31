@@ -26,8 +26,11 @@ import com.condation.cms.api.template.TemplateEngine;
 
 /**
  *
+ * @deprecated  As of release 7.2.0, replaced by {@link TemplateModelExtendingExtensionPoint}
+ * 
  * @author thmar
  */
+@Deprecated(since = "7.2.0", forRemoval = true)
 public abstract class TemplateModelExtendingExtentionPoint extends AbstractExtensionPoint{
 
 	public abstract void extendModel (TemplateEngine.Model model);

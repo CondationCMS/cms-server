@@ -32,7 +32,7 @@ import java.util.function.Function;
  */
 public interface CacheProvider {
 	
-	<K extends Serializable, V extends Serializable> ICache<K, V> getCache (String name, CacheManager.CacheConfig config);
+	<K, V> ICache<K, V> getCache (String name, CacheManager.CacheConfig config);
 	
-	<K extends Serializable, V extends Serializable> ICache<K, V> getCache (String name, CacheManager.CacheConfig config, Function<K, V> loader);
+	<K, V> ICache<K, V> getCache (String name, CacheManager.CacheConfig config, Function<K, V> loader);
 }

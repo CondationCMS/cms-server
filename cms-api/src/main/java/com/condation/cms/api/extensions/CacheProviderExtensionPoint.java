@@ -23,18 +23,15 @@ package com.condation.cms.api.extensions;
  */
 
 
-import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.cache.CacheProvider;
 
 /**
- * ExtensionPoint for modules to register hooks.
  *
- * @deprecated  As of release 7.2.0, replaced by {@link HookSystemRegisterExtensionPoint}
- * 
- * @author thmar
+ * @author t.marx
  */
-@Deprecated(since = "7.2.0", forRemoval = true)
-public abstract class HookSystemRegisterExtentionPoint extends AbstractExtensionPoint{
+public abstract class CacheProviderExtensionPoint extends AbstractExtensionPoint {
 
-	public abstract void register (final HookSystem hookSystem);
+	public abstract String getName ();
+	public abstract CacheProvider getCacheProvider ();
 	
 }

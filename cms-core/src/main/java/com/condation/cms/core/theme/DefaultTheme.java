@@ -29,12 +29,15 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.ThemeProperties;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.messages.MessageSource;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import com.condation.cms.core.messages.EmptyMessageSource;
 import com.condation.cms.core.messages.ThemeMessageSource;
+import java.time.Duration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,17 +68,26 @@ public class DefaultTheme implements Theme {
 			Path themePath, 
 			SiteProperties siteProperties, 
 			MessageSource siteMessages, 
-			ServerProperties serverProperties) throws IOException {
+			ServerProperties serverProperties,
+			CacheManager cacheManager) throws IOException {
 		
-		return load(themePath, siteProperties, siteMessages, serverProperties, true);
+		return load(themePath, siteProperties, siteMessages, serverProperties, cacheManager, true);
 	}
 	
 	private static Theme load(
 			Path themePath, 
 			SiteProperties siteProperties, 
 			MessageSource siteMessages, 
-			ServerProperties serverProperties, boolean withParent) throws IOException {
-		MessageSource messages = new ThemeMessageSource(siteProperties, themePath.resolve("messages/"), siteMessages);
+			ServerProperties serverProperties, CacheManager cacheManager, boolean withParent) throws IOException {
+		
+		ICache<String, String> cache = null;
+		if (withParent) {
+			cache = cacheManager.get("theme.messages", new CacheManager.CacheConfig(500l, Duration.ofMinutes(5)));
+		} else {
+			cache = cacheManager.get("theme.parent.messages", new CacheManager.CacheConfig(500l, Duration.ofMinutes(5)));
+		}
+
+		MessageSource messages = new ThemeMessageSource(siteProperties, themePath.resolve("messages/"), siteMessages, cache);
 		
 		var themeConfiguration = ConfigurationFactory.themeConfiguration("theme", themePath.getFileName().toString());
 		
@@ -87,6 +99,7 @@ public class DefaultTheme implements Theme {
 					siteProperties, 
 					messages,
 					serverProperties,
+					cacheManager,
 					false
 			);
 			defaultTheme.parent = parentTheme;

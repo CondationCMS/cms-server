@@ -22,10 +22,20 @@ package com.condation.cms.core.messages;
  * #L%
  */
 
-
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
+import com.google.common.base.Stopwatch;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,17 +52,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class MessageSourceTest {
 
 	private static DefaultMessageSource messageSource;
-	
+
 	@Mock
 	private ExtendedSiteProperties siteProperties;
-	
+
+	CacheManager cacheManager = new CacheManager(new LocalCacheProvider());
+
 	@BeforeEach
 	public void setup() {
 		Mockito.when(siteProperties.locale()).thenReturn(Locale.getDefault());
+
 		messageSource = new DefaultMessageSource(
-				siteProperties, 
-				Path.of("src/test/resources/messages")
-		);
+				siteProperties,
+				Path.of("src/test/resources/messages"),
+				cacheManager.get("messages", new CacheManager.CacheConfig(10l, Duration.ofMinutes(1))));
 	}
 
 	@Test
@@ -60,16 +73,27 @@ public class MessageSourceTest {
 		var label = messageSource.getLabel("wrong_bundle", "a.label");
 		Assertions.assertThat(label).isEqualTo("[a.label]");
 	}
-	
+
 	@Test
 	public void lable_not_found() {
 		var label = messageSource.getLabel("abundle", "wrong.label");
 		Assertions.assertThat(label).isEqualTo("[wrong.label]");
 	}
-	
+
 	@Test
 	public void lable_found() {
 		var label = messageSource.getLabel("abundle", "button.submit");
 		Assertions.assertThat(label).isEqualTo("Absenden");
+	}
+
+	@Test
+	public void simple_performance() throws MalformedURLException {
+		Stopwatch stopwatch = Stopwatch.createStarted();
+		for (int i = 0; i < 1000; i++) {
+			var label = messageSource.getLabel("abundle", "button.submit");
+			Assertions.assertThat(label).isEqualTo("Absenden");
+		}
+		System.out.println("took %d ms".formatted(stopwatch.elapsed(TimeUnit.MILLISECONDS)));
+		stopwatch.stop();
 	}
 }

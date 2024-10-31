@@ -27,6 +27,7 @@ import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.HookSystemRegisterExtentionPoint;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
@@ -153,6 +154,7 @@ public class RequestContextFactory {
 		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
 
 		return hookSystem;
 	}

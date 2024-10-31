@@ -29,7 +29,7 @@ import com.condation.cms.api.markdown.MarkdownRenderer;
  *
  * @author t.marx
  */
-public abstract class MarkdownRendererProviderExtentionPoint extends AbstractExtensionPoint {
+public abstract class MarkdownRendererProviderExtensionPoint extends AbstractExtensionPoint {
 
 	public abstract String getName ();
 	public abstract MarkdownRenderer getRenderer ();

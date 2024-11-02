@@ -36,6 +36,7 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -57,6 +58,9 @@ public class ThemesUtil {
 	}
 	
 	public static Set<String> getRequiredThemes () {
+		if (!Files.exists(ServerUtil.getPath(Constants.Folders.THEMES))) {
+			return Collections.emptySet();
+		}
 		var themes = getRequiredSiteThemes();
 		
 		themes.addAll(getRequiredParentThemes());
@@ -67,7 +71,7 @@ public class ThemesUtil {
 	public static Set<String> getRequiredSiteThemes () {
 		Set<String> requiredThemes = new HashSet<>();
 		try {
-			Files.list(ServerUtil.getPath(Constants.Folders.HOSTS))
+			Files.list(ServerUtil.getPath(Constants.Folders.THEMES))
 					.filter(ThemesUtil::isHost)
 					.forEach(site -> {
 						try {

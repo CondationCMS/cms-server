@@ -3,6 +3,8 @@ title: Startseite
 template: start.html
 search:
     index: false
+seo:
+    description: "Test site for most features"
 ---
 
 # Demo Project

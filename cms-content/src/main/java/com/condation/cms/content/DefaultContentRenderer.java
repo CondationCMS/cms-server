@@ -31,7 +31,6 @@ import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.extensions.ContentQueryOperatorExtensionPoint;
 import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
 import com.condation.cms.api.extensions.TemplateModelExtendingExtentionPoint;
-import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -48,6 +47,7 @@ import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.pipeline.ContentPipelineFactory;
 import com.condation.cms.content.views.model.View;
+import com.condation.cms.core.content.MapAccess;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
@@ -66,7 +66,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -140,7 +139,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		modelExtending.accept(model);
 
-		model.values.put("meta", meta);
+		model.values.put("meta", new MapAccess(meta));
 		model.values.put("sections", sections);
 
 		model.values.put("shortCodes", createShortCodeFunction(context));

@@ -5,7 +5,9 @@
 	<title th:text="${meta.title}"></title>
 	<link rel="canonical" th:href="${site.get('baseurl')} + ${requestContext.uri}" />
 	<link rel="shortcut icon" href="/favicon.ico" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+	<meta name="description" th:content="${meta.getOrDefault('seo.description', '')}">
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/

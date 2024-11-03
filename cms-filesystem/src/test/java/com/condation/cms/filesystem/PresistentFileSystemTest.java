@@ -22,8 +22,6 @@ package com.condation.cms.filesystem;
  * #L%
  */
 
-import com.condation.cms.filesystem.FileSystem;
-import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.utils.FileUtils;
 import java.io.IOException;

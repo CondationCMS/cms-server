@@ -53,6 +53,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -111,6 +113,14 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void shutdown() {
 		if (fileWatcher != null) {
 			fileWatcher.stop();
+		}
+		if (metaData != null) {
+			try {
+				metaData.close();
+			} catch (IOException ex) {
+				log.error("", ex);
+				throw new RuntimeException(ex);
+			}
 		}
 	}
 

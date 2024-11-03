@@ -49,6 +49,15 @@ import org.apache.lucene.search.TermRangeQuery;
 public class QueryHelper {
 	
 	public static void exists (BooleanQuery.Builder queryBuilder, String field, Object value) {
+
+		if (value == null) {
+			queryBuilder.add(
+				TermRangeQuery.newStringRange(field, null, null, true, true),
+				BooleanClause.Occur.FILTER);
+
+			return;
+		}
+		
 		if (value.getClass().isArray()) {
 			value = ((Object[])value)[1];
 		}

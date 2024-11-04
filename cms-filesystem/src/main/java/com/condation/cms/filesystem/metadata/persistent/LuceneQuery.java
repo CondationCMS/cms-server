@@ -112,20 +112,36 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
 		long offset = (page - 1) * size;
 
-		var result = queryNodes();
+		var contentNodes = queryContentNodes();
 
-		var filteredTargetNodes = result.nodes.stream()
+		// sorting
+		if (orderByField.isPresent()) {
+			contentNodes = QueryHelper.sorted(contentNodes, orderByField.get(), Order.ASC.equals(sortOrder));
+		}
+		// paging
+		var filteredTargetNodes = contentNodes.stream()
 				.skip(offset)
 				.limit(size)
 				.toList();
-
+		// mapping
+		var result = mapContentNodes(filteredTargetNodes);
+		
 		int totalPages = (int) Math.ceil((float) result.total / size);
-		return new Page<>(result.total, size, totalPages, (int) page, filteredTargetNodes);
+		return new Page<>(result.total, size, totalPages, (int) page, result.nodes);
 	}
 
 	@Override
 	public List<T> get() {
-		return queryNodes().nodes;
+		
+		var contentNodes = queryContentNodes();
+		// sorting
+		if (orderByField.isPresent()) {
+			contentNodes = QueryHelper.sorted(contentNodes, orderByField.get(), Order.ASC.equals(sortOrder));
+		}
+		// mapping
+		var result = mapContentNodes(contentNodes);
+		
+		return result.nodes;
 	}
 
 	private List<ContentNode> queryContentNodes() {
@@ -163,9 +179,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 		return Collections.emptyList();
 	}
 
-	private NodeResult<T> queryNodes() {
-		var contentNodes = queryContentNodes();
-
+	private NodeResult<T> mapContentNodes (List<ContentNode> contentNodes) {
 		var mappedContentNodes = contentNodes.stream()
 				.map(nodeMapper)
 				.toList();

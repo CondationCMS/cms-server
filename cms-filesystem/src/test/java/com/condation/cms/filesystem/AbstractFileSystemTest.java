@@ -105,4 +105,17 @@ public abstract class AbstractFileSystemTest {
 		nodes = query.where("featured", "none").get();
 		Assertions.assertThat(nodes).hasSize(0);
 	}
+
+	@Test
+	public void test_sorting() throws IOException {
+
+		var nodes = getFileSystem().query((node, i) -> node)
+			.orderby("publish_date").desc()
+			.get();
+		
+		Assertions.assertThat(nodes).hasSize(3);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("start");
+		Assertions.assertThat(nodes.get(1).data().get("name")).isEqualTo("test1");
+		Assertions.assertThat(nodes.get(2).data().get("name")).isEqualTo("test2");
+	}
 }

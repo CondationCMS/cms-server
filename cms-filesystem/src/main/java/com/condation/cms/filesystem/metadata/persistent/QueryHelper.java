@@ -22,7 +22,6 @@ package com.condation.cms.filesystem.metadata.persistent;
  * #L%
  */
 
-
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.metadata.query.Queries;
@@ -47,78 +46,38 @@ import org.apache.lucene.search.TermRangeQuery;
  */
 @Slf4j
 public class QueryHelper {
-	
-	public static void exists (BooleanQuery.Builder queryBuilder, String field, Object value) {
 
-		if (value == null) {
+	public static void exists(BooleanQuery.Builder queryBuilder, String field, Object value) {
+
+		if (true) {
 			queryBuilder.add(
-				TermRangeQuery.newStringRange(field, null, null, true, true),
-				BooleanClause.Occur.FILTER);
-
+					new TermQuery(new Term("_fields", field)),
+					BooleanClause.Occur.FILTER);
 			return;
 		}
-		
-		if (value.getClass().isArray()) {
-			value = ((Object[])value)[1];
-		}
-		if (value instanceof String) {
-			queryBuilder.add(
-				TermRangeQuery.newStringRange(field, null, null, true, true),
-				BooleanClause.Occur.FILTER
-			);
-		} else if (value instanceof Float) {
-			queryBuilder.add(
-					FloatField.newRangeQuery(field, Float.MIN_VALUE, Float.MAX_VALUE),
-				BooleanClause.Occur.FILTER
-			);
-		} else if (value instanceof Double) {
-			queryBuilder.add(
-					DoubleField.newRangeQuery(field, Double.MIN_VALUE, Double.MAX_VALUE),
-				BooleanClause.Occur.FILTER
-			);
-		} else if (value instanceof Integer) {
-			queryBuilder.add(
-					IntField.newRangeQuery(field, Integer.MIN_VALUE, Integer.MAX_VALUE),
-				BooleanClause.Occur.FILTER
-			);
-		} else if (value instanceof Long) {
-			queryBuilder.add(
-					LongField.newRangeQuery(field, Long.MIN_VALUE, Long.MAX_VALUE),
-				BooleanClause.Occur.FILTER
-			);
-		} else if (value instanceof Boolean) {
-			queryBuilder.add(
-					IntField.newRangeQuery(field, Integer.MIN_VALUE, Integer.MAX_VALUE),
-				BooleanClause.Occur.FILTER
-			);
-		}
 	}
-	
+
 	public static void lt(BooleanQuery.Builder queryBuilder, String field, Object value) {
 		switch (value) {
 			case Integer numberValue -> {
 				queryBuilder.add(
 						IntField.newRangeQuery(field, Integer.MIN_VALUE, numberValue - 1),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Long numberValue -> {
 				queryBuilder.add(
 						LongField.newRangeQuery(field, Integer.MIN_VALUE, numberValue - 1),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Float numberValue -> {
 				queryBuilder.add(
 						FloatField.newRangeQuery(field, Integer.MIN_VALUE, numberValue - 0.0001f),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Double numberValue -> {
 				queryBuilder.add(
 						DoubleField.newRangeQuery(field, Integer.MIN_VALUE, numberValue - 0.0001),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			default -> {
 			}
@@ -130,88 +89,76 @@ public class QueryHelper {
 			case Integer numberValue -> {
 				queryBuilder.add(
 						IntField.newRangeQuery(field, Integer.MIN_VALUE, numberValue),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Long numberValue -> {
 				queryBuilder.add(
 						LongField.newRangeQuery(field, Integer.MIN_VALUE, numberValue),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Float numberValue -> {
 				queryBuilder.add(
 						FloatField.newRangeQuery(field, Integer.MIN_VALUE, numberValue),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Double numberValue -> {
 				queryBuilder.add(
 						DoubleField.newRangeQuery(field, Integer.MIN_VALUE, numberValue),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			default -> {
 			}
 		}
 	}
-	
+
 	public static void gt(BooleanQuery.Builder queryBuilder, String field, Object value) {
 		switch (value) {
 			case Integer numberValue -> {
 				queryBuilder.add(
 						IntField.newRangeQuery(field, numberValue + 1, Integer.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Long numberValue -> {
 				queryBuilder.add(
 						LongField.newRangeQuery(field, numberValue + 1, Long.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Float numberValue -> {
 				queryBuilder.add(
 						FloatField.newRangeQuery(field, numberValue + 0.0001f, Float.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Double numberValue -> {
 				queryBuilder.add(
 						DoubleField.newRangeQuery(field, numberValue + 0.0001, Double.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			default -> {
 			}
 		}
 	}
-	
+
 	public static void gte(BooleanQuery.Builder queryBuilder, String field, Object value) {
 		switch (value) {
 			case Integer numberValue -> {
 				queryBuilder.add(
 						IntField.newRangeQuery(field, numberValue, Integer.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Long numberValue -> {
 				queryBuilder.add(
 						LongField.newRangeQuery(field, numberValue, Long.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Float numberValue -> {
 				queryBuilder.add(
 						FloatField.newRangeQuery(field, numberValue, Float.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			case Double numberValue -> {
 				queryBuilder.add(
 						DoubleField.newRangeQuery(field, numberValue, Double.MAX_VALUE),
-						BooleanClause.Occur.MUST
-				);
+						BooleanClause.Occur.MUST);
 			}
 			default -> {
 			}
@@ -225,13 +172,13 @@ public class QueryHelper {
 		}
 	}
 
-	public static void contains(BooleanQuery.Builder queryBuilder, String field, Object value, BooleanClause.Occur occur) {
+	public static void contains(BooleanQuery.Builder queryBuilder, String field, Object value,
+			BooleanClause.Occur occur) {
 		var query = toQuery(field, value);
 		if (query != null) {
 			queryBuilder.add(
 					TermRangeQuery.newStringRange(field, null, null, true, true),
-					BooleanClause.Occur.FILTER
-			);
+					BooleanClause.Occur.FILTER);
 			queryBuilder.add(query, occur);
 		}
 	}
@@ -271,8 +218,7 @@ public class QueryHelper {
 		} else if (value instanceof Boolean booleanValue) {
 			return IntField.newExactQuery(
 					field,
-					booleanValue ? 1 : 0
-			);
+					booleanValue ? 1 : 0);
 		} else if (value instanceof Integer numberValue) {
 			return IntField.newExactQuery(field, numberValue);
 		} else if (value instanceof Long numberValue) {
@@ -284,17 +230,16 @@ public class QueryHelper {
 		}
 		return null;
 	}
-	
-	protected static List<ContentNode> sorted(final List<ContentNode> nodes, final String field, final boolean asc) {
+
+	protected static <T extends ContentNode> List<T> sorted(final List<T> nodes, final String field, final boolean asc) {
 
 		var tempNodes = nodes.stream().sorted(
 				(node1, node2) -> {
-					var value1 = MapUtil.getValue(((ContentNode)node1).data(), field);
-					var value2 = MapUtil.getValue(((ContentNode)node2).data(), field);
+					var value1 = MapUtil.getValue(((ContentNode) node1).data(), field);
+					var value2 = MapUtil.getValue(((ContentNode) node2).data(), field);
 
 					return Queries.compare(value1, value2);
-				}
-		).toList();
+				}).toList();
 
 		if (!asc) {
 			tempNodes = tempNodes.reversed();

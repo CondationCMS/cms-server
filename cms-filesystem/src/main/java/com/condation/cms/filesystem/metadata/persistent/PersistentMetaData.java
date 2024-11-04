@@ -108,6 +108,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		document.add(new StringField("content.type", node.contentType(), Field.Store.NO));
 
 		try {
+			DocumentHelper.addAvailableFields(document);
 			this.index.update(new Term("_uri", uri), document);
 		} catch (IOException ex) {
 			log.error("", ex);

@@ -22,13 +22,15 @@ package com.condation.cms.filesystem;
  * #L%
  */
 
-import com.condation.cms.filesystem.FileSystem;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.yaml.snakeyaml.Yaml;
 
@@ -36,7 +38,7 @@ import org.yaml.snakeyaml.Yaml;
  *
  * @author t.marx
  */
-public class FileSystemTest extends AbstractFileSystemTest {
+public class FileSystemTest {
 
 	static FileSystem fileSystem;
 	
@@ -59,9 +61,100 @@ public class FileSystemTest extends AbstractFileSystemTest {
 	static void shutdown () {
 		fileSystem.shutdown();
 	}
+	
+	@Test
+	public void test_query() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).where("featured", true).get();
+		Assertions.assertThat(nodes).hasSize(2);
+	}
+	
+	@Test
+	public void test_query_in() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereIn("name", "test1", "test2").get();
+		Assertions.assertThat(nodes).hasSize(2);
+	}
+	
+	@Test
+	public void test_query_not_in() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereNotIn("name", "test1", "test2").get();
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("start");
+	}
+	@Test
+	public void test_query_contains() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereContains("taxonomy.tags", "eins").get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
+	
+	@Test
+	public void test_query_contains_not() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).whereNotContains("taxonomy.tags", "eins").get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
+	
+	@Test
+	public void test_lt_lte() throws IOException {
+		var nodes = fileSystem.query((node, i) -> node).where("number2", "<", 5).get();
+		Assertions.assertThat(nodes).hasSize(0);
+		
+		nodes = fileSystem.query((node, i) -> node).where("number2", "lte", 5).get();
+		Assertions.assertThat(nodes).hasSize(1);
+	}
 
-	@Override
-	protected FileSystem getFileSystem() {
-		return fileSystem;
+	@Test
+	public void test_query_with_start_uri() throws IOException {
+
+		var nodes = fileSystem.query("/test", (node, i) -> node).where("featured", true).get();
+		
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.getFirst().uri()).isEqualTo("test/test1.md");
+	}
+	
+	@Test
+	public void test_custom_operation() throws IOException {
+
+		var query = fileSystem.query((node, i) -> node);
+		var nodes = query.get();
+		Assertions.assertThat(nodes).hasSize(3);
+		
+		query = fileSystem.query((node, i) -> node);
+		((ExtendableQuery)query).addCustomOperators("none", (value1, value2) -> false);
+		nodes = query.where("featured", "none").get();
+		Assertions.assertThat(nodes).hasSize(0);
+	}
+
+	@Test
+	public void test_sorting() throws IOException {
+
+		var nodes = fileSystem.query((node, i) -> node)
+			.orderby("publish_date").asc()
+			.get();
+		
+		Assertions.assertThat(nodes).hasSize(3);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("start");
+		Assertions.assertThat(nodes.get(1).data().get("name")).isEqualTo("test1");
+		Assertions.assertThat(nodes.get(2).data().get("name")).isEqualTo("test2");
+	}
+
+	@Test
+	public void test_sorting_list() throws IOException {
+
+		var page = fileSystem.query((node, i) -> node)
+			.orderby("publish_date").asc()
+			.page(1, 10);
+		
+		Assertions.assertThat(page.getItems()).hasSize(3);
+		Assertions.assertThat(page.getItems().get(0).data().get("name")).isEqualTo("start");
+		Assertions.assertThat(page.getItems().get(1).data().get("name")).isEqualTo("test1");
+		Assertions.assertThat(page.getItems().get(2).data().get("name")).isEqualTo("test2");
+		
+		page = fileSystem.query((node, i) -> node)
+			.orderby("publish_date").desc()
+			.page(1, 10);
+		
+		Assertions.assertThat(page.getItems()).hasSize(3);
+		Assertions.assertThat(page.getItems().get(0).data().get("name")).isEqualTo("test2");
+		Assertions.assertThat(page.getItems().get(1).data().get("name")).isEqualTo("test1");
+		Assertions.assertThat(page.getItems().get(2).data().get("name")).isEqualTo("start");
 	}
 }

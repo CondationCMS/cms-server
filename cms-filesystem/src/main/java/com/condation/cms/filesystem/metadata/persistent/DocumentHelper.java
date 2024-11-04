@@ -24,6 +24,9 @@ package com.condation.cms.filesystem.metadata.persistent;
 
 
 import com.condation.cms.filesystem.metadata.persistent.utils.FlattenMap;
+
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.apache.lucene.document.Document;
@@ -33,12 +36,24 @@ import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.util.BytesRef;
 
 /**
  *
  * @author t.marx
  */
 public class DocumentHelper {
+
+	public static void addAvailableFields (Document document) {
+		List<String> fieldNames = new ArrayList<>();
+		document.getFields().forEach(field -> fieldNames.add(field.name()));
+
+		fieldNames.forEach(fieldName -> {
+			document.add(new StringField("_fields", new BytesRef(fieldName), Store.NO));
+		});
+	}
+
 	public static void addData(final Document document, Map<String, Object> data) {
 		var flatten = FlattenMap.flattenMap(data);
 
@@ -91,8 +106,11 @@ public class DocumentHelper {
 				);
 //				document.add(new SortedNumericDocValuesField(name, intValue));
 			}
-			case List listValue ->
+			case List<?> listValue ->
 				handleList(document, name, listValue);
+			case Date dateValue -> {
+				document.add(new LongField(name, dateValue.getTime(), Field.Store.NO));
+			}
 			default -> {
 			}
 		}

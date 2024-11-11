@@ -12,7 +12,33 @@ import com.condation.cms.templates.parser.VariableNode;
 
 public class ParserExample {
   public static void main(String[] args) {
-        String template = "Hello {{ name }}! {% if condition %}World{% endif %}";
+        run_example(
+            "Hello {{ name }}! {% if condition %}World{% endif %}"
+        );
+
+        run_example(
+            """
+                Hello {{ name }}! 
+                {% if condition %}
+                    World
+                {% elseif condition2 %}
+                {% else %}
+                {% endif %}
+                Bye {{ name }}
+            """
+        );
+
+        run_example(
+            """
+                {% if condition %}
+                    World
+                {% elseif condition2 %}
+                {% endif %}
+            """
+        );
+    }
+
+    public static void run_example(String template) {
         Lexer lexer = new Lexer(template);
         List<Token> tokens = lexer.tokenize();
         
@@ -35,7 +61,10 @@ public class ParserExample {
         } else if (node instanceof TagNode) {
             TagNode tag = (TagNode) node;
             System.out.println(indent + "Tag: " + tag.getName());
+            System.out.println(indent + "Condition: " + tag.getCondition());
             tag.getChildren().forEach(child -> printAST(child, depth + 1));
+        } else if (!node.getChildren().isEmpty()) {
+            node.getChildren().forEach(child -> printAST(child, depth + 1));
         }
     }
 }

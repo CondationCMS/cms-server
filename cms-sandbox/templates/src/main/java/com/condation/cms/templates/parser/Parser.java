@@ -1,5 +1,6 @@
 package com.condation.cms.templates.parser;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -32,12 +33,15 @@ public class Parser {
                     break;
                 case TAG_START:
                     TagNode tagNode = new TagNode();
+                    
                     nodeStack.peek().addChild(tagNode);
                     nodeStack.push(tagNode); // In den neuen Kontext für Tags wechseln
                     break;
                 case TAG_END:
                     if (!nodeStack.isEmpty()) {
                         nodeStack.pop(); // Aus dem aktuellen Tag-/Variable-Block heraustreten
+                    } else {
+                        throw new RuntimeException("Unexpected token: TAG_END");
                     }
                     break;
                 case IDENTIFIER:
@@ -47,6 +51,10 @@ public class Parser {
                     } else if (currentNode instanceof VariableNode) {
                         ((VariableNode) currentNode).setVariable(token.value); // Variable setzen
                     }
+                    break;
+                case CONDITION:
+                    TagNode ifNode = (TagNode) nodeStack.peek();
+                    ifNode.setCondition(token.value);
                     break;
                 case END:
                     System.out.println("end token?");

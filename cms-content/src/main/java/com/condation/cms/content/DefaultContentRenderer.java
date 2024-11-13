@@ -139,13 +139,32 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		modelExtending.accept(model);
 
+		//model.values.put("cms", Namespace.create("cms", meta));
+
+		Namespace namespace = new Namespace();
+
 		model.values.put("meta", new MapAccess(meta));
 		model.values.put("sections", sections);
 
-		model.values.put("shortCodes", createShortCodeFunction(context));
-		model.values.put("navigation", createNavigationFunction(contentFile, context));
-		model.values.put("nodeList", createNodeListFunction(contentFile, context));
-		model.values.put("query", createQueryFunction(contentFile, context));
+		namespace.add("page", "meta", new MapAccess(meta));
+		namespace.add("page", "sections", sections);
+
+		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
+		model.values.put("shortCodes", shortCodeFunction);
+		namespace.add("cms", "shortCodes", shortCodeFunction);
+		
+		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
+		model.values.put("navigation", navigationFunction);
+		namespace.add("cms", "navigation", shortCodeFunction);
+		
+		NodeListFunctionBuilder nodeListFunction = createNodeListFunction(contentFile, context);
+		model.values.put("nodeList", nodeListFunction);
+		namespace.add("cms", "nodeList", nodeListFunction);
+		
+		QueryFunction queryFunction = createQueryFunction(contentFile, context);
+		model.values.put("query", queryFunction);
+		namespace.add("cms", "query", queryFunction);
+		
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
@@ -181,10 +200,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		extendModel(model);
 
-		model.values.put("content",
-				renderContent(rawContent, context, model)
-		);
+		String content = renderContent(rawContent, context, model);
+		model.values.put("content", content);
+		namespace.add("page", "content", content);
 		
+		model.values.putAll(namespace.getNamespaces());
+
 		return templates.get().render((String) meta.get("template"), model);
 	}
 

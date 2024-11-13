@@ -25,6 +25,9 @@ public class Lexer {
                 tokens.add(new Token(Token.Type.TAG_START, "{%"));
                 position += 2;
                 inTag = true; // Wir sind jetzt in einem Tag
+
+                readTagContent(tokens); // Inhalte des Tags lesen
+
             } else if (inTag && c == '%' && peek(1) == '}') {
                 tokens.add(new Token(Token.Type.TAG_END, "%}"));
                 position += 2;
@@ -36,13 +39,24 @@ public class Lexer {
             } else if (inTag && Character.isLetter(c)) {
                 // Nur wenn wir im Tag sind, identifizieren wir einen IDENTIFIER
                 tokens.add(new Token(Token.Type.IDENTIFIER, readWhile(Character::isLetter)));
+            } else if (!inTag) {
+                tokens.add(new Token(Token.Type.TEXT, readUntil("{"))); // Alles bis zum nächsten '{' als Text speichern
             } else {
-                tokens.add(new Token(Token.Type.TEXT, String.valueOf(c)));
                 position++;
             }
         }
         tokens.add(new Token(Token.Type.END, ""));
         return tokens;
+    }
+
+    private void readTagContent(List<Token> tokens) {
+        skipWhitespace();
+
+        String keyword = readWhile(Character::isLetter);
+        tokens.add(new Token(Token.Type.IDENTIFIER, keyword));
+        
+        String condition = readUntil("%");
+        tokens.add(new Token(Token.Type.CONDITION, condition));
     }
 
     private char peek(int offset) {
@@ -55,5 +69,19 @@ public class Lexer {
             result.append(input.charAt(position++));
         }
         return result.toString();
+    }
+
+    private String readUntil(String delimiter) {
+        StringBuilder result = new StringBuilder();
+        while (position < input.length() && !input.startsWith(delimiter, position)) {
+            result.append(input.charAt(position++));
+        }
+        return result.toString();
+    }
+
+    private void skipWhitespace() {
+        while (position < input.length() && Character.isWhitespace(input.charAt(position))) {
+            position++;
+        }
     }
 }

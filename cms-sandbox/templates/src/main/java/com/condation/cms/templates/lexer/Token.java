@@ -2,7 +2,7 @@ package com.condation.cms.templates.lexer;
 
 public class Token {
     public static enum Type {
-        TEXT, VARIABLE, TAG_START, TAG_END, IDENTIFIER, END
+        TEXT, VARIABLE, TAG_START, TAG_END, IDENTIFIER, END, CONDITION
     }
 
     public final Type type;

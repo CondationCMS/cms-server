@@ -11,7 +11,7 @@
 	<nav th:replace="libs/fragments.html :: navigation"></nav>
 
 	<div id="content">
-		<div class="container" th:utext="${content}"></div>
+		<div class="container" th:utext="${node.content}"></div>
 
 		<div class="container" th:if="${sections.containsKey('part')}">
 			<th:block th:each="part : ${sections.get('part')}">

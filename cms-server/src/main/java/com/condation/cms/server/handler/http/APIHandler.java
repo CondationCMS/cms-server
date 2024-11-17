@@ -1,4 +1,4 @@
-package com.condation.cms.server.handler.api;
+package com.condation.cms.server.handler.http;
 
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;

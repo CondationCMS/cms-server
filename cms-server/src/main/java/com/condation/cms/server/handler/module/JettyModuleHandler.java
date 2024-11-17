@@ -41,6 +41,7 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
+@Deprecated(since = "7.3.0", forRemoval = true)
 public class JettyModuleHandler extends Handler.Abstract {
 
 	public static final String PATH = "module";

@@ -75,6 +75,7 @@ import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.condation.cms.server.filter.InitRequestContextFilter;
 import com.condation.cms.server.filter.PooledRequestContextFilter;
 import com.condation.cms.server.filter.RequestLoggingFilter;
+import com.condation.cms.server.handler.api.APIHandler;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
 import com.condation.cms.server.handler.cache.CacheHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
@@ -271,6 +272,10 @@ public class VHost {
 				createExtensionHandler()
 		);
 
+		pathMappingsHandler.addMapping(PathSpec.from("/" + APIHandler.PATH + "/*"),
+				createAPIHandler()
+		);
+
 		ContextHandler defaultContextHandler = new ContextHandler(
 				pathMappingsHandler,
 				injector.getInstance(SiteProperties.class).contextPath()
@@ -301,6 +306,18 @@ public class VHost {
 		return hostHandler;
 	}
 	
+	private Handler.Wrapper createAPIHandler() {
+		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
+		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
+		var apiHandler = injector.getInstance(APIHandler.class);
+		var handlerSequence = new Handler.Sequence(
+				authHandler,
+				initContextHandler,
+				apiHandler
+		);
+		return requestContextFilter(handlerSequence, injector);
+	}
+
 	private Handler.Wrapper createExtensionHandler() {
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);

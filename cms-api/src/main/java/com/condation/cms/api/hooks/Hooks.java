@@ -38,6 +38,7 @@ public enum Hooks {
 	SCHEDULER_REMOVE("system/scheduler/remove"),
 	HTTP_EXTENSION("system/server/http/extension"),
 	HTTP_ROUTE("system/server/http/route"),
+	API_ROUTE("system/server/api/route"),
 	TEMPLATE_SUPPLIER("system/template/supplier"),
 	TEMPLATE_FUNCTION("system/template/function")
 	;

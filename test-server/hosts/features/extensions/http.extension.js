@@ -24,3 +24,20 @@ $hooks.registerAction("system/server/http/route", (context) => {
 	)
 	return null;
 })
+
+$hooks.registerAction("system/server/api/route", (context) => {
+	context.arguments().get("apiRoutes").add(
+			"GET",
+			"/hello",
+			(request, response) => {
+
+				let data = {
+					"name": "CondationCMS"
+				}
+
+				response.addHeader("Content-Type", "application/json; charset=utf-8")
+				response.write(JSON.stringify(data), UTF_8)
+			}
+	)
+	return null;
+})

@@ -31,6 +31,7 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
+@Deprecated(since = "7.3.0", forRemoval = true)
 public abstract class HttpRouteExtensionPoint extends AbstractExtensionPoint {
 	abstract public String getRoute ();
 	

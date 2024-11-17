@@ -21,11 +21,12 @@ package com.condation.cms.core.scheduler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.scheduler.CronJob;
 import com.condation.cms.api.scheduler.CronJobContext;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import lombok.extern.slf4j.Slf4j;
 
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -36,19 +37,29 @@ import org.quartz.JobExecutionException;
  *
  * @author t.marx
  */
+@Slf4j
 @DisallowConcurrentExecution
 public class SingleCronJobRunner implements Job {
 
 	public static final String DATA_CRONJOB = "cronjob";
 	public static final String DATA_CONTEXT = "context";
 
+	public static final Semaphore LOCK = new Semaphore(1, true);
+
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		CronJobContext jobContext = (CronJobContext) context.getJobDetail().getJobDataMap().get(DATA_CONTEXT);
-		CronJob cronJob = (CronJob) context.getJobDetail().getJobDataMap().get(DATA_CRONJOB);
+		try {
+			LOCK.acquire();
+			CronJobContext jobContext = (CronJobContext) context.getJobDetail().getJobDataMap().get(DATA_CONTEXT);
+			CronJob cronJob = (CronJob) context.getJobDetail().getJobDataMap().get(DATA_CRONJOB);
 
-		if (cronJob != null && jobContext != null) {
-			cronJob.accept(jobContext);
+			if (cronJob != null && jobContext != null) {
+				cronJob.accept(jobContext);
+			}
+		} catch (Exception e) {
+			log.error("", e);
+		} finally {
+			LOCK.release();
 		}
 	}
 

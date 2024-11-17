@@ -22,12 +22,12 @@ package com.condation.cms.core.scheduler;
  * #L%
  */
 
-
-
 import com.condation.cms.api.scheduler.CronJob;
 import com.condation.cms.api.scheduler.CronJobContext;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -36,25 +36,20 @@ import org.quartz.JobExecutionException;
  *
  * @author t.marx
  */
+@DisallowConcurrentExecution
 public class SingleCronJobRunner implements Job {
 
 	public static final String DATA_CRONJOB = "cronjob";
 	public static final String DATA_CONTEXT = "context";
-	
-	private static final Lock lock = new ReentrantLock(true);
-	
+
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		if (context.getJobDetail().getJobDataMap().get(DATA_CRONJOB) != null) {
-			CronJobContext jobContext = (CronJobContext) context.getJobDetail().getJobDataMap().get(DATA_CONTEXT);
-			
-			lock.lock();
-			try {
-				((CronJob)context.getJobDetail().getJobDataMap().get(DATA_CRONJOB)).accept(jobContext);
-			} finally {
-				lock.unlock();
-			}
+		CronJobContext jobContext = (CronJobContext) context.getJobDetail().getJobDataMap().get(DATA_CONTEXT);
+		CronJob cronJob = (CronJob) context.getJobDetail().getJobDataMap().get(DATA_CRONJOB);
+
+		if (cronJob != null && jobContext != null) {
+			cronJob.accept(jobContext);
 		}
 	}
-	
+
 }

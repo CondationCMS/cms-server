@@ -27,7 +27,6 @@ package com.condation.cms.api.extensions;
  *
  * @author t.marx
  */
-@Deprecated(since = "7.3.0", forRemoval = true)
 public abstract class HttpHandlerExtensionPoint extends AbstractExtensionPoint {
 	abstract public Mapping getMapping();
 }

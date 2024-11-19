@@ -1,6 +1,7 @@
 package com.condation.cms.modules.example;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
@@ -40,7 +41,11 @@ public class ExampleTemplateModelExtendingExtensionEndPoint extends TemplateMode
 
 	@Override
 	public void extendModel(TemplateEngine.Model model) {
-		model.values.put("searcher", new Searcher());
+	}
+
+	@Override
+	public Map<String, Object> getModel() {
+		return Map.of("searcher", new Searcher());
 	}
 
 	@Override

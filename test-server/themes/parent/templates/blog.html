@@ -16,7 +16,7 @@
 			<h1 th:text="${title}"></h1>
 		</div>
 
-		<div class="row" th:utext="${content}"></div>
+		<div class="row" th:utext="${node.content}"></div>
 		<div class="row"
 			th:with='page = ${nodeList.from("/blog/*").sort("publish_date").reverse(true).page(pageNumber).size(1).list()}'>
 			<th:block th:each="entry : ${page.items}" data-test="e">

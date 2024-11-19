@@ -1,12 +1,8 @@
-package com.condation.cms.api.extensions;
-
-import java.util.Map;
-
-import com.condation.cms.api.Constants;
+package com.condation.cms.content;
 
 /*-
  * #%L
- * cms-api
+ * cms-content
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -26,25 +22,20 @@ import com.condation.cms.api.Constants;
  * #L%
  */
 
-import com.condation.cms.api.template.TemplateEngine;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class TemplateModelExtendingExtensionPoint extends AbstractExtensionPoint{
+import lombok.Getter;
 
-	/**
-	 * deprecated: use @TemplateModelExtendingExtensionPoint.getModel instead
-	 * @param model
-	 */
-	@Deprecated(since = "7.3.0", forRemoval = true)
-	public abstract void extendModel (TemplateEngine.Model model);
 
-	public Map<String, Object> getModel () {
-		TemplateEngine.Model model = new TemplateEngine.Model(null, null);
-		extendModel(model);
-		return model.values;
-	}
+public class Namespace {
 
-	public String getNamespace () {
-		return Constants.DEFAULT_MODULE_NAMESPACE;
-	}
+    @Getter
+    Map<String, Map<String, Object>> namespaces = new HashMap<>();
+    
+    public void add (String namespace, String key, Object object) {
+        var namespaceMap = namespaces.computeIfAbsent(namespace, k -> new HashMap<>());
+        namespaceMap.put(key, object);
+    }
 
 }

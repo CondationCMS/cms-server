@@ -1,0 +1,2 @@
+[modules]
+active = [ "example-module" ]

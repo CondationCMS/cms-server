@@ -51,6 +51,11 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>com.condation.cms.modules</groupId>
+			<artifactId>cms-system-modules</artifactId>
+		</dependency>
+		
+		<dependency>
 			<groupId>com.condation.cms</groupId>
 			<artifactId>cms-test</artifactId>
 			<scope>test</scope>

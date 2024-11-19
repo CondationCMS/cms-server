@@ -63,8 +63,7 @@ public class RoutesHandler extends Handler.Abstract {
 				return true;
 			}
 
-			Response.writeError(request, response, callback, 404);
-            return true;
+            return false;
 		} catch (Exception e) {
 			log.error(null, e);
 			callback.failed(e);

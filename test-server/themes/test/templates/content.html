@@ -15,7 +15,7 @@
 				<h3>Overridden template from parent</h3>
 			</div>
 			
-			<div class="container" th:utext="${content}"></div>
+			<div class="container" th:utext="${node.content}"></div>
 
 			<div class="container" th:if="${sections.containsKey('part')}">
 				<th:block th:each="part : ${sections.get('part')}">

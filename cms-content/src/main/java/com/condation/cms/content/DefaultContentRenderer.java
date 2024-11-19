@@ -1,5 +1,6 @@
 package com.condation.cms.content;
 
+import com.condation.cms.api.Constants;
 /*-
  * #%L
  * cms-content
@@ -139,20 +140,41 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		modelExtending.accept(model);
 
+		//model.values.put("cms", Namespace.create("cms", meta));
+
+		Namespace namespace = new Namespace();
+
 		model.values.put("meta", new MapAccess(meta));
 		model.values.put("sections", sections);
 
-		model.values.put("shortCodes", createShortCodeFunction(context));
-		model.values.put("navigation", createNavigationFunction(contentFile, context));
-		model.values.put("nodeList", createNodeListFunction(contentFile, context));
-		model.values.put("query", createQueryFunction(contentFile, context));
+		namespace.add("node", "meta", new MapAccess(meta));
+		namespace.add("node", "sections", sections);
+
+		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
+		model.values.put("shortCodes", shortCodeFunction);
+		namespace.add("cms", "shortCodes", shortCodeFunction);
+		
+		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
+		model.values.put("navigation", navigationFunction);
+		namespace.add("cms", "navigation", shortCodeFunction);
+		
+		NodeListFunctionBuilder nodeListFunction = createNodeListFunction(contentFile, context);
+		model.values.put("nodeList", nodeListFunction);
+		namespace.add("cms", "nodeList", nodeListFunction);
+		
+		QueryFunction queryFunction = createQueryFunction(contentFile, context);
+		model.values.put("query", queryFunction);
+		namespace.add("cms", "query", queryFunction);
+		
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
+		namespace.add("cms", "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 
 		model.values.put("taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
-		
+		namespace.add("cms", "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
+
 		var theme = context.get(RenderContext.class).theme();
 		if (theme.empty()) {
 			model.values.put("messages", context.get(InjectorFeature.class).injector().getInstance(MessageSource.class));
@@ -161,8 +183,10 @@ public class DefaultContentRenderer implements ContentRenderer {
 		}
 		
 		model.values.put("hooks", context.get(HookSystemFeature.class).hookSystem());
+		namespace.add("cms", "hooks", context.get(HookSystemFeature.class).hookSystem());
 
 		model.values.put("links", new LinkFunction(context));
+		namespace.add("cms", "links", new LinkFunction(context));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
 		model.values.put("DEV_MODE", isDevMode(context));
@@ -174,17 +198,21 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		context.get(TemplateHooks.class).getTemplateSupplier().getRegisterTemplateSupplier().forEach(service -> {
 			model.values.put(service.name(), service.supplier());
+			namespace.add(Constants.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
 		});
 		context.get(TemplateHooks.class).getTemplateFunctions().getRegisterTemplateFunctions().forEach(service -> {
 			model.values.put(service.name(), service.function());
+			namespace.add(Constants.DEFAULT_MODULE_NAMESPACE, service.name(), service.function());
 		});
 
-		extendModel(model);
+		extendModel(model, namespace);
 
-		model.values.put("content",
-				renderContent(rawContent, context, model)
-		);
+		String content = renderContent(rawContent, context, model);
+		model.values.put("content", content);
+		namespace.add("node", "content", content);
 		
+		model.values.putAll(namespace.getNamespaces());
+
 		return templates.get().render((String) meta.get("template"), model);
 	}
 
@@ -223,9 +251,27 @@ public class DefaultContentRenderer implements ContentRenderer {
 		return context.has(IsDevModeFeature.class);
 	}
 
-	private void extendModel(final TemplateEngine.Model model) {
-		moduleManager.extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
-		moduleManager.extensions(TemplateModelExtendingExtensionPoint.class).forEach(extensionPoint -> extensionPoint.extendModel(model));
+	private void extendModel(final TemplateEngine.Model model, Namespace namespace) {
+		moduleManager.extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> {
+			var modModel = extensionPoint.getModel();
+			// deprecated: module extensions on root will be remove in 8.0.0
+			model.values.putAll(modModel);
+			modModel.entrySet().forEach(entry -> namespace.add(
+				extensionPoint.getNamespace(), 
+				entry.getKey(), 
+				entry.getValue()
+			));
+		});
+		moduleManager.extensions(TemplateModelExtendingExtensionPoint.class).forEach(extensionPoint -> {
+			var modModel = extensionPoint.getModel();
+			// deprecated: module extensions on root will be remove in 8.0.0
+			model.values.putAll(modModel);
+			modModel.entrySet().forEach(entry -> namespace.add(
+				extensionPoint.getNamespace(), 
+				entry.getKey(), 
+				entry.getValue()
+			));
+		});
 	}
 
 	@Override

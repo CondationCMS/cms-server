@@ -114,6 +114,8 @@ public abstract class Constants {
 	
 	public static final String DEFAULT_CACHE_ENGINE = "local";
 	public static final boolean DEFAULT_CONTENT_CACHE_ENABLED = false;
+
+	public static final String DEFAULT_MODULE_NAMESPACE = "mod";
 	
 	public static class Taxonomy {
 		public static final String DEFAULT_TEMPLATE = "taxonomy.html";

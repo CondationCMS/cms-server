@@ -1,5 +1,9 @@
 package com.condation.cms.api.extensions;
 
+import java.util.Map;
+
+import com.condation.cms.api.Constants;
+
 /*-
  * #%L
  * cms-api
@@ -35,4 +39,13 @@ public abstract class TemplateModelExtendingExtentionPoint extends AbstractExten
 
 	public abstract void extendModel (TemplateEngine.Model model);
 	
+	public Map<String, Object> getModel () {
+		TemplateEngine.Model model = new TemplateEngine.Model(null, null);
+		extendModel(model);
+		return model.values;
+	}
+
+	public String getNamespace () {
+		return Constants.DEFAULT_MODULE_NAMESPACE;
+	}
 }

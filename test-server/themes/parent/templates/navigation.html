@@ -15,7 +15,7 @@
 	</div>
 	
 	<div id="content">
-		<div class="container" th:utext="${content}"></div>
+		<div class="container" th:utext="${node.content}"></div>
 	</div>
 
 	<th:block th:replace="libs/fragments.html :: footer"></th:block>

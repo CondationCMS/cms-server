@@ -88,6 +88,11 @@
 		[(${shortCodes.call('hello', #{'name': 'CondationCMS'})})]
 	</div>
 
+	<div class="container">
+		<h3>Test mod-Namespace</h3>
+		<p th:text="${mod.searcher.search('query').total}"></p>
+	</div>
+
 	<th:block th:replace="libs/fragments.html :: footer"></th:block>
 
 </body>

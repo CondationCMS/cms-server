@@ -1,9 +1,11 @@
 package com.condation.cms.server.handler.http;
 
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 
 /*-
  * #%L
@@ -56,9 +58,20 @@ public class APIHandler extends Handler.Abstract {
 
     private final ModuleManager moduleManager;
 
+	private boolean isApiActivated (Request request) {
+		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var siteProperties = requestContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
+		
+		return siteProperties.getOrDefault("api.enabled", Boolean.FALSE);
+	}
+	
     @Override
     public boolean handle(Request request, Response response, Callback callback) throws Exception {
-
+		
+		if (!isApiActivated(request)) {
+			return false;
+		}
+		
         try {
             if (handleExtensionRoute(request, response, callback)) {
                 return true;

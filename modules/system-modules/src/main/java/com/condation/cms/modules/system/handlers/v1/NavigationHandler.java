@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system;
+package com.condation.cms.modules.system.handlers.v1;
 
 /*-
  * #%L
@@ -22,15 +22,15 @@ package com.condation.cms.modules.system;
  * #L%
  */
 
-import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.extensions.http.HttpHandler;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -40,61 +40,45 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author thmar
  */
-public class ApiContentHandler implements HttpHandler {
+public class NavigationHandler implements HttpHandler {
 
 	private final DB db;
 	public static final Gson GSON = new GsonBuilder()
 			.enableComplexMapKeySerialization()
 			.create();
 
-	public ApiContentHandler(DB db) {
+	public NavigationHandler(DB db) {
 		this.db = db;
 	}
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		var uri = RequestUtil.getContentPath(request);
-		uri = uri.replaceFirst("api/content/", "");
+		uri = uri.replaceFirst("api/v1/navigation", "");
+		if (uri.startsWith("/")) {
+			uri = uri.substring(1);
+		}
 
-		var resolved = resolveContentNode(uri);
-		if (resolved.isEmpty()) {
+		var file = db.getReadOnlyFileSystem().contentBase().resolve(uri);
+		
+		if (!file.exists()) {
 			Response.writeError(request, response, callback, 404);
 			return true;
 		}
 		
-		Content.Sink.write(response, true, GSON.toJson(resolved.get().data()), callback);
+		List<NavNode> children = file.children().stream().map(child -> new NavNode(child.getFileName())).toList();
+		
+		NavNode node = new NavNode(file.getFileName(), children);
+		
+		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
+		Content.Sink.write(response, true, GSON.toJson(node), callback);
 		
 		return true;
 	}
-
-	private Optional<ContentNode> resolveContentNode(String uri) {
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
-		var contentPath = contentBase.resolve(uri);
-		ReadOnlyFile contentFile = null;
-		if (contentPath.exists() && contentPath.isDirectory()) {
-			// use index.md
-			var tempFile = contentPath.resolve("index.md");
-			if (tempFile.exists()) {
-				contentFile = tempFile;
-			} else {
-				return Optional.empty();
-			}
-		} else {
-			var temp = contentBase.resolve(uri + ".md");
-			if (temp.exists()) {
-				contentFile = temp;
-			} else {
-				return Optional.empty();
-			}
+	
+	private static record NavNode (String path, List<NavNode> children) {
+		public NavNode (String path) {
+			this(path, Collections.emptyList());
 		}
-		
-		var filePath = PathUtil.toRelativeFile(contentFile, contentBase);
-		if (!db.getContent().isVisible(filePath)) {
-			return Optional.empty();
-		}
-		
-		final ContentNode contentNode = db.getContent().byUri(filePath).get();
-
-		return Optional.ofNullable(contentNode);
-	}
+	};
 }

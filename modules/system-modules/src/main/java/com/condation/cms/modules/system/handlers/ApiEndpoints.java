@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system;
+package com.condation.cms.modules.system.handlers;
 
 /*-
  * #%L
@@ -22,9 +22,11 @@ package com.condation.cms.modules.system;
  * #L%
  */
 
+import com.condation.cms.modules.system.handlers.v1.ContentHandler;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.modules.system.handlers.v1.NavigationHandler;
 import com.condation.modules.api.annotation.Extension;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
@@ -39,10 +41,14 @@ public class ApiEndpoints extends APIHandlerExtensionPoint {
 	public PathMapping getMapping() {
 		var mapping = new PathMapping();
 		
-		mapping.add(
-				PathSpec.from("/content/*"), 
+		mapping.add(PathSpec.from("/v1/content/*"), 
 				"GET", 
-				new ApiContentHandler(getContext().get(DBFeature.class).db())
+				new ContentHandler(getContext().get(DBFeature.class).db())
+		);
+		
+		mapping.add(PathSpec.from("/v1/navigation/*"), 
+				"GET", 
+				new NavigationHandler(getContext().get(DBFeature.class).db())
 		);
 		
 		return mapping;

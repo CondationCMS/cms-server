@@ -1,10 +1,6 @@
 package com.condation.cms.templates;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.condation.cms.templates.Renderer.Context;
 import com.condation.cms.templates.lexer.Lexer;
 import com.condation.cms.templates.lexer.Token;
 import com.condation.cms.templates.parser.ASTNode;

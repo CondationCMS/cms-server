@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Stack;
 
 import com.condation.cms.templates.lexer.Token;
+import static com.condation.cms.templates.lexer.Token.Type.VARIABLE_START;
 
 public class Parser {
     private final List<Token> tokens;
@@ -26,10 +27,21 @@ public class Parser {
                 case TEXT:
                     nodeStack.peek().addChild(new TextNode(token.value));
                     break;
-                case VARIABLE:
+				case COMMENT_VALUE:
+					ASTNode node = nodeStack.peek();
+                    if (node instanceof CommentNode commentNode) {
+						commentNode.setValue(token.value);
+					}
+					break;
+                case VARIABLE_START:
                     VariableNode variableNode = new VariableNode();
                     nodeStack.peek().addChild(variableNode);
                     nodeStack.push(variableNode); // In den neuen Kontext für Variablen wechseln
+                    break;
+				case COMMENT_START:
+                    CommentNode commentNode = new CommentNode();
+                    nodeStack.peek().addChild(commentNode);
+                    nodeStack.push(commentNode); // In den neuen Kontext für Variablen wechseln
                     break;
                 case TAG_START:
                     TagNode tagNode = new TagNode();
@@ -38,6 +50,8 @@ public class Parser {
                     nodeStack.push(tagNode); // In den neuen Kontext für Tags wechseln
                     break;
                 case TAG_END:
+				case VARIABLE_END:
+				case COMMENT_END:
                     if (!nodeStack.isEmpty()) {
                         nodeStack.pop(); // Aus dem aktuellen Tag-/Variable-Block heraustreten
                     } else {
@@ -46,13 +60,14 @@ public class Parser {
                     break;
                 case IDENTIFIER:
                     ASTNode currentNode = nodeStack.peek();
-                    if (currentNode instanceof TagNode) {
-                        ((TagNode) currentNode).setName(token.value); // Tag-Name setzen
-                    } else if (currentNode instanceof VariableNode) {
-                        ((VariableNode) currentNode).setVariable(token.value); // Variable setzen
+                    if (currentNode instanceof TagNode tagNode1) {
+                        tagNode1.setName(token.value); // Tag-Name setzen
+                    } else if (currentNode instanceof VariableNode variableNode1) {
+                        variableNode1.setVariable(token.value); // Variable setzen
                     }
                     break;
-                case CONDITION:
+
+                case EXPRESSION:
                     TagNode ifNode = (TagNode) nodeStack.peek();
                     ifNode.setCondition(token.value);
                     break;

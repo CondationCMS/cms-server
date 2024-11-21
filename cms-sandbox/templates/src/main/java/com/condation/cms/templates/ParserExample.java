@@ -12,10 +12,12 @@ import com.condation.cms.templates.parser.VariableNode;
 
 public class ParserExample {
   public static void main(String[] args) {
+	  System.out.println("TEST 1");
         run_example(
             "Hello {{ name }}! {% if condition %}World{% endif %}"
         );
 
+		System.out.println("TEST 2");
         run_example(
             """
                 Hello {{ name }}! 
@@ -28,11 +30,15 @@ public class ParserExample {
             """
         );
 
+		System.out.println("TEST 3");
         run_example(
             """
                 {% if condition %}
                     World
                 {% elseif condition2 %}
+            {#
+				Here is a comment
+            #}
                 {% endif %}
             """
         );

@@ -22,16 +22,22 @@ package com.condation.cms.modules.system.handlers.v1;
  * #L%
  */
 
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.extensions.http.HttpHandler;
+import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.RequestUtil;
+import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.server.AbstractMetaDataConnection;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -58,17 +64,31 @@ public class NavigationHandler implements HttpHandler {
 		if (uri.startsWith("/")) {
 			uri = uri.substring(1);
 		}
+		final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
 
-		var file = db.getReadOnlyFileSystem().contentBase().resolve(uri);
+		var file = contentBase.resolve(uri);
 		
 		if (!file.exists()) {
 			Response.writeError(request, response, callback, 404);
 			return true;
 		}
 		
-		List<NavNode> children = file.children().stream().map(child -> new NavNode(child.getFileName())).toList();
+		var filePath = PathUtil.toRelativeFile(file, contentBase);
+		if (!db.getContent().isVisible(filePath)) {
+			Response.writeError(request, response, callback, 403);
+			return true;
+		}
 		
-		NavNode node = new NavNode(file.getFileName(), children);
+		final ContentNode contentNode = db.getContent().byUri(filePath).get();
+		
+		List<NavNode> children = new ArrayList<>();
+		db.getContent().listDirectories(file, "").stream()
+				.filter(child -> AbstractMetaData.isVisible(child))
+				.map(child -> new NavNode(child.uri()))
+				.forEach(children::add);
+		
+		
+		NavNode node = new NavNode(contentNode.uri(), children);
 		
 		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
 		Content.Sink.write(response, true, GSON.toJson(node), callback);

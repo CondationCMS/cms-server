@@ -22,14 +22,20 @@ package com.condation.cms.modules.system.handlers.v1;
  * #L%
  */
 
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.extensions.http.HttpHandler;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.RequestUtil;
+import com.condation.cms.modules.system.helpers.NodeHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
@@ -66,8 +72,12 @@ public class ContentHandler implements HttpHandler {
 			return true;
 		}
 		
+		final ContentNode node = resolved.get();
+		final Map<String, Object> data = new HashMap<>(node.data());
+		data.put("_links", NodeHelper.getLinks(node, request));
+		
 		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
-		Content.Sink.write(response, true, GSON.toJson(resolved.get().data()), callback);
+		Content.Sink.write(response, true, GSON.toJson(data), callback);
 		
 		return true;
 	}

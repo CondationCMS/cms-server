@@ -29,15 +29,16 @@ import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
+import com.condation.cms.modules.system.helpers.NodeHelper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.server.AbstractMetaDataConnection;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -74,21 +75,50 @@ public class NavigationHandler implements HttpHandler {
 		}
 		
 		var filePath = PathUtil.toRelativeFile(file, contentBase);
-		if (!db.getContent().isVisible(filePath)) {
+		
+		/*if (!db.getContent().isVisible(filePath)) {
 			Response.writeError(request, response, callback, 403);
 			return true;
-		}
+		}*/
 		
-		final ContentNode contentNode = db.getContent().byUri(filePath).get();
+		final Optional<ContentNode> contentNode = db.getContent().byUri(filePath);
 		
 		List<NavNode> children = new ArrayList<>();
 		db.getContent().listDirectories(file, "").stream()
 				.filter(child -> AbstractMetaData.isVisible(child))
-				.map(child -> new NavNode(child.uri()))
-				.forEach(children::add);
+				.map(child -> new NavNode(
+						NodeHelper.getPath(child), 
+						NodeHelper.getLinks(child, request))
+				).forEach(children::add);
 		
+		final String nodeUri = NodeHelper.getPath(uri);
+		db.getContent().listContent(file, "").stream()
+				.filter(child -> AbstractMetaData.isVisible(child))
+				.filter(child -> 
+						!NodeHelper.getPath(child).equals(nodeUri)
+				)
+				.map(child -> new NavNode(
+						NodeHelper.getPath(child), 
+						NodeHelper.getLinks(child, request))
+				).forEach(children::add);
 		
-		NavNode node = new NavNode(contentNode.uri(), children);
+		children.sort((node1, node2) -> node1.path.compareTo(node2.path));
+		
+		NavNode node;
+		if (contentNode.isPresent()) {
+			node = new NavNode(
+				NodeHelper.getPath(contentNode.get()), 
+				NodeHelper.getLinks(contentNode.get(), request), 
+				children
+			);
+		} else {
+			node = new NavNode(
+				"/" + uri, 
+				Collections.emptyMap(),
+				children
+			);
+		}
+		
 		
 		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
 		Content.Sink.write(response, true, GSON.toJson(node), callback);
@@ -96,9 +126,9 @@ public class NavigationHandler implements HttpHandler {
 		return true;
 	}
 	
-	private static record NavNode (String path, List<NavNode> children) {
-		public NavNode (String path) {
-			this(path, Collections.emptyList());
+	private static record NavNode (String path, Map<String, String> _links, List<NavNode> children) {
+		public NavNode (String path, Map<String, String> _links) {
+			this(path, _links, Collections.emptyList());
 		}
 	};
 }

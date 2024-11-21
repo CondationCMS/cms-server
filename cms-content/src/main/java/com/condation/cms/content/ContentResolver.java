@@ -52,6 +52,9 @@ public class ContentResolver {
 	private final DB db;
 	
 	public Optional<ContentResponse> getStaticContent (String uri) {
+		if (uri.endsWith(".md")) {
+			return Optional.empty();
+		}
 		if (uri.startsWith("/")) {
 			uri = uri.substring(1);
 		}

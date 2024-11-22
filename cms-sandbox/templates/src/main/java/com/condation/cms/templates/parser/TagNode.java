@@ -6,7 +6,15 @@ import java.util.List;
 public class TagNode extends ASTNode {
     private String name;
     private String condition;
-    
+
+	public TagNode () {
+		
+	}
+
+	public TagNode(String name) {
+		this.name = name;
+	}
+	
     public void setName(String name) {
         this.name = name;
     }

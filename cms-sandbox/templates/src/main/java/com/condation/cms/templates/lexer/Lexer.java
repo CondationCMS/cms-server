@@ -1,5 +1,6 @@
 package com.condation.cms.templates.lexer;
 
+import com.condation.cms.templates.parser.TokenStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Lexer {
 		this.input = input;
 	}
 
-	public List<Token> tokenize() {
+	public TokenStream tokenize() {
 		List<Token> tokens = new ArrayList<>();
 		while (position < input.length()) {
 			char c = input.charAt(position);
@@ -59,7 +60,7 @@ public class Lexer {
 			}
 		}
 		tokens.add(new Token(Token.Type.END, "", line, column));
-		return tokens;
+		return new TokenStream(tokens);
 	}
 
 	private void readTagContent(List<Token> tokens) {

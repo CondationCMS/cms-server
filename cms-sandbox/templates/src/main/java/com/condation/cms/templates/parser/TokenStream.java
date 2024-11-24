@@ -2,6 +2,7 @@ package com.condation.cms.templates.parser;
 
 import com.condation.cms.templates.lexer.Token;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  *
@@ -15,6 +16,10 @@ public class TokenStream {
 
 	public TokenStream(List<Token> tokens) {
 		this.tokens = tokens;
+	}
+	
+	public void forEach (Consumer<Token> tokenConsumer) {
+		tokens.forEach(tokenConsumer);
 	}
 
 	public Token next() {

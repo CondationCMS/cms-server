@@ -8,6 +8,7 @@ import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.Parser;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
+import com.condation.cms.templates.parser.TokenStream;
 import com.condation.cms.templates.parser.VariableNode;
 import com.condation.cms.templates.tags.ElseIfTag;
 import com.condation.cms.templates.tags.ElseTag;
@@ -63,13 +64,13 @@ public class ParserExample {
 
 	public static void run_example(String template) {
 		Lexer lexer = new Lexer(template);
-		List<Token> tokens = lexer.tokenize();
+		TokenStream tokenStream = lexer.tokenize();
 
-		Parser parser = new Parser(tokens, config);
-		ASTNode ast = parser.parse();
+		Parser parser = new Parser( config);
+		ASTNode ast = parser.parse(tokenStream);
 
 		System.out.println("Tokens:");
-		tokens.forEach(System.out::println);
+		tokenStream.forEach(System.out::println);
 
 		System.out.println("AST:");
 		printAST(ast, 0);

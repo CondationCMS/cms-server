@@ -14,10 +14,10 @@ public class RenderTemplateExample {
         // Beispiel-Template und Kontext
         String template = "Hello, {% if user %}{{ user }}{% endif %}!";
         Lexer lexer = new Lexer(template);
-        List<Token> tokens = lexer.tokenize();
+        var tokenStream = lexer.tokenize();
 
-        Parser parser = new Parser(tokens, config);
-        ASTNode ast = parser.parse();
+        Parser parser = new Parser(config);
+        ASTNode ast = parser.parse(tokenStream);
 
         // Kontext mit Werten für das Template
         var context = new Renderer.Context();

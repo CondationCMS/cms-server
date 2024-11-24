@@ -13,18 +13,11 @@ public class Parser {
 
 	private final TemplateConfiguration configuration;
 
-//	private final List<Token> tokens;
-//	private int position = 0;
-	private final TokenStream tokenStream;
-
-	public Parser(List<Token> tokens, TemplateConfiguration configuration) {
-//		this.tokens = tokens;
+	public Parser(TemplateConfiguration configuration) {
 		this.configuration = configuration;
-
-		tokenStream = new TokenStream(tokens);
 	}
 
-	public ASTNode parse() {
+	public ASTNode parse(final TokenStream tokenStream) {
 		ASTNode root = new ASTNode();
 		Stack<ASTNode> nodeStack = new Stack<>();
 		nodeStack.push(root);

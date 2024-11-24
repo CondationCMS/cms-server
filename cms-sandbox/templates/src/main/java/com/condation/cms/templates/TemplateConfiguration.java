@@ -3,6 +3,8 @@ package com.condation.cms.templates;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  *
@@ -12,8 +14,14 @@ public class TemplateConfiguration {
 
 	private final Map<String, Tag> registeredTags = new HashMap<>();
 	
-	public void registerTag (Tag tag) {
+	@Getter
+	@Setter
+	private TemplateLoader templateLoader;
+	
+	public TemplateConfiguration registerTag (Tag tag) {
 		registeredTags.put(tag.getTagName(), tag);
+		
+		return this;
 	}
 	
 	public boolean hasTag (String tagName) {

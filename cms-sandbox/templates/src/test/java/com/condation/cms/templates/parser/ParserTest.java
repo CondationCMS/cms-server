@@ -31,8 +31,10 @@ public class ParserTest {
 				new Token(Token.Type.TAG_END, "endif", 0,0)
 		);
 
-		Parser parser = new Parser(tokens, config);
-		ASTNode ast = parser.parse();
+		var tokenStream = new TokenStream(tokens);
+		
+		Parser parser = new Parser(config);
+		ASTNode ast = parser.parse(tokenStream);
 		
 		System.out.println(ast);
 	}

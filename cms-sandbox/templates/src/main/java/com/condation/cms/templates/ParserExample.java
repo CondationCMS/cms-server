@@ -17,6 +17,7 @@ import com.condation.cms.templates.tags.IfTag;
 public class ParserExample {
 
 	static TemplateConfiguration config = new TemplateConfiguration();
+
 	static {
 		config.registerTag(new IfTag());
 		config.registerTag(new ElseIfTag());

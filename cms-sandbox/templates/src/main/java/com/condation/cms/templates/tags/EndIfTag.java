@@ -12,4 +12,9 @@ public class EndIfTag implements Tag {
 	public String getTagName() {
 		return "endif";
 	}
+
+	@Override
+	public boolean isEndTag() {
+		return true;
+	}
 }

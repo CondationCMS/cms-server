@@ -17,4 +17,8 @@ public interface Tag {
 	default boolean supportsNestedTag(String tagName) {
         return false;
     }
+	
+	default boolean isEndTag () {
+		return false;
+	}
 }

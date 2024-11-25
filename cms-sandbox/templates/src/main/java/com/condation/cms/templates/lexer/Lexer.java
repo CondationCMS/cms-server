@@ -1,5 +1,27 @@
 package com.condation.cms.templates.lexer;
 
+/*-
+ * #%L
+ * templates
+ * %%
+ * Copyright (C) 2023 - 2024 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.condation.cms.templates.parser.TokenStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +70,9 @@ public class Lexer {
 				tokens.add(new Token(Token.Type.COMMENT_END, "#}", line, column));
 				position += 2;
 				state.set(State.Type.NONE);
-			} else if (state.is(State.Type.VARIABLE, State.Type.TAG) && Character.isLetter(c)) {
-				// Nur wenn wir im Tag sind, identifizieren wir einen IDENTIFIER
-				tokens.add(new Token(Token.Type.IDENTIFIER, readWhile(Character::isLetter), line, column));
+			} else if (state.is(State.Type.VARIABLE, State.Type.TAG) && Character.isLetterOrDigit(c)) {
+				//tokens.add(new Token(Token.Type.IDENTIFIER, readWhile(Character::isLetter), line, column));
+				tokens.add(new Token(Token.Type.IDENTIFIER, readUntil("}}"), line, column));
 			} else if (state.is(State.Type.COMMENT)) {
 				tokens.add(new Token(Token.Type.COMMENT_VALUE, readUntil("#}"), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else if (!state.is(State.Type.VARIABLE, State.Type.TAG)) {

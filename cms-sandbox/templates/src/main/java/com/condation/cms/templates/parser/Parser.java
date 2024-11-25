@@ -1,21 +1,42 @@
 package com.condation.cms.templates.parser;
 
+/*-
+ * #%L
+ * templates
+ * %%
+ * Copyright (C) 2023 - 2024 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
-import java.util.List;
 import java.util.Stack;
 
 import com.condation.cms.templates.lexer.Token;
 import static com.condation.cms.templates.lexer.Token.Type.VARIABLE_START;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.jexl3.JexlEngine;
 
+@RequiredArgsConstructor
 public class Parser {
 
 	private final TemplateConfiguration configuration;
 
-	public Parser(TemplateConfiguration configuration) {
-		this.configuration = configuration;
-	}
+	private final JexlEngine engine;
 
 	public ASTNode parse(final TokenStream tokenStream) {
 		ASTNode root = new ASTNode();
@@ -107,6 +128,7 @@ public class Parser {
 						tagNode1.setName(token.value); // Tag-Name setzen
 					} else if (currentNode instanceof VariableNode variableNode1) {
 						variableNode1.setVariable(token.value); // Variable setzen
+						variableNode1.setExpression(engine.createExpression(token.value));
 					}
 					break;
 				}

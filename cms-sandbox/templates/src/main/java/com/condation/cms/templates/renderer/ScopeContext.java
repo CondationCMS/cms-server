@@ -1,4 +1,4 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.renderer;
 
 /*-
  * #%L
@@ -22,17 +22,34 @@ package com.condation.cms.templates;
  * #L%
  */
 
-import java.util.Map;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.jexl3.JexlContext;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface Template {
+@RequiredArgsConstructor
+public class ScopeContext implements JexlContext {
+
+	private final ScopeStack scopeStack;
 	
-	default String execute () {
-		return execute(Map.of());
+	@Override
+	public Object get(String name) {
+		if (has(name)) {
+			return scopeStack.getVariable(name).get();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean has(String name) {
+		return scopeStack.getVariable(name).isPresent();
+	}
+
+	@Override
+	public void set(String name, Object value) {
+		scopeStack.setVariable(name, value);
 	}
 	
-	String execute(Map<String, Object> context);
 }

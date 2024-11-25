@@ -1,46 +1,55 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.renderer;
 
-import java.util.HashMap;
-import java.util.Map;
+/*-
+ * #%L
+ * templates
+ * %%
+ * Copyright (C) 2023 - 2024 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
 
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
+import lombok.RequiredArgsConstructor;
+import org.apache.commons.jexl3.JexlEngine;
 
+@RequiredArgsConstructor
 public class Renderer {
 
-    public static class Context {
-        private final Map<String, String> variables = new HashMap<>();
-
-        public void setVariable(String name, String value) {
-            variables.put(name, value);
-        }
-
-        public String getVariable(String name) {
-            return variables.get(name);
-        }
-    }
-
-    private final Context context;
-
-    public Renderer(Context context) {
-        this.context = context;
-    }
-
-    public String render(ASTNode node) {
+    public String render(ASTNode node, final JexlEngine engine, final ScopeStack scopes) {
         StringBuilder output = new StringBuilder();
-        renderNode(node, output);
+        renderNode(node, engine, scopes, output);
         return output.toString();
     }
 
-    private void renderNode(ASTNode node, StringBuilder output) {
+    private void renderNode(ASTNode node, final JexlEngine engine, final ScopeStack scopes, StringBuilder output) {
+		
+		var scopeContext = new ScopeContext(scopes);
+		
         if (node instanceof TextNode) {
             output.append(((TextNode) node).text);
-        } else if (node instanceof VariableNode) {
-            String variableValue = context.getVariable(((VariableNode) node).getVariable());
+        } else if (node instanceof VariableNode vnode) {
+            Object variableValue = vnode.getExpression().evaluate(scopeContext);
             output.append(variableValue != null ? variableValue : "");
         } else if (node instanceof TagNode) {
+			/*
             TagNode tagNode = (TagNode) node;
             // Beispiel: Wir unterstützen das "if"-Tag
             if ("if".equals(tagNode.getName())) {
@@ -56,13 +65,13 @@ public class Renderer {
             } else {
                 // Anderes Tag-Verhalten kann hier hinzugefügt werden
                 for (ASTNode child : tagNode.getChildren()) {
-                    renderNode(child, output);
+                    renderNode(child, engine, scopes, output);
                 }
             }
+			*/
         } else {
-            // Rekursiv alle Kindknoten verarbeiten
             for (ASTNode child : node.getChildren()) {
-                renderNode(child, output);
+                renderNode(child, engine, scopes, output);
             }
         }
     }

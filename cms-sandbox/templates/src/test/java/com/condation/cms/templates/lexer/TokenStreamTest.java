@@ -1,4 +1,4 @@
-package com.condation.cms.templates.parser;
+package com.condation.cms.templates.lexer;
 
 /*-
  * #%L
@@ -22,6 +22,7 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
+import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.lexer.Token;
 import java.util.List;
 import org.assertj.core.api.Assertions;

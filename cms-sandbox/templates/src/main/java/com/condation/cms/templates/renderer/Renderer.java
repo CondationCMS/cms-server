@@ -23,6 +23,8 @@ package com.condation.cms.templates.renderer;
  */
 
 
+import com.condation.cms.templates.RenderFunction;
+import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
@@ -33,22 +35,38 @@ import org.apache.commons.jexl3.JexlEngine;
 @RequiredArgsConstructor
 public class Renderer {
 
+	private final TemplateConfiguration configuration;
+	
+	public static record Context (
+			JexlEngine engine, 
+		ScopeStack scopes, 
+			RenderFunction renderer) {
+	
+		public ScopeContext createEngineContext () {
+			return new ScopeContext(scopes);
+		}
+	}
+	
     public String render(ASTNode node, final JexlEngine engine, final ScopeStack scopes) {
         StringBuilder output = new StringBuilder();
-        renderNode(node, engine, scopes, output);
+        renderNode(node, new Context(engine, scopes, this::renderNode), output);
         return output.toString();
     }
 
-    private void renderNode(ASTNode node, final JexlEngine engine, final ScopeStack scopes, StringBuilder output) {
+    private void renderNode(ASTNode node, Context context, StringBuilder output) {
 		
-		var scopeContext = new ScopeContext(scopes);
+		var scopeContext = context.createEngineContext();
 		
-        if (node instanceof TextNode) {
-            output.append(((TextNode) node).text);
+        if (node instanceof TextNode textNode) {
+            output.append(textNode.text);
         } else if (node instanceof VariableNode vnode) {
             Object variableValue = vnode.getExpression().evaluate(scopeContext);
             output.append(variableValue != null ? variableValue : "");
-        } else if (node instanceof TagNode) {
+        } else if (node instanceof TagNode tagNode) {
+			var tag = configuration.getTag(tagNode.getName());
+			if (tag.isPresent()) {
+				tag.get().render(tagNode, context, output);
+			}
 			/*
             TagNode tagNode = (TagNode) node;
             // Beispiel: Wir unterstützen das "if"-Tag
@@ -71,7 +89,7 @@ public class Renderer {
 			*/
         } else {
             for (ASTNode child : node.getChildren()) {
-                renderNode(child, engine, scopes, output);
+                renderNode(child, context, output);
             }
         }
     }

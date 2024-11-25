@@ -22,6 +22,8 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.templates.parser.TagNode;
+import com.condation.cms.templates.renderer.Renderer;
 import java.util.Optional;
 
 /**
@@ -36,11 +38,11 @@ public interface Tag {
 		return Optional.empty();
 	}
 	
-	default boolean supportsNestedTag(String tagName) {
-        return false;
-    }
-	
-	default boolean isEndTag () {
+	default boolean isClosingTag () {
 		return false;
 	}
+	
+	default void render (TagNode node, Renderer.Context context, StringBuilder sb) {
+		// default render does nothing
+	};
 }

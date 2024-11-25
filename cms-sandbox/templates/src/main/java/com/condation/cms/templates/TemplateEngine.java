@@ -41,7 +41,7 @@ public class TemplateEngine {
 	public TemplateEngine(TemplateConfiguration configuration) {
 		this.configuration = configuration;
 		parser = new Parser(configuration, jexl);
-		this.renderer = new Renderer();
+		this.renderer = new Renderer(configuration);
 	}
 	
 	public Template getTemplate (String template) {

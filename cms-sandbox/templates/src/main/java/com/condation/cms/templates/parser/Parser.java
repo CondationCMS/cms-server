@@ -22,6 +22,7 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
+import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
 import java.util.Stack;
@@ -81,7 +82,7 @@ public class Parser {
 						if (configuration.hasTag(tempNode.getName())) {
 							Tag tag = configuration.getTag(tempNode.getName()).get();
 
-							if (tag.isEndTag()) {
+							if (tag.isClosingTag()) {
 								nodeStack.pop();
 
 								var temp = (TagNode) nodeStack.peek();
@@ -133,12 +134,15 @@ public class Parser {
 					break;
 				}
 				case EXPRESSION: {
-					TagNode ifNode = (TagNode) nodeStack.peek();
-					ifNode.setCondition(token.value);
+					ASTNode currentNode = nodeStack.peek();
+					if (currentNode instanceof TagNode tagNode) {
+						tagNode.setCondition(token.value);
+						tagNode.setExpression(engine.createExpression(token.value));
+					}
+					
 					break;
 				}
 				case END: {
-					System.out.println("end token?");
 					break;
 				}
 				default:

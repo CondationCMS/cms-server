@@ -22,7 +22,6 @@ package com.condation.cms.templates.lexer;
  * #L%
  */
 
-import com.condation.cms.templates.parser.TokenStream;
 import java.util.ArrayList;
 import java.util.List;
 

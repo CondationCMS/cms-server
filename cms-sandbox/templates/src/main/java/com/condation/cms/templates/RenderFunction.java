@@ -1,8 +1,4 @@
-package com.condation.cms.templates.parser;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.jexl3.JexlExpression;
+package com.condation.cms.templates;
 
 /*-
  * #%L
@@ -26,27 +22,15 @@ import org.apache.commons.jexl3.JexlExpression;
  * #L%
  */
 
-public class TagNode extends ASTNode {
-	@Getter
-	@Setter
-    private String name;
-	@Getter
-	@Setter
-    private String condition;
-	@Getter
-	@Setter
-	private JexlExpression expression;
+import com.condation.cms.templates.parser.ASTNode;
+import com.condation.cms.templates.renderer.Renderer;
 
-	public TagNode () {
-		
-	}
+/**
+ *
+ * @author t.marx
+ */
+@FunctionalInterface
+public interface RenderFunction {
 
-	public TagNode(String name) {
-		this.name = name;
-	}
-	
-    @Override
-    public String toString() {
-        return "TagNode('" + name + ", " + condition + "')";
-    }
+    void render(ASTNode node, Renderer.Context context, StringBuilder output);
 }

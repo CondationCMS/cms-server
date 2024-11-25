@@ -36,7 +36,7 @@ public class EndIfTag implements Tag {
 	}
 
 	@Override
-	public boolean isEndTag() {
+	public boolean isClosingTag() {
 		return true;
 	}
 }

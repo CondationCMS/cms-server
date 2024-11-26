@@ -1,4 +1,4 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.tags;
 
 /*-
  * #%L
@@ -21,37 +21,36 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.parser.ASTNode;
+import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
-import com.condation.cms.templates.renderer.ScopeStack;
-import java.util.Map;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.jexl3.JexlEngine;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import org.apache.commons.jexl3.JexlExpression;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-@RequiredArgsConstructor
-public class DefaultTemplate implements Template {
+public class SetTag implements Tag {
 
-	private final ASTNode rootNode;
-	
-	private final JexlEngine engine;
-	
-	private final Renderer renderer;
-	
 	@Override
-	public String execute(Map<String, Object> context) {
-		
-		ScopeStack scopes = new ScopeStack(context);
-		
-		return evaluate(scopes);
+	public String getTagName() {
+		return "set";
 	}
-	
-	public String evaluate (ScopeStack scopes) {
-		return renderer.render(rootNode, engine, scopes);
+
+	@Override
+	public boolean parseExpressions() {
+		return true;
 	}
-	
+
+	@Override
+	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+		var scopeContext = context.createEngineContext();
+		
+		node.getExpression().evaluate(scopeContext);
+		
+	}
 }

@@ -21,10 +21,10 @@ package com.condation.cms.templates.renderer;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
+import com.condation.cms.templates.TemplateEngine;
+import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
@@ -37,38 +37,40 @@ import org.apache.commons.text.StringEscapeUtils;
 public class Renderer {
 
 	private final TemplateConfiguration configuration;
-	
-	public static record Context (
-			JexlEngine engine, 
-		ScopeStack scopes, 
-			RenderFunction renderer) {
-	
-		public ScopeContext createEngineContext () {
+	private final TemplateEngine templateEngine;
+
+	public static record Context(
+			JexlEngine engine,
+			ScopeStack scopes,
+			RenderFunction renderer,
+			TemplateEngine templateEngine) {
+
+		public ScopeContext createEngineContext() {
 			return new ScopeContext(scopes);
 		}
 	}
-	
-    public String render(ASTNode node, final JexlEngine engine, final ScopeStack scopes) {
-        StringBuilder output = new StringBuilder();
-        renderNode(node, new Context(engine, scopes, this::renderNode), output);
-        return output.toString();
-    }
 
-    private void renderNode(ASTNode node, Context context, StringBuilder output) {
-		
+	public String render(ASTNode node, final JexlEngine engine, final ScopeStack scopes) {
+		StringBuilder output = new StringBuilder();
+		renderNode(node, new Context(engine, scopes, this::renderNode, templateEngine), output);
+		return output.toString();
+	}
+
+	private void renderNode(ASTNode node, Context context, StringBuilder output) {
+
 		var scopeContext = context.createEngineContext();
-		
-        if (node instanceof TextNode textNode) {
-            output.append(textNode.text);
-        } else if (node instanceof VariableNode vnode) {
-            Object variableValue = vnode.getExpression().evaluate(scopeContext);
+
+		if (node instanceof TextNode textNode) {
+			output.append(textNode.text);
+		} else if (node instanceof VariableNode vnode) {
+			Object variableValue = vnode.getExpression().evaluate(scopeContext);
 			if (variableValue != null && variableValue instanceof String stringValue) {
 				output.append(StringEscapeUtils.ESCAPE_HTML4.translate(stringValue));
 			} else {
 				output.append(variableValue != null ? variableValue : "");
 			}
-            
-        } else if (node instanceof TagNode tagNode) {
+
+		} else if (node instanceof TagNode tagNode) {
 			var tag = configuration.getTag(tagNode.getName());
 			if (tag.isPresent()) {
 				tag.get().render(tagNode, context, output);
@@ -92,11 +94,11 @@ public class Renderer {
                     renderNode(child, engine, scopes, output);
                 }
             }
-			*/
-        } else {
-            for (ASTNode child : node.getChildren()) {
-                renderNode(child, context, output);
-            }
-        }
-    }
+			 */
+		} else {
+			for (ASTNode child : node.getChildren()) {
+				renderNode(child, context, output);
+			}
+		}
+	}
 }

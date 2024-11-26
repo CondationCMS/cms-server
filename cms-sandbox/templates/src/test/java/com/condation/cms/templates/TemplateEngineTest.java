@@ -55,6 +55,7 @@ public class TemplateEngineTest {
 		config.setTemplateLoader(new StringTemplateLoader()
 				.add("simple", "Hallo {{ name }}")
 				.add("map", "Hallo {{ person.name }}")
+				.add("text", "{{ content }}")
 		);
 		
 		this.templateEngine = new TemplateEngine(config);
@@ -98,4 +99,14 @@ public class TemplateEngineTest {
 		System.out.println("executing map template took: " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
 	}
 	
+	@Test
+	public void test_escape() {
+		
+		Template template = templateEngine.getTemplate("text");
+		
+		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
+		
+		
+		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("&lt;h1&gt;heading&lt;/h1&gt;");
+	}
 }

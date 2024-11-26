@@ -33,12 +33,12 @@ public class ScopeStack {
     }
 	
 	public ScopeStack(Map<String, Object> root) {
-        scopes.push(root);
+        pushScope(root);
     }
 
     // Fügt einen neuen Scope hinzu
     public void pushScope() {
-        pushScope(Map.of());
+        pushScope(new HashMap<>());
     }
 	
 	public void pushScope(Map<String, Object> values) {

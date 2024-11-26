@@ -47,14 +47,19 @@ public class IfTag implements Tag {
 	}
 
 	@Override
+	public boolean parseExpressions() {
+		return true;
+	}
+
+	@Override
 	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
 		List<Condition> conditions = buildConditions(node);
 
 		var scopeContext = context.createEngineContext();
 		for (Condition condition : conditions) {
+			context.scopes().pushScope();
 			try {
-				context.scopes().pushScope();
-				if (condition.expression() != null) {
+				if (!condition.name.equals("else")) {
 					Object value = condition.expression().evaluate(scopeContext);
 					if (value instanceof Boolean boolValue && boolValue == true) {
 						for (var child : condition.currentChildren) {

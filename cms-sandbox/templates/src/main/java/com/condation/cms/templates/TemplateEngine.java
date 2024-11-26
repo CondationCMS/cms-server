@@ -30,7 +30,11 @@ import org.apache.commons.jexl3.JexlEngine;
 
 public class TemplateEngine {
 
-	private static final JexlEngine jexl = new JexlBuilder().cache(512).strict(true).silent(false).create();
+	private static final JexlEngine jexl = new JexlBuilder()
+			.cache(512)
+			.strict(true)
+			.silent(false)
+			.create();
 	
 	private final TemplateConfiguration configuration;
 	

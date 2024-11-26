@@ -25,7 +25,8 @@ package com.condation.cms.templates.parser;
 public class TextNode extends ASTNode {
     public final String text;
 
-    public TextNode(String text) {
+    public TextNode(String text, int line, int column) {
+		super(line, column);
         this.text = text;
     }
 

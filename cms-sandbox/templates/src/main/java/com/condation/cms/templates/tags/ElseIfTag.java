@@ -34,4 +34,9 @@ public class ElseIfTag implements Tag {
 	public String getTagName() {
 		return "elseif";
 	}
+	
+	@Override
+	public boolean parseExpressions() {
+		return true;
+	}
 }

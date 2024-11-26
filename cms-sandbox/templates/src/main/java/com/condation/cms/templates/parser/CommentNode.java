@@ -26,7 +26,8 @@ public class CommentNode extends ASTNode {
 
 	private String value;
 	
-    public CommentNode() {
+    public CommentNode(int line, int column) {
+		super(line, column);
     }
 
 	public String getValue() {

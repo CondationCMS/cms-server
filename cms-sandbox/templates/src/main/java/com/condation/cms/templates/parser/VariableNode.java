@@ -34,6 +34,10 @@ public class VariableNode extends ASTNode {
 	@Setter
 	private JexlExpression expression;
 
+	public VariableNode(int line, int column) {
+		super(line, column);
+	}
+	
     @Override
     public String toString() {
         return "VariableNode('" + variable + "')";

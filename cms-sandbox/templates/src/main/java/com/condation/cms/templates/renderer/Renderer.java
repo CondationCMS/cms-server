@@ -31,6 +31,7 @@ import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.text.StringEscapeUtils;
 
 @RequiredArgsConstructor
 public class Renderer {
@@ -61,7 +62,12 @@ public class Renderer {
             output.append(textNode.text);
         } else if (node instanceof VariableNode vnode) {
             Object variableValue = vnode.getExpression().evaluate(scopeContext);
-            output.append(variableValue != null ? variableValue : "");
+			if (variableValue != null && variableValue instanceof String stringValue) {
+				output.append(StringEscapeUtils.ESCAPE_HTML4.translate(stringValue));
+			} else {
+				output.append(variableValue != null ? variableValue : "");
+			}
+            
         } else if (node instanceof TagNode tagNode) {
 			var tag = configuration.getTag(tagNode.getName());
 			if (tag.isPresent()) {

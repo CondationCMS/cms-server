@@ -1,4 +1,4 @@
-package com.condation.cms.templates.exceptions;
+package com.condation.cms.templates.tags;
 
 /*-
  * #%L
@@ -22,20 +22,21 @@ package com.condation.cms.templates.exceptions;
  * #L%
  */
 
+import com.condation.cms.templates.Tag;
+
 /**
  *
  * @author t.marx
  */
-public class ParserException extends RuntimeException {
+public class EndForTag implements Tag {
 
-	private final int line;
-	private final int column;
-	
-	public ParserException(String message, int line, int column) {
-		super(message);
-		this.line = line;
-		this.column = column;
+	@Override
+	public String getTagName() {
+		return "endfor";
 	}
-	
-	
+
+	@Override
+	public boolean isClosingTag() {
+		return true;
+	}
 }

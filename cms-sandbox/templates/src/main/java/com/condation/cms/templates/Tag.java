@@ -34,6 +34,10 @@ public interface Tag {
 
 	String getTagName();
 	
+	default boolean parseExpressions () {
+		return false;
+	}
+	
 	default Optional<String> getCloseTagName () {
 		return Optional.empty();
 	}

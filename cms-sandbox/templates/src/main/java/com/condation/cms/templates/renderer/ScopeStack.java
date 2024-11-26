@@ -38,7 +38,11 @@ public class ScopeStack {
 
     // Fügt einen neuen Scope hinzu
     public void pushScope() {
-        scopes.push(new HashMap<>());
+        pushScope(Map.of());
+    }
+	
+	public void pushScope(Map<String, Object> values) {
+        scopes.push(new HashMap<>(values));
     }
 
     // Entfernt den obersten Scope und alle Variablen darin

@@ -24,9 +24,18 @@ package com.condation.cms.templates.parser;
 
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class ASTNode {
     private final List<ASTNode> children = new ArrayList<>();
+	
+	@Getter
+	private final int line;
+	@Getter
+	private final int column;
+	
 
     public void addChild(ASTNode child) {
         children.add(child);

@@ -37,13 +37,9 @@ public class TagNode extends ASTNode {
 	@Setter
 	private JexlExpression expression;
 
-	public TagNode () {
-		
-	}
-
-	public TagNode(String name) {
-		this.name = name;
-	}
+	public TagNode(int line, int column) {
+		super(line, column);
+    }
 	
     @Override
     public String toString() {

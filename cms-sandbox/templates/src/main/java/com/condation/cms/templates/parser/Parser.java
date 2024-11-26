@@ -40,7 +40,7 @@ public class Parser {
 	private final JexlEngine engine;
 
 	public ASTNode parse(final TokenStream tokenStream) {
-		ASTNode root = new ASTNode();
+		ASTNode root = new ASTNode(0, 0);
 		Stack<ASTNode> nodeStack = new Stack<>();
 		nodeStack.push(root);
 
@@ -48,7 +48,7 @@ public class Parser {
 		while ((token = tokenStream.peek()) != null) {
 			switch (token.type) {
 				case TEXT: {
-					nodeStack.peek().addChild(new TextNode(token.value));
+					nodeStack.peek().addChild(new TextNode(token.value, token.line, token.column));
 					break;
 				}
 				case COMMENT_VALUE: {
@@ -59,19 +59,19 @@ public class Parser {
 					break;
 				}
 				case VARIABLE_START: {
-					VariableNode variableNode = new VariableNode();
+					VariableNode variableNode = new VariableNode(token.line, token.column);
 					nodeStack.peek().addChild(variableNode);
 					nodeStack.push(variableNode); // In den neuen Kontext für Variablen wechseln
 					break;
 				}
 				case COMMENT_START: {
-					CommentNode commentNode = new CommentNode();
+					CommentNode commentNode = new CommentNode(token.line, token.column);
 					nodeStack.peek().addChild(commentNode);
 					nodeStack.push(commentNode); // In den neuen Kontext für Variablen wechseln
 					break;
 				}
 				case TAG_START: {
-					TagNode tagNode = new TagNode();
+					TagNode tagNode = new TagNode(token.line, token.column);
 
 					nodeStack.peek().addChild(tagNode);
 					nodeStack.push(tagNode); // In den neuen Kontext für Tags wechseln
@@ -137,7 +137,11 @@ public class Parser {
 					ASTNode currentNode = nodeStack.peek();
 					if (currentNode instanceof TagNode tagNode) {
 						tagNode.setCondition(token.value);
-						tagNode.setExpression(engine.createExpression(token.value));
+						
+						Tag tag = configuration.getTag(tagNode.getName()).get();
+						if (tag.parseExpressions()) {
+							tagNode.setExpression(engine.createExpression(token.value));
+						}
 					}
 					
 					break;

@@ -27,6 +27,13 @@ import java.util.*;
 public class ScopeStack {
     private final Deque<Map<String, Object>> scopes = new ArrayDeque<>();
 
+	public ScopeStack parent;
+	
+	public ScopeStack ( ScopeStack parent ) {
+		pushScope();
+		this.parent = parent;
+	}
+	
     public ScopeStack() {
         // Füge den globalen Scope hinzu, der immer verfügbar ist
         pushScope();
@@ -73,6 +80,9 @@ public class ScopeStack {
                 return Optional.of(scope.get(name));
             }
         }
+		if (parent != null) {
+			return parent.getVariable(name);
+		}
         return Optional.empty(); // Variable nicht gefunden
     }
 }

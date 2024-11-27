@@ -56,6 +56,7 @@ public class TemplateEngineTest {
 				.add("simple", "Hallo {{ name }}")
 				.add("map", "Hallo {{ person.name }}")
 				.add("text", "{{ content }}")
+				.add("text_raw", "{{ content | raw }}")
 		);
 		
 		this.templateEngine = new TemplateEngine(config);
@@ -108,5 +109,16 @@ public class TemplateEngineTest {
 		
 		
 		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("&lt;h1&gt;heading&lt;/h1&gt;");
+	}
+	
+	@Test
+	public void test_raw() {
+		
+		Template template = templateEngine.getTemplate("text_raw");
+		
+		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
+		
+		
+		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");
 	}
 }

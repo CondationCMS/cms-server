@@ -90,7 +90,7 @@ public class Lexer {
 		String keyword = readWhile(Character::isLetter);
 		tokens.add(new Token(Token.Type.IDENTIFIER, keyword, line, column));
 
-		String condition = readUntil("%");
+		String condition = readUntil("%}");
 		tokens.add(new Token(Token.Type.EXPRESSION, condition, line, column));
 	}
 

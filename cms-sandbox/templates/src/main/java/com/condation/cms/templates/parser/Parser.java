@@ -25,6 +25,8 @@ package com.condation.cms.templates.parser;
 import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
+import com.condation.cms.templates.exceptions.ParserException;
+import com.condation.cms.templates.utils.TemplateUtils;
 import java.util.Stack;
 
 import com.condation.cms.templates.lexer.Token;
@@ -93,17 +95,17 @@ public class Parser {
 										&& ptag.getCloseTagName().get().equals(tag.getTagName())) {
 									nodeStack.pop();
 								} else {
-									throw new RuntimeException("invalid closing tag");
+									throw new ParserException("invalid closing tag", token.line, token.column);
 								}
 							} else if (tag.getCloseTagName().isEmpty()) {
 								nodeStack.pop();
 							}
 
 						} else {
-							throw new RuntimeException("Undefined tag: " + tempNode.getName());
+							throw new ParserException("Undefined tag: " + tempNode.getName(), token.line, token.column);
 						}
 					} else {
-						throw new RuntimeException("Unexpected token: TAG_END");
+						throw new ParserException("Unexpected token: TAG_END", token.line, token.column);
 					}
 					break;
 				}
@@ -111,7 +113,7 @@ public class Parser {
 					if (!nodeStack.isEmpty()) {
 						nodeStack.pop(); // Aus dem aktuellen Tag-/Variable-Block heraustreten
 					} else {
-						throw new RuntimeException("Unexpected token: VARIABLE_END");
+						throw new ParserException("Unexpected token: VARIABLE_END", token.line, token.column);
 					}
 					break;
 				}
@@ -119,7 +121,7 @@ public class Parser {
 					if (!nodeStack.isEmpty()) {
 						nodeStack.pop(); // Aus dem aktuellen Tag-/Variable-Block heraustreten
 					} else {
-						throw new RuntimeException("Unexpected token: COMMENT_END");
+						throw new ParserException("Unexpected token: COMMENT_END", token.line, token.column);
 					}
 					break;
 				}
@@ -128,8 +130,22 @@ public class Parser {
 					if (currentNode instanceof TagNode tagNode1) {
 						tagNode1.setName(token.value); // Tag-Name setzen
 					} else if (currentNode instanceof VariableNode variableNode1) {
-						variableNode1.setVariable(token.value); // Variable setzen
-						variableNode1.setExpression(engine.createExpression(token.value));
+						var identifier = token.value;
+						if (TemplateUtils.hasFilters(identifier)) {
+							var variable = TemplateUtils.extractVariableName(identifier);
+							
+							variableNode1.setVariable(variable); // Variable setzen
+							variableNode1.setExpression(engine.createExpression(variable));
+							
+							variableNode1.setFilters(TemplateUtils.extractFilters(identifier)
+									.stream()
+									.map(filter -> new Filter(filter))
+									.toList()
+							);
+						} else {
+							variableNode1.setVariable(token.value); // Variable setzen
+							variableNode1.setExpression(engine.createExpression(token.value));
+						}
 					}
 					break;
 				}
@@ -142,6 +158,8 @@ public class Parser {
 						if (tag.parseExpressions()) {
 							tagNode.setExpression(engine.createExpression(token.value));
 						}
+					} else if (currentNode instanceof TagNode vNode) {
+						
 					}
 					
 					break;
@@ -150,13 +168,13 @@ public class Parser {
 					break;
 				}
 				default:
-					throw new RuntimeException("Unexpected token: " + token.type);
+					throw new ParserException("Unexpected token: " + token.type, token.line, token.column);
 			}
 			tokenStream.next();
 		}
 
 		if (nodeStack.size() > 1) {
-			throw new RuntimeException("Unclosed tag or block detected");
+			throw new ParserException("Unclosed tag or block detected", 0, 0);
 		}
 
 		return root;

@@ -1,11 +1,5 @@
 package com.condation.cms.templates.parser;
 
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.jexl3.JexlExpression;
-
 /*-
  * #%L
  * templates
@@ -28,27 +22,10 @@ import org.apache.commons.jexl3.JexlExpression;
  * #L%
  */
 
-public class VariableNode extends ASTNode {
-	@Getter
-	@Setter
-    private String variable;
-	@Getter
-	@Setter
-	private JexlExpression expression;
-	@Setter
-	@Getter
-	private List<Filter> filters = new ArrayList<>();
+/**
+ *
+ * @author t.marx
+ */
+public record Filter(String name) {
 
-	public VariableNode(int line, int column) {
-		super(line, column);
-	}
-	
-	public boolean hasFilters () {
-		return filters != null && !filters.isEmpty();
-	}
-	
-    @Override
-    public String toString() {
-        return "VariableNode('" + variable + "')";
-    }
 }

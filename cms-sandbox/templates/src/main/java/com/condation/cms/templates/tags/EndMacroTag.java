@@ -1,10 +1,4 @@
-package com.condation.cms.templates.parser;
-
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.commons.jexl3.JexlExpression;
+package com.condation.cms.templates.tags;
 
 /*-
  * #%L
@@ -28,27 +22,21 @@ import org.apache.commons.jexl3.JexlExpression;
  * #L%
  */
 
-public class VariableNode extends ASTNode {
-	@Getter
-	@Setter
-    private String variable;
-	@Getter
-	@Setter
-	private JexlExpression expression;
-	@Setter
-	@Getter
-	private List<Filter> filters = new ArrayList<>();
+import com.condation.cms.templates.Tag;
 
-	public VariableNode(int line, int column) {
-		super(line, column);
+/**
+ *
+ * @author t.marx
+ */
+public class EndMacroTag implements Tag {
+
+	@Override
+	public String getTagName() {
+		return "endmacro";
 	}
-	
-	public boolean hasFilters () {
-		return filters != null && !filters.isEmpty();
+
+	@Override
+	public boolean isClosingTag() {
+		return true;
 	}
-	
-    @Override
-    public String toString() {
-        return "VariableNode('" + variable + "')";
-    }
 }

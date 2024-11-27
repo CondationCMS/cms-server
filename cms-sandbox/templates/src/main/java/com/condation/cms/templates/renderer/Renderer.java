@@ -38,6 +38,8 @@ public class Renderer {
 
 	private final TemplateConfiguration configuration;
 	private final TemplateEngine templateEngine;
+	
+	private final VariableNodeRenderer variableNodeRenderer = new VariableNodeRenderer();
 
 	public static record Context(
 			JexlEngine engine,
@@ -63,42 +65,20 @@ public class Renderer {
 		if (node instanceof TextNode textNode) {
 			output.append(textNode.text);
 		} else if (node instanceof VariableNode vnode) {
-			Object variableValue = vnode.getExpression().evaluate(scopeContext);
-			if (variableValue != null && variableValue instanceof String stringValue) {
-				output.append(StringEscapeUtils.ESCAPE_HTML4.translate(stringValue));
-			} else {
-				output.append(variableValue != null ? variableValue : "");
-			}
-
+			renderVariable(vnode, scopeContext, output);
 		} else if (node instanceof TagNode tagNode) {
 			var tag = configuration.getTag(tagNode.getName());
 			if (tag.isPresent()) {
 				tag.get().render(tagNode, context, output);
 			}
-			/*
-            TagNode tagNode = (TagNode) node;
-            // Beispiel: Wir unterstützen das "if"-Tag
-            if ("if".equals(tagNode.getName())) {
-                ASTNode conditionNode = tagNode.getChildren().get(0);
-                if (conditionNode instanceof VariableNode) {
-                    String variableValue = context.getVariable(((VariableNode) conditionNode).getVariable());
-                    if (variableValue != null && !variableValue.isEmpty()) {
-                        for (int i = 1; i < tagNode.getChildren().size(); i++) {
-                            renderNode(tagNode.getChildren().get(i), output);
-                        }
-                    }
-                }
-            } else {
-                // Anderes Tag-Verhalten kann hier hinzugefügt werden
-                for (ASTNode child : tagNode.getChildren()) {
-                    renderNode(child, engine, scopes, output);
-                }
-            }
-			 */
 		} else {
 			for (ASTNode child : node.getChildren()) {
 				renderNode(child, context, output);
 			}
 		}
+	}
+	
+	private void renderVariable (VariableNode node, ScopeContext context, StringBuilder output) {
+		variableNodeRenderer.render(node, context, output);
 	}
 }

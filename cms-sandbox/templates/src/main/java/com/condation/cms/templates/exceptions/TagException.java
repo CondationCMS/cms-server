@@ -37,5 +37,9 @@ public class TagException extends RuntimeException {
 		this.column = column;
 	}
 	
+	@Override
+	public String getLocalizedMessage() {
+		return "Error: %s (line %d, column %d)".formatted(getMessage(), line, column);
+	}
 	
 }

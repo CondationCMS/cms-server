@@ -46,17 +46,6 @@ public class JexlTest {
 			.create();
 	
 	@Test
-	void test_fn () {
-		
-		JexlContext context = new MapContext();
-		context.set("fn", (Function<String, String>) (String t) -> "hello " + t);
-		
-		var exp = jexl.createExpression("fn('CondationCMS')");
-		
-		exp.evaluate(context);
-	}
-	
-	@Test
  	void test_fn_wrapper () {
 		
 		JexlContext context = new MapContext();

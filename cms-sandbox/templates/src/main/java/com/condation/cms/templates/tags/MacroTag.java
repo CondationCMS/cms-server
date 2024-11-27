@@ -95,8 +95,8 @@ public class MacroTag implements Tag {
 		@Override
 		public Object invoke(Object obj, Object... params) throws Exception {
 			
-			ScopeStack scope = new ScopeStack();
-			var engineContext = context.createEngineContext();
+			ScopeStack scope = new ScopeStack(context.scopes());
+			
 			for (int i = 0; i < macro.parameters.size(); i++) {
 				Object value = "";
 				if ( i < params.length ) {

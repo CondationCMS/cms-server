@@ -12,5 +12,6 @@
 	
 	<modules>
 		<module>example-module</module>
+	 <module>system-modules</module>
 	</modules>
 </project>

@@ -116,7 +116,7 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 
 	@Override
 	public List<ReadOnlyFile> children() throws IOException {
-		return Files.list(file).map(path -> new NIOReadOnlyFile(file, basePath)).map(ReadOnlyFile.class::cast).toList();
+		return Files.list(file).map(child -> new NIOReadOnlyFile(child, basePath)).map(ReadOnlyFile.class::cast).toList();
 	}
 
 	@Override

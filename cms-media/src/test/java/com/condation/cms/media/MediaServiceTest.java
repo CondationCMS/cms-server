@@ -23,7 +23,6 @@ package com.condation.cms.media;
  */
 
 
-import com.condation.cms.media.FileMediaService;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;

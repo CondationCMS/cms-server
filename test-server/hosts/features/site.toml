@@ -13,3 +13,6 @@ mode = "PERSISTENT"
 
 [modules]
 active = [ "forms-module" ]
+
+[api]
+enabled = true

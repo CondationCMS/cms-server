@@ -59,4 +59,12 @@ public class ServerHooks implements Feature {
 		
 		return httpExtensions;
 	}
+
+	public HttpHandlerWrapper getAPIRoutes () {
+		var httpExtensions = new HttpHandlerWrapper();
+		requestContext.get(HookSystemFeature.class).hookSystem()
+				.execute(Hooks.API_ROUTE.hook(), Map.of("apiRoutes", httpExtensions));
+		
+		return httpExtensions;
+	}
 }

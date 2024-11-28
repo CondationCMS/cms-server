@@ -1,4 +1,4 @@
-package com.condation.cms.api.extensions;
+package com.condation.cms.api.extensions.http;
 
 /*-
  * #%L
@@ -22,18 +22,8 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.util.Callback;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 
-
-/**
- *
- * @author t.marx
- */
-@Deprecated(since = "7.3.0", forRemoval = true)
-public abstract class HttpRouteExtensionPoint extends AbstractExtensionPoint {
-	abstract public String getRoute ();
-	
-	abstract public void handle (Request request, Response response, Callback callback);
+public abstract class APIHandlerExtensionPoint extends AbstractExtensionPoint {
+	abstract public PathMapping getMapping();
 }

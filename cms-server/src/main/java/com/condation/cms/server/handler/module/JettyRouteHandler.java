@@ -42,6 +42,7 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor(onConstructor = @__({
 	@Inject}))
 @Slf4j
+@Deprecated(since = "7.3.0", forRemoval = true)
 public class JettyRouteHandler extends Handler.Abstract {
 
 	private final ModuleManager moduleManager;

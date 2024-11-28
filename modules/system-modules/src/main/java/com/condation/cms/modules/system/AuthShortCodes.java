@@ -1,4 +1,4 @@
-package	com.condation.cms.auth;
+package	com.condation.cms.modules.system;
 
 /*-
  * #%L

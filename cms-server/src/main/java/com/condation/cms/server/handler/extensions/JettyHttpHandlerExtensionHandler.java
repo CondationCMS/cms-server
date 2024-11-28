@@ -27,7 +27,6 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.hooks.ServerHooks;
 import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
-import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.server.filter.CreateRequestContextFilter;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +76,7 @@ public class JettyHttpHandlerExtensionHandler extends Handler.Abstract {
 		}
 		contextPath = contextPath + PATH + "/";
 
-		path = path.replace(contextPath, "");
+		path = path.replaceFirst(contextPath, "");
 		if (!path.startsWith("/")) {
 			path = "/" + path;
 		}

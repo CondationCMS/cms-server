@@ -1,5 +1,13 @@
 package com.condation.cms.server.configs;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.eclipse.jetty.server.handler.ResourceHandler;
+
 /*-
  * #%L
  * cms-server
@@ -32,30 +40,25 @@ import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.media.SiteMediaManager;
-import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
+import com.condation.cms.server.FileFolderPathResource;
 import com.condation.cms.server.filter.InitRequestContextFilter;
+import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
 import com.condation.cms.server.handler.content.JettyViewHandler;
 import com.condation.cms.server.handler.extensions.JettyHttpHandlerExtensionHandler;
-import com.condation.cms.server.handler.extensions.JettyExtensionRouteHandler;
+import com.condation.cms.server.handler.http.APIHandler;
+import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.cms.server.handler.module.JettyRouteHandler;
-import com.condation.cms.server.handler.module.JettyRoutesHandler;
-import com.condation.cms.server.FileFolderPathResource;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+
 import lombok.RequiredArgsConstructor;
-import org.eclipse.jetty.server.handler.ResourceHandler;
 
 /**
  *
@@ -71,10 +74,11 @@ public class SiteHandlerModule extends AbstractModule {
 		bind(JettyContentHandler.class).in(Singleton.class);
 		bind(JettyTaxonomyHandler.class).in(Singleton.class);
 		bind(JettyRouteHandler.class).in(Singleton.class);
-		bind(JettyRoutesHandler.class).in(Singleton.class);
+		bind(RoutesHandler.class).in(Singleton.class);
 		bind(JettyHttpHandlerExtensionHandler.class).in(Singleton.class);
-		bind(JettyExtensionRouteHandler.class).in(Singleton.class);
 		bind(InitRequestContextFilter.class).in(Singleton.class);
+
+		bind(APIHandler.class).in(Singleton.class);
 		
 		//bind(JettyAuthenticationHandler.class).in(Singleton.class);
 	}

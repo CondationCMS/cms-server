@@ -49,13 +49,11 @@ import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
-import com.condation.cms.api.feature.features.ContentRenderFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.SiteUtil;
-import com.condation.cms.content.ContentResolver;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.extensions.GlobalExtensions;
 import com.condation.cms.extensions.hooks.GlobalHooks;
@@ -63,7 +61,6 @@ import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.media.MediaManager;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.media.ThemeMediaManager;
-import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.server.configs.ModulesModule;
 import com.condation.cms.server.configs.SiteConfigInitializer;
@@ -80,12 +77,12 @@ import com.condation.cms.server.handler.cache.CacheHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
 import com.condation.cms.server.handler.content.JettyViewHandler;
-import com.condation.cms.server.handler.extensions.JettyExtensionRouteHandler;
 import com.condation.cms.server.handler.extensions.JettyHttpHandlerExtensionHandler;
+import com.condation.cms.server.handler.http.APIHandler;
+import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.cms.server.handler.module.JettyRouteHandler;
-import com.condation.cms.server.handler.module.JettyRoutesHandler;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -226,8 +223,7 @@ public class VHost {
 		var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
 		var viewHandler = injector.getInstance(JettyViewHandler.class);
 		var routeHandler = injector.getInstance(JettyRouteHandler.class);
-		var routesHandler = injector.getInstance(JettyRoutesHandler.class);
-		var extensionRouteHandler = injector.getInstance(JettyExtensionRouteHandler.class);
+		var routesHandler = injector.getInstance(RoutesHandler.class);
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
 
@@ -236,7 +232,6 @@ public class VHost {
 				initContextHandler,
 				routeHandler,
 				routesHandler,
-				extensionRouteHandler,
 				viewHandler,
 				taxonomyHandler,
 				contentHandler
@@ -271,6 +266,10 @@ public class VHost {
 				createExtensionHandler()
 		);
 
+		pathMappingsHandler.addMapping(PathSpec.from("/" + APIHandler.PATH + "/*"),
+				createAPIHandler()
+		);
+
 		ContextHandler defaultContextHandler = new ContextHandler(
 				pathMappingsHandler,
 				injector.getInstance(SiteProperties.class).contextPath()
@@ -301,6 +300,18 @@ public class VHost {
 		return hostHandler;
 	}
 	
+	private Handler.Wrapper createAPIHandler() {
+		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
+		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
+		var apiHandler = injector.getInstance(APIHandler.class);
+		var handlerSequence = new Handler.Sequence(
+				authHandler,
+				initContextHandler,
+				apiHandler
+		);
+		return requestContextFilter(handlerSequence, injector);
+	}
+
 	private Handler.Wrapper createExtensionHandler() {
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);

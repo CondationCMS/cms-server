@@ -49,14 +49,14 @@ public class ParserTest {
 	public static void setup () {
 		var config = new TemplateConfiguration();
 		parser = new Parser(config, jexl);
+		lexer = new Lexer();
 	}
 
 	@Test
 	public void test_filters() {
 		var input = "{{ content | raw | trim }}";
-		lexer = new Lexer(input);
 		
-		var tokenStream = lexer.tokenize();
+		var tokenStream = lexer.tokenize(input);
 		
 		var ast = parser.parse(tokenStream);
 		

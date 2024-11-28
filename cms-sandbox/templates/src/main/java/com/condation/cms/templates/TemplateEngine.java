@@ -39,12 +39,13 @@ public class TemplateEngine {
 	private final TemplateConfiguration configuration;
 	
 	private final Parser parser;
-	
+	private final Lexer lexer;
 	private final Renderer renderer;
 
 	public TemplateEngine(TemplateConfiguration configuration) {
 		this.configuration = configuration;
 		parser = new Parser(configuration, jexl);
+		this.lexer = new Lexer();
 		this.renderer = new Renderer(configuration, this);
 	}
 	
@@ -52,7 +53,7 @@ public class TemplateEngine {
 		
 		String templateString = configuration.getTemplateLoader().load(template);
 		
-		var tokenStream = new Lexer(templateString).tokenize();
+		var tokenStream = lexer.tokenize(templateString);
 		
 		var rootNode = parser.parse(tokenStream);
 		

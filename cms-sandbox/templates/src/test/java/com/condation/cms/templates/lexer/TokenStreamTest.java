@@ -22,8 +22,6 @@ package com.condation.cms.templates.lexer;
  * #L%
  */
 
-import com.condation.cms.templates.lexer.TokenStream;
-import com.condation.cms.templates.lexer.Token;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

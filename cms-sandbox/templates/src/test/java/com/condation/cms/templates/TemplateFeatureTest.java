@@ -42,7 +42,7 @@ public class TemplateFeatureTest {
 	private TemplateEngine SUT = TemplateEngineBuilder.buildDefault(templateLoader);
 	
 	@Test
-	void test_features () throws Exception {
+	void test_variable_replacement () throws Exception {
 		var templateFile = "variable_1.html";
 		var templateContent = readContent(templateFile);
 		var expectedContent = readContent("variable_1_expected.html");
@@ -54,6 +54,23 @@ public class TemplateFeatureTest {
 		var rendered = template.execute(Map.of("name", "CondationCMS"));
 		
 		Assertions.assertThat(rendered).isEqualTo(expectedContent);
+	}
+
+	@ParameterizedTest
+	@CsvSource({
+		"variable_raw_filter.html,variable_raw_filter_expected.html" 
+	})
+	void test_features (String templateFile, String expectedFile) throws Exception {
+		var templateContent = readContent(templateFile);
+		var expectedContent = readContent(expectedFile);
+		
+		templateLoader.add(templateFile, templateContent);
+		
+		var template = SUT.getTemplate(templateFile);
+	
+		var rendered = template.execute();
+		
+		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expectedContent);
 	}
 	
 	private String readContent (String filename) throws IOException {

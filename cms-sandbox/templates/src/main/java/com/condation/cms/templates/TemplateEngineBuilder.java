@@ -1,5 +1,8 @@
 package com.condation.cms.templates;
 
+import com.condation.cms.templates.filter.impl.RawFilter;
+import com.condation.cms.templates.filter.impl.UpperFilter;
+
 /*-
  * #%L
  * templates
@@ -52,6 +55,9 @@ public class TemplateEngineBuilder {
 				.registerTag(new MacroTag())
 				.registerTag(new EndMacroTag())
 				.registerTag(new IncludeTag())
+
+				.registerFilter(UpperFilter.NAME, new UpperFilter())
+				.registerFilter(RawFilter.NAME, new RawFilter())
 				;
 		
 		config.setTemplateLoader(templateLoader);

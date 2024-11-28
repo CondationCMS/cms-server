@@ -1,4 +1,4 @@
-package com.condation.cms.templates.filter;
+package com.condation.cms.templates.filter.impl;
 
 /*-
  * #%L
@@ -22,7 +22,19 @@ package com.condation.cms.templates.filter;
  * #L%
  */
 
-@FunctionalInterface
-public interface Filter {
-    Object apply(Object input, Object... params);
+import com.condation.cms.templates.filter.Filter;
+
+public class UpperFilter implements Filter {
+
+    public static final String NAME = "upper";
+
+    @Override
+    public Object apply(Object input, Object... params) {
+        if (input == null || !(input instanceof String)) {
+            return input;
+        }
+
+        return ((String)input).toUpperCase();
+    }
+
 }

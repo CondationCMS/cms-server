@@ -39,6 +39,7 @@ import lombok.Setter;
 public class TemplateConfiguration {
 
 	private final Map<String, Tag> registeredTags = new HashMap<>();
+	@Getter
 	private final FilterRegistry filterRegistry = new FilterRegistry();
 	
 	@Getter

@@ -61,17 +61,17 @@ public class TemplateUtils {
 
 	public static Filter parseFilter(String filterDefinition) {
         // Regular expression to match the filter name and parameters
-        String regex = "^(\\w+)\\((.*?)\\)$";
+        String regex = "^(\\w+)(?:\\((.*?)\\))?$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(filterDefinition);
 
         if (matcher.matches()) {
-            String filterName = matcher.group(1);
-            String paramsString = matcher.group(2);
+            String filterName = matcher.group(1); // Filter name
+            String paramsString = matcher.group(2); // Optional parameters
 
-            // Split the parameters by commas and trim whitespaces
+            // Split the parameters if present, otherwise return an empty list
             List<String> parameters = new ArrayList<>();
-            if (!paramsString.isBlank()) {
+            if (paramsString != null && !paramsString.isBlank()) {
                 for (String param : paramsString.split(",")) {
                     parameters.add(param.trim());
                 }

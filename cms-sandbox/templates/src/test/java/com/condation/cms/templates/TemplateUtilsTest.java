@@ -71,12 +71,21 @@ public class TemplateUtilsTest {
 	}
 
 	@Test
-	public void filter_parse() {
+	public void filter_parse_with_params() {
 		var filter = TemplateUtils.parseFilter("truncate(20, 'ellipsis')");
 
 		Assertions.assertThat(filter.name()).isEqualTo("truncate");
 		Assertions.assertThat(filter.parameters())
 				.hasSize(2)
 				.containsExactly("20", "'ellipsis'");
+	}
+	
+	@Test
+	public void filter_parse_without_params() {
+		var filter = TemplateUtils.parseFilter("raw");
+
+		Assertions.assertThat(filter.name()).isEqualTo("raw");
+		Assertions.assertThat(filter.parameters())
+				.isEmpty();;
 	}
 }

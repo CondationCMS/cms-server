@@ -24,6 +24,10 @@ package com.condation.cms.templates.renderer;
 
 import com.condation.cms.templates.parser.Filter;
 import com.condation.cms.templates.parser.VariableNode;
+import com.condation.cms.templates.renderer.Renderer.Context;
+import com.condation.cms.templates.TemplateConfiguration;
+import com.condation.cms.templates.filter.FilterPipeline;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.text.StringEscapeUtils;
@@ -35,32 +39,44 @@ import org.apache.commons.text.StringEscapeUtils;
 @RequiredArgsConstructor
 class VariableNodeRenderer {
 
-	protected void render(VariableNode node, ScopeContext context, StringBuilder output) {
-		Object variableValue = node.getExpression().evaluate(context);
+	private final TemplateConfiguration templateConfiguration;
+
+	protected void render(VariableNode node, Context context, StringBuilder output) {
+		Object variableValue = node.getExpression().evaluate(context.createEngineContext());
 		if (variableValue != null && variableValue instanceof String stringValue) {
-			output.append(evaluateStringFilters(stringValue, node.getFilters()));
+			output.append(evaluateStringFilters(stringValue, node.getFilters(), context));
 		} else {
 			output.append(variableValue != null ? variableValue : "");
 		}
 	}
 
-	protected String evaluateStringFilters(String value, List<Filter> filters) {
+	protected String evaluateStringFilters(String value, List<Filter> filters, Context context) {
 
 		var returnValue = StringEscapeUtils.ESCAPE_HTML4.translate(value);
 
 		if (filters != null && !filters.isEmpty()) {
-			for (var filter : filters) {
-				returnValue = switch (filter.name()) {
-					case "raw" ->
-						StringEscapeUtils.UNESCAPE_HTML4.translate(value);
-					case "trim" ->
-						returnValue.trim();
-					default ->
-						returnValue;
-				};
-			}
+			var filterPipeline = createPipeline(filters, context);
+			
+			returnValue = (String)filterPipeline.execute(returnValue);
 		}
 
 		return returnValue;
+	}
+
+	private FilterPipeline createPipeline(List<Filter> filters, Context context) {
+		var filterPipeline = new FilterPipeline(templateConfiguration.getFilterRegistry());
+
+		var engineScope = context.createEngineContext();
+		for (Filter filter : filters) {
+			var params = filter.parameters()
+					.stream()
+					.map(param -> {
+						var exp = context.engine().createExpression(param);
+						return exp.evaluate(engineScope);
+					}).toArray();
+			filterPipeline.addStep(filter.name(), params);
+		}
+
+		return filterPipeline;
 	}
 }

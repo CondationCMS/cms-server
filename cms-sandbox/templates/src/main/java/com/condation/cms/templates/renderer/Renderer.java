@@ -33,13 +33,18 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.text.StringEscapeUtils;
 
-@RequiredArgsConstructor
 public class Renderer {
 
 	private final TemplateConfiguration configuration;
 	private final TemplateEngine templateEngine;
 	
-	private final VariableNodeRenderer variableNodeRenderer = new VariableNodeRenderer();
+	private final VariableNodeRenderer variableNodeRenderer;
+
+	public Renderer(TemplateConfiguration configuration, TemplateEngine templateEngine) {
+		this.configuration = configuration;
+		this.templateEngine = templateEngine;
+		this.variableNodeRenderer = new VariableNodeRenderer(configuration);
+	}
 
 	public static record Context(
 			JexlEngine engine,
@@ -60,12 +65,10 @@ public class Renderer {
 
 	private void renderNode(ASTNode node, Context context, StringBuilder output) {
 
-		var scopeContext = context.createEngineContext();
-
 		if (node instanceof TextNode textNode) {
 			output.append(textNode.text);
 		} else if (node instanceof VariableNode vnode) {
-			renderVariable(vnode, scopeContext, output);
+			renderVariable(vnode, context, output);
 		} else if (node instanceof TagNode tagNode) {
 			var tag = configuration.getTag(tagNode.getName());
 			if (tag.isPresent()) {
@@ -78,7 +81,7 @@ public class Renderer {
 		}
 	}
 	
-	private void renderVariable (VariableNode node, ScopeContext context, StringBuilder output) {
+	private void renderVariable (VariableNode node, Context context, StringBuilder output) {
 		variableNodeRenderer.render(node, context, output);
 	}
 }

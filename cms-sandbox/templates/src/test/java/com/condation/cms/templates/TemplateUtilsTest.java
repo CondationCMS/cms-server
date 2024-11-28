@@ -31,40 +31,52 @@ import org.junit.jupiter.api.Test;
  * @author t.marx
  */
 public class TemplateUtilsTest {
-	
+
 	@Test
 	public void no_filter() {
 		Assertions.assertThat(TemplateUtils.hasFilters("var")).isFalse();
-		
+
 		Assertions.assertThat(TemplateUtils.extractFilters("var")).isEmpty();
-		
+
 		Assertions.assertThat(TemplateUtils.extractVariableName("var")).isEqualTo("var");
 	}
-	
+
 	@Test
 	public void one_filter() {
 		Assertions.assertThat(TemplateUtils.hasFilters("var | trim")).isTrue();
-		
+
 		Assertions.assertThat(TemplateUtils.extractFilters("var | trim")).containsExactly("trim");
-		
+
 		Assertions.assertThat(TemplateUtils.extractVariableName("var")).isEqualTo("var");
 	}
-	
+
 	@Test
 	public void more_filter() {
 		Assertions.assertThat(TemplateUtils.hasFilters("var | trim | upper | raw")).isTrue();
-		
-		Assertions.assertThat(TemplateUtils.extractFilters("var | trim | upper | raw")).containsExactly("trim", "upper", "raw");
-		
+
+		Assertions.assertThat(TemplateUtils.extractFilters("var | trim | upper | raw")).containsExactly("trim", "upper",
+				"raw");
+
 		Assertions.assertThat(TemplateUtils.extractVariableName("var")).isEqualTo("var");
 	}
-	
+
 	@Test
 	public void filter_with_params() {
 		Assertions.assertThat(TemplateUtils.hasFilters("var | trim(100) | raw(html)")).isTrue();
-		
-		Assertions.assertThat(TemplateUtils.extractFilters("var | trim(100) | raw(html)")).containsExactly("trim(100)", "raw(html)");
-		
+
+		Assertions.assertThat(TemplateUtils.extractFilters("var | trim(100) | raw(html)")).containsExactly("trim(100)",
+				"raw(html)");
+
 		Assertions.assertThat(TemplateUtils.extractVariableName("var")).isEqualTo("var");
+	}
+
+	@Test
+	public void filter_parse() {
+		var filter = TemplateUtils.parseFilter("truncate(20, 'ellipsis')");
+
+		Assertions.assertThat(filter.name()).isEqualTo("truncate");
+		Assertions.assertThat(filter.parameters())
+				.hasSize(2)
+				.containsExactly("20", "'ellipsis'");
 	}
 }

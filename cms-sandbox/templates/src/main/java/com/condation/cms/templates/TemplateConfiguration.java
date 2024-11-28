@@ -25,6 +25,10 @@ package com.condation.cms.templates;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import com.condation.cms.templates.filter.Filter;
+import com.condation.cms.templates.filter.FilterRegistry;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,11 +39,17 @@ import lombok.Setter;
 public class TemplateConfiguration {
 
 	private final Map<String, Tag> registeredTags = new HashMap<>();
+	private final FilterRegistry filterRegistry = new FilterRegistry();
 	
 	@Getter
 	@Setter
 	private TemplateLoader templateLoader;
 	
+	public TemplateConfiguration registerFilter (String name, Filter filter) {
+		filterRegistry.register(name, filter);
+		return this;
+	}
+
 	public TemplateConfiguration registerTag (Tag tag) {
 		registeredTags.put(tag.getTagName(), tag);
 		

@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.condation.cms.templates.parser.Filter;
+
 /**
  *
  * @author t.marx
@@ -56,6 +58,30 @@ public class TemplateUtils {
 
 		return filters;
 	}
+
+	public static Filter parseFilter(String filterDefinition) {
+        // Regular expression to match the filter name and parameters
+        String regex = "^(\\w+)\\((.*?)\\)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(filterDefinition);
+
+        if (matcher.matches()) {
+            String filterName = matcher.group(1);
+            String paramsString = matcher.group(2);
+
+            // Split the parameters by commas and trim whitespaces
+            List<String> parameters = new ArrayList<>();
+            if (!paramsString.isBlank()) {
+                for (String param : paramsString.split(",")) {
+                    parameters.add(param.trim());
+                }
+            }
+
+            return new Filter(filterName, parameters);
+        } else {
+            throw new IllegalArgumentException("Invalid filter definition: " + filterDefinition);
+        }
+    }
 
 	public static String extractVariableName(String input) {
 		// Split basierend auf "|"

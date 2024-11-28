@@ -30,7 +30,6 @@ import com.condation.cms.templates.utils.TemplateUtils;
 import java.util.Stack;
 
 import com.condation.cms.templates.lexer.Token;
-import static com.condation.cms.templates.lexer.Token.Type.VARIABLE_START;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlEngine;
 
@@ -139,7 +138,7 @@ public class Parser {
 							
 							variableNode1.setFilters(TemplateUtils.extractFilters(identifier)
 									.stream()
-									.map(filter -> new Filter(filter))
+									.map(TemplateUtils::parseFilter)
 									.toList()
 							);
 						} else {

@@ -1,5 +1,9 @@
 package com.condation.cms.templates.parser;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
 /*-
  * #%L
  * templates
@@ -26,6 +30,8 @@ package com.condation.cms.templates.parser;
  *
  * @author t.marx
  */
-public record Filter(String name) {
-
+public record Filter(String name, List<String> parameters) {
+    public Filter (String name) {
+        this(name, Collections.emptyList());
+    }
 }

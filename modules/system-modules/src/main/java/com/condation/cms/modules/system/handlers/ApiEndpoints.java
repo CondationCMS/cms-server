@@ -27,14 +27,13 @@ import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.modules.system.handlers.v1.NavigationHandler;
-import com.condation.modules.api.annotation.Extension;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
 /**
  *
  * @author thmar
  */
-@Extension(APIHandlerExtensionPoint.class)
+//@Extension(APIHandlerExtensionPoint.class)
 public class ApiEndpoints extends APIHandlerExtensionPoint {
 
 	@Override

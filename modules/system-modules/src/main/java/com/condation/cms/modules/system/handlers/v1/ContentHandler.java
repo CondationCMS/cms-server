@@ -22,13 +22,10 @@ package com.condation.cms.modules.system.handlers.v1;
  * #L%
  */
 
-import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.extensions.http.HttpHandler;
-import com.condation.cms.api.feature.features.ConfigurationFeature;
-import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.modules.system.helpers.NodeHelper;

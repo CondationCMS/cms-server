@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.condation.cms</groupId>
 		<artifactId>cms-parent</artifactId>
-		<version>7.2.0</version>
+		<version>7.3.0</version>
 	</parent>
 	<artifactId>cms-server</artifactId>
 	<packaging>jar</packaging>

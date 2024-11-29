@@ -24,14 +24,11 @@ package com.condation.cms.templates.renderer;
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.TemplateEngine;
-import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
-import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlEngine;
-import org.apache.commons.text.StringEscapeUtils;
 
 public class Renderer {
 

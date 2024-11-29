@@ -44,7 +44,7 @@ public class IncludeTag implements Tag {
 	@Override
 	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
 		try {
-			var templateString = getTemplate(node);
+			var templateString = getTemplate(node, context);
 			
 			var template = (DefaultTemplate)context.templateEngine().getTemplate(templateString);
 			if (template != null) {
@@ -56,15 +56,10 @@ public class IncludeTag implements Tag {
 		}
 	}
 	
-	private String getTemplate (TagNode node) {
+	private String getTemplate (TagNode node, Renderer.Context context) {
 		var template = node.getCondition().trim();
-		if (template.startsWith("\"") || template.startsWith("'")) {
-			template = template.substring(1);
-		}
-		if (template.endsWith("\"") || template.endsWith("'")) {
-			template = template.substring(0, template.length() - 1);
-		}
 		
-		return template;
+		var scope = context.createEngineContext();
+		return (String)context.engine().createExpression(template).evaluate(scope);
 	}
 }

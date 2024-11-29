@@ -21,15 +21,7 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.templates.loaders.StringTemplateLoader;
-import com.condation.cms.templates.tags.ElseIfTag;
-import com.condation.cms.templates.tags.ElseTag;
-import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.EndMacroTag;
-import com.condation.cms.templates.tags.IfTag;
-import com.condation.cms.templates.tags.MacroTag;
-import com.condation.cms.templates.tags.SetTag;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,13 +37,7 @@ public class TemplateEngineMacroTest {
 
 	@BeforeEach
 	void setupTemplateEngine() {
-		TemplateConfiguration config = new TemplateConfiguration();
-		config
-				.registerTag(new MacroTag())
-				.registerTag(new EndMacroTag())
-				;
-		
-		config.setTemplateLoader(new StringTemplateLoader()
+		var loader = new StringTemplateLoader()
 				.add("simple", """
                    {% macro hello(name) %}
 						Hello {{ name }}!
@@ -64,22 +50,55 @@ public class TemplateEngineMacroTest {
                    {% endmacro %}
                    {{ hello(name) }}
                    """)
-		);
-		
-		this.templateEngine = new TemplateEngine(config);
+				.add("import", """
+                   {% import "simple" %}
+                   {{ hello(name) }}
+                   """)
+				.add("namespace", """
+                   {% import "simple" as fn %}
+                   {{ fn.hello(name) }}
+                   """)
+				.add("namespace_expression", """
+					{% set template = "simple" %}
+					{% import template as fn %}
+					{{ fn.hello(name) }}
+                   """);
+
+		this.templateEngine = TemplateEngineBuilder.buildDefault(loader);
 	}
-	
+
 	@Test
 	public void test_simple() {
 		Template simpleTemplate = templateEngine.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
-	
+
 	@Test
 	public void test_param() {
 		Template simpleTemplate = templateEngine.getTemplate("param");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "Developer"))).isEqualToIgnoringWhitespace("Hello Developer!");
+	}
+
+	@Test
+	public void test_import() {
+		Template simpleTemplate = templateEngine.getTemplate("import");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
+	}
+
+	@Test
+	public void test_namespace() {
+		Template simpleTemplate = templateEngine.getTemplate("namespace");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
+	}
+	
+	@Test
+	public void test_namespace_expression() {
+		Template simpleTemplate = templateEngine.getTemplate("namespace_expression");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 }

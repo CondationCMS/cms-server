@@ -22,12 +22,7 @@ package com.condation.cms.templates;
  * #L%
  */
 import com.condation.cms.templates.loaders.StringTemplateLoader;
-import com.condation.cms.templates.tags.ElseIfTag;
-import com.condation.cms.templates.tags.ElseTag;
-import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.IfTag;
 import com.condation.cms.templates.tags.IncludeTag;
-import com.condation.cms.templates.tags.SetTag;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,26 +37,25 @@ public class TemplateEngineIncludeTest {
 
 	@BeforeEach
 	void setupTemplateEngine() {
-		TemplateConfiguration config = new TemplateConfiguration();
-		config
-				.registerTag(new IncludeTag());
-
-		config.setTemplateLoader(new StringTemplateLoader()
+		var templateLoader = new StringTemplateLoader()
 				.add("simple1", """
                    {% include "temp1" %}
                    """)
 				.add("simple2", """
                    {% include "nested/temp2" %}
                    """)
+				.add("expression", """
+                   {% set template = "temp1"%}
+                   {% include template %}
+                   """)
 				.add("temp1", """
                   This is from template1
 				""")
 				.add("nested/temp2", """
                   This is from template2
-                         """)
-		);
+                         """);
 
-		this.templateEngine = new TemplateEngine(config);
+		this.templateEngine = TemplateEngineBuilder.buildDefault(templateLoader);
 	}
 
 	@Test
@@ -76,5 +70,12 @@ public class TemplateEngineIncludeTest {
 		Template simpleTemplate = templateEngine.getTemplate("simple2");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("This is from template2");
+	}
+
+	@Test
+	public void test_expression() {
+		Template simpleTemplate = templateEngine.getTemplate("expression");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("This is from template1");
 	}
 }

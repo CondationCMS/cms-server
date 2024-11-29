@@ -28,8 +28,6 @@ import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
 import com.condation.cms.templates.utils.MacroUtils;
-import java.awt.image.renderable.RenderContext;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -71,7 +69,8 @@ public class MacroTag implements Tag {
 
 	@RequiredArgsConstructor
 	public static class Macro {
-
+		
+		@Getter
 		private final String name;
 		private final List<String> parameters;
 		
@@ -84,6 +83,7 @@ public class MacroTag implements Tag {
 	@RequiredArgsConstructor
 	public static class MacroFunction implements JexlMethod {
 
+		@Getter
 		private final Macro macro;
 		private final Renderer.Context context;
 

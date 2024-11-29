@@ -37,34 +37,20 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineSetTest {
+public class TemplateEngineSetTest extends AbstractTemplateEngineTest {
 
-	TemplateEngine templateEngine;
-
-	@BeforeEach
-	void setupTemplateEngine() {
-		TemplateConfiguration config = new TemplateConfiguration();
-		config
-				.registerTag(new IfTag())
-				.registerTag(new ElseIfTag())
-				.registerTag(new ElseTag())
-				.registerTag(new EndIfTag())
-				.registerTag(new SetTag())
-				;
-		
-		config.setTemplateLoader(new StringTemplateLoader()
+	@Override
+	public TemplateLoader getLoader() {
+		return new StringTemplateLoader()
 				.add("simple", """
                    {% set name = 'CondationCMS' %}
                    {{ name }}
-                   """)
-		);
-		
-		this.templateEngine = new TemplateEngine(config);
+                   """);
 	}
 	
 	@Test
 	public void test_set() {
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("CondationCMS");
 	}

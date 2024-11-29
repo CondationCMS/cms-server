@@ -31,13 +31,11 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineMacroTest {
+public class TemplateEngineMacroTest extends AbstractTemplateEngineTest {
 
-	TemplateEngine templateEngine;
-
-	@BeforeEach
-	void setupTemplateEngine() {
-		var loader = new StringTemplateLoader()
+	@Override
+	public TemplateLoader getLoader() {
+		return new StringTemplateLoader()
 				.add("simple", """
                    {% macro hello(name) %}
 						Hello {{ name }}!
@@ -64,40 +62,39 @@ public class TemplateEngineMacroTest {
 					{{ fn.hello(name) }}
                    """);
 
-		this.templateEngine = TemplateEngineBuilder.buildDefault(loader);
 	}
 
 	@Test
 	public void test_simple() {
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
 	@Test
 	public void test_param() {
-		Template simpleTemplate = templateEngine.getTemplate("param");
+		Template simpleTemplate = SUT.getTemplate("param");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "Developer"))).isEqualToIgnoringWhitespace("Hello Developer!");
 	}
 
 	@Test
 	public void test_import() {
-		Template simpleTemplate = templateEngine.getTemplate("import");
+		Template simpleTemplate = SUT.getTemplate("import");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
 	@Test
 	public void test_namespace() {
-		Template simpleTemplate = templateEngine.getTemplate("namespace");
+		Template simpleTemplate = SUT.getTemplate("namespace");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 	
 	@Test
 	public void test_namespace_expression() {
-		Template simpleTemplate = templateEngine.getTemplate("namespace_expression");
+		Template simpleTemplate = SUT.getTemplate("namespace_expression");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}

@@ -35,11 +35,14 @@ import org.junit.jupiter.params.provider.CsvSource;
  *
  * @author t.marx
  */
-public class TemplateFeatureTest {
+public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 	
 	private StringTemplateLoader templateLoader = new StringTemplateLoader();
 	
-	private TemplateEngine SUT = TemplateEngineBuilder.buildDefault(templateLoader);
+	@Override
+	public TemplateLoader getLoader() {
+		return templateLoader;
+	}
 	
 	@Test
 	void test_variable_replacement () throws Exception {

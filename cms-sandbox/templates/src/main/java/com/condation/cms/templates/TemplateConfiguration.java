@@ -22,6 +22,7 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.api.cache.ICache;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,6 +46,16 @@ public class TemplateConfiguration {
 	@Getter
 	@Setter
 	private TemplateLoader templateLoader;
+	
+	@Getter
+	private TemplateCache templateCache = null;
+	
+	public TemplateConfiguration setCache (ICache<String, Template> cache) {
+		if (templateCache != null) {
+			templateCache = new TemplateCache(cache);
+		}
+		return this;
+	}
 	
 	public TemplateConfiguration registerFilter (String name, Filter filter) {
 		filterRegistry.register(name, filter);

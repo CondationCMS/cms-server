@@ -1,5 +1,6 @@
 package com.condation.cms.templates;
 
+import com.condation.cms.api.cache.ICache;
 import com.condation.cms.templates.filter.impl.RawFilter;
 import com.condation.cms.templates.filter.impl.UpperFilter;
 
@@ -44,7 +45,14 @@ import com.condation.cms.templates.tags.SetTag;
 public class TemplateEngineBuilder {
 	
 	public static TemplateEngine buildDefault (TemplateLoader templateLoader) {
+		return buildDefaultWithCache(templateLoader, null);
+	}
+	
+	public static TemplateEngine buildDefaultWithCache (TemplateLoader templateLoader, ICache<String, Template> cache) {
 		TemplateConfiguration config = new TemplateConfiguration();
+		if (cache != null) {
+			config.setCache(cache);
+		}
 		
 		config.registerTag(new IfTag())
 				.registerTag(new ElseIfTag())

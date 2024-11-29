@@ -39,19 +39,16 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineTest {
+public class TemplateEngineTest extends AbstractTemplateEngineTest {
 
-	TemplateEngine templateEngine;
-
-	@BeforeEach
-	void setupTemplateEngine() {
-		var loader = new StringTemplateLoader()
+	@Override
+	public TemplateLoader getLoader() {
+		return new StringTemplateLoader()
 				.add("simple", "Hallo {{ name }}")
 				.add("map", "Hallo {{ person.name }}")
 				.add("text", "{{ content }}")
 				.add("text_raw", "{{ content | raw }}");
 		
-		this.templateEngine = TemplateEngineBuilder.buildDefault(loader);
 	}
 	
 	@RepeatedTest(5)
@@ -59,7 +56,7 @@ public class TemplateEngineTest {
 		
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		
 		System.out.println("creating simple template took: " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
 		
@@ -78,7 +75,7 @@ public class TemplateEngineTest {
 		
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		
-		Template simpleTemplate = templateEngine.getTemplate("map");
+		Template simpleTemplate = SUT.getTemplate("map");
 		
 		System.out.println("creating map template took: " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
 		
@@ -95,7 +92,7 @@ public class TemplateEngineTest {
 	@Test
 	public void test_escape() {
 		
-		Template template = templateEngine.getTemplate("text");
+		Template template = SUT.getTemplate("text");
 		
 		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
 		
@@ -106,7 +103,7 @@ public class TemplateEngineTest {
 	@Test
 	public void test_raw() {
 		
-		Template template = templateEngine.getTemplate("text_raw");
+		Template template = SUT.getTemplate("text_raw");
 		
 		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
 		

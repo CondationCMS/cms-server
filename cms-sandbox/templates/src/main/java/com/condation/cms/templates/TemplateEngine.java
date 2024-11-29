@@ -41,22 +41,36 @@ public class TemplateEngine {
 	private final Parser parser;
 	private final Lexer lexer;
 	private final Renderer renderer;
+	
+	private final TemplateCache templateCache;
 
 	public TemplateEngine(TemplateConfiguration configuration) {
 		this.configuration = configuration;
-		parser = new Parser(configuration, jexl);
+		this.templateCache = configuration.getTemplateCache();
+		this.parser = new Parser(configuration, jexl);
 		this.lexer = new Lexer();
 		this.renderer = new Renderer(configuration, this);
 	}
 	
+	public void invalidateTemplateCache () {
+		
+	}
+	
 	public Template getTemplate (String template) {
 		
+		if (templateCache != null && templateCache.contains(template)) {
+			return templateCache.get(template).get();
+		}
+		
 		String templateString = configuration.getTemplateLoader().load(template);
-		
 		var tokenStream = lexer.tokenize(templateString);
-		
 		var rootNode = parser.parse(tokenStream);
+		var temp = new DefaultTemplate(rootNode, jexl, renderer);
 		
-		return new DefaultTemplate(rootNode, jexl, renderer);
+		if (templateCache != null) {
+			templateCache.put(template, temp);
+		}
+		
+		return temp;
 	}
 }

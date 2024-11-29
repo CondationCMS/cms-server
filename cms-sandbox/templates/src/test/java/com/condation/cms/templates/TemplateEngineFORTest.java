@@ -23,47 +23,26 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
-import com.condation.cms.templates.tags.ElseIfTag;
-import com.condation.cms.templates.tags.ElseTag;
-import com.condation.cms.templates.tags.EndForTag;
-import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.ForTag;
-import com.condation.cms.templates.tags.IfTag;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author thmar
  */
-public class TemplateEngineFORTest {
+public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
 
-	TemplateEngine templateEngine;
-
-	@BeforeEach
-	void setupTemplateEngine() {
-		TemplateConfiguration config = new TemplateConfiguration();
-		config
-				.registerTag(new IfTag())
-				.registerTag(new ElseIfTag())
-				.registerTag(new ElseTag())
-				.registerTag(new EndIfTag())
-				.registerTag(new ForTag())
-				.registerTag(new EndForTag())
-				;
-		
-		config.setTemplateLoader(new StringTemplateLoader()
+	
+	@Override
+	public TemplateLoader getLoader() {
+		return new StringTemplateLoader()
 				.add("simple", """
                    {% for name in names %}
 						<li>{{ name }}</li>
                    {% endfor %}
-                   """)
-		);
-		
-		this.templateEngine = new TemplateEngine(config);
+                   """);
 	}
 	
 	@Test
@@ -75,7 +54,7 @@ public class TemplateEngineFORTest {
                  <li>three</li>
                  """;
 		
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("names", List.of("one", "two", "three"));
 		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace(expected);

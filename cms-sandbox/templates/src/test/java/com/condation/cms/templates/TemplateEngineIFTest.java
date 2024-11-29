@@ -36,20 +36,11 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineIFTest {
+public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 
-	TemplateEngine templateEngine;
-
-	@BeforeEach
-	void setupTemplateEngine() {
-		TemplateConfiguration config = new TemplateConfiguration();
-		config
-				.registerTag(new IfTag())
-				.registerTag(new ElseIfTag())
-				.registerTag(new ElseTag())
-				.registerTag(new EndIfTag());
-		
-		config.setTemplateLoader(new StringTemplateLoader()
+	@Override
+	public TemplateLoader getLoader() {
+		return new StringTemplateLoader()
 				.add("simple", """
                    {% if name == 'CondationCMS' %}
 						Best CMS ever!
@@ -58,15 +49,12 @@ public class TemplateEngineIFTest {
                    {% else %}
                         Not even a CMS!
                    {% endif %}
-                   """)
-		);
-		
-		this.templateEngine = new TemplateEngine(config);
+                   """);
 	}
 	
 	@Test
 	public void test_if() {
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "CondationCMS");
 		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace("Best CMS ever!");
@@ -74,7 +62,7 @@ public class TemplateEngineIFTest {
 	
 	@Test
 	public void test_elseif() {
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "AnotherCMS");
 		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace("Just a CMS!");
@@ -82,7 +70,7 @@ public class TemplateEngineIFTest {
 	
 	@Test
 	public void test_else() {
-		Template simpleTemplate = templateEngine.getTemplate("simple");
+		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "some thing else");
 		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace("Not even a CMS!");

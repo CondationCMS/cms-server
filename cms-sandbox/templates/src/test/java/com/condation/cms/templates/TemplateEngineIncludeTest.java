@@ -31,13 +31,11 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineIncludeTest {
+public class TemplateEngineIncludeTest extends AbstractTemplateEngineTest {
 
-	TemplateEngine templateEngine;
-
-	@BeforeEach
-	void setupTemplateEngine() {
-		var templateLoader = new StringTemplateLoader()
+	@Override
+	public TemplateLoader getLoader() {
+		return new StringTemplateLoader()
 				.add("simple1", """
                    {% include "temp1" %}
                    """)
@@ -54,27 +52,25 @@ public class TemplateEngineIncludeTest {
 				.add("nested/temp2", """
                   This is from template2
                          """);
-
-		this.templateEngine = TemplateEngineBuilder.buildDefault(templateLoader);
 	}
 
 	@Test
 	public void test_template1() {
-		Template simpleTemplate = templateEngine.getTemplate("simple1");
+		Template simpleTemplate = SUT.getTemplate("simple1");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("This is from template1");
 	}
 
 	@Test
 	public void test_template2() {
-		Template simpleTemplate = templateEngine.getTemplate("simple2");
+		Template simpleTemplate = SUT.getTemplate("simple2");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("This is from template2");
 	}
 
 	@Test
 	public void test_expression() {
-		Template simpleTemplate = templateEngine.getTemplate("expression");
+		Template simpleTemplate = SUT.getTemplate("expression");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("This is from template1");
 	}

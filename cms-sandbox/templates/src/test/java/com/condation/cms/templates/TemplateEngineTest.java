@@ -45,21 +45,13 @@ public class TemplateEngineTest {
 
 	@BeforeEach
 	void setupTemplateEngine() {
-		TemplateConfiguration config = new TemplateConfiguration();
-		config
-				.registerTag(new IfTag())
-				.registerTag(new ElseIfTag())
-				.registerTag(new ElseTag())
-				.registerTag(new EndIfTag());
-		
-		config.setTemplateLoader(new StringTemplateLoader()
+		var loader = new StringTemplateLoader()
 				.add("simple", "Hallo {{ name }}")
 				.add("map", "Hallo {{ person.name }}")
 				.add("text", "{{ content }}")
-				.add("text_raw", "{{ content | raw }}")
-		);
+				.add("text_raw", "{{ content | raw }}");
 		
-		this.templateEngine = new TemplateEngine(config);
+		this.templateEngine = TemplateEngineBuilder.buildDefault(loader);
 	}
 	
 	@RepeatedTest(5)

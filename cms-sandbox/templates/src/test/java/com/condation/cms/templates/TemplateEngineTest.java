@@ -47,7 +47,8 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 				.add("simple", "Hallo {{ name }}")
 				.add("map", "Hallo {{ person.name }}")
 				.add("text", "{{ content }}")
-				.add("text_raw", "{{ content | raw }}");
+				.add("text_raw", "{{ content | raw }}")
+				.add("text_expression_raw", "{{ ns.content | raw }}");
 		
 	}
 	
@@ -106,6 +107,17 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 		Template template = SUT.getTemplate("text_raw");
 		
 		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
+		
+		
+		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");
+	}
+	
+	@Test
+	public void test_expression_raw() {
+		
+		Template template = SUT.getTemplate("text_expression_raw");
+		
+		Map<String, Object> context = Map.of("ns", Map.of("content", "<h1>heading</h1>"));
 		
 		
 		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");

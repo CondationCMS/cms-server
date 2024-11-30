@@ -10,7 +10,7 @@
 		<version>7.2.0</version>
 	</parent>
 
-	<artifactId>templates</artifactId>
+	<artifactId>cms-templates</artifactId>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>

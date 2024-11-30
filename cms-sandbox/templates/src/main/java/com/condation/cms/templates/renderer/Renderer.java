@@ -28,6 +28,8 @@ import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.commons.jexl3.JexlEngine;
 
 public class Renderer {
@@ -47,8 +49,16 @@ public class Renderer {
 			JexlEngine engine,
 			ScopeStack scopes,
 			RenderFunction renderer,
-			TemplateEngine templateEngine) {
+			TemplateEngine templateEngine,
+			Map<String, Object> context) {
 
+		public Context (JexlEngine engine,
+			ScopeStack scopes,
+			RenderFunction renderer,
+			TemplateEngine templateEngine) {
+			this(engine, scopes, renderer, templateEngine, new HashMap<>());
+		}
+		
 		public ScopeContext createEngineContext() {
 			return new ScopeContext(scopes);
 		}

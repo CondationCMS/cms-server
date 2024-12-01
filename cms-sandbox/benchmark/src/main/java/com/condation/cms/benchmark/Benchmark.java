@@ -81,6 +81,6 @@ public class Benchmark {
 	@org.openjdk.jmh.annotations.Benchmark
 	public String renderTemplate() {
 		// Der Code, dessen Performance gemessen werden soll
-		return template.execute(data);
+		return template.evaluate(data);
 	}
 }

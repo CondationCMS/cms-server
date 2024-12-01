@@ -30,7 +30,7 @@ import org.apache.commons.jexl3.JexlEngine;
 
 public class TemplateEngine {
 
-	private static final JexlEngine jexl = new JexlBuilder()
+	private final JexlEngine jexl = new JexlBuilder()
 			.cache(512)
 			.strict(true)
 			.silent(false)
@@ -49,7 +49,7 @@ public class TemplateEngine {
 		this.templateCache = configuration.getTemplateCache();
 		this.parser = new Parser(configuration, jexl);
 		this.lexer = new Lexer();
-		this.renderer = new Renderer(configuration, this);
+		this.renderer = new Renderer(configuration, this, jexl);
 	}
 	
 	public void invalidateTemplateCache () {
@@ -65,7 +65,7 @@ public class TemplateEngine {
 		String templateString = configuration.getTemplateLoader().load(template);
 		var tokenStream = lexer.tokenize(templateString);
 		var rootNode = parser.parse(tokenStream);
-		var temp = new DefaultTemplate(rootNode, jexl, renderer);
+		var temp = new DefaultTemplate(rootNode, renderer);
 		
 		if (templateCache != null) {
 			templateCache.put(template, temp);

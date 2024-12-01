@@ -1,4 +1,4 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.tags.layout;
 
 /*-
  * #%L
@@ -21,37 +21,33 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.condation.cms.templates.parser.ASTNode;
+import com.condation.cms.templates.Tag;
+import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
-import com.condation.cms.templates.renderer.ScopeStack;
-import java.util.Map;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.jexl3.JexlEngine;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-@RequiredArgsConstructor
-public class DefaultTemplate implements Template {
+public class ExtendsTag implements Tag {
 
-	@Getter
-	private final ASTNode rootNode;
-	
-	private final Renderer renderer;
-	
 	@Override
-	public String evaluate(Map<String, Object> context) {
+	public String getTagName() {
+		return "extends";
+	}
+
+	@Override
+	public boolean parseExpressions() {
+		return true;
+	}
+
+	@Override
+	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+		var scopeContext = context.createEngineContext();
 		
-		ScopeStack scopes = new ScopeStack(context);
-		
-		return evaluate(scopes);
+		String parentTemplate = (String) node.getExpression().evaluate(scopeContext);
+		context.context().put("_extends", new Extends(parentTemplate));
 	}
 	
-	public String evaluate (ScopeStack scopes) {
-		return renderer.render(rootNode, scopes);
-	}
-	
+	public static record Extends (String parentTemplate){}
 }

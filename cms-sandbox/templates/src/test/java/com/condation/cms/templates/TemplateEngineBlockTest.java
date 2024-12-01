@@ -29,47 +29,38 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineIncludeTest extends AbstractTemplateEngineTest {
+public class TemplateEngineBlockTest extends AbstractTemplateEngineTest {
 
 	@Override
 	public TemplateLoader getLoader() {
 		return new StringTemplateLoader()
-				.add("simple1", """
-                   {% include "temp1" %}
+				.add("parent", """
+                   {% block title %}
+						Default title
+                   {% endblock  %}
                    """)
-				.add("simple2", """
-                   {% include "nested/temp2" %}
+				.add("child_without_block", """
+                   {% extends "parent" %}
                    """)
-				.add("expression", """
-                   {% assign template = "temp1"%}
-                   {% include template %}
-                   """)
-				.add("temp1", """
-                  This is from template1
-				""")
-				.add("nested/temp2", """
-                  This is from template2
-                         """);
+				.add("child_with_block", """
+                   {% extends "parent" %}
+                   {% block title %}
+                      Custom title
+                   {% endblock %}
+                   """);
 	}
 
 	@Test
-	public void test_template1() {
-		Template simpleTemplate = SUT.getTemplate("simple1");
+	public void test_without_block() {
+		Template simpleTemplate = SUT.getTemplate("child_without_block");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("This is from template1");
+		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("Default title");
 	}
 
 	@Test
-	public void test_template2() {
-		Template simpleTemplate = SUT.getTemplate("simple2");
+	public void test_with_block() {
+		Template simpleTemplate = SUT.getTemplate("child_with_block");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("This is from template2");
-	}
-
-	@Test
-	public void test_expression() {
-		Template simpleTemplate = SUT.getTemplate("expression");
-		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("This is from template1");
+		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("Custom title");
 	}
 }

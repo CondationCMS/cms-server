@@ -23,13 +23,8 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
-import com.condation.cms.templates.tags.ElseIfTag;
-import com.condation.cms.templates.tags.ElseTag;
-import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.IfTag;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -57,7 +52,7 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "CondationCMS");
-		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace("Best CMS ever!");
+		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace("Best CMS ever!");
 	}
 	
 	@Test
@@ -65,7 +60,7 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "AnotherCMS");
-		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace("Just a CMS!");
+		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace("Just a CMS!");
 	}
 	
 	@Test
@@ -73,6 +68,6 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "some thing else");
-		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace("Not even a CMS!");
+		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace("Not even a CMS!");
 	}
 }

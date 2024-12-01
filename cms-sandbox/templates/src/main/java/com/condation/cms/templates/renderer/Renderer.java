@@ -21,6 +21,7 @@ package com.condation.cms.templates.renderer;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.templates.DefaultTemplate;
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.TemplateEngine;
@@ -28,6 +29,7 @@ import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
+import com.condation.cms.templates.tags.layout.ExtendsTag;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.jexl3.JexlEngine;
@@ -36,12 +38,13 @@ public class Renderer {
 
 	private final TemplateConfiguration configuration;
 	private final TemplateEngine templateEngine;
-	
+	private final JexlEngine engine;
 	private final VariableNodeRenderer variableNodeRenderer;
 
-	public Renderer(TemplateConfiguration configuration, TemplateEngine templateEngine) {
+	public Renderer(TemplateConfiguration configuration, TemplateEngine templateEngine, JexlEngine engine) {
 		this.configuration = configuration;
 		this.templateEngine = templateEngine;
+		this.engine = engine;
 		this.variableNodeRenderer = new VariableNodeRenderer(configuration);
 	}
 
@@ -64,9 +67,22 @@ public class Renderer {
 		}
 	}
 
-	public String render(ASTNode node, final JexlEngine engine, final ScopeStack scopes) {
+	public String render(ASTNode node, final ScopeStack scopes) {
 		StringBuilder output = new StringBuilder();
-		renderNode(node, new Context(engine, scopes, this::renderNode, templateEngine), output);
+		final Context renderContext = new Context(engine, scopes, this::renderNode, templateEngine);
+		renderNode(node, renderContext, output);
+		
+		if (renderContext.context().containsKey("_extends")) {
+			ExtendsTag.Extends ext = (ExtendsTag.Extends) renderContext.context().get("_extends");
+			
+			DefaultTemplate parentTemplate = (DefaultTemplate) templateEngine.getTemplate(ext.parentTemplate());
+			
+			StringBuilder parentOutput = new StringBuilder();
+			renderContext.context().put("_parent", Boolean.TRUE);
+			renderNode(parentTemplate.getRootNode(), renderContext, parentOutput);
+			return parentOutput.toString();
+		}
+		
 		return output.toString();
 	}
 

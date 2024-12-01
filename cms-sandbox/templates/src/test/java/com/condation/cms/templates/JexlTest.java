@@ -22,15 +22,12 @@ package com.condation.cms.templates;
  * #L%
  */
 
-import java.util.function.Function;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlContext;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JexlException;
-import org.apache.commons.jexl3.JexlInfo;
 import org.apache.commons.jexl3.MapContext;
 import org.apache.commons.jexl3.introspection.JexlMethod;
-import org.apache.commons.jexl3.parser.JexlNode;
 import org.junit.jupiter.api.Test;
 
 /**

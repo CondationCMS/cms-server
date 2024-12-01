@@ -24,7 +24,6 @@ package com.condation.cms.templates;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -68,34 +67,34 @@ public class TemplateEngineMacroTest extends AbstractTemplateEngineTest {
 	public void test_simple() {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("Hello CondationCMS!");
+		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
 	@Test
 	public void test_param() {
 		Template simpleTemplate = SUT.getTemplate("param");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "Developer"))).isEqualToIgnoringWhitespace("Hello Developer!");
+		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "Developer"))).isEqualToIgnoringWhitespace("Hello Developer!");
 	}
 
 	@Test
 	public void test_import() {
 		Template simpleTemplate = SUT.getTemplate("import");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
+		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
 	@Test
 	public void test_namespace() {
 		Template simpleTemplate = SUT.getTemplate("namespace");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
+		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 	
 	@Test
 	public void test_namespace_expression() {
 		Template simpleTemplate = SUT.getTemplate("namespace_expression");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.execute(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
+		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 }

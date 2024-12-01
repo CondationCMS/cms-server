@@ -45,6 +45,6 @@ public class TemplateEngineAssignTest extends AbstractTemplateEngineTest {
 	public void test_assign() {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
-		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("CondationCMS");
+		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("CondationCMS");
 	}
 }

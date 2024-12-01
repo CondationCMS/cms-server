@@ -23,15 +23,10 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
-import com.condation.cms.templates.tags.ElseIfTag;
-import com.condation.cms.templates.tags.ElseTag;
-import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.IfTag;
 import com.google.common.base.Stopwatch;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +62,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 		
 		stopwatch.reset();
 		stopwatch.start();
-		System.out.println(simpleTemplate.execute(context));
+		System.out.println(simpleTemplate.evaluate(context));
 		System.out.println("executing simple template took: " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
 	}
 
@@ -86,7 +81,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 		
 		stopwatch.reset();
 		stopwatch.start();
-		System.out.println(simpleTemplate.execute(context));
+		System.out.println(simpleTemplate.evaluate(context));
 		System.out.println("executing map template took: " + stopwatch.elapsed(TimeUnit.MILLISECONDS) + "ms");
 	}
 	
@@ -98,7 +93,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
 		
 		
-		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("&lt;h1&gt;heading&lt;/h1&gt;");
+		Assertions.assertThat(template.evaluate(context)).isEqualToIgnoringWhitespace("&lt;h1&gt;heading&lt;/h1&gt;");
 	}
 	
 	@Test
@@ -109,7 +104,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 		Map<String, Object> context = Map.of("content", "<h1>heading</h1>");
 		
 		
-		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");
+		Assertions.assertThat(template.evaluate(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");
 	}
 	
 	@Test
@@ -120,6 +115,6 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 		Map<String, Object> context = Map.of("ns", Map.of("content", "<h1>heading</h1>"));
 		
 		
-		Assertions.assertThat(template.execute(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");
+		Assertions.assertThat(template.evaluate(context)).isEqualToIgnoringWhitespace("<h1>heading</h1>");
 	}
 }

@@ -57,7 +57,7 @@ public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("names", List.of("one", "two", "three"));
-		Assertions.assertThat(simpleTemplate.execute(context)).isEqualToIgnoringWhitespace(expected);
+		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace(expected);
 	}
 	
 	

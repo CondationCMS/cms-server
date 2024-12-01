@@ -30,13 +30,16 @@ import com.condation.cms.templates.tags.ElseIfTag;
 import com.condation.cms.templates.tags.ElseTag;
 import com.condation.cms.templates.tags.EndForTag;
 import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.EndMacroTag;
+import com.condation.cms.templates.tags.macro.EndMacroTag;
 import com.condation.cms.templates.tags.ForTag;
 import com.condation.cms.templates.tags.IfTag;
-import com.condation.cms.templates.tags.ImportTag;
-import com.condation.cms.templates.tags.IncludeTag;
-import com.condation.cms.templates.tags.MacroTag;
+import com.condation.cms.templates.tags.macro.ImportTag;
+import com.condation.cms.templates.tags.layout.IncludeTag;
+import com.condation.cms.templates.tags.macro.MacroTag;
 import com.condation.cms.templates.tags.AssignTag;
+import com.condation.cms.templates.tags.layout.BlockTag;
+import com.condation.cms.templates.tags.layout.EndBlockTag;
+import com.condation.cms.templates.tags.layout.ExtendsTag;
 
 /**
  *
@@ -65,6 +68,9 @@ public class TemplateEngineBuilder {
 				.registerTag(new EndMacroTag())
 				.registerTag(new IncludeTag())
 				.registerTag(new ImportTag())
+				.registerTag(new ExtendsTag())
+				.registerTag(new BlockTag())
+				.registerTag(new EndBlockTag())
 
 				.registerFilter(UpperFilter.NAME, new UpperFilter())
 				.registerFilter(RawFilter.NAME, new RawFilter())

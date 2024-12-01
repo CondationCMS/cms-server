@@ -1,4 +1,4 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.tags.layout;
 
 /*-
  * #%L
@@ -22,36 +22,21 @@ package com.condation.cms.templates;
  * #L%
  */
 
-import com.condation.cms.templates.parser.ASTNode;
-import com.condation.cms.templates.renderer.Renderer;
-import com.condation.cms.templates.renderer.ScopeStack;
-import java.util.Map;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.jexl3.JexlEngine;
+import com.condation.cms.templates.Tag;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-@RequiredArgsConstructor
-public class DefaultTemplate implements Template {
+public class EndBlockTag implements Tag {
 
-	@Getter
-	private final ASTNode rootNode;
-	
-	private final Renderer renderer;
-	
 	@Override
-	public String evaluate(Map<String, Object> context) {
-		
-		ScopeStack scopes = new ScopeStack(context);
-		
-		return evaluate(scopes);
+	public String getTagName() {
+		return "endblock";
 	}
-	
-	public String evaluate (ScopeStack scopes) {
-		return renderer.render(rootNode, scopes);
+
+	@Override
+	public boolean isClosingTag() {
+		return true;
 	}
-	
 }

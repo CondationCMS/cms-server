@@ -22,7 +22,7 @@ package com.condation.cms.templates.utils;
  * #L%
  */
 
-import com.condation.cms.templates.tags.MacroTag;
+import com.condation.cms.templates.tags.macro.MacroTag;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.Arrays;

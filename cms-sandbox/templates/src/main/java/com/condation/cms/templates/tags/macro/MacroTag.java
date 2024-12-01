@@ -1,4 +1,4 @@
-package com.condation.cms.templates.tags;
+package com.condation.cms.templates.tags.macro;
 
 /*-
  * #%L

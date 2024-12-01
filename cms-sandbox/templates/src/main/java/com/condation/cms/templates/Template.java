@@ -30,9 +30,9 @@ import java.util.Map;
  */
 public interface Template {
 	
-	default String execute () {
-		return execute(Map.of());
+	default String evaluate () {
+		return evaluate(Map.of());
 	}
 	
-	String execute(Map<String, Object> context);
+	String evaluate(Map<String, Object> context);
 }

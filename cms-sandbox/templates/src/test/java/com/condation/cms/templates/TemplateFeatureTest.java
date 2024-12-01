@@ -54,7 +54,7 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 		
 		var template = SUT.getTemplate(templateFile);
 	
-		var rendered = template.execute(Map.of("name", "CondationCMS"));
+		var rendered = template.evaluate(Map.of("name", "CondationCMS"));
 		
 		Assertions.assertThat(rendered).isEqualTo(expectedContent);
 	}
@@ -71,7 +71,7 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 		
 		var template = SUT.getTemplate(templateFile);
 	
-		var rendered = template.execute();
+		var rendered = template.evaluate();
 		
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expectedContent);
 	}

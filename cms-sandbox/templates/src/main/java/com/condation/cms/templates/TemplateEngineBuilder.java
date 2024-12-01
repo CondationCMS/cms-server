@@ -36,7 +36,7 @@ import com.condation.cms.templates.tags.IfTag;
 import com.condation.cms.templates.tags.ImportTag;
 import com.condation.cms.templates.tags.IncludeTag;
 import com.condation.cms.templates.tags.MacroTag;
-import com.condation.cms.templates.tags.SetTag;
+import com.condation.cms.templates.tags.AssignTag;
 
 /**
  *
@@ -60,7 +60,7 @@ public class TemplateEngineBuilder {
 				.registerTag(new EndIfTag())
 				.registerTag(new ForTag())
 				.registerTag(new EndForTag())
-				.registerTag(new SetTag())
+				.registerTag(new AssignTag())
 				.registerTag(new MacroTag())
 				.registerTag(new EndMacroTag())
 				.registerTag(new IncludeTag())

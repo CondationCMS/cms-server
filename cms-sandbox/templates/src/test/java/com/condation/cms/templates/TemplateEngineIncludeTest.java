@@ -43,7 +43,7 @@ public class TemplateEngineIncludeTest extends AbstractTemplateEngineTest {
                    {% include "nested/temp2" %}
                    """)
 				.add("expression", """
-                   {% set template = "temp1"%}
+                   {% assign template = "temp1"%}
                    {% include template %}
                    """)
 				.add("temp1", """

@@ -22,23 +22,18 @@ package com.condation.cms.templates.tags;
  * #L%
  */
 import com.condation.cms.templates.Tag;
-import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.apache.commons.jexl3.JexlExpression;
 
 /**
  *
  * @author t.marx
  */
-public class SetTag implements Tag {
+public class AssignTag implements Tag {
 
 	@Override
 	public String getTagName() {
-		return "set";
+		return "assign";
 	}
 
 	@Override

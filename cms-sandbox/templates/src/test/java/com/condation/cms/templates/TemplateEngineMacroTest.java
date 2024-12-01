@@ -57,7 +57,7 @@ public class TemplateEngineMacroTest extends AbstractTemplateEngineTest {
                    {{ fn.hello(name) }}
                    """)
 				.add("namespace_expression", """
-					{% set template = "simple" %}
+					{% assign template = "simple" %}
 					{% import template as fn %}
 					{{ fn.hello(name) }}
                    """);

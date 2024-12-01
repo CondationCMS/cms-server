@@ -23,33 +23,26 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
-import com.condation.cms.templates.tags.ElseIfTag;
-import com.condation.cms.templates.tags.ElseTag;
-import com.condation.cms.templates.tags.EndIfTag;
-import com.condation.cms.templates.tags.IfTag;
-import com.condation.cms.templates.tags.SetTag;
-import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author thmar
  */
-public class TemplateEngineSetTest extends AbstractTemplateEngineTest {
+public class TemplateEngineAssignTest extends AbstractTemplateEngineTest {
 
 	@Override
 	public TemplateLoader getLoader() {
 		return new StringTemplateLoader()
 				.add("simple", """
-                   {% set name = 'CondationCMS' %}
+                   {% assign name = 'CondationCMS' %}
                    {{ name }}
                    """);
 	}
 	
 	@Test
-	public void test_set() {
+	public void test_assign() {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.execute()).isEqualToIgnoringWhitespace("CondationCMS");

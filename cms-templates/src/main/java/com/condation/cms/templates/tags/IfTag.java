@@ -34,7 +34,7 @@ import org.apache.commons.jexl3.JexlExpression;
  *
  * @author t.marx
  */
-public class IfTag implements Tag {
+public class IfTag extends AbstractTag implements Tag {
 
 	@Override
 	public String getTagName() {
@@ -60,7 +60,8 @@ public class IfTag implements Tag {
 			context.scopes().pushScope();
 			try {
 				if (!condition.name.equals("else")) {
-					Object value = condition.expression().evaluate(scopeContext);
+					//Object value = condition.expression().evaluate(scopeContext);
+					Object value = evaluateExpression(node, condition.expression, context, scopeContext);
 					if (value instanceof Boolean boolValue && boolValue == true) {
 						for (var child : condition.currentChildren) {
 							context.renderer().render(child, context, sb);

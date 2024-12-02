@@ -1,4 +1,4 @@
-package com.condation.cms.templates.tags;
+package com.condation.cms.templates.exceptions;
 
 /*-
  * #%L
@@ -21,31 +21,25 @@ package com.condation.cms.templates.tags;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.templates.Tag;
-import com.condation.cms.templates.parser.TagNode;
-import com.condation.cms.templates.renderer.Renderer;
 
 /**
  *
  * @author t.marx
  */
-public class AssignTag extends AbstractTag implements Tag {
+public class RenderException extends RuntimeException {
 
-	@Override
-	public String getTagName() {
-		return "assign";
+	private final int line;
+	private final int column;
+	
+	public RenderException(String message, int line, int column) {
+		super(message);
+		this.line = line;
+		this.column = column;
 	}
-
+	
 	@Override
-	public boolean parseExpressions() {
-		return true;
+	public String getLocalizedMessage() {
+		return "Error: %s (line %d, column %d)".formatted(getMessage(), line, column);
 	}
-
-	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
-		var scopeContext = context.createEngineContext();
-		
-//		node.getExpression().evaluate(scopeContext);
-		evaluateExpression(node, node.getExpression(), context, scopeContext);
-	}
+	
 }

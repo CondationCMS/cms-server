@@ -24,12 +24,13 @@ package com.condation.cms.templates.tags.layout;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import com.condation.cms.templates.tags.AbstractTag;
 
 /**
  *
  * @author t.marx
  */
-public class ExtendsTag implements Tag {
+public class ExtendsTag extends AbstractTag implements Tag {
 
 	@Override
 	public String getTagName() {
@@ -45,7 +46,7 @@ public class ExtendsTag implements Tag {
 	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
 		var scopeContext = context.createEngineContext();
 		
-		String parentTemplate = (String) node.getExpression().evaluate(scopeContext);
+		String parentTemplate = (String) evaluateExpression(node, node.getExpression(), context, scopeContext);
 		context.context().put("_extends", new Extends(parentTemplate));
 	}
 	

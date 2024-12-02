@@ -28,7 +28,6 @@ import com.condation.cms.templates.renderer.Renderer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

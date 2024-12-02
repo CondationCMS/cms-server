@@ -2,7 +2,7 @@ package com.condation.cms.templates.tags;
 
 /*-
  * #%L
- * templates
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -21,31 +21,24 @@ package com.condation.cms.templates.tags;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.templates.Tag;
+
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import com.condation.cms.templates.renderer.ScopeContext;
+import org.apache.commons.jexl3.JexlExpression;
 
 /**
  *
  * @author t.marx
  */
-public class AssignTag extends AbstractTag implements Tag {
-
-	@Override
-	public String getTagName() {
-		return "assign";
-	}
-
-	@Override
-	public boolean parseExpressions() {
-		return true;
-	}
-
-	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
-		var scopeContext = context.createEngineContext();
-		
-//		node.getExpression().evaluate(scopeContext);
-		evaluateExpression(node, node.getExpression(), context, scopeContext);
+public class AbstractTag {
+	
+	protected Object evaluateExpression (TagNode node, JexlExpression expression, Renderer.Context context, ScopeContext scopeContext) {
+		try {
+			return expression.evaluate(scopeContext);
+		} catch (Exception e) {
+			throw new RenderException(e.getLocalizedMessage(), node.getLine(), node.getColumn());
+		}
 	}
 }

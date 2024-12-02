@@ -1,8 +1,8 @@
-package com.condation.cms.templates.tags;
+package com.condation.cms.templates.loaders;
 
 /*-
  * #%L
- * templates
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -21,31 +21,33 @@ package com.condation.cms.templates.tags;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.templates.Tag;
-import com.condation.cms.templates.parser.TagNode;
-import com.condation.cms.templates.renderer.Renderer;
+
+import com.condation.cms.templates.TemplateLoader;
+import com.condation.cms.templates.exceptions.TemplateNotFoundException;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
  * @author t.marx
  */
-public class AssignTag extends AbstractTag implements Tag {
+@RequiredArgsConstructor
+public class CompositeTemplateLoader implements TemplateLoader {
 
+	private final List<TemplateLoader> templateLoaders;
+	
 	@Override
-	public String getTagName() {
-		return "assign";
+	public String load(String template) {
+		for (var templateLoader : templateLoaders) {
+			try {
+				String content = templateLoader.load(template);
+				
+				return content;
+			} catch (TemplateNotFoundException tnfe) {
+				// nothing to do here, try next template loader
+			}
+		}
+		throw new TemplateNotFoundException("template %s not found".formatted(template));
 	}
-
-	@Override
-	public boolean parseExpressions() {
-		return true;
-	}
-
-	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
-		var scopeContext = context.createEngineContext();
-		
-//		node.getExpression().evaluate(scopeContext);
-		evaluateExpression(node, node.getExpression(), context, scopeContext);
-	}
+	
 }

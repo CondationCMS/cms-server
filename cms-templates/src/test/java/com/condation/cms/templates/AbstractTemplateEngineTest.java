@@ -39,7 +39,7 @@ public abstract class AbstractTemplateEngineTest {
 	
 	private static CacheProvider cacheProvider = new LocalCacheProvider();
 	
-	protected TemplateEngine SUT;
+	protected CMSTemplateEngine SUT;
 	
 	public abstract TemplateLoader getLoader ();
 	

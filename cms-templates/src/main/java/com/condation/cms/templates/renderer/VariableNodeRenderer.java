@@ -21,11 +21,11 @@ package com.condation.cms.templates.renderer;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.templates.parser.Filter;
 import com.condation.cms.templates.parser.VariableNode;
 import com.condation.cms.templates.renderer.Renderer.Context;
 import com.condation.cms.templates.TemplateConfiguration;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.filter.FilterPipeline;
 
 import java.util.List;
@@ -42,11 +42,15 @@ class VariableNodeRenderer {
 	private final TemplateConfiguration templateConfiguration;
 
 	protected void render(VariableNode node, Context context, StringBuilder output) {
-		Object variableValue = node.getExpression().evaluate(context.createEngineContext());
-		if (variableValue != null && variableValue instanceof String stringValue) {
-			output.append(evaluateStringFilters(stringValue, node.getFilters(), context));
-		} else {
-			output.append(variableValue != null ? variableValue : "");
+		try {
+			Object variableValue = node.getExpression().evaluate(context.createEngineContext());
+			if (variableValue != null && variableValue instanceof String stringValue) {
+				output.append(evaluateStringFilters(stringValue, node.getFilters(), context));
+			} else {
+				output.append(variableValue != null ? variableValue : "");
+			}
+		} catch (Exception e) {
+			throw new RenderException(e.getLocalizedMessage(), node.getLine(), node.getColumn());
 		}
 	}
 
@@ -56,8 +60,8 @@ class VariableNodeRenderer {
 
 		if (filters != null && !filters.isEmpty()) {
 			var filterPipeline = createPipeline(filters, context);
-			
-			returnValue = (String)filterPipeline.execute(returnValue);
+
+			returnValue = (String) filterPipeline.execute(returnValue);
 		}
 
 		return returnValue;

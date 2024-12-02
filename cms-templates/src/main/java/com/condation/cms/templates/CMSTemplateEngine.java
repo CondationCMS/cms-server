@@ -29,14 +29,9 @@ import com.condation.cms.templates.renderer.Renderer;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 
-public class TemplateEngine {
+public class CMSTemplateEngine {
 
-	private final JexlEngine jexl = new JexlBuilder()
-			.cache(512)
-			.strict(true)
-			.silent(false)
-			.permissions(CMSPermissions.PERMISSIONS)
-			.create();
+	private final JexlEngine jexl;
 	
 	private final TemplateConfiguration configuration;
 	
@@ -46,16 +41,40 @@ public class TemplateEngine {
 	
 	private final TemplateCache templateCache;
 
-	public TemplateEngine(TemplateConfiguration configuration) {
+	public CMSTemplateEngine(TemplateConfiguration configuration) {
 		this.configuration = configuration;
+		jexl = createJexlEngine();
 		this.templateCache = configuration.getTemplateCache();
 		this.parser = new Parser(configuration, jexl);
 		this.lexer = new Lexer();
 		this.renderer = new Renderer(configuration, this, jexl);
 	}
 	
-	public void invalidateTemplateCache () {
+	public JexlEngine createJexlEngine() {
+        JexlBuilder builder = new JexlBuilder();
+
+		if (configuration.isDevMode()) {
+			builder
+					.cache(512)
+					.safe(false)
+					.strict(true)
+					.silent(false)
+					.debug(false);
+		} else {
+			builder
+					.cache(1024)
+					.safe(true)
+					.strict(false)
+					.silent(true)
+					.debug(false);
+		}
 		
+        return builder.permissions(CMSPermissions.PERMISSIONS).create();
+    }
+	
+	
+	public void invalidateTemplateCache () {
+		templateCache.invalidate();
 	}
 	
 	public Template getTemplate (String template) {

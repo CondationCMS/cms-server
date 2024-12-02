@@ -47,15 +47,16 @@ import com.condation.cms.templates.tags.layout.ExtendsTag;
  */
 public class TemplateEngineBuilder {
 	
-	public static TemplateEngine buildDefault (TemplateLoader templateLoader) {
+	public static CMSTemplateEngine buildDefault (TemplateLoader templateLoader) {
 		return buildDefaultWithCache(templateLoader, null);
 	}
 	
-	public static TemplateEngine buildDefaultWithCache (TemplateLoader templateLoader, ICache<String, Template> cache) {
+	public static CMSTemplateEngine buildDefaultWithCache (TemplateLoader templateLoader, ICache<String, Template> cache) {
 		TemplateConfiguration config = new TemplateConfiguration();
 		if (cache != null) {
 			config.setCache(cache);
 		}
+		config.setDevMode(true);
 		
 		config.registerTag(new IfTag())
 				.registerTag(new ElseIfTag())
@@ -78,6 +79,6 @@ public class TemplateEngineBuilder {
 		
 		config.setTemplateLoader(templateLoader);
 		
-		return new TemplateEngine(config);
+		return new CMSTemplateEngine(config);
 	}
 }

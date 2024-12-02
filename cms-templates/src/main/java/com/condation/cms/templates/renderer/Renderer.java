@@ -24,7 +24,7 @@ package com.condation.cms.templates.renderer;
 import com.condation.cms.templates.DefaultTemplate;
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
-import com.condation.cms.templates.TemplateEngine;
+import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
@@ -37,11 +37,11 @@ import org.apache.commons.jexl3.JexlEngine;
 public class Renderer {
 
 	private final TemplateConfiguration configuration;
-	private final TemplateEngine templateEngine;
+	private final CMSTemplateEngine templateEngine;
 	private final JexlEngine engine;
 	private final VariableNodeRenderer variableNodeRenderer;
 
-	public Renderer(TemplateConfiguration configuration, TemplateEngine templateEngine, JexlEngine engine) {
+	public Renderer(TemplateConfiguration configuration, CMSTemplateEngine templateEngine, JexlEngine engine) {
 		this.configuration = configuration;
 		this.templateEngine = templateEngine;
 		this.engine = engine;
@@ -52,13 +52,13 @@ public class Renderer {
 			JexlEngine engine,
 			ScopeStack scopes,
 			RenderFunction renderer,
-			TemplateEngine templateEngine,
+			CMSTemplateEngine templateEngine,
 			Map<String, Object> context) {
 
 		public Context (JexlEngine engine,
 			ScopeStack scopes,
 			RenderFunction renderer,
-			TemplateEngine templateEngine) {
+			CMSTemplateEngine templateEngine) {
 			this(engine, scopes, renderer, templateEngine, new HashMap<>());
 		}
 		

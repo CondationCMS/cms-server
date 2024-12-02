@@ -27,14 +27,16 @@ import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.exceptions.TagException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import com.condation.cms.templates.tags.AbstractTag;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jexl3.JexlExpression;
 
 /**
  *
  * @author t.marx
  */
 @Slf4j
-public class IncludeTag implements Tag {
+public class IncludeTag extends AbstractTag implements Tag {
 
 	@Override
 	public String getTagName() {
@@ -60,6 +62,7 @@ public class IncludeTag implements Tag {
 		var template = node.getCondition().trim();
 		
 		var scope = context.createEngineContext();
-		return (String)context.engine().createExpression(template).evaluate(scope);
+		final JexlExpression expression = context.engine().createExpression(template);
+		return (String)evaluateExpression(node, expression, context, scope);
 	}
 }

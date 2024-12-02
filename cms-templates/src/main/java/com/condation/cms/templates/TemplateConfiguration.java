@@ -50,10 +50,18 @@ public class TemplateConfiguration {
 	@Getter
 	private TemplateCache templateCache = null;
 	
+	@Getter
+	private boolean devMode = false;
+	
 	public TemplateConfiguration setCache (ICache<String, Template> cache) {
 		if (templateCache != null) {
 			templateCache = new TemplateCache(cache);
 		}
+		return this;
+	}
+	
+	public TemplateConfiguration setDevMode (boolean devMode) {
+		this.devMode = devMode;
 		return this;
 	}
 	

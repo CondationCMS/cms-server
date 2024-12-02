@@ -27,6 +27,7 @@ import com.condation.cms.templates.exceptions.TagException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
+import com.condation.cms.templates.tags.AbstractTag;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,13 +36,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.jexl3.JexlExpression;
 
 /**
  *
  * @author t.marx
  */
 @Slf4j
-public class ImportTag implements Tag {
+public class ImportTag extends AbstractTag implements Tag {
 
 	// Regular expression to match the template and optional namespace
 	private static final String REGEX = "^((?:'([^']+)'|\"([^\"]+)\"|[a-zA-Z0-9._-]+))(?:\\s+as\\s+(\\w+))?$";
@@ -59,7 +61,8 @@ public class ImportTag implements Tag {
 			var importDefinition = parseImport(node.getCondition(), node);
 
 			var scope = context.createEngineContext();
-			var templateString = (String) context.engine().createExpression(importDefinition.template).evaluate(scope);
+			final JexlExpression expression = context.engine().createExpression(importDefinition.template);
+			var templateString = (String) evaluateExpression(node, expression, context, scope);
 
 			var template = (DefaultTemplate) context.templateEngine().getTemplate(templateString);
 			if (template != null) {

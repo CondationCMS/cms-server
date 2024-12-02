@@ -23,15 +23,14 @@ package com.condation.cms.templates.tags;
  */
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.exceptions.TagException;
-import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.apache.commons.jexl3.JexlExpression;
+import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -77,7 +76,7 @@ public class ForTag implements Tag {
 		}
 	}
 
-	public ForDefinition parseForLoop(TagNode node) {
+	private ForDefinition parseForLoop(TagNode node) {
 		var loopDefinition = node.getCondition();
 		// Überprüfen, ob der String das richtige Format hat
 		if (!loopDefinition.contains(" in ")) {
@@ -100,7 +99,9 @@ public class ForTag implements Tag {
 
 	}
 
-	private static record Loop(int index) {
-
+	@RequiredArgsConstructor
+	public static class Loop {
+		@Getter
+		public final int index;
 	}
 }

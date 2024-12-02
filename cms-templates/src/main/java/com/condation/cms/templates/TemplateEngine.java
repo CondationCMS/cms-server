@@ -22,6 +22,7 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.templates.expression.CMSPermissions;
 import com.condation.cms.templates.lexer.Lexer;
 import com.condation.cms.templates.parser.Parser;
 import com.condation.cms.templates.renderer.Renderer;
@@ -34,6 +35,7 @@ public class TemplateEngine {
 			.cache(512)
 			.strict(true)
 			.silent(false)
+			.permissions(CMSPermissions.PERMISSIONS)
 			.create();
 	
 	private final TemplateConfiguration configuration;

@@ -6,11 +6,12 @@
 
 	<parent>
 		<groupId>com.condation.cms</groupId>
-		<artifactId>cms-sandbox</artifactId>
-		<version>7.2.0</version>
+		<artifactId>cms-parent</artifactId>
+		<version>7.3.0</version>
 	</parent>
 
 	<artifactId>cms-templates</artifactId>
+	<packaging>jar</packaging>
 
 	<properties>
 		<maven.compiler.source>21</maven.compiler.source>

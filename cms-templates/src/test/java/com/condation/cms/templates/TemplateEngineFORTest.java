@@ -42,6 +42,11 @@ public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
                    {% for name in names %}
 						<li>{{ name }}</li>
                    {% endfor %}
+                   """)
+				.add("index", """
+                   {% for name in names %}
+						<li>{{ loop.getIndex() }}</li>
+                   {% endfor %}
                    """);
 	}
 	
@@ -60,5 +65,19 @@ public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
 		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace(expected);
 	}
 	
+	@Test
+	public void test_index() {
+		
+		var expected = """
+                 <li>0</li>
+                 <li>1</li>
+                 <li>2</li>
+                 """;
+		
+		Template simpleTemplate = SUT.getTemplate("index");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+		Map<String, Object> context = Map.of("names", List.of("one", "two", "three"));
+		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace(expected);
+	}
 	
 }

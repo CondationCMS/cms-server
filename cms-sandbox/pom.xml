@@ -10,7 +10,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>tests</module>
-        <module>templates</module>
         <module>benchmark</module>
     </modules>
 

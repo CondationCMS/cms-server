@@ -21,13 +21,16 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.Strictness;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -36,47 +39,58 @@ import org.junit.jupiter.params.provider.CsvSource;
  * @author t.marx
  */
 public class TemplateFeatureTest extends AbstractTemplateEngineTest {
-	
+
 	private StringTemplateLoader templateLoader = new StringTemplateLoader();
 	
+	private Gson gson = new GsonBuilder()
+			.setStrictness(Strictness.LENIENT)
+			.create();
+
 	@Override
 	public TemplateLoader getLoader() {
 		return templateLoader;
 	}
-	
-	@Test
-	void test_variable_replacement () throws Exception {
-		var templateFile = "variable_1.html";
-		var templateContent = readContent(templateFile);
-		var expectedContent = readContent("variable_1_expected.html");
-		
-		templateLoader.add(templateFile, templateContent);
-		
-		var template = SUT.getTemplate(templateFile);
-	
-		var rendered = template.evaluate(Map.of("name", "CondationCMS"));
-		
-		Assertions.assertThat(rendered).isEqualTo(expectedContent);
-	}
 
 	@ParameterizedTest
 	@CsvSource({
-		"variable_raw_filter.html,variable_raw_filter_expected.html" 
+		"variable_raw_filter",
+		"variable_1",
+		"for_1",
+		"if_1"
 	})
-	void test_features (String templateFile, String expectedFile) throws Exception {
-		var templateContent = readContent(templateFile);
-		var expectedContent = readContent(expectedFile);
+	void test_features(String templateFile) throws Exception {
+		var templateContent = readContent(templateFile + ".html");
+		var expectedContent = readContent(templateFile + "_expected.html");
+
+		var data = getData(templateFile);
 		
 		templateLoader.add(templateFile, templateContent);
-		
+
 		var template = SUT.getTemplate(templateFile);
-	
-		var rendered = template.evaluate();
-		
+
+		var rendered = template.evaluate(data);
+
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expectedContent);
 	}
+
+	private Map<String, Object> getData (String filename) throws IOException {
+		String dataFile = filename + "_data.json";
+		if (!exists(dataFile)) {
+			return Collections.emptyMap();
+		}
+		
+		var dataContent = readContent(dataFile);
+		
+		return gson.fromJson(dataContent, HashMap.class);
+	}
 	
-	private String readContent (String filename) throws IOException {
+	private boolean exists(String filename) {
+		var resourcePath = "testdata/" + filename;
+		var url = TemplateFeatureTest.class.getResource(resourcePath);
+		return url != null;
+	}
+
+	private String readContent(String filename) throws IOException {
 		try (var stream = TemplateFeatureTest.class.getResourceAsStream("testdata/" + filename);) {
 			return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
 		}

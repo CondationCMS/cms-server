@@ -22,12 +22,17 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlContext;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.JexlException;
 import org.apache.commons.jexl3.MapContext;
 import org.apache.commons.jexl3.introspection.JexlMethod;
+import org.apache.commons.jexl3.introspection.JexlPermissions;
+import org.apache.commons.jexl3.introspection.JexlUberspect;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -40,7 +45,25 @@ public class JexlTest {
 			.cache(512)
 			.strict(true)
 			.silent(false)
+			.permissions(JexlPermissions.UNRESTRICTED)
 			.create();
+	
+	@RequiredArgsConstructor
+	public static class Loop {
+		public final int index;
+	}
+	
+	@Test
+	void test_bean () {
+		JexlContext context = new MapContext();
+		
+		
+		context.set("loop", new Loop(0));
+		
+		var exp = jexl.createExpression("loop.index");
+		
+		Assertions.assertThat(exp.evaluate(context)).isEqualTo(0);
+	}
 	
 	@Test
  	void test_fn_wrapper () {

@@ -4,12 +4,12 @@
 	<parent>
 		<groupId>com.condation.cms</groupId>
 		<artifactId>cms-sandbox</artifactId>
-		<version>7.2.0</version>
+		<version>7.3.0</version>
 	</parent>
 	<artifactId>benchmark</artifactId>
 	<packaging>jar</packaging>
 	<properties>
-		<exec.mainClass>com.condation.cms.benchmark.Benchmark</exec.mainClass>
+		<exec.mainClass>com.condation.cms.benchmark.TemplateEngineBenchmark</exec.mainClass>
 	</properties>
 	
 	<dependencies>

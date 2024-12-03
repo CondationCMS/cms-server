@@ -29,9 +29,10 @@ import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.CacheProvider;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.templates.Template;
-import com.condation.cms.templates.TemplateEngine;
-import com.condation.cms.templates.TemplateEngineBuilder;
+import com.condation.cms.templates.CMSTemplateEngine;
+import com.condation.cms.templates.TemplateEngineFactory;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -52,16 +53,16 @@ import org.openjdk.jmh.annotations.Warmup;
  */
 // Benchmarks in JMH
 @Fork(5)
-@Warmup(iterations = 5)
-@Measurement(iterations = 10)
+@Warmup(iterations = 2)
+@Measurement(iterations = 5)
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
 @State(Scope.Benchmark)
-public class Benchmark {
+public class TemplateEngineBenchmark {
 
 	private static CacheProvider cacheProvider = new LocalCacheProvider();
 	
-	private TemplateEngine engine; // Deine Template-Engine
+	private CMSTemplateEngine engine; // Deine Template-Engine
 	private Map<String, Object> data;
 
 	private Template template;
@@ -70,17 +71,21 @@ public class Benchmark {
 	public void setup() {
 		var loader = new StringTemplateLoader();
 		loader.add("test", "Hallo, {{name}}!");
-		engine = TemplateEngineBuilder.buildDefaultWithCache(
-				loader, 
-				cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60)))); // Initialisiere deine Engine
+		
+		engine = TemplateEngineFactory.newInstance(loader)
+				.cache(cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))))
+				.defaultFilters()
+				.defaultTags()
+				.devMode(false)
+				.create();
+		
 		data = Map.of("name", "Thorsten");
 		
 		template = engine.getTemplate("test");
 	}
 
 	@org.openjdk.jmh.annotations.Benchmark
-	public String renderTemplate() {
-		// Der Code, dessen Performance gemessen werden soll
+	public String renderTemplate() throws IOException {
 		return template.evaluate(data);
 	}
 }

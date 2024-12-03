@@ -23,6 +23,7 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import java.io.IOException;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_if() {
+	public void test_if() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "CondationCMS");
@@ -56,7 +57,7 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_elseif() {
+	public void test_elseif() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "AnotherCMS");
@@ -64,7 +65,7 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_else() {
+	public void test_else() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Map<String, Object> context = Map.of("name", "some thing else");

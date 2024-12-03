@@ -27,7 +27,6 @@ import com.condation.cms.api.cache.CacheProvider;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 
 /**
@@ -45,6 +44,15 @@ public abstract class AbstractTemplateEngineTest {
 	
 	@BeforeAll
 	public void setup () {
-		SUT = TemplateEngineBuilder.buildDefaultWithCache(getLoader(), cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))));
+		SUT = TemplateEngineFactory
+				.newInstance(getLoader())
+				.cache(cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))))
+				.defaultFilters()
+				.defaultTags()
+				.devMode(true)
+				.create();
+		
+				
+				
 	}
 }

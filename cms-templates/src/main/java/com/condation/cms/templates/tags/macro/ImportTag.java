@@ -28,6 +28,8 @@ import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
 import com.condation.cms.templates.tags.AbstractTag;
+import com.condation.cms.templates.utils.NullWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +57,7 @@ public class ImportTag extends AbstractTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		try {
 
 			var importDefinition = parseImport(node.getCondition(), node);
@@ -67,7 +69,7 @@ public class ImportTag extends AbstractTag implements Tag {
 			var template = (DefaultTemplate) context.templateEngine().getTemplate(templateString);
 			if (template != null) {
 				CustomScopeStack scopeStack = new CustomScopeStack();
-				template.evaluate(scopeStack);
+				template.evaluate(scopeStack, new NullWriter());
 
 				var namespace = new HashMap<String, MacroTag.MacroFunction>();
 				scopeStack.macros().forEach(macro -> {

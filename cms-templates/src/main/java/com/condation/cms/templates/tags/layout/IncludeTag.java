@@ -28,6 +28,8 @@ import com.condation.cms.templates.exceptions.TagException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.tags.AbstractTag;
+import java.io.StringWriter;
+import java.io.Writer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jexl3.JexlExpression;
 
@@ -44,14 +46,15 @@ public class IncludeTag extends AbstractTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		try {
 			var templateString = getTemplate(node, context);
 			
 			var template = (DefaultTemplate)context.templateEngine().getTemplate(templateString);
 			if (template != null) {
-				String result = template.evaluate(context.scopes());
-				sb.append(result);
+				StringWriter childWriter = new StringWriter();
+				template.evaluate(context.scopes(), childWriter);
+				writer.write(childWriter.toString());
 			}
 		} catch (Exception e) {
 			throw new TagException("error including template", node.getLine(), node.getColumn());

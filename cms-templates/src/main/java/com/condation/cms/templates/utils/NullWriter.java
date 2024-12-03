@@ -1,8 +1,8 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.utils;
 
 /*-
  * #%L
- * templates
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,26 +22,37 @@ package com.condation.cms.templates;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
 
-/**
- *
- * @author thmar
- */
-public interface Template {
-	
-	default String evaluate () throws IOException {
-		return evaluate(Map.of());
-	}
-	
-	default String evaluate(Map<String, Object> context) throws IOException {
-		var writer = new StringWriter();
-		evaluate(context, writer);
-		return writer.toString();
-	}
-	
-	void evaluate (Map<String, Object> context, Writer writer) throws IOException;
+public class NullWriter extends Writer {
+
+    @Override
+    public void write(char[] cbuf, int off, int len) {
+        // Ignoriert den Inhalt
+    }
+
+    @Override
+    public void flush() {
+        // Nichts zu tun
+    }
+
+    @Override
+    public void close() {
+        // Nichts zu tun
+    }
+
+    @Override
+    public void write(String str) {
+        // Ignoriert den Inhalt
+    }
+
+    @Override
+    public void write(String str, int off, int len) {
+        // Ignoriert den Inhalt
+    }
+
+    @Override
+    public void write(int c) {
+        // Ignoriert das Zeichen
+    }
 }

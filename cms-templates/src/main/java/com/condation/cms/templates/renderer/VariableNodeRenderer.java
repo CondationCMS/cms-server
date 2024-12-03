@@ -27,6 +27,7 @@ import com.condation.cms.templates.renderer.Renderer.Context;
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.filter.FilterPipeline;
+import java.io.Writer;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -41,13 +42,13 @@ class VariableNodeRenderer {
 
 	private final TemplateConfiguration templateConfiguration;
 
-	protected void render(VariableNode node, Context context, StringBuilder output) {
+	protected void render(VariableNode node, Context context, Writer writer) {
 		try {
 			Object variableValue = node.getExpression().evaluate(context.createEngineContext());
 			if (variableValue != null && variableValue instanceof String stringValue) {
-				output.append(evaluateStringFilters(stringValue, node.getFilters(), context));
+				writer.append(evaluateStringFilters(stringValue, node.getFilters(), context));
 			} else {
-				output.append(variableValue != null ? variableValue : "");
+				writer.append(variableValue != null ? String.valueOf(variableValue) : "");
 			}
 		} catch (Exception e) {
 			throw new RenderException(e.getLocalizedMessage(), node.getLine(), node.getColumn());

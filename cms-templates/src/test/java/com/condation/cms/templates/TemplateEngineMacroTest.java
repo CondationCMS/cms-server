@@ -22,6 +22,7 @@ package com.condation.cms.templates;
  * #L%
  */
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import java.io.IOException;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -64,35 +65,35 @@ public class TemplateEngineMacroTest extends AbstractTemplateEngineTest {
 	}
 
 	@Test
-	public void test_simple() {
+	public void test_simple() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
 	@Test
-	public void test_param() {
+	public void test_param() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("param");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "Developer"))).isEqualToIgnoringWhitespace("Hello Developer!");
 	}
 
 	@Test
-	public void test_import() {
+	public void test_import() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("import");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
 	@Test
-	public void test_namespace() {
+	public void test_namespace() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("namespace");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 	
 	@Test
-	public void test_namespace_expression() {
+	public void test_namespace_expression() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("namespace_expression");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate(Map.of("name", "CondationCMS"))).isEqualToIgnoringWhitespace("Hello CondationCMS!");

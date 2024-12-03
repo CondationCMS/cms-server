@@ -30,6 +30,9 @@ import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
 import com.condation.cms.templates.tags.layout.ExtendsTag;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.jexl3.JexlEngine;
@@ -67,44 +70,46 @@ public class Renderer {
 		}
 	}
 
-	public String render(ASTNode node, final ScopeStack scopes) {
-		StringBuilder output = new StringBuilder();
+	public void render(ASTNode node, final ScopeStack scopes, final Writer writer) throws IOException {
+		
+		var contentWriter = new StringWriter();
 		final Context renderContext = new Context(engine, scopes, this::renderNode, templateEngine);
-		renderNode(node, renderContext, output);
+		renderNode(node, renderContext, contentWriter);
 		
 		if (renderContext.context().containsKey("_extends")) {
 			ExtendsTag.Extends ext = (ExtendsTag.Extends) renderContext.context().get("_extends");
 			
 			DefaultTemplate parentTemplate = (DefaultTemplate) templateEngine.getTemplate(ext.parentTemplate());
 			
-			StringBuilder parentOutput = new StringBuilder();
+			StringWriter parentWriter = new StringWriter();
 			renderContext.context().put("_parent", Boolean.TRUE);
-			renderNode(parentTemplate.getRootNode(), renderContext, parentOutput);
-			return parentOutput.toString();
+			renderNode(parentTemplate.getRootNode(), renderContext, parentWriter);
+			
+			writer.write(parentWriter.toString());
+		} else {
+			writer.write(contentWriter.toString());
 		}
-		
-		return output.toString();
 	}
 
-	private void renderNode(ASTNode node, Context context, StringBuilder output) {
+	private void renderNode(ASTNode node, Context context, Writer writer) throws IOException {
 
 		if (node instanceof TextNode textNode) {
-			output.append(textNode.text);
+			writer.write(textNode.text);
 		} else if (node instanceof VariableNode vnode) {
-			renderVariable(vnode, context, output);
+			renderVariable(vnode, context, writer);
 		} else if (node instanceof TagNode tagNode) {
 			var tag = configuration.getTag(tagNode.getName());
 			if (tag.isPresent()) {
-				tag.get().render(tagNode, context, output);
+				tag.get().render(tagNode, context, writer);
 			}
 		} else {
 			for (ASTNode child : node.getChildren()) {
-				renderNode(child, context, output);
+				renderNode(child, context, writer);
 			}
 		}
 	}
 	
-	private void renderVariable (VariableNode node, Context context, StringBuilder output) {
-		variableNodeRenderer.render(node, context, output);
+	private void renderVariable (VariableNode node, Context context, Writer writer) {
+		variableNodeRenderer.render(node, context, writer);
 	}
 }

@@ -23,6 +23,7 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,7 @@ public class TemplateEngineAssignTest extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_assign() {
+	public void test_assign() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("CondationCMS");

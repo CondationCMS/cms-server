@@ -25,7 +25,6 @@ import com.condation.cms.templates.filter.impl.UpperFilter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.templates.tags.ElseIfTag;
 import com.condation.cms.templates.tags.ElseTag;
 import com.condation.cms.templates.tags.EndForTag;
@@ -45,20 +44,36 @@ import com.condation.cms.templates.tags.layout.ExtendsTag;
  *
  * @author t.marx
  */
-public class TemplateEngineBuilder {
-	
-	public static CMSTemplateEngine buildDefault (TemplateLoader templateLoader) {
-		return buildDefaultWithCache(templateLoader, null);
+public class TemplateEngineFactory {
+
+	private TemplateConfiguration configuration;
+
+	private TemplateEngineFactory() {
+		configuration = new TemplateConfiguration();
 	}
-	
-	public static CMSTemplateEngine buildDefaultWithCache (TemplateLoader templateLoader, ICache<String, Template> cache) {
-		TemplateConfiguration config = new TemplateConfiguration();
-		if (cache != null) {
-			config.setCache(cache);
+
+	public static TemplateEngineFactory newInstance(TemplateLoader templateLoader) {
+		var factory = new TemplateEngineFactory();
+
+		factory.configuration.setTemplateLoader(templateLoader);
+
+		return factory;
+	}
+
+	public CMSTemplateEngine create() {
+
+		if (!configuration.hasFilters()) {
+			defaultFilters();
 		}
-		config.setDevMode(true);
-		
-		config.registerTag(new IfTag())
+		if (!configuration.hasTags()) {
+			defaultTags();
+		}
+
+		return new CMSTemplateEngine(configuration);
+	}
+
+	public TemplateEngineFactory defaultTags() {
+		configuration.registerTag(new IfTag())
 				.registerTag(new ElseIfTag())
 				.registerTag(new ElseTag())
 				.registerTag(new EndIfTag())
@@ -71,14 +86,24 @@ public class TemplateEngineBuilder {
 				.registerTag(new ImportTag())
 				.registerTag(new ExtendsTag())
 				.registerTag(new BlockTag())
-				.registerTag(new EndBlockTag())
+				.registerTag(new EndBlockTag());
+		return this;
+	}
 
+	public TemplateEngineFactory defaultFilters() {
+		configuration
 				.registerFilter(UpperFilter.NAME, new UpperFilter())
-				.registerFilter(RawFilter.NAME, new RawFilter())
-				;
-		
-		config.setTemplateLoader(templateLoader);
-		
-		return new CMSTemplateEngine(config);
+				.registerFilter(RawFilter.NAME, new RawFilter());
+		return this;
+	}
+
+	public TemplateEngineFactory devMode(boolean devMode) {
+		configuration.setDevMode(devMode);
+		return this;
+	}
+
+	public TemplateEngineFactory cache(ICache<String, Template> cache) {
+		configuration.setCache(cache);
+		return this;
 	}
 }

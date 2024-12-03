@@ -22,9 +22,12 @@ package com.condation.cms.templates.tags;
  * #L%
  */
 import com.condation.cms.templates.Tag;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -52,7 +55,7 @@ public class IfTag extends AbstractTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		List<Condition> conditions = buildConditions(node);
 
 		var scopeContext = context.createEngineContext();
@@ -64,16 +67,18 @@ public class IfTag extends AbstractTag implements Tag {
 					Object value = evaluateExpression(node, condition.expression, context, scopeContext);
 					if (value instanceof Boolean boolValue && boolValue == true) {
 						for (var child : condition.currentChildren) {
-							context.renderer().render(child, context, sb);
+							context.renderer().render(child, context, writer);
 						}
 						break;
 					}
 				} else {
 					for (var child : condition.currentChildren) {
-						context.renderer().render(child, context, sb);
+						context.renderer().render(child, context, writer);
 					}
 					break;
 				}
+			} catch (IOException ioe) {
+				throw new RenderException(ioe.getMessage(), node.getLine(), node.getColumn());
 			} finally {
 				context.scopes().popScope();
 			}

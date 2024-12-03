@@ -28,6 +28,8 @@ import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
 import com.condation.cms.templates.utils.MacroUtils;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
@@ -55,7 +57,7 @@ public class MacroTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		Optional<Macro> macroOpt = MacroUtils.parseMacro(node.getCondition());
 		if (macroOpt.isEmpty()) {
 			return;
@@ -105,14 +107,14 @@ public class MacroTag implements Tag {
 				
 				scope.setVariable(macro.parameters.get(i), value);
 			}
-			StringBuilder sb = new StringBuilder();
+			StringWriter writer = new StringWriter();
 			
 			var newContext = new Renderer.Context(context.engine(), scope, context.renderer(), context.templateEngine());
 			for (var child : macro.children) {
-				context.renderer().render(child, newContext, sb);
+				context.renderer().render(child, newContext, writer);
 			}
 			
-			return sb.toString();
+			return writer.toString();
 		}
 
 		@Override

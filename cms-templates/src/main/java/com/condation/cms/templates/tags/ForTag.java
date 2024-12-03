@@ -22,9 +22,12 @@ package com.condation.cms.templates.tags;
  * #L%
  */
 import com.condation.cms.templates.Tag;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.exceptions.TagException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -48,7 +51,7 @@ public class ForTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		var forCondition = parseForLoop(node);
 
 		var collection = context.scopes().getVariable(forCondition.collection);
@@ -67,8 +70,10 @@ public class ForTag implements Tag {
 			);
 			try {
 				for (var child : node.getChildren()) {
-					context.renderer().render(child, context, sb);
+					context.renderer().render(child, context, writer);
 				}
+			} catch (IOException ioe) {
+				throw new RenderException(ioe.getMessage(), node.getLine(), node.getColumn());
 			} finally {
 				context.scopes().popScope();
 			}

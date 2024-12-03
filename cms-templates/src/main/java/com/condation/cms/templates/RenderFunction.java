@@ -24,6 +24,8 @@ package com.condation.cms.templates;
 
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.renderer.Renderer;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  *
@@ -32,5 +34,5 @@ import com.condation.cms.templates.renderer.Renderer;
 @FunctionalInterface
 public interface RenderFunction {
 
-    void render(ASTNode node, Renderer.Context context, StringBuilder output);
+    void render(ASTNode node, Renderer.Context context, Writer writer) throws IOException;
 }

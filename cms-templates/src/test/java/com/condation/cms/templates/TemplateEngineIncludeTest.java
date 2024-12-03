@@ -22,6 +22,7 @@ package com.condation.cms.templates;
  * #L%
  */
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -53,21 +54,21 @@ public class TemplateEngineIncludeTest extends AbstractTemplateEngineTest {
 	}
 
 	@Test
-	public void test_template1() {
+	public void test_template1() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple1");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("This is from template1");
 	}
 
 	@Test
-	public void test_template2() {
+	public void test_template2() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple2");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("This is from template2");
 	}
 
 	@Test
-	public void test_expression() {
+	public void test_expression() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("expression");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace("This is from template1");

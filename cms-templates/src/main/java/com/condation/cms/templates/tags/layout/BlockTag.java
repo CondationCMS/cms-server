@@ -22,9 +22,15 @@ package com.condation.cms.templates.tags.layout;
  * #L%
  */
 import com.condation.cms.templates.Tag;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -43,11 +49,17 @@ public class BlockTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
-		if (context.context().containsKey("_parent")) {
-			handleParent(node, context, sb);
-		} else {
-			handleChild(node, context);
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
+		try {
+			if (context.context().containsKey("_parent")) {
+
+				handleParent(node, context, writer);
+
+			} else {
+				handleChild(node, context);
+			}
+		} catch (IOException ex) {
+			throw new RenderException(ex.getMessage(), node.getLine(), node.getColumn());
 		}
 	}
 
@@ -56,25 +68,25 @@ public class BlockTag implements Tag {
 		return "_block_%s".formatted(blockName);
 	}
 
-	private void handleParent(TagNode node, Renderer.Context context, StringBuilder sb) {
+	private void handleParent(TagNode node, Renderer.Context context, Writer writer) throws IOException {
 		var blockKey = getBlockKey(node);
 		if (context.context().containsKey(blockKey)) {
-			sb.append(context.context().get(blockKey));
+			writer.write((String) context.context().get(blockKey));
 		} else {
 			for (var child : node.getChildren()) {
-				context.renderer().render(child, context, sb);
+				context.renderer().render(child, context, writer);
 			}
 		}
 	}
 
-	private void handleChild(TagNode node, Renderer.Context context) {
-		StringBuilder sb = new StringBuilder();
+	private void handleChild(TagNode node, Renderer.Context context) throws IOException {
+		StringWriter writer = new StringWriter();
 		for (var child : node.getChildren()) {
-			context.renderer().render(child, context, sb);
+			context.renderer().render(child, context, writer);
 		}
 
 		context.context().put(
 				getBlockKey(node),
-				sb.toString());
+				writer.toString());
 	}
 }

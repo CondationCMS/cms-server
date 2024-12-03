@@ -24,6 +24,7 @@ package com.condation.cms.templates;
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import com.google.common.base.Stopwatch;
+import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
@@ -48,7 +49,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 	}
 	
 	@RepeatedTest(5)
-	public void test_simple() {
+	public void test_simple() throws IOException {
 		
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		
@@ -67,7 +68,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 	}
 
 	@RepeatedTest(5)
-	public void test_map() {
+	public void test_map() throws IOException {
 		
 		Stopwatch stopwatch = Stopwatch.createStarted();
 		
@@ -86,7 +87,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_escape() {
+	public void test_escape() throws IOException {
 		
 		Template template = SUT.getTemplate("text");
 		
@@ -97,7 +98,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_raw() {
+	public void test_raw() throws IOException {
 		
 		Template template = SUT.getTemplate("text_raw");
 		
@@ -108,7 +109,7 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_expression_raw() {
+	public void test_expression_raw() throws IOException {
 		
 		Template template = SUT.getTemplate("text_expression_raw");
 		

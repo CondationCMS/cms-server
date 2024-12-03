@@ -24,6 +24,7 @@ package com.condation.cms.templates;
 
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import java.io.Writer;
 import java.util.Optional;
 
 /**
@@ -46,7 +47,7 @@ public interface Tag {
 		return false;
 	}
 	
-	default void render (TagNode node, Renderer.Context context, StringBuilder sb) {
+	default void render (TagNode node, Renderer.Context context, Writer writer) {
 		// default render does nothing
 	};
 }

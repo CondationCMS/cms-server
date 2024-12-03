@@ -21,14 +21,13 @@ package com.condation.cms.templates.lexer;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class Lexer {
 
 	public Lexer() {
-		
+
 	}
 
 	public TokenStream tokenize(String input) {
@@ -68,8 +67,18 @@ public class Lexer {
 				tokens.add(new Token(Token.Type.COMMENT_END, "#}", line, column));
 				charStream.skip(2);
 				state.set(State.Type.NONE);
-			} else if (state.is(State.Type.VARIABLE, State.Type.TAG) && Character.isLetterOrDigit(c)) {
-				tokens.add(new Token(Token.Type.IDENTIFIER, charStream.readUntil("}}"), line, column));
+			} else if (state.is(State.Type.VARIABLE, State.Type.TAG)/* && Character.isLetterOrDigit(c)*/) {
+				//tokens.add(new Token(Token.Type.IDENTIFIER, charStream.readUntil("}}"), line, column));
+
+				if (c == '\'' || c == '"') {
+					String stringContent = readString(charStream, c);
+					tokens.add(new Token(Token.Type.IDENTIFIER, stringContent, line, column));
+				} else if (!Character.isWhitespace(c)) {
+					tokens.add(new Token(Token.Type.IDENTIFIER, charStream.readUntil("}}"), line, column));
+				} else {
+					charStream.advance();
+				}
+
 			} else if (state.is(State.Type.COMMENT)) {
 				tokens.add(new Token(Token.Type.COMMENT_VALUE, charStream.readUntil("#}"), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else if (!state.is(State.Type.VARIABLE, State.Type.TAG)) {
@@ -90,5 +99,30 @@ public class Lexer {
 
 		String condition = charStream.readUntil("%}");
 		tokens.add(new Token(Token.Type.EXPRESSION, condition, charStream.getLine(), charStream.getColumn()));
+	}
+
+	private String readString(CharacterStream charStream, char delimiter) {
+		StringBuilder result = new StringBuilder();
+		result.append(delimiter); // Anfangs-Anführungszeichen hinzufügen
+		charStream.advance(); // Das anfängliche Anführungszeichen überspringen
+		while (charStream.hasMore()) {
+			char c = charStream.charAtCurrentPosition();
+			if (c == delimiter) {
+				result.append(c); // Abschließendes Anführungszeichen hinzufügen
+				charStream.advance(); // Das abschließende Anführungszeichen überspringen
+				break;
+			}
+			if (c == '\\') {
+				// Escape-Sequenzen verarbeiten
+				result.append(c); // Backslash hinzufügen
+				charStream.advance();
+				if (charStream.hasMore()) {
+					c = charStream.charAtCurrentPosition();
+				}
+			}
+			result.append(c);
+			charStream.advance();
+		}
+		return result.toString();
 	}
 }

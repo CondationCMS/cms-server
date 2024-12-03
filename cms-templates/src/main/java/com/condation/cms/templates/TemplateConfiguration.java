@@ -53,6 +53,14 @@ public class TemplateConfiguration {
 	@Getter
 	private boolean devMode = false;
 	
+	public boolean hasTags () {
+		return !registeredTags.isEmpty();
+	}
+	
+	public boolean hasFilters () {
+		return !registeredTags.isEmpty();
+	}
+	
 	public TemplateConfiguration setCache (ICache<String, Template> cache) {
 		if (templateCache != null) {
 			templateCache = new TemplateCache(cache);

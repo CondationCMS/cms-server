@@ -23,6 +23,7 @@ package com.condation.cms.templates;
  */
 
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -51,7 +52,7 @@ public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_for() {
+	public void test_for() throws IOException {
 		
 		var expected = """
                  <li>one</li>
@@ -66,7 +67,7 @@ public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
 	}
 	
 	@Test
-	public void test_index() {
+	public void test_index() throws IOException {
 		
 		var expected = """
                  <li>0</li>

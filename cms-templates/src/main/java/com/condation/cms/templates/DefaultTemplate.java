@@ -25,10 +25,11 @@ package com.condation.cms.templates;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.Map;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.jexl3.JexlEngine;
 
 /**
  *
@@ -43,15 +44,17 @@ public class DefaultTemplate implements Template {
 	private final Renderer renderer;
 	
 	@Override
-	public String evaluate(Map<String, Object> context) {
+	public void evaluate(Map<String, Object> context, Writer writer) throws IOException {
 		
 		ScopeStack scopes = new ScopeStack(context);
 		
-		return evaluate(scopes);
+		evaluate(scopes, writer);
+		
+		writer.flush();
 	}
 	
-	public String evaluate (ScopeStack scopes) {
-		return renderer.render(rootNode, scopes);
+	public void evaluate (ScopeStack scopes, Writer writer) throws IOException {
+		renderer.render(rootNode, scopes, writer);
 	}
 	
 }

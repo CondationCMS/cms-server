@@ -24,6 +24,7 @@ package com.condation.cms.templates.tags;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import java.io.Writer;
 
 /**
  *
@@ -42,7 +43,7 @@ public class AssignTag extends AbstractTag implements Tag {
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, StringBuilder sb) {
+	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		var scopeContext = context.createEngineContext();
 		
 //		node.getExpression().evaluate(scopeContext);

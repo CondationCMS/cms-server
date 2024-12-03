@@ -1,8 +1,8 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.lexer;
 
 /*-
  * #%L
- * templates
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,26 +22,32 @@ package com.condation.cms.templates;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface Template {
+public class LexerTest {
 	
-	default String evaluate () throws IOException {
-		return evaluate(Map.of());
+
+	@Test
+	public void testSomeMethod() {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("{{ \"}}\" }}");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_START);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
+		Assertions.assertThat(token.value).isEqualTo("\"}}\"");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_END);
+		
 	}
 	
-	default String evaluate(Map<String, Object> context) throws IOException {
-		var writer = new StringWriter();
-		evaluate(context, writer);
-		return writer.toString();
-	}
-	
-	void evaluate (Map<String, Object> context, Writer writer) throws IOException;
 }

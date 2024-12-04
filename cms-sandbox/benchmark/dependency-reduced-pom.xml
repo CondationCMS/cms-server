@@ -3,7 +3,7 @@
   <parent>
     <artifactId>cms-sandbox</artifactId>
     <groupId>com.condation.cms</groupId>
-    <version>7.2.0</version>
+    <version>7.3.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>benchmark</artifactId>
@@ -140,6 +140,6 @@
     </dependency>
   </dependencies>
   <properties>
-    <exec.mainClass>com.condation.cms.benchmark.Benchmark</exec.mainClass>
+    <exec.mainClass>com.condation.cms.benchmark.TemplateEngineBenchmark</exec.mainClass>
   </properties>
 </project>

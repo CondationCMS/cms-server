@@ -22,6 +22,7 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.templates.exceptions.TemplateNotFoundException;
 import com.condation.cms.templates.expression.CMSPermissions;
 import com.condation.cms.templates.lexer.Lexer;
 import com.condation.cms.templates.parser.Parser;
@@ -84,6 +85,9 @@ public class CMSTemplateEngine {
 		}
 		
 		String templateString = configuration.getTemplateLoader().load(template);
+		if (templateString == null) {
+			throw new TemplateNotFoundException("template % not found".formatted(template));
+		}
 		var tokenStream = lexer.tokenize(templateString);
 		var rootNode = parser.parse(tokenStream);
 		var temp = new DefaultTemplate(rootNode, renderer);

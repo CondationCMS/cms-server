@@ -33,6 +33,7 @@ public class Lexer {
 	public TokenStream tokenize(String input) {
 
 		CharacterStream charStream = new CharacterStream(input);
+//		ReaderCharacterStream charStream = new ReaderCharacterStream(new StringReader(input));
 		final State state = new State();
 
 		List<Token> tokens = new ArrayList<>();
@@ -67,18 +68,8 @@ public class Lexer {
 				tokens.add(new Token(Token.Type.COMMENT_END, "#}", line, column));
 				charStream.skip(2);
 				state.set(State.Type.NONE);
-			} else if (state.is(State.Type.VARIABLE, State.Type.TAG)/* && Character.isLetterOrDigit(c)*/) {
-				//tokens.add(new Token(Token.Type.IDENTIFIER, charStream.readUntil("}}"), line, column));
-
-				if (c == '\'' || c == '"') {
-					String stringContent = readString(charStream, c);
-					tokens.add(new Token(Token.Type.IDENTIFIER, stringContent, line, column));
-				} else if (!Character.isWhitespace(c)) {
-					tokens.add(new Token(Token.Type.IDENTIFIER, charStream.readUntil("}}"), line, column));
-				} else {
-					charStream.advance();
-				}
-
+			} else if (state.is(State.Type.VARIABLE)) {
+				tokens.add(new Token(Token.Type.IDENTIFIER, readVariableContent(charStream), line, column));
 			} else if (state.is(State.Type.COMMENT)) {
 				tokens.add(new Token(Token.Type.COMMENT_VALUE, charStream.readUntil("#}"), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else if (!state.is(State.Type.VARIABLE, State.Type.TAG)) {
@@ -91,6 +82,42 @@ public class Lexer {
 		return new TokenStream(tokens);
 	}
 
+	public static String readVariableContent(CharacterStream stream) {
+        StringBuilder content = new StringBuilder();
+        boolean insideQuotes = false;
+        boolean escapeNext = false;
+
+        while (stream.hasMore()) {
+            char ch = stream.charAtCurrentPosition();
+
+            // Handle escaping within quoted strings
+            if (insideQuotes && ch == '\\' && !escapeNext) {
+                escapeNext = true;
+                stream.advance();
+                continue;
+            }
+
+            // Toggle quotes
+            if (ch == '"' && !escapeNext) {
+                insideQuotes = !insideQuotes;
+            } else if (ch == '}' && !insideQuotes) {
+                // Check if next char is also '}'
+                if (stream.peek(1) == '}') {
+                    //stream.skip(2); // Skip the closing }}
+                    break;
+                }
+            }
+
+            // Append character
+            content.append(ch);
+            escapeNext = false;
+            stream.advance();
+        }
+
+        return content.toString().trim();
+    }
+	
+	
 	private void readTagContent(List<Token> tokens, CharacterStream charStream) {
 		charStream.skipWhitespace();
 

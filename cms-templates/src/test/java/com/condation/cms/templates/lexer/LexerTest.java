@@ -22,9 +22,9 @@ package com.condation.cms.templates.lexer;
  * #L%
  */
 
+import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -34,7 +34,7 @@ public class LexerTest {
 	
 
 	@Test
-	public void testSomeMethod() {
+	public void test_string_variable() throws IOException {
 		
 		var lexer = new Lexer();
 		
@@ -46,8 +46,59 @@ public class LexerTest {
 		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
 		Assertions.assertThat(token.value).isEqualTo("\"}}\"");
 		token = tokens.next();
-		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_END);
-		
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_END);		
 	}
 	
+	@Test
+	public void test_variable() throws IOException {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("{{ test }}");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_START);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
+		Assertions.assertThat(token.value.trim()).isEqualTo("test");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_END);		
+	}
+	
+	@Test
+	public void test_tag() throws IOException {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("{% test %}");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.TAG_START);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
+		Assertions.assertThat(token.value.trim()).isEqualTo("test");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.EXPRESSION);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.TAG_END);		
+	}
+	
+	@Test
+	public void test_tag_with_condition_quoted() throws IOException {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("{% test \"thats\" %}");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.TAG_START);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
+		Assertions.assertThat(token.value.trim()).isEqualTo("test");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.EXPRESSION);
+		Assertions.assertThat(token.value.trim()).isEqualTo("\"thats\"");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.TAG_END);		
+	}
 }

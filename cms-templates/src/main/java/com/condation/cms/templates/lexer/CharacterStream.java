@@ -22,6 +22,7 @@ package com.condation.cms.templates.lexer;
  * #L%
  */
 
+import java.util.function.Predicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -50,7 +51,7 @@ public class CharacterStream {
 		return (position + offset < source.length()) ? source.charAt(position + offset) : '\0';
 	}
 
-	protected String readWhile(java.util.function.Predicate<Character> condition) {
+	protected String readWhile(Predicate<Character> condition) {
 		StringBuilder result = new StringBuilder();
 		while (position < source.length() && condition.test(source.charAt(position))) {
 			result.append(source.charAt(position));

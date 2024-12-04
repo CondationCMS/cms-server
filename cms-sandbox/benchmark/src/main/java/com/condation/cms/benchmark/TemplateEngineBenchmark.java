@@ -60,17 +60,36 @@ import org.openjdk.jmh.annotations.Warmup;
 @State(Scope.Benchmark)
 public class TemplateEngineBenchmark {
 
-	private static CacheProvider cacheProvider = new LocalCacheProvider();
+	private static final CacheProvider cacheProvider = new LocalCacheProvider();
 	
 	private CMSTemplateEngine engine; // Deine Template-Engine
-	private Map<String, Object> data;
 
-	private Template template;
+	private Template simple;
+	private Template page;
+	private Template layout;
 	
 	@Setup(Level.Trial) // Einmalige Initialisierung vor allen Benchmarks
 	public void setup() {
 		var loader = new StringTemplateLoader();
-		loader.add("test", "Hallo, {{name}}!");
+		loader.add("simple", "Hallo, {{name}}!");
+		loader.add("layout", """
+                       {% block title%}
+							the default title
+                       {% endblock %}
+                       {% block content%}
+						the default content
+					  {% endblock %}
+                       """);
+		
+		loader.add("page", """
+					   {% extends "layout" %}
+                       {% block title%}
+							the default title
+                       {% endblock %}
+                       {% block content%}
+						the default content
+					   {% endblock %}
+                       """);
 		
 		engine = TemplateEngineFactory.newInstance(loader)
 				.cache(cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))))
@@ -79,13 +98,18 @@ public class TemplateEngineBenchmark {
 				.devMode(false)
 				.create();
 		
-		data = Map.of("name", "Thorsten");
-		
-		template = engine.getTemplate("test");
+		simple = engine.getTemplate("simple");
+		layout = engine.getTemplate("layout");
+		page = engine.getTemplate("page");
 	}
 
 	@org.openjdk.jmh.annotations.Benchmark
-	public String renderTemplate() throws IOException {
-		return template.evaluate(data);
+	public String render_simple_template() throws IOException {
+		Map<String, Object> data = Map.of("name", "Thorsten");
+		return simple.evaluate(data);
+	}
+	@org.openjdk.jmh.annotations.Benchmark
+	public String render_simple_layout() throws IOException {
+		return page.evaluate();
 	}
 }

@@ -1,20 +1,17 @@
-<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<title>{{node.meta.title}}</title>
+<link
+  rel="canonical"
+  href="{{ site.get('baseurl') + requestContext.uri }}"
+/>
+<link rel="shortcut icon" href="/favicon.ico" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<th:block th:fragment="header">
-	<title th:text="${node.meta.title}"></title>
-	<link rel="canonical" th:href="${site.get('baseurl')} + ${requestContext.uri}" />
-	<link rel="shortcut icon" href="/favicon.ico" />
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+<script th:inline="javascript">
+  const CONTEXT_PATH = "{{ site.contextPath }}/";
+</script>
 
-	<script th:inline="javascript">
-		/*<![CDATA[*/
-		const CONTEXT_PATH = /*[[${site.contextPath}]]*/ '/';
-		/*]]>*/
-	</script>
-
-	<link rel="stylesheet" th:href="${links.createUrl('/theme/assets/style.css')}" defer />
-
-</th:block>
-
-</html>
+<link
+  rel="stylesheet"
+  href="{{ links.createUrl('/theme/assets/style.css') }}"
+  defer
+/>

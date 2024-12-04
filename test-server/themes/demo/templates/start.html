@@ -1,15 +1,16 @@
-<!DOCTYPE html SYSTEM "http://www.thymeleaf.org/dtd/xhtml1-strict-thymeleaf-4.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<!DOCTYPE html SYSTEM>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-	<th:block th:replace="libs/fragments.html :: header">
-	</th:block>
+	{% include "libs/fragments.html" %}
 </head>
 
 <body class="centered">
 
 	<div id="content">
-		<div class="container" th:utext="${node.content}"></div>
+		<div class="container">
+			{{ node.content | raw}}
+		</div>
 	</div>
 
 </body>

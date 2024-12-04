@@ -156,7 +156,7 @@ public class ModulesModule extends AbstractModule {
 					throw new RuntimeException("Detected usage of different template engines in site and themes.");
 				});
 		
-		return used_engine.orElseThrow(() -> new RuntimeException("No template engine configured"));
+		return used_engine.orElse("system");
 	}
 
 	@Provides

@@ -24,8 +24,10 @@ package com.condation.cms.server.configs;
 
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.feature.features.CacheManagerFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentRenderFeature;
 import com.condation.cms.api.feature.features.CronJobSchedulerFeature;
@@ -86,6 +88,7 @@ public class SiteConfigInitializer {
 		cmsModuleContext.add(ThemeFeature.class, new ThemeFeature(injector.getInstance(Theme.class)));
 		cmsModuleContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
 		cmsModuleContext.add(CronJobSchedulerFeature.class, new CronJobSchedulerFeature(injector.getInstance(SiteCronJobScheduler.class)));
+		cmsModuleContext.add(CacheManagerFeature.class, new CacheManagerFeature(injector.getInstance(CacheManager.class)));
 
         var contentResolver = injector.getInstance(ContentResolver.class);
 		var requestContextFactory = injector.getInstance(RequestContextFactory.class);

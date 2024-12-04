@@ -66,6 +66,22 @@ public class LexerTest {
 	}
 	
 	@Test
+	public void test_complex_variable() throws IOException {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("{{ site.get('baseurl') + requestContext.uri }}");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_START);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
+		Assertions.assertThat(token.value.trim()).isEqualTo("site.get('baseurl') + requestContext.uri");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.VARIABLE_END);		
+	}
+	
+	@Test
 	public void test_tag() throws IOException {
 		
 		var lexer = new Lexer();

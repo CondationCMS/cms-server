@@ -51,7 +51,7 @@ public class CMSTemplateEngine {
 		this.renderer = new Renderer(configuration, this, jexl);
 	}
 	
-	public JexlEngine createJexlEngine() {
+	private JexlEngine createJexlEngine() {
         JexlBuilder builder = new JexlBuilder();
 
 		if (configuration.isDevMode()) {

@@ -18,5 +18,9 @@
 			<groupId>com.condation.cms</groupId>
 			<artifactId>cms-filesystem</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-templates</artifactId>
+		</dependency>
 	</dependencies>
 </project>

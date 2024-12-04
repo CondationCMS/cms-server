@@ -89,6 +89,11 @@
 			</dependency>
 			<dependency>
 				<groupId>com.condation.cms</groupId>
+				<artifactId>cms-templates</artifactId>
+				<version>${project.version}</version>            
+			</dependency>
+			<dependency>
+				<groupId>com.condation.cms</groupId>
 				<artifactId>cms-extensions</artifactId>
 				<version>${project.version}</version>            
 			</dependency>

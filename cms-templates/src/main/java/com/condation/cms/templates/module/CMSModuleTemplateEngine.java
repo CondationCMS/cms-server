@@ -21,9 +21,7 @@ package com.condation.cms.templates.module;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.cache.CacheManager;
-import com.condation.cms.api.cache.CacheProvider;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
@@ -35,7 +33,6 @@ import com.condation.cms.templates.loaders.FileTemplateLoader;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
@@ -45,39 +42,57 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 
 	CMSTemplateEngine templateEngine;
 
-	private CMSModuleTemplateEngine () {
-		
+	CacheManager cacheManager;
+
+	DB db;
+
+	boolean devMode = false;
+
+	Theme theme = null;
+
+	private CMSModuleTemplateEngine() {
+
 	}
-	
-	public static CMSModuleTemplateEngine create (final DB db, final Theme theme, CacheManager cacheManager, boolean devMode) {
+
+	public static CMSModuleTemplateEngine create(final DB db, final Theme theme, CacheManager cacheManager, boolean devMode) {
+
 		var engine = new CMSModuleTemplateEngine();
-		
+
+		engine.db = db;
+		engine.devMode = devMode;
+		engine.cacheManager = cacheManager;
+		engine.theme = theme;
+
+		engine.initTemplateEngine();
+
+		return engine;
+	}
+
+	private void initTemplateEngine() {
+
 		var loaders = new ArrayList<TemplateLoader>();
 		loaders.add(new FileTemplateLoader(db.getFileSystem().resolve("templates/")));
-		
+
 		if (!theme.empty()) {
 			var themeLoader = new FileTemplateLoader(theme.templatesPath());
 			loaders.add(themeLoader);
-			
+
 			if (theme.getParentTheme() != null) {
 				var parentLoader = new FileTemplateLoader(theme.getParentTheme().templatesPath());
 				loaders.add(parentLoader);
 			}
 		}
-		
+
 		CompositeTemplateLoader templateLoader = new CompositeTemplateLoader(loaders);
-		
-		engine.templateEngine = TemplateEngineFactory.newInstance(templateLoader)
+
+		templateEngine = TemplateEngineFactory.newInstance(templateLoader)
 				.cache(cacheManager.get("templates", new CacheManager.CacheConfig(100l, Duration.ofMinutes(1))))
 				.defaultFilters()
 				.defaultTags()
 				.devMode(devMode)
 				.create();
-		
-		return engine;
 	}
-	
-	
+
 	@Override
 	public void invalidateCache() {
 		templateEngine.invalidateTemplateCache();
@@ -85,15 +100,15 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 
 	@Override
 	public void updateTheme(Theme theme) {
+		initTemplateEngine();
 		templateEngine.invalidateTemplateCache();
-		// update theme
 	}
 
 	@Override
 	public String render(String template, Model model) throws IOException {
 		var cmsTemplate = templateEngine.getTemplate(template);
-		
+
 		return cmsTemplate.evaluate(model.values);
 	}
-	
+
 }

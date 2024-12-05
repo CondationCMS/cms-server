@@ -42,6 +42,10 @@ public abstract class AbstractTemplateEngineTest {
 	
 	public abstract TemplateLoader getLoader ();
 	
+	public boolean isDevMode () {
+		return true;
+	}
+	
 	@BeforeAll
 	public void setup () {
 		SUT = TemplateEngineFactory
@@ -49,7 +53,7 @@ public abstract class AbstractTemplateEngineTest {
 				.cache(cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))))
 				.defaultFilters()
 				.defaultTags()
-				.devMode(true)
+				.devMode(isDevMode())
 				.create();
 		
 				

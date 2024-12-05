@@ -54,13 +54,17 @@ public class ForTag implements Tag {
 	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		var forCondition = parseForLoop(node);
 
-		var collection = context.scopes().getVariable(forCondition.collection);
-		if (collection.isEmpty() || !(collection.get() instanceof Collection)) {
+		var collectionVariable = context.scopes().getVariable(forCondition.collection);
+		var colExp = context.engine().createExpression(forCondition.collection);
+		
+		var collection = colExp.evaluate(context.createEngineContext());
+		
+		if (collection == null || !(collection instanceof Collection)) {
 			throw new TagException("variable '%s' not found".formatted(forCondition.collection), node.getLine(), node.getColumn());
 		}
 
 		var index = 0;
-		for (var item : (Collection) collection.get()) {
+		for (var item : (Collection) collection) {
 			var loop = new Loop(index++);
 			context.scopes().pushScope(
 					Map.of(

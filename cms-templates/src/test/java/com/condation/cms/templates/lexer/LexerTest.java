@@ -117,4 +117,18 @@ public class LexerTest {
 		token = tokens.next();
 		Assertions.assertThat(token.type).isEqualTo(Token.Type.TAG_END);		
 	}
+	
+	@Test
+	public void lexer_issue_curly_brace() throws IOException {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("the curly brace { can't be parsed ");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.TEXT);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.END);
+		Assertions.assertThat(tokens.isEnd()).isTrue();
+	}
 }

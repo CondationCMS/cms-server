@@ -22,6 +22,7 @@ package com.condation.cms.templates.lexer;
  * #L%
  */
 
+import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -61,13 +62,28 @@ public class CharacterStream {
 		return result.toString();
 	}
 
-	protected String readUntil(String delimiter) {
+	protected String readUntil(BiPredicate<String, Integer> predicate) {
 		StringBuilder result = new StringBuilder();
-		while (position < source.length() && !source.startsWith(delimiter, position)) {
+		while (position < source.length() && predicate.test(source, position)) {
 			result.append(source.charAt(position));
 			advance();
 		}
 		return result.toString();
+	}
+	
+	protected String readUntil(String delimiter) {
+		return readUntil((source, position) -> !source.startsWith(delimiter, position));
+	}
+	
+	protected String readUntil(String[] delimiters) {
+		return readUntil((source, position) -> {
+			for (String delimiter : delimiters) {
+				if (source.startsWith(delimiter, position)) {
+					return false;
+				}
+			}
+			return true;
+		});
 	}
 
 	protected void skipWhitespace() {

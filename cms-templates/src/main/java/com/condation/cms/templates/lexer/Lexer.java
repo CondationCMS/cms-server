@@ -26,6 +26,23 @@ import java.util.List;
 
 public class Lexer {
 
+	public class Syntax {
+		public static final String TAG_OPEN = "{%";
+		public static final String TAG_CLOSE = "%}";
+		
+		public static final String COMMENT_OPEN = "{#";
+		public static final String COMMENT_CLOSE = "#}";
+		
+		public static final String VARIABLE_OPEN = "{{";
+		public static final String VARIABLE_CLOSE = "}}";
+		
+		public static final String[] OPENING = new String[] {
+			TAG_OPEN, COMMENT_OPEN, VARIABLE_OPEN};
+		
+		public static final String[] CLOSING = new String[] {
+			TAG_CLOSE, COMMENT_CLOSE, VARIABLE_CLOSE};
+	}
+	
 	public Lexer() {
 
 	}
@@ -73,7 +90,7 @@ public class Lexer {
 			} else if (state.is(State.Type.COMMENT)) {
 				tokens.add(new Token(Token.Type.COMMENT_VALUE, charStream.readUntil("#}"), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else if (!state.is(State.Type.VARIABLE, State.Type.TAG)) {
-				tokens.add(new Token(Token.Type.TEXT, charStream.readUntil("{"), line, column)); // Alles bis zum nächsten '{' als Text speichern
+				tokens.add(new Token(Token.Type.TEXT, charStream.readUntil(Syntax.OPENING), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else {
 				charStream.advance();
 			}

@@ -24,6 +24,7 @@ package com.condation.cms.templates;
 
 import com.condation.cms.templates.exceptions.TemplateNotFoundException;
 import com.condation.cms.templates.expression.CMSPermissions;
+import com.condation.cms.templates.expression.RecordResolverStrategy;
 import com.condation.cms.templates.lexer.Lexer;
 import com.condation.cms.templates.parser.Parser;
 import com.condation.cms.templates.renderer.Renderer;
@@ -69,6 +70,8 @@ public class CMSTemplateEngine {
 					.silent(true)
 					.debug(false);
 		}
+
+		builder.strategy(new RecordResolverStrategy());
 		
         return builder.permissions(CMSPermissions.PERMISSIONS).create();
     }

@@ -24,7 +24,6 @@ package com.condation.cms.templates.expression;
 
 import org.apache.commons.jexl3.introspection.JexlPropertyGet;
 import org.apache.commons.jexl3.introspection.JexlUberspect;
-import org.apache.commons.jexl3.JexlOperator;
 
 import java.lang.reflect.Method;
 import java.util.Optional;

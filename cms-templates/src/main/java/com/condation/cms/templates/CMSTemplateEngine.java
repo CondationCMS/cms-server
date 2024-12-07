@@ -81,6 +81,12 @@ public class CMSTemplateEngine {
 		templateCache.invalidate();
 	}
 	
+	public Template getTemplateFromString (String templateContent) {
+		var tokenStream = lexer.tokenize(templateContent);
+		var rootNode = parser.parse(tokenStream);
+		return new DefaultTemplate(rootNode, renderer);
+	}
+	
 	public Template getTemplate (String template) {
 		
 		if (templateCache != null && templateCache.contains(template)) {

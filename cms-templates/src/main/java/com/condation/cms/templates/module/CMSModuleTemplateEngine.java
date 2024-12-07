@@ -111,4 +111,12 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 		return cmsTemplate.evaluate(model.values);
 	}
 
+	@Override
+	public String renderFromString(String templateString, Model model) throws IOException {
+		var template = templateEngine.getTemplateFromString(templateString);
+		return template.evaluate(model.values);
+	}
+	
+	
+
 }

@@ -143,4 +143,31 @@ public class TagParserTest {
 		result = tagParser.parse("[[ns1:print message='Hello CondationCMS' /]]", tagMap);
 		Assertions.assertThat(result).isEqualTo("message: Hello CondationCMS");
 	}
+	
+		@Test
+	public void multiline () {
+		String content = """
+				[[content]]
+					This is a multiline shortcode!
+				[[/content]]
+				""";
+
+		String result = tagParser.parse(content, tagMap);
+
+		System.out.println("-" + result + "-");
+	}
+	
+	@Test
+	public void nested () {
+		String content = """
+                   [[content]]
+                   [[nested /]]
+                   [[/content]]
+                   """;
+		
+		var tags = tagParser.findTags(content, tagMap);
+		Assertions.assertThat(tags.size()).isEqualTo(1);
+		String result = tagParser.parse(content, tagMap);
+		System.out.println("-" + result + "-");
+	}
 }

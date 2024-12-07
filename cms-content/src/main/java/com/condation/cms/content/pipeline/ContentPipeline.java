@@ -22,7 +22,6 @@ package com.condation.cms.content.pipeline;
  * #L%
  */
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
-import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.TemplateEngineFeature;
 import com.condation.cms.api.hooks.FilterContext;
@@ -34,8 +33,6 @@ import com.condation.cms.content.RenderContext;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 

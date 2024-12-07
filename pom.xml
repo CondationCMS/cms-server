@@ -23,6 +23,7 @@
 		<module>cms-media</module>
 		<module>cms-git</module>
 		<module>cms-content</module>
+		<module>cms-templates</module>
 		<module>cms-extensions</module>
 		<module>cms-auth</module>
 		<module>integration-tests</module>
@@ -84,6 +85,11 @@
 			<dependency>
 				<groupId>com.condation.cms</groupId>
 				<artifactId>cms-content</artifactId>
+				<version>${project.version}</version>            
+			</dependency>
+			<dependency>
+				<groupId>com.condation.cms</groupId>
+				<artifactId>cms-templates</artifactId>
 				<version>${project.version}</version>            
 			</dependency>
 			<dependency>
@@ -421,9 +427,13 @@
 							<licenseName>gpl_v3</licenseName>
 							<roots>
 								<root>src/main/java</root>
-								<root>src/resources</root>
-								<root>src/test</root>
+								<root>src/main/resources</root>
+								<root>src/test/java</root>
+								<root>src/test/resources</root>
 							</roots>
+							<excludes>
+								<exclude>**/*.json</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>
@@ -516,9 +526,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
+				<!--configuration>
 					<argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
-				</configuration>
+				</configuration-->
 			</plugin>
 		</plugins>
 	</build>

@@ -4,11 +4,20 @@
     <parent>
         <groupId>com.condation.cms</groupId>
         <artifactId>cms-parent</artifactId>
-        <version>6.4.0</version>
+        <version>7.3.0</version>
     </parent>
     <artifactId>cms-sandbox</artifactId>
     <packaging>pom</packaging>
     <modules>
         <module>tests</module>
+        <module>benchmark</module>
     </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

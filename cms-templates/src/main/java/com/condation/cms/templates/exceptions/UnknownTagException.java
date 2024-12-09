@@ -26,19 +26,24 @@ package com.condation.cms.templates.exceptions;
  *
  * @author t.marx
  */
-public class TemplateNotFoundException extends RuntimeException {
+public class UnknownTagException extends RuntimeException {
 
-	public TemplateNotFoundException(String message) {
+	private final int line;
+	private final int column;
+	
+	public UnknownTagException(String message, int line, int column) {
 		super(message);
+		this.line = line;
+		this.column = column;
 	}
 	
 	@Override
 	public String getLocalizedMessage() {
-		return "Error: %s".formatted(getMessage());
+		return "Error: %s (line %d, column %d)".formatted(getMessage(), line, column);
 	}
 	
 	@Override
 	public String getMessage() {
-		return "Error: %s".formatted(getMessage());
+		return "Error: %s (line %d, column %d)".formatted(getMessage(), line, column);
 	}
 }

@@ -26,6 +26,7 @@ import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.exceptions.ParserException;
+import com.condation.cms.templates.exceptions.UnknownTagException;
 import com.condation.cms.templates.utils.TemplateUtils;
 import java.util.Stack;
 
@@ -152,6 +153,10 @@ public class Parser {
 					ASTNode currentNode = nodeStack.peek();
 					if (currentNode instanceof TagNode tagNode) {
 						tagNode.setCondition(token.value);
+						
+						if (configuration.getTag(tagNode.getName()).isEmpty()) {
+							throw new UnknownTagException("unkown tag (%s)".formatted(tagNode.getName()), currentNode.getLine(), currentNode.getColumn());
+						}
 						
 						Tag tag = configuration.getTag(tagNode.getName()).get();
 						if (tag.parseExpressions()) {

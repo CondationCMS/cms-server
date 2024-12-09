@@ -150,8 +150,8 @@ public class TagParserTest {
 		result = tagParser.parse("[[ns1:print message='Hello CondationCMS' /]]", tagMap);
 		Assertions.assertThat(result).isEqualTo("message: Hello CondationCMS");
 	}
-	
-		@Test
+
+	@Test
 	public void multiline () {
 		String content = """
 				[[content]]

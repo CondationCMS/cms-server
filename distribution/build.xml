@@ -2,18 +2,6 @@
 <project name="distribution" default="distribution" basedir=".">
 	<property name="cms.version">7.3.0</property>
 	
-	<property name="thymeleaf.version">v3.0.0</property>
-		
-	<target name="download-modules" description="--> download modules">
-		<echo>download template implementation modules</echo>
-		<get src="https://github.com/CondationCMS/thymeleaf-module/releases/download/${thymeleaf.version}/thymeleaf-module-bin.zip" dest="temp/thymeleaf-module-bin.zip"></get>
-	</target>
-	
-	<target name="unzip-modules">
-		<echo>unzip modules</echo>
-		<unzip src="temp/thymeleaf-module-bin.zip" dest="build/modules/" />
-	</target>
-	
 	<target name="copy-server" description="--> copy server">
 		<unzip src="../cms-server/target/cms-server-${cms.version}.zip" dest="temp/" />
 		<copy todir="build/themes/demo">
@@ -45,7 +33,7 @@
 		<mkdir  dir="build/modules/" />
 	</target>
 	
-	<target name="distribution" depends="clean,download-modules,unzip-modules,copy-server">
+	<target name="distribution" depends="clean,copy-server">
 		<zip destfile="dist/condation-server-${cms.version}.zip">
 			<fileset dir="build/"/>
 			<fileset dir="../" includes="README.md"/>

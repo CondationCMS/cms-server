@@ -21,6 +21,7 @@ package com.condation.cms.content.markdown.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -36,23 +37,23 @@ public class StringUtils {
 	private static final String AMP_PLACEHOLDER = "AMP#PLACE#HOLDER";
 
 	static {
-		ESCAPE.put("\\\\#", AMP_PLACEHOLDER + "#35;");
-		ESCAPE.put("\\\\\\*", AMP_PLACEHOLDER + "#42;");
-		ESCAPE.put("\\\\`", AMP_PLACEHOLDER + "#96;");
-		ESCAPE.put("\\\\_", AMP_PLACEHOLDER + "#95;");
-		ESCAPE.put("\\\\\\{", AMP_PLACEHOLDER + "#123;");
-		ESCAPE.put("\\\\\\}", AMP_PLACEHOLDER + "#125;");
-		ESCAPE.put("\\\\\\[", AMP_PLACEHOLDER + "#91;");
-		ESCAPE.put("\\\\\\]", AMP_PLACEHOLDER + "#93;");
-		ESCAPE.put("\\\\<", AMP_PLACEHOLDER + "#60;");
-		ESCAPE.put("\\\\>", AMP_PLACEHOLDER + "#62;");
-		ESCAPE.put("\\\\\\(", AMP_PLACEHOLDER + "#40;");
-		ESCAPE.put("\\\\\\)", AMP_PLACEHOLDER + "#41;");
-		ESCAPE.put("\\\\\\+", AMP_PLACEHOLDER + "#43;");
-		ESCAPE.put("\\\\-", AMP_PLACEHOLDER + "#45;");
-		ESCAPE.put("\\\\\\.", AMP_PLACEHOLDER + "#46;");
-		ESCAPE.put("\\\\!", AMP_PLACEHOLDER + "#33;");
-		ESCAPE.put("\\\\\\|", AMP_PLACEHOLDER + "#124;");
+		ESCAPE.put("\\#", AMP_PLACEHOLDER + "#35;");
+		ESCAPE.put("\\*", AMP_PLACEHOLDER + "#42;");
+		ESCAPE.put("\\`", AMP_PLACEHOLDER + "#96;");
+		ESCAPE.put("\\_", AMP_PLACEHOLDER + "#95;");
+		ESCAPE.put("\\{", AMP_PLACEHOLDER + "#123;");
+		ESCAPE.put("\\}", AMP_PLACEHOLDER + "#125;");
+		ESCAPE.put("\\[", AMP_PLACEHOLDER + "#91;");
+		ESCAPE.put("\\]", AMP_PLACEHOLDER + "#93;");
+		ESCAPE.put("\\<", AMP_PLACEHOLDER + "#60;");
+		ESCAPE.put("\\>", AMP_PLACEHOLDER + "#62;");
+		ESCAPE.put("\\(", AMP_PLACEHOLDER + "#40;");
+		ESCAPE.put("\\)", AMP_PLACEHOLDER + "#41;");
+		ESCAPE.put("\\+", AMP_PLACEHOLDER + "#43;");
+		ESCAPE.put("\\-", AMP_PLACEHOLDER + "#45;");
+		ESCAPE.put("\\.", AMP_PLACEHOLDER + "#46;");
+		ESCAPE.put("\\!", AMP_PLACEHOLDER + "#33;");
+		ESCAPE.put("\\|", AMP_PLACEHOLDER + "#124;");
 	}
 
 	public static String unescape(String html) {
@@ -60,11 +61,20 @@ public class StringUtils {
 	}
 
 	public static String escape(String md) {
-		AtomicReference<String> escaped = new AtomicReference<>(md);
-		ESCAPE.entrySet().forEach(entry -> {
-			escaped.updateAndGet(value -> value.replaceAll(entry.getKey(), entry.getValue()));
+		if (Strings.isNullOrEmpty(md)) {
+			return md;
+		}
+		StringBuilder escaped = new StringBuilder(md);
+
+		ESCAPE.forEach((key, value) -> {
+			int index = escaped.indexOf(key);
+			while (index != -1) {
+				escaped.replace(index, index + key.length(), value);
+				index = escaped.indexOf(key, index + value.length());
+			}
 		});
-		return escaped.get();
+
+		return escaped.toString();
 	}
 
 	public static String removeLeadingPipe(String s) {

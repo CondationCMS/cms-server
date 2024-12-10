@@ -31,6 +31,7 @@ import com.condation.cms.core.configuration.ReloadStrategy;
 import com.condation.cms.core.configuration.reload.NoReload;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,14 +157,15 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 	}
 
 	public Map<String, Object> getMap (String field) {
-		Map<String, Object> result = new HashMap<>();
-		sources.stream()
+		var configSource = sources.stream()
 				.filter(ConfigSource::exists)
-				.map(config -> config.getMap(field))
-				.forEach(sourceMap -> {
-					MapUtil.deepMerge(result, sourceMap);
-				});
-		return result;
+				.findFirst();
+		
+		if (configSource.isPresent()) {
+			return MapUtil.deepUnmodifiableMap(configSource.get().getMap(field));
+		}
+		
+		return Collections.emptyMap();
 	}
 	
 	public <T> T get(String field, Class<T> aClass) {

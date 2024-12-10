@@ -21,13 +21,14 @@ package com.condation.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.google.common.base.Preconditions;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -49,7 +50,7 @@ public class MapUtil {
 
 	public static <T> T getValue(final Map<String, Object> map, final String field, final T defaultValue) {
 		if (!field.contains(".")) {
-			return (T)map.getOrDefault(field, defaultValue);
+			return (T) map.getOrDefault(field, defaultValue);
 		}
 		String[] keys = field.split("\\.");
 		Map<String, Object> subMap = map;
@@ -106,5 +107,44 @@ public class MapUtil {
 				original.put(key, value);
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> deepUnmodifiableMap(Map<String, Object> original) {
+		return original.entrySet().stream()
+				.collect(Collectors.toUnmodifiableMap(
+						Map.Entry::getKey,
+						entry -> {
+							Object value = entry.getValue();
+							if (value instanceof Map) {
+								// Rekursiver Aufruf für verschachtelte Maps
+								return deepUnmodifiableMap((Map<String, Object>) value);
+							} else if (value instanceof List) {
+								// Rekursiver Aufruf für Listen
+								return deepUnmodifiableList((List<Object>) value);
+							} else {
+								// Andere Objekte bleiben unverändert
+								return value;
+							}
+						}
+				));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static List<Object> deepUnmodifiableList(List<Object> original) {
+		return original.stream()
+				.map(value -> {
+					if (value instanceof Map) {
+						// Rekursiver Aufruf für verschachtelte Maps
+						return deepUnmodifiableMap((Map<String, Object>) value);
+					} else if (value instanceof List) {
+						// Rekursiver Aufruf für verschachtelte Listen
+						return deepUnmodifiableList((List<Object>) value);
+					} else {
+						// Andere Objekte bleiben unverändert
+						return value;
+					}
+				})
+				.collect(Collectors.collectingAndThen(Collectors.toList(), Collections::unmodifiableList));
 	}
 }

@@ -22,7 +22,6 @@ import com.condation.cms.api.Constants;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.db.DB;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.scheduler.CronJobScheduler;
@@ -111,8 +110,8 @@ public class ConfigurationFactory {
 		return SimpleConfiguration.builder(eventBus)
 				.id("server")
 				.reloadStrategy(new NoReload())
-				.addSource(YamlConfigSource.build(ServerUtil.getPath("server.yaml")))
 				.addSource(TomlConfigSource.build(ServerUtil.getPath("server.toml")))
+				.addSource(YamlConfigSource.build(ServerUtil.getPath("server.yaml")))
 				.build();
 	}
 
@@ -143,8 +142,8 @@ public class ConfigurationFactory {
 	private static SimpleConfiguration siteConfiguration(EventBus eventBus, String env, Path siteBase, ReloadStrategy reloadStrategy) throws IOException {
 
 		List<ConfigSource> siteSources = new ArrayList<>();
-		siteSources.add(YamlConfigSource.build(siteBase.resolve("site.yaml")));
 		siteSources.add(TomlConfigSource.build(siteBase.resolve("site.toml")));
+		siteSources.add(YamlConfigSource.build(siteBase.resolve("site.yaml")));
 
 		var envFile = siteBase.resolve("site-%s.yaml".formatted(env));
 		if (Files.exists(envFile)) {

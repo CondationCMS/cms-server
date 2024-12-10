@@ -24,7 +24,6 @@ package com.condation.cms.content.markdown.utils;
 import com.google.common.base.Strings;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  *

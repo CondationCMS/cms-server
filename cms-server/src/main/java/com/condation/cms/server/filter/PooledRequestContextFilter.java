@@ -108,13 +108,13 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 
 		@Override
 		public RequestContextPoolable allocate(Slot slot) throws Exception {
-			log.info("allocate");
+			log.trace("allocate");
 			return new RequestContextPoolable(slot, requestContextFactory.createContext());
 		}
 
 		@Override
 		public void deallocate(RequestContextPoolable poolable) throws Exception {
-			log.info("deallocate");
+			log.trace("deallocate");
 			poolable.close();
 		}
 

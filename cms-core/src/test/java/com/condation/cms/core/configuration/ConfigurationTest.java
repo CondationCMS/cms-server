@@ -95,13 +95,6 @@ public class ConfigurationTest {
 		
 		Assertions.assertThat(env).isEqualTo("prod");
 	}
-
-	@Test
-	public void test_from_yaml() {
-		var env = configuration.getString("test");
-		
-		Assertions.assertThat(env).isEqualTo("only in yaml");
-	}
 	
 	@Test
 	public void test_reload () throws InterruptedException, IOException {

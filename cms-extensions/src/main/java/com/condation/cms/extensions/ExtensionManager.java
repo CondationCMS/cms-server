@@ -124,7 +124,7 @@ public class ExtensionManager {
 			log.debug("load extensions from " + extPath);
 			loadExtensions(extPath, context::eval);
 		}
-
+		
 		return requestExtensions;
 	}
 

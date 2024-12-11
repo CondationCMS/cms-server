@@ -157,15 +157,14 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 	}
 
 	public Map<String, Object> getMap (String field) {
-		var configSource = sources.stream()
+		Map<String, Object> result = new HashMap<>();
+		sources.stream()
 				.filter(ConfigSource::exists)
-				.findFirst();
-		
-		if (configSource.isPresent()) {
-			return MapUtil.deepUnmodifiableMap(configSource.get().getMap(field));
-		}
-		
-		return Collections.emptyMap();
+				.map(config -> config.getMap(field))
+				.forEach(sourceMap -> {
+					MapUtil.deepMerge(result, sourceMap);
+				});
+		return result;
 	}
 	
 	public <T> T get(String field, Class<T> aClass) {

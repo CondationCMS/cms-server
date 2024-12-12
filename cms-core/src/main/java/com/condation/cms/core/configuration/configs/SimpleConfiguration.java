@@ -165,8 +165,8 @@ public class SimpleConfiguration extends AbstractConfiguration implements IConfi
 					MapUtil.deepMerge(result, sourceMap);
 				});
 		return result;
-	}
-	
+		}
+		
 	public <T> T get(String field, Class<T> aClass) {
 		try {
 			var map = getMap(field);

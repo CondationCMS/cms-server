@@ -11,7 +11,7 @@
 		<maven.compiler.target>21</maven.compiler.target>
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<jetty.version>12.0.15</jetty.version>
+		<jetty.version>12.0.16</jetty.version>
 		<lucene.version>10.0.0</lucene.version>
 	</properties>
 	<modules>

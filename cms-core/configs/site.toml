@@ -1,5 +1,5 @@
 id = "condation"
-hostname = [ "condation.com", "localhost" ]
+hostname = [ "condation.com"]
 baseurl = "https://condation.com"
 
 [template]

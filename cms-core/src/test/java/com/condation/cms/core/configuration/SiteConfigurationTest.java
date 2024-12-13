@@ -29,23 +29,17 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.scheduler.CronJobScheduler;
-import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.core.configuration.reload.CronReload;
-import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.time.Duration;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
@@ -58,44 +52,23 @@ import org.quartz.impl.StdSchedulerFactory;
 @ExtendWith(MockitoExtension.class)
 public class SiteConfigurationTest {
 
-	SimpleConfiguration configuration;
-	
-	Scheduler scheduler;
-	CronJobScheduler cronScheduler;
-
-	@Mock
-	SiteProperties siteProperties;
-	
-	@Mock
-	EventBus eventBus;
-	
-	private ExtendedSiteProperties extSiteProperties;
+	private SimpleConfiguration siteConfig;
+	private ExtendedSiteProperties siteProperties;
 	
 	@BeforeEach
 	public void setup() throws IOException, SchedulerException {
-		scheduler = StdSchedulerFactory.getDefaultScheduler();
-		scheduler.start();
-		cronScheduler = new SingleCronJobScheduler(scheduler, new CronJobContext(), siteProperties);
+		siteConfig = ConfigurationFactory.siteConfiguration("dev", Path.of("configs"));
 		
-		configuration = SimpleConfiguration.builder(eventBus)
-				.id("test-config")
-				.reloadStrategy(new CronReload("0/10 * * * * ?", cronScheduler))
-				.addSource(YamlConfigSource.build(Path.of("configs/site.yaml")))
-				.addSource(TomlConfigSource.build(Path.of("configs/site.toml")))
-				.build();
-		
-		extSiteProperties = new ExtendedSiteProperties(configuration);
+		siteProperties = new ExtendedSiteProperties(siteConfig);
 	}
 	
 	@AfterEach
 	public void shutdown () throws SchedulerException {
-		scheduler.clear();
-		scheduler.shutdown();
 	}
 
 	@Test
 	public void test_hostname() {
-		var hostnames = extSiteProperties.hostnames();
+		var hostnames = siteProperties.hostnames();
 		
 		Assertions.assertThat(hostnames).contains("localhost", "condation.com");
 	}

@@ -19,7 +19,7 @@
 			<artifactId>cms-filesystem</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.condation.cms.module.framework</groupId>
+			<groupId>com.condation.modules.framework</groupId>
 			<artifactId>modules-api</artifactId>
 			<scope>provided</scope>
 		</dependency>

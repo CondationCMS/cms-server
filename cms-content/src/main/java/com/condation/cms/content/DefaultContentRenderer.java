@@ -31,7 +31,6 @@ import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.extensions.ContentQueryOperatorExtensionPoint;
 import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
-import com.condation.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -252,16 +251,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 	}
 
 	private void extendModel(final TemplateEngine.Model model, Namespace namespace) {
-		moduleManager.extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> {
-			var modModel = extensionPoint.getModel();
-			// deprecated: module extensions on root will be remove in 8.0.0
-			model.values.putAll(modModel);
-			modModel.entrySet().forEach(entry -> namespace.add(
-				extensionPoint.getNamespace(), 
-				entry.getKey(), 
-				entry.getValue()
-			));
-		});
 		moduleManager.extensions(TemplateModelExtendingExtensionPoint.class).forEach(extensionPoint -> {
 			var modModel = extensionPoint.getModel();
 			// deprecated: module extensions on root will be remove in 8.0.0

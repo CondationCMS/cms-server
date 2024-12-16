@@ -28,7 +28,6 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
-import com.condation.cms.api.extensions.HookSystemRegisterExtentionPoint;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
@@ -150,10 +149,22 @@ public class RequestContextFactory {
 		requestContext.add(RequestExtensions.class, requestExtensions);
 	}
 	
-	private HookSystem initHookSystem(RequestContext requestContext) {
+	private void initHookSystem(RequestContext requestContext) {
 		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+	}
+	
+	/**
+	 * Has to run as one of the last steps, because we need the requestContext
+	 * to be filled
+	 *
+	 * @param requestContext
+	 * @return
+	 */
+	private HookSystem setupAndGetHookSystem() {
+		var hookSystem = injector.getInstance(HookSystem.class);
+		var moduleManager = injector.getInstance(ModuleManager.class);
 		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
 
 		return hookSystem;
@@ -202,7 +213,7 @@ public class RequestContextFactory {
 		requestContext.add(DBHooks.class, new DBHooks(requestContext));
 		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
 
-		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupHookSystem()));
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupAndGetHookSystem()));
 
 		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
 
@@ -241,21 +252,6 @@ public class RequestContextFactory {
 		}
 
 		return requestContext;
-	}
-
-	/**
-	 * Has to run as one of the last steps, because we need the requestContext
-	 * to be filled
-	 *
-	 * @param requestContext
-	 * @return
-	 */
-	private HookSystem setupHookSystem() {
-		var hookSystem = injector.getInstance(HookSystem.class);
-		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtentionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
-
-		return hookSystem;
 	}
 
 	private ShortCodes createShortCodes(RequestContext requestContext) {

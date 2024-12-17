@@ -150,7 +150,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add("node", "sections", sections);
 
 		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
-		model.values.put("shortCodes", shortCodeFunction);
+		model.values.put(ShortCodeTemplateFunction.KEY, shortCodeFunction);
 		namespace.add("cms", "shortCodes", shortCodeFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);

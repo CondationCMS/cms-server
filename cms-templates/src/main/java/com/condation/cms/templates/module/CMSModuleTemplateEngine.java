@@ -25,7 +25,9 @@ import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
 import com.condation.cms.templates.CMSTemplateEngine;
+import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.TemplateEngineFactory;
 import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.loaders.CompositeTemplateLoader;
@@ -108,13 +110,19 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 	public String render(String template, Model model) throws IOException {
 		var cmsTemplate = templateEngine.getTemplate(template);
 
-		return cmsTemplate.evaluate(model.values);
+		return cmsTemplate.evaluate(model.values, createDynamicConfiguration(model));
+	}
+
+	private DynamicConfiguration createDynamicConfiguration(Model model) {
+		ShortCodeTemplateFunction shortCodeFunction = (ShortCodeTemplateFunction) model.values.get(ShortCodeTemplateFunction.KEY);
+		DynamicConfiguration dynamicConfig = new DynamicConfiguration(shortCodeFunction.getShortCodes());
+		return dynamicConfig;
 	}
 
 	@Override
 	public String renderFromString(String templateString, Model model) throws IOException {
 		var template = templateEngine.getTemplateFromString(templateString);
-		return template.evaluate(model.values);
+		return template.evaluate(model.values, createDynamicConfiguration(model));
 	}
 	
 	

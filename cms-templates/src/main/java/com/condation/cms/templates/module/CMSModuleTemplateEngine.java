@@ -25,6 +25,7 @@ import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.content.RenderContext;
 import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
 import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.DynamicConfiguration;
@@ -114,8 +115,8 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 	}
 
 	private DynamicConfiguration createDynamicConfiguration(Model model) {
-		ShortCodeTemplateFunction shortCodeFunction = (ShortCodeTemplateFunction) model.values.get(ShortCodeTemplateFunction.KEY);
-		DynamicConfiguration dynamicConfig = new DynamicConfiguration(shortCodeFunction.getShortCodes());
+		var shortCodes = model.requestContext.get(RenderContext.class).shortCodes();
+		DynamicConfiguration dynamicConfig = new DynamicConfiguration(shortCodes);
 		return dynamicConfig;
 	}
 

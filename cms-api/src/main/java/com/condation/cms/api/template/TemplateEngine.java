@@ -24,6 +24,7 @@ package com.condation.cms.api.template;
 
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.theme.Theme;
 import java.io.IOException;
 import java.util.HashMap;
@@ -51,5 +52,6 @@ public interface TemplateEngine {
 		public final Map<String, Object> values = new HashMap<>();
 		public final ReadOnlyFile contentFile;
 		public final ContentNode contentNode;
+		public final RequestContext requestContext;
 	} 
 }

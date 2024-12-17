@@ -135,11 +135,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 		
 		Optional<ContentNode> contentNode = db.getContent().byUri(uri);
 
-		TemplateEngine.Model model = new TemplateEngine.Model(contentFile, contentNode.isPresent() ? contentNode.get() : null);
+		TemplateEngine.Model model = new TemplateEngine.Model(
+				contentFile, 
+				contentNode.isPresent() ? contentNode.get() : null,
+				context);
 
 		modelExtending.accept(model);
-
-		//model.values.put("cms", Namespace.create("cms", meta));
 
 		Namespace namespace = new Namespace();
 
@@ -151,7 +152,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
 		model.values.put(ShortCodeTemplateFunction.KEY, shortCodeFunction);
-		namespace.add("cms", "shortCodes", shortCodeFunction);
+		namespace.add("cms", ShortCodeTemplateFunction.KEY, shortCodeFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
 		model.values.put("navigation", navigationFunction);

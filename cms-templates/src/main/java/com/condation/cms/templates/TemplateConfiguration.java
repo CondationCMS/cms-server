@@ -58,7 +58,7 @@ public class TemplateConfiguration {
 	}
 	
 	public boolean hasFilters () {
-		return !registeredTags.isEmpty();
+		return !filterRegistry.empty();
 	}
 	
 	public TemplateConfiguration setCache (ICache<String, Template> cache) {

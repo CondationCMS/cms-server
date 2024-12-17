@@ -138,7 +138,7 @@ public class Lexer {
 	private void readTagContent(List<Token> tokens, CharacterStream charStream) {
 		charStream.skipWhitespace();
 
-		String keyword = charStream.readWhile(Character::isLetter);
+		String keyword = charStream.readWhile(Character::isLetterOrDigit);
 		tokens.add(new Token(Token.Type.IDENTIFIER, keyword, charStream.getLine(), charStream.getColumn()));
 
 		String condition = charStream.readUntil("%}");

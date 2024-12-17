@@ -1,8 +1,8 @@
-package com.condation.cms.templates;
+package com.condation.cms.templates.tags.shortcode;
 
 /*-
  * #%L
- * templates
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,28 +22,28 @@ package com.condation.cms.templates;
  * #L%
  */
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Map;
+import com.condation.cms.templates.Tag;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public interface Template {
+@RequiredArgsConstructor
+public class EndShortCodeTag implements Tag {
 	
-	default String evaluate () throws IOException {
-		return evaluate(Map.of());
+	private final String shortCodeName;
+
+	@Override
+	public String getTagName() {
+		return "end%s".formatted(shortCodeName);
+	}
+
+	@Override
+	public boolean isClosingTag() {
+		return true;
 	}
 	
-	default String evaluate(Map<String, Object> context) throws IOException {
-		var writer = new StringWriter();
-		evaluate(context, writer);
-		return writer.toString();
-	}
 	
-	String evaluate(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) throws IOException;
 	
-	void evaluate (Map<String, Object> context, Writer writer) throws IOException;
 }

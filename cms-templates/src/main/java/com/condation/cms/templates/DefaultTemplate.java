@@ -26,6 +26,7 @@ import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
 import lombok.Getter;
@@ -52,9 +53,20 @@ public class DefaultTemplate implements Template {
 		
 		writer.flush();
 	}
+
+	@Override
+	public String evaluate(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) throws IOException {
+		ScopeStack scopes = new ScopeStack(context);
+		
+		try (var writer = new StringWriter()) {
+			renderer.render(rootNode, scopes, writer, dynamicConfiguration);
+			writer.flush();
+			return writer.toString();
+		} 
+	}
 	
 	public void evaluate (ScopeStack scopes, Writer writer) throws IOException {
-		renderer.render(rootNode, scopes, writer);
+		renderer.render(rootNode, scopes, writer, null);
 	}
 	
 }

@@ -88,6 +88,10 @@ public class CMSTemplateEngine {
 	}
 	
 	public Template getTemplate (String template) {
+		return getTemplate(template, null);
+	}
+	
+	public Template getTemplate (String template, DynamicConfiguration dynamicConfiguration) {
 		
 		if (templateCache != null && templateCache.contains(template)) {
 			return templateCache.get(template).get();
@@ -98,7 +102,7 @@ public class CMSTemplateEngine {
 			throw new TemplateNotFoundException("template % not found".formatted(template));
 		}
 		var tokenStream = lexer.tokenize(templateString);
-		var rootNode = parser.parse(tokenStream);
+		var rootNode = parser.parse(tokenStream, dynamicConfiguration);
 		var temp = new DefaultTemplate(rootNode, renderer);
 		
 		if (templateCache != null) {

@@ -22,6 +22,7 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
+import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
@@ -41,7 +42,15 @@ public class Parser {
 
 	private final JexlEngine engine;
 
-	public ASTNode parse(final TokenStream tokenStream) {
+	public ASTNode parse (final TokenStream tokenStream, final DynamicConfiguration dynamicConfiguration) {
+		return _parse(tokenStream, new ParserConfiguration(configuration, dynamicConfiguration));
+	}
+	
+	public ASTNode parse (final TokenStream tokenStream) {
+		return _parse(tokenStream, new ParserConfiguration(configuration));
+	}
+	
+	private ASTNode _parse(final TokenStream tokenStream, final ParserConfiguration parserConfiguration) {
 		ASTNode root = new ASTNode(0, 0);
 		Stack<ASTNode> nodeStack = new Stack<>();
 		nodeStack.push(root);
@@ -81,15 +90,15 @@ public class Parser {
 				}
 				case TAG_END: {
 					if (!nodeStack.isEmpty() && nodeStack.peek() instanceof TagNode tempNode) {
-						if (configuration.hasTag(tempNode.getName())) {
-							Tag tag = configuration.getTag(tempNode.getName()).get();
+						if (parserConfiguration.hasTag(tempNode.getName())) {
+							Tag tag = parserConfiguration.getTag(tempNode.getName()).get();
 
 							if (tag.isClosingTag()) {
 								nodeStack.pop();
 
 								var temp = (TagNode) nodeStack.peek();
 
-								var ptag = configuration.getTag(temp.getName()).get();
+								var ptag = parserConfiguration.getTag(temp.getName()).get();
 
 								if (ptag.getCloseTagName().isPresent()
 										&& ptag.getCloseTagName().get().equals(tag.getTagName())) {
@@ -154,16 +163,14 @@ public class Parser {
 					if (currentNode instanceof TagNode tagNode) {
 						tagNode.setCondition(token.value);
 						
-						if (configuration.getTag(tagNode.getName()).isEmpty()) {
+						if (parserConfiguration.getTag(tagNode.getName()).isEmpty()) {
 							throw new UnknownTagException("unkown tag (%s)".formatted(tagNode.getName()), currentNode.getLine(), currentNode.getColumn());
 						}
 						
-						Tag tag = configuration.getTag(tagNode.getName()).get();
+						Tag tag = parserConfiguration.getTag(tagNode.getName()).get();
 						if (tag.parseExpressions()) {
 							tagNode.setExpression(engine.createExpression(token.value));
 						}
-					} else if (currentNode instanceof TagNode vNode) {
-						
 					}
 					
 					break;

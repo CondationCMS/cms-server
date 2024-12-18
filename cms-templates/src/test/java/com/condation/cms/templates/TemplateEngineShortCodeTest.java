@@ -48,6 +48,9 @@ public class TemplateEngineShortCodeTest extends AbstractTemplateEngineTest {
 						},
 						"tag2", (param) -> {
 							return "Hello " + param.get("name") + "!";
+						},
+						"tag3", (param) -> {
+							return "<div>%s</div>".formatted(param.get("_content"));
 						}),
 				new TagParser(null)
 		);
@@ -64,6 +67,11 @@ public class TemplateEngineShortCodeTest extends AbstractTemplateEngineTest {
                    """)
 				.add("tag2", """
                    {% tag2 name="CondationCMS" %}
+                   {% endtag2 %}
+                   """)
+				.add("tag3", """
+                   {% tag3 %}
+						This is the content!
                    {% endtag2 %}
                    """);
 	}
@@ -88,4 +96,13 @@ public class TemplateEngineShortCodeTest extends AbstractTemplateEngineTest {
 				.isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 
+	@Test
+	public void test_tag3() throws IOException {
+		Template simpleTemplate = SUT.getTemplate("tag3", dynamicConfiguration);
+		Assertions.assertThat(simpleTemplate).isNotNull();
+
+		Assertions
+				.assertThat(simpleTemplate.evaluate(Map.of(), dynamicConfiguration))
+				.isEqualToIgnoringWhitespace("<div>This is the content!</div>");
+	}
 }

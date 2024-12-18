@@ -27,6 +27,7 @@ import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
+import com.condation.cms.templates.utils.ParameterUtil;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -63,7 +64,8 @@ public class ShortCodeTag implements Tag {
 	@Override
 	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		try {
-			var params = parseAndEvaluate(node.getCondition(), context);
+			
+			var params = ParameterUtil.parseAndEvaluate(node.getCondition(), context.createEngineContext(), context.engine());
 			var content = renderChildren(node, context);
 
 			params.put("_content", content);
@@ -87,71 +89,6 @@ public class ShortCodeTag implements Tag {
 		} catch (IOException ioe) {
 			throw new RenderException(ioe.getMessage(), node.getLine(), node.getColumn());
 		}
-	}
-
-	public Map<String, Object> parseAndEvaluate(String input, Renderer.Context context) {
-		Map<String, Object> resultMap = new HashMap<>();
-
-		// Tokenize den Eingabestring (Leerzeichen als Trennung der Parameter)
-		List<String> tokens = tokenize(input);
-
-		var jexlContext = context.createEngineContext();
-
-		for (String token : tokens) {
-			int equalsIndex = token.indexOf('=');
-			if (equalsIndex > 0) {
-				String key = token.substring(0, equalsIndex).trim(); // Schlüssel extrahieren
-				String value = token.substring(equalsIndex + 1).trim(); // Wert extrahieren
-
-				// Anführungszeichen entfernen, falls vorhanden
-				if (value.startsWith("\"") && value.endsWith("\"")) {
-					value = value.substring(1, value.length() - 1);
-				}
-
-				// Wert mit JEXL evaluieren
-				Object evaluatedValue;
-				try {
-					JexlExpression expression = context.engine().createExpression(value);
-					evaluatedValue = expression.evaluate(jexlContext);
-				} catch (Exception e) {
-					// Falls der Wert keine JEXL-Expression ist, einfach als String speichern
-					evaluatedValue = value;
-				}
-
-				resultMap.put(key, evaluatedValue);
-			}
-		}
-
-		return resultMap;
-	}
-
-	private List<String> tokenize(String input) {
-		List<String> tokens = new ArrayList<>();
-		StringBuilder currentToken = new StringBuilder();
-		boolean inQuotes = false;
-
-		for (int i = 0; i < input.length(); i++) {
-			char c = input.charAt(i);
-
-			if (c == '"') {
-				inQuotes = !inQuotes; // Zustand der Anführungszeichen umkehren
-				currentToken.append(c);
-			} else if (c == ' ' && !inQuotes) {
-				// Bei Leerzeichen trennen, sofern nicht in Anführungszeichen
-				if (currentToken.length() > 0) {
-					tokens.add(currentToken.toString());
-					currentToken.setLength(0);
-				}
-			} else {
-				currentToken.append(c);
-			}
-		}
-
-		if (currentToken.length() > 0) {
-			tokens.add(currentToken.toString());
-		}
-
-		return tokens;
 	}
 
 }

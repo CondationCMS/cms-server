@@ -28,6 +28,10 @@ import java.util.Map;
 public class FilterRegistry {
     private final Map<String, Filter> filters = new HashMap<>();
 
+	public boolean empty () {
+		return filters.isEmpty();
+	}
+	
     public void register(String name, Filter filter) {
         filters.put(name, filter);
     }

@@ -54,7 +54,6 @@ public class ForTag implements Tag {
 	public void render(TagNode node, Renderer.Context context, Writer writer) {
 		var forCondition = parseForLoop(node);
 
-		var collectionVariable = context.scopes().getVariable(forCondition.collection);
 		var colExp = context.engine().createExpression(forCondition.collection);
 		
 		var collection = colExp.evaluate(context.createEngineContext());

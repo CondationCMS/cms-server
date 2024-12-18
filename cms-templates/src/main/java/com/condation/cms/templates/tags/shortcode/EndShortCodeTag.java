@@ -1,8 +1,8 @@
-package com.condation.modules.api;
+package com.condation.cms.templates.tags.shortcode;
 
 /*-
  * #%L
- * modules-api
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,43 +22,28 @@ package com.condation.modules.api;
  * #L%
  */
 
-
+import com.condation.cms.templates.Tag;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
- * @author marx
- * @param <C>
+ * @author t.marx
  */
-public abstract class BaseExtension<C extends Context, R extends ModuleRequestContext> implements ExtensionPoint<C, R> {
-
-	protected ModuleConfiguration configuration;
+@RequiredArgsConstructor
+public class EndShortCodeTag implements Tag {
 	
-	private C context;
-	
-	private R requestContext;
+	private final String shortCodeName;
 
 	@Override
-	public void setContext(C context) {
-		this.context = context;
+	public String getTagName() {
+		return "end%s".formatted(shortCodeName);
 	}
-	
-	public C getContext () {
-		return this.context;
-	}
-	
+
 	@Override
-	public void setRequestContext(R context) {
-		this.requestContext = requestContext;
+	public boolean isClosingTag() {
+		return true;
 	}
 	
-	public R getRequestContext () {
-		return this.requestContext;
-	}
-	
-	@Override
-	public void setConfiguration(ModuleConfiguration configuration) {
-		this.configuration = configuration;
-	}
 	
 	
 }

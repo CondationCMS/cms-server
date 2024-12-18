@@ -72,7 +72,7 @@ public class TemplateEngineShortCodeTest extends AbstractTemplateEngineTest {
 				.add("tag3", """
                    {% tag3 %}
 						This is the content!
-                   {% endtag2 %}
+                   {% endtag3 %}
                    """);
 	}
 

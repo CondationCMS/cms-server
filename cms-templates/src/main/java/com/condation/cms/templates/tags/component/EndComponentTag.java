@@ -1,8 +1,8 @@
-package com.condation.cms.templates.lexer;
+package com.condation.cms.templates.tags.component;
 
 /*-
  * #%L
- * templates
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,37 +22,25 @@ package com.condation.cms.templates.lexer;
  * #L%
  */
 
-public class Token {
-    public static enum Type {
-        TEXT, 
-		VARIABLE_START,
-		VARIABLE_END,
-		COMPONENT_START,
-		COMPONENT_END,
-		TAG_START, 
-		TAG_END, 
-		COMMENT_START,
-		COMMENT_END,
-		COMMENT_VALUE,
-		IDENTIFIER, 
-		END, 
-		EXPRESSION
-    }
+import com.condation.cms.templates.Component;
+import lombok.RequiredArgsConstructor;
 
-    public final Type type;
-    public final String value;
-	public final int line;
-    public final int column;
+/**
+ *
+ * @author t.marx
+ */
+@RequiredArgsConstructor
+public class EndComponentTag implements Component {
+	
+	private final String shortCodeName;
 
-    public Token(Type type, String value, int line, int column) {
-        this.type = type;
-        this.value = value;
-		this.line = line;
-		this.column = column;
-    }
+	@Override
+	public String getName() {
+		return "end%s".formatted(shortCodeName);
+	}
 
-    @Override
-    public String toString() {
-        return type + "('" + value + "')";
-    }
+	@Override
+	public boolean isClosing() {
+		return true;
+	}
 }

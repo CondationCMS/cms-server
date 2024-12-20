@@ -1,4 +1,4 @@
-package com.condation.cms.templates.tags.shortcode;
+package com.condation.cms.templates.tags.component;
 
 /*-
  * #%L
@@ -23,8 +23,10 @@ package com.condation.cms.templates.tags.shortcode;
  */
 
 import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.templates.Component;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.exceptions.RenderException;
+import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.utils.ParameterUtil;
@@ -32,40 +34,36 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.jexl3.JexlExpression;
 
 /**
  *
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class ShortCodeTag implements Tag {
+public class ComponentTag implements Component {
 
 	private final String shortCodeName;
 
 	private final ShortCodes shortCodes;
 
 	@Override
-	public String getTagName() {
+	public String getName() {
 		return shortCodeName;
 	}
+	
 
 	@Override
-	public Optional<String> getCloseTagName() {
+	public Optional<String> getCloseingName() {
 		return Optional.of("end%s".formatted(shortCodeName));
 	}
 
 	@Override
-	public void render(TagNode node, Renderer.Context context, Writer writer) {
+	public void render(ComponentNode node, Renderer.Context context, Writer writer) {
 		try {
 			
-			var params = ParameterUtil.parseAndEvaluate(node.getCondition(), context.createEngineContext(), context.engine());
+			var params = ParameterUtil.parseAndEvaluate(node.getParameters(), context.createEngineContext(), context.engine());
 			var content = renderChildren(node, context);
 
 			params.put("_content", content);
@@ -79,7 +77,7 @@ public class ShortCodeTag implements Tag {
 		}
 	}
 
-	private String renderChildren(TagNode node, Renderer.Context context) {
+	private String renderChildren(ComponentNode node, Renderer.Context context) {
 		try {
 			StringWriter writer = new StringWriter();
 			for (var child : node.getChildren()) {

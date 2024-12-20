@@ -27,6 +27,7 @@ import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.parser.ASTNode;
+import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
@@ -100,18 +101,26 @@ public class Renderer {
 
 	private void renderNode(ASTNode node, Context context, Writer writer, RenderConfiguration renderConfiguration) throws IOException {
 
-		if (node instanceof TextNode textNode) {
-			writer.write(textNode.text);
-		} else if (node instanceof VariableNode vnode) {
-			renderVariable(vnode, context, writer);
-		} else if (node instanceof TagNode tagNode) {
-			var tag = renderConfiguration.getTag(tagNode.getName());
-			if (tag.isPresent()) {
-				tag.get().render(tagNode, context, writer);
+		switch (node) {
+			case TextNode textNode -> writer.write(textNode.text);
+			case VariableNode vnode -> renderVariable(vnode, context, writer);
+			case TagNode tagNode -> {
+				var tag = renderConfiguration.getTag(tagNode.getName());
+				if (tag.isPresent()) {
+					tag.get().render(tagNode, context, writer);
+				}
 			}
-		} else {
-			for (ASTNode child : node.getChildren()) {
-				renderNode(child, context, writer, renderConfiguration);
+			case ComponentNode componentNode -> {
+				var component = renderConfiguration.getComponent(componentNode.getName());
+				if (component.isPresent()) {
+					component.get().render(componentNode, context, writer);
+				}
+				
+			}
+			default -> {
+				for (ASTNode child : node.getChildren()) {
+					renderNode(child, context, writer, renderConfiguration);
+				}
 			}
 		}
 	}

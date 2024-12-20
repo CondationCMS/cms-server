@@ -22,6 +22,7 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
+import com.condation.cms.templates.Component;
 import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
@@ -37,18 +38,21 @@ public record ParserConfiguration(TemplateConfiguration templateEngineConfigurat
 		this(templateConfiguration, null);
 	}
 	
-	public boolean hasTag (String tagName) {
-		return templateEngineConfiguration.hasTag(tagName)
-				|| (dynamicConfiguration != null && dynamicConfiguration.hasTag(tagName));
+	public boolean hasTag (String name) {
+		return templateEngineConfiguration.hasTag(name);
 	}
 	
-	public Optional<Tag> getTag (String tagName) {
-		if (templateEngineConfiguration.hasTag(tagName)) {
-			return templateEngineConfiguration.getTag(tagName);
-		}
-		
-		if (dynamicConfiguration != null && dynamicConfiguration.hasTag(tagName)) {
-			return dynamicConfiguration.getTag(tagName);
+	public Optional<Tag> getTag (String name) {
+		return templateEngineConfiguration.getTag(name);
+	}
+	
+	public boolean hasComponent (String name) {
+		return (dynamicConfiguration != null && dynamicConfiguration.hasComponent(name));
+	}
+	
+	public Optional<Component> getComponent (String name) {
+		if (dynamicConfiguration != null && dynamicConfiguration.hasComponent(name)) {
+			return dynamicConfiguration.getComponent(name);
 		}
 		
 		return Optional.empty();

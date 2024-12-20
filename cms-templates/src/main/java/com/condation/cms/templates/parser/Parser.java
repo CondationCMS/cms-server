@@ -22,6 +22,7 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
+import com.condation.cms.templates.Component;
 import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.Tag;
@@ -32,6 +33,8 @@ import com.condation.cms.templates.utils.TemplateUtils;
 import java.util.Stack;
 
 import com.condation.cms.templates.lexer.Token;
+import static com.condation.cms.templates.lexer.Token.Type.TAG_END;
+import static com.condation.cms.templates.lexer.Token.Type.TAG_START;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlEngine;
 
@@ -118,6 +121,43 @@ public class Parser {
 					}
 					break;
 				}
+				case COMPONENT_START: {
+					ComponentNode tagNode = new ComponentNode(token.line, token.column);
+
+					nodeStack.peek().addChild(tagNode);
+					nodeStack.push(tagNode); // In den neuen Kontext für Tags wechseln
+					break;
+				}
+				case COMPONENT_END: {
+					if (!nodeStack.isEmpty() && nodeStack.peek() instanceof ComponentNode tempNode) {
+						if (parserConfiguration.hasComponent(tempNode.getName())) {
+							Component component = parserConfiguration.getComponent(tempNode.getName()).get();
+
+							if (component.isClosing()) {
+								nodeStack.pop();
+
+								var temp = (ComponentNode) nodeStack.peek();
+
+								var ptag = parserConfiguration.getComponent(temp.getName()).get();
+
+								if (ptag.getCloseingName().isPresent()
+										&& ptag.getCloseingName().get().equals(component.getName())) {
+									nodeStack.pop();
+								} else {
+									throw new ParserException("invalid closing component", token.line, token.column);
+								}
+							} else if (component.getCloseingName().isEmpty()) {
+								nodeStack.pop();
+							}
+
+						} else {
+							throw new ParserException("Undefined component: " + tempNode.getName(), token.line, token.column);
+						}
+					} else {
+						throw new ParserException("Unexpected token: COMPONENT_END", token.line, token.column);
+					}
+					break;
+				}
 				case VARIABLE_END: {
 					if (!nodeStack.isEmpty()) {
 						nodeStack.pop(); // Aus dem aktuellen Tag-/Variable-Block heraustreten
@@ -137,7 +177,7 @@ public class Parser {
 				case IDENTIFIER: {
 					ASTNode currentNode = nodeStack.peek();
 					if (currentNode instanceof TagNode tagNode1) {
-						tagNode1.setName(token.value); // Tag-Name setzen
+						tagNode1.setName(token.value);
 					} else if (currentNode instanceof VariableNode variableNode1) {
 						var identifier = token.value;
 						if (TemplateUtils.hasFilters(identifier)) {
@@ -155,6 +195,8 @@ public class Parser {
 							variableNode1.setVariable(token.value); // Variable setzen
 							variableNode1.setExpression(engine.createExpression(token.value));
 						}
+					} else if (currentNode instanceof ComponentNode compNode) {
+						compNode.setName(token.value);
 					}
 					break;
 				}
@@ -171,6 +213,8 @@ public class Parser {
 						if (tag.parseExpressions()) {
 							tagNode.setExpression(engine.createExpression(token.value));
 						}
+					} else if (currentNode instanceof ComponentNode compNode) {
+						compNode.setParameters(token.value);
 					}
 					
 					break;

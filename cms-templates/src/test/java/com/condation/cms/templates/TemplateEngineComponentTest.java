@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author thmar
  */
-public class TemplateEngineShortCodeTest extends AbstractTemplateEngineTest {
+public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 
 	static ShortCodes shortCodes;
 	static DynamicConfiguration dynamicConfiguration;
@@ -61,18 +61,18 @@ public class TemplateEngineShortCodeTest extends AbstractTemplateEngineTest {
 	public TemplateLoader getLoader() {
 		return new StringTemplateLoader()
 				.add("tag1", """
-                   {% tag1 %}
+                   {[ tag1 ]}
 						
-                   {% endtag1 %}
+                   {[ endtag1 ]}
                    """)
 				.add("tag2", """
-                   {% tag2 name="CondationCMS" %}
-                   {% endtag2 %}
+                   {[ tag2 name="CondationCMS" ]}
+                   {[ endtag2 ]}
                    """)
 				.add("tag3", """
-                   {% tag3 %}
+                   {[ tag3 ]}
 						This is the content!
-                   {% endtag3 %}
+                   {[ endtag3 ]}
                    """);
 	}
 

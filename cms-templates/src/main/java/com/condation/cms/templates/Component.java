@@ -1,8 +1,8 @@
-package com.condation.cms.templates.tags.shortcode;
+package com.condation.cms.templates;
 
 /*-
  * #%L
- * cms-templates
+ * templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,28 +22,28 @@ package com.condation.cms.templates.tags.shortcode;
  * #L%
  */
 
-import com.condation.cms.templates.Tag;
-import lombok.RequiredArgsConstructor;
+import com.condation.cms.templates.parser.ComponentNode;
+import com.condation.cms.templates.renderer.Renderer;
+import java.io.Writer;
+import java.util.Optional;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
-public class EndShortCodeTag implements Tag {
+public interface Component {
+
+	String getName();
 	
-	private final String shortCodeName;
-
-	@Override
-	public String getTagName() {
-		return "end%s".formatted(shortCodeName);
-	}
-
-	@Override
-	public boolean isClosingTag() {
-		return true;
+	default Optional<String> getCloseingName () {
+		return Optional.empty();
 	}
 	
+	default boolean isClosing () {
+		return false;
+	}
 	
-	
+	default void render (ComponentNode node, Renderer.Context context, Writer writer) {
+		// default render does nothing
+	};
 }

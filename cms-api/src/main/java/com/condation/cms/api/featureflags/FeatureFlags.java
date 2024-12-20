@@ -43,25 +43,25 @@ public class FeatureFlags {
 
     /**
      * Checks if a feature is activated
-     * @param featureName Der Name des Features.
-     * @return true, wenn das Feature aktiviert ist; andernfalls false.
+     * @param featureName Name of the feature.
+     * @return true, if the feature is activated; otherwise false.
      */
     public static boolean isEnabled(String featureName) {
         return flags.getOrDefault(featureName, false);
     }
 
     /**
-     * Setzt oder aktualisiert ein einzelnes Feature-Flag.
-     * @param featureName Der Name des Features.
-     * @param enabled true für aktivieren, false für deaktivieren.
+     * sets or updates a feature
+     * @param featureName Name of the feature.
+     * @param enabled true if activated, false if deactivated.
      */
     public static void setFlag(String featureName, boolean enabled) {
         flags.put(featureName, enabled);
     }
 
     /**
-     * Gibt eine unveränderliche Sicht auf die Flags zurück.
-     * @return Map der aktuellen Feature-Flags.
+     * returns an unmodifiable view of the feature flags
+     * @return Map of the current feature flags.
      */
     public static Map<String, Boolean> getFlags() {
         return Collections.unmodifiableMap(flags);

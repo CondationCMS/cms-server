@@ -12,7 +12,7 @@
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.16</jetty.version>
-		<lucene.version>10.0.0</lucene.version>
+		<lucene.version>10.1.0</lucene.version>
 	</properties>
 	<modules>
 		<module>cms-api</module>

@@ -12,7 +12,7 @@
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.16</jetty.version>
-		<lucene.version>10.0.0</lucene.version>
+		<lucene.version>10.1.0</lucene.version>
 		<modules-framework.version>1.0.0</modules-framework.version>
 	</properties>
 	<modules>
@@ -157,7 +157,7 @@
 			<dependency>
 				<groupId>com.github.usefulness</groupId>
 				<artifactId>webp-imageio</artifactId>
-				<version>0.8.0</version>
+				<version>0.9.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
@@ -188,7 +188,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.3.1-jre</version>
+				<version>33.4.0-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.inject</groupId>
@@ -279,7 +279,7 @@
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.26.3</version>
+				<version>3.27.0</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -297,7 +297,7 @@
 			<dependency>
 				<groupId>org.junit</groupId>
 				<artifactId>junit-bom</artifactId>
-				<version>5.11.3</version>
+				<version>5.11.4</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>

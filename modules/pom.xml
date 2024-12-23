@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.condation.cms</groupId>
 		<artifactId>cms-parent</artifactId>
-		<version>7.4.2</version>
+		<version>7.5.0</version>
 	</parent>
 	<groupId>com.condation.cms.modules</groupId>
 	<artifactId>cms-modules</artifactId>
@@ -12,6 +12,6 @@
 	
 	<modules>
 		<module>example-module</module>
-	 <module>system-modules</module>
+		<module>system-modules</module>
 	</modules>
 </project>

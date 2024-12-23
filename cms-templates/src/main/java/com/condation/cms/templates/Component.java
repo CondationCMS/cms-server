@@ -1,8 +1,8 @@
-package com.condation.modules.api;
+package com.condation.cms.templates;
 
 /*-
  * #%L
- * modules-api
+ * templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,43 +22,28 @@ package com.condation.modules.api;
  * #L%
  */
 
-
+import com.condation.cms.templates.parser.ComponentNode;
+import com.condation.cms.templates.renderer.Renderer;
+import java.io.Writer;
+import java.util.Optional;
 
 /**
  *
- * @author marx
- * @param <C>
+ * @author t.marx
  */
-public abstract class BaseExtension<C extends Context, R extends ModuleRequestContext> implements ExtensionPoint<C, R> {
+public interface Component {
 
-	protected ModuleConfiguration configuration;
+	String getName();
 	
-	private C context;
-	
-	private R requestContext;
-
-	@Override
-	public void setContext(C context) {
-		this.context = context;
+	default Optional<String> getCloseingName () {
+		return Optional.empty();
 	}
 	
-	public C getContext () {
-		return this.context;
+	default boolean isClosing () {
+		return false;
 	}
 	
-	@Override
-	public void setRequestContext(R context) {
-		this.requestContext = requestContext;
-	}
-	
-	public R getRequestContext () {
-		return this.requestContext;
-	}
-	
-	@Override
-	public void setConfiguration(ModuleConfiguration configuration) {
-		this.configuration = configuration;
-	}
-	
-	
+	default void render (ComponentNode node, Renderer.Context context, Writer writer) {
+		// default render does nothing
+	};
 }

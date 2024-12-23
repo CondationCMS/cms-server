@@ -1,8 +1,12 @@
-package com.condation.modules.manager;
+package com.condation.cms.templates.parser;
+
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.jexl3.JexlExpression;
 
 /*-
  * #%L
- * modules-manager
+ * templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,16 +26,19 @@ package com.condation.modules.manager;
  * #L%
  */
 
-
-import com.condation.modules.api.ExtensionPoint;
-
-
-
-/**
- *
- * @author marx
- */
-public interface ModuleInjector {
+public class ComponentNode extends ASTNode {
+	@Getter
+	@Setter
+    private String name;
+	@Getter
+	@Setter
+    private String parameters;
+	public ComponentNode(int line, int column) {
+		super(line, column);
+    }
 	
-	public void inject (final ExtensionPoint extension);
+    @Override
+    public String toString() {
+        return "ComponentNode('" + name + ", " + parameters + "')";
+    }
 }

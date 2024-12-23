@@ -34,6 +34,7 @@ public class State {
 	public enum Type {
 		NONE,
 		TAG,
+		COMPONENT,
 		VARIABLE,
 		COMMENT
 	}

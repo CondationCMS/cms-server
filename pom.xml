@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.condation.cms</groupId>
 	<artifactId>cms-parent</artifactId>
-	<version>7.4.2</version>
+	<version>7.5.0</version>
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -13,11 +13,11 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.16</jetty.version>
 		<lucene.version>10.1.0</lucene.version>
+		<modules-framework.version>1.0.0</modules-framework.version>
 	</properties>
 	<modules>
 		<module>cms-api</module>
 		<module>cms-server</module>
-		<module>modules-framework</module>
 		<module>modules</module>
 		<module>cms-filesystem</module>
 		<module>cms-media</module>
@@ -113,14 +113,14 @@
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.condation.cms.module.framework</groupId>
+				<groupId>com.condation.modules.framework</groupId>
 				<artifactId>modules-manager</artifactId>
-				<version>${project.version}</version>
+				<version>${modules-framework.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.condation.cms.module.framework</groupId>
+				<groupId>com.condation.modules.framework</groupId>
 				<artifactId>modules-api</artifactId>
-				<version>${project.version}</version>
+				<version>${modules-framework.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.condation.cms.modules</groupId>
@@ -374,9 +374,9 @@
 								<version>1.1.1</version>
 							</path>
 							<path>
-								<groupId>com.condation.cms.module.framework</groupId>
+								<groupId>com.condation.modules.framework</groupId>
 								<artifactId>modules-api</artifactId>
-								<version>6.4.0</version>
+								<version>${modules-framework.version}</version>
 							</path>
 						</annotationProcessorPaths>
 					</configuration>

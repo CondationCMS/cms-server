@@ -1,8 +1,8 @@
-package com.condation.modules.api;
+package com.condation.cms.templates.tags.component;
 
 /*-
  * #%L
- * modules-api
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,12 +22,25 @@ package com.condation.modules.api;
  * #L%
  */
 
-
+import com.condation.cms.templates.Component;
+import lombok.RequiredArgsConstructor;
 
 /**
- * The Context is passed to the module. It can be used to inject implementation dependend objects or functionality
  *
- * @author marx
+ * @author t.marx
  */
-public interface ModuleRequestContext {
+@RequiredArgsConstructor
+public class EndComponentTag implements Component {
+	
+	private final String shortCodeName;
+
+	@Override
+	public String getName() {
+		return "end%s".formatted(shortCodeName);
+	}
+
+	@Override
+	public boolean isClosing() {
+		return true;
+	}
 }

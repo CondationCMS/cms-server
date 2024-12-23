@@ -1,8 +1,8 @@
-package com.condation.modules.api;
+package com.condation.cms.templates.utils;
 
 /*-
  * #%L
- * modules-api
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,12 +22,33 @@ package com.condation.modules.api;
  * #L%
  */
 
+import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.MapContext;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public interface ModuleRequestContextFactory {
-	
-	ModuleRequestContext createContext ();
+public class ParameterUtilTest {
+
+	JexlEngine engine = new JexlBuilder().create();
+
+	@Test
+	public void testSomeMethod() {
+		
+		var context = new MapContext();
+		context.set("variable", "CMS");
+		
+		var parameters = ParameterUtil.parseAndEvaluate("param1=\"CondationCMS\" param2=30 param3=variable", context, engine);
+		
+		Assertions.assertThat(parameters)
+				.hasSize(3)
+				.containsEntry("param1", "CondationCMS")
+				.containsEntry("param2", 30)
+				.containsEntry("param3", "CMS");
+	}
+
 }

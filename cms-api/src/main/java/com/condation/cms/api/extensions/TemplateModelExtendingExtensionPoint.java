@@ -38,7 +38,7 @@ public abstract class TemplateModelExtendingExtensionPoint extends AbstractExten
 	public abstract void extendModel (TemplateEngine.Model model);
 
 	public Map<String, Object> getModel () {
-		TemplateEngine.Model model = new TemplateEngine.Model(null, null);
+		TemplateEngine.Model model = new TemplateEngine.Model(null, null, null);
 		extendModel(model);
 		return model.values;
 	}

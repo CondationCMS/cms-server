@@ -98,6 +98,24 @@ public class LexerTest {
 		token = tokens.next();
 		Assertions.assertThat(token.type).isEqualTo(Token.Type.TAG_END);		
 	}
+
+	@Test
+	public void test_component() throws IOException {
+		
+		var lexer = new Lexer();
+		
+		var tokens = lexer.tokenize("{[ comp1 param1=\"value1\" param2=55 ]}");
+		
+		Token token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.COMPONENT_START);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.IDENTIFIER);
+		Assertions.assertThat(token.value.trim()).isEqualTo("comp1");
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.EXPRESSION);
+		token = tokens.next();
+		Assertions.assertThat(token.type).isEqualTo(Token.Type.COMPONENT_END);		
+	}
 	
 	@Test
 	public void test_tag_with_condition_quoted() throws IOException {

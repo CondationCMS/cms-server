@@ -25,6 +25,7 @@ package com.condation.cms.content.template.functions.shortcode;
 
 import com.condation.cms.content.shortcodes.ShortCodes;
 import java.util.Map;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -33,6 +34,10 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class ShortCodeTemplateFunction {
+	
+	public static final String KEY = "shortCodes";
+	
+	@Getter
 	private final ShortCodes shortCodes;
 	
 	public String call (String name, Map<String, Object> parameters) {

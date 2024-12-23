@@ -27,6 +27,8 @@ public class Token {
         TEXT, 
 		VARIABLE_START,
 		VARIABLE_END,
+		COMPONENT_START,
+		COMPONENT_END,
 		TAG_START, 
 		TAG_END, 
 		COMMENT_START,

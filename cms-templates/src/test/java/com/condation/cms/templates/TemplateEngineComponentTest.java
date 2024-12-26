@@ -23,6 +23,7 @@ package com.condation.cms.templates;
  */
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.templates.exceptions.ParserException;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import java.io.IOException;
 import java.util.Map;
@@ -73,22 +74,27 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
                    {[ tag3 ]}
 						This is the content!
                    {[ endtag3 ]}
-                   """);
+                   """)
+				.add("tag_exception", """
+                          {[ tag3 ]}
+                          	This is the content!
+                          {[ endtag4 ]}
+                          """);
 	}
 
 	@Test
 	public void test_tag1() throws IOException {
-		Template simpleTemplate = SUT.getTemplate("tag1", dynamicConfiguration);
+		Template simpleTemplate = SUT.getTemplate("tag1");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 
 		Assertions
 				.assertThat(simpleTemplate.evaluate(Map.of(), dynamicConfiguration))
 				.isEqualToIgnoringWhitespace("Hello");
 	}
-	
+
 	@Test
 	public void test_tag2() throws IOException {
-		Template simpleTemplate = SUT.getTemplate("tag2", dynamicConfiguration);
+		Template simpleTemplate = SUT.getTemplate("tag2");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 
 		Assertions
@@ -98,11 +104,17 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 
 	@Test
 	public void test_tag3() throws IOException {
-		Template simpleTemplate = SUT.getTemplate("tag3", dynamicConfiguration);
+		Template simpleTemplate = SUT.getTemplate("tag3");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 
 		Assertions
 				.assertThat(simpleTemplate.evaluate(Map.of(), dynamicConfiguration))
 				.isEqualToIgnoringWhitespace("<div>This is the content!</div>");
+	}
+
+	@Test
+	public void test_parser_exception() throws IOException {
+		Assertions.assertThatThrownBy(() -> SUT.getTemplate("tag_exception"))
+				.isInstanceOf(ParserException.class);
 	}
 }

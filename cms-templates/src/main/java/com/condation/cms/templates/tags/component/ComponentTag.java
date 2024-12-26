@@ -24,10 +24,8 @@ package com.condation.cms.templates.tags.component;
 
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.templates.Component;
-import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.ComponentNode;
-import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.utils.ParameterUtil;
 import com.google.common.base.Strings;

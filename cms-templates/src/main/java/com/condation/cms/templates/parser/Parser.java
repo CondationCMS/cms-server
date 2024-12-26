@@ -130,28 +130,21 @@ public class Parser {
 				}
 				case COMPONENT_END: {
 					if (!nodeStack.isEmpty() && nodeStack.peek() instanceof ComponentNode tempNode) {
-						if (parserConfiguration.hasComponent(tempNode.getName())) {
-							Component component = parserConfiguration.getComponent(tempNode.getName()).get();
-
-							if (component.isClosing()) {
+						
+						var compName = tempNode.getName();
+						var isClosing = compName.startsWith("end");
+						var startName = compName.replaceFirst("end", "");
+						
+						if (isClosing) {
+							nodeStack.pop();
+							
+							var temp = (ComponentNode) nodeStack.peek();
+							
+							if (temp.getName().equals(startName)) {
 								nodeStack.pop();
-
-								var temp = (ComponentNode) nodeStack.peek();
-
-								var ptag = parserConfiguration.getComponent(temp.getName()).get();
-
-								if (ptag.getCloseingName().isPresent()
-										&& ptag.getCloseingName().get().equals(component.getName())) {
-									nodeStack.pop();
-								} else {
-									throw new ParserException("invalid closing component", token.line, token.column);
-								}
-							} else if (component.getCloseingName().isEmpty()) {
-								nodeStack.pop();
+							} else {
+								throw new ParserException("invalid closing component", token.line, token.column);
 							}
-
-						} else {
-							throw new ParserException("Undefined component: " + tempNode.getName(), token.line, token.column);
 						}
 					} else {
 						throw new ParserException("Unexpected token: COMPONENT_END", token.line, token.column);

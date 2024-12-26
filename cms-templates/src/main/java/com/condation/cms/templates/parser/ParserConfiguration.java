@@ -32,11 +32,7 @@ import java.util.Optional;
  *
  * @author t.marx
  */
-public record ParserConfiguration(TemplateConfiguration templateEngineConfiguration, DynamicConfiguration dynamicConfiguration) {
-	
-	public ParserConfiguration (TemplateConfiguration templateConfiguration) {
-		this(templateConfiguration, null);
-	}
+public record ParserConfiguration(TemplateConfiguration templateEngineConfiguration) {
 	
 	public boolean hasTag (String name) {
 		return templateEngineConfiguration.hasTag(name);
@@ -44,17 +40,5 @@ public record ParserConfiguration(TemplateConfiguration templateEngineConfigurat
 	
 	public Optional<Tag> getTag (String name) {
 		return templateEngineConfiguration.getTag(name);
-	}
-	
-	public boolean hasComponent (String name) {
-		return (dynamicConfiguration != null && dynamicConfiguration.hasComponent(name));
-	}
-	
-	public Optional<Component> getComponent (String name) {
-		if (dynamicConfiguration != null && dynamicConfiguration.hasComponent(name)) {
-			return dynamicConfiguration.getComponent(name);
-		}
-		
-		return Optional.empty();
 	}
 }

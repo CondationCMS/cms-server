@@ -45,10 +45,6 @@ public class Parser {
 
 	private final JexlEngine engine;
 
-	public ASTNode parse (final TokenStream tokenStream, final DynamicConfiguration dynamicConfiguration) {
-		return _parse(tokenStream, new ParserConfiguration(configuration, dynamicConfiguration));
-	}
-	
 	public ASTNode parse (final TokenStream tokenStream) {
 		return _parse(tokenStream, new ParserConfiguration(configuration));
 	}

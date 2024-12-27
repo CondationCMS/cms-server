@@ -24,6 +24,7 @@ package com.condation.cms.templates;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.content.shortcodes.TagParser;
 import com.condation.cms.templates.exceptions.ParserException;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import java.io.IOException;
 import java.util.Map;
@@ -75,8 +76,13 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 						This is the content!
                    {[ endtag3 ]}
                    """)
-				.add("tag_exception", """
+				.add("parser_exception", """
                           {[ tag3 ]}
+                          	This is the content!
+                          {[ endtag4 ]}
+                          """)
+				.add("render_exception", """
+                          {[ tag4 ]}
                           	This is the content!
                           {[ endtag4 ]}
                           """);
@@ -114,7 +120,14 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 
 	@Test
 	public void test_parser_exception() throws IOException {
-		Assertions.assertThatThrownBy(() -> SUT.getTemplate("tag_exception"))
+		Assertions.assertThatThrownBy(() -> SUT.getTemplate("parser_exception"))
 				.isInstanceOf(ParserException.class);
+	}
+	
+	@Test
+	public void test_render_exception() throws IOException {
+		var template = SUT.getTemplate("render_exception");
+		Assertions.assertThatThrownBy(() -> template.evaluate(Map.of(), dynamicConfiguration))
+				.isInstanceOf(RenderException.class);
 	}
 }

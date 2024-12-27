@@ -26,6 +26,7 @@ import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.DynamicConfiguration;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.parser.TagNode;
@@ -108,12 +109,16 @@ public class Renderer {
 				var tag = renderConfiguration.getTag(tagNode.getName());
 				if (tag.isPresent()) {
 					tag.get().render(tagNode, context, writer);
+				} else if (this.configuration.isDevMode()) {
+					throw new RenderException("unknown tag", node.getLine(), node.getColumn());
 				}
 			}
 			case ComponentNode componentNode -> {
 				var component = renderConfiguration.getComponent(componentNode.getName());
 				if (component.isPresent()) {
 					component.get().render(componentNode, context, writer);
+				} else if (this.configuration.isDevMode()) {
+					throw new RenderException("unknown component", node.getLine(), node.getColumn());
 				}
 				
 			}

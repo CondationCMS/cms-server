@@ -39,15 +39,6 @@ public class HooksTemlateFunction {
 	
 	private final HookSystem hookSystem;
 	
-	@Deprecated(since = "4.18.0", forRemoval = true)
-	public ActionContext<Object> call (String name) {
-		return execute(name, Map.of());
-	}
-	@Deprecated(since = "4.18.0", forRemoval = true)
-	public ActionContext<Object> call (String name, Map<String, Object> arguments) {
-		return execute(name, arguments);
-	}
-	
 	public ActionContext<Object> execute (String name) {
 		return execute(name, Map.of());
 	}

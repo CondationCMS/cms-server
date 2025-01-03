@@ -31,7 +31,6 @@ import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.extensions.ContentQueryOperatorExtensionPoint;
 import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
-import com.condation.cms.api.extensions.TemplateModelExtendingExtentionPoint;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -136,11 +135,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 		
 		Optional<ContentNode> contentNode = db.getContent().byUri(uri);
 
-		TemplateEngine.Model model = new TemplateEngine.Model(contentFile, contentNode.isPresent() ? contentNode.get() : null);
+		TemplateEngine.Model model = new TemplateEngine.Model(
+				contentFile, 
+				contentNode.isPresent() ? contentNode.get() : null,
+				context);
 
 		modelExtending.accept(model);
-
-		//model.values.put("cms", Namespace.create("cms", meta));
 
 		Namespace namespace = new Namespace();
 
@@ -151,8 +151,8 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add("node", "sections", sections);
 
 		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
-		model.values.put("shortCodes", shortCodeFunction);
-		namespace.add("cms", "shortCodes", shortCodeFunction);
+		model.values.put(ShortCodeTemplateFunction.KEY, shortCodeFunction);
+		namespace.add("cms", ShortCodeTemplateFunction.KEY, shortCodeFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
 		model.values.put("navigation", navigationFunction);
@@ -252,16 +252,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 	}
 
 	private void extendModel(final TemplateEngine.Model model, Namespace namespace) {
-		moduleManager.extensions(TemplateModelExtendingExtentionPoint.class).forEach(extensionPoint -> {
-			var modModel = extensionPoint.getModel();
-			// deprecated: module extensions on root will be remove in 8.0.0
-			model.values.putAll(modModel);
-			modModel.entrySet().forEach(entry -> namespace.add(
-				extensionPoint.getNamespace(), 
-				entry.getKey(), 
-				entry.getValue()
-			));
-		});
 		moduleManager.extensions(TemplateModelExtendingExtensionPoint.class).forEach(extensionPoint -> {
 			var modModel = extensionPoint.getModel();
 			// deprecated: module extensions on root will be remove in 8.0.0

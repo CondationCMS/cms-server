@@ -33,7 +33,6 @@ import com.condation.cms.api.feature.Feature;
  *
  * @author t.marx
  */
-@Deprecated(since = "6.5.0")
 @FeatureScope({FeatureScope.Scope.GLOBAL, FeatureScope.Scope.MODULE, FeatureScope.Scope.REQUEST})
 public record SitePropertiesFeature(SiteProperties siteProperties) implements Feature {
 

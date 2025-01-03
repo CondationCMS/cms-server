@@ -25,7 +25,10 @@ import com.condation.cms.templates.DefaultTemplate;
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.CMSTemplateEngine;
+import com.condation.cms.templates.DynamicConfiguration;
+import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.ASTNode;
+import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.parser.TextNode;
 import com.condation.cms.templates.parser.VariableNode;
@@ -70,11 +73,17 @@ public class Renderer {
 		}
 	}
 
-	public void render(ASTNode node, final ScopeStack scopes, final Writer writer) throws IOException {
+	public void render(ASTNode node, final ScopeStack scopes, final Writer writer, final DynamicConfiguration dynamicConfiguration) throws IOException {
+		
+		var renderConfig = new RenderConfiguration(configuration, dynamicConfiguration);
+		
+		var renderFunction = (RenderFunction) (ASTNode node1, Context context, Writer writer1) -> {
+			renderNode(node1, context, writer1, renderConfig);
+		};
 		
 		var contentWriter = new StringWriter();
-		final Context renderContext = new Context(engine, scopes, this::renderNode, templateEngine);
-		renderNode(node, renderContext, contentWriter);
+		final Context renderContext = new Context(engine, scopes, renderFunction, templateEngine);
+		renderFunction.render(node, renderContext, contentWriter);
 		
 		if (renderContext.context().containsKey("_extends")) {
 			ExtendsTag.Extends ext = (ExtendsTag.Extends) renderContext.context().get("_extends");
@@ -83,7 +92,7 @@ public class Renderer {
 			
 			StringWriter parentWriter = new StringWriter();
 			renderContext.context().put("_parent", Boolean.TRUE);
-			renderNode(parentTemplate.getRootNode(), renderContext, parentWriter);
+			renderFunction.render(parentTemplate.getRootNode(), renderContext, parentWriter);
 			
 			writer.write(parentWriter.toString());
 		} else {
@@ -91,20 +100,32 @@ public class Renderer {
 		}
 	}
 
-	private void renderNode(ASTNode node, Context context, Writer writer) throws IOException {
+	private void renderNode(ASTNode node, Context context, Writer writer, RenderConfiguration renderConfiguration) throws IOException {
 
-		if (node instanceof TextNode textNode) {
-			writer.write(textNode.text);
-		} else if (node instanceof VariableNode vnode) {
-			renderVariable(vnode, context, writer);
-		} else if (node instanceof TagNode tagNode) {
-			var tag = configuration.getTag(tagNode.getName());
-			if (tag.isPresent()) {
-				tag.get().render(tagNode, context, writer);
+		switch (node) {
+			case TextNode textNode -> writer.write(textNode.text);
+			case VariableNode vnode -> renderVariable(vnode, context, writer);
+			case TagNode tagNode -> {
+				var tag = renderConfiguration.getTag(tagNode.getName());
+				if (tag.isPresent()) {
+					tag.get().render(tagNode, context, writer);
+				} else if (this.configuration.isDevMode()) {
+					throw new RenderException("unknown tag", node.getLine(), node.getColumn());
+				}
 			}
-		} else {
-			for (ASTNode child : node.getChildren()) {
-				renderNode(child, context, writer);
+			case ComponentNode componentNode -> {
+				var component = renderConfiguration.getComponent(componentNode.getName());
+				if (component.isPresent()) {
+					component.get().render(componentNode, context, writer);
+				} else if (this.configuration.isDevMode()) {
+					throw new RenderException("unknown component", node.getLine(), node.getColumn());
+				}
+				
+			}
+			default -> {
+				for (ASTNode child : node.getChildren()) {
+					renderNode(child, context, writer, renderConfiguration);
+				}
 			}
 		}
 	}

@@ -36,11 +36,14 @@ public class Lexer {
 		public static final String VARIABLE_OPEN = "{{";
 		public static final String VARIABLE_CLOSE = "}}";
 		
+		public static final String COMPONENT_OPEN = "{[";
+		public static final String COMPONENT_CLOSE = "]}";
+		
 		public static final String[] OPENING = new String[] {
-			TAG_OPEN, COMMENT_OPEN, VARIABLE_OPEN};
+			TAG_OPEN, COMMENT_OPEN, VARIABLE_OPEN, COMPONENT_OPEN};
 		
 		public static final String[] CLOSING = new String[] {
-			TAG_CLOSE, COMMENT_CLOSE, VARIABLE_CLOSE};
+			TAG_CLOSE, COMMENT_CLOSE, VARIABLE_CLOSE, COMPONENT_CLOSE};
 	}
 	
 	public Lexer() {
@@ -61,34 +64,43 @@ public class Lexer {
 			int column = charStream.getColumn();
 
 			if (c == '{' && charStream.peek(1) == '{') {
-				tokens.add(new Token(Token.Type.VARIABLE_START, "{{", line, column));
+				tokens.add(new Token(Token.Type.VARIABLE_START, Syntax.VARIABLE_OPEN, line, column));
 				charStream.skip(2);
 				state.set(State.Type.VARIABLE);
 			} else if (c == '{' && charStream.peek(1) == '%') {
-				tokens.add(new Token(Token.Type.TAG_START, "{%", line, column));
+				tokens.add(new Token(Token.Type.TAG_START, Syntax.TAG_OPEN, line, column));
 				charStream.skip(2);
 				state.set(State.Type.TAG);
 				readTagContent(tokens, charStream); // Inhalte des Tags lesen
+			} else if (c == '{' && charStream.peek(1) == '[') {
+				tokens.add(new Token(Token.Type.COMPONENT_START, Syntax.COMPONENT_OPEN, line, column));
+				charStream.skip(2);
+				state.set(State.Type.COMPONENT);
+				readComponentContent(tokens, charStream); 
 			} else if (c == '{' && charStream.peek(1) == '#') {
-				tokens.add(new Token(Token.Type.COMMENT_START, "{*", line, column));
+				tokens.add(new Token(Token.Type.COMMENT_START, Syntax.COMMENT_OPEN, line, column));
 				charStream.skip(2);
 				state.set(State.Type.COMMENT);
 			} else if (state.is(State.Type.TAG) && c == '%' && charStream.peek(1) == '}') {
-				tokens.add(new Token(Token.Type.TAG_END, "%}", line, column));
+				tokens.add(new Token(Token.Type.TAG_END, Syntax.TAG_CLOSE, line, column));
+				charStream.skip(2);
+				state.set(State.Type.NONE);
+			} else if (state.is(State.Type.COMPONENT) && c == ']' && charStream.peek(1) == '}') {
+				tokens.add(new Token(Token.Type.COMPONENT_END, Syntax.COMPONENT_CLOSE, line, column));
 				charStream.skip(2);
 				state.set(State.Type.NONE);
 			} else if (state.is(State.Type.VARIABLE) && c == '}' && charStream.peek(1) == '}') {
-				tokens.add(new Token(Token.Type.VARIABLE_END, "}}", line, column));
+				tokens.add(new Token(Token.Type.VARIABLE_END, Syntax.VARIABLE_CLOSE, line, column));
 				charStream.skip(2);
 				state.set(State.Type.NONE);
 			} else if (state.is(State.Type.COMMENT) && c == '#' && charStream.peek(1) == '}') {
-				tokens.add(new Token(Token.Type.COMMENT_END, "#}", line, column));
+				tokens.add(new Token(Token.Type.COMMENT_END, Syntax.COMMENT_CLOSE, line, column));
 				charStream.skip(2);
 				state.set(State.Type.NONE);
 			} else if (state.is(State.Type.VARIABLE)) {
 				tokens.add(new Token(Token.Type.IDENTIFIER, readVariableContent(charStream), line, column));
 			} else if (state.is(State.Type.COMMENT)) {
-				tokens.add(new Token(Token.Type.COMMENT_VALUE, charStream.readUntil("#}"), line, column)); // Alles bis zum nächsten '{' als Text speichern
+				tokens.add(new Token(Token.Type.COMMENT_VALUE, charStream.readUntil(Syntax.COMMENT_CLOSE), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else if (!state.is(State.Type.VARIABLE, State.Type.TAG)) {
 				tokens.add(new Token(Token.Type.TEXT, charStream.readUntil(Syntax.OPENING), line, column)); // Alles bis zum nächsten '{' als Text speichern
 			} else {
@@ -134,39 +146,21 @@ public class Lexer {
         return content.toString().trim();
     }
 	
-	
-	private void readTagContent(List<Token> tokens, CharacterStream charStream) {
+	private void readContent(List<Token> tokens, CharacterStream charStream, final String END) {
 		charStream.skipWhitespace();
 
-		String keyword = charStream.readWhile(Character::isLetter);
+		String keyword = charStream.readWhile(Character::isLetterOrDigit);
 		tokens.add(new Token(Token.Type.IDENTIFIER, keyword, charStream.getLine(), charStream.getColumn()));
 
-		String condition = charStream.readUntil("%}");
+		String condition = charStream.readUntil(END);
 		tokens.add(new Token(Token.Type.EXPRESSION, condition, charStream.getLine(), charStream.getColumn()));
 	}
-
-	private String readString(CharacterStream charStream, char delimiter) {
-		StringBuilder result = new StringBuilder();
-		result.append(delimiter); // Anfangs-Anführungszeichen hinzufügen
-		charStream.advance(); // Das anfängliche Anführungszeichen überspringen
-		while (charStream.hasMore()) {
-			char c = charStream.charAtCurrentPosition();
-			if (c == delimiter) {
-				result.append(c); // Abschließendes Anführungszeichen hinzufügen
-				charStream.advance(); // Das abschließende Anführungszeichen überspringen
-				break;
-			}
-			if (c == '\\') {
-				// Escape-Sequenzen verarbeiten
-				result.append(c); // Backslash hinzufügen
-				charStream.advance();
-				if (charStream.hasMore()) {
-					c = charStream.charAtCurrentPosition();
-				}
-			}
-			result.append(c);
-			charStream.advance();
-		}
-		return result.toString();
+	
+	private void readTagContent(List<Token> tokens, CharacterStream charStream) {
+		readContent(tokens, charStream, Syntax.TAG_CLOSE);
+	}
+	
+	private void readComponentContent(List<Token> tokens, CharacterStream charStream) {
+		readContent(tokens, charStream, Syntax.COMPONENT_CLOSE);
 	}
 }

@@ -112,7 +112,7 @@ public class ImportTag extends AbstractTag implements Tag {
 	}
 
 	// Method to parse the import statement
-	public static ImportDefinition parseImport(String importStatement, TagNode node) {
+	private ImportDefinition parseImport(String importStatement, TagNode node) {
 
 		Matcher matcher = PATTERN.matcher(importStatement.trim());
 

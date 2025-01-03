@@ -43,5 +43,7 @@ public interface Template {
 		return writer.toString();
 	}
 	
+	String evaluate(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) throws IOException;
+	
 	void evaluate (Map<String, Object> context, Writer writer) throws IOException;
 }

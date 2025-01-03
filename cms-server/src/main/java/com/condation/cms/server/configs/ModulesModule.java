@@ -24,7 +24,6 @@ package com.condation.cms.server.configs;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
 import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
-import com.condation.cms.api.extensions.TemplateEngineProviderExtentionPoint;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.markdown.MarkdownRenderer;
@@ -169,13 +168,6 @@ public class ModulesModule extends AbstractModule {
 
 		if (extOpt.isPresent()) {
 			return extOpt.get().getTemplateEngine();
-		}
-
-		List<TemplateEngineProviderExtentionPoint> extensionsLegacy = moduleManager.extensions(TemplateEngineProviderExtentionPoint.class);
-		Optional<TemplateEngineProviderExtentionPoint> extLegacyOpt = extensionsLegacy.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
-
-		if (extLegacyOpt.isPresent()) {
-			return extLegacyOpt.get().getTemplateEngine();
 		}
 		
 		throw new RuntimeException("no template engine found");

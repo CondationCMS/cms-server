@@ -23,8 +23,10 @@ package com.condation.cms.content.shortcodes;
  */
 
 import com.condation.cms.api.model.Parameter;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
@@ -35,6 +37,10 @@ public class TagMap {
 
 	private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
 
+	public Set<String> names () {
+		return Collections.unmodifiableSet(tags.keySet());
+	}
+	
 	public void put(String codeName, Function<Parameter, String> function) {
 		tags.put(codeName, function);
 	}

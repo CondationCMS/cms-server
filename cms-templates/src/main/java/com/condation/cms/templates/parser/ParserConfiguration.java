@@ -1,8 +1,8 @@
-package com.condation.cms.api.extensions;
+package com.condation.cms.templates.parser;
 
 /*-
  * #%L
- * cms-api
+ * cms-templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,19 +22,23 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-
-import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.templates.Component;
+import com.condation.cms.templates.DynamicConfiguration;
+import com.condation.cms.templates.Tag;
+import com.condation.cms.templates.TemplateConfiguration;
+import java.util.Optional;
 
 /**
- * ExtensionPoint for modules to register hooks.
  *
- * @deprecated  As of release 7.2.0, replaced by {@link HookSystemRegisterExtensionPoint}
- * 
- * @author thmar
+ * @author t.marx
  */
-@Deprecated(since = "7.2.0", forRemoval = true)
-public abstract class HookSystemRegisterExtentionPoint extends AbstractExtensionPoint{
-
-	public abstract void register (final HookSystem hookSystem);
+public record ParserConfiguration(TemplateConfiguration templateEngineConfiguration) {
 	
+	public boolean hasTag (String name) {
+		return templateEngineConfiguration.hasTag(name);
+	}
+	
+	public Optional<Tag> getTag (String name) {
+		return templateEngineConfiguration.getTag(name);
+	}
 }

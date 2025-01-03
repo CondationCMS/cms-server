@@ -21,6 +21,8 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.content.shortcodes.TagParser;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -56,7 +58,8 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 		"variable_raw_filter",
 		"variable_1",
 		"for_1",
-		"if_1"
+		"if_1",
+		"component_1"
 	})
 	void test_features(String templateFile) throws Exception {
 		var templateContent = readContent(templateFile + ".html");
@@ -68,11 +71,20 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 
 		var template = SUT.getTemplate(templateFile);
 
-		var rendered = template.evaluate(data);
+		var rendered = template.evaluate(data, createDynamicConfig());
 
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expectedContent);
 	}
 
+	private DynamicConfiguration createDynamicConfig () {
+		ShortCodes shortCodes = new ShortCodes(
+				Map.of(
+						"hello", (params) -> "hello " + params.get("name")
+				), 
+				new TagParser(null));
+		return new DynamicConfiguration(shortCodes);
+	}
+	
 	private Map<String, Object> getData (String filename) throws IOException {
 		String dataFile = filename + "_data.json";
 		if (!exists(dataFile)) {

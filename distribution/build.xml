@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">7.4.2</property>
+	<property name="cms.version">7.5.0</property>
 	
 	<target name="copy-server" description="--> copy server">
 		<unzip src="../cms-server/target/cms-server-${cms.version}.zip" dest="temp/" />

@@ -21,6 +21,7 @@ package com.condation.cms.templates.renderer;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.templates.DefaultTemplate;
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;
@@ -59,13 +60,15 @@ public class Renderer {
 			ScopeStack scopes,
 			RenderFunction renderer,
 			CMSTemplateEngine templateEngine,
-			Map<String, Object> context) {
+			Map<String, Object> context, 
+			DynamicConfiguration dynamicConfiguration) {
 
 		public Context (JexlEngine engine,
 			ScopeStack scopes,
 			RenderFunction renderer,
-			CMSTemplateEngine templateEngine) {
-			this(engine, scopes, renderer, templateEngine, new HashMap<>());
+			CMSTemplateEngine templateEngine,
+			DynamicConfiguration dynamicConfiguration) {
+			this(engine, scopes, renderer, templateEngine, new HashMap<>(), dynamicConfiguration);
 		}
 		
 		public ScopeContext createEngineContext() {
@@ -82,7 +85,12 @@ public class Renderer {
 		};
 		
 		var contentWriter = new StringWriter();
-		final Context renderContext = new Context(engine, scopes, renderFunction, templateEngine);
+		final Context renderContext = new Context(
+				engine, 
+				scopes, 
+				renderFunction, 
+				templateEngine, 
+				dynamicConfiguration);
 		renderFunction.render(node, renderContext, contentWriter);
 		
 		if (renderContext.context().containsKey("_extends")) {

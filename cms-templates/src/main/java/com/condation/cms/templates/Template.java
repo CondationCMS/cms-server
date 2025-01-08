@@ -39,11 +39,11 @@ public interface Template {
 	
 	default String evaluate(Map<String, Object> context) throws IOException {
 		var writer = new StringWriter();
-		evaluate(context, writer);
+		evaluate(context, writer, DynamicConfiguration.EMPTY);
 		return writer.toString();
 	}
 	
 	String evaluate(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) throws IOException;
 	
-	void evaluate (Map<String, Object> context, Writer writer) throws IOException;
+	void evaluate (Map<String, Object> context, Writer writer, DynamicConfiguration dynamicConfiguration) throws IOException;
 }

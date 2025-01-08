@@ -68,7 +68,7 @@ public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
 		Template template = new Template("templateName", new StringReader(templateString), cfg);
 
 		Map<String, Object> model = new HashMap<>();
-		model.put("shortCode", new ShortCodeTemplateFunction(shortCodes));
+		model.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 		Writer out = new StringWriter();
 		template.process(model, out);
 
@@ -82,7 +82,7 @@ public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
 		Template template = new Template("templateName", new StringReader(templateString), cfg);
 
 		Map<String, Object> model = new HashMap<>();
-		model.put("shortCode", new ShortCodeTemplateFunction(shortCodes));
+		model.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 		Writer out = new StringWriter();
 		template.process(model, out);
 

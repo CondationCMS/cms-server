@@ -65,8 +65,8 @@ public class ComponentTag implements Component {
 			var content = renderChildren(node, context);
 
 			params.put("_content", content);
-
-			var shortCodeResult = shortCodes.execute(shortCodeName, params);
+			
+			var shortCodeResult = shortCodes.execute(shortCodeName, params, context.dynamicConfiguration().requestContext());
 			if (!Strings.isNullOrEmpty(shortCodeResult)) {
 				writer.write(shortCodeResult);
 			}

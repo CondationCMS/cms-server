@@ -23,6 +23,7 @@ package com.condation.cms.api.model;
  */
 
 
+import com.condation.cms.api.request.RequestContext;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,9 +32,26 @@ import java.util.Map;
  * @author t.marx
  */
 public class Parameter extends HashMap<String, Object> {
+	
+	private RequestContext requestContext = null;
+	
 	public Parameter () {
 	}
+	
+	public Parameter (final RequestContext requestContext) {
+		this.requestContext = requestContext;
+	}
+	
 	public Parameter (final Map<String, Object> parameters) {
 		super(parameters);
+	}
+	
+	public Parameter (final Map<String, Object> parameters, final RequestContext requestContext) {
+		super(parameters);
+		this.requestContext = requestContext;
+	}
+
+	public RequestContext getRequestContext() {
+		return requestContext;
 	}
 }

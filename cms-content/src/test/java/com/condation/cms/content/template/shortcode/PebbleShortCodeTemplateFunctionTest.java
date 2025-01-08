@@ -69,7 +69,7 @@ public class PebbleShortCodeTemplateFunctionTest extends ContentBaseTest {
 		PebbleTemplate template = engine.getTemplate(templateString);
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("shortCode", new ShortCodeTemplateFunction(shortCodes));
+		context.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);
@@ -84,7 +84,7 @@ public class PebbleShortCodeTemplateFunctionTest extends ContentBaseTest {
 		PebbleTemplate template = engine.getTemplate(templateString);
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("shortCode", new ShortCodeTemplateFunction(shortCodes));
+		context.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 
 		Writer writer = new StringWriter();
 		template.evaluate(writer, context);

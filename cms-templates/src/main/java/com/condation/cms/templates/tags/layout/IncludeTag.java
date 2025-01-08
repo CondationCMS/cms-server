@@ -53,7 +53,7 @@ public class IncludeTag extends AbstractTag implements Tag {
 			var template = (DefaultTemplate)context.templateEngine().getTemplate(templateString);
 			if (template != null) {
 				StringWriter childWriter = new StringWriter();
-				template.evaluate(context.scopes(), childWriter);
+				template.evaluate(context.scopes(), childWriter, context.dynamicConfiguration());
 				writer.write(childWriter.toString());
 			}
 		} catch (Exception e) {

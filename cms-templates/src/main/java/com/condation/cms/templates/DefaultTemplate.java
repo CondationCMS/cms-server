@@ -45,11 +45,11 @@ public class DefaultTemplate implements Template {
 	private final Renderer renderer;
 	
 	@Override
-	public void evaluate(Map<String, Object> context, Writer writer) throws IOException {
+	public void evaluate(Map<String, Object> context, Writer writer, DynamicConfiguration dynamicConfiguration) throws IOException {
 		
 		ScopeStack scopes = new ScopeStack(context);
 		
-		evaluate(scopes, writer);
+		evaluate(scopes, writer, dynamicConfiguration);
 		
 		writer.flush();
 	}
@@ -65,8 +65,8 @@ public class DefaultTemplate implements Template {
 		} 
 	}
 	
-	public void evaluate (ScopeStack scopes, Writer writer) throws IOException {
-		renderer.render(rootNode, scopes, writer, null);
+	public void evaluate (ScopeStack scopes, Writer writer, DynamicConfiguration dynamicConfiguration) throws IOException {
+		renderer.render(rootNode, scopes, writer, dynamicConfiguration);
 	}
-	
+
 }

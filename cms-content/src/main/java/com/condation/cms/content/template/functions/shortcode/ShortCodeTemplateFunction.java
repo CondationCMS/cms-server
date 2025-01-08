@@ -23,6 +23,7 @@ package com.condation.cms.content.template.functions.shortcode;
  */
 
 
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import java.util.Map;
 import lombok.Getter;
@@ -37,14 +38,16 @@ public class ShortCodeTemplateFunction {
 	
 	public static final String KEY = "shortCodes";
 	
+	private final RequestContext requestContext;
+	
 	@Getter
 	private final ShortCodes shortCodes;
 	
 	public String call (String name, Map<String, Object> parameters) {
-		return shortCodes.execute(name, parameters);
+		return shortCodes.execute(name, parameters, requestContext);
 	}
 	public String call (String name) {
-		return shortCodes.execute(name, Map.of());
+		return shortCodes.execute(name, Map.of(), requestContext);
 	}
 
 }

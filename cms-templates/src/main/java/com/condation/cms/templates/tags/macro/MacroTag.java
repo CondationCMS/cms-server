@@ -109,7 +109,13 @@ public class MacroTag implements Tag {
 			}
 			StringWriter writer = new StringWriter();
 			
-			var newContext = new Renderer.Context(context.engine(), scope, context.renderer(), context.templateEngine());
+			var newContext = new Renderer.Context(
+					context.engine(), 
+					scope, 
+					context.renderer(), 
+					context.templateEngine(), 
+					context.dynamicConfiguration()
+			);
 			for (var child : macro.children) {
 				context.renderer().render(child, newContext, writer);
 			}

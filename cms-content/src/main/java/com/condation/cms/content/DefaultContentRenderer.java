@@ -298,7 +298,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 	}
 
 	private ShortCodeTemplateFunction createShortCodeFunction(RequestContext context) {
-		return new ShortCodeTemplateFunction(context.get(RenderContext.class).shortCodes());
+		return new ShortCodeTemplateFunction(context, context.get(RenderContext.class).shortCodes());
 	}
 
 }

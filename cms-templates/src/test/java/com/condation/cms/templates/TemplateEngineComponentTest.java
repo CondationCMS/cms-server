@@ -56,7 +56,7 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 						}),
 				new TagParser(null)
 		);
-		dynamicConfiguration = new DynamicConfiguration(shortCodes);
+		dynamicConfiguration = new DynamicConfiguration(shortCodes, null);
 	}
 
 	@Override

@@ -82,7 +82,7 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 						"hello", (params) -> "hello " + params.get("name")
 				), 
 				new TagParser(null));
-		return new DynamicConfiguration(shortCodes);
+		return new DynamicConfiguration(shortCodes, null);
 	}
 	
 	private Map<String, Object> getData (String filename) throws IOException {

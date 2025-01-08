@@ -116,7 +116,7 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 
 	private DynamicConfiguration createDynamicConfiguration(Model model) {
 		var shortCodes = model.requestContext.get(RenderContext.class).shortCodes();
-		DynamicConfiguration dynamicConfig = new DynamicConfiguration(shortCodes);
+		DynamicConfiguration dynamicConfig = new DynamicConfiguration(shortCodes, model.requestContext);
 		return dynamicConfig;
 	}
 

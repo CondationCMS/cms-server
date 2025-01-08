@@ -24,6 +24,7 @@ package com.condation.cms.content.shortcodes;
 
 
 import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.request.RequestContext;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -53,14 +54,18 @@ public class ShortCodes {
 	}
 	
 	public String replace (final String content) {
-		return replace(content, Collections.emptyMap());
+		return replace(content, Collections.emptyMap(), null);
 	}
 	
 	public String replace (final String content, Map<String, Object> contextModel) {
+		return replace(content, contextModel, null);
+	}
+	
+	public String replace (final String content, Map<String, Object> contextModel, RequestContext requestContext) {
 		return parser.parse(content, tagMap, contextModel);
 	}
 	
-	public String execute (String name, Map<String, Object> parameters) {
+	public String execute (String name, Map<String, Object> parameters, RequestContext requestContext) {
 		if (!tagMap.has(name)) {
 			return "";
 		}

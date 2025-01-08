@@ -74,7 +74,7 @@ public class ContentPipeline {
 	}
 
 	private String processShortCodes(FilterContext<String> context) {
-		return requestContext.get(RenderContext.class).shortCodes().replace(context.value(), model.values);
+		return requestContext.get(RenderContext.class).shortCodes().replace(context.value(), model.values, requestContext);
 	}
 
 	private String processTemplate(FilterContext<String> context) {

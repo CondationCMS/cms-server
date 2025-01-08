@@ -68,7 +68,7 @@ public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
 		String templateString = "[(${shortCode.call('echo')})]";
 		
 		Context context = new Context();
-		context.setVariable("shortCode", new ShortCodeTemplateFunction(shortCodes));
+		context.setVariable("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 		String renderedString = templateEngine.process(templateString, context);
         Assertions.assertThat(renderedString).isEqualTo("Hello world");
 	}
@@ -78,7 +78,7 @@ public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
 		String templateString = "[(${shortCode.call('greet', #{'name': 'CondationCMS'})})]";
 		
 		Context context = new Context();
-		context.setVariable("shortCode", new ShortCodeTemplateFunction(shortCodes));
+		context.setVariable("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 		String renderedString = templateEngine.process(templateString, context);
         Assertions.assertThat(renderedString).isEqualTo("Hello CondationCMS");
 	}

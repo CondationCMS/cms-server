@@ -69,7 +69,7 @@ public class ImportTag extends AbstractTag implements Tag {
 			var template = (DefaultTemplate) context.templateEngine().getTemplate(templateString);
 			if (template != null) {
 				CustomScopeStack scopeStack = new CustomScopeStack();
-				template.evaluate(scopeStack, new NullWriter());
+				template.evaluate(scopeStack, new NullWriter(), context.dynamicConfiguration());
 
 				var namespace = new HashMap<String, MacroTag.MacroFunction>();
 				scopeStack.macros().forEach(macro -> {

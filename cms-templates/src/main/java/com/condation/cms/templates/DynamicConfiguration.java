@@ -21,10 +21,11 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.templates.tags.component.EndComponentTag;
 import com.condation.cms.templates.tags.component.ComponentTag;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -33,27 +34,33 @@ import java.util.Optional;
  *
  * @author t.marx
  */
-public record DynamicConfiguration(ShortCodes shortCodes, Map<String, Component> components) {
-	
-	public DynamicConfiguration {
+public record DynamicConfiguration(ShortCodes shortCodes, Map<String, Component> components, RequestContext requestContext) {
+
+	public static final DynamicConfiguration EMPTY = new DynamicConfiguration(
+			new ShortCodes(Collections.emptyMap(), null),
+			Collections.emptyMap(),
+			null
+	);
+
+	public DynamicConfiguration   {
 		for (var tag : shortCodes.getShortCodeNames()) {
 			var openTag = new ComponentTag(tag, shortCodes);
 			var closeTag = new EndComponentTag(tag);
-			
+
 			components.put(openTag.getName(), openTag);
 			components.put(closeTag.getName(), closeTag);
 		}
 	}
-	
-	public DynamicConfiguration(ShortCodes shortcodes) {
-		this(shortcodes, new HashMap<>());
+
+	public DynamicConfiguration(ShortCodes shortcodes, RequestContext requestContext) {
+		this(shortcodes, new HashMap<>(), requestContext);
 	}
-	
-	public boolean hasComponent (String name) {
+
+	public boolean hasComponent(String name) {
 		return components.containsKey(name);
 	}
-	
-	public Optional<Component> getComponent (String name) {
+
+	public Optional<Component> getComponent(String name) {
 		return Optional.ofNullable(components.get(name));
 	}
 }

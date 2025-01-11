@@ -21,7 +21,6 @@ package com.condation.cms.filesystem.metadata.memory;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.metadata.query.Queries;
@@ -39,8 +38,6 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public final class QueryUtil {
-
-	
 
 	public static Map<Object, List<ContentNode>> groupby(final Stream<ContentNode> nodes, final String field) {
 		return nodes.collect(Collectors.groupingBy((node) -> MapUtil.getValue(node.data(), field)));
@@ -63,6 +60,14 @@ public final class QueryUtil {
 
 		context.setNodes(tempNodes.stream());
 
+		return context;
+	}
+
+	public static QueryContext exists(final QueryContext context, final String field) {
+		context.setNodes(context.getNodes().filter((node) -> {
+			var node_value = MapUtil.getValue(((ContentNode)node).data(), field);
+			return node_value != null;
+		}));
 		return context;
 	}
 
@@ -92,7 +97,4 @@ public final class QueryUtil {
 		context.setNodes(context.getNodes().filter(Queries.createExtensionPredicate(field, value, predicate)));
 		return context;
 	}
-
-	
-	
 }

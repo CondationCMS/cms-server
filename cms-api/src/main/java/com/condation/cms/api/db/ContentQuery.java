@@ -64,6 +64,8 @@ public interface ContentQuery<T> {
 	ContentQuery<T> whereNotIn(final String field, final Object... value);
 
 	ContentQuery<T> whereNotIn(final String field, final List<Object> value);
+	
+	ContentQuery<T> whereExists(final String field);
 
 	public static interface Sort<T> {
 		public ContentQuery<T> asc();

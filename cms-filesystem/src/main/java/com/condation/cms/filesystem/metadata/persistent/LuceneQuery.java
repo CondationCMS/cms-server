@@ -269,10 +269,16 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	public ContentQuery<T> whereNotIn(String field, List<Object> value) {
 		return where(field, Queries.Operator.NOT_IN, value);
 	}
+	
+	@Override
+	public ContentQuery<T> whereExists(String field) {
+		QueryHelper.exists(queryBuilder, field);
+		return this;
+	}
 
 	private ContentQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
 
-		QueryHelper.exists(queryBuilder, field, value);
+		QueryHelper.exists(queryBuilder, field);
 
 		switch (operator) {
 			case EQ ->

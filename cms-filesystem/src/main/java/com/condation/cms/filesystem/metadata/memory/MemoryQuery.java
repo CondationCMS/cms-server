@@ -111,6 +111,11 @@ public class MemoryQuery<T> extends ExtendableQuery<T> {
 		return where(field, Queries.Operator.NOT_IN, value);
 	}
 
+	@Override
+	public MemoryQuery<T> whereExists(final String field) {
+		return new MemoryQuery<>(QueryUtil.exists(context, field));
+	}
+	
 	private MemoryQuery<T> where(final String field, final Queries.Operator operator, final Object value) {
 		return new MemoryQuery<>(filtered(context, field, value, operator));
 	}

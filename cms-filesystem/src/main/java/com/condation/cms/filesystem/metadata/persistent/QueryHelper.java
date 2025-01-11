@@ -47,7 +47,7 @@ import org.apache.lucene.search.TermRangeQuery;
 @Slf4j
 public class QueryHelper {
 
-	public static void exists(BooleanQuery.Builder queryBuilder, String field, Object value) {
+	public static void exists(BooleanQuery.Builder queryBuilder, String field) {
 
 		if (true) {
 			queryBuilder.add(

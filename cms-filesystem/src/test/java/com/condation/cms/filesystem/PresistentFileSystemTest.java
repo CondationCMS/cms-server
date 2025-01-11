@@ -119,6 +119,19 @@ public class PresistentFileSystemTest {
 	}
 	
 	@Test
+	public void test_field_exists() throws IOException {
+
+		var nodes = fileSystem.query("/test", (node, i) -> node).whereExists("keywords").get();
+		
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.getFirst().uri()).isEqualTo("test/test1.md");
+		
+		nodes = fileSystem.query((node, i) -> node).whereExists("keywords").get();
+		
+		Assertions.assertThat(nodes).hasSize(2);
+	}
+	
+	@Test
 	public void test_custom_operation() throws IOException {
 
 		var query = fileSystem.query((node, i) -> node);

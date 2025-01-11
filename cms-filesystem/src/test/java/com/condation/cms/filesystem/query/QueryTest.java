@@ -290,4 +290,11 @@ public class QueryTest {
 		query.where("index", "=", null).get();
 		Assertions.assertThat(nodes).hasSize(2);
 	}
+	
+	@Test
+	public void test_where_exists() {
+		MemoryQuery<ContentNode> query = createQuery();
+		var nodes = query.whereExists("index").get();
+		Assertions.assertThat(nodes).hasSize(2);
+	}
 }

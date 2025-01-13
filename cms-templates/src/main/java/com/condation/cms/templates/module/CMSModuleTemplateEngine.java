@@ -133,7 +133,8 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 
 		var injector = requestContext.get(InjectorFeature.class).injector();
 		
-		injector.getInstance(ModuleManager.class).extensions(RegisterTemplateComponentExtensionPoint.class)
+		injector.getInstance(ModuleManager.class)
+				.extensions(RegisterTemplateComponentExtensionPoint.class)
 				.forEach(extension -> components.putAll(extension.components()));
 
 		var wrapper = requestContext.get(TemplateHooks.class).getComponents(components);

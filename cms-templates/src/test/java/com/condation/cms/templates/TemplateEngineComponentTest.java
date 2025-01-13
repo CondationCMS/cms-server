@@ -23,6 +23,7 @@ package com.condation.cms.templates;
  */
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.exceptions.ParserException;
 import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
@@ -38,12 +39,12 @@ import org.junit.jupiter.api.Test;
  */
 public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 
-	static ShortCodes shortCodes;
+	static TemplateComponents components;
 	static DynamicConfiguration dynamicConfiguration;
 
 	@BeforeAll
 	public void setupShortCodes() {
-		shortCodes = new ShortCodes(
+		components = new TemplateComponents(
 				Map.of(
 						"tag1", (params) -> {
 							return "Hello";
@@ -53,10 +54,9 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 						},
 						"tag3", (param) -> {
 							return "<div>%s</div>".formatted(param.get("_content"));
-						}),
-				new TagParser(null)
+						})
 		);
-		dynamicConfiguration = new DynamicConfiguration(shortCodes, null);
+		dynamicConfiguration = new DynamicConfiguration(components, null);
 	}
 
 	@Override

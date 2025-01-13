@@ -24,6 +24,7 @@ package com.condation.cms.templates.tags.component;
 
 import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.templates.Component;
+import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.renderer.Renderer;
@@ -42,19 +43,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ComponentTag implements Component {
 
-	private final String shortCodeName;
+	private final String componentName;
 
-	private final ShortCodes shortCodes;
+	private final TemplateComponents components;
 
 	@Override
 	public String getName() {
-		return shortCodeName;
+		return componentName;
 	}
 	
 
 	@Override
 	public Optional<String> getCloseingName() {
-		return Optional.of("end%s".formatted(shortCodeName));
+		return Optional.of("end%s".formatted(componentName));
 	}
 
 	@Override
@@ -66,7 +67,7 @@ public class ComponentTag implements Component {
 
 			params.put("_content", content);
 			
-			var shortCodeResult = shortCodes.execute(shortCodeName, params, context.dynamicConfiguration().requestContext());
+			var shortCodeResult = components.execute(componentName, params, context.dynamicConfiguration().requestContext());
 			if (!Strings.isNullOrEmpty(shortCodeResult)) {
 				writer.write(shortCodeResult);
 			}

@@ -21,8 +21,8 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -77,12 +77,11 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 	}
 
 	private DynamicConfiguration createDynamicConfig () {
-		ShortCodes shortCodes = new ShortCodes(
+		TemplateComponents components = new TemplateComponents(
 				Map.of(
 						"hello", (params) -> "hello " + params.get("name")
-				), 
-				new TagParser(null));
-		return new DynamicConfiguration(shortCodes, null);
+				));
+		return new DynamicConfiguration(components, null);
 	}
 	
 	private Map<String, Object> getData (String filename) throws IOException {

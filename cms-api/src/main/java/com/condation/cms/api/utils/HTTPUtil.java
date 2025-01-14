@@ -23,6 +23,7 @@ package com.condation.cms.api.utils;
  */
 
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;
@@ -50,16 +51,16 @@ public class HTTPUtil {
 	 * @param requestContext
 	 * @return 
 	 */
-	public static String modifyUrl(String url, final RequestContext requestContext) {
+	public static String modifyUrl(String url, final FeatureContainer featureContainer) {
 
 		// is external url
 		if (url.startsWith("http") || url.startsWith("https")) {
 			return url;
 		}
 
-		url = modifyUrl(url, requestContext.get(SitePropertiesFeature.class).siteProperties());
+		url = modifyUrl(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
 		
-		if (requestContext.has(IsPreviewFeature.class)) {
+		if (featureContainer.has(IsPreviewFeature.class)) {
 			if (url.contains("?")) {
 				url += "&preview=true";
 			} else {

@@ -48,7 +48,7 @@ public class HTTPUtil {
 	 * Adds the context according to the siteproperties and the preview to an url
 	 * 
 	 * @param url
-	 * @param requestContext
+	 * @param featureContainer
 	 * @return 
 	 */
 	public static String modifyUrl(String url, final FeatureContainer featureContainer) {

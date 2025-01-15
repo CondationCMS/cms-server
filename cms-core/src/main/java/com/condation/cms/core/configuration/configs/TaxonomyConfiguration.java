@@ -107,8 +107,8 @@ public class TaxonomyConfiguration extends AbstractConfiguration implements ICon
 	
 	private void loadValues(Taxonomy taxonomy) {
 		try {
-			var yamlFile = "configs/taxonomy.%s.yaml".formatted(taxonomy.getSlug());
-			var tomlFile = "configs/taxonomy.%s.toml".formatted(taxonomy.getSlug());
+			var yamlFile = "config/taxonomy.%s.yaml".formatted(taxonomy.getSlug());
+			var tomlFile = "config/taxonomy.%s.toml".formatted(taxonomy.getSlug());
 			
 			var valueSrc = List.of(
 					YamlConfigSource.build(hostBase.resolve(yamlFile)),

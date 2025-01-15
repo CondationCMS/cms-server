@@ -78,8 +78,8 @@ public class ConfigurationTest {
 		configuration = SimpleConfiguration.builder(eventBus)
 				.id("test-config")
 				.reloadStrategy(new CronReload("0/10 * * * * ?", cronScheduler))
-				.addSource(YamlConfigSource.build(Path.of("configs/server.yaml")))
-				.addSource(TomlConfigSource.build(Path.of("configs/server.toml")))
+				.addSource(YamlConfigSource.build(Path.of("config/server.yaml")))
+				.addSource(TomlConfigSource.build(Path.of("config/server.toml")))
 				.build();
 	}
 	
@@ -99,7 +99,7 @@ public class ConfigurationTest {
 	@Test
 	public void test_reload () throws InterruptedException, IOException {
 		
-		FileUtils.touch(Path.of("configs/server.toml"));
+		FileUtils.touch(Path.of("config/server.toml"));
 		
 		Thread.sleep(Duration.ofSeconds(20));
 		

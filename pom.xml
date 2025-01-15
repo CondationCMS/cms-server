@@ -217,7 +217,7 @@
 				<version>2.3.232</version>
 			</dependency>
 
-			<dependency>
+			<!--dependency>
 				<groupId>org.graalvm.polyglot</groupId>
 				<artifactId>polyglot</artifactId>
 				<version>24.1.1</version>
@@ -226,6 +226,17 @@
 				<groupId>org.graalvm.js</groupId>
 				<artifactId>js-language</artifactId>
 				<version>24.1.1</version>
+			</dependency-->
+			<dependency>
+				<groupId>org.graalvm.polyglot</groupId>
+				<artifactId>polyglot</artifactId> 
+				<version>24.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>org.graalvm.polyglot</groupId>
+				<artifactId>js</artifactId>
+				<version>24.1.1</version>
+				<type>pom</type>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>

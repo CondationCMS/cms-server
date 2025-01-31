@@ -62,7 +62,7 @@ public class TemplateConfiguration {
 	}
 	
 	public TemplateConfiguration setCache (ICache<String, Template> cache) {
-		if (templateCache != null) {
+		if (templateCache == null) {
 			templateCache = new TemplateCache(cache);
 		}
 		return this;

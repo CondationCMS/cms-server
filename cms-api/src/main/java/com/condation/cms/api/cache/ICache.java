@@ -22,9 +22,6 @@ package com.condation.cms.api.cache;
  * #L%
  */
 
-
-import java.io.Serializable;
-
 /**
  *
  * @author t.marx

@@ -36,7 +36,7 @@ import org.junit.jupiter.api.TestInstance;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public abstract class AbstractTemplateEngineTest {
 	
-	private static CacheProvider cacheProvider = new LocalCacheProvider();
+	private CacheProvider cacheProvider = new LocalCacheProvider();
 	
 	protected CMSTemplateEngine SUT;
 	

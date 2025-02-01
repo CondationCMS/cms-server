@@ -95,12 +95,7 @@ public class ModulesModule extends AbstractModule {
 	@Singleton
 	public ModuleRequestContextFactory requestContextFactory() {
 		return () -> {
-			final CMSRequestContext requestContext = new CMSRequestContext();
-			var rc = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
-			if (rc != null) {
-				requestContext.features.putAll(rc.features);
-			}
-			return requestContext;
+			return new CMSRequestContext(ThreadLocalRequestContext.REQUEST_CONTEXT.get());
 		};
 	}
 

@@ -21,16 +21,12 @@ package com.condation.cms.core.configuration;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.core.configuration.source.TomlConfigSource;
 import com.condation.cms.core.configuration.source.YamlConfigSource;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.core.configuration.configs.MediaConfiguration;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,8 +51,8 @@ public class MediaConfigurationTest {
 	public void setup() throws IOException, SchedulerException {
 		configuration = MediaConfiguration.builder(eventBus)
 				.id("media-config")
-				.addSource(YamlConfigSource.build(Path.of("configs/media.yaml")))
-				.addSource(TomlConfigSource.build(Path.of("configs/media.toml")))
+				.addSource(YamlConfigSource.build(Path.of("config/media.yaml")))
+				.addSource(TomlConfigSource.build(Path.of("config/media.toml")))
 				.build();
 	}
 

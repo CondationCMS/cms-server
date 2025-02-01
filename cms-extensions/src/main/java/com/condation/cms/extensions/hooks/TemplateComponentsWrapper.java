@@ -1,8 +1,8 @@
-package com.condation.cms.api.cache;
+package com.condation.cms.extensions.hooks;
 
 /*-
  * #%L
- * cms-api
+ * cms-extensions
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,21 +22,32 @@ package com.condation.cms.api.cache;
  * #L%
  */
 
+
+import com.condation.cms.api.model.Parameter;
+import java.util.Map;
+import java.util.function.Function;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  *
  * @author t.marx
- * @param <K>
- * @param <V>
  */
-public interface ICache<K, V> {
-	
-	void put (K key, V value);
-	
-	V get (K key);
-	
-	boolean contains (K key);
-	
-	void invalidate ();
-	
-	void invalidate (K key);
+@RequiredArgsConstructor
+public class TemplateComponentsWrapper {
+
+	@Getter
+	private final Map<String, Function<Parameter, String>> components;
+
+	public void put(final String name, final Function<Parameter, String> function) {
+		components.put(name, function);
+	}
+
+	public boolean contains(final String name) {
+		return components.containsKey(name);
+	}
+
+	public void remove(final String name) {
+		components.remove(name);
+	}
 }

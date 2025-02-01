@@ -23,15 +23,7 @@ package com.condation.cms.core.configuration;
  */
 
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
-import com.condation.cms.core.configuration.source.TomlConfigSource;
-import com.condation.cms.core.configuration.source.YamlConfigSource;
-import com.condation.cms.api.SiteProperties;
-import com.condation.cms.api.eventbus.EventBus;
-import com.condation.cms.api.scheduler.CronJobContext;
-import com.condation.cms.api.scheduler.CronJobScheduler;
-import com.condation.cms.core.configuration.reload.CronReload;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
-import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
@@ -39,11 +31,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.impl.StdSchedulerFactory;
 
 /**
  *
@@ -57,7 +46,7 @@ public class SiteConfigurationTest {
 	
 	@BeforeEach
 	public void setup() throws IOException, SchedulerException {
-		siteConfig = ConfigurationFactory.siteConfiguration("dev", Path.of("configs"));
+		siteConfig = ConfigurationFactory.siteConfiguration("dev", Path.of("config"));
 		
 		siteProperties = new ExtendedSiteProperties(siteConfig);
 	}

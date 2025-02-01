@@ -33,6 +33,7 @@ public enum Hooks {
 	NAVIGATION_LIST("system/navigation/%s/list"),
 	CONTENT_SHORTCODE("system/content/shortcodes"),
 	CONTENT_FILTER("system/content/filter"),
+	TEMPLATE_COMPONENT("system/template/component"),
 	DB_QUERY_OPERATIONS("system/db/query/operations"),
 	SCHEDULER_REGISTER("system/scheduler/register"),
 	SCHEDULER_REMOVE("system/scheduler/remove"),

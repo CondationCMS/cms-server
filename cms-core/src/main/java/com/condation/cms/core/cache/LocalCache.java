@@ -26,7 +26,6 @@ package com.condation.cms.core.cache;
 import com.github.benmanes.caffeine.cache.Cache;
 import lombok.RequiredArgsConstructor;
 import com.condation.cms.api.cache.ICache;
-import java.io.Serializable;
 import java.util.function.Function;
 
 /**
@@ -36,7 +35,7 @@ import java.util.function.Function;
  * @param <V>
  */
 @RequiredArgsConstructor
-public class LocalCache<K extends Serializable, V extends Serializable> implements ICache<K, V> {
+public class LocalCache<K, V> implements ICache<K, V> {
 	
 	private final Cache<K,V> wrappedCache;
 	private final Function<K, V> loader;

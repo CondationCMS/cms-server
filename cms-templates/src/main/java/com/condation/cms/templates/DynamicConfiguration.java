@@ -23,6 +23,7 @@ package com.condation.cms.templates;
  */
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.tags.component.EndComponentTag;
 import com.condation.cms.templates.tags.component.ComponentTag;
 import java.util.Collections;
@@ -34,17 +35,17 @@ import java.util.Optional;
  *
  * @author t.marx
  */
-public record DynamicConfiguration(ShortCodes shortCodes, Map<String, Component> components, RequestContext requestContext) {
+public record DynamicConfiguration(TemplateComponents templateComponents, Map<String, Component> components, RequestContext requestContext) {
 
 	public static final DynamicConfiguration EMPTY = new DynamicConfiguration(
-			new ShortCodes(Collections.emptyMap(), null),
+			new TemplateComponents(Collections.emptyMap()),
 			Collections.emptyMap(),
 			null
 	);
 
 	public DynamicConfiguration   {
-		for (var tag : shortCodes.getShortCodeNames()) {
-			var openTag = new ComponentTag(tag, shortCodes);
+		for (var tag : templateComponents.getComponentNames()) {
+			var openTag = new ComponentTag(tag, templateComponents);
 			var closeTag = new EndComponentTag(tag);
 
 			components.put(openTag.getName(), openTag);
@@ -52,8 +53,8 @@ public record DynamicConfiguration(ShortCodes shortCodes, Map<String, Component>
 		}
 	}
 
-	public DynamicConfiguration(ShortCodes shortcodes, RequestContext requestContext) {
-		this(shortcodes, new HashMap<>(), requestContext);
+	public DynamicConfiguration(TemplateComponents templateComponents, RequestContext requestContext) {
+		this(templateComponents, new HashMap<>(), requestContext);
 	}
 
 	public boolean hasComponent(String name) {

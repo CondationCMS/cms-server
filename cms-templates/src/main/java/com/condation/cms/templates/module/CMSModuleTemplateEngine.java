@@ -23,19 +23,27 @@ package com.condation.cms.templates.module;
  */
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.extensions.RegisterTemplateComponentExtensionPoint;
+import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
-import com.condation.cms.content.RenderContext;
-import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
+import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.TemplateEngineFactory;
 import com.condation.cms.templates.TemplateLoader;
+import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.loaders.CompositeTemplateLoader;
 import com.condation.cms.templates.loaders.FileTemplateLoader;
+import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  *
@@ -115,9 +123,22 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 	}
 
 	private DynamicConfiguration createDynamicConfiguration(Model model) {
-		var shortCodes = model.requestContext.get(RenderContext.class).shortCodes();
-		DynamicConfiguration dynamicConfig = new DynamicConfiguration(shortCodes, model.requestContext);
+		DynamicConfiguration dynamicConfig = new DynamicConfiguration(
+				createTemplateComponents(model.requestContext), model.requestContext);
 		return dynamicConfig;
+	}
+	
+	private TemplateComponents createTemplateComponents(RequestContext requestContext) {
+		Map<String, Function<Parameter, String>> components = new HashMap<>();
+
+		var injector = requestContext.get(InjectorFeature.class).injector();
+		
+		injector.getInstance(ModuleManager.class)
+				.extensions(RegisterTemplateComponentExtensionPoint.class)
+				.forEach(extension -> components.putAll(extension.components()));
+
+		var wrapper = requestContext.get(TemplateHooks.class).getComponents(components);
+		return new TemplateComponents(wrapper.getComponents());
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package com.condation.cms.api.cache;
+package com.condation.cms.api.extensions;
 
 /*-
  * #%L
@@ -22,21 +22,16 @@ package com.condation.cms.api.cache;
  * #L%
  */
 
+
+import com.condation.cms.api.model.Parameter;
+import java.util.Map;
+import java.util.function.Function;
+
 /**
  *
  * @author t.marx
- * @param <K>
- * @param <V>
  */
-public interface ICache<K, V> {
+public abstract class RegisterTemplateComponentExtensionPoint extends AbstractExtensionPoint {
 	
-	void put (K key, V value);
-	
-	V get (K key);
-	
-	boolean contains (K key);
-	
-	void invalidate ();
-	
-	void invalidate (K key);
+	public abstract Map<String, Function<Parameter, String>> components ();
 }

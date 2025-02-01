@@ -28,8 +28,10 @@ import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.hooks.Hooks;
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import java.util.Map;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -58,5 +60,13 @@ public class TemplateHooks implements Feature {
 				.execute(Hooks.TEMPLATE_FUNCTION.hook(), Map.of("functions", templateFunctions));
 		
 		return templateFunctions;
+	}
+	
+	public TemplateComponentsWrapper getComponents (Map<String, Function<Parameter, String>> components) {
+		var componentsWrapper = new TemplateComponentsWrapper(components);
+		requestContext.get(HookSystemFeature.class).hookSystem()
+				.execute(Hooks.TEMPLATE_COMPONENT.hook(), Map.of("components", componentsWrapper));
+		
+		return componentsWrapper;
 	}
 }

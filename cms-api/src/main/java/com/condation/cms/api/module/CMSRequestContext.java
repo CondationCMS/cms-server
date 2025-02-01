@@ -23,7 +23,9 @@ package com.condation.cms.api.module;
  */
 
 
+import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.FeatureContainer;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.modules.api.ModuleRequestContext;
 import lombok.RequiredArgsConstructor;
 
@@ -33,5 +35,40 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 public class CMSRequestContext extends FeatureContainer implements ModuleRequestContext {
+	
+	private final RequestContext requestContext;
+
+	@Override
+	public void close() throws Exception {
+		if (requestContext == null) {
+			return;
+		}
+		requestContext.close();
+	}
+
+	@Override
+	public <T extends Feature> T get(Class<T> featureClass) {
+		if (requestContext == null) {
+			return null;
+		}
+		return requestContext.get(featureClass);
+	}
+
+	@Override
+	public <T extends Feature> void add(Class<T> featureClass, T feature) {
+		if (requestContext == null) {
+			return;
+		}
+		requestContext.add(featureClass, feature);
+	}
+
+	@Override
+	public boolean has(Class<? extends Feature> featureClass) {
+		if (requestContext == null) {
+			return false;
+		}
+		return requestContext.has(featureClass);
+	}
+	
 	
 }

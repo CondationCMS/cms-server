@@ -85,7 +85,7 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 	
 	public List<MediaFormat> getMediaFormats () {
 		return getFormats().stream().map(format -> {
-			return new MediaFormat(format.name, format.width, format.height, MediaUtils.Format.PNG, format.compression);
+			return new MediaFormat(format.name, format.width, format.height, toFormat(format.format), format.compression);
 		}).toList();
 	}
 	

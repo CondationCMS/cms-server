@@ -53,8 +53,8 @@ public class TaxonomyConfigurationTest {
 		configuration = TaxonomyConfiguration.builder(eventBus)
 				.id("taxonomy-config")
 				.hostBase(Path.of("."))
-				.addSource(YamlConfigSource.build(Path.of("configs/taxonomy.yaml")))
-				.addSource(TomlConfigSource.build(Path.of("configs/taxonomy.toml")))
+				.addSource(YamlConfigSource.build(Path.of("config/taxonomy.yaml")))
+				.addSource(TomlConfigSource.build(Path.of("config/taxonomy.toml")))
 				.build();
 	}
 

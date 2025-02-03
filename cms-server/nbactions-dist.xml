@@ -12,9 +12,10 @@
             <properties>
                 <exec.vmArgs></exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>server start -Dcms.home=../test-server/</exec.appArgs>
+                <exec.appArgs>server start</exec.appArgs>
                 <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
+                <exec.workingdir>C:\entwicklung\workspaces\tma\cms\cms-server\test-server</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -29,10 +30,11 @@
             <properties>
                 <exec.vmArgs>-agentlib:jdwp=transport=dt_socket,server=n,address=${jpda.address}</exec.vmArgs>
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>server start -Dcms.home=../test-server/</exec.appArgs>
+                <exec.appArgs>server start</exec.appArgs>
                 <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
                 <jpda.listen>true</jpda.listen>
+                <exec.workingdir>C:\entwicklung\workspaces\tma\cms\cms-server\test-server</exec.workingdir>
             </properties>
         </action>
         <action>
@@ -49,22 +51,8 @@
                 <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
                 <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
                 <exec.executable>java</exec.executable>
-                <exec.appArgs>server start -Dcms.home=../test-server/</exec.appArgs>
-            </properties>
-        </action>
-        <action>
-            <actionName>CUSTOM-Stop project</actionName>
-            <displayName>Stop project</displayName>
-            <goals>
-                <goal>process-classes</goal>
-                <goal>org.codehaus.mojo:exec-maven-plugin:3.1.0:exec</goal>
-            </goals>
-            <properties>
-                <exec.vmArgs></exec.vmArgs>
-                <exec.args>${exec.vmArgs} -classpath %classpath ${exec.mainClass} ${exec.appArgs}</exec.args>
-                <exec.appArgs>stop</exec.appArgs>
-                <exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
-                <exec.executable>java</exec.executable>
+                <exec.appArgs>server start</exec.appArgs>
+                <exec.workingdir>C:\entwicklung\workspaces\tma\cms\cms-server\test-server</exec.workingdir>
             </properties>
         </action>
     </actions>

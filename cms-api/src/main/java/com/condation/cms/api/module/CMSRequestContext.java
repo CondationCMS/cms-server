@@ -34,40 +34,39 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class CMSRequestContext extends FeatureContainer implements ModuleRequestContext {
+public class CMSRequestContext extends RequestContext implements ModuleRequestContext {
 	
-	private final RequestContext requestContext;
+	private final RequestContext delegate;
 
 	@Override
 	public void close() throws Exception {
-		if (requestContext == null) {
-			return;
+		if (delegate != null) {
+			delegate.close();
 		}
-		requestContext.close();
 	}
 
 	@Override
 	public <T extends Feature> T get(Class<T> featureClass) {
-		if (requestContext == null) {
+		if (delegate == null) {
 			return null;
 		}
-		return requestContext.get(featureClass);
+		return delegate.get(featureClass);
 	}
 
 	@Override
 	public <T extends Feature> void add(Class<T> featureClass, T feature) {
-		if (requestContext == null) {
+		if (delegate == null) {
 			return;
 		}
-		requestContext.add(featureClass, feature);
+		delegate.add(featureClass, feature);
 	}
 
 	@Override
 	public boolean has(Class<? extends Feature> featureClass) {
-		if (requestContext == null) {
+		if (delegate == null) {
 			return false;
 		}
-		return requestContext.has(featureClass);
+		return delegate.has(featureClass);
 	}
 	
 	

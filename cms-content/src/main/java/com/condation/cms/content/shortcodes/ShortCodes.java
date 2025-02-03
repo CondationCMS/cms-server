@@ -72,9 +72,9 @@ public class ShortCodes {
 		try {
 			Parameter params;
 			if (parameters != null) {
-				params = new Parameter(parameters);
+				params = new Parameter(parameters, requestContext);
 			} else {
-				params = new Parameter();
+				params = new Parameter(requestContext);
 			}
 			return tagMap.get(name).apply(params);
 		} catch (Exception e) {

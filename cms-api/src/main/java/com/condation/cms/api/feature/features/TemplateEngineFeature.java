@@ -21,17 +21,30 @@ package com.condation.cms.api.feature.features;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.template.TemplateEngine;
+import java.io.IOException;
+import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 @FeatureScope({FeatureScope.Scope.REQUEST})
 public record TemplateEngineFeature(TemplateEngine templateEngine) implements Feature {
 
+	public String render(String template, Map<String, String> model, RequestContext requestContext) {
+		try {
+			var templateModel = new TemplateEngine.Model(null, null, requestContext);
+			templateModel.values.putAll(model);
+			return templateEngine.render(template, templateModel);
+		} catch (IOException ioe) {
+			log.error("", ioe);
+		}
+		return "";
+	}
 }

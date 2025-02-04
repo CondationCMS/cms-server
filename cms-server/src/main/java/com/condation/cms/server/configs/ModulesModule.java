@@ -107,12 +107,6 @@ public class ModulesModule extends AbstractModule {
 		return cmsModuleContext;
 	}
 
-	@Provides
-	@Singleton
-	public CMSMarkdownRenderer defaultMarkdownRenderer() {
-		return new CMSMarkdownRenderer();
-	}
-
 	/**
 	 * 
 	 *
@@ -123,8 +117,7 @@ public class ModulesModule extends AbstractModule {
 	 */
 	@Provides
 	@Singleton
-	public MarkdownRenderer markdownRenderer(SiteProperties siteProperties, ModuleManager moduleManager,
-			CMSMarkdownRenderer defaultMarkdownRenderer) {
+	public MarkdownRenderer markdownRenderer(SiteProperties siteProperties, ModuleManager moduleManager) {
 		var engine = siteProperties.markdownEngine();
 
 		List<MarkdownRendererProviderExtensionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtensionPoint.class);
@@ -134,7 +127,7 @@ public class ModulesModule extends AbstractModule {
 			return extOpt.get().getRenderer();
 		}
 
-		return defaultMarkdownRenderer;
+		throw new RuntimeException("no markdown renderer found");
 	}
 
 	private String getTemplateEngine(SiteProperties siteProperties, Theme theme) {

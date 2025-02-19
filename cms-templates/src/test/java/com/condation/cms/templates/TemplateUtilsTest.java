@@ -88,4 +88,9 @@ public class TemplateUtilsTest {
 		Assertions.assertThat(filter.parameters())
 				.isEmpty();;
 	}
+	
+	@Test
+	public void complex_filter() {
+		Assertions.assertThat(TemplateUtils.hasFilters("node.meta['date'] | date")).isTrue();
+	}
 }

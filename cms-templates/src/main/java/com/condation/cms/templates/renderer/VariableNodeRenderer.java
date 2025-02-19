@@ -47,12 +47,23 @@ class VariableNodeRenderer {
 			Object variableValue = node.getExpression().evaluate(context.createEngineContext());
 			if (variableValue != null && variableValue instanceof String stringValue) {
 				writer.append(evaluateStringFilters(stringValue, node.getFilters(), context));
-			} else {
-				writer.append(variableValue != null ? String.valueOf(variableValue) : "");
+			} else if (variableValue != null)  {
+				writer.append(evaluateFilters(variableValue, node.getFilters(), context));
 			}
 		} catch (Exception e) {
 			throw new RenderException(e.getLocalizedMessage(), node.getLine(), node.getColumn());
 		}
+	}
+
+	protected String evaluateFilters(Object value, List<Filter> filters, Context context) {
+		var returnValue = value;
+		if (filters != null && !filters.isEmpty()) {
+			var filterPipeline = createPipeline(filters, context);
+
+			returnValue = filterPipeline.execute(returnValue);
+		}
+
+		return String.valueOf(returnValue);
 	}
 
 	protected String evaluateStringFilters(String value, List<Filter> filters, Context context) {

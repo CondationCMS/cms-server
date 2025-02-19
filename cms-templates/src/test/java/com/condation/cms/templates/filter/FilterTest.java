@@ -67,7 +67,25 @@ public class FilterTest {
 		
 		
 		var date = new Date();
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
+		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		var formatted = format.format(date);
+		
+        Object result = pipeline.execute(date);
+        Assertions.assertThat(result).isEqualTo(formatted);
+    }
+	
+	@Test
+    void date_custom_format() {
+		
+		FilterRegistry registry = new FilterRegistry();
+		FilterPipeline pipeline = new FilterPipeline(registry);
+		registry.register(DateFilter.NAME, new DateFilter());
+		
+		pipeline.addStep("date", "MM/yyyy");
+		
+		
+		var date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
 		var formatted = format.format(date);
 		
         Object result = pipeline.execute(date);

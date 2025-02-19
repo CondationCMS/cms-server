@@ -24,6 +24,9 @@ package com.condation.cms.templates.filter.impl;
 
 import com.condation.cms.templates.filter.Filter;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class DateFilter implements Filter {
@@ -32,12 +35,27 @@ public class DateFilter implements Filter {
 
     @Override
     public Object apply(Object input, Object... params) {
-        if (input == null || !(input instanceof Date)) {
+        if (input == null) {
             return input;
         }
 
-		SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");
-		return format.format((Date)input);
+		String pattern = "dd.MM.yyyy";
+		if (params.length == 1 && params[0] instanceof String) {
+			pattern = (String)params[0];
+		}
+		
+		if (input instanceof Date) {
+			SimpleDateFormat format = new SimpleDateFormat(pattern);
+			return format.format((Date)input);
+		} else if (input instanceof LocalDate date) {
+			var formatter = DateTimeFormatter.ofPattern(pattern);
+			return formatter.format(date);
+		} else if (input instanceof LocalDateTime dateTime) {
+			var formatter = DateTimeFormatter.ofPattern(pattern);
+			return formatter.format(dateTime);
+		}
+		
+		return input;
     }
 
 }

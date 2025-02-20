@@ -1,6 +1,7 @@
 package com.condation.cms.templates;
 
 import com.condation.cms.api.cache.ICache;
+import com.condation.cms.templates.filter.impl.DateFilter;
 import com.condation.cms.templates.filter.impl.RawFilter;
 import com.condation.cms.templates.filter.impl.UpperFilter;
 
@@ -92,6 +93,7 @@ public class TemplateEngineFactory {
 
 	public TemplateEngineFactory defaultFilters() {
 		configuration
+				.registerFilter(DateFilter.NAME, new DateFilter())
 				.registerFilter(UpperFilter.NAME, new UpperFilter())
 				.registerFilter(RawFilter.NAME, new RawFilter());
 		return this;

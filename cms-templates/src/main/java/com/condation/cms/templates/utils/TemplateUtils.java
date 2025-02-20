@@ -40,23 +40,31 @@ public class TemplateUtils {
 	public static final String GET_FILTER_REGEX = "\\s*(.*?)\\s*";
 	public static final Pattern GET_FILTER_PATTERN = Pattern.compile(GET_FILTER_REGEX);
 
-	public static boolean hasFilters(String variable) {
-		Matcher matcher = CHECK_FILTER_PATTERN.matcher(variable);
-		return matcher.find();
+	public static boolean hasFilters(String expression) {
+		if (expression == null || expression.isBlank()) {
+            return false;
+        }
+
+        String[] parts = expression.split("\\s+\\|\\s+"); // Nur " | " als Trenner verwenden
+        return parts.length > 1;
 	}
 
-	public static List<String> extractFilters(String variable) {
+	public static List<String> extractFilters(String expression) {
 		List<String> filters = new ArrayList<>();
+        if (expression == null || expression.isBlank()) {
+            return filters; 
+        }
 
-		// Split basierend auf "|"
-		String[] parts = variable.split("\\|");
+        String[] parts = expression.split("\\s+\\|\\s+"); 
+        if (parts.length < 2) {
+            return filters; 
+        }
 
-		// Entferne den Variablennamen (erstes Element) und trimme Filter
-		for (int i = 1; i < parts.length; i++) {
-			filters.add(parts[i].trim());
-		}
+        for (int i = 1; i < parts.length; i++) {
+            filters.add(parts[i]);
+        }
 
-		return filters;
+        return filters;
 	}
 
 	public static Filter parseFilter(String filterDefinition) {

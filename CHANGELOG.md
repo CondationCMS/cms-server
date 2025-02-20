@@ -11,6 +11,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** TemplateEngineFeature for scripts [#393](https://github.com/CondationCMS/cms-server/pull/393)
 * **FEATURE** add system module for default markdown renderer [#394](https://github.com/CondationCMS/cms-server/pull/394)
 * **BUG** Fix request context issues [#392](https://github.com/CondationCMS/cms-server/pull/392)  
+* **BUG** Missing template filter (date) added [#397](https://github.com/CondationCMS/cms-server/pull/397)  
 
 ## 7.6.3
 

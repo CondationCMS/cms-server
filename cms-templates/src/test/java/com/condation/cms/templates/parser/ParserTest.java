@@ -21,7 +21,6 @@ package com.condation.cms.templates.parser;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.templates.TemplateConfiguration;
 import com.condation.cms.templates.lexer.Lexer;
 import org.apache.commons.jexl3.JexlBuilder;
@@ -35,18 +34,18 @@ import org.junit.jupiter.api.BeforeAll;
  * @author t.marx
  */
 public class ParserTest {
-	
+
 	private static final JexlEngine jexl = new JexlBuilder()
 			.cache(512)
 			.strict(true)
 			.silent(false)
 			.create();
-	
+
 	static Parser parser;
 	static Lexer lexer;
-	
+
 	@BeforeAll
-	public static void setup () {
+	public static void setup() {
 		var config = new TemplateConfiguration();
 		parser = new Parser(config, jexl);
 		lexer = new Lexer();
@@ -55,19 +54,37 @@ public class ParserTest {
 	@Test
 	public void test_filters() {
 		var input = "{{ content | raw | trim }}";
-		
+
 		var tokenStream = lexer.tokenize(input);
-		
+
 		var ast = parser.parse(tokenStream);
-		
+
 		Assertions.assertThat(ast.getChildren().getFirst()).isInstanceOf(VariableNode.class);
-		
-		var variableNode = (VariableNode)ast.getChildren().getFirst();
-		
+
+		var variableNode = (VariableNode) ast.getChildren().getFirst();
+
 		Assertions.assertThat(variableNode.hasFilters()).isEqualTo(true);
 		Assertions.assertThat(variableNode.getFilters()).containsExactly(
 				new Filter("raw"), new Filter("trim")
 		);
 	}
-	
+
+	@Test
+	public void test_complex_filters() {
+		var input = "{{ meta['date'] | date}}";
+
+		var tokenStream = lexer.tokenize(input);
+
+		var ast = parser.parse(tokenStream);
+
+		Assertions.assertThat(ast.getChildren().getFirst()).isInstanceOf(VariableNode.class);
+
+		var variableNode = (VariableNode) ast.getChildren().getFirst();
+
+		Assertions.assertThat(variableNode.hasFilters()).isEqualTo(true);
+		Assertions.assertThat(variableNode.getFilters()).containsExactly(
+				new Filter("date")
+		);
+	}
+
 }

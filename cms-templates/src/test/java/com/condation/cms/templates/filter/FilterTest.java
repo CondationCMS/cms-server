@@ -22,6 +22,9 @@ package com.condation.cms.templates.filter;
  * #L%
  */
 
+import com.condation.cms.templates.filter.impl.DateFilter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,5 +54,41 @@ public class FilterTest {
     void test() {
         Object result = pipeline.execute("Dies ist ein langer Text, der abgeschnitten werden sollte.");
         Assertions.assertThat(result).isEqualTo("Dies ist ein langer ...");
+    }
+	
+	@Test
+    void date() {
+		
+		FilterRegistry registry = new FilterRegistry();
+		FilterPipeline pipeline = new FilterPipeline(registry);
+		registry.register(DateFilter.NAME, new DateFilter());
+		
+		pipeline.addStep("date");
+		
+		
+		var date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		var formatted = format.format(date);
+		
+        Object result = pipeline.execute(date);
+        Assertions.assertThat(result).isEqualTo(formatted);
+    }
+	
+	@Test
+    void date_custom_format() {
+		
+		FilterRegistry registry = new FilterRegistry();
+		FilterPipeline pipeline = new FilterPipeline(registry);
+		registry.register(DateFilter.NAME, new DateFilter());
+		
+		pipeline.addStep("date", "MM/yyyy");
+		
+		
+		var date = new Date();
+		SimpleDateFormat format = new SimpleDateFormat("MM/yyyy");
+		var formatted = format.format(date);
+		
+        Object result = pipeline.execute(date);
+        Assertions.assertThat(result).isEqualTo(formatted);
     }
 }

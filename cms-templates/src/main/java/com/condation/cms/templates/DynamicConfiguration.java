@@ -22,7 +22,6 @@ package com.condation.cms.templates;
  * #L%
  */
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.tags.component.EndComponentTag;
 import com.condation.cms.templates.tags.component.ComponentTag;

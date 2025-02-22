@@ -21,8 +21,6 @@ package com.condation.cms.templates.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.condation.cms.templates.renderer.Renderer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +34,7 @@ import org.apache.commons.jexl3.JexlExpression;
  * @author t.marx
  */
 public class ParameterUtil {
+
 	public static Map<String, Object> parseAndEvaluate(String input, JexlContext jexlContext, JexlEngine engine) {
 		Map<String, Object> resultMap = new HashMap<>();
 
@@ -48,22 +47,29 @@ public class ParameterUtil {
 				String key = token.substring(0, equalsIndex).trim(); // Schlüssel extrahieren
 				String value = token.substring(equalsIndex + 1).trim(); // Wert extrahieren
 
+				boolean isVariable = true;
 				// Anführungszeichen entfernen, falls vorhanden
 				if (value.startsWith("\"") && value.endsWith("\"")) {
 					value = value.substring(1, value.length() - 1);
+					isVariable = false;
 				}
 
-				// Wert mit JEXL evaluieren
-				Object evaluatedValue;
-				try {
-					JexlExpression expression = engine.createExpression(value);
-					evaluatedValue = expression.evaluate(jexlContext);
-				} catch (Exception e) {
-					// Falls der Wert keine JEXL-Expression ist, einfach als String speichern
-					evaluatedValue = value;
+				if (isVariable) {
+					// Wert mit JEXL evaluieren
+					Object evaluatedValue;
+					try {
+						JexlExpression expression = engine.createExpression(value);
+						evaluatedValue = expression.evaluate(jexlContext);
+					} catch (Exception e) {
+						// Falls der Wert keine JEXL-Expression ist, einfach als String speichern
+						evaluatedValue = value;
+					}
+
+					resultMap.put(key, evaluatedValue);
+				} else {
+					resultMap.put(key, value);
 				}
 
-				resultMap.put(key, evaluatedValue);
 			}
 		}
 

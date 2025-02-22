@@ -17,6 +17,7 @@ export const RequestFeature = Java.type("com.condation.cms.api.feature.features.
 export const ServerPropertiesFeature = Java.type("com.condation.cms.api.feature.features.ServerPropertiesFeature").class
 export const SiteMediaServiceFeature = Java.type("com.condation.cms.api.feature.features.SiteMediaServiceFeature").class
 export const SitePropertiesFeature = Java.type("com.condation.cms.api.feature.features.SitePropertiesFeature").class
+export const TemplateEngineFeature = Java.type("com.condation.cms.api.feature.features.TemplateEngineFeature").class
 export const ThemeFeature = Java.type("com.condation.cms.api.feature.features.ThemeFeature").class
 
 export const $features = {

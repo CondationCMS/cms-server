@@ -59,7 +59,7 @@ public class ExtendedSiteProperties implements SiteProperties {
 
 	@Override
 	public String markdownEngine() {
-		return configuration.getString("markdown.engine");
+		return configuration.getString("markdown.engine", "system");
 	}
 
 	@Override

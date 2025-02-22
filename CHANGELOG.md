@@ -6,6 +6,97 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 7.7.0
+
+* **FEATURE** TemplateEngineFeature for scripts [#393](https://github.com/CondationCMS/cms-server/pull/393)
+* **FEATURE** add system module for default markdown renderer [#394](https://github.com/CondationCMS/cms-server/pull/394)
+* **BUG** Fix request context issues [#392](https://github.com/CondationCMS/cms-server/pull/392)  
+* **BUG** Missing template filter (date) added [#397](https://github.com/CondationCMS/cms-server/pull/397)  
+
+## 7.6.3
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.6.3
+
+## 7.6.2
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.6.2
+
+## 7.6.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.6.1
+
+## 7.6.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.6.0
+
+## 7.5.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.5.0
+
+## 7.4.2
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.4.2
+
+## 7.4.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.4.1
+
+## 7.4.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.4.0
+
+## 7.3.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.3.0
+
+## 7.2.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.2.0
+
+## 7.1.2
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.1.2
+
+## 7.1.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.1.1
+
+## 7.1.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v7.1.0
+
+## 6.4.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.4.0
+
+## 6.3.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.3.1
+
+## 6.3.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.3.0
+
+## 6.2.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.2.1
+
+## 6.2.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.2.0
+
+## 6.1.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.1.1
+
+## 6.1.0
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.1.0
+
+## 6.0.1
+
+https://github.com/CondationCMS/cms-server/releases/tag/v6.0.1
+
 ## 6.0.0
 
 This is the first version under the new condation organization.

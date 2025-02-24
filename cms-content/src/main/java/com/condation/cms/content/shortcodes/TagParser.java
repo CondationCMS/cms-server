@@ -22,6 +22,7 @@ package com.condation.cms.content.shortcodes;
  * #L%
  */
 import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.request.RequestContext;
 import org.apache.commons.jexl3.JexlEngine;
 import org.apache.commons.jexl3.MapContext;
 
@@ -90,12 +91,12 @@ public class TagParser {
 		return tags;
 	}
 
-	public String parse(String text, TagMap tagHandlers) {
-		return parse(text, tagHandlers, Collections.emptyMap());
+	public String parse(String text, TagMap tagHandlers, RequestContext requestContext) {
+		return parse(text, tagHandlers, Collections.emptyMap(), requestContext);
 	}
 
 	// Zweiter Schritt: Tags basierend auf den gespeicherten Positionen ersetzen
-	public String parse(String text, TagMap tagHandlers, Map<String, Object> contextModel) {
+	public String parse(String text, TagMap tagHandlers, Map<String, Object> contextModel, RequestContext requestContext) {
 		// Erster Schritt: Finde alle Tags
 		List<TagInfo> tags = findTags(text, tagHandlers);
 
@@ -107,11 +108,11 @@ public class TagParser {
 			Function<Parameter, String> handler = tagHandlers.get(tag.name);
 
 			// Im zweiten Schritt: Attribute auswerten
-			Parameter evaluatedAttributes = evaluateAttributes(tag.rawAttributes, contextModel);
+			Parameter evaluatedAttributes = evaluateAttributes(tag.rawAttributes, contextModel, requestContext);
 
 			if (evaluatedAttributes.containsKey("_content")) {
 				String rawContent = (String) evaluatedAttributes.get("_content");
-				String parsedContent = parse(rawContent, tagHandlers, contextModel); // Rekursives Parsen
+				String parsedContent = parse(rawContent, tagHandlers, contextModel, requestContext); // Rekursives Parsen
 				evaluatedAttributes.put("_content", parsedContent);
 			}
 
@@ -172,8 +173,8 @@ public class TagParser {
 	}
 
 	// Zweiter Schritt: Attribute auswerten
-	private Parameter evaluateAttributes(Parameter rawAttributes, Map<String, Object> contextModel) {
-		Parameter evaluatedAttributes = new Parameter();
+	private Parameter evaluateAttributes(Parameter rawAttributes, Map<String, Object> contextModel, RequestContext requestContext) {
+		Parameter evaluatedAttributes = new Parameter(requestContext);
 		for (Map.Entry<String, Object> entry : rawAttributes.entrySet()) {
 			String key = entry.getKey();
 			String rawValue = (String) entry.getValue(); // Rohwert als String

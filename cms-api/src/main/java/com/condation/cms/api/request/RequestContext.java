@@ -23,6 +23,9 @@ package com.condation.cms.api.request;
  */
 
 import com.condation.cms.api.feature.FeatureContainer;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -32,9 +35,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RequestContext extends FeatureContainer implements AutoCloseable {
 
+	private ConcurrentMap<String, Object> variables = new ConcurrentHashMap<>();
+	
 	public RequestContext () {
 	}
-
+	
+	public Map<String, Object> getVariables () {
+		return variables;
+	}
+	
 	@Override
 	public void close() throws Exception {
 		super.close();

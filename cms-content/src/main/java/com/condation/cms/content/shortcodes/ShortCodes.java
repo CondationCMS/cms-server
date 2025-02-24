@@ -62,7 +62,7 @@ public class ShortCodes {
 	}
 	
 	public String replace (final String content, Map<String, Object> contextModel, RequestContext requestContext) {
-		return parser.parse(content, tagMap, contextModel);
+		return parser.parse(content, tagMap, contextModel, requestContext);
 	}
 	
 	public String execute (String name, Map<String, Object> parameters, RequestContext requestContext) {

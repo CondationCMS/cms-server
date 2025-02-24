@@ -24,6 +24,7 @@ package com.condation.cms.content.shortcodes;
 
 
 import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ContentBaseTest;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +64,20 @@ public class ShortCodesTest extends ContentBaseTest {
 		tags.put(
 				"exp",
 				params -> "<span>%s</span>".formatted(params.get("expression"))
+		);
+		
+		tags.put(
+				"set_var",
+				params -> {
+					params.getRequestContext().getVariables().put("myVar", "Hello world!");
+					return "";
+				}
+		);
+		tags.put(
+				"get_var",
+				params -> {
+					return (String)params.getRequestContext().getVariables().getOrDefault("myVar", "DEFAULT");
+				}
 		);
 		
 		shortCodes = new ShortCodes(tags, getTagParser());
@@ -201,5 +216,17 @@ public class ShortCodesTest extends ContentBaseTest {
 		);
 		
 		Assertions.assertThat(result).isEqualTo("<span>CondationCMS</span>");
+	}
+	
+	@Test
+	void test_variables() {
+		
+		RequestContext requestContext = new RequestContext();
+		
+		shortCodes.replace("[[set_var /]]", Map.of(), requestContext);
+		
+		var result = shortCodes.replace("[[get_var /]]", Map.of(), requestContext);
+		
+		Assertions.assertThat(result).isEqualTo("Hello world!");
 	}
 }

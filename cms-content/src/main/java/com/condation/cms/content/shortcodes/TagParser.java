@@ -178,13 +178,13 @@ public class TagParser {
 		for (Map.Entry<String, Object> entry : rawAttributes.entrySet()) {
 			String key = entry.getKey();
 			String rawValue = (String) entry.getValue(); // Rohwert als String
-			evaluatedAttributes.put(key, parseValue(rawValue, contextModel)); // Wert erst jetzt parsen
+			evaluatedAttributes.put(key, parseValue(rawValue, contextModel, requestContext)); // Wert erst jetzt parsen
 		}
 		return evaluatedAttributes;
 	}
 
 	// Methode zur Auswertung von Attributwerten im zweiten Schritt
-	private Object parseValue(String value, Map<String, Object> contextModel) {
+	private Object parseValue(String value, Map<String, Object> contextModel, RequestContext requestContext) {
 		if (value.matches("\\d+")) {
 			return Integer.valueOf(value);
 		} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
@@ -192,8 +192,14 @@ public class TagParser {
 		} else if (value.startsWith("${") && value.endsWith("}")) {
 			String expressionString = value.substring(2, value.length() - 1);
 
+			var contextMap = new HashMap<String, Object>();
+			contextMap.putAll(contextModel);
+			if (requestContext != null) {
+				contextMap.putAll(requestContext.getVariables());			
+			}
+			
 			var expression = engine.createExpression(expressionString);
-			return expression.evaluate(new MapContext(contextModel));
+			return expression.evaluate(new MapContext(contextMap));
 		}
 		return value;
 	}

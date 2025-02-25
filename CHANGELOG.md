@@ -12,6 +12,8 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** add system module for default markdown renderer [#394](https://github.com/CondationCMS/cms-server/pull/394)
 * **BUG** Fix request context issues [#392](https://github.com/CondationCMS/cms-server/pull/392)  
 * **BUG** Missing template filter (date) added [#397](https://github.com/CondationCMS/cms-server/pull/397)  
+* **FEATURE** Add variables to request context to share data in request scope [#403](https://github.com/CondationCMS/cms-server/pull/403)  
+* **FEATURE** use request variables in expression context [#404](https://github.com/CondationCMS/cms-server/pull/404)  
 
 ## 7.6.3
 

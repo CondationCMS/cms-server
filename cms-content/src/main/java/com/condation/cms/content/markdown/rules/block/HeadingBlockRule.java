@@ -59,7 +59,7 @@ public class HeadingBlockRule implements BlockElementRule {
 			return "<h%d id=\"%s\">%s</h%d>".formatted(
 					level,
 					id,
-					heading,
+					inlineRenderer.render(heading),
 					level
 			);
 		}

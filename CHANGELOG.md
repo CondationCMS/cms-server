@@ -16,6 +16,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** use request variables in expression context [#404](https://github.com/CondationCMS/cms-server/pull/404)  
 * **FEATURE** allow inline markdown rules in heading [#409](https://github.com/CondationCMS/cms-server/pull/409)
 * **BUG** horizontal rule doesn't work as expected [#410](https://github.com/CondationCMS/cms-server/issues/410)
+* **BUG** remove the pebble dependeny for security reasons [#407](https://github.com/CondationCMS/cms-server/pull/407)  
 
 ## 7.6.3
 

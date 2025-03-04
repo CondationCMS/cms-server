@@ -1,4 +1,4 @@
-package com.condation.cms.content.template.shortcode;
+package com.condation.cms.templates.content;
 
 /*-
  * #%L
@@ -23,14 +23,11 @@ package com.condation.cms.content.template.shortcode;
  */
 
 
-import com.condation.cms.content.ContentBaseTest;
 import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
 import com.condation.cms.content.shortcodes.ShortCodes;
-import io.pebbletemplates.pebble.PebbleEngine;
-import io.pebbletemplates.pebble.loader.StringLoader;
-import io.pebbletemplates.pebble.template.PebbleTemplate;
-import java.io.StringWriter;
-import java.io.Writer;
+import com.condation.cms.templates.CMSTemplateEngine;
+import com.condation.cms.templates.TemplateEngineFactory;
+import com.condation.cms.templates.loaders.StringTemplateLoader;
 import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -42,17 +39,22 @@ import org.junit.jupiter.api.Test;
  *
  * @author t.marx
  */
-public class PebbleShortCodeTemplateFunctionTest extends ContentBaseTest {
+public class ShortCodeTemplateFunctionTest extends ContentBaseTest {
 
 	ShortCodes shortCodes;
 
-	static PebbleEngine engine;
+	static CMSTemplateEngine engine;
+	static StringTemplateLoader templateLoader;
 
 	@BeforeAll
 	public static void setup() {
-		engine = new PebbleEngine.Builder()
-				.loader(new StringLoader())
-				.build();
+		templateLoader = new StringTemplateLoader();
+		engine = TemplateEngineFactory
+				.newInstance(templateLoader)
+				.defaultFilters()
+				.defaultTags()
+				.devMode(true)
+				.create();
 	}
 	@BeforeEach
 	public void setupShortCodes() {
@@ -63,32 +65,33 @@ public class PebbleShortCodeTemplateFunctionTest extends ContentBaseTest {
 	}
 
 	@Test
-	public void testSomeMethod() throws Exception {
+	public void test_call_shortcode() throws Exception {
 		String templateString = "{{shortCode.call('echo')}}";
 
-		PebbleTemplate template = engine.getTemplate(templateString);
+		templateLoader.add("test_call_shortcode", templateString);
+		var template = engine.getTemplate("test_call_shortcode");
 
 		Map<String, Object> context = new HashMap<>();
 		context.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
+		var content = template.evaluate(context);
 
-		Assertions.assertThat(writer.toString()).isEqualTo("Hello world");
+		Assertions.assertThat(content).isEqualTo("Hello world");
 	}
 
 	@Test
 	public void test_greet() throws Exception {
 		String templateString = "{{shortCode.call('greet', {'name': 'CondationCMS'})}}";
 
-		PebbleTemplate template = engine.getTemplate(templateString);
+		templateLoader.add("test_greet", templateString);
+		
+		var template = engine.getTemplate("test_greet");
 
 		Map<String, Object> context = new HashMap<>();
 		context.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
 
-		Writer writer = new StringWriter();
-		template.evaluate(writer, context);
+		var content = template.evaluate(context);
 
-		Assertions.assertThat(writer.toString()).isEqualTo("Hello CondationCMS");
+		Assertions.assertThat(content).isEqualTo("Hello CondationCMS");
 	}
 }

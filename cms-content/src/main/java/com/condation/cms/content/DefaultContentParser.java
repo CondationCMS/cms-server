@@ -21,7 +21,6 @@ package com.condation.cms.content;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.google.common.base.Strings;
@@ -38,15 +37,14 @@ import org.yaml.snakeyaml.Yaml;
  * @author t.marx
  */
 @Slf4j
-public class DefaultContentParser implements ContentParser{
+public class DefaultContentParser implements ContentParser {
 
-	
 	public DefaultContentParser() {
 	}
 
 	@Override
 	public void clearCache() {
-		
+
 	}
 
 	@Override
@@ -55,18 +53,18 @@ public class DefaultContentParser implements ContentParser{
 
 		return new Content(readContent.content(), _parseMeta(readContent));
 	}
-    
-    private Map<String, Object> _parseMeta (ContentRecord content) {
-        if (Strings.isNullOrEmpty(content.meta().trim())) {
-            return Collections.emptyMap();
-        }
+
+	private Map<String, Object> _parseMeta(ContentRecord content) {
+		if (Strings.isNullOrEmpty(content.meta().trim())) {
+			return Collections.emptyMap();
+		}
 		try {
 			return new Yaml().load(content.meta().trim());
 		} catch (Exception e) {
 			log.error("error parsing yaml: " + content.meta(), e);
 			throw new RuntimeException(e);
 		}
-    }
+	}
 
 	@Override
 	public Map<String, Object> parseMeta(final ReadOnlyFile contentFile) throws IOException {
@@ -81,23 +79,28 @@ public class DefaultContentParser implements ContentParser{
 		StringBuilder contentBuilder = new StringBuilder();
 		StringBuilder metaBuilder = new StringBuilder();
 
-		AtomicBoolean inFrontMatter = new AtomicBoolean(true);
-		AtomicInteger counter = new AtomicInteger(0);
-		fileContent.stream().forEach((line) -> {
-			if (line.trim().equals("---")) {
-				counter.incrementAndGet();
-				if (counter.get() == 2) {
-					inFrontMatter.set(false);
+		boolean inFrontMatter = false;
+		boolean frontMatterClosed = false;
+
+		for (String line : fileContent) {
+			if (line.trim().equals("---") && !frontMatterClosed) {
+				if (!inFrontMatter) {
+					inFrontMatter = true; // Start Frontmatter
+					continue;
+				} else if (!frontMatterClosed) {
+					frontMatterClosed = true; // Ende Frontmatter
+					inFrontMatter = false;
+					continue;
 				}
-				return;
-			}			
-			if (inFrontMatter.get()) {
+			}
+
+			if (inFrontMatter) {
 				metaBuilder.append(line).append("\r\n");
 			} else {
 				contentBuilder.append(line).append("\r\n");
 			}
-		});
-		
+		}
+
 		return new ContentRecord(contentBuilder.toString(), metaBuilder.toString());
 	}
 }

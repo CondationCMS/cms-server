@@ -14,6 +14,8 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **BUG** Missing template filter (date) added [#397](https://github.com/CondationCMS/cms-server/pull/397)  
 * **FEATURE** Add variables to request context to share data in request scope [#403](https://github.com/CondationCMS/cms-server/pull/403)  
 * **FEATURE** use request variables in expression context [#404](https://github.com/CondationCMS/cms-server/pull/404)  
+* **FEATURE** allow inline markdown rules in heading [#409](https://github.com/CondationCMS/cms-server/pull/409)
+* **BUG** horizontal rule doesn't work as expected [#410](https://github.com/CondationCMS/cms-server/issues/410)
 
 ## 7.6.3
 

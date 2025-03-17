@@ -6,6 +6,10 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 7.8.0
+
+* **BUG** Namespaces not set when executing content pipeline [#416](https://github.com/CondationCMS/cms-server/pull/416)  
+
 ## 7.7.0
 
 * **FEATURE** TemplateEngineFeature for scripts [#393](https://github.com/CondationCMS/cms-server/pull/393)

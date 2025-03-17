@@ -207,7 +207,10 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		extendModel(model, namespace);
 
-		String content = renderContent(rawContent, context, model);
+		var modelCopy = model.copy();
+		modelCopy.values.putAll(namespace.getNamespaces());
+		
+		String content = renderContent(rawContent, context, modelCopy);
 		model.values.put("content", content);
 		namespace.add("node", "content", content);
 		

@@ -21,7 +21,6 @@ package com.condation.cms.api.template;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.request.RequestContext;
@@ -36,22 +35,31 @@ import lombok.RequiredArgsConstructor;
  * @author thmar
  */
 public interface TemplateEngine {
-	
+
 	public void invalidateCache();
 
-	void updateTheme (Theme theme);
-	
+	void updateTheme(Theme theme);
+
 	String render(final String template, final TemplateEngine.Model model) throws IOException;
-	
+
 	default String renderFromString(final String templateString, final TemplateEngine.Model model) throws IOException {
 		return templateString;
 	}
-	
+
 	@RequiredArgsConstructor
 	public static class Model {
+
 		public final Map<String, Object> values = new HashMap<>();
 		public final ReadOnlyFile contentFile;
 		public final ContentNode contentNode;
 		public final RequestContext requestContext;
-	} 
+
+		public Model copy() {
+			var copy = new Model(this.contentFile, this.contentNode, this.requestContext);
+			
+			copy.values.putAll(this.values);
+			
+			return copy;
+		}
+	}
 }

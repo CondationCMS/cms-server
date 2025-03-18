@@ -1,10 +1,10 @@
-package com.condation.cms.git;
+package com.condation.cms.api.eventbus.events;
 
 /*-
  * #%L
- * cms-git
+ * cms-api
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,20 +22,12 @@ package com.condation.cms.git;
  * #L%
  */
 
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import com.condation.cms.api.eventbus.Event;
 
 /**
  *
  * @author t.marx
  */
-public class TaskRunner {
-	
-	ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
-	
-	public Future<Boolean> execute (Task<Boolean> task) {
-		return executor.submit(task);
-	}
+public record RepoCheckoutEvent(String repo) implements Event {
+
 }

@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.Setter;
 import org.yaml.snakeyaml.Yaml;
@@ -46,5 +47,7 @@ public class Config {
 	@Setter
 	List<Repo> repos;
 	
-	
+	public Optional<Repo> find (String name) {
+		return repos.stream().filter(repo -> repo.getName().equals(name)).findFirst();
+	}
 }

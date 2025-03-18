@@ -23,8 +23,6 @@ package com.condation.cms.git;
  */
 
 
-import com.condation.cms.git.TaskRunner;
-import com.condation.cms.git.Config;
 import com.condation.cms.git.tasks.CloneTask;
 import com.condation.cms.git.tasks.FetchTask;
 import com.condation.cms.git.tasks.MergeTask;
@@ -32,7 +30,6 @@ import com.condation.cms.git.tasks.ResetTask;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -41,28 +38,26 @@ import org.junit.jupiter.api.Test;
  */
 public class FlowTest {
 	
-	TaskRunner runner = new TaskRunner();
-	
 	@Test
-	void flow_test () throws IOException, InterruptedException, ExecutionException {
+	void flow_test () throws Exception {
 		var config = Config.load(Path.of("git.yaml"));
 		
-		Future<Boolean> clone = runner.execute(new CloneTask(config.getRepos().get(0)));
+		Boolean clone = new CloneTask(config.getRepos().get(0)).call();
 		
-		if (clone.get()) {
+		if (clone) {
 			System.out.println("clone done");
 			
-			var fetch = runner.execute(new FetchTask(config.getRepos().get(0)));
+			var fetch = new FetchTask(config.getRepos().get(0)).call();
 			
-			if (fetch.get()) {
+			if (fetch) {
 				System.out.println("fetch done");
-				var merge = runner.execute(new MergeTask(config.getRepos().get(0)));
-				if (merge.get()) {
+				var merge = new MergeTask(config.getRepos().get(0)).call();
+				if (merge) {
 					System.out.println("merged");
 				} else {
 					System.out.println("merge error");
-					var reset = runner.execute(new ResetTask(config.getRepos().get(0)));
-					System.out.println("reset " + reset.get());
+					var reset = new ResetTask(config.getRepos().get(0)).call();
+					System.out.println("reset " + reset);
 				}
 			} else {
 				System.out.println("fetch error");

@@ -23,7 +23,7 @@ package com.condation.cms.git;
  */
 
 import com.condation.cms.git.tasks.CloneTask;
-import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,22 +40,24 @@ public class RepositoryManager {
 	private final Scheduler scheduler;
 	
 	Config config;
-	TaskRunner taskRunner;
 
 	GitScheduler gitScheduler;
 
-	public void init(final Path configFile) throws IOException {
+	public void init(final Path configFile) throws Exception {
+		if (!Files.exists(configFile)) {
+			log.info("no repository configuration found");
+			return;
+		}
 		config = Config.load(configFile);
-		taskRunner = new TaskRunner();
-		gitScheduler = new GitScheduler(scheduler, taskRunner);
+		gitScheduler = new GitScheduler(scheduler);
 
 		if (config.getRepos() != null) {
 			log.debug("initial clone repositories");
 			for (var repo : config.getRepos()) {
 				log.debug("clone {}", repo.getName());
-				var result = taskRunner.execute(new CloneTask(repo));
+				var result = new CloneTask(repo).call();
 				try {
-					log.debug("result : {} ", result.get());
+					log.debug("result : {} ", result);
 					log.debug("schedule repo");
 					gitScheduler.schedule(repo);
 				} catch (Exception ex) {
@@ -65,9 +67,20 @@ public class RepositoryManager {
 
 		}
 	}
-
-	public void close() throws IOException {
-		taskRunner.executor.shutdown();
+	
+	public void updateRepo (String name) {
+		log.debug("try updating git repo: {}", name);
+		if (config == null) {
+			log.warn("config not loaded");
+			return;
+		}
+		var repo = config.find(name);
+		if (repo.isEmpty()) {
+			log.warn("repository {} not found", name);
+			return;
+		}
+		log.debug("updating git repo: {}", name);
+		new UpdateRepoJob().execute(repo.get());
+		log.debug("get repo {} updated", name);
 	}
-
 }

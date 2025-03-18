@@ -43,13 +43,11 @@ import org.quartz.TriggerBuilder;
 public class GitScheduler {
 
 	private final Scheduler scheduler;
-	private final TaskRunner taskRunner;
 
 
 	public void schedule(final Repo repo)  {
 		JobDataMap data = new JobDataMap();
 		data.put("repo", repo);
-		data.put("taskRunner", taskRunner);
 		JobDetail jobDetail = JobBuilder
 				.newJob(UpdateRepoJob.class)
 				.withIdentity(repo.getName(), "update-repo")

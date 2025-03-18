@@ -23,9 +23,6 @@ package com.condation.cms.git;
  */
 
 
-import com.condation.cms.git.GitScheduler;
-import com.condation.cms.git.TaskRunner;
-import com.condation.cms.git.Config;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -44,7 +41,6 @@ import org.quartz.impl.StdSchedulerFactory;
 public class GitSchedulerTest {
 	
 	static GitScheduler gitScheduler;
-	static TaskRunner runner = new TaskRunner();
 	
 	static Scheduler scheduler;
 	
@@ -55,12 +51,11 @@ public class GitSchedulerTest {
 		scheduler = schedulerFactory.getScheduler();
 		scheduler.start();
 		
-		gitScheduler = new GitScheduler(scheduler, runner);
+		gitScheduler = new GitScheduler(scheduler);
 	}
 	@AfterAll
 	static void shutdown () throws Exception {
 		scheduler.shutdown();
-		runner.executor.shutdown();
 	}
 
 	@Test

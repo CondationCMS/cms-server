@@ -21,8 +21,6 @@ package com.condation.cms.git;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.git.tasks.FetchTask;
 import com.condation.cms.git.tasks.MergeTask;
 import com.condation.cms.git.tasks.ResetTask;
@@ -37,24 +35,27 @@ import org.quartz.JobExecutionException;
  */
 @Slf4j
 public class UpdateRepoJob implements Job {
-	
+
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
-		
+
 		Repo repo = (Repo) context.getJobDetail().getJobDataMap().get("repo");
-		TaskRunner taskRunner = (TaskRunner) context.getJobDetail().getJobDataMap().get("taskRunner");
-		
+
+		execute(repo);
+	}
+
+	protected void execute(Repo repo) {
 		try {
-			var fetch = taskRunner.execute(new FetchTask(repo));
-			
-			if (fetch.get()) {
+			var fetch = new FetchTask(repo).call();
+
+			if (fetch) {
 				log.debug("fetch {} done", repo.getName());
-				var merge = taskRunner.execute(new MergeTask(repo));
-				if (merge.get()) {
+				var merge = new MergeTask(repo).call();
+				if (merge) {
 					log.debug("{} merged", repo.getName());
 				} else {
 					log.error("merge {} error", repo.getName());
-					var reset = taskRunner.execute(new ResetTask(repo));
+					var reset = new ResetTask(repo).call();
 					log.debug("reset {}", repo.getName());
 				}
 			} else {

@@ -26,6 +26,7 @@ package com.condation.cms.ipc;
 
 import com.condation.cms.api.IPCProperties;
 import com.condation.cms.api.eventbus.Event;
+import com.condation.cms.api.eventbus.events.RepoCheckoutEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
 import java.util.function.Consumer;
@@ -71,6 +72,14 @@ public class IPCProtocol {
 			}
 			log.debug("trigger reload host event");
 			eventConsumer.accept(new ReloadHostEvent((String)hostHeader.get()));
+		} else if ("repo_checkout".equals(command.getCommand())) {
+			var repoHeader = command.getHeader("repo");
+			if (!repoHeader.isPresent()) {
+				log.warn("repo header not set");
+				return;
+			}
+			log.debug("trigger checkout of repo {}", repoHeader);
+			eventConsumer.accept(new RepoCheckoutEvent((String)repoHeader.get()));
 		}
 	}
 }

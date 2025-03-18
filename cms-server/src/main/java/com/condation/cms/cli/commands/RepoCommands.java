@@ -1,4 +1,4 @@
-package com.condation.cms.cli;
+package com.condation.cms.cli.commands;
 
 /*-
  * #%L
@@ -23,21 +23,24 @@ package com.condation.cms.cli;
  */
 
 
+import com.condation.cms.cli.commands.repo.Checkout;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
-import com.condation.cms.cli.commands.*;
 
 /**
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "", subcommands = {
-	ServerCommand.class,  HostCommands.class, ExtensionCommands.class, ModuleCommands.class, ThemeCommands.class, RepoCommands.class})
+@CommandLine.Command(
+		name = "repo",
+		subcommands = {
+			Checkout.class
+		})
 @Slf4j
-public class CLICommand implements Runnable {
+public class RepoCommands implements Runnable {
 
 	@Override
 	public void run() {
-		System.out.println("");
+		System.out.println("Subcommand needed: 'checkout'");
 	}
 }

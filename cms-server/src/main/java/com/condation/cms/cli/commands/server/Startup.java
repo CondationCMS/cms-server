@@ -35,13 +35,10 @@ import com.condation.cms.ipc.IPCServer;
 import com.condation.cms.server.configs.ServerGlobalModule;
 import com.condation.cms.server.JettyServer;
 import com.google.inject.Guice;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
-import org.quartz.Scheduler;
 import picocli.CommandLine;
 
 /**
@@ -58,6 +55,7 @@ public class Startup implements Runnable {
 			
 			System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
 			System.setProperty("polyglotimpl.DisableClassPathIsolation", "true");
+			//System.setProperty("polyglot.engine.WarnVirtualThreadSupport", "false");
 
 			var globalInjector = Guice.createInjector(new ServerGlobalModule());
 			ServerProperties properties = globalInjector.getInstance(ServerProperties.class);
@@ -69,7 +67,7 @@ public class Startup implements Runnable {
 
 			ServerContext.IS_DEV = properties.dev();
 
-			initGitRepositoryManager(globalInjector);
+			globalInjector.getInstance(RepositoryManager.class);
 			
 			var server = new JettyServer(globalInjector);
 			
@@ -117,24 +115,6 @@ public class Startup implements Runnable {
 		Files.writeString(ServerUtil.getPath(Constants.PID_FILE), String.valueOf(ProcessHandle.current().pid()));
 	}
 
-	private static void initGitRepositoryManager(Injector globaInjector) throws IOException {
-		Path gitConfig = ServerUtil.getPath("git.yaml");
-		if (!Files.exists(gitConfig)) {
-			log.info("no repository configuration found");
-			return;
-		}
-		log.info("repository configuration found");
-		final RepositoryManager repositoryManager = new RepositoryManager(globaInjector.getInstance(Scheduler.class));
-		repositoryManager.init(gitConfig);
-
-		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-			try {
-				repositoryManager.close();
-			} catch (IOException ex) {
-				log.error("error closing repo manager", ex);
-			}
-		}));
-	}
 
 	private static void printStartup(ServerProperties properties) throws IOException {
 		try (var in = com.condation.cms.Startup.class.getResourceAsStream("application.properties")) {

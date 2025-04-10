@@ -6,6 +6,11 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
+## 7.8.1
+
+* **MAINTENANCE** multiple dependencies updated
+* **MAINTENANCE** maven wrapper added to project
+
 ## 7.8.0
 
 * **BUG** Namespaces not set when executing content pipeline [#416](https://github.com/CondationCMS/cms-server/pull/416)  

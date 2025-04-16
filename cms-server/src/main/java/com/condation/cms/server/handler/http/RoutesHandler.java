@@ -24,8 +24,8 @@ package com.condation.cms.server.handler.http;
 
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
-import com.condation.cms.api.extensions.routes.RoutesExtensionPoint;
-import com.condation.cms.api.extensions.routes.RoutesManager;
+import com.condation.cms.api.extensions.http.routes.RoutesExtensionPoint;
+import com.condation.cms.api.extensions.http.routes.RoutesManager;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.extensions.HttpHandlerExtension;

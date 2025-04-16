@@ -1,4 +1,4 @@
-package com.condation.cms.api.extensions.routes;
+package com.condation.cms.api.extensions.http.routes;
 
 /*-
  * #%L
@@ -22,14 +22,13 @@ package com.condation.cms.api.extensions.routes;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Route {
-    String value();
-    String method() default "GET"; // Optional: GET, POST, PUT, DELETE ...
+/**
+ *
+ * @author thorstenmarx
+ */
+public abstract class RoutesExtensionPoint extends AbstractExtensionPoint {
+	
+	abstract public void registerRoutes (RoutesManager routesManager);
 }

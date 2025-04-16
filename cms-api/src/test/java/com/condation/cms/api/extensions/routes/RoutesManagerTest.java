@@ -26,6 +26,8 @@ package com.condation.cms.api.extensions.routes;
  * #L%
  */
 
+import com.condation.cms.api.extensions.http.routes.Route;
+import com.condation.cms.api.extensions.http.routes.RoutesManager;
 import com.google.common.base.Stopwatch;
 import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;

@@ -1,4 +1,4 @@
-package com.condation.cms.api.extensions.routes;
+package com.condation.cms.api.extensions.http.routes;
 
 /*-
  * #%L

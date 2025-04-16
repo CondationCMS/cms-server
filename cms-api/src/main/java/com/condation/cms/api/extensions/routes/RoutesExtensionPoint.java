@@ -1,10 +1,10 @@
-package com.condation.cms.api.extensions;
+package com.condation.cms.api.extensions.routes;
 
 /*-
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,24 +22,13 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-
-import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.util.Callback;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-public interface HttpHandler {
+public abstract class RoutesExtensionPoint extends AbstractExtensionPoint {
 	
-	/**
-	 * 
-	 * @param request
-	 * @param response
-	 * @param callback
-	 * @return true if the request is handled by the HttpHandler, otherwise false
-	 * @throws Exception 
-	 */
-	boolean handle (Request request, Response response, Callback callback) throws Exception;
+	abstract public void registerRoutes (RoutesManager routesManager);
 }

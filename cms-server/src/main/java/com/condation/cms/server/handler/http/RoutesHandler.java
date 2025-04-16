@@ -24,6 +24,8 @@ package com.condation.cms.server.handler.http;
 
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
+import com.condation.cms.api.extensions.routes.RoutesExtensionPoint;
+import com.condation.cms.api.extensions.routes.RoutesManager;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.extensions.HttpHandlerExtension;
@@ -62,8 +64,8 @@ public class RoutesHandler extends Handler.Abstract {
 			if (tryModuleRoutes(request, response, callback)) {
 				return true;
 			}
-
-            return false;
+			
+            return tryRoutesManager(request, response, callback);
 		} catch (Exception e) {
 			log.error(null, e);
 			callback.failed(e);
@@ -71,6 +73,24 @@ public class RoutesHandler extends Handler.Abstract {
 		}
 	}
 
+	private boolean tryRoutesManager (Request request, Response response, Callback callback) throws Exception {
+		String route = "/" + RequestUtil.getContentPath(request);
+		
+		RoutesManager routesManager = new RoutesManager();
+		
+		
+		moduleManager.extensions(RoutesExtensionPoint.class)
+				.stream()
+				.forEach(extension -> extension.registerRoutes(routesManager));
+		
+		var handler = routesManager.findFirst(route, request.getMethod());
+		if (handler.isPresent()) {
+			return handler.get().handle(request, response, callback);
+		}
+		
+		return false;
+	}
+	
 	private boolean tryModuleRoutes(Request request, Response response, Callback callback) throws Exception {
 		String route = "/" + RequestUtil.getContentPath(request);
 

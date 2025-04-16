@@ -17,6 +17,8 @@ In this release we introduced some features to make life of developers easier.
 
 #### Registering hooks via annotations
 
+It is now possible to pass an object with annotated hook definitions to the HookSystem.register method.
+
 ```java
 @Filter("test/annotation/filter1")
 public List<String> filter (FilterContext<List<String>> context) {
@@ -30,6 +32,15 @@ public void action1 (ActionContext<?> context) {
 ```
 
 #### HTTP-Controllers
+
+The new RoutesExtensionPoint gives developers access to the RoutesManager, which includes a register method for adding routes via annotated methods.
+
+```java
+@Route("/test2")
+public boolean handle2 (Request request, Response response, Callback callback) {
+	return true;
+}
+```
 
 ## 7.8.0
 

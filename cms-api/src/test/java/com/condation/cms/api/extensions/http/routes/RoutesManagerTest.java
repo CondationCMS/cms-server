@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
  */
-package com.condation.cms.api.extensions.routes;
+package com.condation.cms.api.extensions.http.routes;
 
 /*-
  * #%L
@@ -26,10 +26,6 @@ package com.condation.cms.api.extensions.routes;
  * #L%
  */
 
-import com.condation.cms.api.extensions.http.routes.Route;
-import com.condation.cms.api.extensions.http.routes.RoutesManager;
-import com.google.common.base.Stopwatch;
-import java.util.concurrent.TimeUnit;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;

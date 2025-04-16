@@ -4,7 +4,7 @@ package com.condation.cms.api.hooks;
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2023 - 2025 CondationCMS
+ * Copyright (C) 2023 - 2024 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,18 +22,10 @@ package com.condation.cms.api.hooks;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
 
 /**
  *
- * @author thorstenmarx
+ * @author t.marx
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Filter {
-	String value ();
-	int priority () default 10;
+record FilterHook<T>(String name, int priority, FilterFunction<T> function) implements Hook {
 }

@@ -11,6 +11,26 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **MAINTENANCE** multiple dependencies updated
 * **MAINTENANCE** maven wrapper added to project
 
+### Developer experience
+
+In this release we introduced some features to make life of developers easier.
+
+#### Registering hooks via annotations
+
+```java
+@Filter("test/annotation/filter1")
+public List<String> filter (FilterContext<List<String>> context) {
+	context.value().remove("2");
+	return context.value();
+}
+@Action("test/annotation/action1")
+public void action1 (ActionContext<?> context) {
+	// do something
+}
+```
+
+#### HTTP-Controllers
+
 ## 7.8.0
 
 * **BUG** Namespaces not set when executing content pipeline [#416](https://github.com/CondationCMS/cms-server/pull/416)  

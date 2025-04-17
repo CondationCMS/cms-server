@@ -33,7 +33,8 @@ public void action1 (ActionContext<?> context) {
 
 #### HTTP-Controllers
 
-The new RoutesExtensionPoint gives developers access to the RoutesManager, which includes a register method for adding routes via annotated methods.
+The RoutesExtensionPoint is an extension point for defining HTTP routes. 
+It allows developers to provide a list of objects whose methods can be registered as routes using annotations.
 
 ```java
 @Route("/test2")

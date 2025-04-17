@@ -37,8 +37,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class RoutesManager {
 
-    //private final Map<PathSpec, HttpHandler> handlerMapping = new HashMap<>();
-	private final PathMapping pathMapping = new PathMapping();
+    private final PathMapping pathMapping = new PathMapping();
 
 	public Optional<HttpHandler> findFirst (String path, String method) {
 		return pathMapping.getMatchingHandler(path, method);

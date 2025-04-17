@@ -34,6 +34,7 @@ import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
 import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Inject;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,7 +82,10 @@ public class RoutesHandler extends Handler.Abstract {
 		
 		moduleManager.extensions(RoutesExtensionPoint.class)
 				.stream()
-				.forEach(extension -> extension.registerRoutes(routesManager));
+				.map(RoutesExtensionPoint::getRouteDefinitions)
+				.filter(routeDefinitions -> routeDefinitions != null && !routeDefinitions.isEmpty())
+				.flatMap(List::stream)
+				.forEach(controller -> routesManager.register(controller));
 		
 		var handler = routesManager.findFirst(route, request.getMethod());
 		if (handler.isPresent()) {

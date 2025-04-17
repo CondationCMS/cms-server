@@ -23,12 +23,12 @@ package com.condation.cms.api.extensions.http.routes;
  */
 
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import java.util.List;
 
 /**
  *
  * @author thorstenmarx
  */
 public abstract class RoutesExtensionPoint extends AbstractExtensionPoint {
-	
-	abstract public void registerRoutes (RoutesManager routesManager);
+	abstract public List<Object> getRouteDefinitions ();
 }

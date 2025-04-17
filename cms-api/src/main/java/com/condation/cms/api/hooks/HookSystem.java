@@ -21,9 +21,9 @@ package com.condation.cms.api.hooks;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,17 +40,68 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class HookSystem {
 
-	Multimap<String, Action> actions = ArrayListMultimap.create();
-	
-	Multimap<String, Filter> filters = ArrayListMultimap.create();
-	
-	private HookSystem (HookSystem source) {
+	Multimap<String, ActionHook> actions = ArrayListMultimap.create();
+
+	Multimap<String, FilterHook> filters = ArrayListMultimap.create();
+
+	private HookSystem(HookSystem source) {
 		this.actions.putAll(source.actions);
 		this.filters.putAll(source.filters);
 	}
-	
-	public HookSystem clone () {
+
+	public HookSystem clone() {
 		return new HookSystem(this);
+	}
+
+	public void register(Object sourceObject) {
+		Class<?> objectClass = sourceObject.getClass();
+		for (Method method : objectClass.getDeclaredMethods()) {
+			// regsiter actions
+			var actionAnnotation = method.getAnnotation(Action.class);
+			if (actionAnnotation != null) {
+
+				var parameters = method.getParameterTypes();
+				if (parameters.length != 1 || !ActionContext.class.isAssignableFrom(parameters[0])) {
+					log.warn("Method {}.{} ignored: must have exactly one parameter of type ActionContext",
+							objectClass.getSimpleName(), method.getName());
+				} else {
+					if (!method.canAccess(sourceObject)) {
+						method.setAccessible(true);
+					}
+
+					registerAction(actionAnnotation.value(), context -> {
+						try {
+							return method.invoke(sourceObject, context);
+						} catch (Exception e) {
+							log.error("Error invoking action method {}.{}", objectClass.getSimpleName(), method.getName(), e);
+							throw new RuntimeException(e);
+						}
+					}, actionAnnotation.priority());
+				}
+			}
+
+			// register filters
+			var filterAnnotation = method.getAnnotation(Filter.class);
+			if (filterAnnotation != null) {
+				var parameters = method.getParameterTypes();
+				if (parameters.length != 1 || !FilterContext.class.isAssignableFrom(parameters[0])) {
+					log.warn("Method {}.{} ignored for Filter: must have exactly one parameter of type FilterContext",
+							objectClass.getSimpleName(), method.getName());
+				} else {
+					if (!method.canAccess(sourceObject)) {
+						method.setAccessible(true);
+					}
+					registerFilter(filterAnnotation.value(), context -> {
+						try {
+							return method.invoke(sourceObject, context);
+						} catch (Exception e) {
+							log.error("Error invoking filter method {}.{}", objectClass.getSimpleName(), method.getName(), e);
+							throw new RuntimeException(e);
+						}
+					}, filterAnnotation.priority());
+				}
+			}
+		}
 	}
 
 	public <T> void registerAction(final String name, final ActionFunction<T> hookFunction) {
@@ -58,22 +109,21 @@ public class HookSystem {
 	}
 
 	public <T> void registerAction(final String name, final ActionFunction<T> hookFunction, int priority) {
-		actions.put(name, new Action<>(name, priority, hookFunction));
+		actions.put(name, new ActionHook<>(name, priority, hookFunction));
 	}
-	
+
 	public <T> void registerFilter(final String name, final FilterFunction<T> hookFunction) {
 		registerFilter(name, hookFunction, 10);
 	}
 
 	public <T> void registerFilter(final String name, final FilterFunction<T> hookFunction, int priority) {
-		filters.put(name, new Filter<>(name, priority, hookFunction));
+		filters.put(name, new FilterHook<>(name, priority, hookFunction));
 	}
-	
+
 	public ActionContext<Object> execute(final String name) {
 		return execute(name, Map.of());
 	}
-	
-	
+
 	public ActionContext<Object> execute(final String name, final Map<String, Object> arguments) {
 		var context = new ActionContext(new HashMap<>(arguments), new ArrayList<>());
 		actions.get(name).stream()
@@ -91,15 +141,15 @@ public class HookSystem {
 
 		return context;
 	}
-	
+
 	/**
-	 * calls all filters with the given parameters,
-	 * if no filter is executed, the original parameters are returned
-	 * 
+	 * calls all filters with the given parameters, if no filter is executed,
+	 * the original parameters are returned
+	 *
 	 * @param <T>
 	 * @param name
 	 * @param parameters
-	 * @return 
+	 * @return
 	 */
 	public <T> FilterContext<T> filter(final String name, final T parameters) {
 		final FilterContext<T> returnContext = new FilterContext(
@@ -111,7 +161,7 @@ public class HookSystem {
 					try {
 						var context = new FilterContext(returnContext.value());
 						var result = action.function().apply(context);
-						returnContext.value((T)result);
+						returnContext.value((T) result);
 					} catch (Exception e) {
 						log.error("error on filter", e);
 					}

@@ -26,6 +26,7 @@ package com.condation.cms.api.hooks;
 import com.condation.cms.api.hooks.HookSystem;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -109,5 +110,48 @@ public class HookSystemTest {
 		});
 		var context = hookSystem.filter("test/list", new ArrayList<>(List.of("1", "2", "3")));
 		Assertions.assertThat(context.value()).containsExactly("1", "3");
+	}
+	
+	@Test
+	void test_action_annotation () {
+		var actionObject = new MyActions();
+		
+		hookSystem.register(actionObject);
+		
+		hookSystem.execute("test/annotation/action1");
+		
+		Assertions.assertThat(actionObject.counter).hasValue(2);
+	}
+	
+	@Test
+	void test_filter_annotations () {
+		var myFilters = new MyFilters();
+		
+		hookSystem.register(myFilters);
+		
+		var context = hookSystem.filter("test/annotation/filter1", new ArrayList<>(List.of("1", "2", "3")));
+		Assertions.assertThat(context.value()).containsExactly("1", "3");
+	}
+	
+	public class MyFilters {
+		@Filter("test/annotation/filter1")
+		public List<String> filter (FilterContext<List<String>> context) {
+			context.value().remove("2");
+			return context.value();
+		}
+	}
+	
+	public class MyActions {
+		
+		private AtomicInteger counter = new AtomicInteger(0);
+		
+		@Action("test/annotation/action1")
+		public void action1 (ActionContext<?> context) {
+			counter.incrementAndGet();
+		}
+		@Action("test/annotation/action1")
+		public void action2 (ActionContext<?> context) {
+			counter.incrementAndGet();
+		}
 	}
 }

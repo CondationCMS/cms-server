@@ -33,5 +33,13 @@ import org.eclipse.jetty.util.Callback;
  */
 public interface HttpHandler {
 	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @param callback
+	 * @return true if the request is handled by the HttpHandler, otherwise false
+	 * @throws Exception 
+	 */
 	boolean handle (Request request, Response response, Callback callback) throws Exception;
 }

@@ -1,4 +1,4 @@
-package com.condation.cms.api.hooks;
+package com.condation.cms.api.extensions.http.routes;
 
 /*-
  * #%L
@@ -22,18 +22,13 @@ package com.condation.cms.api.hooks;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import java.util.List;
 
 /**
  *
  * @author thorstenmarx
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Filter {
-	String value ();
-	int priority () default 10;
+public abstract class RoutesExtensionPoint extends AbstractExtensionPoint {
+	abstract public List<Object> getRouteDefinitions ();
 }

@@ -1,4 +1,4 @@
-package com.condation.cms.api.hooks;
+package com.condation.cms.api.annotations;
 
 /*-
  * #%L
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Filter {
+public @interface Action {
 	String value ();
 	int priority () default 10;
 }

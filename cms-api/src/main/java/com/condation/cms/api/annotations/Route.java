@@ -1,4 +1,4 @@
-package com.condation.cms.api.hooks;
+package com.condation.cms.api.annotations;
 
 /*-
  * #%L
@@ -27,13 +27,9 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- *
- * @author thorstenmarx
- */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Action {
-	String value ();
-	int priority () default 10;
+@Target(ElementType.METHOD)
+public @interface Route {
+    String value();
+    String method() default "GET"; // Optional: GET, POST, PUT, DELETE ...
 }

@@ -22,6 +22,7 @@ package com.condation.cms.api.extensions.http.routes;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Route;
 import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.extensions.http.PathMapping;
 import org.eclipse.jetty.http.pathmap.PathSpec;

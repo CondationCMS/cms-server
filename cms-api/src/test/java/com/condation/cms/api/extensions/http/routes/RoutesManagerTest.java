@@ -26,6 +26,7 @@ package com.condation.cms.api.extensions.http.routes;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Route;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;

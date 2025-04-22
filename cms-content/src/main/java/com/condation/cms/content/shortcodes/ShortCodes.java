@@ -21,11 +21,12 @@ package com.condation.cms.content.shortcodes;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
+import com.condation.cms.api.annotations.ShortCode;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
+import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -43,29 +44,29 @@ public class ShortCodes {
 	private final TagMap tagMap;
 	private final TagParser parser;
 
-	public ShortCodes (Map<String, Function<Parameter, String>> codes, TagParser tagParser) {
+	public ShortCodes(Map<String, Function<Parameter, String>> codes, TagParser tagParser) {
 		this.parser = tagParser;
 		this.tagMap = new TagMap();
 		this.tagMap.putAll(codes);
 	}
-	
-	public Set<String> getShortCodeNames () {
+
+	public Set<String> getShortCodeNames() {
 		return tagMap.names();
 	}
-	
-	public String replace (final String content) {
+
+	public String replace(final String content) {
 		return replace(content, Collections.emptyMap(), null);
 	}
-	
-	public String replace (final String content, Map<String, Object> contextModel) {
+
+	public String replace(final String content, Map<String, Object> contextModel) {
 		return replace(content, contextModel, null);
 	}
-	
-	public String replace (final String content, Map<String, Object> contextModel, RequestContext requestContext) {
+
+	public String replace(final String content, Map<String, Object> contextModel, RequestContext requestContext) {
 		return parser.parse(content, tagMap, contextModel, requestContext);
 	}
-	
-	public String execute (String name, Map<String, Object> parameters, RequestContext requestContext) {
+
+	public String execute(String name, Map<String, Object> parameters, RequestContext requestContext) {
 		if (!tagMap.has(name)) {
 			return "";
 		}
@@ -78,8 +79,66 @@ public class ShortCodes {
 			}
 			return tagMap.get(name).apply(params);
 		} catch (Exception e) {
-			log.error("",e);
+			log.error("", e);
 		}
 		return "";
+	}
+
+	public static ShortCodes.Builder builder(TagParser tagParser) {
+		return new Builder(tagParser);
+	}
+
+	public static class Builder {
+
+		private final TagParser tagParser;
+
+		private final Map<String, Function<Parameter, String>> codes = new HashMap<>();
+
+		private Builder(TagParser tagParser) {
+			this.tagParser = tagParser;
+		}
+
+		public Builder register(String name, Function<Parameter, String> shortCodeFN) {
+			codes.put(name, shortCodeFN);
+			return this;
+		}
+		
+		public Builder register (Map<String, Function<Parameter, String>> codes) {
+			this.codes.putAll(codes);
+			return this;
+		}
+
+		public Builder register(Object handler) {
+			if (handler == null) {
+				return this;
+			}
+
+			Class<?> clazz = handler.getClass();
+			for (Method method : clazz.getDeclaredMethods()) {
+				if (method.isAnnotationPresent(ShortCode.class)) {
+					if (method.getParameterCount() == 1 && method.getParameterTypes()[0] == Parameter.class) {
+						method.setAccessible(true); // falls private
+						ShortCode annotation = method.getAnnotation(ShortCode.class);
+						String key = annotation.value();
+
+						codes.put(key, param -> {
+							try {
+								return (String) method.invoke(handler, param);
+							} catch (Exception e) {
+								throw new RuntimeException("Error calling shortcode: " + key, e);
+							}
+						});
+					} else {
+						log.error("ignore methode" + method.getName() + " – wrong signature.");
+					}
+				}
+			}
+
+			return this;
+		}
+
+		public ShortCodes build() {
+			return new ShortCodes(codes, tagParser);
+		}
 	}
 }

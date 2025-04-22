@@ -23,8 +23,10 @@ package com.condation.cms.templates.components;
  */
 
 
+import com.condation.cms.api.annotations.TemplateComponent;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -39,9 +41,43 @@ public class TemplateComponents {
 
 	private final ComponentMap componentMap;
 
-	public TemplateComponents (Map<String, Function<Parameter, String>> components) {
+	public TemplateComponents () {
 		this.componentMap = new ComponentMap();
+	}
+	
+	public void register (String name, Function<Parameter, String> templateComponentFN) {
+		componentMap.put(name, templateComponentFN);
+	}
+	
+	public void register (Map<String, Function<Parameter, String>> components) {
 		this.componentMap.putAll(components);
+	}
+	
+	public void register(Object handler) {
+		if (handler == null) {
+			return;
+		}
+
+		Class<?> clazz = handler.getClass();
+		for (Method method : clazz.getDeclaredMethods()) {
+			if (method.isAnnotationPresent(TemplateComponent.class)) {
+				if (method.getParameterCount() == 1 && method.getParameterTypes()[0] == Parameter.class) {
+					method.setAccessible(true);
+					var annotation = method.getAnnotation(TemplateComponent.class);
+					String key = annotation.value();
+
+					componentMap.put(key, param -> {
+						try {
+							return (String) method.invoke(handler, param);
+						} catch (Exception e) {
+							throw new RuntimeException("Error calling component: " + key, e);
+						}
+					});
+				} else {
+					log.error("ignore methode" + method.getName() + " – wrong signature.");
+				}
+			}
+		}
 	}
 	
 	public Set<String> getComponentNames () {

@@ -21,7 +21,6 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.content.shortcodes.TagParser;
 import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import com.google.gson.Gson;
@@ -43,7 +42,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 
 	private StringTemplateLoader templateLoader = new StringTemplateLoader();
-	
+
 	private Gson gson = new GsonBuilder()
 			.setStrictness(Strictness.LENIENT)
 			.create();
@@ -66,7 +65,7 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 		var expectedContent = readContent(templateFile + "_expected.html");
 
 		var data = getData(templateFile);
-		
+
 		templateLoader.add(templateFile, templateContent);
 
 		var template = SUT.getTemplate(templateFile);
@@ -76,25 +75,25 @@ public class TemplateFeatureTest extends AbstractTemplateEngineTest {
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expectedContent);
 	}
 
-	private DynamicConfiguration createDynamicConfig () {
-		TemplateComponents components = new TemplateComponents(
-				Map.of(
-						"hello", (params) -> "hello " + params.get("name")
-				));
+	private DynamicConfiguration createDynamicConfig() {
+		TemplateComponents components = new TemplateComponents();
+		components.register(Map.of(
+				"hello", (params) -> "hello " + params.get("name")
+		));
 		return new DynamicConfiguration(components, null);
 	}
-	
-	private Map<String, Object> getData (String filename) throws IOException {
+
+	private Map<String, Object> getData(String filename) throws IOException {
 		String dataFile = filename + "_data.json";
 		if (!exists(dataFile)) {
 			return Collections.emptyMap();
 		}
-		
+
 		var dataContent = readContent(dataFile);
-		
+
 		return gson.fromJson(dataContent, HashMap.class);
 	}
-	
+
 	private boolean exists(String filename) {
 		var resourcePath = "testdata/" + filename;
 		var url = TemplateFeatureTest.class.getResource(resourcePath);

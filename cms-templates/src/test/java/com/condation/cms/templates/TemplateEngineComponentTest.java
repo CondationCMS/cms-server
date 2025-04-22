@@ -21,8 +21,8 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.content.shortcodes.ShortCodes;
-import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.api.annotations.TemplateComponent;
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.exceptions.ParserException;
 import com.condation.cms.templates.exceptions.RenderException;
@@ -44,19 +44,23 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 
 	@BeforeAll
 	public void setupShortCodes() {
-		components = new TemplateComponents(
-				Map.of(
+		components = new TemplateComponents();
+		components.register(Map.of(
 						"tag1", (params) -> {
 							return "Hello";
 						},
 						"tag2", (param) -> {
 							return "Hello " + param.get("name") + "!";
-						},
-						"tag3", (param) -> {
-							return "<div>%s</div>".formatted(param.get("_content"));
-						})
-		);
+						}));
+		components.register(new MyComponents());
 		dynamicConfiguration = new DynamicConfiguration(components, null);
+	}
+	
+	public static class MyComponents {
+		@TemplateComponent("tag3")
+		public String tag3 (Parameter parameter) {
+			return "<div>%s</div>".formatted(parameter.get("_content"));
+		}
 	}
 
 	@Override

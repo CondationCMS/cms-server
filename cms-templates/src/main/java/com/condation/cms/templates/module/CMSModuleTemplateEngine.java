@@ -129,16 +129,22 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 	}
 	
 	private TemplateComponents createTemplateComponents(RequestContext requestContext) {
-		Map<String, Function<Parameter, String>> components = new HashMap<>();
-
 		var injector = requestContext.get(InjectorFeature.class).injector();
 		
+		var templateComponents = new TemplateComponents();
 		injector.getInstance(ModuleManager.class)
 				.extensions(RegisterTemplateComponentExtensionPoint.class)
-				.forEach(extension -> components.putAll(extension.components()));
+				.forEach(extension -> {
+					templateComponents.register(extension.components());
+					templateComponents.register(extension.handler());
+				});
 
+		Map<String, Function<Parameter, String>> components = new HashMap<>();
 		var wrapper = requestContext.get(TemplateHooks.class).getComponents(components);
-		return new TemplateComponents(wrapper.getComponents());
+		
+		templateComponents.register(wrapper.getComponents());
+		
+		return templateComponents;
 	}
 
 	@Override

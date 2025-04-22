@@ -37,7 +37,7 @@ import java.util.Optional;
 public record DynamicConfiguration(TemplateComponents templateComponents, Map<String, Component> components, RequestContext requestContext) {
 
 	public static final DynamicConfiguration EMPTY = new DynamicConfiguration(
-			new TemplateComponents(Collections.emptyMap()),
+			new TemplateComponents(),
 			Collections.emptyMap(),
 			null
 	);

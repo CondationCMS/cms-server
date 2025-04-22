@@ -21,26 +21,27 @@ package com.condation.cms.templates.components;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.model.Parameter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
+@Slf4j
 public class ComponentMap {
 
 	private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
 
-	public Set<String> names () {
+	public Set<String> names() {
 		return Collections.unmodifiableSet(tags.keySet());
 	}
-	
+
 	public void put(String codeName, Function<Parameter, String> function) {
 		tags.put(codeName, function);
 	}
@@ -48,7 +49,7 @@ public class ComponentMap {
 	public void putAll(Map<String, Function<Parameter, String>> tags) {
 		this.tags.putAll(tags);
 	}
-	
+
 	public boolean has(String codeName) {
 		return tags.containsKey(codeName);
 	}

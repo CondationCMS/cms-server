@@ -21,6 +21,8 @@ package com.condation.cms.api.hooks;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.annotations.Filter;
+import com.condation.cms.api.annotations.Action;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Method;

@@ -23,6 +23,7 @@ package com.condation.cms.content.shortcodes;
  */
 
 
+import com.condation.cms.api.annotations.ShortCode;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ContentBaseTest;
@@ -43,44 +44,47 @@ public class ShortCodesTest extends ContentBaseTest {
 	
 	@BeforeEach
 	public void init () {
-		Map<String, Function<Parameter, String>> tags = new HashMap<>();
-		tags.put(
+		var builder = ShortCodes.builder(getTagParser());
+		
+		builder.register(
 				"youtube", 
 				(params) -> "<video src='%s'></video>".formatted(params.getOrDefault("id", "")));
-		tags.put(
+		builder.register(
 				"hello_from", 
 				(params) -> "<p><h3>%s</h3><small>from %s</small></p>".formatted(params.getOrDefault("name", ""), params.getOrDefault("from", "")));
 		
-		tags.put(
+		builder.register(
 				"mark",
 				params -> "<mark>%s</mark>".formatted(params.get("_content"))
 		);
 		
-		tags.put(
+		builder.register(
 				"mark2",
 				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("_content"))
 		);
 		
-		tags.put(
+		builder.register(
 				"exp",
 				params -> "<span>%s</span>".formatted(params.get("expression"))
 		);
 		
-		tags.put(
+		builder.register(
 				"set_var",
 				params -> {
 					params.getRequestContext().getVariables().put("myVar", "Hello world!");
 					return "";
 				}
 		);
-		tags.put(
+		builder.register(
 				"get_var",
 				params -> {
 					return (String)params.getRequestContext().getVariables().getOrDefault("myVar", "DEFAULT");
 				}
 		);
 		
-		shortCodes = new ShortCodes(tags, getTagParser());
+		builder.register(new ShortCodesHandler());
+		
+		shortCodes = builder.build();
 	}
 	
 
@@ -228,5 +232,21 @@ public class ShortCodesTest extends ContentBaseTest {
 		var result = shortCodes.replace("[[get_var /]]", Map.of(), requestContext);
 		
 		Assertions.assertThat(result).isEqualTo("Hello world!");
+	}
+	
+	@Test
+	void test_handler () {
+		RequestContext requestContext = new RequestContext();
+		
+		var result = shortCodes.replace("[[printHello name='CondationCMS' /]]", Map.of(), requestContext);
+		
+		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
+	}
+	
+	public static class ShortCodesHandler {
+		@ShortCode("printHello")
+		public String printHello (Parameter parameter) {
+			return "hello " + parameter.getOrDefault("name", "");
+		}
 	}
 }

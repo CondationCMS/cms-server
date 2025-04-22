@@ -1,4 +1,4 @@
-package com.condation.cms.api.extensions.http.routes;
+package com.condation.cms.api.annotations;
 
 /*-
  * #%L
@@ -27,9 +27,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ *
+ * @author thorstenmarx
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Route {
-    String value();
-    String method() default "GET"; // Optional: GET, POST, PUT, DELETE ...
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface ShortCode {
+	String value ();
 }

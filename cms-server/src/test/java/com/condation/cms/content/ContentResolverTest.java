@@ -114,5 +114,17 @@ public class ContentResolverTest {
 		Assertions.assertThat(optional).isPresent();
 		Assertions.assertThat(optional.get().node().data()).containsEntry("title", "StartseiteView");
 	}
+	
+	@Test
+	public void test_not_published() throws IOException {
+
+		var context = TestHelper.requestContext("alias-hidden");
+		var optional = contentResolver.getContent(context);
+		Assertions.assertThat(optional).isEmpty();
+		
+		context = TestHelper.requestContext("hidden");
+		optional = contentResolver.getContent(context);
+		Assertions.assertThat(optional).isEmpty();
+	}
 
 }

@@ -101,24 +101,37 @@ public class ContentResolver {
 			var tempFile = contentPath.resolve("index.md");
 			if (tempFile.exists()) {
 				contentFile = tempFile;
-			} else {
-				return Optional.empty();
 			}
 		} else {
 			var temp = contentBase.resolve(path + ".md");
 			if (temp.exists()) {
 				contentFile = temp;
-			} else {
-				return Optional.empty();
 			}
 		}
 		
-		var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-		if (checkVisibility && !db.getContent().isVisible(uri)) {
+		// handle alias
+		ContentNode contentNode = null;
+		if (contentFile == null || !contentFile.exists()) {
+			var query = db.getContent().query((node, count) -> node);
+			var result = query.whereContains("aliases", "/" + path).get();
+			if (!result.isEmpty()) {
+				contentNode = result.getFirst();
+				contentFile = contentBase.resolve(contentNode.uri());
+			}
+		} else {
+			var uri = PathUtil.toRelativeFile(contentFile, contentBase);
+			contentNode = db.getContent().byUri(uri).get();
+		}
+		
+		if (contentNode == null) {
 			return Optional.empty();
 		}
 		
-		final ContentNode contentNode = db.getContent().byUri(uri).get();
+		if (checkVisibility && !db.getContent().isVisible(contentNode)) {
+			return Optional.empty();
+		}
+		
+		
 		if (contentNode.isRedirect()) {
 			return Optional.of(new ContentResponse(contentNode));
 		} else if (!Constants.NodeType.PAGE.equals(contentNode.nodeType())) {

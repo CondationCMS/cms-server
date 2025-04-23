@@ -50,6 +50,11 @@ public class FileContent implements Content {
 	}
 
 	@Override
+	public boolean isVisible(ContentNode node) {
+		return fileSystem.isVisible(node.uri());
+	}
+	
+	@Override
 	public List<ContentNode> listSections(ReadOnlyFile contentFile) {
 		String folder = PathUtil.toRelativePath(contentFile, cmsFileSystem.contentBase());
 		String filename = contentFile.getFileName();

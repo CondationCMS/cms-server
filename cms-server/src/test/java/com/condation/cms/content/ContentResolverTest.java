@@ -100,5 +100,19 @@ public class ContentResolverTest {
 		optional = contentResolver.getErrorContent(context);
 		Assertions.assertThat(optional).isPresent();
 	}
+	
+	@Test
+	public void testAliases() throws IOException {
+
+		var context = TestHelper.requestContext("alias2");
+		var optional = contentResolver.getContent(context);
+		Assertions.assertThat(optional).isPresent();
+		Assertions.assertThat(optional.get().node().data()).containsEntry("title", "StartseiteView");
+		
+		context = TestHelper.requestContext("alias3/sub1");
+		optional = contentResolver.getContent(context);
+		Assertions.assertThat(optional).isPresent();
+		Assertions.assertThat(optional.get().node().data()).containsEntry("title", "StartseiteView");
+	}
 
 }

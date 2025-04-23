@@ -35,6 +35,8 @@ import java.util.function.BiFunction;
 public interface Content {
 	boolean isVisible (String uri);
 	
+	boolean isVisible (ContentNode node);
+	
 	List<ContentNode>  listSections(final ReadOnlyFile contentFile);
 	
 	List<ContentNode> listContent(final ReadOnlyFile base, final String start);

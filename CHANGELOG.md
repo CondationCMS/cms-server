@@ -10,6 +10,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 * **MAINTENANCE** multiple dependencies updated
 * **MAINTENANCE** maven wrapper added to project
+* **FEATURE** Developer Experience [PR-440](https://github.com/CondationCMS/cms-server/pull/440)
 
 ### Developer experience
 

@@ -150,7 +150,7 @@ public class ContentResolver {
 			var contentType = contentNode.contentType();
 			
 			return Optional.of(new ContentResponse(content, contentType, contentNode));
-		} catch (Exception ex) {
+		} catch (IOException ex) {
 			log.error(null, ex);
 			return Optional.empty();
 		}

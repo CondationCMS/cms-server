@@ -178,7 +178,8 @@ public class RequestContextFactory {
 		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
 				.forEach(extension -> {
 					builder.register(extension.shortCodes());
-					builder.register(extension.shortCodeHandler());
+					
+					builder.register(extension.shortCodeDefinitions());
 				});
 
 		var codes = new HashMap<String, Function<Parameter, String>>();

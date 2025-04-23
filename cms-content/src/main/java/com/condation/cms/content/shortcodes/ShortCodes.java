@@ -27,6 +27,7 @@ import com.condation.cms.api.request.RequestContext;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -108,6 +109,16 @@ public class ShortCodes {
 			return this;
 		}
 
+		public Builder register (List<Object> handlers) {
+			if (handlers == null || handlers.isEmpty()) {
+				return this;
+			}
+			
+			handlers.forEach(this::register);
+			
+			return this;
+		}
+		
 		public Builder register(Object handler) {
 			if (handler == null) {
 				return this;

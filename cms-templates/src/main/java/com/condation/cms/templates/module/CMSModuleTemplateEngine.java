@@ -136,7 +136,7 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 				.extensions(RegisterTemplateComponentExtensionPoint.class)
 				.forEach(extension -> {
 					templateComponents.register(extension.components());
-					templateComponents.register(extension.handler());
+					templateComponents.register(extension.componentDefinitions());
 				});
 
 		Map<String, Function<Parameter, String>> components = new HashMap<>();

@@ -25,6 +25,7 @@ package com.condation.cms.api.extensions;
 
 import com.condation.cms.api.model.Parameter;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -38,7 +39,7 @@ public abstract class RegisterTemplateComponentExtensionPoint extends AbstractEx
 		return Collections.emptyMap();
 	}
 	
-	public Object handler () {
-		return new Object();
+	public List<Object> componentDefinitions () {
+		return Collections.emptyList();
 	}
 }

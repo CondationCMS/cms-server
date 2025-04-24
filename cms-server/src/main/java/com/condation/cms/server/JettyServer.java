@@ -21,8 +21,6 @@ package com.condation.cms.server;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.configuration.Configuration;
@@ -80,7 +78,7 @@ public class JettyServer implements AutoCloseable {
 	public void fireServerEvent(Event event) {
 		serverEventBus.publish(event);
 	}
-	
+
 	public void reloadVHost(String vhost) {
 		log.debug("try reloading " + vhost);
 		vhosts.stream()
@@ -93,20 +91,18 @@ public class JettyServer implements AutoCloseable {
 					}
 				});
 	}
-	
+
 	public void startup() throws IOException {
 
 		var properties = globalInjector.getInstance(ServerProperties.class);
 
-		Files.list(ServerUtil.getPath(Constants.Folders.HOSTS)).forEach((hostPath) -> {
-			if (SiteUtil.isSite(hostPath)) {
-				try {
-					var host = new VHost(hostPath);
-					host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
-					vhosts.add(host);
-				} catch (IOException ex) {
-					log.error(null, ex);
-				}
+		SiteUtil.sitesStream().forEach((site) -> {
+			try {
+				var host = new VHost(site.basePath());
+				host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
+				vhosts.add(host);
+			} catch (IOException ex) {
+				log.error(null, ex);
 			}
 		});
 
@@ -135,7 +131,7 @@ public class JettyServer implements AutoCloseable {
 				host.shutdown();
 			});
 //			scheduledExecutorService.shutdownNow();
-			
+
 			try {
 				globalInjector.getInstance(Scheduler.class).shutdown();
 			} catch (SchedulerException ex) {

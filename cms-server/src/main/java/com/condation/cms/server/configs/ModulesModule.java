@@ -75,7 +75,8 @@ public class ModulesModule extends AbstractModule {
 						"org.graalvm.polyglot",
 						"org.graalvm.js",
 						"org.eclipse.jetty",
-						"jakarta.servlet"
+						"jakarta.servlet",
+						"org.w3c"
 				));
 		var moduleManager = ModuleManagerImpl.builder()
 				.setClassLoader(classLoader)

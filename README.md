@@ -3,13 +3,14 @@
 CondationCMS is a powerful and flexible content management system designed specifically for developers. 
 It enables dynamic content creation and management through a modular architecture, powerful template engines, and flexible extensibility.
 
-## Features
+## ✨ Features
 
-* Modular System: Extend and customize through flexible modules
-* Multi-Template Engine: Supports Freemarker, Thymeleaf, Velocity, and Pebble
-* Extensible Hook and Event Mechanisms
-* Integrated Caching
-* Multilingual Support
+✅ Modular System: Extend and customize through flexible modules  
+✅ Multi-Template Engine: Supports Freemarker, Thymeleaf, Velocity, and Pebble  
+✅ Extensible Hook and Event Mechanisms  
+✅ Integrated Caching  
+✅ Multilingual Support  
+✅ Multisite Support  
 
 ## Documentation
 

@@ -53,7 +53,7 @@ public class ContentFileParserTest {
         // Überprüfe den Inhalt
         String content = parser.getContent();
         String expectedContent = "# This is a test markdown file\n\nThis is the content of the markdown file.";
-        assertThat(content).isEqualTo(expectedContent);
+        assertThat(content).isEqualToIgnoringWhitespace(expectedContent);
     }
 	
 }

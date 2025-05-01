@@ -28,9 +28,9 @@ import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.GetContentNodeCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
 import com.condation.cms.modules.ui.http.HookHandler;
+import com.condation.cms.modules.ui.http.JsModuleHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.services.CommandService;
-import com.condation.cms.modules.ui.utils.UIHooks;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -43,7 +43,6 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
-
 /**
  *
  * @author t.marx
@@ -53,18 +52,18 @@ import org.eclipse.jetty.http.pathmap.PathSpec;
 public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 	public static FileSystem fileSystem;
-	
-	public static synchronized FileSystem getFileSystem () {
+
+	public static synchronized FileSystem getFileSystem() {
 		if (fileSystem == null) {
 			fileSystem = createFileSystem();
 		}
 		return fileSystem;
 	}
-	
-	public static FileSystem createFileSystem () {
+
+	public static FileSystem createFileSystem() {
 		try {
 			URL resource = UIJettyHttpHandlerExtension.class.getResource("/manager");
-			
+
 			final Map<String, String> env = new HashMap<>();
 			final String[] array = resource.toURI().toString().split("!");
 			try {
@@ -72,26 +71,26 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			} catch (FileSystemNotFoundException fsnfe) {
 				log.error("", fsnfe);
 			}
-			
+
 			return FileSystems.newFileSystem(URI.create(array[0]), env);
-			
-		} catch (URISyntaxException | IOException  ex) {
+
+		} catch (URISyntaxException | IOException ex) {
 			log.error("", ex);
 			throw new RuntimeException(ex);
 		}
 	}
-	
+
 	@Override
 	public Mapping getMapping() {
-		
+
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
-		
+
 		Mapping mapping = new Mapping();
-		
+
 		var commandService = new CommandService();
 		commandService.register("test", (cmd) -> "Hallo Leute!");
 		//commandService.register(IsLockedCommand.name, IsLockedCommand.handler);
-		commandService.register(GetContentNodeCommand.NAME, 
+		commandService.register(GetContentNodeCommand.NAME,
 				GetContentNodeCommand.getHandler(getContext(), getRequestContext()));
 
 		try {
@@ -101,12 +100,21 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/file-system/delete"), new FileSystemDeleteHandler(UILifecycleExtension.fileSystemService));
 			mapping.add(PathSpec.from("/file-system/read"), new FileSystemReadHandler(UILifecycleExtension.fileSystemService));
 			mapping.add(PathSpec.from("/file-system/write"), new FileSystemWriteHandler(UILifecycleExtension.fileSystemService));
-			*/
-			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(hookSystem, getFileSystem(), "/manager", getContext(), getModuleConfiguration()));
-			
+			 */
+
 			mapping.add(PathSpec.from("/manager/command"), new CommandHandler(commandService));
-			
+
 			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(getRequestContext().get(HookSystemFeature.class).hookSystem()));
+
+			mapping.add(PathSpec.from("/manager/menu/action/test"), new JsModuleHandler("""
+					// hook.js
+					export function runAction(params) {
+					  console.log("HookAction ausgeführt mit Parametern:", params.name);
+					}
+                                                     """));
+			
+			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(hookSystem, getFileSystem(), "/manager", getContext(), getModuleConfiguration()));
+
 
 		} catch (Exception ex) {
 			log.error(null, ex);

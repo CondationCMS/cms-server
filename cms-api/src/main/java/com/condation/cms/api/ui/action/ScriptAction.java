@@ -31,22 +31,28 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class HookAction extends Action {
+public class ScriptAction extends Action {
 
-	public static final String TYPE = "hook";
+	public static final String TYPE = "script";
 
-	private String hook;
+	private String function;
+	private String module;
 
 	private Map<String, Object> parameters;
 
-	public HookAction () {
+	public ScriptAction() {
 		super(TYPE);
 	}
 	
-	public HookAction(String hook, Map<String, Object> parameters) {
+	public ScriptAction (String module, String function, Map<String, Object> parameters) {
 		this();
-		this.hook = hook;
+		this.function = function;
+		this.module = module;
 		this.parameters = parameters;
+	}
+	
+	public ScriptAction (String module, Map<String, Object> parameters) {
+		this(module, "runAction", parameters);
 	}
 	
 }

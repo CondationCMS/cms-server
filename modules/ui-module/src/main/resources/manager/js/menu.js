@@ -30,6 +30,8 @@ window.addEventListener("DOMContentLoaded", () => {
 					console.log(action)
 					if (action.type === "hook") {
 						executeHookAction(action)
+					} else if (action.type === "script") {
+						executeScriptAction(action)
 					}
 
 				} catch (e) {
@@ -41,6 +43,22 @@ window.addEventListener("DOMContentLoaded", () => {
 		}
 	});
 })
+
+const executeScriptAction = async (action) => {
+  if (action.module && action.function === "runAction") {
+    import(action.module)
+      .then(mod => {
+        if (typeof mod.runAction === "function") {
+          mod.runAction(action.parameters || {});
+        } else {
+          console.error("Function runAction not found", action.module);
+        }
+      })
+      .catch(err => {
+        console.error("Error loading module:", action.module, err);
+      });
+  }
+}
 
 const executeHookAction = async (action) => {
 	var data = {

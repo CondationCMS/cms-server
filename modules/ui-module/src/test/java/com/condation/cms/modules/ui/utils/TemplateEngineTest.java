@@ -24,7 +24,7 @@ package com.condation.cms.modules.ui.utils;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.ui.action.HookAction;
+import com.condation.cms.api.ui.action.ScriptAction;
 import com.condation.cms.api.ui.menu.Menu;
 import com.condation.cms.api.ui.menu.MenuEntry;
 import com.condation.cms.core.cache.LocalCacheProvider;
@@ -51,12 +51,11 @@ public class TemplateEngineTest {
 			var menu = context.value();
 			menu.addMenuEntry(MenuEntry.builder()
 					.children(new ArrayList<>(
-							List.of(
-									MenuEntry.builder().id("child1").name("Child 1").position(0).build(),
+							List.of(MenuEntry.builder().id("child1").name("Child 1").position(0).build(),
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("Child 2")
 											.position(2)
-											.action(new HookAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
+											.action(new ScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
 							)))
 					.name("ExampleMenu")

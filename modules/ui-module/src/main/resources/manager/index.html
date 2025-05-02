@@ -40,7 +40,7 @@
 					</button>
 					<div class="collapse navbar-collapse" id="navbarSupportedContent">
 						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-							{% for entry in uihooks.menu().entries() %}
+							{% for entry in menuFactory.createMenu().entries() %}
 								{% if entry != null && entry.hasChildren() %}
 								<li class="nav-item dropdown">
 									<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"

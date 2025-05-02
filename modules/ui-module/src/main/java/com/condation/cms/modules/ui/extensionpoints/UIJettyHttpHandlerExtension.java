@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.extensionpoints;
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.GetContentNodeCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
@@ -31,6 +32,7 @@ import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JsModuleHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.services.CommandService;
+import com.condation.cms.modules.ui.utils.MenuFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -84,6 +86,8 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 	public Mapping getMapping() {
 
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
+		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
+		var menuFactory = new MenuFactory(hookSystem, moduleManager);
 
 		Mapping mapping = new Mapping();
 
@@ -104,7 +108,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 			mapping.add(PathSpec.from("/manager/command"), new CommandHandler(commandService));
 
-			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(getRequestContext().get(HookSystemFeature.class).hookSystem()));
+			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(hookSystem));
 
 			mapping.add(PathSpec.from("/manager/menu/action/test"), new JsModuleHandler("""
 					// hook.js
@@ -113,7 +117,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 					}
                                                      """));
 			
-			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(hookSystem, getFileSystem(), "/manager", getContext(), getModuleConfiguration()));
+			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(menuFactory, getFileSystem(), "/manager", getContext()));
 
 
 		} catch (Exception ex) {

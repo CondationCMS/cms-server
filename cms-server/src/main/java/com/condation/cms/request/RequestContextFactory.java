@@ -152,7 +152,11 @@ public class RequestContextFactory {
 	private void initHookSystem(RequestContext requestContext) {
 		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			
+			extensionPoint.hookDefinitions().forEach(hookSystem::register);
+		});
 	}
 	
 	/**
@@ -165,7 +169,11 @@ public class RequestContextFactory {
 	private HookSystem setupAndGetHookSystem() {
 		var hookSystem = injector.getInstance(HookSystem.class);
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			
+			extensionPoint.hookDefinitions().forEach(hookSystem::register);
+		});
 
 		return hookSystem;
 	}

@@ -1,10 +1,14 @@
-package com.condation.cms.api.ui.action;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/AnnotationType.java to edit this template
+ */
+package com.condation.cms.api.ui.annotations;
 
 /*-
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2024 - 2025 Condation
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,19 +26,17 @@ package com.condation.cms.api.ui.action;
  * #L%
  */
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  *
  * @author thorstenmarx
  */
-public abstract class Action {
-	
-	private final String type;
-	
-	public Action (String type) {
-		this.type = type;
-	}
-	
-	public String getType () {
-		return type;
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface HookAction {
+	String value();
 }

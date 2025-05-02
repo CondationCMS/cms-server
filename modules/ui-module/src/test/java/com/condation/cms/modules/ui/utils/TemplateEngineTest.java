@@ -24,22 +24,30 @@ package com.condation.cms.modules.ui.utils;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.ui.action.ScriptAction;
+import com.condation.cms.api.ui.action.MenuScriptAction;
 import com.condation.cms.api.ui.menu.Menu;
 import com.condation.cms.api.ui.menu.MenuEntry;
 import com.condation.cms.core.cache.LocalCacheProvider;
+import com.condation.modules.api.ModuleManager;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  *
  * @author thorstenmarx
  */
+@ExtendWith(MockitoExtension.class)
 public class TemplateEngineTest {
 
+	@Mock
+	private ModuleManager moduleManager;
+	
 	@Test
 	public void testSomeMethod() {
 		CacheManager cacheManager = new CacheManager(new LocalCacheProvider());
@@ -55,7 +63,7 @@ public class TemplateEngineTest {
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("Child 2")
 											.position(2)
-											.action(new ScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
+											.action(new MenuScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
 							)))
 					.name("ExampleMenu")
@@ -67,7 +75,7 @@ public class TemplateEngineTest {
 		);
 
 		Assertions.assertThatCode(() -> {
-			templateEngine.render("index.html", Map.of("uihooks", new UIHooks(hookSystem)));
+			templateEngine.render("index.html", Map.of("menuFactory", new MenuFactory(hookSystem, moduleManager)));
 		}).doesNotThrowAnyException();
 	}
 

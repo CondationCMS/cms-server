@@ -25,8 +25,8 @@ import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.FilterContext;
-import com.condation.cms.api.ui.action.HookAction;
-import com.condation.cms.api.ui.action.ScriptAction;
+import com.condation.cms.api.ui.action.MenuHookAction;
+import com.condation.cms.api.ui.action.MenuScriptAction;
 import com.condation.cms.api.ui.menu.Menu;
 import com.condation.cms.api.ui.menu.MenuEntry;
 import com.condation.modules.api.annotation.Extension;
@@ -43,20 +43,25 @@ import java.util.Map;
 public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 
 	@Override
+	public List<Object> hookDefinitions() {
+		return List.of(new MenuExtension());
+	}
+	
+	@Override
 	public void register(HookSystem hookSystem) {
 		hookSystem.registerFilter("module/ui/menu", (FilterContext<Menu> context)
 				-> {
 			var menu = context.value();
 			menu.addMenuEntry(MenuEntry.builder()
 					.children(new ArrayList<>(
-							List.of(MenuEntry.builder().id("child1").name("Child 1")
+							List.of(MenuEntry.builder().id("child1").name("ScriptAction")
 									.position(0)
-									.action(new ScriptAction("/manager/menu/action/test", Map.of("name", "CondationCMS")))
+									.action(new MenuScriptAction("/manager/menu/action/test", Map.of("name", "CondationCMS")))
 									.build(),
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
-									MenuEntry.builder().id("child2").name("Child 2")
+									MenuEntry.builder().id("child2").name("HookAction")
 											.position(2)
-											.action(new HookAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
+											.action(new MenuHookAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
 							)))
 					.name("ExampleMenu")

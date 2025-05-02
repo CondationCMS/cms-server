@@ -48,8 +48,8 @@ const executeScriptAction = async (action) => {
   if (action.module && action.function === "runAction") {
     import(action.module)
       .then(mod => {
-        if (typeof mod.runAction === "function") {
-          mod.runAction(action.parameters || {});
+		if (typeof mod[action.function] === "function") {
+          mod[action.function](action.parameters || {});
         } else {
           console.error("Function runAction not found", action.module);
         }

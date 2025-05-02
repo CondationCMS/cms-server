@@ -31,7 +31,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class ScriptAction extends Action {
+public class MenuScriptAction extends MenuAction {
 
 	public static final String TYPE = "script";
 
@@ -40,18 +40,18 @@ public class ScriptAction extends Action {
 
 	private Map<String, Object> parameters;
 
-	public ScriptAction() {
+	public MenuScriptAction() {
 		super(TYPE);
 	}
 	
-	public ScriptAction (String module, String function, Map<String, Object> parameters) {
+	public MenuScriptAction (String module, String function, Map<String, Object> parameters) {
 		this();
 		this.function = function;
 		this.module = module;
 		this.parameters = parameters;
 	}
 	
-	public ScriptAction (String module, Map<String, Object> parameters) {
+	public MenuScriptAction (String module, Map<String, Object> parameters) {
 		this(module, "runAction", parameters);
 	}
 	

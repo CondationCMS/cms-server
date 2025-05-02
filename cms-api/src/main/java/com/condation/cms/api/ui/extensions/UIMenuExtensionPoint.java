@@ -24,6 +24,8 @@ package com.condation.cms.api.ui.extensions;
 
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.ui.menu.Menu;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -31,5 +33,9 @@ import com.condation.cms.api.ui.menu.Menu;
  */
 public abstract class UIMenuExtensionPoint extends AbstractExtensionPoint {
 	
-	public abstract void addMenuItems (Menu menu);
+	public void addMenuItems (Menu menu) {}
+	
+	public List<Object> getMenuEntryDefinitions () {
+		return Collections.emptyList();
+	}
 }

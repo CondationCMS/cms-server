@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
+import com.condation.cms.modules.ui.utils.MenuFactory;
 import com.condation.cms.modules.ui.utils.UIHooks;
 import com.condation.modules.api.ModuleConfiguration;
 import java.nio.charset.StandardCharsets;
@@ -45,11 +46,10 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class ResourceHandler extends JettyHandler {
 
-	private final HookSystem hookSystem;
+	private final MenuFactory menuFactory;
 	private final FileSystem fileSystem;
 	private final String base;
 	private final CMSModuleContext context;
-	private final ModuleConfiguration configuration;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -62,7 +62,7 @@ public class ResourceHandler extends JettyHandler {
 		if (resource.endsWith(".html")) {
 			try {
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource, 
-						Map.of("uihooks", new UIHooks(hookSystem)));
+						Map.of("menuFactory", menuFactory));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {
 				log.error("", e);

@@ -22,12 +22,12 @@ package com.condation.cms.api.ui.menu;
  * #L%
  */
 
-import com.condation.cms.api.ui.action.Action;
+import com.condation.cms.api.ui.action.MenuAction;
 import com.condation.cms.api.utils.JSONUtil;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Singular;
 
 /**
  *
@@ -49,7 +49,16 @@ public class MenuEntry {
 	
 	private List<MenuEntry> children;
 	
-	private Action action;
+	private MenuAction action;
+	
+	public void addChildren (MenuEntry entry) {
+		if (children == null) {
+			children = new ArrayList<>();
+		}
+		
+		children = new ArrayList<>(children);
+		children.add(entry);
+	}
 
 	public String getActionDefinition () {
 		return action != null ? JSONUtil.toJson(action) : "";

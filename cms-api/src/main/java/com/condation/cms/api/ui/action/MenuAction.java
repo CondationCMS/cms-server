@@ -1,10 +1,10 @@
-package com.condation.cms.api.extensions;
+package com.condation.cms.api.ui.action;
 
 /*-
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2024 - 2025 Condation
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,18 +22,19 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-import com.condation.cms.api.hooks.HookSystem;
-import java.util.Collections;
-import java.util.List;
-
 /**
- * ExtensionPoint for modules to register hooks.
- * 
+ *
+ * @author thorstenmarx
  */
-public abstract class HookSystemRegisterExtensionPoint extends AbstractExtensionPoint{
-
-	public void register (final HookSystem hookSystem) {}
+public abstract class MenuAction {
 	
-	public List<Object> hookDefinitions () {return Collections.emptyList();}
+	private final String type;
 	
+	public MenuAction (String type) {
+		this.type = type;
+	}
+	
+	public String getType () {
+		return type;
+	}
 }

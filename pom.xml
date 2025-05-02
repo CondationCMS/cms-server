@@ -12,7 +12,7 @@
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.19</jetty.version>
-		<lucene.version>10.2.0</lucene.version>
+		<lucene.version>10.2.1</lucene.version>
 		<modules-framework.version>1.0.0</modules-framework.version>
 		<mockito.version>5.17.0</mockito.version>
 	</properties>

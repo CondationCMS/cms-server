@@ -21,18 +21,16 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.utils.MenuFactory;
-import com.condation.cms.modules.ui.utils.UIHooks;
-import com.condation.modules.api.ModuleConfiguration;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -77,6 +75,7 @@ public class ResourceHandler extends JettyHandler {
 
 			var path = files.resolve(resource);
 			if (Files.exists(path)) {
+				response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
 				Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
 			} else {
 				callback.succeeded();

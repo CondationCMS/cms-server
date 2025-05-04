@@ -51,7 +51,7 @@ public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 					.children(new ArrayList<>(
 							List.of(MenuEntry.builder().id("child1").name("ScriptAction")
 									.position(0)
-									.action(new MenuScriptAction("/manager/menu/action/test", Map.of("name", "CondationCMS")))
+									.action(new MenuScriptAction("/manager/menu/action/test-modal", Map.of("name", "CondationCMS")))
 									.build(),
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("HookAction")

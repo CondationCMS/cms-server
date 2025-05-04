@@ -100,6 +100,7 @@ public class MenuFactory {
 					.divider(menuAnn.divider())
 					.position(menuAnn.position())
 					.action(menuAction)
+					.children(new ArrayList<MenuEntry>())
 					.build();
 
 			entries.add(new EntryHolder(menuAnn.parent(), entry));

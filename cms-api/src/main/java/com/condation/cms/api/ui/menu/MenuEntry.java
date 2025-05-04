@@ -47,7 +47,8 @@ public class MenuEntry {
 	@Builder.Default
 	private int position = 0;
 	
-	private List<MenuEntry> children;
+	@Builder.Default
+	private List<MenuEntry> children = new ArrayList<>();
 	
 	private MenuAction action;
 	

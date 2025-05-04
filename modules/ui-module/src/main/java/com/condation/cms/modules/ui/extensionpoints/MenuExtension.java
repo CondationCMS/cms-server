@@ -33,8 +33,8 @@ import com.condation.modules.api.annotation.Extensions;
  * @author t.marx
  */
 @Extensions({
-		@Extension(UIMenuExtensionPoint.class),
-		@Extension(HookSystemRegisterExtensionPoint.class)
+	@Extension(UIMenuExtensionPoint.class),
+	@Extension(HookSystemRegisterExtensionPoint.class)
 })
 public class MenuExtension extends HookSystemRegisterExtensionPoint implements UIMenuExtensionPoint {
 
@@ -43,21 +43,32 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 			name = "ParentDemo",
 			position = 10
 	)
-	public void parentDefinition () {
-		
+	public void parentDefinition() {
+
 	}
-	
+
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",
 			id = "demo-script-action",
-			name = "ScriptDemo",
+			name = "ModalDemo",
 			position = 1,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test")
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-modal")
 	)
-	public void demoScriptAction () {
-		
+	public void test_modal() {
+
 	}
-	
+
+	@com.condation.cms.api.ui.annotations.MenuEntry(
+			parent = "parentDemo",
+			id = "demo-script-action",
+			name = "SidebarDemo",
+			position = 1,
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-sidebar")
+	)
+	public void test_sidebar() {
+
+	}
+
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",
 			id = "demo-hook-action",
@@ -65,7 +76,7 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 			position = 2
 	)
 	@Action("demo-hook-action")
-	public void demoScriptAction (ActionContext<?> context) {
+	public void demoScriptAction(ActionContext<?> context) {
 		System.out.println("demo-hook-action called");
 	}
 }

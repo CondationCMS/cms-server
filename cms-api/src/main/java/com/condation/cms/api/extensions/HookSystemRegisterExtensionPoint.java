@@ -23,8 +23,6 @@ package com.condation.cms.api.extensions;
  */
 
 import com.condation.cms.api.hooks.HookSystem;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * ExtensionPoint for modules to register hooks.
@@ -33,7 +31,4 @@ import java.util.List;
 public abstract class HookSystemRegisterExtensionPoint extends AbstractExtensionPoint{
 
 	public void register (final HookSystem hookSystem) {}
-	
-	public List<Object> hookDefinitions () {return Collections.emptyList();}
-	
 }

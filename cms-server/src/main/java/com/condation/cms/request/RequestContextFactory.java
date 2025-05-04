@@ -155,7 +155,7 @@ public class RequestContextFactory {
 		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
 			extensionPoint.register(hookSystem);
 			
-			extensionPoint.hookDefinitions().forEach(hookSystem::register);
+			hookSystem.register(extensionPoint);
 		});
 	}
 	
@@ -172,7 +172,7 @@ public class RequestContextFactory {
 		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
 			extensionPoint.register(hookSystem);
 			
-			extensionPoint.hookDefinitions().forEach(hookSystem::register);
+			hookSystem.register(extensionPoint);
 		});
 
 		return hookSystem;

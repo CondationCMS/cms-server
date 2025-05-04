@@ -22,22 +22,21 @@ package com.condation.cms.modules.ui.extensionpoints;
  * #L%
  */
 import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.ui.extensions.UIMenuExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
-import java.util.List;
+import com.condation.modules.api.annotation.Extensions;
 
 /**
  *
  * @author t.marx
  */
-@Extension(UIMenuExtensionPoint.class)
-public class MenuExtension extends UIMenuExtensionPoint {
-
-	@Override
-	public List<Object> getMenuEntryDefinitions() {
-		return List.of(this);
-	}
+@Extensions({
+		@Extension(UIMenuExtensionPoint.class),
+		@Extension(HookSystemRegisterExtensionPoint.class)
+})
+public class MenuExtension extends HookSystemRegisterExtensionPoint implements UIMenuExtensionPoint {
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			id = "parentDemo",

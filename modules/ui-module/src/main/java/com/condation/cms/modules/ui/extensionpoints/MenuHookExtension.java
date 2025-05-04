@@ -43,11 +43,6 @@ import java.util.Map;
 public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 
 	@Override
-	public List<Object> hookDefinitions() {
-		return List.of(new MenuExtension());
-	}
-	
-	@Override
 	public void register(HookSystem hookSystem) {
 		hookSystem.registerFilter("module/ui/menu", (FilterContext<Menu> context)
 				-> {

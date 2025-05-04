@@ -61,9 +61,7 @@ public class MenuFactory {
 		
 		List<EntryHolder> entries = new ArrayList<>();
 		moduleManager.extensions(UIMenuExtensionPoint.class).forEach(extension -> {
-			extension.getMenuEntryDefinitions().forEach(mi -> {
-				entries.addAll(scan(mi));
-			});
+			entries.addAll(scan(extension));
 		});
 		
 		insertEntriesIntoMenu(menu, entries);

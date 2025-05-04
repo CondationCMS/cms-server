@@ -13,7 +13,7 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.19</jetty.version>
 		<lucene.version>10.2.0</lucene.version>
-		<modules-framework.version>1.1.0</modules-framework.version>
+		<modules-framework.version>1.2.0</modules-framework.version>
 		<mockito.version>5.17.0</mockito.version>
 	</properties>
 	<modules>
@@ -522,9 +522,9 @@
 							<version>1.1.1</version>
 						</path>
 						<path>
-							<groupId>com.condation.cms.module.framework</groupId>
+							<groupId>com.condation.modules.framework</groupId>
 							<artifactId>modules-api</artifactId>
-							<version>7.4.2</version>
+							<version>1.2.0</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

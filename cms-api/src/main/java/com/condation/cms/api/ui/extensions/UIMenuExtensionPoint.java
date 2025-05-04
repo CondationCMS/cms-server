@@ -22,20 +22,16 @@ package com.condation.cms.api.ui.extensions;
  * #L%
  */
 
-import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.ui.menu.Menu;
-import java.util.Collections;
-import java.util.List;
+import com.condation.modules.api.ExtensionPoint;
 
 /**
  *
  * @author t.marx
  */
-public abstract class UIMenuExtensionPoint extends AbstractExtensionPoint {
+public interface UIMenuExtensionPoint extends ExtensionPoint<CMSModuleContext, CMSRequestContext> {
 	
-	public void addMenuItems (Menu menu) {}
-	
-	public List<Object> getMenuEntryDefinitions () {
-		return Collections.emptyList();
-	}
+	public default void addMenuItems (Menu menu) {};
 }

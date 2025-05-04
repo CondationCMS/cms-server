@@ -81,11 +81,7 @@ public class RoutesHandler extends Handler.Abstract {
 		
 		
 		moduleManager.extensions(RoutesExtensionPoint.class)
-				.stream()
-				.map(RoutesExtensionPoint::getRouteDefinitions)
-				.filter(routeDefinitions -> routeDefinitions != null && !routeDefinitions.isEmpty())
-				.flatMap(List::stream)
-				.forEach(controller -> routesManager.register(controller));
+				.forEach(routesManager::register);
 		
 		var handler = routesManager.findFirst(route, request.getMethod());
 		if (handler.isPresent()) {

@@ -1,10 +1,10 @@
-package com.condation.cms.modules.ui.utils;
+package com.condation.cms.api.ui.action;
 
 /*-
  * #%L
- * ui-module
+ * cms-api
  * %%
- * Copyright (C) 2023 - 2025 CondationCMS
+ * Copyright (C) 2024 - 2025 Condation
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,28 +21,32 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.ui.elements.Menu;
+import java.util.Map;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author thorstenmarx
  */
-public class UIHooks {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class UIHookAction extends UIAction {
 
-	public static final String HOOK_MENU = "module/ui/menu";
+	public static final String TYPE = "hook";
 
-	private final HookSystem hookSystem;
+	private String hook;
+
+	private Map<String, Object> parameters;
+
+	public UIHookAction () {
+		super(TYPE);
+	}
 	
-	public UIHooks (final HookSystem hookSystem) {
-		this.hookSystem = hookSystem;
+	public UIHookAction(String hook, Map<String, Object> parameters) {
+		this();
+		this.hook = hook;
+		this.parameters = parameters;
 	}
-
-	public Menu menu() {
-		var menu = new Menu();
-
-		menu = hookSystem.filter(HOOK_MENU, menu).value();
-		
-		return menu;
-	}
+	
 }

@@ -21,20 +21,38 @@ package com.condation.cms.api.ui.action;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import java.util.Map;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  *
  * @author thorstenmarx
  */
-public abstract class MenuAction {
-	
-	private final String type;
-	
-	public MenuAction (String type) {
-		this.type = type;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class UIScriptAction extends UIAction {
+
+	public static final String TYPE = "script";
+
+	private String function;
+	private String module;
+
+	private Map<String, Object> parameters;
+
+	public UIScriptAction() {
+		super(TYPE);
 	}
 	
-	public String getType () {
-		return type;
+	public UIScriptAction (String module, String function, Map<String, Object> parameters) {
+		this();
+		this.function = function;
+		this.module = module;
+		this.parameters = parameters;
 	}
+	
+	public UIScriptAction (String module, Map<String, Object> parameters) {
+		this(module, "runAction", parameters);
+	}
+	
 }

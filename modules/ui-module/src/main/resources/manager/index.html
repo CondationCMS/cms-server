@@ -43,7 +43,7 @@
 					</button>
 					<div class="collapse navbar-collapse" id="navbarSupportedContent">
 						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-							{% for entry in menuFactory.createMenu().entries() %}
+							{% for entry in actionFactory.createMenu().entries() %}
 							{% if entry != null && entry.hasChildren() %}
 							<li class="nav-item dropdown">
 								<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
@@ -78,7 +78,7 @@
 		<script src="/manager/bootstrap/bootstrap.bundle.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
 
-		<script src="/manager/js/menu.js"></script>
+		<script src="/manager/js/ui-actions.js"></script>
 
 		<div id="modalContainer"></div>
 		<div id="sidebarContainer"></div>
@@ -86,53 +86,29 @@
 	<ninja-keys> </ninja-keys>
 
 	<script>
-const ninja = document.querySelector('ninja-keys');
-ninja.data = [
-{
-	id: 'Projects',
-	title: 'Open Projects',
-	hotkey: 'ctrl+N',
-	icon: 'apps',
-	section: 'Projects',
-	handler: () => {
-		// it's auto register above hotkey with this handler
-		alert('Your logic to handle');
-	},
-},
-{
-	id: 'Theme',
-	title: 'Change theme...',
-	icon: 'desktop_windows',
-	children: ['Light Theme', 'Dark Theme', 'System Theme'],
-	hotkey: 'ctrl+T',
-	handler: () => {
-		// open menu if closed. Because you can open directly that menu from it's hotkey
-		ninja.open({parent: 'Theme'});
-		// if menu opened that prevent it from closing on select that action, no need if you don't have child actions
-		return {keepOpen: true};
-	},
-},
-{
-	id: 'Light Theme',
-	title: 'Change theme to Light',
-	icon: 'light_mode',
-	parent: 'Theme',
-	handler: () => {
-		// simple handler
-		document.documentElement.classList.remove('dark');
-	},
-},
-{
-	id: 'Dark Theme',
-	title: 'Change theme to Dark',
-	icon: 'dark_mode',
-	parent: 'Theme',
-	handler: () => {
-		// simple handler
-		document.documentElement.classList.add('dark');
-	},
-},
-];
+		
+		var shortCuts = [
+			{% for entry in actionFactory.createShortCuts() %}
+				{
+					id: '{{ entry.id }}',
+					title: '{{ entry.title }}',
+					hotkey: '{{ entry.hotkey }}',
+					icon: '{{ entry.icon }}',
+					section: '{{ entry.section }}',
+					handler: () => {
+						var action = {{ entry.getActionDefinition() | raw }}
+						if (action.type === "hook") {
+							executeHookAction(action)
+						} else if (action.type === "script") {
+							executeScriptAction(action)
+						}
+					}
+				},
+			{% endfor %}
+		];
+		
+		const ninja = document.querySelector('ninja-keys');
+		ninja.data = shortCuts;
 	</script>
 </body>
 </html>

@@ -32,7 +32,7 @@ import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JsModuleHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.services.CommandService;
-import com.condation.cms.modules.ui.utils.MenuFactory;
+import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -87,7 +87,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
-		var menuFactory = new MenuFactory(hookSystem, moduleManager);
+		var actionFactory = new ActionFactory(hookSystem, moduleManager);
 
 		Mapping mapping = new Mapping();
 
@@ -113,7 +113,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/menu/action/test-modal"), new JsModuleHandler("actions/test-modal.js"));
 			mapping.add(PathSpec.from("/manager/menu/action/test-sidebar"), new JsModuleHandler("actions/test-sidebar.js"));
 			
-			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(menuFactory, getFileSystem(), "/manager", getContext()));
+			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(actionFactory, getFileSystem(), "/manager", getContext()));
 
 
 		} catch (Exception ex) {

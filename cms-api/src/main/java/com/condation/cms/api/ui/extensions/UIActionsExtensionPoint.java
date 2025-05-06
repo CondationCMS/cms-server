@@ -24,14 +24,14 @@ package com.condation.cms.api.ui.extensions;
 
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.module.CMSRequestContext;
-import com.condation.cms.api.ui.menu.Menu;
+import com.condation.cms.api.ui.elements.Menu;
 import com.condation.modules.api.ExtensionPoint;
 
 /**
  *
  * @author t.marx
  */
-public interface UIMenuExtensionPoint extends ExtensionPoint<CMSModuleContext, CMSRequestContext> {
+public interface UIActionsExtensionPoint extends ExtensionPoint<CMSModuleContext, CMSRequestContext> {
 	
 	public default void addMenuItems (Menu menu) {};
 }

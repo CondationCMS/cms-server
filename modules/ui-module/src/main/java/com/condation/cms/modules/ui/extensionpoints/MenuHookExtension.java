@@ -25,10 +25,10 @@ import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.FilterContext;
-import com.condation.cms.api.ui.action.MenuHookAction;
-import com.condation.cms.api.ui.action.MenuScriptAction;
-import com.condation.cms.api.ui.menu.Menu;
-import com.condation.cms.api.ui.menu.MenuEntry;
+import com.condation.cms.api.ui.action.UIHookAction;
+import com.condation.cms.api.ui.action.UIScriptAction;
+import com.condation.cms.api.ui.elements.Menu;
+import com.condation.cms.api.ui.elements.MenuEntry;
 import com.condation.modules.api.annotation.Extension;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,12 +51,12 @@ public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 					.children(new ArrayList<>(
 							List.of(MenuEntry.builder().id("child1").name("ScriptAction")
 									.position(0)
-									.action(new MenuScriptAction("/manager/menu/action/test-modal", Map.of("name", "CondationCMS")))
+									.action(new UIScriptAction("/manager/menu/action/test-modal", Map.of("name", "CondationCMS")))
 									.build(),
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("HookAction")
 											.position(2)
-											.action(new MenuHookAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
+											.action(new UIHookAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
 							)))
 					.name("ExampleMenu")

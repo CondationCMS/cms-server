@@ -1,4 +1,4 @@
-package com.condation.cms.api.ui.menu;
+package com.condation.cms.api.ui.elements;
 
 /*-
  * #%L

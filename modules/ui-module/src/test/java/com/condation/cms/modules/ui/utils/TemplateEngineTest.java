@@ -24,9 +24,9 @@ package com.condation.cms.modules.ui.utils;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.ui.action.MenuScriptAction;
-import com.condation.cms.api.ui.menu.Menu;
-import com.condation.cms.api.ui.menu.MenuEntry;
+import com.condation.cms.api.ui.action.UIScriptAction;
+import com.condation.cms.api.ui.elements.Menu;
+import com.condation.cms.api.ui.elements.MenuEntry;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.modules.api.ModuleManager;
 import java.util.ArrayList;
@@ -63,7 +63,7 @@ public class TemplateEngineTest {
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("Child 2")
 											.position(2)
-											.action(new MenuScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
+											.action(new UIScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
 							)))
 					.name("ExampleMenu")
@@ -75,7 +75,7 @@ public class TemplateEngineTest {
 		);
 
 		Assertions.assertThatCode(() -> {
-			templateEngine.render("index.html", Map.of("menuFactory", new MenuFactory(hookSystem, moduleManager)));
+			templateEngine.render("index.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager)));
 		}).doesNotThrowAnyException();
 	}
 

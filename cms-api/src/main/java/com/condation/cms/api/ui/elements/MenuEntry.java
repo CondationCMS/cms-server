@@ -1,4 +1,4 @@
-package com.condation.cms.api.ui.menu;
+package com.condation.cms.api.ui.elements;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package com.condation.cms.api.ui.menu;
  * #L%
  */
 
-import com.condation.cms.api.ui.action.MenuAction;
+import com.condation.cms.api.ui.action.UIAction;
 import com.condation.cms.api.utils.JSONUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,7 +50,7 @@ public class MenuEntry {
 	@Builder.Default
 	private List<MenuEntry> children = new ArrayList<>();
 	
-	private MenuAction action;
+	private UIAction action;
 	
 	public void addChildren (MenuEntry entry) {
 		if (children == null) {

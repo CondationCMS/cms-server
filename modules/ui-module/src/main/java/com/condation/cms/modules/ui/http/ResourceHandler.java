@@ -23,7 +23,7 @@ package com.condation.cms.modules.ui.http;
  */
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
-import com.condation.cms.modules.ui.utils.MenuFactory;
+import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -44,7 +44,7 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class ResourceHandler extends JettyHandler {
 
-	private final MenuFactory menuFactory;
+	private final ActionFactory actionFactory;
 	private final FileSystem fileSystem;
 	private final String base;
 	private final CMSModuleContext context;
@@ -60,7 +60,7 @@ public class ResourceHandler extends JettyHandler {
 		if (resource.endsWith(".html")) {
 			try {
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource, 
-						Map.of("menuFactory", menuFactory));
+						Map.of("actionFactory", actionFactory));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {
 				log.error("", e);

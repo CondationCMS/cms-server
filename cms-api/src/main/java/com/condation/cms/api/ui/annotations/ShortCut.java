@@ -1,10 +1,10 @@
-package com.condation.cms.api.ui.action;
+package com.condation.cms.api.ui.annotations;
 
 /*-
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2024 - 2025 Condation
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,32 +21,26 @@ package com.condation.cms.api.ui.action;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.util.Map;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
  * @author thorstenmarx
  */
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class MenuHookAction extends MenuAction {
-
-	public static final String TYPE = "hook";
-
-	private String hook;
-
-	private Map<String, Object> parameters;
-
-	public MenuHookAction () {
-		super(TYPE);
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface ShortCut {
+	String title();
+	String id();
+	String parent() default "";
+	String icon() default "";
+	String hotkey () default "";
+	String section () default "";
 	
-	public MenuHookAction(String hook, Map<String, Object> parameters) {
-		this();
-		this.hook = hook;
-		this.parameters = parameters;
-	}
-	
+	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
+	HookAction hookAction () default @HookAction("");
 }

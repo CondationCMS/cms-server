@@ -21,15 +21,13 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.ui.action.MenuHookAction;
-import com.condation.cms.api.ui.action.MenuAction;
-import com.condation.cms.api.ui.action.MenuScriptAction;
-import com.condation.cms.api.ui.extensions.UIMenuExtensionPoint;
-import com.condation.cms.api.ui.menu.Menu;
-import com.condation.cms.api.ui.menu.MenuEntry;
+import com.condation.cms.api.ui.action.UIHookAction;
+import com.condation.cms.api.ui.action.UIAction;
+import com.condation.cms.api.ui.action.UIScriptAction;
+import com.condation.cms.api.ui.elements.Menu;
+import com.condation.cms.api.ui.elements.MenuEntry;
 import com.condation.modules.api.ModuleManager;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -39,6 +37,8 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
+import com.condation.cms.api.utils.JSONUtil;
 
 /**
  *
@@ -46,33 +46,94 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class MenuFactory {
+public class ActionFactory {
 
 	private final HookSystem hookSystem;
 	private final ModuleManager moduleManager;
+
+	public List<ShortCutHolder> createShortCuts() {
+		List<ShortCutHolder> shortCuts = new ArrayList<>();
+		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
+			shortCuts.addAll(scanShortCuts(extension));
+		});
+
+		return shortCuts;
+	}
 
 	public Menu createMenu() {
 		UIHooks uiHooks = new UIHooks(hookSystem);
 		var menu = uiHooks.menu();
 
-		moduleManager.extensions(UIMenuExtensionPoint.class).forEach(extension -> {
+		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
 			extension.addMenuItems(menu);
 		});
-		
+
 		List<EntryHolder> entries = new ArrayList<>();
-		moduleManager.extensions(UIMenuExtensionPoint.class).forEach(extension -> {
-			entries.addAll(scan(extension));
+		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
+			entries.addAll(scanMenuEntries(extension));
 		});
-		
+
 		insertEntriesIntoMenu(menu, entries);
 
 		return menu;
 	}
 
-	private List<EntryHolder> scan(Object moduleInstance) {
+	private List<ShortCutHolder> scanShortCuts(Object moduleInstance) {
+		List<ShortCutHolder> shortCuts = new ArrayList<>();
+
+		for (Method method : moduleInstance.getClass().getDeclaredMethods()) {
+			var shortcutAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.ShortCut.class);
+			if (shortcutAnnotation == null) {
+				continue;
+			}
+
+			method.setAccessible(true);
+			UIAction menuAction = null;
+
+			// 1. Methode hat @Action?
+			Action actionAnn = method.getAnnotation(Action.class);
+			if (actionAnn != null) {
+				menuAction = new UIHookAction(actionAnn.value(), Map.of());
+			} // 2. @Hook in @MenuEntry
+			else if (!shortcutAnnotation.hookAction().value().isEmpty()) {
+				menuAction = new UIHookAction(shortcutAnnotation.hookAction().value(), Map.of());
+			} // 3. @ScriptAction in @MenuEntry
+			else if (!shortcutAnnotation.scriptAction().module().isEmpty()) {
+				menuAction = new UIScriptAction(shortcutAnnotation.scriptAction().module(), shortcutAnnotation.scriptAction().function(), Map.of());
+			}
+			
+			if (menuAction == null) {
+				var menuAnn = method.getAnnotation(com.condation.cms.api.ui.annotations.MenuEntry.class);
+				if (menuAnn != null) {
+					if (!menuAnn.hookAction().value().isEmpty()) {
+						menuAction = new UIHookAction(menuAnn.hookAction().value(), Map.of());
+					} // 3. @ScriptAction in @MenuEntry
+					else if (!menuAnn.scriptAction().module().isEmpty()) {
+						menuAction = new UIScriptAction(menuAnn.scriptAction().module(), menuAnn.scriptAction().function(), Map.of());
+					}
+				}
+			}
+			
+			if (menuAction != null) {
+				shortCuts.add(new ShortCutHolder(
+					shortcutAnnotation.id(), 
+					shortcutAnnotation.title(), 
+					shortcutAnnotation.icon(), 
+					shortcutAnnotation.hotkey(),
+					shortcutAnnotation.parent(), 
+					shortcutAnnotation.section(),
+					menuAction));
+			}
+
+		}
+
+		return shortCuts;
+	}
+
+	private List<EntryHolder> scanMenuEntries(Object moduleInstance) {
 
 		List<EntryHolder> entries = new ArrayList<>();
-		
+
 		for (Method method : moduleInstance.getClass().getDeclaredMethods()) {
 			var menuAnn = method.getAnnotation(com.condation.cms.api.ui.annotations.MenuEntry.class);
 			if (menuAnn == null) {
@@ -80,18 +141,18 @@ public class MenuFactory {
 			}
 
 			method.setAccessible(true);
-			MenuAction menuAction = null;
+			UIAction menuAction = null;
 
 			// 1. Methode hat @Action?
 			Action actionAnn = method.getAnnotation(Action.class);
 			if (actionAnn != null) {
-				menuAction = new MenuHookAction(actionAnn.value(), Map.of());
+				menuAction = new UIHookAction(actionAnn.value(), Map.of());
 			} // 2. @Hook in @MenuEntry
 			else if (!menuAnn.hookAction().value().isEmpty()) {
-				menuAction = new MenuHookAction(menuAnn.hookAction().value(), Map.of());
+				menuAction = new UIHookAction(menuAnn.hookAction().value(), Map.of());
 			} // 3. @ScriptAction in @MenuEntry
 			else if (!menuAnn.scriptAction().module().isEmpty()) {
-				menuAction = new MenuScriptAction(menuAnn.scriptAction().module(), menuAnn.scriptAction().function(), Map.of());
+				menuAction = new UIScriptAction(menuAnn.scriptAction().module(), menuAnn.scriptAction().function(), Map.of());
 			}
 
 			var entry = MenuEntry.builder()
@@ -100,15 +161,15 @@ public class MenuFactory {
 					.divider(menuAnn.divider())
 					.position(menuAnn.position())
 					.action(menuAction)
-					.children(new ArrayList<MenuEntry>())
+					.children(new ArrayList<>())
 					.build();
 
 			entries.add(new EntryHolder(menuAnn.parent(), entry));
 		}
-		
+
 		return entries;
 	}
-	
+
 	private void insertEntriesIntoMenu(Menu menu, List<EntryHolder> entries) {
 		Map<String, MenuEntry> index = new HashMap<>();
 		entries.forEach(holder -> index.put(holder.entry().getId(), holder.entry()));
@@ -147,7 +208,7 @@ public class MenuFactory {
 		}
 	}
 
-	public Optional<MenuEntry> findEntryById(Menu menu, String id) {
+	private Optional<MenuEntry> findEntryById(Menu menu, String id) {
 		if (menu.entries() == null) {
 			return Optional.empty();
 		}
@@ -175,6 +236,16 @@ public class MenuFactory {
 		}
 		return Optional.empty();
 	}
-	
-	private record EntryHolder (String parent, MenuEntry entry) {}
+
+	private record EntryHolder(String parent, MenuEntry entry) {
+
+	}
+
+	public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action) {
+
+		public String getActionDefinition() {
+			return action != null ? JSONUtil.toJson(action) : "";
+		}
+	}
+;
 }

@@ -23,8 +23,8 @@ package com.condation.cms.modules.ui.utils;
  */
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.ui.menu.Menu;
-import com.condation.cms.api.ui.menu.MenuEntry;
+import com.condation.cms.api.ui.elements.Menu;
+import com.condation.cms.api.ui.elements.MenuEntry;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;

@@ -24,19 +24,20 @@ package com.condation.cms.modules.ui.extensionpoints;
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.hooks.ActionContext;
-import com.condation.cms.api.ui.extensions.UIMenuExtensionPoint;
+import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.modules.api.annotation.Extensions;
+import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 
 /**
  *
  * @author t.marx
  */
 @Extensions({
-	@Extension(UIMenuExtensionPoint.class),
+	@Extension(UIActionsExtensionPoint.class),
 	@Extension(HookSystemRegisterExtensionPoint.class)
 })
-public class MenuExtension extends HookSystemRegisterExtensionPoint implements UIMenuExtensionPoint {
+public class MenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint {
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			id = "parentDemo",
@@ -54,16 +55,28 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 			position = 1,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-modal")
 	)
+	@ShortCut(
+		id = "demo-script-action",
+		title = "Demo Open Modal",
+		hotkey = "ctrl-1",
+		section = "script"
+	)
 	public void test_modal() {
 
 	}
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",
-			id = "demo-script-action",
+			id = "demo-script-action2",
 			name = "SidebarDemo",
 			position = 1,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-sidebar")
+	)
+	@ShortCut(
+		id = "demo-script-action2",
+		title = "Demo Open Sidebar",
+		hotkey = "ctrl-2",
+		section = "script"
 	)
 	public void test_sidebar() {
 
@@ -76,6 +89,12 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 			position = 2
 	)
 	@Action("demo-hook-action")
+	@ShortCut(
+		id = "demo-hook-action",
+		title = "Demo Call hook",
+		hotkey = "ctrl-3",
+		section = "hook"
+	)
 	public void demoScriptAction(ActionContext<?> context) {
 		System.out.println("demo-hook-action called");
 	}

@@ -84,6 +84,22 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",
+			id = "test-get-contentNode",
+			name = "GetContentNode",
+			position = 1,
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-command")
+	)
+	@ShortCut(
+		id = "test-get-contentNode",
+		title = "GetContentNode",
+		section = "script"
+	)
+	public void get_Content_node() {
+
+	}
+	
+	@com.condation.cms.api.ui.annotations.MenuEntry(
+			parent = "parentDemo",
 			id = "demo-hook-action",
 			name = "HookDemo",
 			position = 2

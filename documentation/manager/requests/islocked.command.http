@@ -1,0 +1,9 @@
+POST http://localhost:1010/module/ui-module/command
+
+{
+    type: "islocked",
+    parameters: {
+        mode: "edit",
+        uri: "/"
+    }
+}

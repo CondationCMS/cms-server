@@ -112,6 +112,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 			mapping.add(PathSpec.from("/manager/menu/action/test-modal"), new JsModuleHandler("actions/test-modal.js"));
 			mapping.add(PathSpec.from("/manager/menu/action/test-sidebar"), new JsModuleHandler("actions/test-sidebar.js"));
+			mapping.add(PathSpec.from("/manager/menu/action/test-command"), new JsModuleHandler("actions/test-command.js"));
 			
 			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(actionFactory, getFileSystem(), "/manager", getContext()));
 

@@ -450,6 +450,9 @@
 							</roots>
 							<excludes>
 								<exclude>**/*.json</exclude>
+								<exclude>**/manager/bootstrap/*.js</exclude>
+								<exclude>**/manager/bootstrap/*.css</exclude>
+								<exclude>**/manager/bootstrap/*.map</exclude>
 							</excludes>
 						</configuration>
 					</execution>

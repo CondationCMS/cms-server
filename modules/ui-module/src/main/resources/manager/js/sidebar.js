@@ -32,7 +32,7 @@ const openSidebar = (options) => {
 				<h5 class="offcanvas-title" id="${sidebarId}_label">${options.title || 'Sidebar Title'}</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
 			</div>
-			<div class="offcanvas-body">
+			<div class="offcanvas-body" id="sidebarBodyContainer">
 				${options.body || '<p>Sidebar content</p>'}
 			</div>
 			<div class="offcanvas-footer d-flex justify-content-end gap-2 mt-3">
@@ -44,6 +44,10 @@ const openSidebar = (options) => {
 
 	const container = document.getElementById('sidebarContainer');
 	container.innerHTML = sidebarHtml;
+	
+	if (options.form) {
+		options.form.init("#sidebarBodyContainer")
+	}
 
 	const sidebarElement = document.getElementById(sidebarId);
 	const sidebarInstance = new bootstrap.Offcanvas(sidebarElement, {

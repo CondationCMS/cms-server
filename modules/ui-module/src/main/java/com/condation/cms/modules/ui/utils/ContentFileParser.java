@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -37,6 +38,10 @@ public class ContentFileParser {
 	public ContentFileParser(String filePath) throws IOException {
 		String fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
 		parseFile(fileContent);
+	}
+	
+	public ContentFileParser (ReadOnlyFile contentFile) throws IOException {
+		parseFile(contentFile.getContent());
 	}
 
 	private void parseFile(String fileContent) {

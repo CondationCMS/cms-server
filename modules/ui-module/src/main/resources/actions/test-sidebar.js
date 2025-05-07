@@ -20,12 +20,40 @@
  * #L%
  */
 import {openSidebar} from '/manager/js/sidebar.js'
+import {createForm} from '/manager/js/forms.js'
 		// hook.js
 export function runAction(params) {
+
+	const form = createForm({
+		fields: [
+			{type: 'text', name: 'username', title: 'Benutzername'},
+			{type: 'email', name: 'email', title: 'E-Mail'},
+			{
+				type: 'select',
+				name: 'gender',
+				title: 'Geschlecht',
+				options: [
+					{label: 'Bitte wählen', value: ''},
+					{label: 'Männlich', value: 'm'},
+					{label: 'Weiblich', value: 'w'},
+					{label: 'Divers', value: 'd'}
+				]
+			}
+		],
+		values: {
+			username: 'Max',
+			email: 'max@beispiel.de',
+			gender: 'm'
+		}
+	});
+
+
+
 	openSidebar({
 		title: 'Example Model',
 		body: 'modal body',
-		onCancel : (event) => console.log("modal canceled"),
-		onOk : (event) => console.log("modal ok"),
+		form: form,
+		onCancel: (event) => console.log("modal canceled"),
+		onOk: (event) => console.log("modal ok", form.getData()),
 	});
 }

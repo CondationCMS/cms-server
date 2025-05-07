@@ -21,36 +21,58 @@
  */
 const createID = () => "id" + Math.random().toString(16).slice(2);
 
-const createEmailField = (options) => {
+const createEmailField = (options, value = '') => {
 	const placeholder = options.placeholder || "";
 	const id = createID();
 	return `
 		<div class="mb-3">
 			<label for="${id}" class="form-label">${options.title}</label>
-			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}">
+			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
 		</div>
 	`;
 };
 
-const createTextField = (options) => {
+const createTextField = (options, value = '') => {
 	const placeholder = options.placeholder || "";
 	const id = createID();
 	return `
 		<div class="mb-3">
 			<label for="${id}" class="form-label">${options.title}</label>
-			<input type="text" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}">
+			<input type="text" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
+		</div>
+	`;
+};
+
+const createSelectField = (options, value = '') => {
+	const id = createID();
+	const optionTags = (options.options || []).map(opt => {
+		const label = typeof opt === 'object' ? opt.label : opt;
+		const val = typeof opt === 'object' ? opt.value : opt;
+		const selected = val === value ? ' selected' : '';
+		return `<option value="${val}"${selected}>${label}</option>`;
+	}).join('\n');
+
+	return `
+		<div class="mb-3">
+			<label for="${id}" class="form-label">${options.title}</label>
+			<select class="form-select" id="${id}" name="${options.name}">
+				${optionTags}
+			</select>
 		</div>
 	`;
 };
 
 const createForm = (options) => {
 	const fields = options.fields || [];
+	const values = options.values || {};
 	const formId = createID();
 
 	const fieldHtml = fields.map(field => {
+		const val = values[field.name] || '';
 		switch (field.type) {
-			case 'email': return createEmailField(field);
-			case 'text': return createTextField(field);
+			case 'email': return createEmailField(field, val);
+			case 'text': return createTextField(field, val);
+			case 'select': return createSelectField(field, val);
 			default: return '';
 		}
 	}).join('\n');
@@ -74,7 +96,6 @@ const createForm = (options) => {
 		container.innerHTML = html;
 		formElement = container.querySelector('form');
 
-		// Enter unterdrücken
 		formElement.addEventListener('keydown', (e) => {
 			if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
 				e.preventDefault();

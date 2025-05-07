@@ -29,7 +29,6 @@ const executeCommand = async (options) => {
 		method: "POST",
 		body: JSON.stringify(data)
 	})
-	console.log(response)
 	return await response.json();
 };
 

@@ -12,6 +12,14 @@
 			{{ node.content | raw}}
 		</div>
 	</div>
+	<div class="container">
+		{% if sections.containsKey('asection') %}
+			{% for section in sections.get('asection') %}
+				{{ section.content() | raw }}
+			{% endfor %}
+		{% endif %}
+		
+	</div>
 
 </body>
 

@@ -23,9 +23,14 @@
 const openModal = (options) => {
 	const modalId = 'fullscreenModal_' + Date.now();
 
+	let fullscreen = "";
+	if (options.fullscreen) {
+		fullscreen = "modal-fullscreen";
+	}
+
 	const modalHtml = `
 		<div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
-		  <div class="modal-dialog modal-fullscreen">
+		  <div class="modal-dialog ${fullscreen}">
 			<div class="modal-content">
 			  <div class="modal-header">
 				<h5 class="modal-title">${options.title || 'Modal Title'}</h5>

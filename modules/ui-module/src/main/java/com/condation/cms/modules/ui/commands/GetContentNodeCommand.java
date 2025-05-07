@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.commands;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
@@ -75,11 +76,14 @@ public class GetContentNodeCommand {
 					contentFile = temp;
 				}
 			}
-
+			
 			Map<String, Object> result = new HashMap<>();
 			result.put("url", url);
 			if (contentFile != null) {
 				result.put("uri", PathUtil.toRelativeFile(contentFile, contentBase));
+				
+				var sections = db.getContent().listSections(contentFile);
+				result.put("sections", sections.stream().map(ContentNode::uri).toList());
 			}
 
 			return result;

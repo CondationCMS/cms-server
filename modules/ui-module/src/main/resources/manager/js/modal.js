@@ -36,7 +36,7 @@ const openModal = (options) => {
 				<h5 class="modal-title">${options.title || 'Modal Title'}</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			  </div>
-			  <div class="modal-body">
+			  <div class="modal-body" id="modalBodyContainer">
 				${options.body || '<p>Modal body content</p>'}
 			  </div>
 			  <div class="modal-footer">
@@ -50,6 +50,10 @@ const openModal = (options) => {
 	// Modal einfügen
 	const container = document.getElementById('modalContainer');
 	container.innerHTML = modalHtml;
+
+	if (options.form) {
+		options.form.init("#modalBodyContainer")
+	}
 
 	const modalElement = document.getElementById(modalId);
 	const modalInstance = new bootstrap.Modal(modalElement);

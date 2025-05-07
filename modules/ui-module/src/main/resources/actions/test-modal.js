@@ -20,12 +20,22 @@
  * #L%
  */
 import {openModal} from '/manager/js/modal.js'
+import {createForm} from '/manager/js/forms.js'
 		// hook.js
 export function runAction(params) {
+	
+	const form = createForm({
+		fields: [
+			{ type: 'text', name: 'username', title: 'Benutzername', placeholder: 'Max' },
+			{ type: 'email', name: 'email', title: 'E-Mail', placeholder: 'max@example.com' }
+		]
+	});
+	
 	openModal({
 		title: 'Example Model',
 		body: 'modal body',
+		form: form,
 		onCancel : (event) => console.log("modal canceled"),
-		onOk : (event) => console.log("modal ok"),
+		onOk : (event) => console.log("modal ok", form.getData()),
 	});
 }

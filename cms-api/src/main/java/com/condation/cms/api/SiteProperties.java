@@ -63,4 +63,6 @@ public interface SiteProperties {
 	public String templateEngine();
 
 	public List<String> activeModules();
+	
+	public boolean uiManagerEnabled ();
 }

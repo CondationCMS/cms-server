@@ -21,8 +21,10 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.modules.api.annotation.Extension;
@@ -84,12 +86,19 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 	@Override
 	public Mapping getMapping() {
+		
+		Mapping mapping = new Mapping();
+		
+		var siteProperties = getContext().get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
+		if (!siteProperties.uiManagerEnabled()) {
+			return mapping;
+		}
+		
 
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
 		var actionFactory = new ActionFactory(hookSystem, moduleManager);
 
-		Mapping mapping = new Mapping();
 
 		var commandService = new CommandService();
 		commandService.register("test", (cmd) -> "Hallo Leute!");

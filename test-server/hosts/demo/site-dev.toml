@@ -1,1 +1,4 @@
 hostname = [ "localhost5" ]
+
+[ui.manager]
+enabled = true

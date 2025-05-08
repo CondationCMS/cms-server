@@ -45,13 +45,23 @@ export async function runAction(params) {
 			{type: 'text', name: 'title', title: 'Title'},
 			{
 				type: 'select',
+				name: 'published',
+				title: 'Published',
+				options: [
+					{label: 'No', value: false},
+					{label: 'Yes', value: true}
+				]
+			},
+			{
+				type: 'select',
 				name: 'search.index',
-				title: 'Index for searcht',
+				title: 'Index for search',
 				options: [
 					{label: 'No', value: false},
 					{label: 'Yes', value: true}
 				]
 			}
+			
 		],
 		values: {
 			'title': getcontent?.result?.meta?.title,

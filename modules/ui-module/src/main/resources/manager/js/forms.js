@@ -62,6 +62,17 @@ const createSelectField = (options, value = '') => {
 	`;
 };
 
+const createEditorField = (options, value = '') => {
+	const id = createID();
+	return `
+		<div class="mb-3">
+			<label class="form-label">${options.title}</label>
+			<div id="${id}" class="monaco-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
+			<input type="hidden" name="${options.name}" data-monaco-id="${id}" data-initial-value="${encodeURIComponent(value)}">
+		</div>
+	`;
+};
+
 const createForm = (options) => {
 	const fields = options.fields || [];
 	const values = options.values || {};
@@ -76,6 +87,8 @@ const createForm = (options) => {
 				return createTextField(field, val);
 			case 'select':
 				return createSelectField(field, val);
+			case 'editor':
+				return createEditorField(field, val);
 			default:
 				return '';
 		}
@@ -88,6 +101,8 @@ const createForm = (options) => {
 	`;
 
 	let formElement = null;
+
+	let monacoEditors = [];
 
 	const init = (container) => {
 		if (typeof container === 'string') {
@@ -111,6 +126,22 @@ const createForm = (options) => {
 			e.stopPropagation();
 			formElement.classList.add('was-validated');
 		});
+
+		require.config({paths: {vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs'}});
+		require(['vs/editor/editor.main'], function () {
+			const editorInputs = formElement.querySelectorAll('[data-monaco-id]');
+			editorInputs.forEach(input => {
+				const editorContainer = document.getElementById(input.dataset.monacoId);
+				const initialValue = decodeURIComponent(input.dataset.initialValue || "");
+				const editor = monaco.editor.create(editorContainer, {
+					value: initialValue,
+					language: 'markdown',
+					theme: 'vs-dark',
+					automaticLayout: true
+				});
+				monacoEditors.push({input, editor});
+			});
+		});
 	};
 
 	const getData = () => {
@@ -130,6 +161,10 @@ const createForm = (options) => {
 			}
 
 			data[el.name] = value;
+			
+			monacoEditors.forEach(({ input, editor }) => {
+				data[input.name] = editor.getValue();
+			});
 		});
 		return data;
 	};

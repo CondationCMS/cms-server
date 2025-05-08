@@ -30,6 +30,7 @@ import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.modules.ui.commands.GetContentCommand;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.GetContentNodeCommand;
+import com.condation.cms.modules.ui.commands.SetContentCommand;
 import com.condation.cms.modules.ui.commands.SetMetaCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
 import com.condation.cms.modules.ui.http.HookHandler;
@@ -104,11 +105,11 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		var commandService = new CommandService();
 		commandService.register("test", (cmd) -> "Hallo Leute!");
-		//commandService.register(IsLockedCommand.name, IsLockedCommand.handler);
 		commandService.register(GetContentNodeCommand.NAME,
 				GetContentNodeCommand.getHandler(getContext(), getRequestContext()));
 		commandService.register(GetContentCommand.NAME, GetContentCommand.getHandler(context, requestContext));
 		commandService.register(SetMetaCommand.NAME, SetMetaCommand.getHandler(context, requestContext));
+		commandService.register(SetContentCommand.NAME, SetContentCommand.getHandler(context, requestContext));
 
 		try {
 			/*

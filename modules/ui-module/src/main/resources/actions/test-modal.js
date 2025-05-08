@@ -21,21 +21,50 @@
  */
 import {openModal} from '/manager/js/modal.js'
 import {createForm} from '/manager/js/forms.js'
+import {executeCommand} from '/manager/js/system-commands.js'
+import {getPreviewUrl, reloadPreview} from '/manager/js/ui-helpers.js'
 		// hook.js
-export function runAction(params) {
-	
+export async function runAction(params) {
+
+	const contentNode = await executeCommand({
+		command: "getContentNode",
+		parameters: {
+			url: getPreviewUrl()
+		}
+	})
+
+	const getContent = await executeCommand({
+		command: "getContent",
+		parameters: {
+			uri: contentNode.result.uri
+		}
+	})
+
 	const form = createForm({
 		fields: [
-			{ type: 'text', name: 'username', title: 'Benutzername', placeholder: 'Max' },
-			{ type: 'email', name: 'email', title: 'E-Mail', placeholder: 'max@example.com' }
-		]
+			{type: 'editor', name: 'content', title: 'Inhalt'}
+		],
+		values: {
+			"content" : getContent?.result?.content
+		}
 	});
-	
+
 	openModal({
-		title: 'Example Model',
+		title: 'Edit Content',
 		body: 'modal body',
 		form: form,
-		onCancel : (event) => console.log("modal canceled"),
-		onOk : (event) => console.log("modal ok", form.getData()),
+		fullscreen: true,
+		onCancel: (event) => console.log("modal canceled"),
+		onOk: async (event) => {
+			var updateData = form.getData()
+			var setContent = await executeCommand({
+				command: "setContent",
+				parameters: {
+					uri: contentNode.result.uri,
+					content: updateData.content
+				}
+			})
+			reloadPreview()
+		}
 	});
 }

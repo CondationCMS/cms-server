@@ -27,8 +27,10 @@ import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
+import com.condation.cms.modules.ui.commands.GetContentCommand;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.GetContentNodeCommand;
+import com.condation.cms.modules.ui.commands.SetMetaCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
 import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JsModuleHandler;
@@ -105,6 +107,8 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		//commandService.register(IsLockedCommand.name, IsLockedCommand.handler);
 		commandService.register(GetContentNodeCommand.NAME,
 				GetContentNodeCommand.getHandler(getContext(), getRequestContext()));
+		commandService.register(GetContentCommand.NAME, GetContentCommand.getHandler(context, requestContext));
+		commandService.register(SetMetaCommand.NAME, SetMetaCommand.getHandler(context, requestContext));
 
 		try {
 			/*

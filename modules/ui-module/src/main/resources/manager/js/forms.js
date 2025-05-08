@@ -70,10 +70,14 @@ const createForm = (options) => {
 	const fieldHtml = fields.map(field => {
 		const val = values[field.name] || '';
 		switch (field.type) {
-			case 'email': return createEmailField(field, val);
-			case 'text': return createTextField(field, val);
-			case 'select': return createSelectField(field, val);
-			default: return '';
+			case 'email':
+				return createEmailField(field, val);
+			case 'text':
+				return createTextField(field, val);
+			case 'select':
+				return createSelectField(field, val);
+			default:
+				return '';
 		}
 	}).join('\n');
 
@@ -116,7 +120,16 @@ const createForm = (options) => {
 		}
 		const data = {};
 		formElement.querySelectorAll('[name]').forEach(el => {
-			data[el.name] = el.value;
+			let value = el.value;
+
+			// Boolean-Konvertierung bei den Strings "true"/"false"
+			if (value === 'true') {
+				value = true;
+			} else if (value === 'false') {
+				value = false;
+			}
+
+			data[el.name] = value;
 		});
 		return data;
 	};

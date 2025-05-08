@@ -24,4 +24,8 @@ const getPreviewUrl = () => {
 	return document.getElementById("contentPreview").src;
 };
 
-export { getPreviewUrl };
+const reloadPreview = () => {
+	document.getElementById("contentPreview").src = document.getElementById("contentPreview").src
+}
+
+export { getPreviewUrl, reloadPreview };

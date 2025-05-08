@@ -28,6 +28,7 @@ import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.services.CommandService;
 import com.condation.cms.modules.ui.utils.ContentFileParser;
+import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,9 +39,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class GetContentCommand {
+public class SetMetaCommand {
 
-	public static final String NAME = "getContent";
+	public static final String NAME = "setMeta";
 
 	public static final CommandService.CommandHandler getHandler(
 			final CMSModuleContext moduleContext, final CMSRequestContext requestContext
@@ -48,6 +49,7 @@ public class GetContentCommand {
 		final DB db = moduleContext.get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 		return command -> {
+			var update = (Map<String, Object>) command.parameters().get("meta");
 			var uri = (String) command.parameters().get("uri");
 
 			var contentFile = contentBase.resolve(uri);
@@ -57,8 +59,14 @@ public class GetContentCommand {
 			if (contentFile != null) {
 				try {
 					ContentFileParser parser = new ContentFileParser(contentFile);
-					result.put("content", parser.getContent());
-					result.put("meta", parser.getHeader());
+					
+					Map<String, Object> meta = parser.getHeader();
+					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
+					
+					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+					
+					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
+					log.debug("file {} saved", uri);
 				} catch (IOException ex) {
 					log.error("", ex);
 				}

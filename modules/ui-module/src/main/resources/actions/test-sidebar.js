@@ -21,29 +21,41 @@
  */
 import {openSidebar} from '/manager/js/sidebar.js'
 import {createForm} from '/manager/js/forms.js'
+import {executeCommand} from '/manager/js/system-commands.js'
+import {getPreviewUrl} from '/manager/js/ui-helpers.js'
 		// hook.js
-export function runAction(params) {
+export async function runAction(params) {
+
+	const contentNode = await executeCommand({
+		command: "getContentNode",
+		parameters: {
+			url: getPreviewUrl()
+		}
+	})
+
+	const getcontent = await executeCommand({
+		command: "getContent",
+		parameters: {
+			uri: contentNode.result.uri
+		}
+	})
 
 	const form = createForm({
 		fields: [
-			{type: 'text', name: 'username', title: 'Benutzername'},
-			{type: 'email', name: 'email', title: 'E-Mail'},
+			{type: 'text', name: 'title', title: 'Title'},
 			{
 				type: 'select',
-				name: 'gender',
-				title: 'Geschlecht',
+				name: 'search.index',
+				title: 'Index for searcht',
 				options: [
-					{label: 'Bitte wählen', value: ''},
-					{label: 'Männlich', value: 'm'},
-					{label: 'Weiblich', value: 'w'},
-					{label: 'Divers', value: 'd'}
+					{label: 'No', value: false},
+					{label: 'Yes', value: true}
 				]
 			}
 		],
 		values: {
-			username: 'Max',
-			email: 'max@beispiel.de',
-			gender: 'm'
+			'title': getcontent?.result?.meta?.title,
+			'search.index': getcontent?.result?.meta?.search?.index
 		}
 	});
 
@@ -54,6 +66,15 @@ export function runAction(params) {
 		body: 'modal body',
 		form: form,
 		onCancel: (event) => console.log("modal canceled"),
-		onOk: (event) => console.log("modal ok", form.getData()),
+		onOk: async (event) => {
+			var updateData = form.getData()
+			var setMeta = await executeCommand({
+				command: "setMeta",
+				parameters: {
+					uri: contentNode.result.uri,
+					meta: updateData
+				}
+			})
+		}
 	});
 }

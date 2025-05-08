@@ -2,9 +2,9 @@
 title: Startseite
 template: start.html
 search:
-    index: false
+  index: false
 ---
 
 # Demo Project
 
-![TestBild!](/media/images/test.jpg?format=small)
+![TestBild!](/media/images/test2.jpg?format=small)

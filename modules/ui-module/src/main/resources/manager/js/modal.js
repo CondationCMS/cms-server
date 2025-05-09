@@ -27,10 +27,17 @@ const openModal = (options) => {
 	if (options.fullscreen) {
 		fullscreen = "modal-fullscreen";
 	}
+	/*
+	 * sm, lg, xl
+	 */
+	let size = ""
+	if (options.size) {
+		size = "model-" + options.size
+	}
 
 	const modalHtml = `
 		<div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
-		  <div class="modal-dialog ${fullscreen}">
+		  <div class="modal-dialog ${fullscreen} ${size}">
 			<div class="modal-content">
 			  <div class="modal-header">
 				<h5 class="modal-title">${options.title || 'Modal Title'}</h5>

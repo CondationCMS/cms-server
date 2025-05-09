@@ -65,6 +65,7 @@ export async function runAction(params) {
 		],
 		values: {
 			'title': getcontent?.result?.meta?.title,
+			'published': getcontent?.result?.meta?.published,
 			'search.index': getcontent?.result?.meta?.search?.index
 		}
 	});

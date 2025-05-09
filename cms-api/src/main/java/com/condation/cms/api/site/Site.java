@@ -1,6 +1,8 @@
+package com.condation.cms.api.site;
+
 /*-
  * #%L
- * ui-module
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -19,17 +21,29 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '/manager/js/system-commands.js'
-import {getPreviewUrl} from '/manager/js/ui-helpers.js'
-		// hook.js
-export async function runAction(params) {
+
+import com.condation.cms.api.SiteProperties;
+import com.google.inject.Injector;
+import java.util.List;
+
+/**
+ *
+ * @author thmar
+ */
+public record Site(Injector injector) {
+	public String id () {
+		return injector.getInstance(SiteProperties.class).id();
+	}
 	
-		var contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
+	public List<String> modules () {
+		return injector.getInstance(SiteProperties.class).activeModules();
+	}
 	
-	console.log(contentNode)
+	public String baseurl () {
+		return (String)injector.getInstance(SiteProperties.class).get("baseurl");
+	}
+	
+	public boolean manager () {
+		return injector.getInstance(SiteProperties.class).uiManagerEnabled();
+	}
 }

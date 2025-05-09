@@ -18,7 +18,32 @@
   License along with this program.  If not, see
   <http://www.gnu.org/licenses/gpl-3.0.html>.
   #L%
-  -->
+-->
+{% macro menuEntry(entry) %}
+{% if entry != null && entry.hasChildren() %}
+<li class="nav-item dropdown">
+	<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+	   aria-expanded="false">
+		{{ entry.name }}
+	</a>
+	<ul class="dropdown-menu submenu">
+		{% for child in entry.getChildren() %}
+			{% if child.isDivider() %}
+			<li><hr class="dropdown-divider"></li>
+			{% elseif child.hasChildren() %}
+				{{ menuEntry(child) | raw }}
+			{% else %}
+			<li><a class="dropdown-item" href="#" data-action-definition='{{ child.getActionDefinition() }}'>{{ child.name }}</a></li>
+			{% endif %}
+		{% endfor %}
+	</ul>
+</li>
+{% else %}
+<li class="nav-item">
+	<a class="nav-link" aria-current="page" href="#" data-action-definition='{{ entry.getActionDefinition() }}'>{{ entry.name }}</a>
+</li>
+{% endif %}
+{% endmacro %}
 <!doctype html>
 <html lang="en">
 	<head>
@@ -30,7 +55,8 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
 		<script type="module" src="https://unpkg.com/ninja-keys?module"></script>
-
+		<link rel="stylesheet" href="/manager/css/manager.css" />
+		<script type="text/javascript" src="/manager/js/manager.js"></script>
 	</head>
 	<body>
 		<div id="menu">
@@ -44,27 +70,7 @@
 					<div class="collapse navbar-collapse" id="navbarSupportedContent">
 						<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 							{% for entry in actionFactory.createMenu().entries() %}
-							{% if entry != null && entry.hasChildren() %}
-							<li class="nav-item dropdown">
-								<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-								   aria-expanded="false">
-									{{ entry.name }}
-								</a>
-								<ul class="dropdown-menu">
-									{% for child in entry.getChildren() %}
-									{% if child.isDivider() %}
-									<li><hr class="dropdown-divider"></li>
-									{% else %}
-									<li><a class="dropdown-item" href="#" data-action-definition='{{ child.getActionDefinition() }}'>{{ child.name }}</a></li>
-									{% endif %}
-									{% endfor %}
-								</ul>
-							</li>
-							{% else %}
-							<li class="nav-item">
-								<a class="nav-link" aria-current="page" href="#" data-action-definition='{{ child.getActionDefinition() }}'>{{ entry.name }}</a>
-							</li>
-							{% endif %}
+								{{ menuEntry(entry) | raw }}
 							{% endfor %}
 						</ul>
 					</div>
@@ -87,29 +93,28 @@
 	<ninja-keys> </ninja-keys>
 
 	<script>
-		
-		var shortCuts = [
-			{% for entry in actionFactory.createShortCuts() %}
-				{
-					id: '{{ entry.id }}',
-					title: '{{ entry.title }}',
-					hotkey: '{{ entry.hotkey }}',
-					icon: '{{ entry.icon }}',
-					section: '{{ entry.section }}',
-					handler: () => {
-						var action = {{ entry.getActionDefinition() | raw }}
-						if (action.type === "hook") {
-							executeHookAction(action)
-						} else if (action.type === "script") {
-							executeScriptAction(action)
-						}
-					}
-				},
-			{% endfor %}
-		];
-		
-		const ninja = document.querySelector('ninja-keys');
-		ninja.data = shortCuts;
+
+var shortCuts = [
+	{% for entry in actionFactory.createShortCuts() %}
+	{
+		id: '{{ entry.id }}',
+		title: '{{ entry.title }}',
+		hotkey: '{{ entry.hotkey }}',
+		icon: '{{ entry.icon }}',
+		section: '{{ entry.section }}',
+		handler: () => {
+			var action = {{ entry.getActionDefinition() | raw }}
+			if (action.type === "hook") {
+				executeHookAction(action)
+			} else if (action.type === "script") {
+				executeScriptAction(action)
+			}
+		}
+	},
+	{% endfor %}
+];
+const ninja = document.querySelector('ninja-keys');
+ninja.data = shortCuts;
 	</script>
 </body>
 </html>

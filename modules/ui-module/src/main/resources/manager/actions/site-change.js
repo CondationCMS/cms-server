@@ -22,14 +22,7 @@
 import {executeCommand} from '/manager/js/system-commands.js'
 import {getPreviewUrl} from '/manager/js/ui-helpers.js'
 		// hook.js
-export async function runAction(params) {
-	
-		var contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
-	
-	console.log(contentNode)
+export async function runAction(parameters) {
+	window.location.href = parameters.href;
+
 }

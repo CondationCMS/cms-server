@@ -1,6 +1,8 @@
+package com.condation.cms.core.site;
+
 /*-
  * #%L
- * ui-module
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -19,17 +21,30 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '/manager/js/system-commands.js'
-import {getPreviewUrl} from '/manager/js/ui-helpers.js'
-		// hook.js
-export async function runAction(params) {
+
+import com.condation.cms.api.site.Site;
+import com.condation.cms.api.site.SiteService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
+/**
+ *
+ * @author thmar
+ */
+public class DefaultSiteService implements SiteService {
 	
-		var contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
+	private final List<Site> sites = new ArrayList<>();
+
+	@Override
+	public void add(Site site) {
+		sites.add(site);
+	}
+
+	@Override
+	public Stream<Site> sites() {
+		return sites.stream();
+	}
 	
-	console.log(contentNode)
+	
 }

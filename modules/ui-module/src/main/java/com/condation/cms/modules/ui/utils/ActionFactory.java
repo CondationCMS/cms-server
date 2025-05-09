@@ -65,12 +65,20 @@ public class ActionFactory {
 		var menu = uiHooks.menu();
 
 		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
-			extension.addMenuItems(menu);
+			try {
+				extension.addMenuItems(menu);			
+			} catch (Exception e) {
+				log.error("", e);
+			}
 		});
 
 		List<EntryHolder> entries = new ArrayList<>();
 		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
-			entries.addAll(scanMenuEntries(extension));
+			try {
+				entries.addAll(scanMenuEntries(extension));
+			} catch (Exception e) {
+				log.error("", e);
+			}
 		});
 
 		insertEntriesIntoMenu(menu, entries);

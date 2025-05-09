@@ -1,6 +1,8 @@
+package com.condation.cms.api.site;
+
 /*-
  * #%L
- * ui-module
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -19,17 +21,15 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '/manager/js/system-commands.js'
-import {getPreviewUrl} from '/manager/js/ui-helpers.js'
-		// hook.js
-export async function runAction(params) {
+
+import java.util.stream.Stream;
+
+/**
+ *
+ * @author thmar
+ */
+public interface SiteService {
+	void add (Site site);
 	
-		var contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
-	
-	console.log(contentNode)
+	Stream<Site> sites ();
 }

@@ -23,8 +23,6 @@ package com.condation.cms.server;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
-import com.condation.cms.api.configuration.Configuration;
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.eventbus.Event;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.RepoCheckoutEvent;
@@ -32,14 +30,14 @@ import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.site.Site;
+import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.git.RepositoryManager;
 import com.google.inject.Injector;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -101,6 +99,8 @@ public class JettyServer implements AutoCloseable {
 				var host = new VHost(site.basePath());
 				host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
 				vhosts.add(host);
+				
+				globalInjector.getInstance(SiteService.class).add(new Site(host.injector));
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

@@ -10,4 +10,4 @@ published: true
 
 ![TestBild!](/media/images/test.jpg?format=small)
 
-Thats a demo page with some extra features to show the manager application!
+That's a demo page with some extra features to show the manager application!

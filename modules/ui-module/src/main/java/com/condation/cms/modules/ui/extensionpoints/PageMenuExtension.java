@@ -21,9 +21,7 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
-import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.modules.api.annotation.Extensions;
@@ -53,7 +51,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			id = "page-edit-content",
 			name = "Edit Content",
 			position = 1,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/test-modal")
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-content")
 	)
 	@ShortCut(
 		id = "page-edit-content",
@@ -70,7 +68,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			id = "page-edit-meta",
 			name = "Edit MetaData",
 			position = 2,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/test-sidebar")
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-meta")
 	)
 	@ShortCut(
 		id = "page-edit-meta",

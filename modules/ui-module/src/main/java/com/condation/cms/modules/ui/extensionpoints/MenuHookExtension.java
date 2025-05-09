@@ -31,7 +31,6 @@ import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.elements.MenuEntry;
 import com.condation.modules.api.annotation.Extension;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +50,7 @@ public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 					.children(new ArrayList<>(
 							List.of(MenuEntry.builder().id("child1").name("ScriptAction")
 									.position(0)
-									.action(new UIScriptAction("/manager/actions/test-modal", Map.of("name", "CondationCMS")))
+									.action(new UIScriptAction("/manager/actions/page/edit-content", Map.of("name", "CondationCMS")))
 									.build(),
 									MenuEntry.builder().id("div1").divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("HookAction")

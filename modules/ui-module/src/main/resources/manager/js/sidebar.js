@@ -35,7 +35,7 @@ const openSidebar = (options) => {
 			<div class="offcanvas-body" id="sidebarBodyContainer">
 				${options.body || '<p>Sidebar content</p>'}
 			</div>
-			<div class="offcanvas-footer d-flex justify-content-end gap-2 mt-3">
+			<div class="offcanvas-footer d-flex justify-content-center gap-2 mt-3 mb-3">
 				<button type="button" class="btn btn-secondary" id="${sidebarId}_cancelBtn">Cancel</button>
 				<button type="button" class="btn btn-primary" id="${sidebarId}_okBtn">OK</button>
 			</div>

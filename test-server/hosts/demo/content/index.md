@@ -1,10 +1,13 @@
 ---
-title: Startseite
+title: Startpage
 template: start.html
 search:
-    index: false
+  index: false
+published: true
 ---
 
 # Demo Project
 
 ![TestBild!](/media/images/test.jpg?format=small)
+
+That's a demo page with some extra features to show the manager application!

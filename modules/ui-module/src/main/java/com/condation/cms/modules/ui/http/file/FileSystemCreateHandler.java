@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.modules.ui.http.file;
 
 /*-
  * #%L
@@ -21,12 +21,12 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.services.FileSystemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -37,27 +37,42 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class FileSystemListHandler extends JettyHandler {
+public class FileSystemCreateHandler extends JettyHandler {
 
 	private final FileSystemService fileSystemService;
-	
-	
-	
+
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		
+
+		if (!request.getMethod().equalsIgnoreCase("POST")) {
+			Response.writeError(request, response, callback, HttpStatus.METHOD_NOT_ALLOWED_405, "");
+			return true;
+		}
+
 		String path = "";
-		var fields = Request.getParameters(request);
+		var fields = Request.extractQueryParameters(request);
 		if (fields.getNames().contains("path")) {
 			path = fields.getValue("path");
 		}
+		String filename = null;
+		if (fields.getNames().contains("filename")) {
+			filename = fields.getValue("filename");
+		}
+		String filetype = null;
+		if (fields.getNames().contains("type")) {
+			filetype = fields.getValue("type");
+		}
+		if ("file".equalsIgnoreCase(filetype)) {
+			String content = getBody(request);
+			fileSystemService.createFile(filename, path, content);
+		} else if ("folder".equalsIgnoreCase(filetype)) {
+			fileSystemService.createFolder(filename, path);
+		}
 		
-		var nodes = fileSystemService.listContent(path);
 		response.setStatus(200);
-        response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-		Content.Sink.write(response, true, GSON.toJson(nodes), callback);
-		
+		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
+		callback.succeeded();
+
 		return true;
 	}
-	
 }

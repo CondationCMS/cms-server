@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.modules.ui.http.file;
 
 /*-
  * #%L
@@ -21,11 +21,13 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.services.FileSystemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -36,14 +38,14 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class FileSystemWriteHandler extends JettyHandler {
+public class FileSystemReadHandler extends JettyHandler {
 
 	private final FileSystemService fileSystemService;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		if (!request.getMethod().equalsIgnoreCase("PUT")) {
+		if (!request.getMethod().equalsIgnoreCase("GET")) {
 			Response.writeError(request, response, callback, HttpStatus.METHOD_NOT_ALLOWED_405, "");
 			return true;
 		}
@@ -53,13 +55,13 @@ public class FileSystemWriteHandler extends JettyHandler {
 		if (fields.getNames().contains("path")) {
 			path = fields.getValue("path");
 		}
-
-		String content = getBody(request);
-		fileSystemService.writeToFile(path, content);
-
+		
+		
+		String content = fileSystemService.readFromFile(path);
+		
 		response.setStatus(200);
-		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-		callback.succeeded();
+		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/plain; charset=UTF-8");
+		Content.Sink.write(response, true, content, callback);
 
 		return true;
 	}

@@ -37,11 +37,11 @@ import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 	@Extension(UIActionsExtensionPoint.class),
 	@Extension(HookSystemRegisterExtensionPoint.class)
 })
-public class MenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint {
+public class PageMenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint {
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
-			id = "parentDemo",
-			name = "ParentDemo",
+			id = "pageMenu",
+			name = "Page",
 			position = 10
 	)
 	public void parentDefinition() {
@@ -49,45 +49,45 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 	}
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
-			parent = "parentDemo",
-			id = "demo-script-action",
-			name = "ModalDemo",
+			parent = "pageMenu",
+			id = "page-edit-content",
+			name = "Edit Content",
 			position = 1,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-modal")
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/test-modal")
 	)
 	@ShortCut(
-		id = "demo-script-action",
-		title = "Demo Open Modal",
+		id = "page-edit-content",
+		title = "Edit Content",
 		hotkey = "ctrl-1",
-		section = "script"
+		section = "Page"
 	)
 	public void test_modal() {
 
 	}
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
-			parent = "parentDemo",
-			id = "demo-script-action2",
-			name = "SidebarDemo",
-			position = 1,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-sidebar")
+			parent = "pageMenu",
+			id = "page-edit-meta",
+			name = "Edit MetaData",
+			position = 2,
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/test-sidebar")
 	)
 	@ShortCut(
-		id = "demo-script-action2",
-		title = "Demo Open Sidebar",
+		id = "page-edit-meta",
+		title = "Edit MetaData",
 		hotkey = "ctrl-2",
-		section = "script"
+		section = "Page"
 	)
 	public void test_sidebar() {
 
 	}
-
+/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",
 			id = "test-get-contentNode",
 			name = "GetContentNode",
 			position = 1,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/menu/action/test-command")
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/test-command")
 	)
 	@ShortCut(
 		id = "test-get-contentNode",
@@ -114,4 +114,5 @@ public class MenuExtension extends HookSystemRegisterExtensionPoint implements U
 	public void demoScriptAction(ActionContext<?> context) {
 		System.out.println("demo-hook-action called");
 	}
+*/
 }

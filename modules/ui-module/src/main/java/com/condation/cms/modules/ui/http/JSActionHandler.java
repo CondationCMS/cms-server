@@ -21,12 +21,15 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import com.condation.cms.modules.ui.services.FileSystemService;
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.modules.ui.utils.ActionFactory;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpStatus;
+import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -35,32 +38,38 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
 @Slf4j
-public class FileSystemDeleteHandler extends JettyHandler {
+@RequiredArgsConstructor
+public class JSActionHandler extends JettyHandler {
 
-	private final FileSystemService fileSystemService;
-	
+	private final ActionFactory actionFactory;
+	private final FileSystem fileSystem;
+	private final String base;
+	private final CMSModuleContext context;
+
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		
-		if (!request.getMethod().equalsIgnoreCase("DELETE")) {
-			Response.writeError(request, response, callback, HttpStatus.METHOD_NOT_ALLOWED_405, "");
-			return true;
+
+		System.out.println("path: " + request.getHttpURI().getPath());
+		System.out.println("context: " + request.getContext().getContextPath());
+
+		var resource = request.getHttpURI().getPath().replace("/manager/actions/", "") + ".js";
+
+		var files = fileSystem.getPath(base);
+
+		if (resource.startsWith("/")) {
+			resource = resource.substring(1);
 		}
-		
-		String path = "";
-		var fields = Request.getParameters(request);
-		if (fields.getNames().contains("path")) {
-			path = fields.getValue("path");
+
+		var path = files.resolve(resource);
+		if (Files.exists(path)) {
+			response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
+			Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
+		} else {
+			callback.succeeded();
 		}
-		
-		fileSystemService.delete(path);
-		response.setStatus(200);
-        response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-		callback.succeeded();
-		
+
 		return true;
 	}
-	
+
 }

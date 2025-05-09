@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.commands;
+package com.condation.cms.modules.ui.commands.content;
 
 /*-
  * #%L
@@ -22,26 +22,25 @@ package com.condation.cms.modules.ui.commands;
  * #L%
  */
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.module.CMSRequestContext;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.services.CommandService;
-import java.net.URI;
+import com.condation.cms.modules.ui.utils.ContentFileParser;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-public class GetContentNodeCommand {
+@Slf4j
+public class GetContentCommand {
 
-	public static final String NAME = "getContentNode";
+	public static final String NAME = "getContent";
 
 	public static final CommandService.CommandHandler getHandler(
 			final CMSModuleContext moduleContext, final CMSRequestContext requestContext
@@ -49,41 +48,20 @@ public class GetContentNodeCommand {
 		final DB db = moduleContext.get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 		return command -> {
-			var url = (String) command.parameters().get("url");
+			var uri = (String) command.parameters().get("uri");
 
-			var path = URI.create(url).getPath();
-
-			var contextPath = requestContext.get(RequestFeature.class).context();
-			if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
-				path = path.replaceFirst(contextPath, "");
-			}
-
-			if (path.startsWith("/")) {
-				path = path.substring(1);
-			}
-
-			var contentPath = contentBase.resolve(path);
-			ReadOnlyFile contentFile = null;
-			if (contentPath.exists() && contentPath.isDirectory()) {
-				// use index.md
-				var tempFile = contentPath.resolve("index.md");
-				if (tempFile.exists()) {
-					contentFile = tempFile;
-				}
-			} else {
-				var temp = contentBase.resolve(path + ".md");
-				if (temp.exists()) {
-					contentFile = temp;
-				}
-			}
+			var contentFile = contentBase.resolve(uri);
 			
 			Map<String, Object> result = new HashMap<>();
-			result.put("url", url);
+			result.put("uri", uri);
 			if (contentFile != null) {
-				result.put("uri", PathUtil.toRelativeFile(contentFile, contentBase));
-				
-				var sections = db.getContent().listSections(contentFile);
-				result.put("sections", sections.stream().map(ContentNode::uri).toList());
+				try {
+					ContentFileParser parser = new ContentFileParser(contentFile);
+					result.put("content", parser.getContent());
+					result.put("meta", parser.getHeader());
+				} catch (IOException ex) {
+					log.error("", ex);
+				}
 			}
 
 			return result;

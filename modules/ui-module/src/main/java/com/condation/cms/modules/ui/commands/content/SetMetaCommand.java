@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.commands;
+package com.condation.cms.modules.ui.commands.content;
 
 /*-
  * #%L
@@ -39,9 +39,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class SetContentCommand {
+public class SetMetaCommand {
 
-	public static final String NAME = "setContent";
+	public static final String NAME = "setMeta";
 
 	public static final CommandService.CommandHandler getHandler(
 			final CMSModuleContext moduleContext, final CMSRequestContext requestContext
@@ -49,7 +49,7 @@ public class SetContentCommand {
 		final DB db = moduleContext.get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 		return command -> {
-			var updatedContent = (String) command.parameters().get("content");
+			var update = (Map<String, Object>) command.parameters().get("meta");
 			var uri = (String) command.parameters().get("uri");
 
 			var contentFile = contentBase.resolve(uri);
@@ -61,10 +61,11 @@ public class SetContentCommand {
 					ContentFileParser parser = new ContentFileParser(contentFile);
 					
 					Map<String, Object> meta = parser.getHeader();
+					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
 					
 					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 					
-					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, updatedContent);
+					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
 					log.debug("file {} saved", uri);
 				} catch (IOException ex) {
 					log.error("", ex);

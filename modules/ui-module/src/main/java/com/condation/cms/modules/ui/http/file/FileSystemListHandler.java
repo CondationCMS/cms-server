@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.modules.ui.http.file;
 
 /*-
  * #%L
@@ -21,11 +21,9 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.stream.Collectors;
+
+import com.condation.cms.modules.ui.http.JettyHandler;
+import com.condation.cms.modules.ui.services.FileSystemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
@@ -40,31 +38,27 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class JsModuleHandler extends JettyHandler {
+public class FileSystemListHandler extends JettyHandler {
 
-	private final String moduleCode;
-
+	private final FileSystemService fileSystemService;
+	
+	
+	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/javascript; charset=UTF-8");
+		
+		String path = "";
+		var fields = Request.getParameters(request);
+		if (fields.getNames().contains("path")) {
+			path = fields.getValue("path");
+		}
+		
+		var nodes = fileSystemService.listContent(path);
 		response.setStatus(200);
-		Content.Sink.write(response, true, loadContent(moduleCode), callback);
+        response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
+		Content.Sink.write(response, true, GSON.toJson(nodes), callback);
+		
 		return true;
 	}
-	
-	private String loadContent (String path) {
-		ClassLoader classLoader = JsModuleHandler.class.getClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(path)) {
-            if (inputStream == null) {
-                throw new IllegalArgumentException("Datei nicht gefunden: " + path);
-            }
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-                return reader.lines().collect(Collectors.joining("\n"));
-            }
-        } catch (Exception e) {
-            throw new RuntimeException("Fehler beim Laden der Datei: " + path, e);
-        }
-	}
-
 	
 }

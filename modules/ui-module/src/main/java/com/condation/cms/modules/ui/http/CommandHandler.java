@@ -55,21 +55,23 @@ public class CommandHandler extends JettyHandler {
 
 		String body = getBody(request);
 		var command = GSON.fromJson(body, Command.class);
-		Optional<?> result = commandService.execute(command);
-		
+
 		Map<String, Object> commandResponse = new HashMap<>();
 		commandResponse.put("type", command.type());
-		if (result.isPresent()) {
-			commandResponse.put("result", result.get());
+		try {
+			Optional<?> result = commandService.execute(command);
+			if (result.isPresent()) {
+				commandResponse.put("result", result.get());
+			}
+		} catch (Exception e) {
+			log.error("error executing command", command.type(), e);
 		}
-		
+
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
 		response.setStatus(200);
 		Content.Sink.write(response, true, GSON.toJson(commandResponse), callback);
-		
 
 		return true;
 	}
 
-	
 }

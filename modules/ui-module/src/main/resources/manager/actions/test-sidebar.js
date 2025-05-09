@@ -21,6 +21,7 @@
  */
 import {openSidebar} from '/manager/js/sidebar.js'
 import {createForm} from '/manager/js/forms.js'
+import {showToast} from '/manager/js/toast.js'
 import {executeCommand} from '/manager/js/system-commands.js'
 import {getPreviewUrl} from '/manager/js/ui-helpers.js'
 		// hook.js
@@ -61,7 +62,7 @@ export async function runAction(params) {
 					{label: 'Yes', value: true}
 				]
 			}
-			
+
 		],
 		values: {
 			'title': getcontent?.result?.meta?.title,
@@ -86,6 +87,12 @@ export async function runAction(params) {
 					meta: updateData
 				}
 			})
+			showToast({
+				title: 'MetaData saved',
+				message: 'MetaData successfuly saved.',
+				type: 'success', // optional: info | success | warning | error
+				timeout: 3000
+			});
 		}
 	});
 }

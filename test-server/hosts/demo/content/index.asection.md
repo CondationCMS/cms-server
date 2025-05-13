@@ -1,8 +1,10 @@
 ---
 title: Startseite
-template: start.html
+template: section.html
 search:
-    index: false
+  index: false
 ---
 
 # This is a section
+
+And no i can edit the content

@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openSidebar} from '/manager/js/sidebar.js'
-import {createForm} from '/manager/js/forms.js'
-import {showToast} from '/manager/js/toast.js'
-import {executeCommand} from '/manager/js/system-commands.js'
-import {getPreviewUrl} from '/manager/js/ui-helpers.js'
+import {openSidebar} from '/manager/js/modules/sidebar.js'
+import {createForm} from '/manager/js/modules/forms.js'
+import {showToast} from '/manager/js/modules/toast.js'
+import {executeCommand} from '/manager/js/modules/system-commands.js'
+import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
 		// hook.js
 export async function runAction(params) {
 

@@ -19,8 +19,30 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
+import frameMessenger from '/manager/js/modules/frameMessenger.js';
+
 document.addEventListener("DOMContentLoaded", function () {
 
+	const iframe = document.getElementById('contentPreview');
+
+	frameMessenger.on('edit', (payload) => {
+		if (payload.element === "content") {
+			var cmd = {
+				"module": "/manager/actions/page/edit-content",
+				"function": "runAction"
+			}
+			if (payload.uri) {
+				if (!cmd.parameters) {
+					cmd.parameters = {} 
+				}
+				
+				cmd.parameters.uri = payload.uri
+			}
+			console.log(cmd)
+			executeScriptAction(cmd)
+		}
+	});
 
 	/////// Prevent closing from click inside dropdown
 	document.querySelectorAll('.dropdown-menu').forEach(function (element) {

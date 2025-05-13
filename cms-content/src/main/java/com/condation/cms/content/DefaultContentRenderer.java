@@ -149,6 +149,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		namespace.add("node", "meta", new MapAccess(meta));
 		namespace.add("node", "sections", sections);
+		namespace.add("node", "uri", uri);
 
 		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
 		model.values.put(ShortCodeTemplateFunction.KEY, shortCodeFunction);

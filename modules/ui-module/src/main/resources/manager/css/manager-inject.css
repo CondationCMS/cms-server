@@ -19,17 +19,40 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '/manager/js/modules/system-commands.js'
-import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
-		// hook.js
-export async function runAction(params) {
-	
-		var contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
-	
-	console.log(contentNode)
+
+.cms-ui-editable {
+	position: relative;
+}
+
+.toolbar {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1000;
+	display: flex;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.toolbar.visible {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transition: opacity 0.2s ease;
+}
+
+.toolbar button {
+	background: transparent;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.toolbar button:hover {
+	color: steelblue;
 }

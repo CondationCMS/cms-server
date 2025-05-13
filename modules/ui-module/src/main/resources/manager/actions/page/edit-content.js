@@ -19,24 +19,36 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openModal} from '/manager/js/modal.js'
-import {createForm} from '/manager/js/forms.js'
-import {executeCommand} from '/manager/js/system-commands.js'
-import {getPreviewUrl, reloadPreview} from '/manager/js/ui-helpers.js'
+import {openModal} from '/manager/js/modules/modal.js'
+import {createForm} from '/manager/js/modules/forms.js'
+import {executeCommand} from '/manager/js/modules/system-commands.js'
+import {getPreviewUrl, reloadPreview} from '/manager/js/modules/ui-helpers.js'
 		// hook.js
 export async function runAction(params) {
 
-	const contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
+	console.log("edit content", params);
+
+	var uri = null
+	if (params.uri) {
+		uri = params.uri
+	} else {
+		const contentNode = await executeCommand({
+			command: "getContentNode",
+			parameters: {
+				url: getPreviewUrl()
+			}
+		})
+		uri = contentNode.result.uri
+	}
+
+
+
+
 
 	const getContent = await executeCommand({
 		command: "getContent",
 		parameters: {
-			uri: contentNode.result.uri
+			uri: uri
 		}
 	})
 
@@ -45,7 +57,7 @@ export async function runAction(params) {
 			{type: 'editor', name: 'content', title: 'Inhalt'}
 		],
 		values: {
-			"content" : getContent?.result?.content
+			"content": getContent?.result?.content
 		}
 	});
 
@@ -60,7 +72,7 @@ export async function runAction(params) {
 			var setContent = await executeCommand({
 				command: "setContent",
 				parameters: {
-					uri: contentNode.result.uri,
+					uri: uri,
 					content: updateData.content
 				}
 			})

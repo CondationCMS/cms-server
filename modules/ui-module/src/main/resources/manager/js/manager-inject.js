@@ -35,7 +35,22 @@ document.addEventListener("DOMContentLoaded", function () {
 	const containers = document.querySelectorAll('[data-cms-editor]');
 
 	containers.forEach(container => {
-		const toolbar = container.querySelector('.toolbar');
+
+		if (container.querySelector('.cms-ui-toolbar'))
+			return;
+
+		const toolbar = document.createElement('div');
+		toolbar.className = 'cms-ui-toolbar';
+
+		const button = document.createElement('button');
+		button.setAttribute('data-cms-action', 'edit');
+		button.textContent = 'Edit';
+		button.addEventListener('click', edit);
+
+		toolbar.appendChild(button);
+
+		container.insertBefore(toolbar, container.firstChild);
+		//const toolbar = container.querySelector('.toolbar');
 
 		container.addEventListener('mouseover', () => {
 			toolbar.classList.add('visible');
@@ -52,10 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				toolbar.classList.remove('visible');
 			}
 		});
-
-		toolbar.querySelectorAll("button").forEach(button => {
-			button.addEventListener('click', edit);
-		})
 	});
 });
 
@@ -64,7 +75,7 @@ const edit = (event) => {
 	var $editor = event.target.closest('[data-cms-editor]');
 	if ($editor) {
 		var contentUri = event.target.closest('[data-cms-content-uri]')
-		
+
 		var command = {
 			type: 'edit',
 			payload: {
@@ -75,9 +86,9 @@ const edit = (event) => {
 		if (contentUri) {
 			command.payload.uri = contentUri.dataset.cmsContentUri
 		}
-		
+
 		console.log("edit", command)
-		
+
 		frameMessenger.send(window.parent, command);
 	}
 }

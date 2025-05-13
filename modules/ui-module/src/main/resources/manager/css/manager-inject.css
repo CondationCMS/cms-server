@@ -26,10 +26,10 @@
 
 .cms-ui-editable:hover {
 	outline: 3px solid orange;
-	outline-offset: 2px; /* Abstand zum Element */
+	outline-offset: 2px;
 }
 
-.toolbar {
+.cms-ui-editable .cms-ui-toolbar {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -43,14 +43,14 @@
 	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-.toolbar.visible {
+.cms-ui-editable .cms-ui-toolbar.visible {
 	opacity: 1;
 	visibility: visible;
 	pointer-events: auto;
 	transition: opacity 0.2s ease;
 }
 
-.toolbar button {
+.cms-ui-editable .cms-ui-toolbar button {
 	background: transparent;
 	color: white;
 	border: none;
@@ -58,6 +58,6 @@
 	cursor: pointer;
 }
 
-.toolbar button:hover {
+.cms-ui-editable .cms-ui-toolbar button:hover {
 	color: steelblue;
 }

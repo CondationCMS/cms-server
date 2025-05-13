@@ -24,6 +24,11 @@
 	position: relative;
 }
 
+.cms-ui-editable:hover {
+	outline: 3px solid orange;
+	outline-offset: 2px; /* Abstand zum Element */
+}
+
 .toolbar {
 	position: absolute;
 	top: 0;

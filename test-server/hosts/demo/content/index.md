@@ -8,6 +8,6 @@ published: true
 
 # Demo Project
 
-![TestBild!](/media/images/test.jpg?format=small)
+![TestBild!](/media/images/test1.jpg?format=small)
 
 That's a demo page with some extra features to show the manager application!

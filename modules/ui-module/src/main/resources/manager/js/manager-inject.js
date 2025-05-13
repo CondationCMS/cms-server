@@ -76,7 +76,7 @@ const edit = (event) => {
 			command.payload.uri = contentUri.dataset.cmsContentUri
 		}
 		
-		console.log(command)
+		console.log("edit", command)
 		
 		frameMessenger.send(window.parent, command);
 	}

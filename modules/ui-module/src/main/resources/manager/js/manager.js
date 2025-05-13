@@ -28,18 +28,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	frameMessenger.on('edit', (payload) => {
 		if (payload.element === "content") {
+			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-content",
-				"function": "runAction"
+				"function": "runAction",
+				"parameters" : {
+					"editor": payload.editor
+				}
 			}
 			if (payload.uri) {
-				if (!cmd.parameters) {
-					cmd.parameters = {} 
-				}
-				
 				cmd.parameters.uri = payload.uri
 			}
-			console.log(cmd)
+			console.log("cmd", cmd)
 			executeScriptAction(cmd)
 		}
 	});

@@ -82,7 +82,7 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 		if (site.manager()) {
 			entries.add(MenuEntry.builder()
 					.id("manager-" + site.id())
-					.name("manager")
+					.name("Manager")
 					.action(new UIScriptAction("/manager/actions/site-change", Map.of("href", url + "manager/index.html")))
 					.position(2)
 					.build());

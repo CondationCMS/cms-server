@@ -54,7 +54,7 @@ export async function runAction(params) {
 
 	const form = createForm({
 		fields: [
-			{type: 'editor', name: 'content', title: 'Inhalt'}
+			{type: params.editor, name: 'content', title: 'Inhalt'}
 		],
 		values: {
 			"content": getContent?.result?.content

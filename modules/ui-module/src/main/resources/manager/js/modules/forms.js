@@ -62,7 +62,7 @@ const createSelectField = (options, value = '') => {
 	`;
 };
 
-const createEditorField = (options, value = '') => {
+const createCodeField = (options, value = '') => {
 	const id = createID();
 	return `
 		<div class="mb-3">
@@ -87,8 +87,8 @@ const createForm = (options) => {
 				return createTextField(field, val);
 			case 'select':
 				return createSelectField(field, val);
-			case 'editor':
-				return createEditorField(field, val);
+			case 'code':
+				return createCodeField(field, val);
 			default:
 				return '';
 		}

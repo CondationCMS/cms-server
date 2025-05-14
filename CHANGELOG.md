@@ -6,12 +6,13 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
-## 7.9.0
+## 8.0.0
 
 * **MAINTENANCE** multiple dependencies updated
 * **MAINTENANCE** maven wrapper added to project
 * **FEATURE** Developer Experience [PR-440](https://github.com/CondationCMS/cms-server/pull/440)
 * **FEATURE** Aliases for content [442](https://github.com/CondationCMS/cms-server/issues/442)
+* **BREAKING CHANGE** Sorted sections now use the _layout.order_ meta attribute for sorting
 
 ### Developer experience
 

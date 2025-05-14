@@ -283,7 +283,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 				var sectionPath = contentBase.resolve(node.uri());
 				var content = render(sectionPath, context);
 				var name = SectionUtil.getSectionName(node.name());
-				var index = SectionUtil.getSectionIndex(node.name());
+				var index = node.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_LAYOUT_ORDER);
 
 				if (!sections.containsKey(name)) {
 					sections.put(name, new ArrayList<>());

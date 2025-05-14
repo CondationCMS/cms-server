@@ -35,18 +35,10 @@ public class SectionUtilTest {
 	@ParameterizedTest
 	@CsvSource({
 		"index.asection.md, asection",
-		"index.asection.1.md, asection"
+		"index.asection.1.md, asection",
+		"index.asection.blabla.md, asection"
 	})
 	public void test_getSectionName(String filename, String sectionname) {
 		Assertions.assertThat(SectionUtil.getSectionName(filename)).isEqualTo(sectionname);
-	}
-
-	@ParameterizedTest
-	@CsvSource({
-		"index.asection.md, 0",
-		"index.asection.1.md, 1"
-	})
-	public void test_getSectionIndex(String filename, int sectionindex) {
-		Assertions.assertThat(SectionUtil.getSectionIndex(filename)).isEqualTo(sectionindex);
 	}
 }

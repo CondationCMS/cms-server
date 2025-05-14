@@ -227,8 +227,8 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		List<ContentNode> nodes = new ArrayList<>();
 
 		final Pattern isSectionOf = Constants.SECTION_OF_PATTERN.apply(filename);
-		final Pattern isOrderedSectionOf = Constants.SECTION_ORDERED_OF_PATTERN.apply(filename);
-
+		final Pattern isNamedSectionOf = Constants.SECTION_NAMED_OF_PATTERN.apply(filename);
+		
 		if ("".equals(folder)) {
 			metaData.getTree().values()
 					.stream()
@@ -236,7 +236,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 					.filter(node -> node.isPublished())
 					.filter(node -> node.isSection())
 					.filter(node -> {
-						return isSectionOf.matcher(node.name()).matches() || isOrderedSectionOf.matcher(node.name()).matches();
+						return isSectionOf.matcher(node.name()).matches() || isNamedSectionOf.matcher(node.name()).matches();
 					})
 					.forEach((node) -> {
 						nodes.add(node);
@@ -250,8 +250,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 						.filter(node -> node.isPublished())
 						.filter(node -> node.isSection())
 						.filter(node
-								-> isSectionOf.matcher(node.name()).matches()
-						|| isOrderedSectionOf.matcher(node.name()).matches()
+								-> isSectionOf.matcher(node.name()).matches() || isNamedSectionOf.matcher(node.name()).matches()
 						)
 						.forEach((node) -> {
 							nodes.add(node);

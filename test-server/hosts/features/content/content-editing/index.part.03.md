@@ -1,6 +1,8 @@
 ---
 title: Content sections
 template: content.part.html
+layout:
+	order: 3
 ---
 
 ### Sections

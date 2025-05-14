@@ -33,6 +33,6 @@ import com.condation.cms.api.Constants;
 public record Section(String name, int index, String content) {
 
 	public Section(String name, String content) {
-		this(name, Constants.DEFAULT_SECTION_ORDERED_INDEX, content);
+		this(name, Constants.DEFAULT_SECTION_LAYOUT_ORDER, content);
 	}
 }

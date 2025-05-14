@@ -83,6 +83,10 @@ const edit = (event) => {
 				element: $editor.dataset.cmsElement
 			}
 		}
+		if ($editor.dataset.cmsMetaElement) {
+			command.payload.metaElement = $editor.dataset.cmsMetaElement
+		}
+		
 		if (contentUri) {
 			command.payload.uri = contentUri.dataset.cmsContentUri
 		}

@@ -39,7 +39,22 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (payload.uri) {
 				cmd.parameters.uri = payload.uri
 			}
-			console.log("cmd", cmd)
+			console.log("cmd content", cmd)
+			executeScriptAction(cmd)
+		} else if (payload.element === "meta") {
+			console.log(payload)
+			var cmd = {
+				"module": "/manager/actions/page/edit-metaattribute",
+				"function": "runAction",
+				"parameters" : {
+					"editor": payload.editor,
+					"attribute": payload.metaElement
+				}
+			}
+			if (payload.uri) {
+				cmd.parameters.uri = payload.uri
+			}
+			console.log("cmd meta", cmd)
 			executeScriptAction(cmd)
 		}
 	});
@@ -74,7 +89,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (nextEl && nextEl.classList.contains('submenu')) {
 					// prevent opening link if link needs to open dropdown
 					e.preventDefault();
-					console.log(nextEl);
 					if (nextEl.style.display == 'block') {
 						nextEl.style.display = 'none';
 					} else {

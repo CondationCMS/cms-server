@@ -14,12 +14,20 @@
 				</div-->
 				{{ node.content | raw}}
 			</div>
+			<div>
+				<div class="container cms-ui-editable" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="description">
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div class="container cms-ui-editable" style="min-height: 10px;" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="parent.text">
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+			</div>
 		</div>
 		<div class="container">
 			{% if sections.containsKey('asection') %}
-				{% for section in sections.get('asection') %}
-					{{ section.content() | raw }}
-				{% endfor %}
+			{% for section in sections.get('asection') %}
+			{{ section.content() | raw }}
+			{% endfor %}
 			{% endif %}
 
 		</div>

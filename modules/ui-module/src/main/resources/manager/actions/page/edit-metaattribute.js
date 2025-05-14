@@ -19,71 +19,62 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openSidebar} from '/manager/js/modules/sidebar.js'
+import {openModal} from '/manager/js/modules/modal.js'
 import {createForm} from '/manager/js/modules/forms.js'
 import {showToast} from '/manager/js/modules/toast.js'
 import {executeCommand} from '/manager/js/modules/system-commands.js'
-import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
+import {getPreviewUrl, reloadPreview} from '/manager/js/modules/ui-helpers.js'
+import { getMetaValueByPath } from '/manager/js/modules/node.js'
 		// hook.js
 export async function runAction(params) {
 
-	const contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
+	console.log("edit meta attribute", params);
+
+	var uri = null
+	if (params.uri) {
+		uri = params.uri
+	} else {
+		const contentNode = await executeCommand({
+			command: "getContentNode",
+			parameters: {
+				url: getPreviewUrl()
+			}
+		})
+		uri = contentNode.result.uri
+	}
 
 	const getContent = await executeCommand({
 		command: "getContent",
 		parameters: {
-			uri: contentNode.result.uri
+			uri: uri
 		}
 	})
 
-	const form = createForm({
+	let formDefinition = {
 		fields: [
-			{type: 'text', name: 'title', title: 'Title'},
-			{
-				type: 'select',
-				name: 'published',
-				title: 'Published',
-				options: [
-					{label: 'No', value: false},
-					{label: 'Yes', value: true}
-				]
-			},
-			{
-				type: 'select',
-				name: 'search.index',
-				title: 'Index for search',
-				options: [
-					{label: 'No', value: false},
-					{label: 'Yes', value: true}
-				]
-			}
-
+			{type: params.editor, name: params.attribute, title: "Edit attribute: " + params.attribute}
 		],
-		values: {
-			'title': getContent?.result?.meta?.title,
-			'published': getContent?.result?.meta?.published,
-			'search.index': getContent?.result?.meta?.search?.index
-		}
-	});
+		values: {}
+	}
+	formDefinition.values[params.attribute] = getMetaValueByPath(getContent?.result?.meta, params.attribute)
 
+	console.log("Meta-Daten:", getContent?.result?.meta)
+	console.log("form", formDefinition)
 
+	const form = createForm(formDefinition)
 
-	openSidebar({
-		title: 'Example Model',
+	openModal({
+		title: 'Edit meta attribute',
 		body: 'modal body',
 		form: form,
+		fullscreen: true,
 		onCancel: (event) => console.log("modal canceled"),
 		onOk: async (event) => {
 			var updateData = form.getData()
 			var setMeta = await executeCommand({
 				command: "setMeta",
 				parameters: {
-					uri: contentNode.result.uri,
+					uri: uri,
 					meta: updateData
 				}
 			})
@@ -93,6 +84,7 @@ export async function runAction(params) {
 				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});
+			reloadPreview()
 		}
 	});
 }

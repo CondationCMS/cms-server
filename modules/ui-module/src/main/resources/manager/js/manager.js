@@ -41,7 +41,22 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 			console.log("cmd content", cmd)
 			executeScriptAction(cmd)
-		} else if (payload.element === "meta") {
+		} else if (payload.element === "meta" && payload.editor === "form" ) {
+			console.log(payload)
+			var cmd = {
+				"module": "/manager/actions/page/edit-metaattribute-list",
+				"function": "runAction",
+				"parameters" : {
+					"editor": payload.editor,
+					"attributes": payload.metaElements
+				}
+			}
+			if (payload.uri) {
+				cmd.parameters.uri = payload.uri
+			}
+			console.log("cmd meta list", cmd)
+			executeScriptAction(cmd)
+		} else if (payload.element === "meta" ) {
 			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-metaattribute",

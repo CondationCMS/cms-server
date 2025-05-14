@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 
-	const containers = document.querySelectorAll('[data-cms-editor]');
+	const containers = document.querySelectorAll('.cms-ui-editable');
 
 	containers.forEach(container => {
 
@@ -85,6 +85,18 @@ const edit = (event) => {
 		}
 		if ($editor.dataset.cmsMetaElement) {
 			command.payload.metaElement = $editor.dataset.cmsMetaElement
+		}
+		if ($editor.dataset.cmsEditor === "form") {
+			var elements = []
+			$editor.querySelectorAll("[data-cms-editor]").forEach($elem => {
+				if ($elem.dataset.cmsElement === "meta") {
+					elements.push({
+						name: $elem.dataset.cmsMetaElement,
+						editor: $elem.dataset.cmsEditor
+					})
+				}
+			})
+			command.payload.metaElements = elements
 		}
 		
 		if (contentUri) {

@@ -22,6 +22,15 @@
 					{{ node.meta.get('parent.text') | raw}}
 				</div>
 			</div>
+			<hr />
+			<div class="cms-ui-editable" data-cms-editor="form" data-cms-element="meta">
+				<div data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="description">
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div style="min-height: 10px;" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="parent.text">
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+			</div>
 		</div>
 		<div class="container">
 			{% if sections.containsKey('asection') %}

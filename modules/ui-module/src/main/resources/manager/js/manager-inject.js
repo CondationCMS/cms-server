@@ -32,9 +32,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	});
 
-	const containers = document.querySelectorAll('.cms-ui-editable');
+	const containers = document.querySelectorAll('[data-cms-edit]');
 
 	containers.forEach(container => {
+
+		container.classList.add("cms-ui-editable");
 
 		if (container.querySelector('.cms-ui-toolbar'))
 			return;

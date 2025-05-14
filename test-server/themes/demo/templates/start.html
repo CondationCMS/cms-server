@@ -8,23 +8,23 @@
 	<body class="centered">
 
 		<div id="content">
-			<div class="container cms-ui-editable" data-cms-editor="code" data-cms-element="content">
+			<div class="container" {{ ui.editContent("code") }}>
 				{{ node.content | raw}}
 			</div>
 			<div>
-				<div class="container cms-ui-editable" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="description">
+				<div class="container" {{ ui.editMeta("text", "description") }}>
 					{{ node.meta.get('description') | raw}}
 				</div>
-				<div class="container cms-ui-editable" style="min-height: 10px;" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="parent.text">
+				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
 					{{ node.meta.get('parent.text') | raw}}
 				</div>
 			</div>
 			<hr />
-			<div class="cms-ui-editable" data-cms-editor="form" data-cms-element="meta">
-				<div data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="description">
+			<div {{ ui.editForm() }}>
+				<div {{ ui.editFormElement("text", "description") }}>
 					{{ node.meta.get('description') | raw}}
 				</div>
-				<div style="min-height: 10px;" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="parent.text">
+				<div {{ ui.editFormElement("text", "parent.text") }}>
 					{{ node.meta.get('parent.text') | raw}}
 				</div>
 			</div>

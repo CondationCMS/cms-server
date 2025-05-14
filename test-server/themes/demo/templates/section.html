@@ -5,3 +5,11 @@
 	{{ node.content | raw}}
 </div>
 
+<div>
+	<div class="container cms-ui-editable" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="description" data-cms-content-uri="{{node.uri}}">
+		{{ node.meta.get('description') | raw}}
+	</div>
+	<div class="container cms-ui-editable" style="min-height: 10px;" data-cms-editor="text" data-cms-element="meta" data-cms-meta-element="parent.text" data-cms-content-uri="{{node.uri}}">
+		{{ node.meta.get('parent.text') | raw}}
+	</div>
+</div>

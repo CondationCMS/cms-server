@@ -28,49 +28,100 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		frameMessenger.send(window.parent, {
 			type: 'helloFromIframe',
-			payload: {response: 'Hallo Parent!'}
+			payload: { response: 'Hallo Parent!' }
 		});
 	});
 
 	const containers = document.querySelectorAll('[data-cms-edit]');
+	containers.forEach(contentEditing);
 
-	containers.forEach(container => {
-
-		container.classList.add("cms-ui-editable");
-
-		if (container.querySelector('.cms-ui-toolbar'))
-			return;
-
-		const toolbar = document.createElement('div');
-		toolbar.className = 'cms-ui-toolbar';
-
-		const button = document.createElement('button');
-		button.setAttribute('data-cms-action', 'edit');
-		button.textContent = 'Edit';
-		button.addEventListener('click', edit);
-
-		toolbar.appendChild(button);
-
-		container.insertBefore(toolbar, container.firstChild);
-		//const toolbar = container.querySelector('.toolbar');
-
-		container.addEventListener('mouseover', () => {
-			toolbar.classList.add('visible');
-		});
-
-		container.addEventListener('mouseleave', (event) => {
-			if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
-				toolbar.classList.remove('visible');
-			}
-		});
-
-		toolbar.addEventListener('mouseleave', (event) => {
-			if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
-				toolbar.classList.remove('visible');
-			}
-		});
-	});
+	// data-cms-edit-sections='true' data-cms-section-name
+	const sectionContainers = document.querySelectorAll('[data-cms-edit-sections]');
+	sectionContainers.forEach(sectionEdition);
 });
+
+const sectionEdition = (container) => {
+	container.classList.add("cms-ui-editable-sections");
+
+	const toolbar = document.createElement('div');
+	toolbar.className = 'cms-ui-toolbar';
+
+	const button = document.createElement('button');
+	button.setAttribute('data-cms-action', 'editSections');
+	button.textContent = 'Sections';
+	button.addEventListener('click', editSections);
+
+	toolbar.appendChild(button);
+
+	container.insertBefore(toolbar, container.firstChild);
+
+	container.addEventListener('mouseover', () => {
+		toolbar.classList.add('visible');
+	});
+
+	container.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+};
+
+const editSections = (event) => {
+	console.log("edit sections")
+	// data-cms-edit-sections='true' data-cms-section-name
+	var $editSections = event.target.closest("[data-cms-edit-sections]")
+	var sectionName = $editSections.dataset.cmsSectionName
+
+	var command = {
+		type: 'edit-sections',
+		payload: {
+			sectionName: sectionName
+		}
+	}
+	frameMessenger.send(window.parent, command);
+}
+
+const contentEditing = (container) => {
+	container.classList.add("cms-ui-editable");
+
+	if (container.querySelector('.cms-ui-toolbar'))
+		return;
+
+	const toolbar = document.createElement('div');
+	toolbar.className = 'cms-ui-toolbar';
+
+	const button = document.createElement('button');
+	button.setAttribute('data-cms-action', 'edit');
+	button.textContent = 'Edit';
+	button.addEventListener('click', edit);
+
+	toolbar.appendChild(button);
+
+	container.insertBefore(toolbar, container.firstChild);
+	//const toolbar = container.querySelector('.toolbar');
+
+	container.addEventListener('mouseover', () => {
+		toolbar.classList.add('visible');
+	});
+
+	container.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+};
 
 const edit = (event) => {
 	console.log(event)
@@ -100,7 +151,7 @@ const edit = (event) => {
 			})
 			command.payload.metaElements = elements
 		}
-		
+
 		if (contentUri) {
 			command.payload.uri = contentUri.dataset.cmsContentUri
 		}

@@ -28,8 +28,30 @@
 	outline: 3px solid orange;
 	outline-offset: 2px;
 }
+.cms-ui-editable-sections {
+	position: relative;
+}
 
-.cms-ui-editable .cms-ui-toolbar {
+.cms-ui-editable-sections:hover {
+	outline: 3px solid rgb(120, 187, 239);
+	outline-offset: 2px;
+}
+
+.cms-ui-editable-sections > .cms-ui-toolbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	display: flex;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.cms-ui-editable > .cms-ui-toolbar {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -43,14 +65,14 @@
 	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-.cms-ui-editable .cms-ui-toolbar.visible {
+.cms-ui-editable-sections > .cms-ui-toolbar.visible, .cms-ui-editable > .cms-ui-toolbar.visible {
 	opacity: 1;
 	visibility: visible;
 	pointer-events: auto;
 	transition: opacity 0.2s ease;
 }
 
-.cms-ui-editable .cms-ui-toolbar button {
+.cms-ui-editable-sections > .cms-ui-toolbar > button, .cms-ui-editable > .cms-ui-toolbar button {
 	background: transparent;
 	color: white;
 	border: none;
@@ -58,6 +80,6 @@
 	cursor: pointer;
 }
 
-.cms-ui-editable .cms-ui-toolbar button:hover {
+.cms-ui-editable-sections > .cms-ui-toolbar > button:hover, .cms-ui-editable > .cms-ui-toolbar button:hover {
 	color: steelblue;
 }

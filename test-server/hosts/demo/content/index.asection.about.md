@@ -5,10 +5,12 @@ search:
   index: false
 description: total awesome sectiondd
 parent:
-  text: text for a section1
+  text: text for a section
+layout:
+  order: 0
 ---
 
-# This is a section2
+# This is a section: about
 
 And no i can edit the content
 

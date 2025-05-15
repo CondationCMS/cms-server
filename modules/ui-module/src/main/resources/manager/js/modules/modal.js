@@ -83,6 +83,10 @@ const openModal = (options) => {
 	modalElement.addEventListener('hidden.bs.modal', () => {
 		container.innerHTML = '';
 	});
+
+	if (options.onShow) {
+		options.onShow()
+	}
 };
 
 export {openModal};

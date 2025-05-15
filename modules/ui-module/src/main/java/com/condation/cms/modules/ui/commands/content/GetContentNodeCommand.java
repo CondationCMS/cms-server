@@ -30,9 +30,13 @@ import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.SectionUtil;
+import com.condation.cms.content.Section;
 import com.condation.cms.modules.ui.services.CommandService;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -83,7 +87,16 @@ public class GetContentNodeCommand {
 				result.put("uri", PathUtil.toRelativeFile(contentFile, contentBase));
 				
 				var sections = db.getContent().listSections(contentFile);
-				result.put("sections", sections.stream().map(ContentNode::uri).toList());
+				Map<String, List<Section>> sectionMap = new HashMap<>();
+				sections.forEach(section -> {
+					String uri = section.uri();
+					String name = SectionUtil.getSectionName(section.name());
+					var index = section.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_LAYOUT_ORDER);
+					
+					sectionMap.computeIfAbsent(name, k -> new ArrayList<>())
+						.add(new Section(section.name(), index, "", uri));
+				});
+				result.put("sections", sectionMap);
 			}
 
 			return result;

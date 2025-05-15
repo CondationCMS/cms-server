@@ -23,9 +23,12 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 
 import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.modules.api.annotation.Extension;
 import java.util.Map;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -40,40 +43,75 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 
 	@Override
 	public Map<String, Object> getModel() {
-		return Map.of("ui", new UIHelper());	
+		return Map.of("ui", new UIHelper(getRequestContext()));	
 	}
 	
+	
+	@RequiredArgsConstructor
 	public static class UIHelper {
 		
+		private final CMSRequestContext requestContext;
+		
 		public String editContent (String editor) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-edit='true' data-cms-editor='%s' data-cms-element='content' ".formatted(editor);
 		}
 		
 		public String editMeta (String editor, String element) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-edit='true' data-cms-editor='%s' data-cms-element='meta' data-cms-meta-element='%s' ".formatted(editor, element);
 		}
 		
+		public String editSections (String sectionName) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
+			return " data-cms-edit-sections='true' data-cms-section-name='%s' ".formatted(sectionName);
+		}
+		
 		public String editForm () {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-edit='true' data-cms-editor='form' data-cms-element='meta' ";
 		}
 		
 		public String editFormElement (String editor, String element) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-editor='%s' data-cms-element='meta' data-cms-meta-element='%s' ".formatted(editor, element);
 		}
 		
 		public String editContent (String editor, String uri) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-edit='true' data-cms-editor='%s' data-cms-element='content' data-cms-content-uri='%s' ".formatted(editor, uri);
 		}
 		
 		public String editMeta (String editor, String element, String uri) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-edit='true' data-cms-editor='%s' data-cms-element='meta' data-cms-meta-element='%s' data-cms-content-uri='%s' ".formatted(editor, element, uri);
 		}
 		
 		public String editForm (String uri) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-edit='true' data-cms-editor='form' data-cms-element='meta' data-cms-content-uri='%s' ".formatted(uri);
 		}
 		
 		public String editFormElement (String editor, String element, String uri) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
 			return " data-cms-editor='%s' data-cms-element='meta' data-cms-meta-element='%s' data-cms-content-uri='%s' ".formatted(editor, element, uri);
 		}
 	}

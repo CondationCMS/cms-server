@@ -30,9 +30,13 @@ import com.condation.cms.api.Constants;
  *
  * @author t.marx
  */
-public record Section(String name, int index, String content) {
+public record Section(String name, int index, String content, String uri) {
 
+	public Section(String name, int index, String content) {
+		this(name, index, content, null);
+	}
+	
 	public Section(String name, String content) {
-		this(name, Constants.DEFAULT_SECTION_LAYOUT_ORDER, content);
+		this(name, Constants.DEFAULT_SECTION_LAYOUT_ORDER, content, null);
 	}
 }

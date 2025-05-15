@@ -25,7 +25,8 @@ const getPreviewUrl = () => {
 };
 
 const reloadPreview = () => {
-	document.getElementById("contentPreview").src = document.getElementById("contentPreview").src
+	console.log("reloadPreview")
+	document.getElementById("contentPreview").contentDocument.location.reload(true);
 }
 
 export { getPreviewUrl, reloadPreview };

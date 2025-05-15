@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			var cmd = {
 				"module": "/manager/actions/page/edit-content",
 				"function": "runAction",
-				"parameters" : {
+				"parameters": {
 					"editor": payload.editor
 				}
 			}
@@ -41,12 +41,12 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 			console.log("cmd content", cmd)
 			executeScriptAction(cmd)
-		} else if (payload.element === "meta" && payload.editor === "form" ) {
+		} else if (payload.element === "meta" && payload.editor === "form") {
 			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-metaattribute-list",
 				"function": "runAction",
-				"parameters" : {
+				"parameters": {
 					"editor": payload.editor,
 					"attributes": payload.metaElements
 				}
@@ -56,12 +56,12 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 			console.log("cmd meta list", cmd)
 			executeScriptAction(cmd)
-		} else if (payload.element === "meta" ) {
+		} else if (payload.element === "meta") {
 			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-metaattribute",
 				"function": "runAction",
-				"parameters" : {
+				"parameters": {
 					"editor": payload.editor,
 					"attribute": payload.metaElement
 				}
@@ -72,6 +72,20 @@ document.addEventListener("DOMContentLoaded", function () {
 			console.log("cmd meta", cmd)
 			executeScriptAction(cmd)
 		}
+	});
+	frameMessenger.on('edit-sections', (payload) => {
+		console.log("edit sections", payload)
+		var cmd = {
+			"module": "/manager/actions/page/edit-sections",
+			"function": "runAction",
+			"parameters": {
+				"sectionName": payload.sectionName
+			}
+		}
+		if (payload.uri) {
+			cmd.parameters.uri = payload.uri
+		}
+		executeScriptAction(cmd)
 	});
 
 	/////// Prevent closing from click inside dropdown

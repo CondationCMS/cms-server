@@ -3,10 +3,10 @@
 </div>
 
 <div>
-	<div class="container" {{ ui.editMeta("text", "description") }}>
+	<div class="container" {{ ui.editMeta("text", "description", node.uri) }}>
 		{{ node.meta.get('description') | raw}}
 	</div>
-	<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+	<div class="container" {{ ui.editMeta("text", "parent.text", node.uri) }}>
 		{{ node.meta.get('parent.text') | raw}}
 	</div>
 </div>

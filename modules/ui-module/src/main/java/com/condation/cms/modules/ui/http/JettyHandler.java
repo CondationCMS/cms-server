@@ -25,6 +25,7 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.extensions.HttpHandler;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
 import java.nio.charset.StandardCharsets;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Request;
@@ -36,7 +37,10 @@ import org.eclipse.jetty.server.Request;
 @Slf4j
 public abstract class JettyHandler implements HttpHandler {
 	
-	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
+	public static final Gson GSON = new GsonBuilder()
+			.setPrettyPrinting()
+			.setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+			.create();
 	
 	protected String getBody(Request request) {
 		try (var inputStream = Request.asInputStream(request)) {

@@ -29,7 +29,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="container">
+		<div class="container" {{ ui.editSections('asection')}}>
 			{% if sections.containsKey('asection') %}
 			{% for section in sections.get('asection') %}
 			{{ section.content() | raw }}

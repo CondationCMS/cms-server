@@ -31,6 +31,7 @@ import com.condation.cms.modules.ui.commands.content.AddSectionCommand;
 import com.condation.cms.modules.ui.commands.content.GetContentCommand;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.content.GetContentNodeCommand;
+import com.condation.cms.modules.ui.commands.content.ListContentFilesCommand;
 import com.condation.cms.modules.ui.commands.content.SetContentCommand;
 import com.condation.cms.modules.ui.commands.content.SetMetaCommand;
 import com.condation.cms.modules.ui.commands.content.SetMetaInBatchCommand;
@@ -107,6 +108,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		commandService.register(SetContentCommand.NAME, SetContentCommand.getHandler(context, requestContext));
 		commandService.register(SetMetaInBatchCommand.NAME, SetMetaInBatchCommand.getHandler(context, requestContext));
 		commandService.register(AddSectionCommand.NAME, AddSectionCommand.getHandler(context, requestContext));
+		commandService.register(ListContentFilesCommand.NAME, ListContentFilesCommand.getHandler(context, requestContext));
 
 		try {
 

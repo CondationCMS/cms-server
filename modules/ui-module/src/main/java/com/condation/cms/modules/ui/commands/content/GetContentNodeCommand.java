@@ -22,7 +22,6 @@ package com.condation.cms.modules.ui.commands.content;
  * #L%
  */
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;

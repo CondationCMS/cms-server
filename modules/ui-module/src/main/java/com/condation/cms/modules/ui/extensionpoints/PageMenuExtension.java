@@ -48,16 +48,33 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "pageMenu",
+			id = "page-create",
+			name = "Create new page",
+			position = 1,
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/create-page")
+	)
+	@ShortCut(
+			id = "page-create",
+			title = "Create new page",
+			hotkey = "ctrl-3",
+			section = "Page"
+	)
+	public void create_page() {
+
+	}
+
+	@com.condation.cms.api.ui.annotations.MenuEntry(
+			parent = "pageMenu",
 			id = "page-edit-content",
 			name = "Edit Content",
 			position = 1,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-content")
 	)
 	@ShortCut(
-		id = "page-edit-content",
-		title = "Edit Content",
-		hotkey = "ctrl-1",
-		section = "Page"
+			id = "page-edit-content",
+			title = "Edit Content",
+			hotkey = "ctrl-1",
+			section = "Page"
 	)
 	public void test_modal() {
 
@@ -71,15 +88,15 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-meta")
 	)
 	@ShortCut(
-		id = "page-edit-meta",
-		title = "Edit MetaData",
-		hotkey = "ctrl-2",
-		section = "Page"
+			id = "page-edit-meta",
+			title = "Edit MetaData",
+			hotkey = "ctrl-2",
+			section = "Page"
 	)
 	public void test_sidebar() {
 
 	}
-/*
+	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",
 			id = "test-get-contentNode",
@@ -112,5 +129,5 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 	public void demoScriptAction(ActionContext<?> context) {
 		System.out.println("demo-hook-action called");
 	}
-*/
+	 */
 }

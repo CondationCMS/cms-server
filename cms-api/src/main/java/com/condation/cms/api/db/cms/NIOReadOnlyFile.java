@@ -47,6 +47,11 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	private final Path basePath;
 	
 	@Override
+	public String uri () {
+		return PathUtil.toURI(file, basePath);
+	}
+	
+	@Override
 	public boolean exists() {
 		return Files.exists(file);
 	}

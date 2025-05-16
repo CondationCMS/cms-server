@@ -336,7 +336,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		
 		eventBus.register(ReIndexContentMetaDataEvent.class, (event) -> {
 			try {
-				swapMetaData();
+				if (event.uri() == null) {
+					swapMetaData();
+				} else {
+					var contentFile = contentBase.resolve(event.uri());
+					addOrUpdateMetaData(contentFile);
+				}
 			} catch (IOException ex) {
 				log.error("error while reindex meta data", ex);
 			}

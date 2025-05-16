@@ -83,3 +83,11 @@
 .cms-ui-editable-sections > .cms-ui-toolbar > button:hover, .cms-ui-editable > .cms-ui-toolbar button:hover {
 	color: steelblue;
 }
+
+.cms-ui-editable:empty::before,
+.cms-ui-editable-sections:empty::before {
+	content: " ";
+	display: block;
+	min-height: 20px;
+	min-width: 100%;
+}

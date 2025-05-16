@@ -1,12 +1,14 @@
-<div class="container" {{ ui.editContent("code", node.uri) }}">
-	{{ node.content | raw}}
-</div>
-
 <div>
-	<div class="container" {{ ui.editMeta("text", "description", node.uri) }}>
-		{{ node.meta.get('description') | raw}}
+	<div class="container" {{ ui.editContent("code", node.uri) }}">
+		{{ node.content | default('your content here') | raw}}
 	</div>
-	<div class="container" {{ ui.editMeta("text", "parent.text", node.uri) }}>
-		{{ node.meta.get('parent.text') | raw}}
+
+	<div>
+		<div class="container" {{ ui.editMeta("text", "description", node.uri) }}>
+			{{ node.meta.getOrDefault('description', 'description here') | raw}}
+		</div>
+		<div class="container" {{ ui.editMeta("text", "parent.text", node.uri) }}>
+			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here') | raw}}
+		</div>
 	</div>
 </div>

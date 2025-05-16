@@ -1,8 +1,8 @@
-package com.condation.cms.api.eventbus.events;
+package com.condation.cms.templates.filter.impl;
 
 /*-
  * #%L
- * cms-api
+ * templates
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,15 +22,29 @@ package com.condation.cms.api.eventbus.events;
  * #L%
  */
 
+import com.condation.cms.templates.filter.Filter;
 
-import com.condation.cms.api.eventbus.Event;
+public class DefaultFilter implements Filter {
 
-/**
- *
- * @author t.marx
- */
-public record ReIndexContentMetaDataEvent (String uri) implements Event {
-	public ReIndexContentMetaDataEvent () {
-		this(null);
-	}
+    public static final String NAME = "default";
+
+@Override
+public Object apply(Object input, Object... params) {
+	if (input == null) {
+        return params.length == 1 ? params[0] : null;
+    }
+
+    String str = input.toString().trim();
+
+    // Prüfe auf escaped leeres <p></p>
+    if (str.isEmpty() 
+			|| str.equals("&lt;p&gt;&lt;/p&gt;") 
+			|| str.equals("&amp;lt;p&amp;gt;&amp;lt;/p&amp;gt;")
+			|| str.equals("<p></p>")) {
+        return params.length == 1 ? params[0] : input;
+    }
+
+    return input;
+}
+
 }

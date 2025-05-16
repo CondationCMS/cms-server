@@ -40,7 +40,7 @@ export async function runAction(params) {
 	var template = Handlebars.compile(`
 			<ul class="list-group cms-sortable">
 				{{#each sections}}
-    				<li class="list-group-item" data-cms-section-uri="{{uri}}" data-cms-section-index="{{index}}">{{name}}</li>
+    				<li class="list-group-item" data-cms-section-uri="{{uri}}" data-cms-section-index="{{index}}"><i class="bi bi-grip-vertical" data-cms-section-handle=''></i> {{name}}</li>
   				{{/each}}
 			</ul>
 		`);
@@ -54,7 +54,7 @@ export async function runAction(params) {
 	openModal({
 		title: 'Edit Sections',
 		body: template({ sections: sections }),
-		fullscreen: true,
+		fullscreen: false,
 		onCancel: (event) => console.log("modal canceled"),
 		onOk: async (event) => {
 			await saveSections();
@@ -69,7 +69,9 @@ export async function runAction(params) {
 		},
 		onShow: () => {
 			document.querySelectorAll(".cms-sortable").forEach(elem => {
-				var sortable = Sortable.create(elem);
+				var sortable = Sortable.create(elem, {
+					handle: '[data-cms-section-handle]'
+				});
 			})
 		}
 	});
@@ -79,17 +81,22 @@ const saveSections = async () => {
 
 	const items = document.querySelectorAll(".cms-sortable li");
 
+	var updates = []
 	for (const [index, el] of Array.from(items).entries()) {
 		var uri = el.dataset.cmsSectionUri
 
-		await executeCommand({
-			command: "setMeta",
-			parameters: {
-				uri: uri,
-				meta: {
-					"layout.order": parseInt(index)
-				}
+		updates.push({
+			uri: uri,
+			meta: {
+				"layout.order": parseInt(index)
 			}
 		});
 	}
+	await executeCommand({
+		command: "setMetaInBatch",
+		parameters: {
+			updates: updates,
+
+		}
+	});
 }

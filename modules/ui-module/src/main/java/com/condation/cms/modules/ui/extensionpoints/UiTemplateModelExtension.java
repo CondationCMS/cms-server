@@ -27,7 +27,10 @@ import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.modules.api.annotation.Extension;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -71,6 +74,14 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 				return "";
 			}
 			return " data-cms-edit-sections='true' data-cms-section-name='%s' ".formatted(sectionName);
+		}
+		
+		public String addSection (String[] sectionTemplates) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
+			return " data-cms-add-section='true' data-cms-section-templates='%s' ".formatted(
+					Arrays.stream(sectionTemplates).collect(Collectors.joining(",")));
 		}
 		
 		public String editForm () {

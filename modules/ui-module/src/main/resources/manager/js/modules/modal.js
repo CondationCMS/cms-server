@@ -20,8 +20,17 @@
  * #L%
  */
 
-const openModal = (options) => {
+const defaultOptions = {
+    validate: () => true
+  };
+
+const openModal = (optionsParam) => {
 	const modalId = 'fullscreenModal_' + Date.now();
+
+	const options = {
+    	...defaultOptions,
+    	...optionsParam
+  	};
 
 	let fullscreen = "";
 	if (options.fullscreen) {
@@ -74,9 +83,11 @@ const openModal = (options) => {
 	});
 
 	document.getElementById(`${modalId}_okBtn`).addEventListener('click', () => {
-		modalInstance.hide();
-		if (typeof options.onOk === 'function')
-			options.onOk();
+		if (options.validate()) {
+			modalInstance.hide();
+			if (typeof options.onOk === 'function')
+				options.onOk();
+		}
 	});
 
 	// Clean-up nach Schließen

@@ -41,9 +41,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class SetMetaCommand {
+public class AddSectionCommand {
 
-	public static final String NAME = "setMeta";
+	public static final String NAME = "addSection";
 
 	public static final CommandService.CommandHandler getHandler(
 			final CMSModuleContext moduleContext, final CMSRequestContext requestContext
@@ -51,8 +51,9 @@ public class SetMetaCommand {
 		final DB db = moduleContext.get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 		return command -> {
-			var update = (Map<String, Object>) command.parameters().get("meta");
+			var content = (String) command.parameters().getOrDefault("content", "");
 			var uri = (String) command.parameters().get("uri");
+			var template = (String) command.parameters().get("template");
 
 			var contentFile = contentBase.resolve(uri);
 			
@@ -60,18 +61,16 @@ public class SetMetaCommand {
 			result.put("uri", uri);
 			if (contentFile != null) {
 				try {
-					ContentFileParser parser = new ContentFileParser(contentFile);
-					
-					Map<String, Object> meta = parser.getHeader();
-					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
+					Map<String, Object> meta = Map.of("template", template);
 					
 					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 					
-					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
+					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, content);
 					log.debug("file {} saved", uri);
 					
 					moduleContext.get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
 				} catch (IOException ex) {
+					result.put("error", true);
 					log.error("", ex);
 				}
 			}

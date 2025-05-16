@@ -46,12 +46,19 @@ const sectionEdition = (container) => {
 	const toolbar = document.createElement('div');
 	toolbar.className = 'cms-ui-toolbar';
 
-	const button = document.createElement('button');
-	button.setAttribute('data-cms-action', 'editSections');
-	button.textContent = 'Sections';
-	button.addEventListener('click', editSections);
+	const editSectionsButton = document.createElement('button');
+	editSectionsButton.setAttribute('data-cms-action', 'editSections');
+	editSectionsButton.textContent = 'Sections';
+	editSectionsButton.addEventListener('click', editSections);
+	toolbar.appendChild(editSectionsButton);
 
-	toolbar.appendChild(button);
+	if (container.dataset.cmsAddSection) {
+		const addSectionButton = document.createElement('button');
+		addSectionButton.setAttribute('data-cms-action', 'addSection');
+		addSectionButton.textContent = 'Add';
+		addSectionButton.addEventListener('click', addSection);
+		toolbar.appendChild(addSectionButton);
+	}
 
 	container.insertBefore(toolbar, container.firstChild);
 
@@ -71,6 +78,24 @@ const sectionEdition = (container) => {
 		}
 	});
 };
+
+const addSection = (event) => {
+	console.log("edit sections")
+	// data-cms-edit-sections='true' data-cms-section-name
+	var $editSections = event.target.closest("[data-cms-edit-sections]")
+	var sectionName = $editSections.dataset.cmsSectionName
+	var sectionTemplates = $editSections.dataset.cmsSectionTemplates
+	const validTemplates = sectionTemplates.split(",").map(s => s.trim());
+
+	var command = {
+		type: 'add-section',
+		payload: {
+			sectionName: sectionName,
+			sectionTemplates: validTemplates
+		}
+	}
+	frameMessenger.send(window.parent, command);
+}
 
 const editSections = (event) => {
 	console.log("edit sections")

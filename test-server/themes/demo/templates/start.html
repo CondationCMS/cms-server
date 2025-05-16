@@ -29,7 +29,10 @@
 				</div>
 			</div>
 		</div>
-		<div class="container" {{ ui.editSections('asection')}}>
+		<div class="container" 
+			 {{ ui.editSections('asection')}}
+			 {{ ui.addSection(['section.html'])}}
+			 >
 			{% if sections.containsKey('asection') %}
 			{% for section in sections.get('asection') %}
 			{{ section.content() | raw }}

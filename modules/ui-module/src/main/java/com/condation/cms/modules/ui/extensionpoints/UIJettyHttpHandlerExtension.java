@@ -27,11 +27,13 @@ import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
+import com.condation.cms.modules.ui.commands.content.AddSectionCommand;
 import com.condation.cms.modules.ui.commands.content.GetContentCommand;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.content.GetContentNodeCommand;
 import com.condation.cms.modules.ui.commands.content.SetContentCommand;
 import com.condation.cms.modules.ui.commands.content.SetMetaCommand;
+import com.condation.cms.modules.ui.commands.content.SetMetaInBatchCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
 import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JSActionHandler;
@@ -103,6 +105,8 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		commandService.register(GetContentCommand.NAME, GetContentCommand.getHandler(context, requestContext));
 		commandService.register(SetMetaCommand.NAME, SetMetaCommand.getHandler(context, requestContext));
 		commandService.register(SetContentCommand.NAME, SetContentCommand.getHandler(context, requestContext));
+		commandService.register(SetMetaInBatchCommand.NAME, SetMetaInBatchCommand.getHandler(context, requestContext));
+		commandService.register(AddSectionCommand.NAME, AddSectionCommand.getHandler(context, requestContext));
 
 		try {
 

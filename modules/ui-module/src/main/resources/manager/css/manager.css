@@ -56,3 +56,8 @@
 
 }
 /* ============ small devices .end// ============ */
+
+
+i[data-cms-section-handle] {
+	cursor: pointer;
+}

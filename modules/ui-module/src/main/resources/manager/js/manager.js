@@ -88,6 +88,19 @@ document.addEventListener("DOMContentLoaded", function () {
 		executeScriptAction(cmd)
 	});
 
+	frameMessenger.on('add-section', (payload) => {
+		console.log("add section", payload)
+		var cmd = {
+			"module": "/manager/actions/page/add-section",
+			"function": "runAction",
+			"parameters": {
+				"sectionTemplates": payload.sectionTemplates,
+				"sectionName": payload.sectionName
+			}
+		}
+		executeScriptAction(cmd)
+	});
+
 	/////// Prevent closing from click inside dropdown
 	document.querySelectorAll('.dropdown-menu').forEach(function (element) {
 		element.addEventListener('click', function (e) {

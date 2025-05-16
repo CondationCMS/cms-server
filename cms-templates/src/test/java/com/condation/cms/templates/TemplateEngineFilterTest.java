@@ -38,6 +38,7 @@ public class TemplateEngineFilterTest extends AbstractTemplateEngineTest {
 	@Override
 	public TemplateLoader getLoader() {
 		return new StringTemplateLoader()
+				.add("var_default", "{{ content | default('the default text') }}")
 				.add("simple", "{{ meta['date'] | date }}")
 				.add("month_year", "{{ meta['date'] | date('MM/yyyy')}}")
 				;
@@ -78,5 +79,30 @@ public class TemplateEngineFilterTest extends AbstractTemplateEngineTest {
 		var result = simpleTemplate.evaluate(context);
 
 		Assertions.assertThat(result).isEqualTo(format.format(date));
+	}
+	
+	@Test
+	public void test_default_filter() throws IOException {
+
+		Template simpleTemplate = SUT.getTemplate("var_default");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+
+		var result = simpleTemplate.evaluate(
+				Map.of("content", "&lt;p&gt;&lt;/p&gt;")
+		);
+
+		Assertions.assertThat(result).isEqualTo("the default text");		
+		
+		result = simpleTemplate.evaluate(
+				Map.of("content", "<p></p>")
+		);
+
+		Assertions.assertThat(result).isEqualTo("the default text");
+		
+		result = simpleTemplate.evaluate(
+				Map.of("content", "")
+		);
+
+		Assertions.assertThat(result).isEqualTo("the default text");
 	}
 }

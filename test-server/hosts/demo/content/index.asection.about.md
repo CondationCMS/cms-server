@@ -7,7 +7,7 @@ description: total awesome sectiondd
 parent:
   text: text for a section
 layout:
-  order: 0
+  order: 3
 ---
 
 # This is a section: about

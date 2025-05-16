@@ -33,6 +33,7 @@ import com.condation.cms.modules.ui.utils.ContentFileParser;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
@@ -41,9 +42,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class SetMetaCommand {
+public class SetMetaInBatchCommand {
 
-	public static final String NAME = "setMeta";
+	public static final String NAME = "setMetaInBatch";
 
 	public static final CommandService.CommandHandler getHandler(
 			final CMSModuleContext moduleContext, final CMSRequestContext requestContext
@@ -51,30 +52,36 @@ public class SetMetaCommand {
 		final DB db = moduleContext.get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 		return command -> {
-			var update = (Map<String, Object>) command.parameters().get("meta");
-			var uri = (String) command.parameters().get("uri");
 
-			var contentFile = contentBase.resolve(uri);
-			
 			Map<String, Object> result = new HashMap<>();
-			result.put("uri", uri);
-			if (contentFile != null) {
-				try {
-					ContentFileParser parser = new ContentFileParser(contentFile);
-					
-					Map<String, Object> meta = parser.getHeader();
-					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
-					
-					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
-					
-					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
-					log.debug("file {} saved", uri);
-					
-					moduleContext.get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
-				} catch (IOException ex) {
-					log.error("", ex);
+			result.put("command", NAME);
+
+			List<Map<String, Object>> updates = (List<Map<String, Object>>) command.parameters().get("updates");
+
+			updates.forEach(entry -> {
+				var update = (Map<String, Object>) entry.get("meta");
+				var uri = (String) entry.get("uri");
+
+				var contentFile = contentBase.resolve(uri);
+
+				if (contentFile != null) {
+					try {
+						ContentFileParser parser = new ContentFileParser(contentFile);
+
+						Map<String, Object> meta = parser.getHeader();
+						YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
+
+						var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+
+						YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
+						log.debug("file {} saved", uri);
+						
+						moduleContext.get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
+					} catch (IOException ex) {
+						log.error("", ex);
+					}
 				}
-			}
+			});
 
 			return result;
 		};

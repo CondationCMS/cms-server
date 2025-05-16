@@ -1,0 +1,158 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+import { openModal } from '/manager/js/modules/modal.js'
+import { showToast } from '/manager/js/modules/toast.js'
+import { executeCommand } from '/manager/js/modules/system-commands.js'
+import { getPreviewUrl, reloadPreview } from '/manager/js/modules/ui-helpers.js'
+import { Sortable } from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/+esm'
+import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
+// hook.js
+export async function runAction(params) {
+
+	console.log("edit sections params", params);
+
+	const contentNode = await executeCommand({
+		command: "getContentNode",
+		parameters: {
+			url: getPreviewUrl()
+		}
+	})
+
+	var template = Handlebars.compile(`
+		<div class="mb-3">
+  			<label for="cms-section-name" class="form-label">Name for the section</label>
+  			<input type="text" class="form-control" id="cms-section-name" placeholder="Name of the section">
+		</div>
+		<select id="cms-section-template-selection" class="form-select" aria-label="Select section template">
+			<option value="000" selected>Select template</option>
+			{{#each templates}}
+				<option value="{{this}}">{{this}}</option>
+			{{/each}}
+		</select>
+		`);
+
+
+	openModal({
+		title: 'Add section',
+		body: template({ templates: params.sectionTemplates }),
+		fullscreen: false,
+		onCancel: (event) => console.log("modal canceled"),
+		validate: () => validate(contentNode, params.sectionName),
+		onOk: async (event) => {
+			var result = await createSection(contentNode.result.uri, params.sectionName);
+			if (result) {
+				showToast({
+					title: 'Section created',
+					message: 'Section successfuly created.',
+					type: 'success', // optional: info | success | warning | error
+					timeout: 3000
+				});
+				await new Promise(resolve => setTimeout(resolve, 1000));
+				reloadPreview()
+			} else {
+				showToast({
+					title: 'Create section',
+					message: 'Section not created.',
+					type: 'warning', // optional: info | success | warning | error
+					timeout: 3000
+				});
+			}
+
+		}
+	});
+}
+
+const validate = (contentNode, targetSectionName) => {
+	const template = document.getElementById("cms-section-template-selection").value
+	if (template === "000") {
+		showToast({
+			title: 'Create section',
+			message: 'No template selected.',
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
+		return false
+	}
+
+	const sectionUri = getSectionUri(contentNode.result.uri, targetSectionName)
+	if (isUriInSection(contentNode, targetSectionName, sectionUri)) {
+		showToast({
+			title: 'Create section',
+			message: 'Section name already taken.',
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
+		return false
+	}
+
+	return true;
+}
+
+const getSectionUri = (parentUri, targetSectionName) => {
+	const sectionName = document.getElementById("cms-section-name").value
+
+	const parts = parentUri.split("/");
+	const fileName = parts.pop(); // "index.md"
+	const baseName = fileName.replace(/\.md$/, ""); // "index"
+	const newFileName = `${baseName}.${targetSectionName}.${sectionName}.md`;
+
+	const sectionUri = [...parts, newFileName].join("/");
+
+	return sectionUri
+}
+
+function isUriInSection(data, sectionKey, targetUri) {
+	if (
+		!data ||
+		!data.result ||
+		!data.result.sections ||
+		typeof data.result.sections !== 'object'
+	) {
+		return false;
+	}
+
+	const sectionArray = data.result.sections[sectionKey];
+
+	if (!Array.isArray(sectionArray)) {
+		return false;
+	}
+
+	return sectionArray.some(item => item.uri === targetUri);
+}
+
+const createSection = async (parentUri, parentSectionName) => {
+
+	const template = document.getElementById("cms-section-template-selection").value
+	if (template === "000") {
+		return false
+	}
+	const sectionUri = getSectionUri(parentUri, parentSectionName)
+
+	await executeCommand({
+		command: "addSection",
+		parameters: {
+			uri: sectionUri,
+			template: template
+		}
+	})
+	return true
+}

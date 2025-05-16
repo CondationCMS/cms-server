@@ -1,19 +1,47 @@
 <!DOCTYPE html SYSTEM>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-	{% include "libs/fragments.html" %}
-</head>
+	<head>
+		{% include "libs/fragments.html" %}
+	</head>
 
-<body class="centered">
+	<body class="centered">
 
-	<div id="content">
-		<div class="container">
-			{{ node.content | raw}}
+		<div id="content">
+			<div class="container" {{ ui.editContent("code") }}>
+				{{ node.content | raw}}
+			</div>
+			<div>
+				<div class="container" {{ ui.editMeta("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+			</div>
+			<hr />
+			<div {{ ui.editForm() }}>
+				<div {{ ui.editFormElement("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div {{ ui.editFormElement("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+			</div>
 		</div>
-	</div>
+		<div class="container" 
+			 {{ ui.editSections('asection')}}
+			 {{ ui.addSection(['section.html'])}}
+			 >
+			{% if sections.containsKey('asection') %}
+			{% for section in sections.get('asection') %}
+			{{ section.content() | raw }}
+			{% endfor %}
+			{% endif %}
 
-</body>
+		</div>
+
+	</body>
 
 
 </html>

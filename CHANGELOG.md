@@ -6,7 +6,9 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
-## 7.9.0
+## 8.0.0
+
+* **BREAKING CHANGE** Sorted sections now use the _layout.order_ meta attribute for sorting
 
 * **MAINTENANCE** multiple dependencies updated
 * **MAINTENANCE** maven wrapper added to project

@@ -29,4 +29,8 @@ import com.condation.cms.api.eventbus.Event;
  *
  * @author t.marx
  */
-public record ReIndexContentMetaDataEvent () implements Event {}
+public record ReIndexContentMetaDataEvent (String uri) implements Event {
+	public ReIndexContentMetaDataEvent () {
+		this(null);
+	}
+}

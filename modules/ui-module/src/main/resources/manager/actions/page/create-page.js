@@ -19,27 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openSidebar} from '/manager/js/modules/sidebar.js'
-import {createForm} from '/manager/js/modules/forms.js'
-import {showToast} from '/manager/js/modules/toast.js'
-import {executeCommand} from '/manager/js/modules/system-commands.js'
-import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
+import {openFileBrowser} from '/manager/js/modules/file-browser.js'
 		// hook.js
 export async function runAction(params) {
 
-	const contentFiles = await executeCommand({
-		command: "listContentFiles",
-		parameters: {
-			type: "content"
-		}
+	openFileBrowser({
+		type: "content"
 	})
-	console.log("content", contentFiles)
-
-	const assetFiles = await executeCommand({
-		command: "listContentFiles",
-		parameters: {
-			type: "assets"
-		}
-	})
-	console.log("assets", assetFiles)
 }

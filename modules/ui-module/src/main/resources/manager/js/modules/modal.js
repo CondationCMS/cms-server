@@ -52,7 +52,7 @@ const openModal = (optionsParam) => {
 				<h5 class="modal-title">${options.title || 'Modal Title'}</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			  </div>
-			  <div class="modal-body" id="modalBodyContainer">
+			  <div class="modal-body" id="${modalId}_bodyContainer">
 				${options.body || '<p>Modal body content</p>'}
 			  </div>
 			  <div class="modal-footer">
@@ -68,7 +68,7 @@ const openModal = (optionsParam) => {
 	container.innerHTML = modalHtml;
 
 	if (options.form) {
-		options.form.init("#modalBodyContainer")
+		options.form.init(`#${modalId}_bodyContainer`)
 	}
 
 	const modalElement = document.getElementById(modalId);
@@ -98,6 +98,8 @@ const openModal = (optionsParam) => {
 	if (options.onShow) {
 		options.onShow()
 	}
+
+	return modalInstance
 };
 
 export {openModal};

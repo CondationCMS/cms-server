@@ -61,3 +61,7 @@
 i[data-cms-section-handle] {
 	cursor: pointer;
 }
+
+tr[data-cms-file-directory] {
+	cursor: pointer;
+}

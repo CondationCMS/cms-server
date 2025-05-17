@@ -35,6 +35,8 @@ import com.condation.cms.modules.ui.commands.content.ListContentFilesCommand;
 import com.condation.cms.modules.ui.commands.content.SetContentCommand;
 import com.condation.cms.modules.ui.commands.content.SetMetaCommand;
 import com.condation.cms.modules.ui.commands.content.SetMetaInBatchCommand;
+import com.condation.cms.modules.ui.commands.files.DeleteFileCommand;
+import com.condation.cms.modules.ui.commands.files.ListFilesCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
 import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JSActionHandler;
@@ -109,6 +111,9 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		commandService.register(SetMetaInBatchCommand.NAME, SetMetaInBatchCommand.getHandler(context, requestContext));
 		commandService.register(AddSectionCommand.NAME, AddSectionCommand.getHandler(context, requestContext));
 		commandService.register(ListContentFilesCommand.NAME, ListContentFilesCommand.getHandler(context, requestContext));
+		
+		commandService.register(ListFilesCommand.NAME, ListFilesCommand.getHandler(context, requestContext));
+		commandService.register(DeleteFileCommand.NAME, DeleteFileCommand.getHandler(context, requestContext));
 
 		try {
 

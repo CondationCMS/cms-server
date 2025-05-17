@@ -29,4 +29,9 @@ const reloadPreview = () => {
 	document.getElementById("contentPreview").contentDocument.location.reload(true);
 }
 
-export { getPreviewUrl, reloadPreview };
+const loadPreview = (url) => {
+	console.log("loadPreview", url)
+	document.getElementById("contentPreview").src = url + "?preview=true";
+}
+
+export { getPreviewUrl, reloadPreview, loadPreview };

@@ -21,11 +21,11 @@ package com.condation.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.exceptions.AnnotationExecutionException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -51,58 +51,68 @@ public class AnnotationsUtil {
 		Objects.requireNonNull(target);
 		Objects.requireNonNull(annotationClass);
 		Objects.requireNonNull(parameters);
-		
+
 		List<CMSAnnotation<A, R>> result = new ArrayList();
 		Class<?> clazz = target.getClass();
 		for (Method method : clazz.getDeclaredMethods()) {
 			if (!method.isAnnotationPresent(annotationClass)) {
 				continue;
 			}
-            if (!hasValidSignatur(method, parameters, returnType)) {
+			if (!hasValidSignatur(method, parameters, returnType)) {
 				log.warn("method {} has wrong signature", method);
 				continue;
 			}
-			method.setAccessible(true);
+
 			A annotation = method.getAnnotation(annotationClass);
-			
+
 			result.add(new CMSAnnotation<>(annotation, (params) -> {
 				try {
-					return (R)method.invoke(target, params);
+					return (R) method.invoke(target, params);
 				} catch (IllegalAccessException | InvocationTargetException ex) {
 					log.error("", ex);
 					throw new AnnotationExecutionException(ex.getMessage());
 				}
 			}));
-        }
-		
+		}
+
 		return result;
 	}
 
 	private static boolean hasValidSignatur(Method method, List<Class<?>> parameters, Class<?> returnType) {
 
+		if (!Modifier.isPublic(method.getModifiers())) {
+			return false;
+		}
+
 		if (returnType != Void.class) {
-			if (!method.getReturnType().equals(returnType)) {
+			Class<?> actualReturnType = method.getReturnType();
+			if (returnType == Object.class) {
+				if (actualReturnType == Void.TYPE) {
+					return false;
+				}
+			} else if (!actualReturnType.equals(returnType)) {
 				return false;
 			}
 		}
 
 		Class<?>[] params = method.getParameterTypes();
-		
+
 		if (params.length != parameters.size()) {
 			return false;
 		}
-		
+
 		for (int i = 0; i < params.length; i++) {
 			if (!params[i].isAssignableFrom(parameters.get(i))) {
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
-	
-	public record CMSAnnotation<A extends Annotation, R> (A annotation, Function<Object[], R> function){
-		public R invoke (Object... parameters) {
+
+	public record CMSAnnotation<A extends Annotation, R>(A annotation, Function<Object[], R> function) {
+
+		public R invoke(Object... parameters) {
 			return function.apply(parameters);
 		}
 	}

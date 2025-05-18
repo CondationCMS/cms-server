@@ -65,43 +65,5 @@ public class RoutesManager {
 					};
 					pathMapping.add(pathSpec, cmsAnnotation.annotation().method(), handler);
 				});
-
-		Class<?> clazz = controller.getClass();
-
-		for (Method method : clazz.getDeclaredMethods()) {
-			Route route = method.getAnnotation(Route.class);
-			if (route != null && isValidHandlerMethod(method)) {
-				method.setAccessible(true);
-
-				PathSpec pathSpec = PathSpec.from(route.value());
-
-				HttpHandler handler = (request, response, callback) -> {
-					try {
-						return (Boolean) method.invoke(controller, request, response, callback);
-					} catch (Exception e) {
-						log.error("", e);
-						response.setStatus(500);
-						return true;
-					}
-				};
-				pathMapping.add(pathSpec, route.method(), handler);
-			}
-		}
-	}
-
-	private boolean isValidHandlerMethod(Method method) {
-		// Muss "boolean handle(Request, Response, Callback)" sein
-		if (!Modifier.isPublic(method.getModifiers())) {
-			return false;
-		}
-		if (!method.getReturnType().equals(boolean.class)) {
-			return false;
-		}
-
-		Class<?>[] params = method.getParameterTypes();
-		return params.length == 3
-				&& Request.class.isAssignableFrom(params[0])
-				&& Response.class.isAssignableFrom(params[1])
-				&& Callback.class.isAssignableFrom(params[2]);
 	}
 }

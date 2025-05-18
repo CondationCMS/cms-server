@@ -23,11 +23,13 @@ package com.condation.cms.api.hooks;
  */
 import com.condation.cms.api.annotations.Filter;
 import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.utils.AnnotationsUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +58,26 @@ public class HookSystem {
 	}
 
 	public void register(Object sourceObject) {
+		// Action-Methoden registrieren
+		List<AnnotationsUtil.CMSAnnotation<Action, Void>> actionMethods
+				= AnnotationsUtil.process(sourceObject, Action.class, List.of(ActionContext.class), Void.class);
+
+		for (AnnotationsUtil.CMSAnnotation<Action, Void> ann : actionMethods) {
+			Action annotation = ann.annotation();
+			registerAction(annotation.value(), context -> ann.invoke(context), annotation.priority());
+		}
+
+		// Filter-Methoden registrieren
+		List<AnnotationsUtil.CMSAnnotation<Filter, Object>> filterMethods
+				= AnnotationsUtil.process(sourceObject, Filter.class, List.of(FilterContext.class), Object.class);
+
+		for (AnnotationsUtil.CMSAnnotation<Filter, Object> ann : filterMethods) {
+			Filter annotation = ann.annotation();
+			registerFilter(annotation.value(), context -> ann.invoke(context), annotation.priority());
+		}
+	}
+
+	public void registerqq(Object sourceObject) {
 		Class<?> objectClass = sourceObject.getClass();
 		for (Method method : objectClass.getDeclaredMethods()) {
 			// regsiter actions

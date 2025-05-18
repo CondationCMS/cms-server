@@ -24,7 +24,7 @@ package com.condation.cms.content.shortcodes;
 import com.condation.cms.api.annotations.ShortCode;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
-import java.lang.reflect.Method;
+import com.condation.cms.api.utils.AnnotationsUtil;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -103,46 +103,39 @@ public class ShortCodes {
 			codes.put(name, shortCodeFN);
 			return this;
 		}
-		
-		public Builder register (Map<String, Function<Parameter, String>> codes) {
+
+		public Builder register(Map<String, Function<Parameter, String>> codes) {
 			this.codes.putAll(codes);
 			return this;
 		}
 
-		public Builder register (List<Object> handlers) {
+		public Builder register(List<Object> handlers) {
 			if (handlers == null || handlers.isEmpty()) {
 				return this;
 			}
-			
+
 			handlers.forEach(this::register);
-			
+
 			return this;
 		}
-		
+
 		public Builder register(Object handler) {
 			if (handler == null) {
 				return this;
 			}
 
-			Class<?> clazz = handler.getClass();
-			for (Method method : clazz.getDeclaredMethods()) {
-				if (method.isAnnotationPresent(ShortCode.class)) {
-					if (method.getParameterCount() == 1 && method.getParameterTypes()[0] == Parameter.class) {
-						method.setAccessible(true); // falls private
-						ShortCode annotation = method.getAnnotation(ShortCode.class);
-						String key = annotation.value();
+			// Wir erwarten Methoden mit @ShortCode(Parameter) -> String
+			var annotations = AnnotationsUtil.process(handler, ShortCode.class, List.of(Parameter.class), String.class);
 
-						codes.put(key, param -> {
-							try {
-								return (String) method.invoke(handler, param);
-							} catch (Exception e) {
-								throw new RuntimeException("Error calling shortcode: " + key, e);
-							}
-						});
-					} else {
-						log.error("ignore methode" + method.getName() + " – wrong signature.");
+			for (var entry : annotations) {
+				String key = entry.annotation().value();
+				codes.put(key, param -> {
+					try {
+						return entry.invoke(param);
+					} catch (Exception e) {
+						throw new RuntimeException("Error calling shortcode: " + key, e);
 					}
-				}
+				});
 			}
 
 			return this;

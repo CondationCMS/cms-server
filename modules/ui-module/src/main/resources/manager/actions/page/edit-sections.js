@@ -25,6 +25,7 @@ import { executeCommand } from '/manager/js/modules/system-commands.js'
 import { getPreviewUrl, reloadPreview } from '/manager/js/modules/ui-helpers.js'
 import { Sortable } from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/+esm'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
+import {setMetaBatch} from '/manager/js/modules/rpc-calls.js'
 // hook.js
 export async function runAction(params) {
 
@@ -92,11 +93,7 @@ const saveSections = async () => {
 			}
 		});
 	}
-	await executeCommand({
-		command: "setMetaInBatch",
-		parameters: {
-			updates: updates,
-
-		}
+	await setMetaBatch({
+		updates: updates
 	});
 }

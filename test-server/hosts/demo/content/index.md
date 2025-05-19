@@ -9,7 +9,7 @@ parent:
   text: another text for the meta attribute
 ---
 
-# Demo Project
+# Demo Project 2
 
 ![TestBild!](/media/images/test.jpg?format=small)
 

@@ -23,6 +23,7 @@ import {openModal} from '/manager/js/modules/modal.js'
 import {createForm} from '/manager/js/modules/forms.js'
 import {executeCommand} from '/manager/js/modules/system-commands.js'
 import {getPreviewUrl, reloadPreview} from '/manager/js/modules/ui-helpers.js'
+import {getContent, setContent} from '/manager/js/modules/rpc-calls.js'
 		// hook.js
 export async function runAction(params) {
 
@@ -41,15 +42,8 @@ export async function runAction(params) {
 		uri = contentNode.result.uri
 	}
 
-
-
-
-
-	const getContent = await executeCommand({
-		command: "getContent",
-		parameters: {
-			uri: uri
-		}
+	const nodeContent = await getContent({
+		uri: uri
 	})
 
 	const form = createForm({
@@ -57,7 +51,7 @@ export async function runAction(params) {
 			{type: params.editor, name: 'content', title: 'Inhalt'}
 		],
 		values: {
-			"content": getContent?.result?.content
+			"content": nodeContent?.result?.content
 		}
 	});
 
@@ -69,12 +63,9 @@ export async function runAction(params) {
 		onCancel: (event) => console.log("modal canceled"),
 		onOk: async (event) => {
 			var updateData = form.getData()
-			var setContent = await executeCommand({
-				command: "setContent",
-				parameters: {
-					uri: uri,
-					content: updateData.content
-				}
+			var setContentResponse = await setContent({
+				uri: uri,
+				content: updateData.content
 			})
 			reloadPreview()
 		}

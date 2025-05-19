@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.modules.ui.model;
 
 /*-
  * #%L
@@ -22,25 +22,10 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 
-import com.condation.cms.api.extensions.HttpHandler;
-import java.nio.charset.StandardCharsets;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Request;
+import java.util.Map;
 
 /**
  *
  * @author t.marx
  */
-@Slf4j
-public abstract class JettyHandler implements HttpHandler {
-	
-	protected String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
-	}
-}
+public record RemoteCall (String endpoint, Map<String, Object> parameters) {}

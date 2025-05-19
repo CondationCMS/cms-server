@@ -1,8 +1,8 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.api.ui.annotations;
 
 /*-
  * #%L
- * ui-module
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,25 +22,17 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 
-import com.condation.cms.api.extensions.HttpHandler;
-import java.nio.charset.StandardCharsets;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Request;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-@Slf4j
-public abstract class JettyHandler implements HttpHandler {
-	
-	protected String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
-	}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface RemoteEndpoint {
+	String endpoint();
 }

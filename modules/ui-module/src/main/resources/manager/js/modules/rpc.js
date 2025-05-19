@@ -1,5 +1,3 @@
-package com.condation.cms.modules.ui.http;
-
 /*-
  * #%L
  * ui-module
@@ -22,25 +20,16 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 
-import com.condation.cms.api.extensions.HttpHandler;
-import java.nio.charset.StandardCharsets;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Request;
-
-/**
- *
- * @author t.marx
- */
-@Slf4j
-public abstract class JettyHandler implements HttpHandler {
-	
-	protected String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
+const executeRemoteCall = async (options) => {
+	var data = {
+		endpoint: options.endpoint,
+		parameters: options.parameters
 	}
-}
+	var response = await fetch("/manager/rpc", {
+		method: "POST",
+		body: JSON.stringify(data)
+	})
+	return await response.json();
+};
+
+export { executeRemoteCall };

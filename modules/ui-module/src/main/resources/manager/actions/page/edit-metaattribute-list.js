@@ -25,6 +25,7 @@ import {showToast} from '/manager/js/modules/toast.js'
 import {executeCommand} from '/manager/js/modules/system-commands.js'
 import {getPreviewUrl, reloadPreview} from '/manager/js/modules/ui-helpers.js'
 import { getMetaValueByPath } from '/manager/js/modules/node.js'
+import {getContent, setMeta} from '/manager/js/modules/rpc-calls.js'
 		// hook.js
 export async function runAction(params) {
 
@@ -43,11 +44,8 @@ export async function runAction(params) {
 		uri = contentNode.result.uri
 	}
 
-	const getContent = await executeCommand({
-		command: "getContent",
-		parameters: {
-			uri: uri
-		}
+	const getContentResponse = await getContent({
+		uri: uri
 	})
 
 	let formDefinition = {
@@ -56,13 +54,13 @@ export async function runAction(params) {
 	}
 	
 	params.attributes.forEach(attr => {
-		formDefinition.values[attr.name] = getMetaValueByPath(getContent?.result?.meta, attr.name)
+		formDefinition.values[attr.name] = getMetaValueByPath(getContentResponse?.result?.meta, attr.name)
 		formDefinition.fields.push(
 			{type: attr.editor, name: attr.name, title: attr.name}
 		)
 	})
 
-	console.log("Meta-Daten:", getContent?.result?.meta)
+	console.log("Meta-Daten:", getContentResponse?.result?.meta)
 	console.log("form", formDefinition)
 
 	const form = createForm(formDefinition)
@@ -75,12 +73,9 @@ export async function runAction(params) {
 		onCancel: (event) => console.log("modal canceled"),
 		onOk: async (event) => {
 			var updateData = form.getData()
-			var setMeta = await executeCommand({
-				command: "setMeta",
-				parameters: {
-					uri: uri,
-					meta: updateData
-				}
+			var setMetaResponse = await setMeta({
+				uri: uri,
+				meta: updateData
 			})
 			showToast({
 				title: 'MetaData saved',

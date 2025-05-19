@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.modules.ui.utils;
 
 /*-
  * #%L
@@ -22,25 +22,18 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 
-import com.condation.cms.api.extensions.HttpHandler;
-import java.nio.charset.StandardCharsets;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Request;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.ToNumberPolicy;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-@Slf4j
-public abstract class JettyHandler implements HttpHandler {
+public class GsonProvider {
 	
-	protected String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
-	}
+	public static final Gson INSTANCE = new GsonBuilder()
+			.setPrettyPrinting()
+			.setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
+			.create();
 }

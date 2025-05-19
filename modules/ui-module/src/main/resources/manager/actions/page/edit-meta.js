@@ -23,6 +23,7 @@ import {openSidebar} from '/manager/js/modules/sidebar.js'
 import {createForm} from '/manager/js/modules/forms.js'
 import {showToast} from '/manager/js/modules/toast.js'
 import {executeCommand} from '/manager/js/modules/system-commands.js'
+import {setMeta, getContent} from '/manager/js/modules/rpc-calls.js'
 import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
 		// hook.js
 export async function runAction(params) {
@@ -34,11 +35,8 @@ export async function runAction(params) {
 		}
 	})
 
-	const getContent = await executeCommand({
-		command: "getContent",
-		parameters: {
-			uri: contentNode.result.uri
-		}
+	const getContentResponse = await getContent({
+		uri: contentNode.result.uri
 	})
 
 	const form = createForm({
@@ -65,9 +63,9 @@ export async function runAction(params) {
 
 		],
 		values: {
-			'title': getContent?.result?.meta?.title,
-			'published': getContent?.result?.meta?.published,
-			'search.index': getContent?.result?.meta?.search?.index
+			'title': getContentResponse?.result?.meta?.title,
+			'published': getContentResponse?.result?.meta?.published,
+			'search.index': getContentResponse?.result?.meta?.search?.index
 		}
 	});
 
@@ -80,12 +78,9 @@ export async function runAction(params) {
 		onCancel: (event) => console.log("modal canceled"),
 		onOk: async (event) => {
 			var updateData = form.getData()
-			var setMeta = await executeCommand({
-				command: "setMeta",
-				parameters: {
-					uri: contentNode.result.uri,
-					meta: updateData
-				}
+			var setMetaResponse = await setMeta({
+				uri: contentNode.result.uri,
+				meta: updateData
 			})
 			showToast({
 				title: 'MetaData saved',

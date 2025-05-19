@@ -1,5 +1,3 @@
-package com.condation.cms.modules.ui.http;
-
 /*-
  * #%L
  * ui-module
@@ -22,25 +20,38 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 
-import com.condation.cms.api.extensions.HttpHandler;
-import java.nio.charset.StandardCharsets;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Request;
+import { executeRemoteCall } from '/manager/js/modules/rpc.js'
 
-/**
- *
- * @author t.marx
- */
-@Slf4j
-public abstract class JettyHandler implements HttpHandler {
-	
-	protected String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
+const getContent = async (options) => {
+	var data = {
+		endpoint: "content.get",
+		parameters: options
 	}
-}
+	return await executeRemoteCall(data);
+};
+
+const setContent = async (options) => {
+	var data = {
+		endpoint: "content.set",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+const setMeta = async (options) => {
+	var data = {
+		endpoint: "meta.set",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+const setMetaBatch = async (options) => {
+	var data = {
+		endpoint: "meta.set.batch",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+export { getContent, setContent, setMeta, setMetaBatch };

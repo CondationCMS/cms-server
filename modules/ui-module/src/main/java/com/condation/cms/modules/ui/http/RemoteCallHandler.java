@@ -22,7 +22,8 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.modules.ui.model.Command;
-import com.condation.cms.modules.ui.services.CommandService;
+import com.condation.cms.modules.ui.model.RemoteCall;
+import com.condation.cms.modules.ui.services.RemoteCallService;
 import com.condation.cms.modules.ui.utils.GsonProvider;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,9 +43,9 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class CommandHandler extends JettyHandler {
+public class RemoteCallHandler extends JettyHandler {
 
-	private final CommandService commandService;
+	private final RemoteCallService remoteCallService;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -55,22 +56,22 @@ public class CommandHandler extends JettyHandler {
 		}
 
 		String body = getBody(request);
-		var command = GsonProvider.INSTANCE.fromJson(body, Command.class);
+		var remoteCall = GsonProvider.INSTANCE.fromJson(body, RemoteCall.class);
 
-		Map<String, Object> commandResponse = new HashMap<>();
-		commandResponse.put("type", command.type());
+		Map<String, Object> remoteCallResponse = new HashMap<>();
+		remoteCallResponse.put("endpoint", remoteCall.endpoint());
 		try {
-			Optional<?> result = commandService.execute(command);
+			Optional<?> result = remoteCallService.execute(remoteCall.endpoint(), remoteCall.parameters());
 			if (result.isPresent()) {
-				commandResponse.put("result", result.get());
+				remoteCallResponse.put("result", result.get());
 			}
 		} catch (Exception e) {
-			log.error("error executing command", command.type(), e);
+			log.error("error executing endpoint", remoteCall.endpoint(), e);
 		}
 
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
 		response.setStatus(200);
-		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(commandResponse), callback);
+		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(remoteCallResponse), callback);
 
 		return true;
 	}

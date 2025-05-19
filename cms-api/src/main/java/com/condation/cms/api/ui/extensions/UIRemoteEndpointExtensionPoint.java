@@ -1,10 +1,10 @@
-package com.condation.cms.modules.ui.http;
+package com.condation.cms.api.ui.extensions;
 
 /*-
  * #%L
- * ui-module
+ * ui-api
  * %%
- * Copyright (C) 2023 - 2025 CondationCMS
+ * Copyright (C) 2024 Marx-Software
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,25 +22,12 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 
-import com.condation.cms.api.extensions.HttpHandler;
-import java.nio.charset.StandardCharsets;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.server.Request;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 
 /**
  *
  * @author t.marx
  */
-@Slf4j
-public abstract class JettyHandler implements HttpHandler {
+public abstract class UIRemoteEndpointExtensionPoint extends AbstractExtensionPoint {
 	
-	protected String getBody(Request request) {
-		try (var inputStream = Request.asInputStream(request)) {
-
-			return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-		} catch (Exception ex) {
-			log.error("", ex);
-		}
-		return "";
-	}
 }

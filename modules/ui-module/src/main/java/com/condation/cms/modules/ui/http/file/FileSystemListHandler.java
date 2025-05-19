@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.http.file;
 
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.services.FileSystemService;
+import com.condation.cms.modules.ui.utils.GsonProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
@@ -56,7 +57,7 @@ public class FileSystemListHandler extends JettyHandler {
 		var nodes = fileSystemService.listContent(path);
 		response.setStatus(200);
         response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-		Content.Sink.write(response, true, GSON.toJson(nodes), callback);
+		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(nodes), callback);
 		
 		return true;
 	}

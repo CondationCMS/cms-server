@@ -28,20 +28,18 @@ import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.modules.ui.commands.content.AddSectionCommand;
-import com.condation.cms.modules.ui.commands.content.GetContentCommand;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.cms.modules.ui.commands.content.GetContentNodeCommand;
 import com.condation.cms.modules.ui.commands.content.ListContentFilesCommand;
-import com.condation.cms.modules.ui.commands.content.SetContentCommand;
-import com.condation.cms.modules.ui.commands.content.SetMetaCommand;
-import com.condation.cms.modules.ui.commands.content.SetMetaInBatchCommand;
 import com.condation.cms.modules.ui.commands.files.DeleteFileCommand;
 import com.condation.cms.modules.ui.commands.files.ListFilesCommand;
 import com.condation.cms.modules.ui.http.CommandHandler;
 import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JSActionHandler;
+import com.condation.cms.modules.ui.http.RemoteCallHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.services.CommandService;
+import com.condation.cms.modules.ui.services.RemoteCallService;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.io.IOException;
 import java.net.URI;
@@ -105,18 +103,18 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		commandService.register("test", (cmd) -> "Hallo Leute!");
 		commandService.register(GetContentNodeCommand.NAME,
 				GetContentNodeCommand.getHandler(getContext(), getRequestContext()));
-		commandService.register(GetContentCommand.NAME, GetContentCommand.getHandler(context, requestContext));
-		commandService.register(SetMetaCommand.NAME, SetMetaCommand.getHandler(context, requestContext));
-		commandService.register(SetContentCommand.NAME, SetContentCommand.getHandler(context, requestContext));
-		commandService.register(SetMetaInBatchCommand.NAME, SetMetaInBatchCommand.getHandler(context, requestContext));
 		commandService.register(AddSectionCommand.NAME, AddSectionCommand.getHandler(context, requestContext));
 		commandService.register(ListContentFilesCommand.NAME, ListContentFilesCommand.getHandler(context, requestContext));
 		
 		commandService.register(ListFilesCommand.NAME, ListFilesCommand.getHandler(context, requestContext));
 		commandService.register(DeleteFileCommand.NAME, DeleteFileCommand.getHandler(context, requestContext));
 
+		RemoteCallService remoteCallService = new RemoteCallService();
+		remoteCallService.init(moduleManager);
+		
 		try {
 
+			mapping.add(PathSpec.from("/manager/rpc"), new RemoteCallHandler(remoteCallService));
 			mapping.add(PathSpec.from("/manager/command"), new CommandHandler(commandService));
 
 			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(hookSystem));

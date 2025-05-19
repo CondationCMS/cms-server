@@ -19,12 +19,33 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
+import { localizeUi, setLocale } from '/manager/js/modules/localization.js';
+
 window.addEventListener("DOMContentLoaded", () => {
-	const actionElements = document.querySelectorAll('[data-action-definition]');
+
+	localizeUi();
+
+	document.querySelectorAll(".cms-lang-selector").forEach($elem => {
+		$elem.addEventListener("click", () => {
+			setLocale($elem.getAttribute("data-cms-i18n-lang"))
+			localizeUi();
+			document.querySelectorAll(".cms-lang-selector").forEach(el => {
+				el.classList.remove("active");
+			});
+			$elem.classList.add("active");
+
+			const dropdown = bootstrap.Dropdown.getInstance($elem.closest('.dropdown')) 
+		              || new bootstrap.Dropdown($elem.closest('.dropdown').querySelector('[data-bs-toggle="dropdown"]'));
+			dropdown.hide();
+		})
+	})
+
+	const actionElements = document.querySelectorAll('[data-cms-action-definition]');
 	actionElements.forEach(element => {
 		try {
 			element.addEventListener("click", (action) => {
-				const definition = element.getAttribute('data-action-definition');
+				const definition = element.getAttribute('data-cms-action-definition');
 				try {
 					const action = JSON.parse(definition);
 					console.log(action)

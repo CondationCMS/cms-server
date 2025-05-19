@@ -26,6 +26,8 @@ import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.modules.api.annotation.Extensions;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
+import com.condation.cms.api.ui.extensions.UILocalizationExtensionPoint;
+import java.util.Map;
 
 /**
  *
@@ -33,9 +35,10 @@ import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
  */
 @Extensions({
 	@Extension(UIActionsExtensionPoint.class),
-	@Extension(HookSystemRegisterExtensionPoint.class)
+	@Extension(HookSystemRegisterExtensionPoint.class),
+	@Extension(UILocalizationExtensionPoint.class)
 })
-public class PageMenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint {
+public class PageMenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint, UILocalizationExtensionPoint {
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			id = "pageMenu",
@@ -67,7 +70,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			parent = "pageMenu",
 			id = "page-edit-content",
 			name = "Edit Content",
-			position = 1,
+			position = 2,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-content")
 	)
 	@ShortCut(
@@ -84,7 +87,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			parent = "pageMenu",
 			id = "page-edit-meta",
 			name = "Edit MetaData",
-			position = 2,
+			position = 3,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-meta")
 	)
 	@ShortCut(
@@ -130,4 +133,26 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 		System.out.println("demo-hook-action called");
 	}
 	 */
+
+	@Override
+	public Map<String, Map<String, String>> getLocalizations() {
+		return Map.of(
+				"de", Map.of(
+						"pageMenu", "Seite",
+						"page-create", "Neue Seite erstellen",
+						"page-edit-content", "Inhalt bearbeiten",
+						"page-edit-meta", "Metadaten bearbeiten",
+						"language.de", "Deutsch",
+						"language.en", "Englisch"
+				),
+				"en", Map.of(
+						"pageMenu", "Page",
+						"page-create", "Create new page",
+						"page-edit-content", "Edit content",
+						"page-edit-meta", "Edit metadata",
+						"language.de", "German",
+						"language.en", "English"
+				)
+		);
+	}
 }

@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.modules.ui.model.Command;
 import com.condation.cms.modules.ui.model.RemoteCall;
 import com.condation.cms.modules.ui.services.RemoteCallService;
 import com.condation.cms.modules.ui.utils.GsonProvider;

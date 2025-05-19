@@ -22,17 +22,13 @@
 import {openSidebar} from '/manager/js/modules/sidebar.js'
 import {createForm} from '/manager/js/modules/forms.js'
 import {showToast} from '/manager/js/modules/toast.js'
-import {executeCommand} from '/manager/js/modules/system-commands.js'
-import {setMeta, getContent} from '/manager/js/modules/rpc-calls.js'
+import {getContentNode, setMeta, getContent} from '/manager/js/modules/rpc-content.js'
 import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
 		// hook.js
 export async function runAction(params) {
 
-	const contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
+	const contentNode = await getContentNode({
+		url: getPreviewUrl()
 	})
 
 	const getContentResponse = await getContent({

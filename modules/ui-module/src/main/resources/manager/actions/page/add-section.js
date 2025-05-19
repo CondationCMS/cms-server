@@ -21,20 +21,16 @@
  */
 import { openModal } from '/manager/js/modules/modal.js'
 import { showToast } from '/manager/js/modules/toast.js'
-import { executeCommand } from '/manager/js/modules/system-commands.js'
+import { addSection, getContentNode } from '/manager/js/modules/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '/manager/js/modules/ui-helpers.js'
-import { Sortable } from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/+esm'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
-// hook.js
+
 export async function runAction(params) {
 
 	console.log("edit sections params", params);
 
-	const contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
+	const contentNode = await getContentNode({
+		url: getPreviewUrl()
 	})
 
 	var template = Handlebars.compile(`
@@ -147,12 +143,9 @@ const createSection = async (parentUri, parentSectionName) => {
 	}
 	const sectionUri = getSectionUri(parentUri, parentSectionName)
 
-	await executeCommand({
-		command: "addSection",
-		parameters: {
-			uri: sectionUri,
-			template: template
-		}
+	await addSection({
+		uri: sectionUri,
+		template: template
 	})
 	return true
 }

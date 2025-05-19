@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { executeCommand } from '/manager/js/modules/system-commands.js'
+import { listFiles } from '/manager/js/modules/rpc-files.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
 import { loadPreview } from '/manager/js/modules/ui-helpers.js'
@@ -85,12 +85,9 @@ const openFileBrowser = async (optionsParam) => {
 };
 
 const initFileBrowser = async (options, uri) => {
-	const contentFiles = await executeCommand({
-		command: "listFiles",
-		parameters: {
-			type: options.type,
-			uri: uri ? uri : null
-		}
+	const contentFiles = await listFiles({
+		type: options.type,
+		uri: uri ? uri : null
 	})
 
 	const fileBrowserElement = document.getElementById("cms-file-browser");

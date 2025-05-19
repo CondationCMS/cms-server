@@ -23,7 +23,7 @@ package com.condation.cms.modules.ui.http;
  */
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.modules.ui.model.Command;
+import com.condation.cms.modules.ui.model.HookCall;
 import com.condation.cms.modules.ui.utils.GsonProvider;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,11 +55,11 @@ public class HookHandler extends JettyHandler {
 		}
 
 		String body = getBody(request);
-		var command = GsonProvider.INSTANCE.fromJson(body, Command.class);
-		ActionContext<?> actionContext  = hookSystem.execute(command.type(), command.parameters());
+		var command = GsonProvider.INSTANCE.fromJson(body, HookCall.class);
+		ActionContext<?> actionContext  = hookSystem.execute(command.hook(), command.parameters());
 		
 		Map<String, Object> commandResponse = new HashMap<>();
-		commandResponse.put("type", command.type());
+		commandResponse.put("hook", command.hook());
 		if (!actionContext.results().isEmpty()) {
 			commandResponse.put("result", actionContext.results());
 		}

@@ -19,9 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '/manager/js/modules/system-commands.js'
-import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
-		// hook.js
+		
 export async function runAction(parameters) {
 	window.location.href = parameters.href;
 

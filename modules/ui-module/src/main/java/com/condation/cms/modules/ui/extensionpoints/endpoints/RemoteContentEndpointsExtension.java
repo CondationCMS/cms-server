@@ -23,15 +23,22 @@ package com.condation.cms.modules.ui.extensionpoints.endpoints;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.ui.annotations.RemoteEndpoint;
 import com.condation.cms.api.ui.extensions.UIRemoteEndpointExtensionPoint;
+import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.SectionUtil;
+import com.condation.cms.content.Section;
 import com.condation.cms.modules.ui.utils.ContentFileParser;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import com.condation.modules.api.annotation.Extension;
 import java.io.IOException;
+import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -168,5 +175,91 @@ public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPo
 		});
 
 		return result;
+	}
+
+	@RemoteEndpoint(endpoint = "content.section.add")
+	public Object addSection(Map<String, Object> parameters) {
+		final DB db = getContext().get(DBFeature.class).db();
+		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+
+		var content = (String) parameters.getOrDefault("content", "");
+		var uri = (String) parameters.get("uri");
+		var template = (String) parameters.get("template");
+
+		var contentFile = contentBase.resolve(uri);
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("uri", uri);
+		if (contentFile != null) {
+			try {
+				Map<String, Object> meta = Map.of("template", template);
+
+				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+
+				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, content);
+				log.debug("file {} saved", uri);
+
+				getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
+			} catch (IOException ex) {
+				result.put("error", true);
+				log.error("", ex);
+			}
+		}
+
+		return result;
+	}
+	
+	@RemoteEndpoint(endpoint = "content.node")
+	public Object getContentNode (Map<String, Object> parameters) {
+		final DB db = getContext().get(DBFeature.class).db();
+		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		
+		var url = (String) parameters.get("url");
+
+			var path = URI.create(url).getPath();
+
+			var contextPath = requestContext.get(RequestFeature.class).context();
+			if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
+				path = path.replaceFirst(contextPath, "");
+			}
+
+			if (path.startsWith("/")) {
+				path = path.substring(1);
+			}
+
+			var contentPath = contentBase.resolve(path);
+			ReadOnlyFile contentFile = null;
+			if (contentPath.exists() && contentPath.isDirectory()) {
+				// use index.md
+				var tempFile = contentPath.resolve("index.md");
+				if (tempFile.exists()) {
+					contentFile = tempFile;
+				}
+			} else {
+				var temp = contentBase.resolve(path + ".md");
+				if (temp.exists()) {
+					contentFile = temp;
+				}
+			}
+			
+			Map<String, Object> result = new HashMap<>();
+			result.put("url", url);
+			if (contentFile != null) {
+				result.put("uri", PathUtil.toRelativeFile(contentFile, contentBase));
+				
+				var sections = db.getContent().listSections(contentFile);
+				Map<String, List<Section>> sectionMap = new HashMap<>();
+				sections.forEach(section -> {
+					String uri = section.uri();
+					String name = SectionUtil.getSectionName(section.name());
+					var index = section.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_LAYOUT_ORDER);
+					
+					sectionMap.computeIfAbsent(name, k -> new ArrayList<>())
+						.add(new Section(section.name(), index, "", uri));
+				});
+				result.put("sections", sectionMap);
+			}
+
+			return result;
 	}
 }

@@ -21,9 +21,8 @@
  */
 import {openModal} from '/manager/js/modules/modal.js'
 import {createForm} from '/manager/js/modules/forms.js'
-import {executeCommand} from '/manager/js/modules/system-commands.js'
 import {getPreviewUrl, reloadPreview} from '/manager/js/modules/ui-helpers.js'
-import {getContent, setContent} from '/manager/js/modules/rpc-calls.js'
+import {getContentNode, getContent, setContent} from '/manager/js/modules/rpc-content.js'
 		// hook.js
 export async function runAction(params) {
 
@@ -33,11 +32,8 @@ export async function runAction(params) {
 	if (params.uri) {
 		uri = params.uri
 	} else {
-		const contentNode = await executeCommand({
-			command: "getContentNode",
-			parameters: {
-				url: getPreviewUrl()
-			}
+		const contentNode = await getContentNode({
+			url: getPreviewUrl()
 		})
 		uri = contentNode.result.uri
 	}

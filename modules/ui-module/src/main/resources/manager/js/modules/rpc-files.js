@@ -1,5 +1,3 @@
-package com.condation.cms.modules.ui.commands;
-
 /*-
  * #%L
  * ui-module
@@ -22,22 +20,22 @@ package com.condation.cms.modules.ui.commands;
  * #L%
  */
 
-import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
-import com.condation.cms.modules.ui.services.CommandService;
+import { executeRemoteCall } from '/manager/js/modules/rpc.js'
 
-/**
- *
- * @author t.marx
- */
-/*
-public class LockCommand {
-	
-	public static final String NAME = "lock";
-	
-	public static final CommandService.CommandHandler HANDLER = command -> {
-		var mode = (String)command.parameters().get("mode");
-		var uri = (String)command.parameters().get("uri");
-		return UILifecycleExtension.lockService.lock(mode, uri);
-	};
-}
-*/
+const listFiles = async (options) => {
+	var data = {
+		endpoint: "files.list",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+const deleteFile = async (options) => {
+	var data = {
+		endpoint: "files.delete",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+export { listFiles, deleteFile };

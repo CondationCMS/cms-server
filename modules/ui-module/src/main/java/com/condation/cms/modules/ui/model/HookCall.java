@@ -1,3 +1,5 @@
+package com.condation.cms.modules.ui.model;
+
 /*-
  * #%L
  * ui-module
@@ -20,38 +22,10 @@
  * #L%
  */
 
-import { executeRemoteCall } from '/manager/js/modules/rpc.js'
+import java.util.Map;
 
-const getContent = async (options) => {
-	var data = {
-		endpoint: "content.get",
-		parameters: options
-	}
-	return await executeRemoteCall(data);
-};
-
-const setContent = async (options) => {
-	var data = {
-		endpoint: "content.set",
-		parameters: options
-	}
-	return await executeRemoteCall(data);
-};
-
-const setMeta = async (options) => {
-	var data = {
-		endpoint: "meta.set",
-		parameters: options
-	}
-	return await executeRemoteCall(data);
-};
-
-const setMetaBatch = async (options) => {
-	var data = {
-		endpoint: "meta.set.batch",
-		parameters: options
-	}
-	return await executeRemoteCall(data);
-};
-
-export { getContent, setContent, setMeta, setMetaBatch };
+/**
+ *
+ * @author t.marx
+ */
+public record HookCall (String hook, Map<String, Object> parameters) {}

@@ -22,11 +22,12 @@
 const createID = () => "id" + Math.random().toString(16).slice(2);
 
 const createEmailField = (options, value = '') => {
-	const placeholder = options.placeholder || "";
-	const id = createID();
+	const placeholder = options.placeholder || ""
+	const id = createID()
+	const key = options.key || ""
 	return `
 		<div class="mb-3">
-			<label for="${id}" class="form-label">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
 			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
 		</div>
 	`;
@@ -35,9 +36,10 @@ const createEmailField = (options, value = '') => {
 const createTextField = (options, value = '') => {
 	const placeholder = options.placeholder || "";
 	const id = createID();
+	const key = options.key || ""
 	return `
 		<div class="mb-3">
-			<label for="${id}" class="form-label">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
 			<input type="text" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
 		</div>
 	`;
@@ -45,6 +47,7 @@ const createTextField = (options, value = '') => {
 
 const createSelectField = (options, value = '') => {
 	const id = createID();
+	const key = options.key || ""
 	const optionTags = (options.options || []).map(opt => {
 		const label = typeof opt === 'object' ? opt.label : opt;
 		const val = typeof opt === 'object' ? opt.value : opt;
@@ -54,7 +57,7 @@ const createSelectField = (options, value = '') => {
 
 	return `
 		<div class="mb-3">
-			<label for="${id}" class="form-label">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
 			<select class="form-select" id="${id}" name="${options.name}">
 				${optionTags}
 			</select>
@@ -64,6 +67,7 @@ const createSelectField = (options, value = '') => {
 
 const createCodeField = (options, value = '') => {
 	const id = createID();
+	const key = options.key || ""
 	return `
 		<div class="mb-3">
 			<label class="form-label">${options.title}</label>

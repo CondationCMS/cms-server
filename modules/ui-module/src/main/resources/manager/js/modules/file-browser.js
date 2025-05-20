@@ -24,6 +24,7 @@ import { listFiles } from '/manager/js/modules/rpc-files.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
 import { loadPreview } from '/manager/js/modules/ui-helpers.js'
+import { i18n } from '/manager/js/modules/localization.js';
 
 const defaultOptions = {
 	validate: () => true
@@ -34,8 +35,8 @@ const template = Handlebars.compile(`
 		<thead>
 			<tr>
 				<th scope="col"></th>
-				<th scope="col">Filename</th>
-				<th scope="col">Actions</th>
+				<th scope="col">{{filenameHeader}}</th>
+				<th scope="col">{{actionHeader}}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -71,7 +72,7 @@ const openFileBrowser = async (optionsParam) => {
 	};
 
 	options.modal = openModal({
-		title: 'Filesystem',
+		title: i18n.t("ui.filebrowser.title", "Filesystem"),
 		body: '<div id="cms-file-browser"></div>',
 		fullscreen: true,
 		onOk: async (event) => {
@@ -92,7 +93,11 @@ const initFileBrowser = async (options, uri) => {
 
 	const fileBrowserElement = document.getElementById("cms-file-browser");
 	if (fileBrowserElement) {
-		fileBrowserElement.innerHTML = template({ files: contentFiles.result.files });
+		fileBrowserElement.innerHTML = template({ 
+			files: contentFiles.result.files,
+			filenameHeader: i18n.t("ui.filebrowser.filename", "Filename"),
+			actionHeader: i18n.t("ui.filebrowser.action", "Action")
+		});
 		makeDirectoriesClickable(options)
 		fileActions(options);
 	}

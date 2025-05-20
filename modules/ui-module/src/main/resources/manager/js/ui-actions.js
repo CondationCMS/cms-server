@@ -20,16 +20,18 @@
  * #L%
  */
 
-import { localizeUi, setLocale } from '/manager/js/modules/localization.js';
+import { i18n, localizeUi } from '/manager/js/modules/localization.js';
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
 
-	localizeUi();
+	await i18n.init()
+
+	await localizeUi();
 
 	document.querySelectorAll(".cms-lang-selector").forEach($elem => {
-		$elem.addEventListener("click", () => {
-			setLocale($elem.getAttribute("data-cms-i18n-lang"))
-			localizeUi();
+		$elem.addEventListener("click", async () => {
+			i18n.setLocale($elem.getAttribute("data-cms-i18n-lang"))
+			await localizeUi();
 			document.querySelectorAll(".cms-lang-selector").forEach(el => {
 				el.classList.remove("active");
 			});

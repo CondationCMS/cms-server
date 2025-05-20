@@ -20,68 +20,113 @@
  * #L%
  */
 
+import { getLocale, setLocale } from './locale-utils.js';
 import { loadLocalizations } from '/manager/js/modules/rpc-i18n.js'
 
-
-const COOKIE_NAME = 'cms-locale';
 const DEFAULT_LOCALE = 'en';
-const COOKIE_MAX_AGE_DAYS = 365;
+const DEFAULT_LOCALIZATIONS = {
+	en: {
+		"ui.filebrowser.filename": "Filename",
+		"ui.filebrowser.filetype": "Filetype",
+		"language.en": "English",
+		"language.de": "German",
+	},
+	de: {
+		"ui.filebrowser.filename": "Dateiname",
+		"ui.filebrowser.filetype": "Dateityp",
+		"language.en": "Englisch",
+		"language.de": "Deutsch",
+	}
+};
 
-/**
- * Set the locale cookie.
- * @param {string} locale - The locale to be saved (e.g. 'en', 'de').
- */
-export function setLocale(locale) {
-  const date = new Date();
-  date.setTime(date.getTime() + (COOKIE_MAX_AGE_DAYS * 24 * 60 * 60 * 1000));
-  document.cookie = `${COOKIE_NAME}=${encodeURIComponent(locale)};path=/;expires=${date.toUTCString()}`;
-}
+const i18n = {
+	_locale: getLocale(),
+	_cache: null,
 
-/**
- * Get the locale from cookie. Returns default if not set.
- * @returns {string} The stored locale or the default.
- */
-export function getLocale() {
-  const cookies = document.cookie.split(';');
-  for (let c of cookies) {
-    const [key, value] = c.trim().split('=');
-    if (key === COOKIE_NAME) {
-      return decodeURIComponent(value);
-    }
-  }
-  return DEFAULT_LOCALE;
-}
+	/**
+	 * Loads and merges remote localizations with defaults.
+	 */
+	async init() {
+		try {
+			if (this._cache != null) {
+				return;
+			}
+			const remote = (await loadLocalizations()).result;
 
-/**
- * Initialize locale, returns current value (cookie or default).
- * @returns {string} The initialized locale.
- */
-export function initLocale() {
-  const locale = getLocale();
-  // Optionally: Set it if not yet stored
-  if (!document.cookie.includes(`${COOKIE_NAME}=`)) {
-    setLocale(locale);
-  }
-  return locale;
-}
+			console.log("remote", remote)
+
+			this._cache = structuredClone(DEFAULT_LOCALIZATIONS);
+
+			for (const lang in remote) {
+				this._cache[lang] = {
+					...this._cache[lang],
+					...remote[lang]
+				};
+			}
+		} catch (err) {
+			console.warn("[i18n] Failed to load remote translations, using defaults.", err);
+			this._cache = structuredClone(DEFAULT_LOCALIZATIONS);
+		}
+	},
+
+	/**
+	 * Get current locale.
+	 */
+	getLocale() {
+		return this._locale || DEFAULT_LOCALE;
+	},
+
+	/**
+	 * Change the active locale and update cookie.
+	 * @param {string} locale 
+	 */
+	setLocale(locale) {
+		setLocale(locale);
+		this._locale = locale;
+	},
+
+	/**
+	 * Returns the translation synchronously after init.
+	 * @param {string} key 
+	 * @param {string} [defaultValue] 
+	 * @returns {string}
+	 */
+	t(key, defaultValue) {
+		const loc = this.getLocale();
+		return this._cache?.[loc]?.[key]
+			|| this._cache?.[DEFAULT_LOCALE]?.[key]
+			|| defaultValue
+			|| key;
+	},
+
+	/**
+	 * Returns the translation asynchronously (no need to call init beforehand).
+	 * @param {string} key 
+	 * @param {string} [defaultValue] 
+	 * @returns {Promise<string>}
+	 */
+	async tAsync(key, defaultValue) {
+		if (!this._cache) {
+			await this.init();
+		}
+		return this.t(key, defaultValue);
+	}
+};
 
 const localizeUi = async () => {
-	let locale = getLocale();
-
-	const localizations = (await loadLocalizations()).result;
+	i18n.init()
 
 	document.querySelectorAll("[data-cms-i18n-key]").forEach($elem => {
 		const key = $elem.getAttribute("data-cms-i18n-key");
-		const translation = localizations?.[locale]?.[key];
+		const translation = i18n.t(key, $elem.textContent);
 
-		console.log(localizations)
-		console.log("translate", key, translation)
+		console.log(key, translation)
 
 		if (translation) {
 			$elem.textContent = translation;
 		} else {
 			// Optional: Fallback zur Default-Sprache oder Anzeige eines Platzhalters
-			const fallback = localizations?.["en"]?.[key];
+			const fallback = localizations?.[DEFAULT_LOCALE]?.[key];
 			if (fallback) {
 				$elem.textContent = fallback;
 			}
@@ -89,4 +134,4 @@ const localizeUi = async () => {
 	});
 }
 
-export { localizeUi };
+export { localizeUi, i18n};

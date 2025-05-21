@@ -21,6 +21,8 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.ui.model.RPCError;
+import com.condation.cms.api.ui.model.RPCResult;
 import com.condation.cms.modules.ui.model.RemoteCall;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
 import com.condation.cms.modules.ui.utils.GsonProvider;
@@ -57,20 +59,23 @@ public class RemoteCallHandler extends JettyHandler {
 		String body = getBody(request);
 		var remoteCall = GsonProvider.INSTANCE.fromJson(body, RemoteCall.class);
 
-		Map<String, Object> remoteCallResponse = new HashMap<>();
-		remoteCallResponse.put("endpoint", remoteCall.method());
+		RPCResult rpcResult;
 		try {
 			Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters());
 			if (result.isPresent()) {
-				remoteCallResponse.put("result", result.get());
+				rpcResult = new RPCResult(result.get());
+			} else {
+				rpcResult = new RPCResult();
 			}
+			
 		} catch (Exception e) {
 			log.error("error executing endpoint", remoteCall.method(), e);
+			rpcResult = new RPCResult(new RPCError(e.getMessage()));
 		}
 
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
 		response.setStatus(200);
-		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(remoteCallResponse), callback);
+		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(rpcResult), callback);
 
 		return true;
 	}

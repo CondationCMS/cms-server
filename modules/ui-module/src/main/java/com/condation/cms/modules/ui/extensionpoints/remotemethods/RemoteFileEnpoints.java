@@ -22,7 +22,9 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadyOnlyFileSystem;
 import com.condation.cms.api.feature.features.DBFeature;
@@ -38,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.api.utils.PathUtil;
+import java.nio.file.Path;
 
 /**
  *
@@ -53,6 +58,16 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 				fileSystem.contentBase();
 			case "assets" ->
 				fileSystem.assetBase();
+			default ->
+				null;
+		};
+	}
+	private static Path getWritableBase(DBFileSystem fileSystem, String type) {
+		return switch (type) {
+			case "content" ->
+				fileSystem.resolve(Constants.Folders.CONTENT);
+			case "assets" ->
+				fileSystem.resolve(Constants.Folders.ASSETS);
 			default ->
 				null;
 		};
@@ -132,6 +147,59 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		} catch (Exception e) {
 			log.error("", e);
 			result.put("error", true);
+		}
+
+		return result;
+	}
+	
+	@RemoteMethod(name="folders.create")
+	public Object createFolder (Map<String, Object> parameters) throws RPCException {
+		final DB db = getContext().get(DBFeature.class).db();
+
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			var uri = (String) parameters.getOrDefault("uri", "");
+			var type = (String) parameters.get("type");
+			var contentBase = getWritableBase(db.getFileSystem(), type);
+			
+			Path newFile = contentBase.resolve(uri);
+			if (Files.exists(newFile)) {
+				throw new RPCException(1, "directory already exists");
+			} else if (PathUtil.isChild(contentBase, newFile)) {
+				throw new RPCException(1, "invalid path");
+			}
+			Files.createDirectories(newFile);
+		} catch (Exception e) {
+			log.error("", e);
+			throw new RPCException(0, e.getMessage());
+		}
+
+		return result;
+	}
+	
+	@RemoteMethod(name="files.create")
+	public Object createFile (Map<String, Object> parameters) throws RPCException {
+		final DB db = getContext().get(DBFeature.class).db();
+
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			var uri = (String) parameters.getOrDefault("uri", "");
+			var type = (String) parameters.get("type");
+			var contentBase = getWritableBase(db.getFileSystem(), type);
+			
+			Path newFile = contentBase.resolve(uri);
+			if (Files.exists(newFile)) {
+				throw new RPCException(1, "directory already exists");
+			} else if (PathUtil.isChild(contentBase, newFile)) {
+				throw new RPCException(1, "invalid path");
+			}
+			Files.createDirectories(newFile.getParent());
+			Files.createFile(newFile);
+		} catch (Exception e) {
+			log.error("", e);
+			throw new RPCException(0, e.getMessage());
 		}
 
 		return result;

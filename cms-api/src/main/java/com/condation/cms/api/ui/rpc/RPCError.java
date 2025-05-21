@@ -1,4 +1,4 @@
-package com.condation.cms.api.ui.model;
+package com.condation.cms.api.ui.rpc;
 
 /*-
  * #%L
@@ -26,16 +26,8 @@ package com.condation.cms.api.ui.model;
  *
  * @author thorstenmarx
  */
-public record  RPCResult (Object result, RPCError error) {
-	public RPCResult () {
-		this(null, null);
-	}
-	
-	public RPCResult (Object result) {
-		this(result, null);
-	}
-	
-	public RPCResult (RPCError error) {
-		this(null, error);
+public record RPCError (int code, String message) {
+	public RPCError (String message) {
+		this(-1, message);
 	}
 }

@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.extensionpoints.endpoints;
+package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 
 /*-
  * #%L
@@ -28,8 +28,7 @@ import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
-import com.condation.cms.api.ui.annotations.RemoteEndpoint;
-import com.condation.cms.api.ui.extensions.UIRemoteEndpointExtensionPoint;
+import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.Section;
@@ -43,16 +42,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.api.ui.annotations.RemoteMethod;
 
 /**
  *
  * @author t.marx
  */
 @Slf4j
-@Extension(UIRemoteEndpointExtensionPoint.class)
-public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPoint {
+@Extension(UIRemoteMethodExtensionPoint.class)
+public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoint {
 
-	@RemoteEndpoint(endpoint = "content.get")
+	@RemoteMethod(name = "content.get")
 	public Object getContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -76,7 +76,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPo
 		return result;
 	}
 
-	@RemoteEndpoint(endpoint = "content.set")
+	@RemoteMethod(name = "content.set")
 	public Object setContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -106,7 +106,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPo
 		return result;
 	}
 
-	@RemoteEndpoint(endpoint = "meta.set")
+	@RemoteMethod(name = "meta.set")
 	public Object setMeta(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -139,7 +139,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPo
 		return result;
 	}
 
-	@RemoteEndpoint(endpoint = "meta.set.batch")
+	@RemoteMethod(name = "meta.set.batch")
 	public Object setMetaBatch(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -177,7 +177,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPo
 		return result;
 	}
 
-	@RemoteEndpoint(endpoint = "content.section.add")
+	@RemoteMethod(name = "content.section.add")
 	public Object addSection(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -209,7 +209,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteEndpointExtensionPo
 		return result;
 	}
 	
-	@RemoteEndpoint(endpoint = "content.node")
+	@RemoteMethod(name = "content.node")
 	public Object getContentNode (Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);

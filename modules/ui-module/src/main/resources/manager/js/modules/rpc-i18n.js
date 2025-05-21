@@ -24,7 +24,7 @@ import { executeRemoteCall } from '/manager/js/modules/rpc.js'
 
 const loadLocalizations = async (options) => {
 	var data = {
-		endpoint: "i18n.load"
+		method: "i18n.load"
 	}
 	return await executeRemoteCall(data)
 };

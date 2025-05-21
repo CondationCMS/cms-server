@@ -24,7 +24,7 @@ import { executeRemoteCall } from '/manager/js/modules/rpc.js'
 
 const getContentNode = async (options) => {
 	var data = {
-		endpoint: "content.node",
+		method: "content.node",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -32,7 +32,7 @@ const getContentNode = async (options) => {
 
 const getContent = async (options) => {
 	var data = {
-		endpoint: "content.get",
+		method: "content.get",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -40,7 +40,7 @@ const getContent = async (options) => {
 
 const setContent = async (options) => {
 	var data = {
-		endpoint: "content.set",
+		method: "content.set",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -48,7 +48,7 @@ const setContent = async (options) => {
 
 const setMeta = async (options) => {
 	var data = {
-		endpoint: "meta.set",
+		method: "meta.set",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -56,7 +56,7 @@ const setMeta = async (options) => {
 
 const setMetaBatch = async (options) => {
 	var data = {
-		endpoint: "meta.set.batch",
+		method: "meta.set.batch",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -64,7 +64,7 @@ const setMetaBatch = async (options) => {
 
 const addSection = async (options) => {
 	var data = {
-		endpoint: "content.section.add",
+		method: "content.section.add",
 		parameters: options
 	}
 	return await executeRemoteCall(data);

@@ -1,10 +1,10 @@
-package com.condation.cms.api.ui.annotations;
+package com.condation.cms.api.ui.extensions;
 
 /*-
  * #%L
- * cms-api
+ * ui-api
  * %%
- * Copyright (C) 2023 - 2025 CondationCMS
+ * Copyright (C) 2024 Marx-Software
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,17 +22,12 @@ package com.condation.cms.api.ui.annotations;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 
 /**
  *
- * @author thorstenmarx
+ * @author t.marx
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface RemoteEndpoint {
-	String endpoint();
+public abstract class UIRemoteMethodExtensionPoint extends AbstractExtensionPoint {
+	
 }

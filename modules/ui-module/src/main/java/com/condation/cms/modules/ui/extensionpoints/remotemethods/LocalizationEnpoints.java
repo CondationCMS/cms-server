@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.extensionpoints.endpoints;
+package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 
 /*-
  * #%L
@@ -23,26 +23,26 @@ package com.condation.cms.modules.ui.extensionpoints.endpoints;
  */
 
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
-import com.condation.cms.api.ui.annotations.RemoteEndpoint;
 import com.condation.cms.api.ui.extensions.UILocalizationExtensionPoint;
-import com.condation.cms.api.ui.extensions.UIRemoteEndpointExtensionPoint;
+import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.modules.ui.utils.TranslationMerger;
 import com.condation.modules.api.annotation.Extension;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.api.ui.annotations.RemoteMethod;
 
 /**
  *
  * @author thorstenmarx
  */
 @Slf4j
-@Extension(UIRemoteEndpointExtensionPoint.class)
-public class LocalizationEnpoints extends UIRemoteEndpointExtensionPoint {
+@Extension(UIRemoteMethodExtensionPoint.class)
+public class LocalizationEnpoints extends UIRemoteMethodExtensionPoint {
 
 
 
-	@RemoteEndpoint(endpoint = "i18n.load")
+	@RemoteMethod(name = "i18n.load")
 	public Object list(Map<String, Object> parameters) {
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
 		

@@ -28,4 +28,4 @@ import java.util.Map;
  *
  * @author t.marx
  */
-public record RemoteCall (String endpoint, Map<String, Object> parameters) {}
+public record RemoteCall (String method, Map<String, Object> parameters) {}

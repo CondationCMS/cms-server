@@ -22,7 +22,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.modules.ui.model.RemoteCall;
-import com.condation.cms.modules.ui.services.RemoteCallService;
+import com.condation.cms.modules.ui.services.RemoteMethodService;
 import com.condation.cms.modules.ui.utils.GsonProvider;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class RemoteCallHandler extends JettyHandler {
 
-	private final RemoteCallService remoteCallService;
+	private final RemoteMethodService remoteCallService;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -58,14 +58,14 @@ public class RemoteCallHandler extends JettyHandler {
 		var remoteCall = GsonProvider.INSTANCE.fromJson(body, RemoteCall.class);
 
 		Map<String, Object> remoteCallResponse = new HashMap<>();
-		remoteCallResponse.put("endpoint", remoteCall.endpoint());
+		remoteCallResponse.put("endpoint", remoteCall.method());
 		try {
-			Optional<?> result = remoteCallService.execute(remoteCall.endpoint(), remoteCall.parameters());
+			Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters());
 			if (result.isPresent()) {
 				remoteCallResponse.put("result", result.get());
 			}
 		} catch (Exception e) {
-			log.error("error executing endpoint", remoteCall.endpoint(), e);
+			log.error("error executing endpoint", remoteCall.method(), e);
 		}
 
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");

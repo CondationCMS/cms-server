@@ -32,7 +32,7 @@ import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JSActionHandler;
 import com.condation.cms.modules.ui.http.RemoteCallHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
-import com.condation.cms.modules.ui.services.RemoteCallService;
+import com.condation.cms.modules.ui.services.RemoteMethodService;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.io.IOException;
 import java.net.URI;
@@ -92,7 +92,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
 		var actionFactory = new ActionFactory(hookSystem, moduleManager);
 
-		RemoteCallService remoteCallService = new RemoteCallService();
+		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
 		
 		try {

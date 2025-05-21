@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.extensionpoints.endpoints;
+package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 
 /*-
  * #%L
@@ -26,8 +26,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadyOnlyFileSystem;
 import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.api.ui.annotations.RemoteEndpoint;
-import com.condation.cms.api.ui.extensions.UIRemoteEndpointExtensionPoint;
+import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.modules.api.annotation.Extension;
@@ -38,14 +37,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.api.ui.annotations.RemoteMethod;
 
 /**
  *
  * @author thorstenmarx
  */
 @Slf4j
-@Extension(UIRemoteEndpointExtensionPoint.class)
-public class RemoteFileEnpoints extends UIRemoteEndpointExtensionPoint {
+@Extension(UIRemoteMethodExtensionPoint.class)
+public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	private static ReadOnlyFile getBase(ReadyOnlyFileSystem fileSystem, String type) {
 		return switch (type) {
@@ -58,7 +58,7 @@ public class RemoteFileEnpoints extends UIRemoteEndpointExtensionPoint {
 		};
 	}
 
-	@RemoteEndpoint(endpoint = "files.list")
+	@RemoteMethod(name = "files.list")
 	public Object list(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var uri = (String) parameters.getOrDefault("uri", "");
@@ -99,7 +99,7 @@ public class RemoteFileEnpoints extends UIRemoteEndpointExtensionPoint {
 		return result;
 	}
 
-	@RemoteEndpoint(endpoint = "files.delete")
+	@RemoteMethod(name = "files.delete")
 	public Object delete(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 

@@ -24,7 +24,7 @@ import { executeRemoteCall } from '/manager/js/modules/rpc.js'
 
 const listFiles = async (options) => {
 	var data = {
-		endpoint: "files.list",
+		method: "files.list",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -32,7 +32,7 @@ const listFiles = async (options) => {
 
 const deleteFile = async (options) => {
 	var data = {
-		endpoint: "files.delete",
+		method: "files.delete",
 		parameters: options
 	}
 	return await executeRemoteCall(data);

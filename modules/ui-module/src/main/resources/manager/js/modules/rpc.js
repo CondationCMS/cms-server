@@ -21,9 +21,13 @@
  */
 
 const executeRemoteCall = async (options) => {
+	return executeRemoteMethodCall(options.method, options.parameters);
+};
+
+const executeRemoteMethodCall = async (method, parameters) => {
 	var data = {
-		endpoint: options.endpoint,
-		parameters: options.parameters
+		method: method,
+		parameters: parameters
 	}
 	var response = await fetch("/manager/rpc", {
 		method: "POST",
@@ -32,4 +36,4 @@ const executeRemoteCall = async (options) => {
 	return await response.json();
 };
 
-export { executeRemoteCall };
+export { executeRemoteCall, executeRemoteMethodCall };

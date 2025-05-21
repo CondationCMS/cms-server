@@ -22,31 +22,31 @@ package com.condation.cms.modules.ui.services;
  * #L%
  */
 
-import com.condation.cms.api.ui.annotations.RemoteEndpoint;
-import com.condation.cms.api.ui.extensions.UIRemoteEndpointExtensionPoint;
+import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.AnnotationsUtil;
 import com.condation.modules.api.ModuleManager;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import com.condation.cms.api.ui.annotations.RemoteMethod;
 
 /**
  *
  * @author t.marx
  */
-public class RemoteCallService {
+public class RemoteMethodService {
 	
-	public Map<String, Enpoint> handlers = new HashMap<>();
+	public Map<String, RMethod> handlers = new HashMap<>();
 	
 	public void init (final ModuleManager moduleManager) {
-		moduleManager.extensions(UIRemoteEndpointExtensionPoint.class).forEach(this::register);
+		moduleManager.extensions(UIRemoteMethodExtensionPoint.class).forEach(this::register);
 	}
 	
-	public void register (UIRemoteEndpointExtensionPoint extension) {
-		AnnotationsUtil.process(extension, RemoteEndpoint.class, List.of(Map.class), Object.class)
+	public void register (UIRemoteMethodExtensionPoint extension) {
+		AnnotationsUtil.process(extension, RemoteMethod.class, List.of(Map.class), Object.class)
 				.forEach(ann -> {
-					handlers.put(ann.annotation().endpoint(), (parameters) -> {
+					handlers.put(ann.annotation().name(), (parameters) -> {
 						return ann.invoke(parameters);
 					});
 				});
@@ -59,7 +59,7 @@ public class RemoteCallService {
 		return Optional.ofNullable(handlers.get(endpoint).execute(parameters));
 	}
 	
-	public static interface Enpoint {
+	public static interface RMethod {
 		public Object execute (final Map<String, Object> parameters);
 	}
 }

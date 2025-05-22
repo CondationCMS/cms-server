@@ -20,19 +20,22 @@
  * #L%
  */
 
-import { listFiles } from '/manager/js/modules/rpc-files.js'
+import { listFiles, createFolder } from '/manager/js/modules/rpc-files.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
 import { loadPreview } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
 
+import { showToast } from '/manager/js/modules/toast.js'
+
 const defaultOptions = {
-	validate: () => true
+	validate: () => true,
+	uri: ""
 };
 
 const state = {
 	options: null,
-	currentUri: null
+	currentUri: ""
 };
 
 const template = Handlebars.compile(`
@@ -105,12 +108,25 @@ const handleCreateFolder = async (folderName) => {
 	console.log("Creating folder:", folderName);
 
 	// Beispiel: Hier könntest du z.B. einen RPC aufrufen
-	// await createFolderRpc({ uri: state.currentUri, name: folderName });
+	var response = await createFolder({ 
+		uri: state.currentUri, 
+		name: folderName,
+		type: state.options.type
+	});
 
-	await initFileBrowser(state.currentUri);
+	if (response.error) {
+			showToast({
+				title: 'Error creating folder',
+				message: response.error.message,
+				type: 'error', // optional: info | success | warning | error
+				timeout: 3000
+			});
+	} else {
+		await initFileBrowser(state.currentUri);
+	}
 };
 
-const insertFolderInputRow = () => {
+const insertFolderInputRow = async () => {
 	const tableBody = document.getElementById("cms-filebrowser-files");
 	if (!tableBody) return;
 
@@ -130,6 +146,7 @@ const insertFolderInputRow = () => {
 	input.focus();
 
 	input.addEventListener("keydown", (event) => {
+		event.stopPropagation()
 		if (event.key === "Enter") {
 			const folderName = input.value.trim();
 			if (folderName.length > 0) {
@@ -150,12 +167,8 @@ const removeFolderInputRow = () => {
 	}
 };
 
-const createFolder = async () => {
-	insertFolderInputRow();
-};
-
 const initFileBrowser = async (uri) => {
-	state.currentUri = uri ? uri : null;
+	state.currentUri = uri ? uri : "";
 
 	const contentFiles = await listFiles({
 		type: state.options.type,
@@ -203,7 +216,7 @@ const fileActions = () => {
 	});
 
 	document.getElementById("cms-filebrowser-action-createFolder").addEventListener("click", async (event) => {
-		await createFolder()
+		await insertFolderInputRow();
 	})
 };
 

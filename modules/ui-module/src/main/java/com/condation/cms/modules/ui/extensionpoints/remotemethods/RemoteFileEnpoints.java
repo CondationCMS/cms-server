@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
@@ -62,6 +61,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 				null;
 		};
 	}
+
 	private static Path getWritableBase(DBFileSystem fileSystem, String type) {
 		return switch (type) {
 			case "content" ->
@@ -109,6 +109,16 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 				log.error("", ex);
 			}
 		}
+		files.sort((f1, f2) -> {
+			if (f1.directory() && !f2.directory()) {
+				return -1;
+			} else if (!f1.directory() && f2.directory()) {
+				return 1;
+			} else {
+				return f1.name().compareToIgnoreCase(f2.name());
+			}
+		});
+
 		result.put("files", files);
 
 		return result;
@@ -151,24 +161,25 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 		return result;
 	}
-	
-	@RemoteMethod(name="folders.create")
-	public Object createFolder (Map<String, Object> parameters) throws RPCException {
+
+	@RemoteMethod(name = "folders.create")
+	public Object createFolder(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 
 		Map<String, Object> result = new HashMap<>();
 
 		try {
+			var name = (String) parameters.getOrDefault("name", "");
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var type = (String) parameters.get("type");
 			var contentBase = getWritableBase(db.getFileSystem(), type);
-			
-			Path newFile = contentBase.resolve(uri);
+
+			Path newFile = contentBase.resolve(uri).resolve(name);
 			if (newFile.isAbsolute()) {
 				throw new RPCException(1, "absolut path is not supported");
 			} else if (Files.exists(newFile)) {
 				throw new RPCException(1, "directory already exists");
-			} else if (PathUtil.isChild(contentBase, newFile)) {
+			} else if (!PathUtil.isChild(contentBase, newFile)) {
 				throw new RPCException(1, "invalid path");
 			}
 			Files.createDirectories(newFile);
@@ -179,9 +190,9 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 		return result;
 	}
-	
-	@RemoteMethod(name="files.create")
-	public Object createFile (Map<String, Object> parameters) throws RPCException {
+
+	@RemoteMethod(name = "files.create")
+	public Object createFile(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 
 		Map<String, Object> result = new HashMap<>();
@@ -190,7 +201,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var type = (String) parameters.get("type");
 			var contentBase = getWritableBase(db.getFileSystem(), type);
-			
+
 			Path newFile = contentBase.resolve(uri);
 			if (newFile.isAbsolute()) {
 				throw new RPCException(1, "absolut path is not supported");

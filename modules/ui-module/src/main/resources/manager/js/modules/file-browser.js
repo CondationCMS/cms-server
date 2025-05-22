@@ -30,7 +30,22 @@ const defaultOptions = {
 	validate: () => true
 };
 
+const state = {
+	options: null,
+	currentUri: null
+};
+
 const template = Handlebars.compile(`
+	<div>
+		<div class="dropdown">
+			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+				Actions
+			</button>
+			<ul class="dropdown-menu">
+				<li><a class="dropdown-item" href="#">Create File</a></li>
+				<li><a class="dropdown-item" href="#" id="cms-filebrowser-action-createFolder">Create Folder</a></li>
+			</ul>
+		</div>
 	<table class="table table-hover">
 		<thead>
 			<tr>
@@ -39,7 +54,7 @@ const template = Handlebars.compile(`
 				<th scope="col">{{actionHeader}}</th>
 			</tr>
 		</thead>
-		<tbody>
+		<tbody id="cms-filebrowser-files">
 		{{#each files}}
 			<tr 
 				data-cms-file-uri="{{uri}}"
@@ -63,15 +78,16 @@ const template = Handlebars.compile(`
 		{{/each}}
 		</tbody>
 	</table>
+	</div>
 `);
 
 const openFileBrowser = async (optionsParam) => {
-	const options = {
+	state.options = {
 		...defaultOptions,
 		...optionsParam
 	};
 
-	options.modal = openModal({
+	state.modal = openModal({
 		title: i18n.t("ui.filebrowser.title", "Filesystem"),
 		body: '<div id="cms-file-browser"></div>',
 		fullscreen: true,
@@ -79,44 +95,99 @@ const openFileBrowser = async (optionsParam) => {
 			console.log("modal ok");
 		},
 		onShow: async () => {
-			initFileBrowser(options);
+			initFileBrowser();
 		}
 	});
 
 };
 
-const initFileBrowser = async (options, uri) => {
+const handleCreateFolder = async (folderName) => {
+	console.log("Creating folder:", folderName);
+
+	// Beispiel: Hier könntest du z.B. einen RPC aufrufen
+	// await createFolderRpc({ uri: state.currentUri, name: folderName });
+
+	await initFileBrowser(state.currentUri);
+};
+
+const insertFolderInputRow = () => {
+	const tableBody = document.getElementById("cms-filebrowser-files");
+	if (!tableBody) return;
+
+	// Prüfe, ob bereits eine Eingabezeile existiert
+	if (document.getElementById("cms-new-folder-row")) return;
+
+	const row = document.createElement("tr");
+	row.id = "cms-new-folder-row";
+	row.innerHTML = `
+		<th scope="row"><i class="bi bi-folder-plus"></i></th>
+		<td><input id="cms-new-folder-input" class="form-control" type="text" placeholder="${i18n.t("ui.filebrowser.enter.foldername", "Enter folder name")}" /></td>
+		<td></td>
+	`;
+	tableBody.prepend(row);
+
+	const input = document.getElementById("cms-new-folder-input");
+	input.focus();
+
+	input.addEventListener("keydown", (event) => {
+		if (event.key === "Enter") {
+			const folderName = input.value.trim();
+			if (folderName.length > 0) {
+				handleCreateFolder(folderName);
+			} else {
+				removeFolderInputRow();
+			}
+		} else if (event.key === "Escape") {
+			removeFolderInputRow();
+		}
+	});
+};
+
+const removeFolderInputRow = () => {
+	const existingRow = document.getElementById("cms-new-folder-row");
+	if (existingRow) {
+		existingRow.remove();
+	}
+};
+
+const createFolder = async () => {
+	insertFolderInputRow();
+};
+
+const initFileBrowser = async (uri) => {
+	state.currentUri = uri ? uri : null;
+
 	const contentFiles = await listFiles({
-		type: options.type,
-		uri: uri ? uri : null
-	})
+		type: state.options.type,
+		uri: state.currentUri
+	});
 
 	const fileBrowserElement = document.getElementById("cms-file-browser");
 	if (fileBrowserElement) {
-		fileBrowserElement.innerHTML = template({ 
+		fileBrowserElement.innerHTML = template({
 			files: contentFiles.result.files,
 			filenameHeader: i18n.t("ui.filebrowser.filename", "Filename"),
 			actionHeader: i18n.t("ui.filebrowser.action", "Action")
 		});
-		makeDirectoriesClickable(options)
-		fileActions(options);
+		makeDirectoriesClickable();
+		fileActions();
 	}
 };
 
-const makeDirectoriesClickable = (options) => {
+const makeDirectoriesClickable = () => {
 	const elements = document.querySelectorAll("[data-cms-file-directory]");
 	elements.forEach((element) => {
 		element.addEventListener("dblclick", (event) => {
 			event.stopPropagation();
 			const directory = element.getAttribute("data-cms-file-uri");
 			if (directory) {
-				initFileBrowser(options, directory);
+				initFileBrowser(directory);
 			}
 		});
 	});
 };
 
-const fileActions = (options) => {
+const fileActions = () => {
 	const elements = document.querySelectorAll("[data-cms-file-action]");
 	elements.forEach((element) => {
 		element.addEventListener("click", (event) => {
@@ -126,11 +197,14 @@ const fileActions = (options) => {
 
 			if (action === "open") {
 				loadPreview(uri);
-				options.modal.hide();
+				state.modal.hide();
 			}
 		});
 	});
 
+	document.getElementById("cms-filebrowser-action-createFolder").addEventListener("click", async (event) => {
+		await createFolder()
+	})
 };
 
 export { openFileBrowser };

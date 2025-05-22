@@ -115,7 +115,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 	}
 
 	@RemoteMethod(name = "files.delete")
-	public Object delete(Map<String, Object> parameters) {
+	public Object delete(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 
 		Map<String, Object> result = new HashMap<>();
@@ -146,7 +146,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			}
 		} catch (Exception e) {
 			log.error("", e);
-			result.put("error", true);
+			throw new RPCException(0, e.getMessage());
 		}
 
 		return result;
@@ -164,7 +164,9 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			var contentBase = getWritableBase(db.getFileSystem(), type);
 			
 			Path newFile = contentBase.resolve(uri);
-			if (Files.exists(newFile)) {
+			if (newFile.isAbsolute()) {
+				throw new RPCException(1, "absolut path is not supported");
+			} else if (Files.exists(newFile)) {
 				throw new RPCException(1, "directory already exists");
 			} else if (PathUtil.isChild(contentBase, newFile)) {
 				throw new RPCException(1, "invalid path");
@@ -190,7 +192,9 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			var contentBase = getWritableBase(db.getFileSystem(), type);
 			
 			Path newFile = contentBase.resolve(uri);
-			if (Files.exists(newFile)) {
+			if (newFile.isAbsolute()) {
+				throw new RPCException(1, "absolut path is not supported");
+			} else if (Files.exists(newFile)) {
 				throw new RPCException(1, "directory already exists");
 			} else if (PathUtil.isChild(contentBase, newFile)) {
 				throw new RPCException(1, "invalid path");

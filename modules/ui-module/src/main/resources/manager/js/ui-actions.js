@@ -66,32 +66,3 @@ window.addEventListener("DOMContentLoaded", async () => {
 		}
 	});
 })
-
-const executeScriptAction = async (action) => {
-  if (action.module && action.function === "runAction") {
-    import(action.module)
-      .then(mod => {
-		if (typeof mod[action.function] === "function") {
-          mod[action.function](action.parameters || {});
-        } else {
-          console.error("Function runAction not found", action.module);
-        }
-      })
-      .catch(err => {
-        console.error("Error loading module:", action.module, err);
-      });
-  }
-}
-
-const executeHookAction = async (action) => {
-	var data = {
-		type : action.hook
-	}
-	if (action.parameters) {
-		data.parameters = action.parameters
-	}
-	const response = await fetch("/manager/hooks", {
-		method: "POST",
-		body: JSON.stringify(data)
-	});
-}

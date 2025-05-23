@@ -221,14 +221,14 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	public record File(String name, String uri, boolean directory) {
+	public record File(String name, String uri, boolean directory, boolean content) {
 
-		public File(String name, String uri) {
-			this(name, uri, false);
+		public File(String name, String uri, boolean directory) {
+			this(name, uri, directory, name.endsWith(".md"));
 		}
 		
-		public boolean content () {
-			return uri.endsWith(".md");
+		public File(String name, String uri) {
+			this(name, uri, false, name.endsWith(".md"));
 		}
 	}
 }

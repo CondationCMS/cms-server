@@ -69,7 +69,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 				FileUtils.deleteFolder(db.getFileSystem().resolve(uri));
 			} else {
 				var sections = db.getContent().listSections(contentFile);
-				Files.deleteIfExists(db.getFileSystem().resolve(uri));
+				Files.deleteIfExists(db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri));
 				sections.forEach(node -> {
 					try {
 						log.debug("deleting section {}", node.uri());

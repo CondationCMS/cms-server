@@ -21,10 +21,9 @@
  */
 
 import { listFiles, createFolder, createFile } from '/manager/js/modules/rpc-files.js'
-import { createPage } from '/manager/js/modules/rpc-page.js'
+import { createPage, deletePage } from '/manager/js/modules/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
-import sweetalert2 from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/+esm'
 import { loadPreview, getPageTemplates } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
 import { alertSelect, alertError } from '/manager/js/modules/alerts.js'
@@ -65,6 +64,7 @@ const template = Handlebars.compile(`
 		{{#each files}}
 			<tr 
 				data-cms-file-uri="{{uri}}"
+				data-cms-file-name="{{name}}"
 				{{#if directory}} data-cms-file-directory="true"{{/if}}>
 				<th scope="row">
 					{{#if directory}}
@@ -76,10 +76,32 @@ const template = Handlebars.compile(`
 				<td>{{name}}</td>
 				<td>
 					{{#if directory}}
-						
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder"
+							data-bs-toggle="tooltip" data-bs-placement="top"
+        					data-bs-title="Delete folder."
+						>
+							<i class="bi folder-x"></i>
+						</button>
+					{{else if content}}
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="open"
+							data-bs-toggle="tooltip" data-bs-placement="top"
+        					data-bs-title="Open page."
+						>
+							<i class="bi bi-file-arrow-up"></i>
+							</button>
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deletePage"
+							data-bs-toggle="tooltip" data-bs-placement="top"
+        					data-bs-title="Delete page."
+						>
+							<i class="bi bi-file-earmark-x"></i>
+						</button>
 					{{else}}
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="open"><i class="bi bi-file-arrow-up"></i></button>
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile"><i class="bi bi-file-earmark-x"></i></button>
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile"
+							data-bs-toggle="tooltip" data-bs-placement="top"
+        					data-bs-title="Delete file."
+						>
+							<i class="bi bi-file-earmark-x"></i>
+						</button>
 					{{/if}}
 				</td>
 			<tr>
@@ -279,17 +301,46 @@ const makeDirectoriesClickable = () => {
 	});
 };
 
+const deletePageAction = async (filename) => {
+	var response = await deletePage({
+		uri: filename
+	})
+	if (response.error) {
+		showToast({
+			title: 'Error deleting page',
+			message: response.error.message,
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
+	} else {
+		showToast({
+			title: 'Page deleted',
+			message: "Page deleted",
+			type: 'info', // optional: info | success | warning | error
+			timeout: 3000
+		});
+		await initFileBrowser(state.currentFolder);
+	}
+}
+
 const fileActions = () => {
 	const elements = document.querySelectorAll("[data-cms-file-action]");
 	elements.forEach((element) => {
 		element.addEventListener("click", (event) => {
 			event.stopPropagation();
 			const uri = element.getAttribute("data-cms-file-uri");
+			const filename = element.closest("[data-cms-file-name]").dataset.cmsFileName
 			const action = element.getAttribute("data-cms-file-action");
 
 			if (action === "open") {
 				loadPreview(uri);
 				state.modal.hide();
+			} else if (action === "deletePage") {
+				deletePageAction(filename)
+			} else if (action === "deleteFile") {
+
+			} else if (action === "deleteFolder") {
+
 			}
 		});
 	});

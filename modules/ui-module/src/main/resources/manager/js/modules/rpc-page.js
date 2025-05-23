@@ -30,4 +30,12 @@ const createPage = async (options) => {
 	return await executeRemoteCall(data);
 };
 
-export { createPage };
+const deletePage = async (options) => {
+	var data = {
+		method: "page.delete",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+export { createPage, deletePage };

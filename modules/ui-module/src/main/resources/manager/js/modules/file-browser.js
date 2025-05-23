@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { listFiles, createFolder, createFile } from '/manager/js/modules/rpc-files.js'
+import { listFiles, createFolder, createFile, deleteFile, deleteFolder } from '/manager/js/modules/rpc-files.js'
 import { createPage, deletePage } from '/manager/js/modules/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
@@ -323,6 +323,28 @@ const deletePageAction = async (filename) => {
 	}
 }
 
+const deleteElementAction = async (options) => {
+	var response = await options.deleteFN({
+		uri: options.uri
+	})
+	if (response.error) {
+		showToast({
+			title: 'Error deleting',
+			message: response.error.message,
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
+	} else {
+		showToast({
+			title: 'Element deleted',
+			message: "Element deleted",
+			type: 'info', // optional: info | success | warning | error
+			timeout: 3000
+		});
+		await initFileBrowser(state.currentFolder);
+	}
+}
+
 const fileActions = () => {
 	const elements = document.querySelectorAll("[data-cms-file-action]");
 	elements.forEach((element) => {
@@ -336,11 +358,21 @@ const fileActions = () => {
 				loadPreview(uri);
 				state.modal.hide();
 			} else if (action === "deletePage") {
-				deletePageAction(filename)
+				//deletePageAction(filename)
+				deleteElementAction({
+					uri: filename,
+					deleteFN: deletePage
+				})
 			} else if (action === "deleteFile") {
-
+				deleteElementAction({
+					uri: filename,
+					deleteFN: deleteFile
+				})
 			} else if (action === "deleteFolder") {
-
+				deleteElementAction({
+					uri: filename,
+					deleteFN: deleteFolder
+				})
 			}
 		});
 	});

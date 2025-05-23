@@ -20,11 +20,14 @@
  * #L%
  */
 
-import { listFiles, createFolder } from '/manager/js/modules/rpc-files.js'
+import { listFiles, createFolder, createFile } from '/manager/js/modules/rpc-files.js'
+import { createPage } from '/manager/js/modules/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
-import { loadPreview } from '/manager/js/modules/ui-helpers.js'
+import sweetalert2 from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/+esm'
+import { loadPreview, getPageTemplates } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
+import { alertSelect, alertError } from '/manager/js/modules/alerts.js'
 
 import { showToast } from '/manager/js/modules/toast.js'
 
@@ -35,7 +38,7 @@ const defaultOptions = {
 
 const state = {
 	options: null,
-	currentUri: ""
+	currentFolder: ""
 };
 
 const template = Handlebars.compile(`
@@ -45,8 +48,9 @@ const template = Handlebars.compile(`
 				Actions
 			</button>
 			<ul class="dropdown-menu">
-				<li><a class="dropdown-item" href="#">Create File</a></li>
-				<li><a class="dropdown-item" href="#" id="cms-filebrowser-action-createFolder">Create Folder</a></li>
+				<li><a class="dropdown-item" href="#" id="cms-filebrowser-action-createPage">Create page</a></li>
+				<li><a class="dropdown-item" href="#" id="cms-filebrowser-action-createFile">Create file</a></li>
+				<li><a class="dropdown-item" href="#" id="cms-filebrowser-action-createFolder">Create folder</a></li>
 			</ul>
 		</div>
 	<table class="table table-hover">
@@ -75,6 +79,7 @@ const template = Handlebars.compile(`
 						
 					{{else}}
 						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="open"><i class="bi bi-file-arrow-up"></i></button>
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile"><i class="bi bi-file-earmark-x"></i></button>
 					{{/if}}
 				</td>
 			<tr>
@@ -104,75 +109,149 @@ const openFileBrowser = async (optionsParam) => {
 
 };
 
-const handleCreateFolder = async (folderName) => {
-	console.log("Creating folder:", folderName);
+const createPageHandler = async (filename) => {
+	const templateMap = getPageTemplates().reduce((acc, { name, template }) => {
+		acc[template] = name;
+		return acc;
+	}, {});
 
-	// Beispiel: Hier könntest du z.B. einen RPC aufrufen
-	var response = await createFolder({ 
-		uri: state.currentUri, 
+
+	var template = await alertSelect({
+		title: "Select page template",
+		placeholder: "Select a page template",
+		values: templateMap
+	})
+
+	if (!template) {
+		alertError({
+			message: "No template selected"
+		})
+		return
+	}
+
+	var parent = state.currentFolder
+	if (state.currentFolder.startsWith("/")) {
+		parent = state.currentFolder.substring(1);
+	}
+
+	let response = await createPage({
+		uri: parent,
+		name: filename,
+		meta: {
+			title: "New of: " + template,
+			template: template,
+			published: false
+		}
+	});
+	if (response.error) {
+		showToast({
+			title: 'Error creating folder',
+			message: response.error.message,
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
+	} else {
+		await initFileBrowser(state.currentFolder);
+	}
+}
+
+const createFolderHandler = async (folderName) => {
+	let response = await createFolder({
+		uri: state.currentFolder,
 		name: folderName,
 		type: state.options.type
 	});
-
 	if (response.error) {
-			showToast({
-				title: 'Error creating folder',
-				message: response.error.message,
-				type: 'error', // optional: info | success | warning | error
-				timeout: 3000
-			});
+		showToast({
+			title: 'Error creating folder',
+			message: response.error.message,
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
 	} else {
-		await initFileBrowser(state.currentUri);
+		await initFileBrowser(state.currentFolder);
+	}
+}
+
+const createFileHandler = async (filename) => {
+	let response = await createFile({
+		uri: state.currentFolder,
+		name: filename,
+		type: state.options.type
+	});
+	if (response.error) {
+		showToast({
+			title: 'Error creating file',
+			message: response.error.message,
+			type: 'error', // optional: info | success | warning | error
+			timeout: 3000
+		});
+	} else {
+		await initFileBrowser(state.currentFolder);
+	}
+}
+
+const handleCreateElement = async (type, folderName) => {
+	console.log("Creating folder:", folderName);
+
+	if (type === "page") {
+		createPageHandler(folderName)
+	} else if (type === "folder") {
+		createFolderHandler(folderName)
+	} else if (type === "file") {
+		createFileHandler(folderName)
 	}
 };
 
-const insertFolderInputRow = async () => {
+const insertElementInputRow = async (options) => {
 	const tableBody = document.getElementById("cms-filebrowser-files");
 	if (!tableBody) return;
 
 	// Prüfe, ob bereits eine Eingabezeile existiert
-	if (document.getElementById("cms-new-folder-row")) return;
+	if (document.getElementById("cms-new-element-row")) return;
 
 	const row = document.createElement("tr");
-	row.id = "cms-new-folder-row";
+	row.id = "cms-new-element-row";
 	row.innerHTML = `
-		<th scope="row"><i class="bi bi-folder-plus"></i></th>
-		<td><input id="cms-new-folder-input" class="form-control" type="text" placeholder="${i18n.t("ui.filebrowser.enter.foldername", "Enter folder name")}" /></td>
+		<th scope="row"><i class="bi bi-${options.type}-plus"></i></th>
+		<td><input id="cms-new-element-input" class="form-control" type="text" placeholder="${i18n.t("ui.filebrowser.enter.elementname", "Enter Element name")}" /></td>
 		<td></td>
 	`;
 	tableBody.prepend(row);
 
-	const input = document.getElementById("cms-new-folder-input");
+	const input = document.getElementById("cms-new-element-input");
 	input.focus();
 
 	input.addEventListener("keydown", (event) => {
 		event.stopPropagation()
 		if (event.key === "Enter") {
+			event.preventDefault();
 			const folderName = input.value.trim();
 			if (folderName.length > 0) {
-				handleCreateFolder(folderName);
+				handleCreateElement(options.type, folderName);
 			} else {
-				removeFolderInputRow();
+				removeElementInputRow();
 			}
 		} else if (event.key === "Escape") {
-			removeFolderInputRow();
+			event.preventDefault();
+			removeElementInputRow();
 		}
 	});
 };
 
-const removeFolderInputRow = () => {
-	const existingRow = document.getElementById("cms-new-folder-row");
+const removeElementInputRow = () => {
+	const existingRow = document.getElementById("cms-new-element-row");
 	if (existingRow) {
 		existingRow.remove();
 	}
 };
 
 const initFileBrowser = async (uri) => {
-	state.currentUri = uri ? uri : "";
+	state.currentFolder = uri ? uri : "";
 
 	const contentFiles = await listFiles({
 		type: state.options.type,
-		uri: state.currentUri
+		uri: state.currentFolder
 	});
 
 	const fileBrowserElement = document.getElementById("cms-file-browser");
@@ -216,7 +295,13 @@ const fileActions = () => {
 	});
 
 	document.getElementById("cms-filebrowser-action-createFolder").addEventListener("click", async (event) => {
-		await insertFolderInputRow();
+		await insertElementInputRow({ type: "folder" });
+	})
+	document.getElementById("cms-filebrowser-action-createFile").addEventListener("click", async (event) => {
+		await insertElementInputRow({ type: "file" });
+	})
+	document.getElementById("cms-filebrowser-action-createPage").addEventListener("click", async (event) => {
+		await insertElementInputRow({ type: "page" });
 	})
 };
 

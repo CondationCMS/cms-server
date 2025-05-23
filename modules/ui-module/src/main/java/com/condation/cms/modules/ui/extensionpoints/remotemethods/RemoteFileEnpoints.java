@@ -101,9 +101,9 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 				contentFile.children().stream()
 						.filter(child -> !SectionUtil.isSection(child.getFileName()))
 						.map(child -> new File(
-						child.getFileName(),
-						child.uri(),
-						child.isDirectory()
+							child.getFileName(),
+							child.uri(),
+							child.isDirectory()
 				)).forEach(files::add);
 			} catch (IOException ex) {
 				log.error("", ex);
@@ -199,15 +199,16 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
+			var name  = (String) parameters.getOrDefault("name", "");
 			var type = (String) parameters.get("type");
 			var contentBase = getWritableBase(db.getFileSystem(), type);
 
-			Path newFile = contentBase.resolve(uri);
+			Path newFile = contentBase.resolve(uri).resolve(name);
 			if (newFile.isAbsolute()) {
 				throw new RPCException(1, "absolut path is not supported");
 			} else if (Files.exists(newFile)) {
 				throw new RPCException(1, "directory already exists");
-			} else if (PathUtil.isChild(contentBase, newFile)) {
+			} else if (!PathUtil.isChild(contentBase, newFile)) {
 				throw new RPCException(1, "invalid path");
 			}
 			Files.createDirectories(newFile.getParent());
@@ -224,6 +225,10 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 		public File(String name, String uri) {
 			this(name, uri, false);
+		}
+		
+		public boolean content () {
+			return uri.endsWith(".md");
 		}
 	}
 }

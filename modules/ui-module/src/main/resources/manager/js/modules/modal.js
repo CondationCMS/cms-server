@@ -72,7 +72,11 @@ const openModal = (optionsParam) => {
 	}
 
 	const modalElement = document.getElementById(modalId);
-	const modalInstance = new bootstrap.Modal(modalElement);
+	const modalInstance = new bootstrap.Modal(modalElement, {
+		backdrop: 'static',
+  		keyboard: false,
+		focus: false
+	});
 	modalInstance.show();
 
 	// Event-Handler

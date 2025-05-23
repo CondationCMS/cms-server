@@ -25,13 +25,20 @@ const getPreviewUrl = () => {
 };
 
 const reloadPreview = () => {
-	console.log("reloadPreview")
 	document.getElementById("contentPreview").contentDocument.location.reload(true);
 }
 
 const loadPreview = (url) => {
-	console.log("loadPreview", url)
 	document.getElementById("contentPreview").src = url + "?preview=true";
 }
 
-export { getPreviewUrl, reloadPreview, loadPreview };
+const getPageTemplates = () => {
+	var info = document.getElementById("contentPreview").contentWindow.cmsUITemplateInfo;
+	if (!info) {
+		return []
+	}
+
+	return info.pageTemplates
+}
+
+export { getPreviewUrl, reloadPreview, loadPreview, getPageTemplates };

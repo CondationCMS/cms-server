@@ -26,9 +26,10 @@ import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
 import { loadPreview, getPageTemplates } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
-import { alertSelect, alertError } from '/manager/js/modules/alerts.js'
+import { alertSelect, alertError, alertConfirm } from '/manager/js/modules/alerts.js'
 
 import { showToast } from '/manager/js/modules/toast.js'
+
 
 const defaultOptions = {
 	validate: () => true,
@@ -80,7 +81,7 @@ const template = Handlebars.compile(`
 							data-bs-toggle="tooltip" data-bs-placement="top"
         					data-bs-title="Delete folder."
 						>
-							<i class="bi folder-x"></i>
+							<i class="bi bi-folder-x"></i>
 						</button>
 					{{else if content}}
 						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="open"
@@ -324,8 +325,25 @@ const deletePageAction = async (filename) => {
 }
 
 const deleteElementAction = async (options) => {
+	
+	var confimred = await alertConfirm({
+		title: i18n.t("ui.filebrowser.delete.confirm.title", "Are you sure?"),
+		message: i18n.t("ui.filebrowser.delete.confirm.message", "You won't be able to revert this!"),
+		confirmText: i18n.t("ui.filebrowser.delete.confirm.yes", "Yes, delete it!"),
+		cancelText: i18n.t("ui.filebrowser.delete.confirm.no", "No, cancel!")
+	});
+	if (!confimred) {
+		return;
+	}
+
+	var parent = state.currentFolder
+	if (state.currentFolder.startsWith("/")) {
+		parent = state.currentFolder.substring(1);
+	}
 	var response = await options.deleteFN({
-		uri: options.uri
+		uri: parent,
+		name : options.uri,
+		type: state.options.type
 	})
 	if (response.error) {
 		showToast({

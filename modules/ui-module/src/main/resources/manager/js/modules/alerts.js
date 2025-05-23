@@ -20,34 +20,17 @@
  * #L%
  */
 
-import sweetalert2 from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/+esm'
+import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/+esm'
+
+const sweetalert2 = Swal.mixin({
+  customClass: {
+    confirmButton: "btn btn-success",
+    cancelButton: "btn btn-danger"
+  },
+  buttonsStyling: false
+});
 
 const alertSelect = async (options) => {
-
-	console.log("alertSelect received:", options);
-	console.log("inputOptions to be used:", options.values);
-	/*
-		const { value: selected } = await sweetalert2.fire({
-			title: "Please select",
-			input: "select",
-			//backdrop: false,
-			//allowOutsideClick: false,
-			//allowEscapeKey: false,
-			inputOptions: options.values,
-			inputPlaceholder: "Select",
-			showCancelButton: true,
-			//inputValidator: options.validator || null
-		});
-	
-		const { value: selectedValue } = await sweetalert2.fire({
-			title: options.title || "Select element",
-			input: "select",
-			inputOptions: options.values,
-			inputPlaceholder: options.placeholder || "Select a element",
-			showCancelButton: true,
-			inputValidator: options.validator || null
-		});
-	*/
 	const { value: selectedValue } = await sweetalert2.fire({
 		title: options.title || "Select element",
 		input: "select",
@@ -67,6 +50,18 @@ const alertError = async () => {
 	});
 }
 
+const alertConfirm = async (options) => {
+	const { isConfirmed } = await sweetalert2.fire({
+		title: options.title || "Are you sure?",
+		text: options.message || "You won't be able to revert this!",
+		icon: "warning",
+		showCancelButton: true,
+		confirmButtonText: options.confirmText || "Yes, delete it!",
+		cancelButtonText: options.cancelText || "No, cancel!",
+	});
+
+	return isConfirmed
+};
 
 
-export { alertSelect, alertError }
+export { alertSelect, alertError, alertConfirm }

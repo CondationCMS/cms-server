@@ -38,6 +38,14 @@ const deleteFile = async (options) => {
 	return await executeRemoteCall(data);
 };
 
+const deleteFolder = async (options) => {
+	var data = {
+		method: "files.delete",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
 const createFolder = async (options) => {
 	var data = {
 		method: "folders.create",
@@ -54,4 +62,4 @@ const createFile = async (options) => {
 	return await executeRemoteCall(data);
 };
 
-export { listFiles, deleteFile, createFolder, createFile };
+export { listFiles, deleteFile, createFolder, createFile, deleteFolder };

@@ -132,10 +132,11 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
+			var name = (String) parameters.getOrDefault("name", "");
 			var type = (String) parameters.get("type");
 			var contentBase = getBase(db.getReadOnlyFileSystem(), type);
 
-			var contentFile = contentBase.resolve(uri);
+			var contentFile = contentBase.resolve(uri).resolve(name);
 
 			log.debug("deleting file {}", contentFile.uri());
 			if (contentFile.isDirectory()) {

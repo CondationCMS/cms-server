@@ -140,16 +140,16 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 			log.debug("deleting file {}", contentFile.uri());
 			if (contentFile.isDirectory()) {
-				FileUtils.deleteFolder(db.getFileSystem().resolve(uri));
+				FileUtils.deleteFolder(db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri).resolve(name));
 			} else if ("assets".equals(type)) {
-				Files.deleteIfExists(db.getFileSystem().resolve(uri));
+				Files.deleteIfExists(db.getFileSystem().resolve(Constants.Folders.ASSETS).resolve(uri).resolve(name));
 			} else {
 				var sections = db.getContent().listSections(contentFile);
-				Files.deleteIfExists(db.getFileSystem().resolve(uri));
+				Files.deleteIfExists(db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri).resolve(name));
 				sections.forEach(node -> {
 					try {
 						log.debug("deleting section {}", node.uri());
-						FileUtils.deleteFolder(db.getFileSystem().resolve(node.uri()));
+						FileUtils.deleteFolder(db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(node.uri()));
 					} catch (IOException ioe) {
 						log.error("error deleting file {}", node.uri(), ioe);
 					}

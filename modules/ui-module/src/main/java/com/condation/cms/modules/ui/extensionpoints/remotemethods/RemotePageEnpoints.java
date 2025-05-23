@@ -42,6 +42,7 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
+import com.google.common.base.Strings;
 import java.nio.file.Path;
 
 /**
@@ -60,25 +61,26 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
+			var name = (String) parameters.getOrDefault("name", "");
 			var contentBase = db.getReadOnlyFileSystem().contentBase();
 
-			var contentFile = contentBase.resolve(uri);
+			if (Strings.isNullOrEmpty(name)) {
+				throw new RPCException(0, "filename can not be null");
+			}
+			
+			var contentFile = contentBase.resolve(uri).resolve(name);
 
 			log.debug("deleting file {}", contentFile.uri());
-			if (contentFile.isDirectory()) {
-				FileUtils.deleteFolder(db.getFileSystem().resolve(uri));
-			} else {
-				var sections = db.getContent().listSections(contentFile);
-				Files.deleteIfExists(db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri));
-				sections.forEach(node -> {
-					try {
-						log.debug("deleting section {}", node.uri());
-						FileUtils.deleteFolder(db.getFileSystem().resolve(node.uri()));
-					} catch (IOException ioe) {
-						log.error("error deleting file {}", node.uri(), ioe);
-					}
-				});
-			}
+			var sections = db.getContent().listSections(contentFile);
+			Files.deleteIfExists(db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri).resolve(name));
+			sections.forEach(node -> {
+				try {
+					log.debug("deleting section {}", node.uri());
+					FileUtils.deleteFolder(db.getFileSystem().resolve(node.uri()));
+				} catch (IOException ioe) {
+					log.error("error deleting file {}", node.uri(), ioe);
+				}
+			});
 		} catch (Exception e) {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());
@@ -95,7 +97,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
-			var name  = (String) parameters.getOrDefault("name", "");
+			var name = (String) parameters.getOrDefault("name", "");
 			var meta = (Map<String, Object>) parameters.getOrDefault("meta", Map.of());
 			var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 
@@ -109,7 +111,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 			}
 			Files.createDirectories(newFile.getParent());
 			Files.createFile(newFile);
-			
+
 			YamlHeaderUpdater.saveMarkdownFileWithHeader(newFile, meta, "");
 		} catch (Exception e) {
 			log.error("", e);

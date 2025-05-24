@@ -1,0 +1,104 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+import frameMessenger from '/manager/js/modules/frameMessenger.js';
+
+document.addEventListener("DOMContentLoaded", function () {
+
+	const iframe = document.getElementById('contentPreview');
+
+	frameMessenger.on('edit', (payload) => {
+		if (payload.element === "content") {
+			console.log(payload)
+			var cmd = {
+				"module": "/manager/actions/page/edit-content",
+				"function": "runAction",
+				"parameters": {
+					"editor": payload.editor
+				}
+			}
+			if (payload.uri) {
+				cmd.parameters.uri = payload.uri
+			}
+			console.log("cmd content", cmd)
+			executeScriptAction(cmd)
+		} else if (payload.element === "meta" && payload.editor === "form") {
+			console.log(payload)
+			var cmd = {
+				"module": "/manager/actions/page/edit-metaattribute-list",
+				"function": "runAction",
+				"parameters": {
+					"editor": payload.editor,
+					"attributes": payload.metaElements
+				}
+			}
+			if (payload.uri) {
+				cmd.parameters.uri = payload.uri
+			}
+			console.log("cmd meta list", cmd)
+			executeScriptAction(cmd)
+		} else if (payload.element === "meta") {
+			console.log(payload)
+			var cmd = {
+				"module": "/manager/actions/page/edit-metaattribute",
+				"function": "runAction",
+				"parameters": {
+					"editor": payload.editor,
+					"attribute": payload.metaElement
+				}
+			}
+			if (payload.uri) {
+				cmd.parameters.uri = payload.uri
+			}
+			console.log("cmd meta", cmd)
+			executeScriptAction(cmd)
+		}
+	});
+	frameMessenger.on('edit-sections', (payload) => {
+		console.log("edit sections", payload)
+		var cmd = {
+			"module": "/manager/actions/page/edit-sections",
+			"function": "runAction",
+			"parameters": {
+				"sectionName": payload.sectionName
+			}
+		}
+		if (payload.uri) {
+			cmd.parameters.uri = payload.uri
+		}
+		executeScriptAction(cmd)
+	});
+
+	frameMessenger.on('add-section', (payload) => {
+		console.log("add section", payload)
+		var cmd = {
+			"module": "/manager/actions/page/add-section",
+			"function": "runAction",
+			"parameters": {
+				"sectionTemplates": payload.sectionTemplates,
+				"sectionName": payload.sectionName
+			}
+		}
+		executeScriptAction(cmd)
+	});
+});
+// DOMContentLoaded  end

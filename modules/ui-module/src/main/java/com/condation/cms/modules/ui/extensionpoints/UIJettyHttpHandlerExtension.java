@@ -103,7 +103,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/upload"), 
 					new UploadHandler(
 							"/manager/upload", 
-							getContext().get(DBFeature.class).db().getFileSystem().resolve("temp")));
+							getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS)));
 			mapping.add(PathSpec.from("/manager/rpc"), new RemoteCallHandler(remoteCallService));
 
 			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(hookSystem));

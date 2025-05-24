@@ -95,7 +95,7 @@ const template = Handlebars.compile(`
 		{{/each}}
 		</tbody>
 	</table>
-	<input id="cms-fileupload" type="file" name="fileupload" />
+	<input id="cms-fileupload" type="file" name="fileupload" accept="image/png, image/jpeg, image/web, image/gif, image/svg+xml, image/tiff, image/avif" />
 	<button id="cms-upload-button"> Upload </button>
 	</div>
 `);
@@ -122,7 +122,7 @@ const openAssetBrowser = async (optionsParam) => {
 
 const createFolderHandler = async (folderName) => {
 	let response = await createFolder({
-		uri: state.currentFolder,
+		uri: getTargetFolder(),
 		name: folderName,
 		type: state.options.type
 	});
@@ -140,7 +140,7 @@ const createFolderHandler = async (folderName) => {
 
 const createFileHandler = async (filename) => {
 	let response = await createFile({
-		uri: state.currentFolder,
+		uri: getTargetFolder(),
 		name: filename,
 		type: state.options.type
 	});
@@ -256,12 +256,8 @@ const deleteElementAction = async (options) => {
 		return;
 	}
 
-	var parent = state.currentFolder
-	if (state.currentFolder.startsWith("/")) {
-		parent = state.currentFolder.substring(1);
-	}
 	var response = await options.deleteFN({
-		uri: parent,
+		uri: getTargetFolder(),
 		name: options.uri,
 		type: state.options.type
 	})
@@ -317,34 +313,66 @@ const fileActions = () => {
 	})
 
 	document.getElementById("cms-upload-button").addEventListener("click", async (event) => {
-		const fileInput = document.getElementById("cms-fileupload");
-		if (fileInput.files.length === 0) {
-			showToast({
-				title: 'No file selected',
-				message: 'Please select a file to upload.',
-				type: 'warning',
-				timeout: 3000
-			});
-			return;
-		}
+		await handleFileUpload();
+	});
+};
 
-		const file = fileInput.files[0];
-		let formData = new FormData();
-		formData.append("file", file);
-		formData.append("uri", state.currentFolder);
-		await fetch('/manager/upload', {
-			method: "POST",
-			body: formData
-		});
-
+const handleFileUpload = async () => {
+	const fileInput = document.getElementById("cms-fileupload");
+	if (fileInput.files.length === 0) {
 		showToast({
-			title: 'File uploaded',
-			message: 'File uploaded successfully.',
-			type: 'success',
+			title: 'No file selected',
+			message: 'Please select a file to upload.',
+			type: 'warning',
 			timeout: 3000
 		});
-		await initFileBrowser(state.currentFolder);
+		return;
+	}
+
+
+	const file = fileInput.files[0];
+
+	const allowedMimeTypes = [
+		"image/png",
+		"image/jpeg",
+		"image/gif",
+		"image/webp",
+		"image/svg+xml",
+		"image/tiff",
+		"image/avif"
+	];
+	if (!allowedMimeTypes.includes(file.type)) {
+		showToast({
+			title: 'Invalid file type',
+			message: `Only images (PNG, JPG, GIF, BMP, WEBP, TIFF, SVG, AVIF) are allowed. Selected: ${file.type}`,
+			type: 'error',
+			timeout: 4000
+		});
+		return;
+	}
+
+	let formData = new FormData();
+	formData.append("file", file);
+	formData.append("uri", getTargetFolder());
+	await fetch('/manager/upload', {
+		method: "POST",
+		body: formData
 	});
+
+	showToast({
+		title: 'File uploaded',
+		message: 'File uploaded successfully.',
+		type: 'success',
+		timeout: 3000
+	});
+	await initFileBrowser(state.currentFolder);
+}
+
+const getTargetFolder = () => {
+	if (state.currentFolder.startsWith("/")) {
+		return state.currentFolder.substring(1);
+	}
+	return state.currentFolder;
 };
 
 export { openAssetBrowser };

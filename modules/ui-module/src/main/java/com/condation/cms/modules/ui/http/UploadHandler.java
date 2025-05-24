@@ -24,25 +24,21 @@ package com.condation.cms.modules.ui.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tika.Tika;
 import org.eclipse.jetty.http.HttpField;
-import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.http.MultiPart;
 import org.eclipse.jetty.http.MultiPartFormData;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.util.BufferUtil;
 import org.eclipse.jetty.util.Callback;
 import org.eclipse.jetty.util.IO;
 import static org.eclipse.jetty.util.IO.ensureDirExists;
@@ -58,11 +54,26 @@ public class UploadHandler extends JettyHandler {
 	private final String contextPath;
 	private final Path outputDir;
 
+	private final Path TEMP_UPLOAD_DIR;
+
+	private static final Set<String> ALLOWED_MIME_TYPES = Set.of(
+			"image/png",
+			"image/jpeg",
+			"image/gif",
+			"image/webp",
+			"image/svg+xml",
+			"image/tiff",
+			"image/avif"
+	);
+
+	private static final Tika tika = new Tika();
+
 	public UploadHandler(String contextPath, Path outputDir) throws IOException {
 		super();
 		this.contextPath = contextPath;
-		this.outputDir = outputDir.resolve("handler");
+		this.outputDir = outputDir;
 		ensureDirExists(this.outputDir);
+		this.TEMP_UPLOAD_DIR = Files.createTempDirectory("condation-uploads");
 	}
 
 	@Override
@@ -87,7 +98,7 @@ public class UploadHandler extends JettyHandler {
 
 		String boundary = MultiPart.extractBoundary(contentType);
 		MultiPartFormData.Parser formData = new MultiPartFormData.Parser(boundary);
-		formData.setFilesDirectory(outputDir);
+		formData.setFilesDirectory(TEMP_UPLOAD_DIR);
 
 		try {
 			formData.parse(request, new org.eclipse.jetty.util.Promise.Invocable<MultiPartFormData.Parts>() {
@@ -108,7 +119,7 @@ public class UploadHandler extends JettyHandler {
 						process(parts);
 						response.setStatus(HttpStatus.OK_200);
 						callback.succeeded();
-					} catch (IOException ex) {
+					} catch (Exception ex) {
 						log.error("Fehler beim Verarbeiten des Uploads", ex);
 						Response.writeError(request, response, callback, ex);
 					}
@@ -120,30 +131,58 @@ public class UploadHandler extends JettyHandler {
 		return true;
 	}
 
-	private String process(MultiPartFormData.Parts parts) throws IOException {
-		StringWriter body = new StringWriter();
-		PrintWriter out = new PrintWriter(body);
+	private void process(MultiPartFormData.Parts parts) throws IOException {
+		MultiPart.Part filePart = null;
+		String uri = null;
 
 		for (MultiPart.Part part : parts) {
-			out.printf("Got Part[%s].length=%s%n", part.getName(), part.getLength());
-			HttpFields headers = part.getHeaders();
-			for (HttpField field : headers) {
-				out.printf("Got Part[%s].header[%s]=%s%n", part.getName(), field.getName(), field.getValue());
-			}
-			out.printf("Got Part[%s].fileName=%s%n", part.getName(), part.getFileName());
-			String filename = part.getFileName();
-			if (StringUtil.isNotBlank(filename)) {
-				// ensure we don't have "/" and ".." in the raw form.
-				filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
-
-				Path outputFile = outputDir.resolve(filename);
-				try (InputStream inputStream = Content.Source.asInputStream(part.getContentSource()); OutputStream outputStream = Files.newOutputStream(outputFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-					IO.copy(inputStream, outputStream);
-					out.printf("Saved Part[%s] to %s%n", part.getName(), outputFile);
+			if ("uri".equals(part.getName())) {
+				try (InputStream is = Content.Source.asInputStream(part.getContentSource())) {
+					uri = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
 				}
+			} else if ("file".equals(part.getName())) {
+				filePart = part;
 			}
 		}
 
-		return body.toString();
+		if (filePart != null) {
+			String rawFilename = filePart.getFileName();
+			if (StringUtil.isNotBlank(rawFilename)) {
+				// Temporäre Datei erzeugen, um MIME-Type zu ermitteln
+				Path tempFile = Files.createTempFile("upload-", ".tmp");
+				try (InputStream inputStream = Content.Source.asInputStream(filePart.getContentSource()); OutputStream outputStream = Files.newOutputStream(tempFile)) {
+					IO.copy(inputStream, outputStream);
+				}
+
+				String detectedMimeType = tika.detect(tempFile);
+				log.debug("Detected MIME type: {}", detectedMimeType);
+
+				if (!ALLOWED_MIME_TYPES.contains(detectedMimeType)) {
+					Files.deleteIfExists(tempFile);
+					throw new IOException("Unsupported file type: " + detectedMimeType);
+				}
+
+				// Zieldatei vorbereiten
+				String safeFilename = URLEncoder.encode(rawFilename, StandardCharsets.UTF_8);
+				Path targetDir = outputDir;
+
+				if (StringUtil.isNotBlank(uri)) {
+					uri = uri.replaceAll("[^a-zA-Z0-9/_\\-]", "_"); // nur sichere Zeichen
+					targetDir = outputDir.resolve(uri).normalize();
+				}
+
+				ensureDirExists(targetDir);
+				Path outputFile = targetDir.resolve(safeFilename);
+
+				// Temporäre Datei an Zielort verschieben
+				Files.move(tempFile, outputFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+				log.info("Saved uploaded file to {}", outputFile);
+			}
+		}
+
+		for (MultiPart.Part part : parts) {
+			part.delete();
+		}
 	}
+
 }

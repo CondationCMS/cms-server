@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openAssetBrowser} from '/manager/js/modules/filebrowser-assets.js'
+import {openFileBrowser} from '/manager/js/modules/filebrowser.js'
 		// hook.js
 export async function runAction(params) {
 
-	openAssetBrowser({
+	openFileBrowser({
 		type: "assets"
 	})
 }

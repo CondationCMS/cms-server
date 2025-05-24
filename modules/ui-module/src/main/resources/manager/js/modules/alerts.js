@@ -63,5 +63,16 @@ const alertConfirm = async (options) => {
 	return isConfirmed
 };
 
+const alertPrompt = async (options) => {
+	const { value } = await sweetalert2.fire({
+		title: options.title || "Enter value?",
+		input: 'text',
+		inputLabel: options.label || "Input",
+		inputPlaceholder: options.placeholder || "Enter your input",
+		showCancelButton: true,
+	});
 
-export { alertSelect, alertError, alertConfirm }
+	return value
+};
+
+export { alertSelect, alertError, alertConfirm, alertPrompt }

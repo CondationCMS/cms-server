@@ -101,9 +101,9 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 				contentFile.children().stream()
 						.filter(child -> !SectionUtil.isSection(child.getFileName()))
 						.map(child -> new File(
-							child.getFileName(),
-							child.uri(),
-							child.isDirectory()
+						child.getFileName(),
+						child.uri(),
+						child.isDirectory()
 				)).forEach(files::add);
 			} catch (IOException ex) {
 				log.error("", ex);
@@ -139,7 +139,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			var contentFile = contentBase.resolve(uri).resolve(name);
 
 			var writableBase = getWritableBase(db.getFileSystem(), type);
-			
+
 			log.debug("deleting file {}", contentFile.uri());
 			if (contentFile.isDirectory()) {
 				FileUtils.deleteFolder(writableBase.resolve(uri).resolve(name));
@@ -159,6 +159,68 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			}
 		} catch (Exception e) {
 			log.error("", e);
+			throw new RPCException(0, e.getMessage());
+		}
+
+		return result;
+	}
+
+	@RemoteMethod(name = "files.rename")
+	public Object renameFile(Map<String, Object> parameters) throws RPCException {
+		final DB db = getContext().get(DBFeature.class).db();
+		Map<String, Object> result = new HashMap<>();
+
+		try {
+			var uri = (String) parameters.getOrDefault("uri", "");
+			var name = (String) parameters.getOrDefault("name", "");
+			var newName = (String) parameters.get("newName");
+			var type = (String) parameters.get("type");
+
+			if (newName == null || newName.isBlank()) {
+				throw new IllegalArgumentException("newName must not be null or blank");
+			}
+
+			var contentBase = getBase(db.getReadOnlyFileSystem(), type);
+			
+			// check if both paths are in host directory
+			contentBase.resolve(uri).resolve(name);
+			contentBase.resolve(uri).resolve(newName);
+			
+			var writableBase = getWritableBase(db.getFileSystem(), type);
+
+			var sourcePath = writableBase.resolve(uri).resolve(name);
+			var targetPath = writableBase.resolve(uri).resolve(newName);
+
+			log.debug("renaming from {} to {}", sourcePath, targetPath);
+
+			if (!Files.exists(sourcePath)) {
+				throw new RPCException("Source file not found: " + sourcePath);
+			}
+			if (Files.exists(targetPath)) {
+				throw new RPCException("Target file already exists: " + targetPath);
+			}
+
+			Files.move(sourcePath, targetPath);
+
+			if (!"assets".equals(type) && !Files.isDirectory(targetPath)) {
+				var contentFile = contentBase.resolve(uri).resolve(name);
+				var sections = db.getContent().listSections(contentFile);
+
+				for (var node : sections) {
+					var sourceSectionPath = writableBase.resolve(node.uri());
+					var targetSectionPath = writableBase.resolve(node.uri().replace(name, newName));
+					if (Files.exists(sourceSectionPath)) {
+						log.debug("renaming section {} to {}", sourceSectionPath, targetSectionPath);
+						Files.move(sourceSectionPath, targetSectionPath);
+					}
+				}
+			}
+
+			result.put("success", true);
+			result.put("newName", newName);
+
+		} catch (Exception e) {
+			log.error("Error during rename", e);
 			throw new RPCException(0, e.getMessage());
 		}
 
@@ -202,7 +264,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
-			var name  = (String) parameters.getOrDefault("name", "");
+			var name = (String) parameters.getOrDefault("name", "");
 			var type = (String) parameters.get("type");
 			var contentBase = getWritableBase(db.getFileSystem(), type);
 
@@ -229,7 +291,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		public File(String name, String uri, boolean directory) {
 			this(name, uri, directory, name.endsWith(".md"));
 		}
-		
+
 		public File(String name, String uri) {
 			this(name, uri, false, name.endsWith(".md"));
 		}

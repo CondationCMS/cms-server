@@ -61,5 +61,12 @@ const createFile = async (options) => {
 	}
 	return await executeRemoteCall(data);
 };
+const renameFile = async (options) => {
+	var data = {
+		method: "files.rename",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
 
-export { listFiles, deleteFile, createFolder, createFile, deleteFolder };
+export { listFiles, deleteFile, createFolder, createFile, deleteFolder, renameFile };

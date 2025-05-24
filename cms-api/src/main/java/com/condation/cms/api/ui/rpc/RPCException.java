@@ -30,8 +30,13 @@ public class RPCException extends Exception {
 	
 	private int code = 0;
 	
+	public RPCException (String message) {
+		this(0, message);
+	}
+	
 	public RPCException(int code, String message) {
 		super(message);
+		this.code = code;
 	}
 	
 	public int getCode () {

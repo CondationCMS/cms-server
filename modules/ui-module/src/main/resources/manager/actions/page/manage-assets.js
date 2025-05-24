@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import {openAssetBrowser} from '/manager/js/modules/filebrowser-assets.js'
+		// hook.js
+export async function runAction(params) {
 
-i[data-cms-section-handle] {
-	cursor: pointer;
-}
-
-tr[data-cms-file-directory] {
-	cursor: pointer;
+	openAssetBrowser({
+		type: "assets"
+	})
 }

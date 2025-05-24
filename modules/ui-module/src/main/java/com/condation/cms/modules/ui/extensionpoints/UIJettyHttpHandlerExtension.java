@@ -21,10 +21,12 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.modules.api.annotation.Extension;
@@ -32,6 +34,7 @@ import com.condation.cms.modules.ui.http.HookHandler;
 import com.condation.cms.modules.ui.http.JSActionHandler;
 import com.condation.cms.modules.ui.http.RemoteCallHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
+import com.condation.cms.modules.ui.http.UploadHandler;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.io.IOException;
@@ -97,6 +100,10 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		
 		try {
 
+			mapping.add(PathSpec.from("/manager/upload"), 
+					new UploadHandler(
+							"/manager/upload", 
+							getContext().get(DBFeature.class).db().getFileSystem().resolve("temp")));
 			mapping.add(PathSpec.from("/manager/rpc"), new RemoteCallHandler(remoteCallService));
 
 			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(hookSystem));

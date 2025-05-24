@@ -26,7 +26,7 @@
 	   aria-expanded="false" data-cms-i18n-key="{{ entry.id }}">
 		{{ entry.name }}
 	</a>
-	<ul class="dropdown-menu submenu">
+	<ul class="dropdown-menu">
 		{% for child in entry.getChildren() %}
 			{% if child.isDivider() %}
 			<li><hr class="dropdown-divider"></li>

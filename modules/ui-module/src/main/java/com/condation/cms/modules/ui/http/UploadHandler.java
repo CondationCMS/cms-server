@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.condation.cms.modules.ui.http;
 
 /*-
@@ -25,7 +21,6 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -36,6 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpField;
 import org.eclipse.jetty.http.HttpFields;
 import org.eclipse.jetty.http.HttpHeader;
@@ -56,7 +52,8 @@ import org.eclipse.jetty.util.StringUtil;
  *
  * @author thorstenmarx
  */
-public class UploadHandler extends Handler.Abstract {
+@Slf4j
+public class UploadHandler extends JettyHandler {
 
 	private final String contextPath;
 	private final Path outputDir;
@@ -93,9 +90,30 @@ public class UploadHandler extends Handler.Abstract {
 		formData.setFilesDirectory(outputDir);
 
 		try {
-			String responseBody = process(formData.parse(request).join()); // May block waiting for multipart form data.
-			response.setStatus(HttpStatus.OK_200);
-			response.write(true, BufferUtil.toBuffer(responseBody), callback);
+			formData.parse(request, new org.eclipse.jetty.util.Promise.Invocable<MultiPartFormData.Parts>() {
+				@Override
+				public void accept(MultiPartFormData.Parts parts, Throwable u) {
+					if (u != null) {
+						Response.writeError(request, response, callback, u);
+						return;
+					}
+
+					if (parts == null || parts.size() == 0) {
+						log.warn("Multipart upload received, but no parts found.");
+						Response.writeError(request, response, callback, HttpStatus.BAD_REQUEST_400, "No parts in upload.");
+						return;
+					}
+
+					try {
+						process(parts);
+						response.setStatus(HttpStatus.OK_200);
+						callback.succeeded();
+					} catch (IOException ex) {
+						log.error("Fehler beim Verarbeiten des Uploads", ex);
+						Response.writeError(request, response, callback, ex);
+					}
+				}
+			});
 		} catch (Exception x) {
 			Response.writeError(request, response, callback, x);
 		}

@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openFileBrowser} from '/manager/js/modules/file-browser.js'
+import {openFileBrowser} from '/manager/js/modules/filebrowser-content.js'
 		// hook.js
 export async function runAction(params) {
 

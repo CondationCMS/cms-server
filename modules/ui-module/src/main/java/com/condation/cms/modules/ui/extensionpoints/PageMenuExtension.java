@@ -99,6 +99,23 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 	public void test_sidebar() {
 
 	}
+	
+	@com.condation.cms.api.ui.annotations.MenuEntry(
+			parent = "pageMenu",
+			id = "manage-assets",
+			name = "Manage assets",
+			position = 10,
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/manage-assets")
+	)
+	@ShortCut(
+			id = "manager-asets",
+			title = "Manage assets",
+			hotkey = "ctrl-4",
+			section = "Assets"
+	)
+	public void manage_media() {
+
+	}
 	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "parentDemo",

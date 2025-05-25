@@ -21,8 +21,6 @@ package com.condation.cms.server.handler.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.request.RequestContext;
@@ -64,7 +62,6 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 //			.expireAfterWrite(Duration.ofMinutes(1))
 //			.expireAfterAccess(Duration.ofMinutes(1))
 //			.build(key -> new AtomicInteger(0));
-
 	static final int ATTEMPTS_TO_BLOCK = 3;
 
 	@Override
@@ -112,10 +109,10 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 							}
 
 							if (authPath.allowed(userOpt.get())) {
-								
+
 								var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 								requestContext.add(AuthFeature.class, new AuthFeature(username));
-								
+
 								loginFails.invalidate(clientAddress(request));
 								return false;
 							}
@@ -144,6 +141,10 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 	}
 
 	private String clientAddress(Request request) {
+		String forwarded = request.getHeaders().get(HttpHeader.X_FORWARDED_FOR);
+		if (forwarded != null && !forwarded.isEmpty()) {
+			return forwarded.split(",")[0].trim();
+		}
 		return ((InetSocketAddress) request.getConnectionMetaData().getRemoteSocketAddress())
 				.getAddress().getHostAddress();
 	}

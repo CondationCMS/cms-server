@@ -24,8 +24,6 @@ import frameMessenger from '/manager/js/modules/frameMessenger.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 	frameMessenger.on('init', (payload) => {
-		console.log('Parent sagt:', payload.msg);
-
 		frameMessenger.send(window.parent, {
 			type: 'helloFromIframe',
 			payload: { response: 'Hallo Parent!' }
@@ -80,7 +78,6 @@ const sectionEdition = (container) => {
 };
 
 const addSection = (event) => {
-	console.log("edit sections")
 	// data-cms-edit-sections='true' data-cms-section-name
 	var $editSections = event.target.closest("[data-cms-edit-sections]")
 	var sectionName = $editSections.dataset.cmsSectionName
@@ -98,7 +95,6 @@ const addSection = (event) => {
 }
 
 const editSections = (event) => {
-	console.log("edit sections")
 	// data-cms-edit-sections='true' data-cms-section-name
 	var $editSections = event.target.closest("[data-cms-edit-sections]")
 	var sectionName = $editSections.dataset.cmsSectionName
@@ -149,7 +145,6 @@ const contentEditing = (container) => {
 };
 
 const edit = (event) => {
-	console.log(event)
 	var $editor = event.target.closest('[data-cms-editor]');
 	if ($editor) {
 		var contentUri = event.target.closest('[data-cms-content-uri]')
@@ -180,8 +175,6 @@ const edit = (event) => {
 		if (contentUri) {
 			command.payload.uri = contentUri.dataset.cmsContentUri
 		}
-
-		console.log("edit", command)
 
 		frameMessenger.send(window.parent, command);
 	}

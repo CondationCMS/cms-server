@@ -53,8 +53,6 @@ const i18n = {
 			}
 			const remote = (await loadLocalizations()).result;
 
-			console.log("remote", remote)
-
 			this._cache = structuredClone(DEFAULT_LOCALIZATIONS);
 
 			for (const lang in remote) {
@@ -119,8 +117,6 @@ const localizeUi = async () => {
 	document.querySelectorAll("[data-cms-i18n-key]").forEach($elem => {
 		const key = $elem.getAttribute("data-cms-i18n-key");
 		const translation = i18n.t(key, $elem.textContent);
-
-		console.log(key, translation)
 
 		if (translation) {
 			$elem.textContent = translation;

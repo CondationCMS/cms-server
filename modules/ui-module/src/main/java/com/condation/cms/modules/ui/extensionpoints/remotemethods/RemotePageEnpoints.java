@@ -23,19 +23,14 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.DBFileSystem;
-import com.condation.cms.api.db.cms.ReadOnlyFile;
-import com.condation.cms.api.db.cms.ReadyOnlyFileSystem;
+import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
-import com.condation.cms.api.utils.SectionUtil;
 import com.condation.modules.api.annotation.Extension;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
@@ -44,6 +39,9 @@ import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import com.google.common.base.Strings;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  *
@@ -98,8 +96,12 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
-			var meta = (Map<String, Object>) parameters.getOrDefault("meta", Map.of());
+			var metaParam = (Map<String, Object>) parameters.getOrDefault("meta", Map.of());
 			var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
+			
+			Map<String, Object> meta = new HashMap<>(metaParam);
+			meta.put("createdAt", Date.from(Instant.now()));
+			meta.put("createdBy", getUserName());
 
 			Path newFile = contentBase.resolve(uri).resolve(name);
 			if (newFile.isAbsolute()) {
@@ -119,5 +121,12 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		}
 
 		return result;
+	}
+
+	private String getUserName() {
+		if (getRequestContext().has(AuthFeature.class)) {
+			return getRequestContext().get(AuthFeature.class).username();
+		}
+		return "";
 	}
 }

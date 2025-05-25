@@ -27,8 +27,6 @@ import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
 
 export async function runAction(params) {
 
-	console.log("edit sections params", params);
-
 	const contentNode = await getContentNode({
 		url: getPreviewUrl()
 	})

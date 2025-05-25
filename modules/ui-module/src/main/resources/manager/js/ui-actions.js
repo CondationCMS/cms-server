@@ -50,7 +50,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 				const definition = element.getAttribute('data-cms-action-definition');
 				try {
 					const action = JSON.parse(definition);
-					console.log(action)
 					if (action.type === "hook") {
 						executeHookAction(action)
 					} else if (action.type === "script") {

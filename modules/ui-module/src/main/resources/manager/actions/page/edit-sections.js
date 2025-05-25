@@ -28,8 +28,6 @@ import {getContentNode, setMetaBatch} from '/manager/js/modules/rpc-content.js'
 // hook.js
 export async function runAction(params) {
 
-	console.log("edit sections params", params);
-
 	const contentNode = await getContentNode({
 		url: getPreviewUrl()
 	})

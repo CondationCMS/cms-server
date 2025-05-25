@@ -28,7 +28,6 @@ import {getContentNode, getContent, setMeta} from '/manager/js/modules/rpc-conte
 		// hook.js
 export async function runAction(params) {
 
-	console.log("edit meta attribute", params);
 
 	var uri = null
 	if (params.uri) {
@@ -56,8 +55,6 @@ export async function runAction(params) {
 		)
 	})
 
-	console.log("Meta-Daten:", getContentResponse?.result?.meta)
-	console.log("form", formDefinition)
 
 	const form = createForm(formDefinition)
 

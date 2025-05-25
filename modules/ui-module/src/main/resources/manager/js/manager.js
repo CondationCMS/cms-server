@@ -28,7 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	frameMessenger.on('edit', (payload) => {
 		if (payload.element === "content") {
-			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-content",
 				"function": "runAction",
@@ -39,10 +38,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (payload.uri) {
 				cmd.parameters.uri = payload.uri
 			}
-			console.log("cmd content", cmd)
 			executeScriptAction(cmd)
 		} else if (payload.element === "meta" && payload.editor === "form") {
-			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-metaattribute-list",
 				"function": "runAction",
@@ -54,10 +51,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (payload.uri) {
 				cmd.parameters.uri = payload.uri
 			}
-			console.log("cmd meta list", cmd)
 			executeScriptAction(cmd)
 		} else if (payload.element === "meta") {
-			console.log(payload)
 			var cmd = {
 				"module": "/manager/actions/page/edit-metaattribute",
 				"function": "runAction",
@@ -69,12 +64,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (payload.uri) {
 				cmd.parameters.uri = payload.uri
 			}
-			console.log("cmd meta", cmd)
 			executeScriptAction(cmd)
 		}
 	});
 	frameMessenger.on('edit-sections', (payload) => {
-		console.log("edit sections", payload)
 		var cmd = {
 			"module": "/manager/actions/page/edit-sections",
 			"function": "runAction",
@@ -89,7 +82,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 	frameMessenger.on('add-section', (payload) => {
-		console.log("add section", payload)
 		var cmd = {
 			"module": "/manager/actions/page/add-section",
 			"function": "runAction",

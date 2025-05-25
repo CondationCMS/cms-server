@@ -30,6 +30,8 @@ import { alertSelect, alertError, alertConfirm, alertPrompt } from '/manager/js/
 import { uploadFileWithProgress } from '/manager/js/modules/upload.js'
 import { showToast } from '/manager/js/modules/toast.js'
 
+import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction } from '/manager/js/modules/filebrowser.actions.js'
+
 
 const defaultOptions = {
 	validate: () => true,
@@ -42,14 +44,14 @@ const state = {
 };
 
 const allowedMimeTypes = [
-		"image/png",
-		"image/jpeg",
-		"image/gif",
-		"image/webp",
-		"image/svg+xml",
-		"image/tiff",
-		"image/avif"
-	];
+	"image/png",
+	"image/jpeg",
+	"image/gif",
+	"image/webp",
+	"image/svg+xml",
+	"image/tiff",
+	"image/avif"
+];
 
 const template = Handlebars.compile(`
 	<div>
@@ -150,144 +152,6 @@ const openFileBrowser = async (optionsParam) => {
 			initFileBrowser();
 		}
 	});
-
-};
-
-const createPageHandler = async (filename) => {
-	const templateMap = getPageTemplates().reduce((acc, { name, template }) => {
-		acc[template] = name;
-		return acc;
-	}, {});
-
-
-	var template = await alertSelect({
-		title: "Select page template",
-		placeholder: "Select a page template",
-		values: templateMap
-	})
-
-	if (!template) {
-		alertError({
-			message: "No template selected"
-		})
-		return
-	}
-
-	var parent = state.currentFolder
-	if (state.currentFolder.startsWith("/")) {
-		parent = state.currentFolder.substring(1);
-	}
-
-	let response = await createPage({
-		uri: parent,
-		name: filename,
-		meta: {
-			title: "New of: " + template,
-			template: template,
-			published: false
-		}
-	});
-	if (response.error) {
-		showToast({
-			title: 'Error creating folder',
-			message: response.error.message,
-			type: 'error', // optional: info | success | warning | error
-			timeout: 3000
-		});
-	} else {
-		await initFileBrowser(state.currentFolder);
-	}
-}
-
-const createFolderHandler = async (folderName) => {
-	let response = await createFolder({
-		uri: state.currentFolder,
-		name: folderName,
-		type: state.options.type
-	});
-	if (response.error) {
-		showToast({
-			title: 'Error creating folder',
-			message: response.error.message,
-			type: 'error', // optional: info | success | warning | error
-			timeout: 3000
-		});
-	} else {
-		await initFileBrowser(state.currentFolder);
-	}
-}
-
-const createFileHandler = async (filename) => {
-	let response = await createFile({
-		uri: state.currentFolder,
-		name: filename,
-		type: state.options.type
-	});
-	if (response.error) {
-		showToast({
-			title: 'Error creating file',
-			message: response.error.message,
-			type: 'error', // optional: info | success | warning | error
-			timeout: 3000
-		});
-	} else {
-		await initFileBrowser(state.currentFolder);
-	}
-}
-
-const handleCreateElement = async (type, folderName) => {
-	console.log("Creating folder:", folderName);
-
-	if (type === "page") {
-		createPageHandler(folderName)
-	} else if (type === "folder") {
-		createFolderHandler(folderName)
-	} else if (type === "file") {
-		createFileHandler(folderName)
-	}
-};
-
-const insertElementInputRow = async (options) => {
-	const tableBody = document.getElementById("cms-filebrowser-files");
-	if (!tableBody) return;
-
-	// Prüfe, ob bereits eine Eingabezeile existiert
-	if (document.getElementById("cms-new-element-row")) return;
-
-	const row = document.createElement("tr");
-	row.id = "cms-new-element-row";
-	row.innerHTML = `
-		<th scope="row"><i class="bi bi-${options.type}-plus"></i></th>
-		<td><input id="cms-new-element-input" class="form-control" type="text" placeholder="${i18n.t("ui.filebrowser.enter.elementname", "Enter Element name")}" /></td>
-		<td></td>
-	`;
-	tableBody.prepend(row);
-
-	const input = document.getElementById("cms-new-element-input");
-	input.focus();
-
-	input.addEventListener("keydown", (event) => {
-		event.stopPropagation()
-		if (event.key === "Enter") {
-			event.preventDefault();
-			const folderName = input.value.trim();
-			if (folderName.length > 0) {
-				handleCreateElement(options.type, folderName);
-			} else {
-				removeElementInputRow();
-			}
-		} else if (event.key === "Escape") {
-			event.preventDefault();
-			removeElementInputRow();
-		}
-	});
-};
-
-const removeElementInputRow = () => {
-	const existingRow = document.getElementById("cms-new-element-row");
-	if (existingRow) {
-		existingRow.remove();
-	}
 };
 
 const initFileBrowser = async (uri) => {
@@ -305,7 +169,7 @@ const initFileBrowser = async (uri) => {
 			filenameHeader: i18n.t("ui.filebrowser.filename", "Filename"),
 			actionHeader: i18n.t("ui.filebrowser.action", "Action"),
 			actions: getActions(),
-			asset : state.options.type === "assets"
+			asset: state.options.type === "assets"
 		});
 		makeDirectoriesClickable();
 		fileActions();
@@ -353,77 +217,6 @@ const makeDirectoriesClickable = () => {
 	});
 };
 
-const deleteElementAction = async (options) => {
-	
-	var confimred = await alertConfirm({
-		title: i18n.t("ui.filebrowser.delete.confirm.title", "Are you sure?"),
-		message: i18n.t("ui.filebrowser.delete.confirm.message", "You won't be able to revert this!"),
-		confirmText: i18n.t("ui.filebrowser.delete.confirm.yes", "Yes, delete it!"),
-		cancelText: i18n.t("ui.filebrowser.delete.confirm.no", "No, cancel!")
-	});
-	if (!confimred) {
-		return;
-	}
-
-	var parent = state.currentFolder
-	if (state.currentFolder.startsWith("/")) {
-		parent = state.currentFolder.substring(1);
-	}
-	var response = await options.deleteFN({
-		uri: parent,
-		name : options.uri,
-		type: state.options.type
-	})
-	if (response.error) {
-		showToast({
-			title: 'Error deleting',
-			message: response.error.message,
-			type: 'error', // optional: info | success | warning | error
-			timeout: 3000
-		});
-	} else {
-		showToast({
-			title: 'Element deleted',
-			message: "Element deleted",
-			type: 'info', // optional: info | success | warning | error
-			timeout: 3000
-		});
-		await initFileBrowser(state.currentFolder);
-	}
-}
-
-const renameFileAction = async (filename) => {
-	const newName = await alertPrompt({
-		title: i18n.t("ui.filebrowser.rename.title", "Rename file"),
-		label: i18n.t("ui.filebrowser.rename.label", "New name"),
-		placeholder: filename
-	});
-	if (newName) {
-		var response = await renameFile({
-			uri: getTargetFolder(),
-			name: filename,
-			newName: newName,
-			type: state.options.type
-		});
-		if (response.error) {
-			showToast({
-				title: 'Error renaming file',
-				message: response.error.message,
-				type: 'error', // optional: info | success | warning | error
-				timeout: 3000
-			});
-		} else {
-			showToast({
-				title: 'File renamed',
-				message: "File renamed successfully",
-				type: 'info', // optional: info | success | warning | error
-				timeout: 3000
-			});
-			await initFileBrowser(state.currentFolder);
-		}
-	}
-}
-
 const fileActions = () => {
 	const elements = document.querySelectorAll("[data-cms-file-action]");
 	elements.forEach((element) => {
@@ -437,35 +230,67 @@ const fileActions = () => {
 				await loadPreview(uri);
 				state.modal.hide();
 			} else if (action === "deletePage") {
-				await deleteElementAction({
-					uri: filename,
-					deleteFN: deletePage
-				})
+				deleteElementAction({
+					elementName: filename,
+					state: state,
+					deleteFN: deletePage,
+					getTargetFolder: getTargetFolder
+				}).then(async () => {
+					await initFileBrowser(state.currentFolder);
+				});
 			} else if (action === "deleteFile") {
-				await deleteElementAction({
-					uri: filename,
-					deleteFN: deleteFile
-				})
+				deleteElementAction({
+					elementName: filename,
+					state: state,
+					deleteFN: deleteFile,
+					getTargetFolder: getTargetFolder
+				}).then(async () => {
+					await initFileBrowser(state.currentFolder);
+				});
 			} else if (action === "deleteFolder") {
-				await deleteElementAction({
-					uri: filename,
-					deleteFN: deleteFolder
-				})
+				deleteElementAction({
+					elementName: filename,
+					state: state,
+					deleteFN: deleteFolder,
+					getTargetFolder: getTargetFolder
+				}).then(async () => {
+					await initFileBrowser(state.currentFolder);
+				});
 			} else if (action === "renameFile") {
-				await renameFileAction(filename);
+				renameFileAction({
+					state: state,
+					getTargetFolder: getTargetFolder,
+					filename: filename
+				}).then(async () => {
+					await initFileBrowser(state.currentFolder);
+				});
 			}
 		});
 	});
 
 	document.getElementById("cms-filebrowser-action-createFolder").addEventListener("click", async (event) => {
-		await insertElementInputRow({ type: "folder" });
+		createFolderAction({
+			state: state,
+			getTargetFolder: getTargetFolder
+		}).then(async () => {
+			await initFileBrowser(state.currentFolder);
+		});
 	})
 	document.getElementById("cms-filebrowser-action-createFile").addEventListener("click", async (event) => {
-		await insertElementInputRow({ type: "file" });
+		createFileAction({
+			state: state,
+			getTargetFolder: getTargetFolder
+		}).then(async () => {
+			await initFileBrowser(state.currentFolder);
+		});
 	})
 	if (document.getElementById("cms-filebrowser-action-createPage")) {
 		document.getElementById("cms-filebrowser-action-createPage").addEventListener("click", async (event) => {
-			await insertElementInputRow({ type: "page" });
+			createPageAction({
+				getTargetFolder: getTargetFolder
+			}).then(async () => {
+				await initFileBrowser(state.currentFolder);
+			});
 		})
 	}
 
@@ -518,7 +343,7 @@ const handleFileUpload = async () => {
 				type: 'success'
 			});
 			updateProgressBar(100);
-			initFileBrowser(state.currentFolder); 
+			initFileBrowser(state.currentFolder);
 		},
 		onError: (message) => {
 			showToast({

@@ -70,6 +70,7 @@ const alertPrompt = async (options) => {
 		inputLabel: options.label || "Input",
 		inputPlaceholder: options.placeholder || "Enter your input",
 		showCancelButton: true,
+		inputValidator: options.validator || null
 	});
 
 	return value

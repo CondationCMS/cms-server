@@ -26,8 +26,6 @@ import {getContentNode, getContent, setContent} from '/manager/js/modules/rpc-co
 		// hook.js
 export async function runAction(params) {
 
-	console.log("edit content", params);
-
 	var uri = null
 	if (params.uri) {
 		uri = params.uri

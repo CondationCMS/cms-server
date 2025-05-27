@@ -61,7 +61,7 @@ public class ExtendedServerProperties implements ServerProperties {
 
 	@Override
 	public UIProperties ui() {
-		return configuration.get("ui", UIProperties.class);
+		return configuration.get("ui", ExtendedUIProperties.class);
 	}
 	
 	@Override

@@ -20,11 +20,37 @@
  * #L%
  */
 
-import frameMessenger from '/manager/js/modules/frameMessenger.js';
+import frameMessenger from './modules/frameMessenger.js';
+import { loadPreview } from './modules/ui-helpers.js';
+
+import { UIStateManager } from './modules/ui-state.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 
 	const iframe = document.getElementById('contentPreview');
+
+	const preview = UIStateManager.getTabState("preview", null)
+	if (preview) {
+		console.log("restore preview url", preview.url)
+		loadPreview(preview.url)
+	}
+
+	iframe.addEventListener("load", () => {
+		try {
+			const currentUrl = iframe.contentWindow.location.href;
+			const url = new URL(currentUrl);
+			const preview_url = url.pathname + url.search;
+
+			const preview_update = {
+				url: preview_url
+			}
+
+			console.log("set preview", preview_update)
+			UIStateManager.setTabState("preview", preview_update)
+		} catch (e) {
+			console.log(e)
+		}
+	})
 
 	frameMessenger.on('edit', (payload) => {
 		if (payload.element === "content") {

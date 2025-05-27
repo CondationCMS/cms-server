@@ -22,14 +22,34 @@
 
 const getPreviewUrl = () => {
 	return document.getElementById("contentPreview").src;
-};
+}
 
 const reloadPreview = () => {
 	document.getElementById("contentPreview").contentDocument.location.reload(true);
 }
 
 const loadPreview = (url) => {
-	document.getElementById("contentPreview").src = url + "?preview=true";
+	const overlay = document.getElementById("previewOverlay");
+	overlay.style.display = "flex";
+	try {
+		// Fallback-Host für relative URLs, damit URL-Parsing funktioniert
+		const dummyBase = window.location.origin;
+		const parsedUrl = new URL(url, dummyBase);
+
+		// Wenn "preview" bereits gesetzt ist, nicht erneut hinzufügen
+		if (!parsedUrl.searchParams.has("preview")) {
+			parsedUrl.searchParams.append("preview", "true");
+		}
+
+		// Setze zusammengesetzten Pfad + Query zurück in das iframe
+		const result = parsedUrl.pathname + parsedUrl.search;
+		document.getElementById("contentPreview").src = result;
+		document.getElementById("contentPreview").addEventListener("load", () => {
+			overlay.style.display = "none";
+		})
+	} catch (e) {
+		console.error("Ungültige URL:", url, e);
+	}
 }
 
 const getPageTemplates = () => {

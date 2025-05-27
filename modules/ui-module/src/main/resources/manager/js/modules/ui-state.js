@@ -1,0 +1,70 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+// state-manager.js
+
+const TAB_ID_KEY = "cms-tab-id";
+const AUTH_KEY = "cms-auth-token";
+
+function getOrCreateTabId() {
+  let tabId = sessionStorage.getItem(TAB_ID_KEY);
+  if (!tabId) {
+    tabId = crypto.randomUUID();
+    sessionStorage.setItem(TAB_ID_KEY, tabId);
+  }
+  return tabId;
+}
+
+const tabId = getOrCreateTabId();
+
+// Prefix all tab-specific keys
+function getTabKey(key) {
+  return `${key}_${tabId}`;
+}
+
+export const UIStateManager = {
+  // Save generic tab-specific state
+  setTabState(key, value) {
+    sessionStorage.setItem(key, JSON.stringify(value));
+  },
+
+  getTabState(key, defaultValue = null) {
+    const raw = sessionStorage.getItem(key);
+    return raw ? JSON.parse(raw) : defaultValue;
+  },
+
+  removeTabState(key) {
+    sessionStorage.removeItem(key);
+  },
+
+  // Save shared auth state
+  setAuthToken(token) {
+    localStorage.setItem(AUTH_KEY, token);
+  },
+
+  getAuthToken() {
+    return localStorage.getItem(AUTH_KEY);
+  },
+
+  clearAuthToken() {
+    localStorage.removeItem(AUTH_KEY);
+  },
+};

@@ -4,7 +4,7 @@ package com.condation.cms.api;
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,29 +21,11 @@ package com.condation.cms.api;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.nio.file.Path;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-public interface ServerProperties  {
-
-	public boolean dev();
-
-	public String env();
-
-	public String serverIp();
-
-	public int serverPort();
-
-	public Path getThemesFolder();
-
-	public APMProperties apm();
-
-	public IPCProperties ipc();
-
-	public PerformanceProperties performance();
-	
-	public UIProperties ui();
+public interface UIProperties {
+	String secret();
 }

@@ -23,8 +23,8 @@ package com.condation.cms.auth.utils;
  */
 
 
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
+import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 
 /**
@@ -37,7 +37,7 @@ public class SecurityUtil {
 	
 	public static String hash (final String value) {
 		return Hashing.sha256()
-				.hashString(value, Charsets.UTF_8)
+				.hashString(value, StandardCharsets.UTF_8)
 				.toString();
 	}
 }

@@ -1,8 +1,8 @@
-package com.condation.cms.api;
+package com.condation.cms.core.configuration.properties;
 
 /*-
  * #%L
- * cms-api
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -21,29 +21,19 @@ package com.condation.cms.api;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.nio.file.Path;
+
+import com.condation.cms.api.UIProperties;
 
 /**
  *
  * @author t.marx
  */
-public interface ServerProperties  {
+public class ExtendedUIProperties implements UIProperties {
 
-	public boolean dev();
+	private String secret = null;
 
-	public String env();
-
-	public String serverIp();
-
-	public int serverPort();
-
-	public Path getThemesFolder();
-
-	public APMProperties apm();
-
-	public IPCProperties ipc();
-
-	public PerformanceProperties performance();
-	
-	public UIProperties ui();
+	@Override
+	public String secret() {
+		return secret;
+	}
 }

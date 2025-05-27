@@ -1,4 +1,4 @@
-paths:
-    - path: "/manager"
-      realm: "users"
-      groups: ["manager"]
+# paths:
+#     - path: "/manager"
+#       realm: "users"
+#       groups: ["manager"]

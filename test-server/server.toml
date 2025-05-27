@@ -21,3 +21,6 @@ test = ["eins", "zwei"]
 
 [map]
 test = {"key1"="value2", "key2"="value2"}
+
+[ui]
+secret = "super-secret-token"

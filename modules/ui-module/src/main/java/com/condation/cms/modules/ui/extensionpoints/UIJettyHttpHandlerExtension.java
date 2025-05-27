@@ -35,6 +35,10 @@ import com.condation.cms.modules.ui.http.JSActionHandler;
 import com.condation.cms.modules.ui.http.RemoteCallHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.http.UploadHandler;
+import com.condation.cms.modules.ui.http.CompositeHttpHandler;
+import com.condation.cms.modules.ui.http.auth.LoginHandler;
+import com.condation.cms.modules.ui.http.auth.UIAuthHandler;
+import com.condation.cms.modules.ui.http.auth.UIAuthRedirectHandler;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.io.IOException;
@@ -45,6 +49,7 @@ import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
@@ -56,7 +61,7 @@ import org.eclipse.jetty.http.pathmap.PathSpec;
 @Extension(HttpRoutesExtensionPoint.class)
 @Slf4j
 public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
-
+	
 	public static FileSystem createFileSystem(String base) {
 		try {
 			URL resource = UIJettyHttpHandlerExtension.class.getResource(base);
@@ -97,19 +102,45 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
-		
+
 		try {
 
-			mapping.add(PathSpec.from("/manager/upload"), 
-					new UploadHandler(
-							"/manager/upload", 
-							getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS)));
-			mapping.add(PathSpec.from("/manager/rpc"), new RemoteCallHandler(remoteCallService));
+			mapping.add(PathSpec.from("/manager/login"), new LoginHandler(getContext(), getRequestContext()));
+			
+			mapping.add(PathSpec.from("/manager/upload"),
+					new CompositeHttpHandler(List.of(
+							new UIAuthHandler(getContext()),
+							new UploadHandler(
+							"/manager/upload",
+							getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS))
+					)));
+			mapping.add(PathSpec.from("/manager/rpc"), 
+					new CompositeHttpHandler(List.of(
+							new UIAuthHandler(getContext()),
+							new RemoteCallHandler(remoteCallService)
+					)));
 
-			mapping.add(PathSpec.from("/manager/hooks"), new HookHandler(hookSystem));
+			mapping.add(PathSpec.from("/manager/hooks"), 
+					new CompositeHttpHandler(List.of(
+							new UIAuthHandler(getContext()),
+							new HookHandler(hookSystem)
+					)));
 
-			mapping.add(PathSpec.from("/manager/actions/*"), new JSActionHandler(actionFactory, createFileSystem("/manager/actions"), "/manager/actions", getContext()));
-			mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(actionFactory, createFileSystem("/manager"), "/manager", getContext()));
+			mapping.add(PathSpec.from("/manager/actions/*"), 
+					new CompositeHttpHandler(List.of(
+							new UIAuthHandler(getContext()),
+							new JSActionHandler(actionFactory, createFileSystem("/manager/actions"), "/manager/actions", getContext())
+					)));
+
+			//mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(actionFactory, createFileSystem("/manager"), "/manager", getContext()));
+			mapping.add(PathSpec.from("/manager/*"),
+					new CompositeHttpHandler(
+							List.of(
+									new UIAuthRedirectHandler(getContext()), 
+									new ResourceHandler(actionFactory, createFileSystem("/manager"), "/manager", getContext())
+							)
+					)
+			);
 
 		} catch (Exception ex) {
 			log.error(null, ex);

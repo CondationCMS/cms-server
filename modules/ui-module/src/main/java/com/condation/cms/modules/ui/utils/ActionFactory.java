@@ -87,11 +87,13 @@ public class ActionFactory {
 
 		insertEntriesIntoMenu(menu, entries);
 
-		var filtered = menu.filterByRoles(Arrays.asList(user.roles()));
-		var menu2 = new Menu();
-		filtered.stream().forEach(menu2::addMenuEntry);
-		
-		return menu2;
+		var filteredMenu = new Menu();
+		var menuEntries = menu.entries();
+		menuEntries.stream()
+				.filter(entry -> RoleUtil.hasAccess(entry.getRoles(), user.roles()))
+				.forEach(filteredMenu::addMenuEntry);
+				
+		return filteredMenu;
 	}
 
 	private List<ShortCutHolder> scanShortCuts(Object moduleInstance) {
@@ -196,10 +198,6 @@ public class ActionFactory {
 		for (EntryHolder holder : entries) {
 			String parentId = holder.parent();
 			MenuEntry entry = holder.entry();
-
-			if (!RoleUtil.hasAccess(entry.getRoles(), user.roles())) {
-				continue;
-			}
 			
 			if (parentId == null || parentId.isBlank()) {
 				menu.addMenuEntry(entry);

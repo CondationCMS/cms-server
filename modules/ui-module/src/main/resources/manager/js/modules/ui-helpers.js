@@ -21,7 +21,12 @@
  */
 
 const getPreviewUrl = () => {
-	return document.getElementById("contentPreview").src;
+	try {
+		return document.getElementById("contentPreview").contentWindow.location.href;
+	} catch (e) {
+		console.warn("Konnte iframe-URL nicht auslesen", e);
+		return "";
+	}
 }
 
 const reloadPreview = () => {

@@ -24,11 +24,15 @@ import { loadLocalizations } from '/manager/js/modules/rpc-i18n.js'
 const DEFAULT_LOCALIZATIONS = {
 	en: {
 		"ui.filebrowser.filename": "Filename",
-		"ui.filebrowser.title": "Filesystem"
+		"ui.filebrowser.title": "Filesystem",
+		"menu.settings": "Settings",
+		"menu.settings.logout": "Logout"
 	},
 	de: {
 		"ui.filebrowser.filename": "Dateiname",
-		"ui.filebrowser.title": "Dateisystem"
+		"ui.filebrowser.title": "Dateisystem",
+		"menu.settings": "Einstellungen",
+		"menu.settings.logout": "Abmelden"
 	}
 };
 

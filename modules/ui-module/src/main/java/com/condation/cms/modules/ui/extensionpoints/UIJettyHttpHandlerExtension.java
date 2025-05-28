@@ -37,6 +37,7 @@ import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.http.UploadHandler;
 import com.condation.cms.modules.ui.http.CompositeHttpHandler;
 import com.condation.cms.modules.ui.http.auth.LoginHandler;
+import com.condation.cms.modules.ui.http.auth.LogoutHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthRedirectHandler;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
@@ -106,6 +107,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		try {
 
 			mapping.add(PathSpec.from("/manager/login"), new LoginHandler(getContext(), getRequestContext()));
+			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler());
 			
 			mapping.add(PathSpec.from("/manager/upload"),
 					new CompositeHttpHandler(List.of(

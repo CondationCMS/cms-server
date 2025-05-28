@@ -66,14 +66,18 @@ public class LoginHandler extends JettyHandler {
 			
 			boolean isDev = request.getHttpURI().getHost().equals("localhost");
 			
-			HttpCookie cookie = HttpCookie.from("cms-token", token, Map.of(HttpCookie.SAME_SITE_ATTRIBUTE, "Strict"));
+			HttpCookie cookie = HttpCookie.from("cms-token", token, 
+					Map.of(
+							HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
+							HttpCookie.HTTP_ONLY_ATTRIBUTE, "true"
+					));
 			if (!isDev) {
 				cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE);
 			}
 			Response.addCookie(response, cookie);
 			
 			response.setStatus(302);
-			response.getHeaders().add("Location", "/manager/login.html");
+			response.getHeaders().add("Location", "/manager/index.html");
 			callback.succeeded();
 		} else {
 			

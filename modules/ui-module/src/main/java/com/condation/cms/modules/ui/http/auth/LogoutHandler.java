@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http.file;
+package com.condation.cms.modules.ui.http.auth;
 
 /*-
  * #%L
@@ -21,47 +21,44 @@ package com.condation.cms.modules.ui.http.file;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
-import com.condation.cms.modules.ui.services.FileSystemService;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.http.HttpStatus;
-import org.eclipse.jetty.io.Content;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
 @RequiredArgsConstructor
 @Slf4j
-public class FileSystemReadHandler extends JettyHandler {
-
-	private final FileSystemService fileSystemService;
+public class LogoutHandler extends JettyHandler {
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		if (!request.getMethod().equalsIgnoreCase("GET")) {
-			Response.writeError(request, response, callback, HttpStatus.METHOD_NOT_ALLOWED_405, "");
-			return true;
-		}
+		boolean isDev = request.getHttpURI().getHost().equals("localhost");
 
-		String path = "";
-		var fields = Request.extractQueryParameters(request);
-		if (fields.getNames().contains("path")) {
-			path = fields.getValue("path");
+		HttpCookie cookie = HttpCookie.from("cms-token", "",
+				Map.of(
+						HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
+						HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
+						HttpCookie.MAX_AGE_ATTRIBUTE, "0"
+				));
+		if (!isDev) {
+			cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE);
 		}
-		
-		
-		String content = fileSystemService.readFromFile(path);
-		
-		response.setStatus(200);
-		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "text/plain; charset=UTF-8");
-		Content.Sink.write(response, true, content, callback);
+		Response.addCookie(response, cookie);
+
+		response.setStatus(302);
+		response.getHeaders().add("Location", "/manager/login");
+		callback.succeeded();
 
 		return true;
 	}

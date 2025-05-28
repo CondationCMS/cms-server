@@ -21,9 +21,15 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.extensions.HttpHandler;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.auth.services.UserService;
+import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Request;
 
@@ -33,7 +39,7 @@ import org.eclipse.jetty.server.Request;
  */
 @Slf4j
 public abstract class JettyHandler implements HttpHandler {
-	
+
 	protected String getBody(Request request) {
 		try (var inputStream = Request.asInputStream(request)) {
 
@@ -43,4 +49,28 @@ public abstract class JettyHandler implements HttpHandler {
 		}
 		return "";
 	}
+
+	public Optional<UserService.User> getUser(Request request, CMSModuleContext moduleContext) {
+
+		try {
+			var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
+
+			if (tokenCookie.isEmpty()) {
+				Optional.empty();
+			}
+			var token = tokenCookie.get().getValue();
+			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+			var username = TokenUtils.getUserName(token, secret);
+			
+			if (username.isEmpty()) {
+				return Optional.empty();
+			}
+			
+			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(UserService.Realm.of("manager-users"), username.get());
+		} catch (Exception e) {
+			log.error("error getting user", e);
+		}
+		return Optional.empty();
+	}
+
 }

@@ -50,6 +50,7 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 				.id("site-menu")
 				.name("Sites")
 				.position(1)
+				.roles(List.of("admin"))
 				.children(siteMenus())
 				.build());
 	}

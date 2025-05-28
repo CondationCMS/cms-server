@@ -41,6 +41,8 @@ public @interface ShortCut {
 	String hotkey () default "";
 	String section () default "";
 	
+	String[] roles() default {"manager"};
+	
 	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
 	HookAction hookAction () default @HookAction("");
 }

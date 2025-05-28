@@ -42,7 +42,6 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class JSActionHandler extends JettyHandler {
 
-	private final ActionFactory actionFactory;
 	private final FileSystem fileSystem;
 	private final String base;
 	private final CMSModuleContext context;

@@ -15,6 +15,10 @@
 			<artifactId>cms-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-auth</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.tika</groupId>
 			<artifactId>tika-core</artifactId>
 			<version>3.1.0</version>

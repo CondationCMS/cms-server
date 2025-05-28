@@ -23,16 +23,14 @@ package com.condation.cms.modules.ui.http.auth;
  */
 
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
-import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
-import com.condation.cms.modules.ui.services.UserService;
 import com.condation.cms.modules.ui.utils.TokenUtils;
-import com.google.inject.Injector;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -60,13 +58,23 @@ public class LoginHandler extends JettyHandler {
 		var username = queryParameters.getOrDefault("username", List.of("")).getFirst();
 		var password = queryParameters.getOrDefault("password", List.of("")).getFirst();
 		
-		var user = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(username, password);
-		if (user != null) {
+		var userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(UserService.Realm.of("manager-users"), username, password);
+		if (userOpt.isPresent()) {
+			var user = userOpt.get();
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
-			var token = TokenUtils.createToken(user.id(), secret);
+			var token = TokenUtils.createToken(user.username(), secret);
 			
-			final HttpCookie cookie = HttpCookie.from(HttpCookie.from("cms-token", token), HttpCookie.SAME_SITE_ATTRIBUTE, HttpCookie.SECURE_ATTRIBUTE);
+			boolean isDev = request.getHttpURI().getHost().equals("localhost");
+			
+			HttpCookie cookie = HttpCookie.from("cms-token", token, Map.of(HttpCookie.SAME_SITE_ATTRIBUTE, "Strict"));
+			if (!isDev) {
+				cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE);
+			}
 			Response.addCookie(response, cookie);
+			
+			response.setStatus(302);
+			response.getHeaders().add("Location", "/manager/login.html");
+			callback.succeeded();
 		} else {
 			
 		}

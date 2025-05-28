@@ -47,14 +47,14 @@ public class UserService {
 	private static final String FILENAME_PATTERN = "%s.realm";
 	
 	private final static Splitter userSplitter = Splitter.on(":").trimResults();
-	private final static Splitter groupSplitter = Splitter.on(",").trimResults();
+	private final static Splitter rolesplitter = Splitter.on(",").trimResults();
 	
 	private final Path hostBase;
 	
-	public void addUser (Realm realm, String username, String password, String [] groups) throws IOException {
+	public void addUser (Realm realm, String username, String password, String [] roles) throws IOException {
 		var users = loadUsers(realm);
 		users = new ArrayList<>(users.stream().filter(user -> !user.username.equals(username)).toList());
-		users.add(new User(username, SecurityUtil.hash(password), groups));
+		users.add(new User(username, SecurityUtil.hash(password), roles));
 		saveUsers(realm, users);
 	}
 	
@@ -69,9 +69,9 @@ public class UserService {
 
 		var username = userParts.get(0);
 		var passwordHash = userParts.get(1);
-		var groups = Iterables.toArray(groupSplitter.split(userParts.get(2)), String.class);
+		var roles = Iterables.toArray(rolesplitter.split(userParts.get(2)), String.class);
 
-		return new User(username, passwordHash, groups);
+		return new User(username, passwordHash, roles);
 	}
 	
 	private List<User> loadUsers(final Realm realm) throws IOException {
@@ -92,6 +92,15 @@ public class UserService {
 		}
 		
 		return users;
+	}
+	
+	public Optional<User> byUsername(final Realm realm, final String username) {
+		try {
+			return loadUsers(realm).stream().filter(user -> user.username().equals(username)).findFirst();
+		} catch (Exception ex) {
+			log.error("", ex);
+		}
+		return Optional.empty();
 	}
 	
 	public Optional<User> login(final Realm realm, final String username, final String password) {
@@ -124,13 +133,13 @@ public class UserService {
 		Files.writeString(usersFile, userContent, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 	}
 	
-	public static record User (String username, String passwordHash, String[] groups) {
+	public static record User (String username, String passwordHash, String[] roles) {
 	
 		public String line () {
 			return "%s:%s:%s\r\n".formatted(
 					username,
 					passwordHash,
-					groups!= null ? String.join(",", groups) : ""
+					roles!= null ? String.join(",", roles) : ""
 			);
 		}
 	}

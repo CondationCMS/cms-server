@@ -39,6 +39,7 @@ public @interface MenuEntry {
 	String parent() default "";
 	boolean divider() default false;
 	int position() default 0;
+	String[] roles() default {"manager"};
 	
 	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
 	HookAction hookAction () default @HookAction("");

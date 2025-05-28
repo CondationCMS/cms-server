@@ -39,6 +39,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.cms.api.utils.JSONUtil;
+import com.condation.cms.auth.services.UserService;
+import java.util.Arrays;
 
 /**
  *
@@ -50,6 +52,7 @@ public class ActionFactory {
 
 	private final HookSystem hookSystem;
 	private final ModuleManager moduleManager;
+	private final UserService.User user;
 
 	public List<ShortCutHolder> createShortCuts() {
 		List<ShortCutHolder> shortCuts = new ArrayList<>();
@@ -71,6 +74,7 @@ public class ActionFactory {
 				log.error("", e);
 			}
 		});
+		
 
 		List<EntryHolder> entries = new ArrayList<>();
 		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
@@ -83,7 +87,11 @@ public class ActionFactory {
 
 		insertEntriesIntoMenu(menu, entries);
 
-		return menu;
+		var filtered = menu.filterByRoles(Arrays.asList(user.roles()));
+		var menu2 = new Menu();
+		filtered.stream().forEach(menu2::addMenuEntry);
+		
+		return menu2;
 	}
 
 	private List<ShortCutHolder> scanShortCuts(Object moduleInstance) {
@@ -130,7 +138,8 @@ public class ActionFactory {
 					shortcutAnnotation.hotkey(),
 					shortcutAnnotation.parent(), 
 					shortcutAnnotation.section(),
-					menuAction));
+					menuAction,
+					shortcutAnnotation.roles()));
 			}
 
 		}
@@ -170,6 +179,7 @@ public class ActionFactory {
 					.position(menuAnn.position())
 					.action(menuAction)
 					.children(new ArrayList<>())
+					.roles(Arrays.asList(menuAnn.roles()))
 					.build();
 
 			entries.add(new EntryHolder(menuAnn.parent(), entry));
@@ -187,6 +197,10 @@ public class ActionFactory {
 			String parentId = holder.parent();
 			MenuEntry entry = holder.entry();
 
+			if (!RoleUtil.hasAccess(entry.getRoles(), user.roles())) {
+				continue;
+			}
+			
 			if (parentId == null || parentId.isBlank()) {
 				menu.addMenuEntry(entry);
 			} else {
@@ -249,7 +263,7 @@ public class ActionFactory {
 
 	}
 
-	public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action) {
+	public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action, String[] roles) {
 
 		public String getActionDefinition() {
 			return action != null ? JSONUtil.toJson(action) : "";

@@ -21,7 +21,6 @@ package com.condation.cms.api.ui.elements;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,30 +33,72 @@ import java.util.Optional;
  * @author thorstenmarx
  */
 public class Menu {
-	
+
 	private Map<String, MenuEntry> menu = new HashMap<>();
-	
-	public Optional<MenuEntry> getMenuEntry (String id) {
+
+	public Optional<MenuEntry> getMenuEntry(String id) {
 		return Optional.ofNullable(menu.get(id));
 	}
-	
-	public void addMenuEntry (MenuEntry entry) {
+
+	public void addMenuEntry(MenuEntry entry) {
 		menu.put(entry.getId(), entry);
 	}
-	
-	public List<MenuEntry> entries () {
+
+	public List<MenuEntry> entries() {
 		List<MenuEntry> entries = new ArrayList<>(menu.values());
 		sortMenuEntries(entries);
 		return entries;
 	}
-	
+
+	public List<MenuEntry> filterByRoles(List<String> userRoles) {
+		List<MenuEntry> filtered = new ArrayList<>();
+
+		for (MenuEntry entry : menu.values()) {
+			// Prüfe, ob der Haupteintrag sichtbar ist
+			if (isVisibleFor(entry, userRoles)) {
+				// Filtere auch die Kinder des Eintrags
+				List<MenuEntry> visibleChildren = new ArrayList<>();
+				for (MenuEntry child : entry.getChildren()) {
+					if (isVisibleFor(child, userRoles)) {
+						visibleChildren.add(child);
+					}
+				}
+
+				// Baue neuen Eintrag mit gefilterten Kindern
+				MenuEntry filteredEntry = MenuEntry.builder()
+						.id(entry.getId())
+						.name(entry.getName())
+						.divider(entry.isDivider())
+						.roles(entry.getRoles())
+						.position(entry.getPosition())
+						.action(entry.getAction())
+						.children(visibleChildren)
+						.build();
+
+				filtered.add(filteredEntry);
+			}
+		}
+
+		sortMenuEntries(filtered);
+		return filtered;
+	}
+
+	private boolean isVisibleFor(MenuEntry entry, List<String> userRoles) {
+		List<String> roles = entry.getRoles();
+		// Wenn keine Rollen gesetzt sind, ist der Eintrag für alle sichtbar
+		if (roles == null || roles.isEmpty()) {
+			return true;
+		}
+		// Ansonsten: mind. eine Rolle muss übereinstimmen
+		return roles.stream().anyMatch(userRoles::contains);
+	}
+
 	private void sortMenuEntries(List<MenuEntry> entries) {
 		if (entries == null || entries.isEmpty()) {
 			return;
 		}
 		// Sortiere die aktuelle Ebene
 		entries.sort(Comparator.comparingInt(MenuEntry::getPosition));
-		
 
 		// Sortiere rekursiv die Kinder
 		for (MenuEntry entry : entries) {

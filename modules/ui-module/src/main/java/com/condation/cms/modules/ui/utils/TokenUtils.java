@@ -25,6 +25,7 @@ package com.condation.cms.modules.ui.utils;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Optional;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -34,6 +35,14 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class TokenUtils {
 
+ 	public static Optional<String> getUserName(String token, String SECRET) throws Exception {
+		if (!validateToken(token, SECRET)) {
+			return Optional.empty();
+		}
+		String[] parts = token.split(":");
+		return Optional.of(parts[0]);
+	}
+	
 	public static boolean validateToken(String token, String SECRET) throws Exception {
 		String[] parts = token.split(":");
 		if (parts.length != 3) {

@@ -57,7 +57,7 @@ public class LogoutHandler extends JettyHandler {
 		Response.addCookie(response, cookie);
 
 		response.setStatus(302);
-		response.getHeaders().add("Location", "/manager/login.html");
+		response.getHeaders().add("Location", "/manager/login");
 		callback.succeeded();
 
 		return true;

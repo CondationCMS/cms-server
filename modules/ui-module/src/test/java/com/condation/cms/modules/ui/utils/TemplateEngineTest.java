@@ -27,6 +27,7 @@ import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.ui.action.UIScriptAction;
 import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.elements.MenuEntry;
+import com.condation.cms.auth.services.UserService;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.modules.api.ModuleManager;
 import java.util.ArrayList;
@@ -59,9 +60,11 @@ public class TemplateEngineTest {
 			var menu = context.value();
 			menu.addMenuEntry(MenuEntry.builder()
 					.children(new ArrayList<>(
-							List.of(MenuEntry.builder().id("child1").name("Child 1").position(0).build(),
-									MenuEntry.builder().id("div1").divider(true).position(1).build(),
+							List.of(
+									MenuEntry.builder().id("child1").roles(List.of("manager")).name("Child 1").position(0).build(),
+									MenuEntry.builder().id("div1").roles(List.of("manager")).divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("Child 2")
+											.roles(List.of("manager"))
 											.position(2)
 											.action(new UIScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
@@ -75,7 +78,7 @@ public class TemplateEngineTest {
 		);
 
 		Assertions.assertThatCode(() -> {
-			templateEngine.render("index.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager)));
+			templateEngine.render("index.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager, new UserService.User("test", "asdasdfasdf", new String[]{"manager"}))));
 		}).doesNotThrowAnyException();
 	}
 

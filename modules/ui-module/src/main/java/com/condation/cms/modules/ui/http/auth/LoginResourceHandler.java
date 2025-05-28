@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.http.file;
+package com.condation.cms.modules.ui.http.auth;
 
 /*-
  * #%L
@@ -21,13 +21,12 @@ package com.condation.cms.modules.ui.http.file;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.http.JettyHandler;
-import com.condation.cms.modules.ui.services.FileSystemService;
-import com.condation.cms.modules.ui.utils.GsonProvider;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -37,29 +36,28 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
 @Slf4j
-public class FileSystemListHandler extends JettyHandler {
+@RequiredArgsConstructor
+public class LoginResourceHandler extends JettyHandler {
 
-	private final FileSystemService fileSystemService;
-	
-	
-	
+	private final CMSModuleContext context;
+
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		
-		String path = "";
-		var fields = Request.getParameters(request);
-		if (fields.getNames().contains("path")) {
-			path = fields.getValue("path");
+
+		if (!request.getMethod().equalsIgnoreCase("GET")) {
+			return false;
 		}
 		
-		var nodes = fileSystemService.listContent(path);
-		response.setStatus(200);
-        response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
-		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(nodes), callback);
-		
+		try {
+			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of());
+			Content.Sink.write(response, true, content, callback);
+		} catch (Exception e) {
+			log.error("", e);
+			callback.failed(e);
+		}
+
 		return true;
 	}
-	
+
 }

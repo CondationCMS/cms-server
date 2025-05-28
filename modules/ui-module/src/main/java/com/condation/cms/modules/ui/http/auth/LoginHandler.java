@@ -36,9 +36,11 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpCookie;
+import org.eclipse.jetty.server.FormFields;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
+import org.eclipse.jetty.util.Fields;
 
 /**
  *
@@ -51,12 +53,22 @@ public class LoginHandler extends JettyHandler {
 	private final CMSModuleContext moduleContext;
 	private final RequestContext requestContext;
 	
+	private static final int MAX_KEYS = 100;
+    private static final int MAX_CONTENT_SIZE = 10000;
+	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
+		
+		if (!request.getMethod().equalsIgnoreCase("POST")) {
+			return false;
+		}
+		
+		Fields form = FormFields.getFields(request, MAX_KEYS, MAX_CONTENT_SIZE);
+		
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		
-		var username = queryParameters.getOrDefault("username", List.of("")).getFirst();
-		var password = queryParameters.getOrDefault("password", List.of("")).getFirst();
+		var username = form.getValue("username");
+		var password = form.getValue("password");
 		
 		var userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(UserService.Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {

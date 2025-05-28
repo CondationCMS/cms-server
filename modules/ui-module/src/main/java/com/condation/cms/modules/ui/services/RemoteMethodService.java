@@ -30,6 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.auth.services.UserService;
+import com.condation.cms.modules.ui.utils.RoleUtil;
+import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -46,20 +50,31 @@ public class RemoteMethodService {
 	public void register (UIRemoteMethodExtensionPoint extension) {
 		AnnotationsUtil.process(extension, RemoteMethod.class, List.of(Map.class), Object.class)
 				.forEach(ann -> {
-					handlers.put(ann.annotation().name(), (parameters) -> {
-						return ann.invoke(parameters);
-					});
+					handlers.put(ann.annotation().name(), 
+							new RMethod(
+									ann.annotation(), 
+									(parameters) -> ann.invoke(parameters)
+							));
 				});
 	}
 	
-	public Optional<?> execute (final String endpoint, final Map<String, Object> parameters) {
+	public Optional<?> execute (final String endpoint, final Map<String, Object> parameters, UserService.User user) {
 		if (!handlers.containsKey(endpoint)) {
 			return Optional.empty();
 		} 
-		return Optional.ofNullable(handlers.get(endpoint).execute(parameters));
+		return Optional.ofNullable(handlers.get(endpoint).execute(parameters, user));
 	}
 	
-	public static interface RMethod {
-		public Object execute (final Map<String, Object> parameters);
+	@RequiredArgsConstructor
+	public static class RMethod {
+		private final RemoteMethod remoteMethodAnnotation;
+		private final Function<Map<String, Object>, Object> function;
+		
+		public Object execute (final Map<String, Object> parameters, UserService.User user) {
+			if (RoleUtil.hasAccess(remoteMethodAnnotation.roles(), user.roles())) {
+				
+			}
+			return function.apply(parameters);
+		};
 	}
 }

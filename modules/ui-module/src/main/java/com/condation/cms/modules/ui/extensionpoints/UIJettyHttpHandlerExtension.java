@@ -37,11 +37,11 @@ import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.http.UploadHandler;
 import com.condation.cms.modules.ui.http.CompositeHttpHandler;
 import com.condation.cms.modules.ui.http.auth.LoginHandler;
+import com.condation.cms.modules.ui.http.auth.LoginResourceHandler;
 import com.condation.cms.modules.ui.http.auth.LogoutHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthRedirectHandler;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
-import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -99,14 +99,14 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
-		var actionFactory = new ActionFactory(hookSystem, moduleManager);
-
+		
 		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
 
 		try {
 
-			mapping.add(PathSpec.from("/manager/login"), new LoginHandler(getContext(), getRequestContext()));
+			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext()));
+			mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext()));
 			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler());
 			
 			mapping.add(PathSpec.from("/manager/upload"),
@@ -119,7 +119,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/rpc"), 
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
-							new RemoteCallHandler(remoteCallService)
+							new RemoteCallHandler(remoteCallService, getContext())
 					)));
 
 			mapping.add(PathSpec.from("/manager/hooks"), 
@@ -131,15 +131,14 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/actions/*"), 
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
-							new JSActionHandler(actionFactory, createFileSystem("/manager/actions"), "/manager/actions", getContext())
+							new JSActionHandler(createFileSystem("/manager/actions"), "/manager/actions", getContext())
 					)));
 
-			//mapping.add(PathSpec.from("/manager/*"), new ResourceHandler(actionFactory, createFileSystem("/manager"), "/manager", getContext()));
 			mapping.add(PathSpec.from("/manager/*"),
 					new CompositeHttpHandler(
 							List.of(
 									new UIAuthRedirectHandler(getContext()), 
-									new ResourceHandler(actionFactory, createFileSystem("/manager"), "/manager", getContext())
+									new ResourceHandler(createFileSystem("/manager"), "/manager", getContext(), getRequestContext())
 							)
 					)
 			);

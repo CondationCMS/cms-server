@@ -21,7 +21,10 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import java.nio.charset.StandardCharsets;
@@ -44,19 +47,25 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class ResourceHandler extends JettyHandler {
 
-	private final ActionFactory actionFactory;
 	private final FileSystem fileSystem;
 	private final String base;
 	private final CMSModuleContext context;
+	private final CMSRequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		System.out.println("path: " + request.getHttpURI().getPath());
-		System.out.println("context: " + request.getContext().getContextPath());
+		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
+		var moduleManager = context.get(ModuleManagerFeature.class).moduleManager();
+		
+		var actionFactory = new ActionFactory(hookSystem, moduleManager, getUser(request, context).get());
 
 		var resource = request.getHttpURI().getPath().replace("/manager/", "");
 
+		if (resource.equals("")) {
+			resource = "index.html";
+		}
+		
 		if (resource.endsWith(".html")) {
 			try {
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource, 
@@ -82,22 +91,6 @@ public class ResourceHandler extends JettyHandler {
 			}
 		}
 
-		/*
-		
-		var files = fileSystem.getPath(base);
-		
-		if (resource.startsWith("/")) {
-			resource = resource.substring(1);
-		}
-		
-		var path = files.resolve(resource);
-		
-		if (Files.exists(path)) {
-			Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
-		} else {
-			callback.succeeded();
-		}
-		 */
 		return true;
 	}
 

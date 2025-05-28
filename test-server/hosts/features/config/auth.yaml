@@ -1,4 +1,4 @@
 paths:
     - path: "/search"
       realm: "users"
-      groups: ["eins"]
+      roles: ["eins"]

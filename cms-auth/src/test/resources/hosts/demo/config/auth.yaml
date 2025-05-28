@@ -1,4 +1,4 @@
 paths:
     - path: "/secured"
       realm: "users"
-      groups: ["eins"]
+      roles: ["eins"]

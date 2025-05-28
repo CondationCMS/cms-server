@@ -45,11 +45,6 @@ public class UIAuthRedirectHandler extends JettyHandler {
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		
-		var path = request.getHttpURI().getPath();
-		if ("/manager/login.html".equals(path)) {
-			return false;
-		}
-		
 		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
 
 		if (tokenCookie.isEmpty()) {
@@ -70,7 +65,7 @@ public class UIAuthRedirectHandler extends JettyHandler {
 
 	private void redirectToLogin(Response response) {
 		response.setStatus(302);
-		response.getHeaders().add("Location", "/manager/login.html");
+		response.getHeaders().add("Location", "/manager/login");
 	}
 
 }

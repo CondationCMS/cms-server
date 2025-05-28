@@ -23,7 +23,7 @@
 import { listFiles, createFolder, createFile, deleteFile, deleteFolder, renameFile } from '/manager/js/modules/rpc-files.js'
 import { createPage, deletePage } from '/manager/js/modules/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
-import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
+import Handlebars from '../libs/handlebars.min.js';
 import { loadPreview, getPageTemplates } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
 import { alertSelect, alertError, alertConfirm, alertPrompt } from '/manager/js/modules/alerts.js'

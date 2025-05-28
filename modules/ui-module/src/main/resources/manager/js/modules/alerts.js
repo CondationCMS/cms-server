@@ -20,7 +20,7 @@
  * #L%
  */
 
-import Swal from 'https://cdn.jsdelivr.net/npm/sweetalert2@11.21.2/+esm'
+import Swal from '../libs/sweetalert2.min.js'
 
 const sweetalert2 = Swal.mixin({
   customClass: {

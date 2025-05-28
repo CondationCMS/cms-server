@@ -23,7 +23,7 @@ import { openModal } from '/manager/js/modules/modal.js'
 import { showToast } from '/manager/js/modules/toast.js'
 import { addSection, getContentNode } from '/manager/js/modules/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '/manager/js/modules/ui-helpers.js'
-import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@latest/+esm';
+import Handlebars from '../../js/libs/handlebars.min.js';
 
 export async function runAction(params) {
 

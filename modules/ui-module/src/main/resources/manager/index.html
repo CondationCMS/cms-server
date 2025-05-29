@@ -151,29 +151,27 @@
 
 	<script>
 
-		var shortCuts = [
-			{% for entry in actionFactory.createShortCuts() %}
-		{
-			id: '{{ entry.id }}',
-				title: '{{ entry.title }}',
-					hotkey: '{{ entry.hotkey }}',
-						icon: '{{ entry.icon }}',
-							section: '{{ entry.section }}',
-								handler: () => {
-									var action = {{ entry.getActionDefinition() | raw
-								}
-		}
-		if (action.type === "hook") {
-			executeHookAction(action)
-		} else if (action.type === "script") {
-			executeScriptAction(action)
-		}
+var shortCuts = [
+	{% for entry in actionFactory.createShortCuts() %}
+	{
+		id: '{{ entry.id }}',
+		title: '{{ entry.title }}',
+		hotkey: '{{ entry.hotkey }}',
+		icon: '{{ entry.icon }}',
+		section: '{{ entry.section }}',
+		handler: () => {
+			var action = {{ entry.getActionDefinition() | raw }}
+			if (action.type === "hook") {
+				executeHookAction(action)
+			} else if (action.type === "script") {
+				executeScriptAction(action)
+			}
 		}
 	},
-		{% endfor %}
+	{% endfor %}
 ];
-		const ninja = document.querySelector('ninja-keys');
-		ninja.data = shortCuts;
+const ninja = document.querySelector('ninja-keys');
+ninja.data = shortCuts;
 	</script>
 </body>
 

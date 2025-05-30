@@ -21,64 +21,51 @@
  */
 import { createID } from "./forms.utils.js";
 
-let cherryEditors = [];
+let markdownEditors = [];
 
 const createMarkdownField = (options, value = '') => {
 	const id = createID();
 	return `
-		<div class="mb-3" data-cms-form-field-type="markdown">
+		<div class="mb-3" data-cms-form-field-type="easymde">
 			<label class="form-label">${options.title}</label>
-			<div id="${id}" class="cherry-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
-			<input type="hidden" name="${options.name}" data-cherry-id="${id}" data-initial-value="${encodeURIComponent(value)}">
+			<textarea id="${id}" style="display: none; height:0;" data-initial-value="${encodeURIComponent(value)}" name="${options.name}"></textarea>
 		</div>
 	`;
 };
 
 const getData = () => {
 	const data = {};
-	cherryEditors.forEach(({ input, editor }) => {
-		data[input.name] = editor.getMarkdown();
+	markdownEditors.forEach(({ input, editor }) => {
+		data[input.name] = editor.value();
 	});
 	return data;
 };
 
 const init = () => {
-	cherryEditors = [];
+	markdownEditors = [];
 
-	const editorInputs = document.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+	const editorInputs = document.querySelectorAll('[data-cms-form-field-type="easymde"] textarea');
 	editorInputs.forEach(input => {
-		const containerId = input.dataset.cherryId;
 		const initialValue = decodeURIComponent(input.dataset.initialValue || "");
 
-		const editor = new window.Cherry({
-			id: containerId,
-			value: initialValue,
-			height: '100%',
-			locale: 'en_US',
-			editor: {
-				defaultModel: 'editOnly'
-			},
-			toolbars: {
-				toolbar: [
-					'bold',
-					'italic',
-					'strikethrough',
-					'|',
-					'color',
-					'header',
-					'|',
-					'list',
-				],
-				bubble: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'], // array or false
-    			float: ['h1', 'h2', 'h3', '|', 'checklist', 'table', 'code']
-			}
-		});
+		input.value = initialValue; // Set initial value for EasyMDE
 
-		cherryEditors.push({ input, editor });
+		const editor = new window.EasyMDE({
+			element: input,
+			initialValue: initialValue,
+			autoDownloadFontAwesome: true,
+			spellChecker: false,
+			forceSync: true, // keeps textarea value updated
+			toolbar: ["bold", "italic", "heading", "|", "quote", "unordered-list", "ordered-list"]
+		});
+		
+		setTimeout(() => editor.codemirror.refresh(), 500);
+
+		markdownEditors.push({ input, editor });
 	});
 };
 
-export const MarkdownField = {
+export const EasyMDEField = {
 	markup: createMarkdownField,
 	init: init,
 	data: getData

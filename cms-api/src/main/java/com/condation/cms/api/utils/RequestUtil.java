@@ -23,6 +23,8 @@ package com.condation.cms.api.utils;
  */
 
 
+import java.net.InetSocketAddress;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.Request;
 
 /**
@@ -48,5 +50,14 @@ public class RequestUtil {
 		}
 
 		return path;
+	}
+	
+	public static String clientAddress(Request request) {
+		String forwarded = request.getHeaders().get(HttpHeader.X_FORWARDED_FOR);
+		if (forwarded != null && !forwarded.isEmpty()) {
+			return forwarded.split(",")[0].trim();
+		}
+		return ((InetSocketAddress) request.getConnectionMetaData().getRemoteSocketAddress())
+				.getAddress().getHostAddress();
 	}
 }

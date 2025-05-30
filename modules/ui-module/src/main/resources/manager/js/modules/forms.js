@@ -25,6 +25,7 @@ import { MailField } from "./forms.field.mail.js";
 import { CodeField } from "./forms.field.code.js";
 import { SelectField } from "./forms.field.select.js";
 import { MarkdownField } from "./forms.field.markdown.js";
+import { EasyMDEField } from "./forms.field.easymde.js";
 
 
 
@@ -47,6 +48,8 @@ const createForm = (options) => {
 				return CodeField.markup(field, val);
 			case 'markdown':
 				return MarkdownField.markup(field, val);
+			case 'easymde':
+				return EasyMDEField.markup(field, val)
 			default:
 				return '';
 		}
@@ -84,23 +87,7 @@ const createForm = (options) => {
 		});
 		CodeField.init()
 		MarkdownField.init()
-		/*
-		require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } });
-		require(['vs/editor/editor.main'], function () {
-			const editorInputs = formElement.querySelectorAll('[data-monaco-id]');
-			editorInputs.forEach(input => {
-				const editorContainer = document.getElementById(input.dataset.monacoId);
-				const initialValue = decodeURIComponent(input.dataset.initialValue || "");
-				const editor = monaco.editor.create(editorContainer, {
-					value: initialValue,
-					language: 'markdown',
-					theme: 'vs-dark',
-					automaticLayout: true
-				});
-				monacoEditors.push({ input, editor });
-			});
-		});
-		*/
+		EasyMDEField.init()
 	};
 
 	const getData = () => {
@@ -112,7 +99,9 @@ const createForm = (options) => {
 			...TextField.data(),
 			...SelectField.data(),
 			...MailField.data(),
-			...CodeField.data()
+			...CodeField.data(),
+			...MarkdownField.data(),
+			...EasyMDEField.data()
 		};
 		return data
 	};

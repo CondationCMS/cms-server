@@ -58,10 +58,7 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 	private final ICache<String, AtomicInteger> loginFails;
 
 //	LoadingCache<String, AtomicInteger> loginFails = Caffeine.newBuilder()
-//			.maximumSize(10_000)
-//			.expireAfterWrite(Duration.ofMinutes(1))
-//			.expireAfterAccess(Duration.ofMinutes(1))
-//			.build(key -> new AtomicInteger(0));
+
 	static final int ATTEMPTS_TO_BLOCK = 3;
 
 	@Override
@@ -113,7 +110,7 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 								var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 								requestContext.add(AuthFeature.class, new AuthFeature(username));
 
-								loginFails.invalidate(clientAddress(request));
+								loginFails.invalidate(RequestUtil.clientAddress(request));
 								return false;
 							}
 
@@ -140,17 +137,8 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 		callback.succeeded();
 	}
 
-	private String clientAddress(Request request) {
-		String forwarded = request.getHeaders().get(HttpHeader.X_FORWARDED_FOR);
-		if (forwarded != null && !forwarded.isEmpty()) {
-			return forwarded.split(",")[0].trim();
-		}
-		return ((InetSocketAddress) request.getConnectionMetaData().getRemoteSocketAddress())
-				.getAddress().getHostAddress();
-	}
-
 	private AtomicInteger getClientLoginCounter(Request request) {
-		return loginFails.get(clientAddress(request));
+		return loginFails.get(RequestUtil.clientAddress(request));
 	}
 
 }

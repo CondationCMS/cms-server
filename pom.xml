@@ -453,6 +453,9 @@
 								<exclude>**/manager/bootstrap/*.js</exclude>
 								<exclude>**/manager/bootstrap/*.css</exclude>
 								<exclude>**/manager/bootstrap/*.map</exclude>
+								<exclude>**/manager/js/libs/*.js</exclude>
+								<exclude>**/manager/js/libs/*.css</exclude>
+								<exclude>**/manager/js/libs/*.map</exclude>
 							</excludes>
 						</configuration>
 					</execution>

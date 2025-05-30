@@ -21,8 +21,8 @@ package com.condation.cms.modules.ui.http.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.feature.features.IsDevModeFeature;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +40,12 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class LogoutHandler extends JettyHandler {
 
+	private final CMSRequestContext requestContext;
+
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		boolean isDev = request.getHttpURI().getHost().equals("localhost");
+		boolean isDev = requestContext.has(IsDevModeFeature.class);
 
 		HttpCookie cookie = HttpCookie.from("cms-token", "",
 				Map.of(

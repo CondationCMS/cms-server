@@ -19,65 +19,17 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-const createID = () => "id" + Math.random().toString(16).slice(2);
+import { createID } from "./forms.utils.js";
+import { TextField } from "./forms.field.text.js";
+import { MailField } from "./forms.field.mail.js";
+import { CodeField } from "./forms.field.code.js";
+import { SelectField } from "./forms.field.select.js";
+import { MarkdownField } from "./forms.field.markdown.js";
 
-const createEmailField = (options, value = '') => {
-	const placeholder = options.placeholder || ""
-	const id = createID()
-	const key = options.key || ""
-	return `
-		<div class="mb-3">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
-			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
-		</div>
-	`;
-};
 
-const createTextField = (options, value = '') => {
-	const placeholder = options.placeholder || "";
-	const id = createID();
-	const key = options.key || ""
-	return `
-		<div class="mb-3">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
-			<input type="text" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
-		</div>
-	`;
-};
-
-const createSelectField = (options, value = '') => {
-	const id = createID();
-	const key = options.key || ""
-	const optionTags = (options.options || []).map(opt => {
-		const label = typeof opt === 'object' ? opt.label : opt;
-		const val = typeof opt === 'object' ? opt.value : opt;
-		const selected = val === value ? ' selected' : '';
-		return `<option value="${val}"${selected}>${label}</option>`;
-	}).join('\n');
-
-	return `
-		<div class="mb-3">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
-			<select class="form-select" id="${id}" name="${options.name}">
-				${optionTags}
-			</select>
-		</div>
-	`;
-};
-
-const createCodeField = (options, value = '') => {
-	const id = createID();
-	const key = options.key || ""
-	return `
-		<div class="mb-3">
-			<label class="form-label">${options.title}</label>
-			<div id="${id}" class="monaco-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
-			<input type="hidden" name="${options.name}" data-monaco-id="${id}" data-initial-value="${encodeURIComponent(value)}">
-		</div>
-	`;
-};
 
 const createForm = (options) => {
+	console.log("form", options)
 	const fields = options.fields || [];
 	const values = options.values || {};
 	const formId = createID();
@@ -86,13 +38,15 @@ const createForm = (options) => {
 		const val = values[field.name] || '';
 		switch (field.type) {
 			case 'email':
-				return createEmailField(field, val);
+				return MailField.markup(field, val);
 			case 'text':
-				return createTextField(field, val);
+				return TextField.markup(field, val);
 			case 'select':
-				return createSelectField(field, val);
+				return SelectField.markup(field, val);
 			case 'code':
-				return createCodeField(field, val);
+				return CodeField.markup(field, val);
+			case 'markdown':
+				return MarkdownField.markup(field, val);
 			default:
 				return '';
 		}
@@ -105,8 +59,6 @@ const createForm = (options) => {
 	`;
 
 	let formElement = null;
-
-	let monacoEditors = [];
 
 	const init = (container) => {
 		if (typeof container === 'string') {
@@ -130,8 +82,10 @@ const createForm = (options) => {
 			e.stopPropagation();
 			formElement.classList.add('was-validated');
 		});
-
-		require.config({paths: {vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs'}});
+		CodeField.init()
+		MarkdownField.init()
+		/*
+		require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } });
 		require(['vs/editor/editor.main'], function () {
 			const editorInputs = formElement.querySelectorAll('[data-monaco-id]');
 			editorInputs.forEach(input => {
@@ -143,9 +97,10 @@ const createForm = (options) => {
 					theme: 'vs-dark',
 					automaticLayout: true
 				});
-				monacoEditors.push({input, editor});
+				monacoEditors.push({ input, editor });
 			});
 		});
+		*/
 	};
 
 	const getData = () => {
@@ -153,24 +108,13 @@ const createForm = (options) => {
 			console.warn("Formular wurde noch nicht initialisiert.");
 			return {};
 		}
-		const data = {};
-		formElement.querySelectorAll('[name]').forEach(el => {
-			let value = el.value;
-
-			// Boolean-Konvertierung bei den Strings "true"/"false"
-			if (value === 'true') {
-				value = true;
-			} else if (value === 'false') {
-				value = false;
-			}
-
-			data[el.name] = value;
-			
-			monacoEditors.forEach(({ input, editor }) => {
-				data[input.name] = editor.getValue();
-			});
-		});
-		return data;
+		const data = {
+			...TextField.data(),
+			...SelectField.data(),
+			...MailField.data(),
+			...CodeField.data()
+		};
+		return data
 	};
 
 	return {

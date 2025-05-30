@@ -22,9 +22,12 @@ package com.condation.cms.modules.ui.extensionpoints;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
+import com.condation.cms.api.feature.features.CacheManagerFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
@@ -49,9 +52,11 @@ import java.net.URL;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystemNotFoundException;
 import java.nio.file.FileSystems;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
@@ -100,14 +105,19 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
 		
+		ICache<String, AtomicInteger> failedLoginsCounter = getContext().get(CacheManagerFeature.class).cacheManager().get("loginFails", 
+				new CacheManager.CacheConfig(10_000l, Duration.ofMinutes(1)), 
+				key -> new AtomicInteger(0)
+		);
+		
 		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
 
 		try {
 
 			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext()));
-			mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext()));
-			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler());
+			mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
+			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler(getRequestContext()));
 			
 			mapping.add(PathSpec.from("/manager/upload"),
 					new CompositeHttpHandler(List.of(

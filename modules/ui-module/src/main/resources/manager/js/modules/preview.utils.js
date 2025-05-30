@@ -40,6 +40,9 @@ const reloadPreview = () => {
 const loadPreview = (url) => {
 	const overlay = document.getElementById("previewOverlay");
 	overlay.style.display = "flex";
+	document.getElementById("contentPreview").addEventListener("load", () => {
+		overlay.style.display = "none";
+	})
 	try {
 		// Fallback-Host für relative URLs, damit URL-Parsing funktioniert
 		const dummyBase = window.location.origin;
@@ -53,10 +56,8 @@ const loadPreview = (url) => {
 		// Setze zusammengesetzten Pfad + Query zurück in das iframe
 		const result = parsedUrl.pathname + parsedUrl.search;
 		//document.getElementById("contentPreview").src = result;
-		PreviewHistory.navigarePreview(result);
-		document.getElementById("contentPreview").addEventListener("load", () => {
-			overlay.style.display = "none";
-		})
+		PreviewHistory.navigatePreview(result);
+
 	} catch (e) {
 		console.error("Ungültige URL:", url, e);
 	}

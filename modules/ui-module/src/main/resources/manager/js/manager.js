@@ -25,7 +25,11 @@ import { loadPreview } from './modules/preview.utils.js';
 
 import { UIStateManager } from './modules/ui-state.js';
 
+import { PreviewHistory } from './modules/preview.history.js';
+
 document.addEventListener("DOMContentLoaded", function () {
+
+	PreviewHistory.init("/");
 
 	const iframe = document.getElementById('contentPreview');
 

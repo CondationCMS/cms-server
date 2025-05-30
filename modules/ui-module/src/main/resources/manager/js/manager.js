@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	})
 
 	frameMessenger.on('edit', (payload) => {
+		console.log(payload)
 		if (payload.element === "content") {
 			var cmd = {
 				"module": "/manager/actions/page/edit-content",

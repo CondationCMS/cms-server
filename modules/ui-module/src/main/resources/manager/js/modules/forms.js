@@ -26,7 +26,7 @@ import { CodeField } from "./forms.field.code.js";
 import { SelectField } from "./forms.field.select.js";
 import { MarkdownField } from "./forms.field.markdown.js";
 import { EasyMDEField } from "./forms.field.easymde.js";
-
+import { NumberField } from "./forms.field.number.js";
 
 
 const createForm = (options) => {
@@ -50,6 +50,8 @@ const createForm = (options) => {
 				return MarkdownField.markup(field, val);
 			case 'easymde':
 				return EasyMDEField.markup(field, val)
+			case 'number':
+				return NumberField.markup(field, val)
 			default:
 				return '';
 		}
@@ -101,7 +103,8 @@ const createForm = (options) => {
 			...MailField.data(),
 			...CodeField.data(),
 			...MarkdownField.data(),
-			...EasyMDEField.data()
+			...EasyMDEField.data(),
+			...NumberField.data()
 		};
 		return data
 	};

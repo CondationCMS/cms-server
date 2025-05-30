@@ -2,3 +2,6 @@ hostname = [ "localhost5" ]
 
 [ui.manager]
 enabled = true
+
+[cache]
+enabled = false

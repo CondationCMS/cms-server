@@ -33,6 +33,9 @@
 				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
 					{{ node.meta.get('parent.text') | raw}}
 				</div>
+				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					{{ node.meta.get('count') }}
+				</div>
 			</div>
 			<hr />
 			<div {{ ui.editForm() }}>
@@ -41,6 +44,9 @@
 				</div>
 				<div {{ ui.editFormElement("text", "parent.text") }}>
 					{{ node.meta.get('parent.text') | raw}}
+				</div>
+				<div {{ ui.editFormElement("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					THE AGE: {{ node.meta.getOrDefault('count', 25 )}}
 				</div>
 			</div>
 		</div>

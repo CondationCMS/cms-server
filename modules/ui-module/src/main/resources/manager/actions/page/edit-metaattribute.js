@@ -45,7 +45,12 @@ export async function runAction(params) {
 
 	let formDefinition = {
 		fields: [
-			{type: params.editor, name: params.attribute, title: "Edit attribute: " + params.attribute}
+			{
+				type: params.editor, 
+				editorOptions: params.editorOptions ? params.editorOptions : {},
+				name: params.attribute, 
+				title: "Edit attribute: " + params.attribute
+			}
 		],
 		values: {}
 	}

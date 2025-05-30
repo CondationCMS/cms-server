@@ -51,7 +51,12 @@ export async function runAction(params) {
 	params.attributes.forEach(attr => {
 		formDefinition.values[attr.name] = getMetaValueByPath(getContentResponse?.result?.meta, attr.name)
 		formDefinition.fields.push(
-			{type: attr.editor, name: attr.name, title: attr.name}
+			{
+				type: attr.editor, 
+				name: attr.name, 
+				title: attr.name,
+				editorOptions: attr.editorOptions ? attr.editorOptions : {}
+			}
 		)
 	})
 

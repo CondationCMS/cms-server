@@ -7,6 +7,7 @@ published: true
 description: Thats awesome
 parent:
   text: another text for the meta attribute , seems to work
+count: 16
 ---
 
 # Demo Project

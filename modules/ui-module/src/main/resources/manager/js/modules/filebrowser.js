@@ -20,13 +20,12 @@
  * #L%
  */
 
-import { listFiles, createFolder, createFile, deleteFile, deleteFolder, renameFile } from '/manager/js/modules/rpc-files.js'
-import { createPage, deletePage } from '/manager/js/modules/rpc-page.js'
+import { listFiles,  deleteFile, deleteFolder, } from '/manager/js/modules/rpc-files.js'
+import {  deletePage } from '/manager/js/modules/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from '../libs/handlebars.min.js';
-import { loadPreview, getPageTemplates } from '/manager/js/modules/ui-helpers.js'
+import { loadPreview } from '/manager/js/modules/preview.utils.js'
 import { i18n } from '/manager/js/modules/localization.js';
-import { alertSelect, alertError, alertConfirm, alertPrompt } from '/manager/js/modules/alerts.js'
 import { uploadFileWithProgress } from '/manager/js/modules/upload.js'
 import { showToast } from '/manager/js/modules/toast.js'
 

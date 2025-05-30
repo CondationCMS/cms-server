@@ -24,22 +24,6 @@
 const TAB_ID_KEY = "cms-tab-id";
 const AUTH_KEY = "cms-auth-token";
 
-function getOrCreateTabId() {
-  let tabId = sessionStorage.getItem(TAB_ID_KEY);
-  if (!tabId) {
-    tabId = crypto.randomUUID();
-    sessionStorage.setItem(TAB_ID_KEY, tabId);
-  }
-  return tabId;
-}
-
-const tabId = getOrCreateTabId();
-
-// Prefix all tab-specific keys
-function getTabKey(key) {
-  return `${key}_${tabId}`;
-}
-
 export const UIStateManager = {
   // Save generic tab-specific state
   setTabState(key, value) {

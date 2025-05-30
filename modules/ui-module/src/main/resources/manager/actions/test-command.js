@@ -20,7 +20,7 @@
  * #L%
  */
 import {executeCommand} from '/manager/js/modules/system-commands.js'
-import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
+import {getPreviewUrl} from '/manager/js/modules/preview.utils.js'
 		// hook.js
 export async function runAction(params) {
 	

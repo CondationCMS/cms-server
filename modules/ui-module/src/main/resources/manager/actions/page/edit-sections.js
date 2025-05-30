@@ -21,7 +21,7 @@
  */
 import { openModal } from '/manager/js/modules/modal.js'
 import { showToast } from '/manager/js/modules/toast.js'
-import { getPreviewUrl, reloadPreview } from '/manager/js/modules/ui-helpers.js'
+import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
 import { Sortable } from '../../js/libs/sortablejs.min.js'
 import Handlebars from '../../js/libs/handlebars.min.js';
 import {getContentNode, setMetaBatch} from '/manager/js/modules/rpc-content.js'

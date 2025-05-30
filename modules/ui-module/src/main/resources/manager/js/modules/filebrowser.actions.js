@@ -20,14 +20,11 @@
  * #L%
  */
 
-import { listFiles, createFolder, createFile, deleteFile, deleteFolder, renameFile } from '/manager/js/modules/rpc-files.js'
-import { createPage, deletePage } from '/manager/js/modules/rpc-page.js'
-import { openModal } from '/manager/js/modules/modal.js'
-import Handlebars from '../libs/handlebars.min.js';
-import { loadPreview, getPageTemplates } from '/manager/js/modules/ui-helpers.js'
+import { createFolder, createFile, renameFile } from '/manager/js/modules/rpc-files.js'
+import { createPage } from '/manager/js/modules/rpc-page.js'
+import { getPageTemplates } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
-import { alertSelect, alertError, alertConfirm, alertPrompt } from '/manager/js/modules/alerts.js'
-import { uploadFileWithProgress } from '/manager/js/modules/upload.js'
+import { alertSelect, alertConfirm, alertPrompt } from '/manager/js/modules/alerts.js'
 import { showToast } from '/manager/js/modules/toast.js'
 
 export async function renameFileAction({ state, getTargetFolder, filename }) {

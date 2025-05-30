@@ -21,7 +21,7 @@
  */
 
 import frameMessenger from './modules/frameMessenger.js';
-import { loadPreview } from './modules/ui-helpers.js';
+import { loadPreview } from './modules/preview.utils.js';
 
 import { UIStateManager } from './modules/ui-state.js';
 

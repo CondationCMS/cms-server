@@ -23,7 +23,7 @@ import {openSidebar} from '/manager/js/modules/sidebar.js'
 import {createForm} from '/manager/js/modules/forms.js'
 import {showToast} from '/manager/js/modules/toast.js'
 import {getContentNode, setMeta, getContent} from '/manager/js/modules/rpc-content.js'
-import {getPreviewUrl} from '/manager/js/modules/ui-helpers.js'
+import {getPreviewUrl} from '/manager/js/modules/preview.utils.js'
 		// hook.js
 export async function runAction(params) {
 

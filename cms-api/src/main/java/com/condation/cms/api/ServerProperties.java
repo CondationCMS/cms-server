@@ -22,7 +22,6 @@ package com.condation.cms.api;
  * #L%
  */
 import java.nio.file.Path;
-import java.util.Map;
 
 /**
  *
@@ -45,4 +44,6 @@ public interface ServerProperties  {
 	public IPCProperties ipc();
 
 	public PerformanceProperties performance();
+	
+	public UIProperties ui();
 }

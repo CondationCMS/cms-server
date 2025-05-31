@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { listFiles,  deleteFile, deleteFolder, } from '/manager/js/modules/rpc-files.js'
-import {  deletePage } from '/manager/js/modules/rpc-page.js'
+import { listFiles,  deleteFile, deleteFolder, } from '/manager/js/modules/rpc/rpc-files.js'
+import {  deletePage } from '/manager/js/modules/rpc/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from '../libs/handlebars.min.js';
 import { loadPreview } from '/manager/js/modules/preview.utils.js'

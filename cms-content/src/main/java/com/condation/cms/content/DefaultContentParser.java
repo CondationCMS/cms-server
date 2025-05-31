@@ -27,8 +27,6 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 

@@ -19,36 +19,44 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
+import { createID, getUTCDateFromInput, utcToLocalDateInputValue } from "./utils.js";
 
-const createNumberField = (options, value = '') => {
-    console.log("number", options)
+const createDateField = (options, value = '') => {
 	const placeholder = options.placeholder || "";
 	const id = createID();
 	const key = options.key || "";
-	const min = options.editorOptions.min != null ? `min="${options.editorOptions.min}"` : "";
-	const max = options.editorOptions.max != null ? `max="${options.editorOptions.max}"` : "";
-	const step = options.editorOptions.step != null ? `step="${options.editorOptions.step}"` : "";
+
+	let val = '';
+
+	if (value instanceof Date) {
+		val = utcToLocalDateInputValue(value.toISOString());
+	} else if (typeof value === 'string' && value.length > 0) {
+		val = utcToLocalDateInputValue(value);
+	}
 
 	return `
-		<div class="mb-3" data-cms-form-field-type="number">
+		<div class="mb-3" data-cms-form-field-type="date">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
-			<input type="number" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}" ${min} ${max} ${step}>
+			<input type="date" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${val}">
 		</div>
 	`;
 };
 
-const getData = () => {
+
+const getDateData = () => {
 	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='number'] input").forEach(el => {
-		const value = el.value;
-		data[el.name] = value !== '' ? Number(value) : null;
+	document.querySelectorAll("[data-cms-form-field-type='date'] input").forEach(el => {
+		const value = getUTCDateFromInput(el); // "2025-05-31"
+		data[el.name] = {
+			type: "date",
+			value: value === "" ? null : value
+		} // Format: "YYYY-MM-DD"
 	});
 	return data;
 };
 
-export const NumberField = {
-	markup: createNumberField,
-	init: () => {},
-	data: getData
+export const DateField = {
+	markup: createDateField,
+	init: () => { },
+	data: getDateData
 };

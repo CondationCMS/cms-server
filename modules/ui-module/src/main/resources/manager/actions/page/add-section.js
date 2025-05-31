@@ -21,7 +21,7 @@
  */
 import { openModal } from '/manager/js/modules/modal.js'
 import { showToast } from '/manager/js/modules/toast.js'
-import { addSection, getContentNode } from '/manager/js/modules/rpc-content.js'
+import { addSection, getContentNode } from '/manager/js/modules/rpc/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
 import Handlebars from '../../js/libs/handlebars.min.js';
 

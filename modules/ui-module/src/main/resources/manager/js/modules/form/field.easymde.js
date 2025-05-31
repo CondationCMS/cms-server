@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
+import { createID } from "./utils.js";
 
 let markdownEditors = [];
 
@@ -36,7 +36,10 @@ const createMarkdownField = (options, value = '') => {
 const getData = () => {
 	const data = {};
 	markdownEditors.forEach(({ input, editor }) => {
-		data[input.name] = editor.value();
+		data[input.name] = {
+			type: "easymde",
+			value: editor.value()
+		}
 	});
 	return data;
 };

@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
+import { createID } from "./utils.js";
 
 let cherryEditors = [];
 
@@ -37,7 +37,10 @@ const createMarkdownField = (options, value = '') => {
 const getData = () => {
 	const data = {};
 	cherryEditors.forEach(({ input, editor }) => {
-		data[input.name] = editor.getMarkdown();
+		data[input.name] = {
+			type: "markdown",
+			value: editor.getMarkdown()
+		}
 	});
 	return data;
 };

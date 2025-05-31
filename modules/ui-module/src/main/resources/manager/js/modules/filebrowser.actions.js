@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { createFolder, createFile, renameFile } from '/manager/js/modules/rpc-files.js'
-import { createPage } from '/manager/js/modules/rpc-page.js'
+import { createFolder, createFile, renameFile } from '/manager/js/modules/rpc/rpc-files.js'
+import { createPage } from '/manager/js/modules/rpc/rpc-page.js'
 import { getPageTemplates } from '/manager/js/modules/ui-helpers.js'
 import { i18n } from '/manager/js/modules/localization.js';
 import { alertSelect, alertConfirm, alertPrompt } from '/manager/js/modules/alerts.js'

@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.modules.ui.utils.MetaConverter;
 
 /**
  *
@@ -112,6 +113,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 
 		var update = (Map<String, Object>) parameters.get("meta");
+		update = MetaConverter.convertMeta(update);
 		var uri = (String) parameters.get("uri");
 
 		var contentFile = contentBase.resolve(uri);
@@ -148,6 +150,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		result.put("endpoint", "meta.set.batch");
 
 		List<Map<String, Object>> updates = (List<Map<String, Object>>) parameters.get("updates");
+		updates = updates.stream().map(MetaConverter::convertMeta).toList();
 
 		updates.forEach(entry -> {
 			var update = (Map<String, Object>) entry.get("meta");

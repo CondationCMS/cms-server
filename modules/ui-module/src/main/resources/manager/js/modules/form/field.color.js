@@ -19,31 +19,33 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
+import { createID } from "./utils.js";
 
-const createEmailField = (options, value = '') => {
-	const placeholder = options.placeholder || ""
-	const id = createID()
-	const key = options.key || ""
+const createColorField = (options, value = '#000000') => {
+	const id = createID();
+	const key = options.key || "";
+
 	return `
-		<div class="mb-3" data-cms-form-field-type="mail">
+		<div class="mb-3" data-cms-form-field-type="color">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
-			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
+			<input type="color" class="form-control form-control-color" id="${id}" name="${options.name}" value="${value || '#000000'}" title="${options.title}">
 		</div>
 	`;
 };
 
-const getData = () => {
-	var data = {}
-	document.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach(el => {
-		let value = el.value
-		data[el.name] = value
-	})
-	return data
-}
+const getColorData = () => {
+	const data = {};
+	document.querySelectorAll("[data-cms-form-field-type='color'] input").forEach(el => {
+		data[el.name] = {
+			type: 'color',
+			value: el.value
+		}
+	});
+	return data;
+};
 
-export const MailField = {
-	markup: createEmailField,
+export const ColorField = {
+	markup: createColorField,
 	init: () => {},
-	data : getData
-}
+	data: getColorData
+};

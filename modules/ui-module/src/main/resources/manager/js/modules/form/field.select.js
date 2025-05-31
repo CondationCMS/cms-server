@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
+import { createID } from "./utils.js";
 
 const createSelectField = (options, value = '') => {
 	const id = createID();
@@ -52,7 +52,10 @@ const getData = () => {
 			value = false;
 		}
 
-		data[el.name] = value
+		data[el.name] = {
+			type: 'select',
+			value: value
+		}
 	})
 	return data
 }

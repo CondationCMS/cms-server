@@ -21,7 +21,7 @@
  */
 
 import { getLocale, setLocale } from './locale-utils.js';
-import { loadLocalizations } from '/manager/js/modules/rpc-i18n.js'
+import { loadLocalizations } from '/manager/js/modules/rpc/rpc-i18n.js'
 
 const DEFAULT_LOCALE = 'en';
 const DEFAULT_LOCALIZATIONS = {

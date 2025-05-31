@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
+import { createID } from "./utils.js";
 
 let monacoEditors = [];
 
@@ -38,7 +38,10 @@ const createCodeField = (options, value = '') => {
 const getData = () => {
 	var data = {}
 	monacoEditors.forEach(({ input, editor }) => {
-		data[input.name] = editor.getValue();
+		data[input.name] = {
+			type: 'code',
+			value: editor.getValue()
+		};
 	});
 	return data
 }

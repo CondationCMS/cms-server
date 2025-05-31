@@ -19,14 +19,17 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./forms.utils.js";
-import { TextField } from "./forms.field.text.js";
-import { MailField } from "./forms.field.mail.js";
-import { CodeField } from "./forms.field.code.js";
-import { SelectField } from "./forms.field.select.js";
-import { MarkdownField } from "./forms.field.markdown.js";
-import { EasyMDEField } from "./forms.field.easymde.js";
-import { NumberField } from "./forms.field.number.js";
+import { createID } from "./utils.js";
+import { TextField } from "./field.text.js";
+import { MailField } from "./field.mail.js";
+import { CodeField } from "./ffield.code.js";
+import { SelectField } from "./field.select.js";
+import { MarkdownField } from "./field.markdown.js";
+import { EasyMDEField } from "./field.easymde.js";
+import { NumberField } from "./field.number.js";
+import { DateField } from "./field.date.js";
+import { ColorField } from "./field.color.js";
+import { DateTimeField } from "./field.datetime.js";
 
 
 const createForm = (options) => {
@@ -52,6 +55,12 @@ const createForm = (options) => {
 				return EasyMDEField.markup(field, val)
 			case 'number':
 				return NumberField.markup(field, val)
+			case 'date':
+				return DateField.markup(field, val);
+			case 'datetime':
+				return DateTimeField.markup(field, val);
+			case 'color':
+				return ColorField.markup(field, val);
 			default:
 				return '';
 		}
@@ -104,7 +113,10 @@ const createForm = (options) => {
 			...CodeField.data(),
 			...MarkdownField.data(),
 			...EasyMDEField.data(),
-			...NumberField.data()
+			...NumberField.data(),
+			...DateField.data(),
+			...DateTimeField.data(),
+			...ColorField.data()
 		};
 		return data
 	};

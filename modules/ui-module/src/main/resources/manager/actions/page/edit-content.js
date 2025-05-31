@@ -20,9 +20,9 @@
  * #L%
  */
 import {openModal} from '/manager/js/modules/modal.js'
-import {createForm} from '/manager/js/modules/forms.js'
+import {createForm} from '/manager/js/modules/form/forms.js'
 import {getPreviewUrl, reloadPreview} from '/manager/js/modules/preview.utils.js'
-import {getContentNode, getContent, setContent} from '/manager/js/modules/rpc-content.js'
+import {getContentNode, getContent, setContent} from '/manager/js/modules/rpc/rpc-content.js'
 		// hook.js
 export async function runAction(params) {
 

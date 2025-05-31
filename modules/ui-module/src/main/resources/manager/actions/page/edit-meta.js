@@ -20,9 +20,9 @@
  * #L%
  */
 import {openSidebar} from '/manager/js/modules/sidebar.js'
-import {createForm} from '/manager/js/modules/forms.js'
+import {createForm} from '/manager/js/modules/form/forms.js'
 import {showToast} from '/manager/js/modules/toast.js'
-import {getContentNode, setMeta, getContent} from '/manager/js/modules/rpc-content.js'
+import {getContentNode, setMeta, getContent} from '/manager/js/modules/rpc/rpc-content.js'
 import {getPreviewUrl} from '/manager/js/modules/preview.utils.js'
 		// hook.js
 export async function runAction(params) {
@@ -48,20 +48,28 @@ export async function runAction(params) {
 				]
 			},
 			{
-				type: 'select',
-				name: 'search.index',
-				title: 'Index for search',
-				options: [
-					{label: 'No', value: false},
-					{label: 'Yes', value: true}
-				]
+				type: 'date',
+				name: 'publish_date',
+				title: 'Publish Date',
+			},
+			{
+				type: 'datetime',
+				name: 'unpublish_date',
+				title: 'Unpublish Date',
+			},
+			{
+				type: 'color',
+				name: 'background_color',
+				title: 'Background Color'
 			}
 
 		],
 		values: {
 			'title': getContentResponse?.result?.meta?.title,
 			'published': getContentResponse?.result?.meta?.published,
-			'search.index': getContentResponse?.result?.meta?.search?.index
+			'publish_date': getContentResponse?.result?.meta?.publish_date,
+			'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
+			'background_color': getContentResponse?.result?.meta?.background_color
 		}
 	});
 

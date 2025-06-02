@@ -87,9 +87,13 @@ public class CMSTemplateEngine {
 		return new DefaultTemplate(rootNode, renderer);
 	}
 	
+	private boolean useCache () {
+		return !configuration.isDevMode() && templateCache != null;
+	}
+	
 	public Template getTemplate (String template) {
 		
-		if (!configuration.isDevMode() && templateCache != null && templateCache.contains(template)) {
+		if (useCache() && templateCache.contains(template)) {
 			return templateCache.get(template).get();
 		}
 		
@@ -101,7 +105,7 @@ public class CMSTemplateEngine {
 		var rootNode = parser.parse(tokenStream);
 		var temp = new DefaultTemplate(rootNode, renderer);
 		
-		if (!configuration.isDevMode() && templateCache != null) {
+		if (useCache()) {
 			templateCache.put(template, temp);
 		}
 		

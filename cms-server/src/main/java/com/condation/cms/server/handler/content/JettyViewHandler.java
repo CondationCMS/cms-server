@@ -24,6 +24,7 @@ package com.condation.cms.server.handler.content;
 
 
 import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ViewResolver;
 import com.condation.cms.server.filter.CreateRequestContextFilter;
@@ -55,9 +56,10 @@ public class JettyViewHandler extends Handler.Abstract {
 
 			Optional<ContentResponse> viewResponse = viewResolver.getViewContent(requestContext);
 			if (viewResponse.isPresent()) {
+				var contentResponse = (DefaultContentResponse)viewResponse.get();
 				response.setStatus(200);
-				response.getHeaders().add("Content-Type", "%s; charset=utf-8".formatted(viewResponse.get().contentType()));
-				Content.Sink.write(response, true, viewResponse.get().content(), callback);
+				response.getHeaders().add("Content-Type", "%s; charset=utf-8".formatted(contentResponse.contentType()));
+				Content.Sink.write(response, true, contentResponse.content(), callback);
 				return true;
 			}
 

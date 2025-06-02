@@ -24,12 +24,15 @@ package com.condation.cms.content;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.content.DefaultContentResponse;
+import com.condation.cms.api.content.RedirectContentResponse;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.PathUtil;
 import com.google.common.base.Strings;
 import java.io.IOException;
@@ -62,7 +65,7 @@ public class ContentResolver {
 		ReadOnlyFile staticFile = contentBase.resolve(uri);
 		try {
 			if (staticFile.exists()) {
-				return Optional.ofNullable(new ContentResponse(
+				return Optional.ofNullable(new DefaultContentResponse(
 						staticFile.getContent(), 
 						staticFile.getContentType(), 
 						null
@@ -111,12 +114,14 @@ public class ContentResolver {
 		
 		// handle alias
 		ContentNode contentNode = null;
+		boolean aliasRedirect = false;
 		if (contentFile == null || !contentFile.exists()) {
 			var query = db.getContent().query((node, count) -> node);
-			var result = query.whereContains("aliases", "/" + path).get();
+			var result = query.whereContains(Constants.MetaFields.ALIASES, "/" + path).get();
 			if (!result.isEmpty()) {
 				contentNode = result.getFirst();
 				contentFile = contentBase.resolve(contentNode.uri());
+				aliasRedirect = true;
 			}
 		} else {
 			var uri = PathUtil.toRelativeFile(contentFile, contentBase);
@@ -133,11 +138,22 @@ public class ContentResolver {
 		
 		
 		if (contentNode.isRedirect()) {
-			return Optional.of(new ContentResponse(contentNode));
+			return Optional.of(new DefaultContentResponse(contentNode));
 		} else if (!Constants.NodeType.PAGE.equals(contentNode.nodeType())) {
 			return Optional.empty();
 		}
 		context.add(CurrentNodeFeature.class, new CurrentNodeFeature(contentNode));
+		
+		if (contentNode.isRedirect()) {
+			return Optional.of(new RedirectContentResponse(contentNode.getRedirectLocation(), contentNode.getRedirectStatus()));
+		} else if (aliasRedirect) {
+			var doRedirect = contentNode.getMetaValue(Constants.MetaFields.ALIASES_REDIRECT, true);
+			if (doRedirect) {
+				var url = PathUtil.toURL(contentFile, contentBase);
+				url = HTTPUtil.modifyUrl(url, context);
+				return Optional.of(new RedirectContentResponse(url, 301));
+			}
+		}
 		
 		try {
 			
@@ -149,7 +165,7 @@ public class ContentResolver {
 			
 			var contentType = contentNode.contentType();
 			
-			return Optional.of(new ContentResponse(content, contentType, contentNode));
+			return Optional.of(new DefaultContentResponse(content, contentType, contentNode));
 		} catch (IOException ex) {
 			log.error(null, ex);
 			return Optional.empty();

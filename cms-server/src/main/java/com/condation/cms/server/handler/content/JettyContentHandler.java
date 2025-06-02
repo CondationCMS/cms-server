@@ -24,6 +24,8 @@ package com.condation.cms.server.handler.content;
 
 
 import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.content.DefaultContentResponse;
+import com.condation.cms.api.content.RedirectContentResponse;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
@@ -81,13 +83,16 @@ public class JettyContentHandler extends Handler.Abstract {
 			}
 
 			var contentResponse = content.get();
-			if (contentResponse.isRedirect()) {
-				response.getHeaders().add(HttpHeader.LOCATION, contentResponse.node().getRedirectLocation());
-				response.setStatus(contentResponse.node().getRedirectStatus());
+			if (contentResponse instanceof RedirectContentResponse redirectContent) {
+				response.getHeaders().add(HttpHeader.LOCATION, redirectContent.location());
+				response.setStatus(redirectContent.status());
 				callback.succeeded();
+			} else if (contentResponse instanceof DefaultContentResponse defaultContent) {
+				response.getHeaders().add(HttpHeader.CONTENT_TYPE, "%s; charset=utf-8".formatted(defaultContent.contentType()));
+				Content.Sink.write(response, true, defaultContent.content(), callback);
 			} else {
-				response.getHeaders().add(HttpHeader.CONTENT_TYPE, "%s; charset=utf-8".formatted(content.get().contentType()));
-				Content.Sink.write(response, true, content.get().content(), callback);
+				response.setStatus(404);
+				callback.succeeded();
 			}
 
 		} catch (Exception e) {

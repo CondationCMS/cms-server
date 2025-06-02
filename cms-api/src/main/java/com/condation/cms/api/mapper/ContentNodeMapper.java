@@ -69,7 +69,7 @@ public class ContentNodeMapper {
 		var name = NodeUtil.getName(node);
 		final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
 		var temp_path = contentBase.resolve(node.uri());
-		var url = PathUtil.toURI(temp_path, contentBase);
+		var url = PathUtil.toURL(temp_path, contentBase);
 		
 		url = HTTPUtil.modifyUrl(url, context);
 		

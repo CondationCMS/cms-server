@@ -27,6 +27,7 @@ import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.utils.DateRange;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.api.utils.SectionUtil;
 import java.io.Serializable;
@@ -113,16 +114,10 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 			return false;
 		}
 		var publish_date = (Date) data.getOrDefault(Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now()));
-		var now = Date.from(Instant.now());
-		if (!(publish_date.before(now) || publish_date.equals(now))) {
-			return false;
-		}
+		
 		var unpublish_date = (Date) data.getOrDefault(Constants.MetaFields.UNPUBLISH_DATE, null);
-		if (unpublish_date != null
-				&& (unpublish_date.before(now) || unpublish_date.equals(now))) {
-			return false;
-		}
-		return true;
+		
+		return DateRange.isNowWithin(publish_date, unpublish_date);
 	}
 
 	public boolean isSection() {

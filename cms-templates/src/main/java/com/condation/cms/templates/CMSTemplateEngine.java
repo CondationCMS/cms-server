@@ -89,19 +89,19 @@ public class CMSTemplateEngine {
 	
 	public Template getTemplate (String template) {
 		
-		if (templateCache != null && templateCache.contains(template)) {
+		if (!configuration.isDevMode() && templateCache != null && templateCache.contains(template)) {
 			return templateCache.get(template).get();
 		}
 		
 		String templateString = configuration.getTemplateLoader().load(template);
 		if (templateString == null) {
-			throw new TemplateNotFoundException("template % not found".formatted(template));
+			throw new TemplateNotFoundException("template %s not found".formatted(template));
 		}
 		var tokenStream = lexer.tokenize(templateString);
 		var rootNode = parser.parse(tokenStream);
 		var temp = new DefaultTemplate(rootNode, renderer);
 		
-		if (templateCache != null) {
+		if (!configuration.isDevMode() && templateCache != null) {
 			templateCache.put(template, temp);
 		}
 		

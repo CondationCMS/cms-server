@@ -90,7 +90,7 @@ public class PathUtil {
 		return uri;
 	}
 
-	public static String toURI(final Path contentFile, final Path contentBase) {
+	public static String toURL(final Path contentFile, final Path contentBase) {
 		var relFile = toRelativeFile(contentFile, contentBase);
 		if (relFile.endsWith("index.md")) {
 			relFile = relFile.replace("index.md", "");
@@ -112,7 +112,7 @@ public class PathUtil {
 		return relFile;
 	}
 
-	public static String toURI(final ReadOnlyFile contentFile, final ReadOnlyFile contentBase) {
+	public static String toURL(final ReadOnlyFile contentFile, final ReadOnlyFile contentBase) {
 		var relFile = toRelativeFile(contentFile, contentBase);
 		if (relFile.endsWith("index.md")) {
 			relFile = relFile.replace("index.md", "");

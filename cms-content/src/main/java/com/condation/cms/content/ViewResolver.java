@@ -22,6 +22,7 @@ package com.condation.cms.content;
  * #L%
  */
 import com.condation.cms.api.content.ContentResponse;
+import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
@@ -107,7 +108,7 @@ public class ViewResolver {
 				context.get(RequestFeature.class).queryParameters(), context);
 			
 			var content = contentRenderer.renderView(contentFile, view, contentNode, context, page);
-			return Optional.of(new ContentResponse(content, contentNode));
+			return Optional.of(new DefaultContentResponse(content, contentNode));
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

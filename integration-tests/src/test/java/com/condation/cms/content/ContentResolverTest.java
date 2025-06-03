@@ -23,22 +23,18 @@ package com.condation.cms.content;
  */
 
 
-import com.condation.cms.content.DefaultContentRenderer;
-import com.condation.cms.content.DefaultContentParser;
-import com.condation.cms.content.ContentResolver;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.SiteProperties;
-import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.content.DefaultContentResponse;
+import com.condation.cms.api.content.RedirectContentResponse;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.template.TemplateEngine;
 import static com.condation.cms.content.ContentRendererNGTest.contentRenderer;
 import static com.condation.cms.content.ContentRendererNGTest.moduleManager;
-import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.test.TestSiteProperties;
@@ -107,12 +103,27 @@ public class ContentResolverTest {
 		var context = TestHelper.requestContext("alias2");
 		var optional = contentResolver.getContent(context);
 		Assertions.assertThat(optional).isPresent();
-		Assertions.assertThat(optional.get().node().data()).containsEntry("title", "StartseiteView");
+		Assertions.assertThat(optional.get()).isInstanceOf(RedirectContentResponse.class);
+		Assertions.assertThat(((RedirectContentResponse)optional.get()).location()).isEqualTo("/test");
 		
 		context = TestHelper.requestContext("alias3/sub1");
 		optional = contentResolver.getContent(context);
 		Assertions.assertThat(optional).isPresent();
-		Assertions.assertThat(optional.get().node().data()).containsEntry("title", "StartseiteView");
+		Assertions.assertThat(optional.get()).isInstanceOf(RedirectContentResponse.class);
+		Assertions.assertThat(((RedirectContentResponse)optional.get()).location()).isEqualTo("/test");
+	}
+	
+	@Test
+	public void alias_no_redirect() throws IOException {
+
+		var context = TestHelper.requestContext("alias_no_redirect");
+		var optional = contentResolver.getContent(context);
+		Assertions.assertThat(optional).isPresent();
+		Assertions.assertThat(optional.get()).isInstanceOf(DefaultContentResponse.class);
+		
+		var defaultContent = (DefaultContentResponse)optional.get();
+		Assertions.assertThat(defaultContent.content()).isNotNull();
+		Assertions.assertThat(defaultContent.node().getMetaValue(Constants.MetaFields.TITLE, String.class).get()).isEqualTo("Alias without redirect");
 	}
 	
 	@Test

@@ -22,10 +22,21 @@ package com.condation.cms.api.content;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
+
 
 /**
  *
  * @author t.marx
  */
-public interface ContentResponse {
+public record DefaultContentResponse(String content, String contentType, ContentNode node) implements ContentResponse {
+
+	public DefaultContentResponse (String content, ContentNode node) {
+		this(content, Constants.DEFAULT_CONTENT_TYPE, node);
+	}
+	
+	public DefaultContentResponse (ContentNode node) {
+		this("", Constants.DEFAULT_CONTENT_TYPE, node);
+	}
 };

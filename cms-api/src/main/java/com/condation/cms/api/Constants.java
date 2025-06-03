@@ -64,6 +64,9 @@ public abstract class Constants {
 		public static final String TEMPLATE = "template";
 		
 		public static final String TYPE = "type";
+		
+		public static final String ALIASES = "aliases";
+		public static final String ALIASES_REDIRECT = "aliases_redirect";
 	}
 	
 	public static class Folders {

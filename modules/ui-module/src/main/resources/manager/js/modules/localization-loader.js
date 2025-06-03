@@ -19,20 +19,29 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { loadLocalizations } from '/manager/js/modules/rpc/rpc-i18n.js'
+import { ACTION_LOCALIZATIONS } from './localization-actions.js';
+import { loadLocalizations } from './rpc/rpc-i18n.js'
 
 const DEFAULT_LOCALIZATIONS = {
 	en: {
 		"ui.filebrowser.filename": "Filename",
 		"ui.filebrowser.title": "Filesystem",
 		"menu.settings": "Settings",
-		"menu.settings.logout": "Logout"
+		"menu.settings.logout": "Logout",
+		"language.en": "English",
+		"language.de": "German",
+		"buttons.ok": "Ok",
+		"buttons.cancle": "Cancel"
 	},
 	de: {
 		"ui.filebrowser.filename": "Dateiname",
 		"ui.filebrowser.title": "Dateisystem",
 		"menu.settings": "Einstellungen",
-		"menu.settings.logout": "Abmelden"
+		"menu.settings.logout": "Abmelden",
+		"language.en": "Englisch",
+		"language.de": "Deutsch",
+		"buttons.ok": "Ok",
+		"buttons.cancle": "Abbrechen"
 	}
 };
 
@@ -43,6 +52,7 @@ const loadLocalizationsWithDefaults = async () => {
 		for (const lang in response) {
 			DEFAULT_LOCALIZATIONS[lang] = {
 				...DEFAULT_LOCALIZATIONS[lang],
+				...ACTION_LOCALIZATIONS[lang],
 				...response[lang]
 			};
 		}

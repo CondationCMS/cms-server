@@ -20,6 +20,8 @@
  * #L%
  */
 
+import { i18n } from "./localization.js";
+
 const defaultOptions = {
     validate: () => true
   };
@@ -56,8 +58,8 @@ const openModal = (optionsParam) => {
 				${options.body || '<p>Modal body content</p>'}
 			  </div>
 			  <div class="modal-footer">
-				<button type="button" class="btn btn-secondary" id="${modalId}_cancelBtn">Cancel</button>
-				<button type="button" class="btn btn-primary" id="${modalId}_okBtn">OK</button>
+				<button type="button" class="btn btn-secondary" id="${modalId}_cancelBtn">${i18n.t("buttons.cancel", "Cancel")}</button>
+				<button type="button" class="btn btn-primary" id="${modalId}_okBtn">${i18n.t("buttons.ok", "Ok")}</button>
 			  </div>
 			</div>
 		  </div>

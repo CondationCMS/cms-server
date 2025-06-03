@@ -49,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				url: preview_url
 			}
 
-			console.log("set preview", preview_update)
 			UIStateManager.setTabState("preview", preview_update)
 		} catch (e) {
 			console.log(e)

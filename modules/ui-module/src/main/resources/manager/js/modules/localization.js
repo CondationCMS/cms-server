@@ -21,23 +21,9 @@
  */
 
 import { getLocale, setLocale } from './locale-utils.js';
-import { loadLocalizations } from '/manager/js/modules/rpc/rpc-i18n.js'
+import { loadLocalizationsWithDefaults } from './localization-loader.js';
 
 const DEFAULT_LOCALE = 'en';
-const DEFAULT_LOCALIZATIONS = {
-	en: {
-		"ui.filebrowser.filename": "Filename",
-		"ui.filebrowser.filetype": "Filetype",
-		"language.en": "English",
-		"language.de": "German",
-	},
-	de: {
-		"ui.filebrowser.filename": "Dateiname",
-		"ui.filebrowser.filetype": "Dateityp",
-		"language.en": "Englisch",
-		"language.de": "Deutsch",
-	}
-};
 
 const i18n = {
 	_locale: getLocale(),
@@ -51,19 +37,11 @@ const i18n = {
 			if (this._cache != null) {
 				return;
 			}
-			const remote = (await loadLocalizations()).result;
 
-			this._cache = structuredClone(DEFAULT_LOCALIZATIONS);
-
-			for (const lang in remote) {
-				this._cache[lang] = {
-					...this._cache[lang],
-					...remote[lang]
-				};
-			}
+			this._cache = await loadLocalizationsWithDefaults();
 		} catch (err) {
 			console.warn("[i18n] Failed to load remote translations, using defaults.", err);
-			this._cache = structuredClone(DEFAULT_LOCALIZATIONS);
+			this._cache = await loadLocalizationsWithDefaults();
 		}
 	},
 

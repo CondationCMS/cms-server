@@ -35,6 +35,19 @@ export const UIStateManager = {
     return raw ? JSON.parse(raw) : defaultValue;
   },
 
+  setLocale (locale) {
+    this.setTabState("cms-locale", locale)
+    window.dispatchEvent(new CustomEvent("ui:localeChanged", {
+      detail : {
+        locale: locale
+      }
+    }))
+  },
+
+  getLocale () {
+    return this.getTabState("cms-locale")
+  },
+
   removeTabState(key) {
     sessionStorage.removeItem(key);
   },

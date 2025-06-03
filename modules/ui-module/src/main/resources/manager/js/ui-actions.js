@@ -28,6 +28,11 @@ window.addEventListener("DOMContentLoaded", async () => {
 
 	await localizeUi();
 
+	var langSelect = document.querySelector(`[data-cms-i18n-lang='${i18n.getLocale()}']`)
+	if (langSelect) {
+		langSelect.classList.add("active");
+	}
+
 	document.querySelectorAll(".cms-lang-selector").forEach($elem => {
 		$elem.addEventListener("click", async () => {
 			i18n.setLocale($elem.getAttribute("data-cms-i18n-lang"))
@@ -41,6 +46,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 		              || new bootstrap.Dropdown($elem.closest('.dropdown').querySelector('[data-bs-toggle="dropdown"]'));
 			dropdown.hide();
 		})
+	})
+
+	window.addEventListener("ui:localeChanged", (e) => {
+		console.log(e.detail.locale)
 	})
 
 	const actionElements = document.querySelectorAll('[data-cms-action-definition]');

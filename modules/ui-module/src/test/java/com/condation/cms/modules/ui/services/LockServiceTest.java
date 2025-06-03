@@ -35,7 +35,7 @@ public class LockServiceTest {
 	LockService lockService;
 	
 	@BeforeEach
-	private void setup () {
+	public void setup () {
 		lockService = new LockService();
 	}
 

@@ -22,7 +22,7 @@
 import { createID } from "./utils.js";
 import { TextField } from "./field.text.js";
 import { MailField } from "./field.mail.js";
-import { CodeField } from "./ffield.code.js";
+import { CodeField } from "./field.code.js";
 import { SelectField } from "./field.select.js";
 import { MarkdownField } from "./field.markdown.js";
 import { EasyMDEField } from "./field.easymde.js";

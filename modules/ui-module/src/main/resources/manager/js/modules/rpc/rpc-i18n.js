@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { executeRemoteCall } from '/manager/js/modules/rpc.js'
+import { executeRemoteCall } from '/manager/js/modules/rpc/rpc.js'
 
 const loadLocalizations = async (options) => {
 	var data = {

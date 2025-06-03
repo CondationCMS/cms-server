@@ -114,6 +114,19 @@ public class ContentResolverTest {
 	}
 	
 	@Test
+	public void alias_no_redirect() throws IOException {
+
+		var context = TestHelper.requestContext("alias_no_redirect");
+		var optional = contentResolver.getContent(context);
+		Assertions.assertThat(optional).isPresent();
+		Assertions.assertThat(optional.get()).isInstanceOf(DefaultContentResponse.class);
+		
+		var defaultContent = (DefaultContentResponse)optional.get();
+		Assertions.assertThat(defaultContent.content()).isNotNull();
+		Assertions.assertThat(defaultContent.node().getMetaValue(Constants.MetaFields.TITLE, String.class).get()).isEqualTo("Alias without redirect");
+	}
+	
+	@Test
 	public void test_not_published() throws IOException {
 
 		var context = TestHelper.requestContext("alias-hidden");

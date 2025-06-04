@@ -30,6 +30,9 @@ import { NumberField } from "./field.number.js";
 import { DateField } from "./field.date.js";
 import { ColorField } from "./field.color.js";
 import { DateTimeField } from "./field.datetime.js";
+import { RangeField } from "./field.range.js";
+import { RadioField } from "./field.radio.js";
+import { CheckboxField } from "./field.checkbox.js";
 
 
 const createForm = (options) => {
@@ -61,6 +64,12 @@ const createForm = (options) => {
 				return DateTimeField.markup(field, val);
 			case 'color':
 				return ColorField.markup(field, val);
+			case 'range':
+				return RangeField.markup(field, val);
+			case 'radio':
+				return RadioField.markup(field, val);
+			case 'checkbox':
+				return CheckboxField.markup(field, val)
 			default:
 				return '';
 		}
@@ -116,7 +125,10 @@ const createForm = (options) => {
 			...NumberField.data(),
 			...DateField.data(),
 			...DateTimeField.data(),
-			...ColorField.data()
+			...ColorField.data(),
+			...RangeField.data(),
+			...RadioField.data(),
+			...CheckboxField.data(),
 		};
 		return data
 	};

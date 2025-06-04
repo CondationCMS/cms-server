@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openSidebar} from '/manager/js/modules/sidebar.js'
-import {createForm} from '/manager/js/modules/form/forms.js'
-import {showToast} from '/manager/js/modules/toast.js'
-import {getContentNode, setMeta, getContent} from '/manager/js/modules/rpc/rpc-content.js'
-import {getPreviewUrl} from '/manager/js/modules/preview.utils.js'
-		// hook.js
+import { openSidebar } from '/manager/js/modules/sidebar.js'
+import { createForm } from '/manager/js/modules/form/forms.js'
+import { showToast } from '/manager/js/modules/toast.js'
+import { getContentNode, setMeta, getContent } from '/manager/js/modules/rpc/rpc-content.js'
+import { getPreviewUrl } from '/manager/js/modules/preview.utils.js'
+// hook.js
 export async function runAction(params) {
 
 	const contentNode = await getContentNode({
@@ -37,14 +37,14 @@ export async function runAction(params) {
 
 	const form = createForm({
 		fields: [
-			{type: 'text', name: 'title', title: 'Title'},
+			{ type: 'text', name: 'title', title: 'Title' },
 			{
 				type: 'select',
 				name: 'published',
 				title: 'Published',
 				options: [
-					{label: 'No', value: false},
-					{label: 'Yes', value: true}
+					{ label: 'No', value: false },
+					{ label: 'Yes', value: true }
 				]
 			},
 			{
@@ -61,7 +61,33 @@ export async function runAction(params) {
 				type: 'color',
 				name: 'background_color',
 				title: 'Background Color'
+			},
+			{
+				type: "range",
+				name: "range_test",
+				title: "RangField"
+			},
+			{
+				type: "radio",
+				name: "choose_color",
+				title: "Farbe wählen",
+				choices: [
+					{ label: "Rot", value: "red" },
+					{ label: "Grün", value: "green" },
+					{ label: "Blau", value: "blue" }
+				]
+			},
+			{
+				name: "features",
+				title: "Funktionen auswählen",
+				type: "checkbox",
+				choices: [
+					{ label: "Suche", value: "search" },
+					{ label: "Filter", value: "filter" },
+					{ label: "Export", value: "export" }
+				]
 			}
+
 
 		],
 		values: {
@@ -69,7 +95,10 @@ export async function runAction(params) {
 			'published': getContentResponse?.result?.meta?.published,
 			'publish_date': getContentResponse?.result?.meta?.publish_date,
 			'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-			'background_color': getContentResponse?.result?.meta?.background_color
+			'background_color': getContentResponse?.result?.meta?.background_color,
+			'range_test': getContentResponse?.result?.meta?.range_test,
+			'choose_color': getContentResponse?.result?.meta?.choose_color,
+			'features': getContentResponse?.result?.meta?.features,
 		}
 	});
 

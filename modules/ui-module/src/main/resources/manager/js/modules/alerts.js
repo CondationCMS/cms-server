@@ -21,6 +21,7 @@
  */
 
 import Swal from '../libs/sweetalert2.min.js'
+import { i18n } from './localization.js'
 
 const sweetalert2 = Swal.mixin({
   customClass: {
@@ -32,10 +33,10 @@ const sweetalert2 = Swal.mixin({
 
 const alertSelect = async (options) => {
 	const { value: selectedValue } = await sweetalert2.fire({
-		title: options.title || "Select element",
+		title: options.title || i18n.t("alerts.select.title", "Select element"),
 		input: "select",
 		inputOptions: options.values || {},
-		inputPlaceholder: options.placeholder || "Select a element",
+		inputPlaceholder: options.placeholder || i18n.t("alerts.select.placeholder", "Select a element"),
 		showCancelButton: true
 	});
 
@@ -45,19 +46,19 @@ const alertSelect = async (options) => {
 const alertError = async () => {
 	sweetalert2.fire({
   		icon: "error",
-  		title: options.title || "Error title",
-  		text: options.message || "Some error occured",
+  		title: options.title || i18n.t("alerts.error.title", "Error"),
+  		text: options.message || i18n.t("alerts.error.message", "Some error occured"),
 	});
 }
 
 const alertConfirm = async (options) => {
 	const { isConfirmed } = await sweetalert2.fire({
-		title: options.title || "Are you sure?",
-		text: options.message || "You won't be able to revert this!",
+		title: options.title || i18n.t("alerts.confirm.title", "Are you sure?"),
+		text: options.message || i18n.t("alerts.confirm.message", "You won't be able to revert this!"),
 		icon: "warning",
 		showCancelButton: true,
-		confirmButtonText: options.confirmText || "Yes, delete it!",
-		cancelButtonText: options.cancelText || "No, cancel!",
+		confirmButtonText: options.confirmText || i18n.t("alerts.confirm.button.ok", "Yes, delete it!"),
+		cancelButtonText: options.cancelText || i18n.t("alerts.confirm.button.cancel", "No, cancel!"),
 	});
 
 	return isConfirmed
@@ -65,10 +66,10 @@ const alertConfirm = async (options) => {
 
 const alertPrompt = async (options) => {
 	const { value } = await sweetalert2.fire({
-		title: options.title || "Enter value?",
+		title: options.title || i18n.t("alerts.prompt.title", "Enter value?"),
 		input: 'text',
-		inputLabel: options.label || "Input",
-		inputPlaceholder: options.placeholder || "Enter your input",
+		inputLabel: options.label || i18n.t("alerts.prompt.label", "Input"),
+		inputPlaceholder: options.placeholder || i18n.t("alerts.prompt.placeholder", "Enter your input"),
 		showCancelButton: true,
 		inputValidator: options.validator || null
 	});

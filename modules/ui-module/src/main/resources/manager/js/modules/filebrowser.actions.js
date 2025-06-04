@@ -29,8 +29,8 @@ import { showToast } from '/manager/js/modules/toast.js'
 
 export async function renameFileAction({ state, getTargetFolder, filename }) {
 	const newName = await alertPrompt({
-		title: i18n.t("ui.filebrowser.rename.title", "Rename file"),
-		label: i18n.t("ui.filebrowser.rename.label", "New name"),
+		title: i18n.t("filebrowser.rename.title", "Rename file"),
+		label: i18n.t("filebrowser.rename.label", "New name"),
 		placeholder: filename
 	});
 	if (newName) {
@@ -42,16 +42,16 @@ export async function renameFileAction({ state, getTargetFolder, filename }) {
 		});
 		if (response.error) {
 			showToast({
-				title: 'Error renaming file',
+				title: i18n.t("filebrowser.rename.error.title", 'Error renaming file'),
 				message: response.error.message,
-				type: 'error', // optional: info | success | warning | error
+				type: 'error', 
 				timeout: 3000
 			});
 		} else {
 			showToast({
-				title: 'File renamed',
-				message: "File renamed successfully",
-				type: 'info', // optional: info | success | warning | error
+				title: i18n.t("filebrowser.rename.success.title", 'File renamed'),
+				message: i18n.t("filebrowser.rename.success.message", "File renamed successfully"),
+				type: 'info', 
 				timeout: 3000
 			});
 		}
@@ -61,10 +61,10 @@ export async function renameFileAction({ state, getTargetFolder, filename }) {
 export async function deleteElementAction({ elementName, state, deleteFN, getTargetFolder }) {
 
 	var confimred = await alertConfirm({
-		title: i18n.t("ui.filebrowser.delete.confirm.title", "Are you sure?"),
-		message: i18n.t("ui.filebrowser.delete.confirm.message", "You won't be able to revert this!"),
-		confirmText: i18n.t("ui.filebrowser.delete.confirm.yes", "Yes, delete it!"),
-		cancelText: i18n.t("ui.filebrowser.delete.confirm.no", "No, cancel!")
+		title: i18n.t("filebrowser.delete.confirm.title", "Are you sure?"),
+		message: i18n.t("filebrowser.delete.confirm.message", "You won't be able to revert this!"),
+		confirmText: i18n.t("filebrowser.delete.confirm.yes", "Yes, delete it!"),
+		cancelText: i18n.t("filebrowser.delete.confirm.no", "No, cancel!")
 	});
 	if (!confimred) {
 		return;
@@ -94,9 +94,9 @@ export async function deleteElementAction({ elementName, state, deleteFN, getTar
 
 export async function createFolderAction({ state, getTargetFolder }) {
 	const folderName = await alertPrompt({
-		title: i18n.t("ui.filebrowser.createFolder.title", "Create new folder"),
-		label: i18n.t("ui.filebrowser.createFolder.label", "Folder name"),
-		placeholder: i18n.t("ui.filebrowser.createFolder.placeholder", "New Folder")
+		title: i18n.t("filebrowser.createFolder.title", "Create new folder"),
+		label: i18n.t("filebrowser.createFolder.label", "Folder name"),
+		placeholder: i18n.t("filebrowser.createFolder.placeholder", "New Folder")
 	});
 	if (folderName) {
 		var response = await createFolder({
@@ -106,15 +106,15 @@ export async function createFolderAction({ state, getTargetFolder }) {
 		});
 		if (response.error) {
 			showToast({
-				title: 'Error creating folder',
+				title: i18n.t("filebrowser.createFolder.error.title", 'Error creating folder'),
 				message: response.error.message,
 				type: 'error', // optional: info | success | warning | error
 				timeout: 3000
 			});
 		} else {
 			showToast({
-				title: 'Folder created',
-				message: "Folder created successfully",
+				title: i18n.t("filebrowser.createFolder.error.title", 'Folder created'),
+				message: i18n.t("filebrowser.createFolder.success.message", "Folder created successfully"),
 				type: 'info', // optional: info | success | warning | error
 				timeout: 3000
 			});
@@ -124,9 +124,9 @@ export async function createFolderAction({ state, getTargetFolder }) {
 
 export async function createFileAction({ state, getTargetFolder }) {
 	const fileName = await alertPrompt({
-		title: i18n.t("ui.filebrowser.createFile.title", "Create new file"),
-		label: i18n.t("ui.filebrowser.createFile.label", "File name"),
-		placeholder: i18n.t("ui.filebrowser.createFile.placeholder", "New File")
+		title: i18n.t("filebrowser.createFile.title", "Create new file"),
+		label: i18n.t("filebrowser.createFile.label", "File name"),
+		placeholder: i18n.t("filebrowser.createFile.placeholder", "New File")
 	});
 	if (fileName) {
 		var response = await createFile({
@@ -136,15 +136,15 @@ export async function createFileAction({ state, getTargetFolder }) {
 		});
 		if (response.error) {
 			showToast({
-				title: 'Error creating file',
+				title: i18n.t("filebrowser.createFile.error.title", 'Error creating file'),
 				message: response.error.message,
 				type: 'error', // optional: info | success | warning | error
 				timeout: 3000
 			});
 		} else {
 			showToast({
-				title: 'File created',
-				message: "File created successfully",
+				title: i18n.t("filebrowser.createFile.success.title", 'File created'),
+				message: i18n.t("filebrowser.createFile.success.message", "File created successfully"),
 				type: 'info', // optional: info | success | warning | error
 				timeout: 3000
 			});
@@ -154,9 +154,9 @@ export async function createFileAction({ state, getTargetFolder }) {
 
 export async function createPageAction({ getTargetFolder }) {
 	const pageName = await alertPrompt({
-		title: i18n.t("ui.filebrowser.createPage.title", "Create new page"),
-		label: i18n.t("ui.filebrowser.createPage.label", "Page name"),
-		placeholder: i18n.t("ui.filebrowser.createPage.placeholder", "New Page")
+		title: i18n.t("filebrowser.createPage.title", "Create new page"),
+		label: i18n.t("filebrowser.createPage.label", "Page name"),
+		placeholder: i18n.t("filebrowser.createPage.placeholder", "New Page")
 	});
 	if (pageName) {
 		const templateMap = getPageTemplates().reduce((acc, { name, template }) => {
@@ -164,8 +164,8 @@ export async function createPageAction({ getTargetFolder }) {
 			return acc;
 		}, {});
 		const selectedTemplate = await alertSelect({
-			title: i18n.t("ui.filebrowser.createPage.selectTemplate.title", "Select a template"),
-			placeholder: i18n.t("ui.filebrowser.createPage.selectTemplate.placeholder", "Select a template"),
+			title: i18n.t("filebrowser.createPage.selectTemplate.title", "Select a template"),
+			placeholder: i18n.t("filebrowser.createPage.selectTemplate.placeholder", "Select a template"),
 			values: templateMap
 		});
 
@@ -181,15 +181,15 @@ export async function createPageAction({ getTargetFolder }) {
 			});
 			if (response.error) {
 				showToast({
-					title: 'Error creating page',
+					title: i18n.t("filebrowser.createPage.error.title", 'Error creating page'),
 					message: response.error.message,
 					type: 'error', // optional: info | success | warning | error
 					timeout: 3000
 				});
 			} else {
 				showToast({
-					title: 'Page created',
-					message: "Page created successfully",
+					title: i18n.t("filebrowser.createPage.success.title", 'Page created'),
+					message: i18n.t("filebrowser.createPage.success.message", 'Page successfuly created'),
 					type: 'info', // optional: info | success | warning | error
 					timeout: 3000
 				});

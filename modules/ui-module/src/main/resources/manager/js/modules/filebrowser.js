@@ -141,7 +141,7 @@ const openFileBrowser = async (optionsParam) => {
 	};
 
 	state.modal = openModal({
-		title: i18n.t("ui.filebrowser.title", "Filesystem"),
+		title: i18n.t("filebrowser.title", "Filesystem"),
 		body: '<div id="cms-file-browser"></div>',
 		fullscreen: true,
 		onOk: async (event) => {
@@ -165,8 +165,8 @@ const initFileBrowser = async (uri) => {
 	if (fileBrowserElement) {
 		fileBrowserElement.innerHTML = template({
 			files: contentFiles.result.files,
-			filenameHeader: i18n.t("ui.filebrowser.filename", "Filename"),
-			actionHeader: i18n.t("ui.filebrowser.action", "Action"),
+			filenameHeader: i18n.t("filebrowser.filename", "Filename"),
+			actionHeader: i18n.t("filebrowser.action", "Action"),
 			actions: getActions(),
 			asset: state.options.type === "assets"
 		});
@@ -188,16 +188,16 @@ const getActions = () => {
 	if (state.options.type === "content") {
 		actions.push({
 			id: "cms-filebrowser-action-createPage",
-			name: i18n.t("ui.filebrowser.create.page", "Create page")
+			name: i18n.t("filebrowser.create.page", "Create page")
 		})
 	}
 	actions.push({
 		id: "cms-filebrowser-action-createFile",
-		name: i18n.t("ui.filebrowser.create.file", "Create file")
+		name: i18n.t("filebrowser.create.file", "Create file")
 	})
 	actions.push({
 		id: "cms-filebrowser-action-createFolder",
-		name: i18n.t("ui.filebrowser.create.folder", "Create folder")
+		name: i18n.t("filebrowser.create.folder", "Create folder")
 	})
 
 	return actions
@@ -305,8 +305,8 @@ const handleFileUpload = async () => {
 	const fileInput = document.getElementById("cms-fileupload");
 	if (fileInput.files.length === 0) {
 		showToast({
-			title: 'No file selected',
-			message: 'Please select a file to upload.',
+			title: i18n.t("filebrowser.file.upload.no.selection.title", 'No file selected'),
+			message: i18n.t("filebrowser.file.upload.no.selection.message", 'Please select a file to upload.'),
 			type: 'warning',
 			timeout: 3000
 		});
@@ -318,8 +318,8 @@ const handleFileUpload = async () => {
 
 	if (!allowedMimeTypes.includes(file.type)) {
 		showToast({
-			title: 'Invalid file type',
-			message: `Only images (PNG, JPG, GIF, BMP, WEBP, TIFF, SVG, AVIF) are allowed. Selected: ${file.type}`,
+			title: i18n.t("filebrowser.file.upload.wrong.type.title", 'Invalid file type'),
+			message: i18n.t("filebrowser.file.upload.wrong.type.message", `Only images (PNG, JPG, GIF, BMP, WEBP, TIFF, SVG, AVIF) are allowed. Selected: ${file.type}`),
 			type: 'error',
 			timeout: 4000
 		});
@@ -337,8 +337,8 @@ const handleFileUpload = async () => {
 		},
 		onSuccess: () => {
 			showToast({
-				title: 'Upload complete',
-				message: 'File uploaded successfully.',
+				title: i18n.t("filebrowser.file.upload.success.title", 'Upload complete'),
+				message: i18n.t("filebrowser.file.upload.success.message", 'File uploaded successfully.'),
 				type: 'success'
 			});
 			updateProgressBar(100);
@@ -346,7 +346,7 @@ const handleFileUpload = async () => {
 		},
 		onError: (message) => {
 			showToast({
-				title: 'Upload failed',
+				title: i18n.t("filebrowser.file.upload.error.title", "Upload failed"),
 				message,
 				type: 'error'
 			});

@@ -20,6 +20,7 @@
  * #L%
  */
 import { ACTION_LOCALIZATIONS } from './localization-actions.js';
+import { MODULE_LOCALIZATIONS } from './localization-modules.js';
 import { loadLocalizations } from './rpc/rpc-i18n.js'
 
 const DEFAULT_LOCALIZATIONS = {
@@ -53,6 +54,7 @@ const loadLocalizationsWithDefaults = async () => {
 			DEFAULT_LOCALIZATIONS[lang] = {
 				...DEFAULT_LOCALIZATIONS[lang],
 				...ACTION_LOCALIZATIONS[lang],
+				...MODULE_LOCALIZATIONS[lang],
 				...response[lang]
 			};
 		}

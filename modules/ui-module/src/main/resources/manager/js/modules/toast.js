@@ -20,11 +20,13 @@
  * #L%
  */
 
+import { i18n } from './localization.js';
+
 const showToast = (options) => {
 	const toastId = 'toast_' + Date.now();
 
 	// Fallbacks
-	const title = options.title || 'Hinweis';
+	const title = options.title || i18n.t("toast.title", "Note");
 	const message = options.message || '';
 	const type = options.type || 'info'; // info, success, warning, error
 	const timeout = typeof options.timeout === 'number' ? options.timeout : 5000;

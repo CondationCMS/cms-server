@@ -20,10 +20,12 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createSelectField = (options, value = '') => {
 	const id = createID();
-	const key = options.key || ""
+	const key = "field." + options.name
+	const title = i18n.t(key, options.title)
 	const optionTags = (options.options || []).map(opt => {
 		const label = typeof opt === 'object' ? opt.label : opt;
 		const val = typeof opt === 'object' ? opt.value : opt;
@@ -33,7 +35,7 @@ const createSelectField = (options, value = '') => {
 
 	return `
 		<div class="mb-3" data-cms-form-field-type="select">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<select class="form-select" id="${id}" name="${options.name}">
 				${optionTags}
 			</select>

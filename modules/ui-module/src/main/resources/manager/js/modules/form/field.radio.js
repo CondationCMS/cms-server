@@ -20,12 +20,13 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createRadioField = (options, value = '') => {
 	const id = createID();
-	const key = options.key || "";
+	const key = "field." + options.name
 	const name = options.name || id;
-	const title = options.title || "";
+	const title = i18n.t(key, options.title)
 	const choices = options.choices || [];
 
 	const radios = choices.map((choice, idx) => {

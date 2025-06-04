@@ -20,14 +20,17 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createEmailField = (options, value = '') => {
 	const placeholder = options.placeholder || ""
 	const id = createID()
-	const key = options.key || ""
+	const key = "field." + options.name
+	const title = i18n.t(key, options.title)
+
 	return `
 		<div class="mb-3" data-cms-form-field-type="mail">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
 		</div>
 	`;

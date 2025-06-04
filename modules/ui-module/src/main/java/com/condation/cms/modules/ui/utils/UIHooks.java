@@ -23,6 +23,8 @@ package com.condation.cms.modules.ui.utils;
  */
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.ui.elements.Menu;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -31,6 +33,7 @@ import com.condation.cms.api.ui.elements.Menu;
 public class UIHooks {
 
 	public static final String HOOK_MENU = "module/ui/menu";
+	public static final String HOOK_TRANSLATIONS = "module/ui/translations";
 
 	private final HookSystem hookSystem;
 	
@@ -44,5 +47,13 @@ public class UIHooks {
 		menu = hookSystem.filter(HOOK_MENU, menu).value();
 		
 		return menu;
+	}
+	
+	public Map<String, Map<String, String>> translations () {
+		Map<String, Map<String, String>> translations = new HashMap<>(Map.of(
+				"de", new HashMap<>(),
+				"en", new HashMap<>()
+		));
+		return hookSystem.filter(HOOK_TRANSLATIONS, translations).value();
 	}
 }

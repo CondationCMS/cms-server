@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 
+import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.ui.extensions.UILocalizationExtensionPoint;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
@@ -31,6 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.modules.ui.utils.UIHooks;
 
 /**
  *
@@ -44,14 +46,22 @@ public class LocalizationEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "i18n.load")
 	public Object list(Map<String, Object> parameters) {
+		
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
 		
 		Map<String, Map<String, String>> localizations = new HashMap<>();
-		moduleManager.extensions(UILocalizationExtensionPoint.class).forEach(ext -> {
-			TranslationMerger.mergeTranslationMaps(ext.getLocalizations(), localizations);
-		});
-		
+		try {
+			moduleManager.extensions(UILocalizationExtensionPoint.class).forEach(ext -> {
+				TranslationMerger.mergeTranslationMaps(ext.getLocalizations(), localizations);
+			});
 
+			UIHooks uiHooks = new UIHooks(getRequestContext().get(HookSystemFeature.class).hookSystem());
+
+			TranslationMerger.mergeTranslationMaps(uiHooks.translations(), localizations);
+		} catch (Exception e) {
+			log.error("error loading translation", e);
+		}
+		
 		return localizations;
 	}
 }

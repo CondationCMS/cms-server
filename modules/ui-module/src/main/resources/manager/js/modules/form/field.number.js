@@ -20,19 +20,21 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createNumberField = (options, value = '') => {
-    console.log("number", options)
+    
 	const placeholder = options.placeholder || "";
 	const id = createID();
-	const key = options.key || "";
+	const key = "field." + options.name
 	const min = options.editorOptions.min != null ? `min="${options.editorOptions.min}"` : "";
 	const max = options.editorOptions.max != null ? `max="${options.editorOptions.max}"` : "";
 	const step = options.editorOptions.step != null ? `step="${options.editorOptions.step}"` : "";
+	const title = i18n.t(key, options.title)
 
 	return `
 		<div class="mb-3" data-cms-form-field-type="number">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<input type="number" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}" ${min} ${max} ${step}>
 		</div>
 	`;

@@ -20,14 +20,15 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createRangeField = (options, value = '') => {
 	const id = createID();
-	const key = options.key || "";
+	const key = "field." + options.name
 	const min = options.min ?? 0;
 	const max = options.max ?? 100;
 	const step = options.step ?? 1;
-	const title = options.title ?? "";
+	const title = i18n.t(key, options.title)
 
 	return `
 		<div class="mb-3" data-cms-form-field-type="range">

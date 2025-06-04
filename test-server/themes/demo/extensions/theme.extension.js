@@ -8,3 +8,12 @@ $hooks.registerAction("system/content/shortcodes", (context) => {
 	)
 	return null;
 })
+
+$hooks.registerFilter("module/ui/translations", (context) => {
+	var translations = context.value()
+	
+	translations.en["field.title"] = "Title";
+	translations.de["field.title"] = "Titel";
+	
+	return translations;
+})

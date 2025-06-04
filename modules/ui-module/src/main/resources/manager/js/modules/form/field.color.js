@@ -20,14 +20,16 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createColorField = (options, value = '#000000') => {
 	const id = createID();
-	const key = options.key || "";
+	const key = "field." + options.name
+	const title = i18n.t(key, options.title)
 
 	return `
 		<div class="mb-3" data-cms-form-field-type="color">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<input type="color" class="form-control form-control-color" id="${id}" name="${options.name}" value="${value || '#000000'}" title="${options.title}">
 		</div>
 	`;

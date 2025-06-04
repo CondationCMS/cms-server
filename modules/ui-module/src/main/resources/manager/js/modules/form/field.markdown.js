@@ -20,14 +20,17 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
 let cherryEditors = [];
 
 const createMarkdownField = (options, value = '') => {
 	const id = createID();
+	const key = "field." + options.name
+	const title = i18n.t(key, options.title)
 	return `
 		<div class="mb-3" data-cms-form-field-type="markdown">
-			<label class="form-label">${options.title}</label>
+			<label class="form-label" cms-i18n-key="${key}">${title}</label>
 			<div id="${id}" class="cherry-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
 			<input type="hidden" name="${options.name}" data-cherry-id="${id}" data-initial-value="${encodeURIComponent(value)}">
 		</div>

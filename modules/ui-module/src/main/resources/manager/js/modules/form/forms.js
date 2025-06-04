@@ -88,7 +88,7 @@ const createForm = (options) => {
 			container = document.querySelector(container);
 		}
 		if (!container) {
-			console.error("Form-Container nicht gefunden.");
+			console.error("From container not found.");
 			return;
 		}
 		container.innerHTML = html;
@@ -112,7 +112,7 @@ const createForm = (options) => {
 
 	const getData = () => {
 		if (!formElement) {
-			console.warn("Formular wurde noch nicht initialisiert.");
+			console.warn("Form not initialised.");
 			return {};
 		}
 		const data = {

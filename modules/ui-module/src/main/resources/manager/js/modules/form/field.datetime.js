@@ -20,11 +20,14 @@
  * #L%
  */
 import { createID, getUTCDateTimeFromInput, utcToLocalDateTimeInputValue } from "./utils.js";
+import { i18n } from "../localization.js"
 
 const createDateTimeField = (options, value = '') => {
 	const placeholder = options.placeholder || "";
 	const id = createID();
-	const key = options.key || "";
+	const key = "field." + options.name
+
+	const title = i18n.t(key, options.title)
 
 	let val = '';
 
@@ -36,7 +39,7 @@ const createDateTimeField = (options, value = '') => {
 
 	return `
 		<div class="mb-3" data-cms-form-field-type="datetime">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${options.title}</label>
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<input type="datetime-local" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${val}">
 		</div>
 	`;

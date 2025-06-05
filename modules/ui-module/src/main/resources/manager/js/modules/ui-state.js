@@ -21,6 +21,8 @@
  */
 // state-manager.js
 
+import { EventBus } from "./event-bus.js";
+
 const TAB_ID_KEY = "cms-tab-id";
 const AUTH_KEY = "cms-auth-token";
 
@@ -35,16 +37,14 @@ export const UIStateManager = {
     return raw ? JSON.parse(raw) : defaultValue;
   },
 
-  setLocale (locale) {
+  setLocale(locale) {
     this.setTabState("cms-locale", locale)
-    window.dispatchEvent(new CustomEvent("ui:localeChanged", {
-      detail : {
-        locale: locale
-      }
-    }))
+    EventBus.emit("ui:localeChanged", {
+      locale: locale
+    })
   },
 
-  getLocale () {
+  getLocale() {
     return this.getTabState("cms-locale")
   },
 

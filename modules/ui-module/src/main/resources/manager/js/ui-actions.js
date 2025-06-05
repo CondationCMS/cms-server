@@ -20,6 +20,7 @@
  * #L%
  */
 
+import { EventBus } from './modules/event-bus.js';
 import { i18n, localizeUi } from '/manager/js/modules/localization.js';
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -48,8 +49,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 		})
 	})
 
-	window.addEventListener("ui:localeChanged", (e) => {
-		console.log(e.detail.locale)
+	EventBus.on("ui:localeChanged", (data) => {
+		console.log(data.locale)
 	})
 
 	const actionElements = document.querySelectorAll('[data-cms-action-definition]');

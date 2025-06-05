@@ -20,17 +20,16 @@
  * #L%
  */
 
-import { listFiles,  deleteFile, deleteFolder, } from '/manager/js/modules/rpc/rpc-files.js'
-import {  deletePage } from '/manager/js/modules/rpc/rpc-page.js'
+import { listFiles, deleteFile, deleteFolder, } from '/manager/js/modules/rpc/rpc-files.js'
+import { deletePage } from '/manager/js/modules/rpc/rpc-page.js'
 import { openModal } from '/manager/js/modules/modal.js'
 import Handlebars from '../libs/handlebars.min.js';
 import { loadPreview } from '/manager/js/modules/preview.utils.js'
 import { i18n } from '/manager/js/modules/localization.js';
-import { uploadFileWithProgress } from '/manager/js/modules/upload.js'
-import { showToast } from '/manager/js/modules/toast.js'
 
 import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction } from '/manager/js/modules/filebrowser.actions.js'
-
+import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
+import { EventBus } from './event-bus.js';
 
 const defaultOptions = {
 	validate: () => true,
@@ -41,16 +40,6 @@ const state = {
 	options: null,
 	currentFolder: ""
 };
-
-const allowedMimeTypes = [
-	"image/png",
-	"image/jpeg",
-	"image/gif",
-	"image/webp",
-	"image/svg+xml",
-	"image/tiff",
-	"image/avif"
-];
 
 const template = Handlebars.compile(`
 	<div>
@@ -130,9 +119,14 @@ const template = Handlebars.compile(`
 		<input id="cms-fileupload" type="file" name="cms-fileupload" accept="image/png, image/jpeg, image/web, image/gif, image/svg+xml, image/tiff, image/avif" />
 		<button id="cms-filebrowser-upload-button"> Upload </button>
 		<span id="cms-filebrowser-upload-progress"></span>
+		<div id="drop-zone">Drop files here</div>
 	{{/if}}
 	</div>
 `);
+
+EventBus.on("upload:success", (folder) => {
+	initFileBrowser(state.currentFolder);
+});
 
 const openFileBrowser = async (optionsParam) => {
 	state.options = {
@@ -173,6 +167,7 @@ const initFileBrowser = async (uri) => {
 		makeDirectoriesClickable();
 		fileActions();
 		initBootstrapTooltips();
+		initDragAndDropUpload();
 	}
 };
 const initBootstrapTooltips = () => {
@@ -181,6 +176,8 @@ const initBootstrapTooltips = () => {
 		new bootstrap.Tooltip(tooltipTriggerEl);
 	});
 };
+
+
 
 const getActions = () => {
 	const actions = []
@@ -301,71 +298,6 @@ const fileActions = () => {
 
 };
 
-const handleFileUpload = async () => {
-	const fileInput = document.getElementById("cms-fileupload");
-	if (fileInput.files.length === 0) {
-		showToast({
-			title: i18n.t("filebrowser.file.upload.no.selection.title", 'No file selected'),
-			message: i18n.t("filebrowser.file.upload.no.selection.message", 'Please select a file to upload.'),
-			type: 'warning',
-			timeout: 3000
-		});
-		return;
-	}
-
-
-	const file = fileInput.files[0];
-
-	if (!allowedMimeTypes.includes(file.type)) {
-		showToast({
-			title: i18n.t("filebrowser.file.upload.wrong.type.title", 'Invalid file type'),
-			message: i18n.t("filebrowser.file.upload.wrong.type.message", `Only images (PNG, JPG, GIF, BMP, WEBP, TIFF, SVG, AVIF) are allowed. Selected: ${file.type}`),
-			type: 'error',
-			timeout: 4000
-		});
-		return;
-	}
-
-	let formData = new FormData();
-	formData.append("file", file);
-	formData.append("uri", getTargetFolder());
-	uploadFileWithProgress({
-		file,
-		uri: getTargetFolder(),
-		onProgress: (percent) => {
-			updateProgressBar(percent);
-		},
-		onSuccess: () => {
-			showToast({
-				title: i18n.t("filebrowser.file.upload.success.title", 'Upload complete'),
-				message: i18n.t("filebrowser.file.upload.success.message", 'File uploaded successfully.'),
-				type: 'success'
-			});
-			updateProgressBar(100);
-			initFileBrowser(state.currentFolder);
-		},
-		onError: (message) => {
-			showToast({
-				title: i18n.t("filebrowser.file.upload.error.title", "Upload failed"),
-				message,
-				type: 'error'
-			});
-			updateProgressBar(0);
-		}
-	});
-}
-
-const updateProgressBar = (percent) => {
-	const progressBar = document.getElementById("cms-filebrowser-upload-progress");
-	if (!progressBar) return;
-
-	if (percent === 0) {
-		progressBar.textContent = "";
-	} else {
-		progressBar.textContent = `Upload progress: ${percent}%`;
-	}
-}
-
 const getTargetFolder = () => {
 	if (state.currentFolder.startsWith("/")) {
 		return state.currentFolder.substring(1);
@@ -373,4 +305,4 @@ const getTargetFolder = () => {
 	return state.currentFolder;
 };
 
-export { openFileBrowser };
+export { openFileBrowser, state };

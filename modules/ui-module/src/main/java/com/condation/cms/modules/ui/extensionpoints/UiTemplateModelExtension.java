@@ -123,7 +123,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 		}
 		
 		public String editMeta (String editor, String element, String uri) {
-			return editMeta(editor, element, Collections.emptyMap());
+			return editMeta(editor, element, uri, Collections.emptyMap());
 		}
 		
 		public String editMeta (String editor, String element, String uri, Map<String, Object> options) {

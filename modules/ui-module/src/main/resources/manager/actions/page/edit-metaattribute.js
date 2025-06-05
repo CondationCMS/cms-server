@@ -20,7 +20,7 @@
  * #L%
  */
 import {openModal} from '/manager/js/modules/modal.js'
-import {createForm} from '/manager/js/modules/form/form/forms.js'
+import {createForm} from '/manager/js/modules/form/forms.js'
 import {showToast} from '/manager/js/modules/toast.js'
 import {getPreviewUrl, reloadPreview} from '/manager/js/modules/preview.utils.js'
 import { getMetaValueByPath } from '/manager/js/modules/node.js'

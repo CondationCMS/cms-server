@@ -19,23 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+const listeners = {};
 
-i[data-cms-section-handle] {
-	cursor: pointer;
-}
-
-tr[data-cms-file-directory] {
-	cursor: pointer;
-}
-
-#drop-zone {
-  width: 100%;
-  padding: 50px;
-  border: 2px dashed #aaa;
-  text-align: center;
-  margin-top: 10px;
-  transition: background-color 0.2s;
-}
-#drop-zone.dragover {
-  background-color: #f0f8ff;
-}
+export const EventBus = {
+	on(event, handler) {
+		(listeners[event] ||= []).push(handler);
+	},
+	emit(event, payload) {
+		(listeners[event] || []).forEach(fn => fn(payload));
+	}
+};

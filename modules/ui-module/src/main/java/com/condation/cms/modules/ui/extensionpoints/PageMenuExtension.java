@@ -68,23 +68,6 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "pageMenu",
-			id = "page-edit-content",
-			name = "Edit Content",
-			position = 2,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-content")
-	)
-	@ShortCut(
-			id = "page-edit-content",
-			title = "Edit Content",
-			hotkey = "ctrl-1",
-			section = "Page"
-	)
-	public void test_modal() {
-
-	}
-
-	@com.condation.cms.api.ui.annotations.MenuEntry(
-			parent = "pageMenu",
 			id = "page-edit-meta",
 			name = "Edit MetaData",
 			position = 3,

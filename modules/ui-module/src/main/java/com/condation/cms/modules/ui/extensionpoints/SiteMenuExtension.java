@@ -40,8 +40,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  *
  * @author t.marx
  */
+/*
 @Extensions({
 	@Extension(UIActionsExtensionPoint.class),})
+*/
 public class SiteMenuExtension extends AbstractExtensionPoint implements UIActionsExtensionPoint {
 
 	@Override

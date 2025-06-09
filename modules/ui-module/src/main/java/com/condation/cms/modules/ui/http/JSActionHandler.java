@@ -48,10 +48,6 @@ public class JSActionHandler extends JettyHandler {
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-
-		System.out.println("path: " + request.getHttpURI().getPath());
-		System.out.println("context: " + request.getContext().getContextPath());
-
 		var resource = request.getHttpURI().getPath().replace("/manager/actions/", "") + ".js";
 
 		var files = fileSystem.getPath(base);

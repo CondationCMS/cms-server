@@ -39,3 +39,7 @@ tr[data-cms-file-directory] {
 #drop-zone.dragover {
   background-color: #f0f8ff;
 }
+
+.dropdown-nocaret::after{
+  display: none; 
+}

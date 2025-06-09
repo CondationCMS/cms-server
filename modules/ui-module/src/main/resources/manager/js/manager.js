@@ -26,10 +26,13 @@ import { loadPreview } from './modules/preview.utils.js';
 import { UIStateManager } from './modules/ui-state.js';
 
 import { PreviewHistory } from './modules/preview.history.js';
+import { updateStateButton } from './modules/manager-ui.js';
+import { EventBus } from './modules/event-bus.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 
 	PreviewHistory.init("/");
+	updateStateButton();
 
 	const iframe = document.getElementById('contentPreview');
 
@@ -40,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	iframe.addEventListener("load", () => {
+		EventBus.emit("preview:loaded", {});
 		try {
 			const currentUrl = iframe.contentWindow.location.href;
 			const url = new URL(currentUrl);
@@ -50,6 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 
 			UIStateManager.setTabState("preview", preview_update)
+
+			updateStateButton();
+			
 		} catch (e) {
 			console.log(e)
 		}

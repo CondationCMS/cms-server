@@ -108,9 +108,9 @@
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-								aria-expanded="false" data-cms-i18n-key="language">
-								Language
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button" data-bs-toggle="dropdown"
+								aria-expanded="false" data-cms-i18n-key11="language" title="Language">
+								<i class="bi bi-globe2"></i>
 							</a>
 							<ul class="dropdown-menu">
 								<li>
@@ -120,6 +120,22 @@
 								<li>
 									<a class="dropdown-item cms-lang-selector" href="#" data-cms-i18n-lang="de"
 										data-cms-i18n-key="language.de">German</a>
+								</li>
+							</ul>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="btn btn-success dropdown-toggle dropdown-nocaret" href="#" 
+							data-bs-toggle="dropdown" aria-expanded="false"
+								id="cms-btn-status"
+								data-cms-i18n-key="menu.status"
+								>Status
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li>
+									<a class="dropdown-item cms-lang-selector" href="#" data-cms-i18n-lang="en"
+										data-cms-i18n-key="menu.meta"
+										data-cms-action-definition='{"function":"runAction","module":"/manager/actions/page/edit-meta","parameters":{},"type":"script"}'
+										>Edit meta</a>
 								</li>
 							</ul>
 						</li>

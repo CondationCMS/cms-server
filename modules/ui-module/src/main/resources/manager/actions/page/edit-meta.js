@@ -23,8 +23,8 @@ import { openSidebar } from '/manager/js/modules/sidebar.js'
 import { createForm } from '/manager/js/modules/form/forms.js'
 import { showToast } from '/manager/js/modules/toast.js'
 import { getContentNode, setMeta, getContent } from '/manager/js/modules/rpc/rpc-content.js'
-import { getPreviewUrl } from '/manager/js/modules/preview.utils.js'
-// hook.js
+import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
+
 export async function runAction(params) {
 
 	const contentNode = await getContentNode({
@@ -121,6 +121,7 @@ export async function runAction(params) {
 				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});
+			reloadPreview()
 		}
 	});
 }

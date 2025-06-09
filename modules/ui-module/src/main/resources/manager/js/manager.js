@@ -29,6 +29,10 @@ import { PreviewHistory } from './modules/preview.history.js';
 import { updateStateButton } from './modules/manager-ui.js';
 import { EventBus } from './modules/event-bus.js';
 
+frameMessenger.on('load', (payload) => {
+	EventBus.emit("preview:loaded", {});
+});
+
 document.addEventListener("DOMContentLoaded", function () {
 
 	//PreviewHistory.init("/");
@@ -38,12 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const preview = UIStateManager.getTabState("preview", null)
 	if (preview) {
-		console.log("restore preview url", preview.url)
 		loadPreview(preview.url)
 	}
 
 	iframe.addEventListener("load", () => {
-		console.log("Preview loaded");
 		EventBus.emit("preview:loaded", {});
 		try {
 			const currentUrl = iframe.contentWindow.location.href;
@@ -57,15 +59,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			UIStateManager.setTabState("preview", preview_update)
 
 			updateStateButton();
-			
+
 		} catch (e) {
 			console.log(e)
 		}
 	})
-
-	frameMessenger.on('edit', (payload) => {
-		EventBus.emit("preview:loaded", {});
-	});
 
 	frameMessenger.on('edit', (payload) => {
 		console.log(payload)

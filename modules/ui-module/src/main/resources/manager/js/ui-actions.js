@@ -50,7 +50,6 @@ window.addEventListener("DOMContentLoaded", async () => {
 	})
 
 	EventBus.on("ui:localeChanged", (data) => {
-		console.log(data.locale)
 	})
 
 	const actionElements = document.querySelectorAll('[data-cms-action-definition]');

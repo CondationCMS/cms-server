@@ -26,6 +26,7 @@ import { PreviewHistory } from "./preview.history.js";
 //PreviewHistory.init();
 // close overlay on preview loaded
 EventBus.on("preview:loaded", (data) => {
+	console.log("disable preview overlay");
 	deActivatePreviewOverlay();
 });
 
@@ -54,6 +55,7 @@ const getPreviewUrl = () => {
 }
 
 const reloadPreview = () => {
+	activatePreviewOverlay();
 	document.getElementById("contentPreview").contentDocument.location.reload(true);
 }
 
@@ -69,10 +71,11 @@ const loadPreview = (url) => {
 		if (!parsedUrl.searchParams.has("preview")) {
 			parsedUrl.searchParams.append("preview", "true");
 		}
+		parsedUrl.searchParams.append("nocache", Date.now());
 
 		// Setze zusammengesetzten Pfad + Query zurück in das iframe
 		const result = parsedUrl.pathname + parsedUrl.search;
-		//document.getElementById("contentPreview").src = result;
+		document.getElementById("contentPreview").src = result;
 		//PreviewHistory.navigatePreview(result);
 
 	} catch (e) {

@@ -31,7 +31,7 @@ import { EventBus } from './modules/event-bus.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 
-	PreviewHistory.init("/");
+	//PreviewHistory.init("/");
 	updateStateButton();
 
 	const iframe = document.getElementById('contentPreview');
@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	iframe.addEventListener("load", () => {
+		console.log("Preview loaded");
 		EventBus.emit("preview:loaded", {});
 		try {
 			const currentUrl = iframe.contentWindow.location.href;
@@ -61,6 +62,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			console.log(e)
 		}
 	})
+
+	frameMessenger.on('edit', (payload) => {
+		EventBus.emit("preview:loaded", {});
+	});
 
 	frameMessenger.on('edit', (payload) => {
 		console.log(payload)

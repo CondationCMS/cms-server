@@ -20,9 +20,29 @@
  * #L%
  */
 
+import { EventBus } from "./event-bus.js";
 import { PreviewHistory } from "./preview.history.js";
 
-PreviewHistory.init();
+//PreviewHistory.init();
+// close overlay on preview loaded
+EventBus.on("preview:loaded", (data) => {
+	deActivatePreviewOverlay();
+});
+
+export const activatePreviewOverlay = () => {
+	console.log("activatePreviewOverlay");
+	const overlay = document.getElementById("previewOverlay");
+	if (overlay) {
+		overlay.style.display = "flex";
+	}
+}
+export const deActivatePreviewOverlay = () => {
+	console.log("deActivatePreviewOverlay");
+	const overlay = document.getElementById("previewOverlay");
+	if (overlay) {
+		overlay.style.display = "none";
+	}
+}
 
 const getPreviewUrl = () => {
 	try {
@@ -38,11 +58,8 @@ const reloadPreview = () => {
 }
 
 const loadPreview = (url) => {
-	const overlay = document.getElementById("previewOverlay");
-	overlay.style.display = "flex";
-	document.getElementById("contentPreview").addEventListener("load", () => {
-		overlay.style.display = "none";
-	})
+	activatePreviewOverlay();
+	
 	try {
 		// Fallback-Host für relative URLs, damit URL-Parsing funktioniert
 		const dummyBase = window.location.origin;
@@ -56,7 +73,7 @@ const loadPreview = (url) => {
 		// Setze zusammengesetzten Pfad + Query zurück in das iframe
 		const result = parsedUrl.pathname + parsedUrl.search;
 		//document.getElementById("contentPreview").src = result;
-		PreviewHistory.navigatePreview(result);
+		//PreviewHistory.navigatePreview(result);
 
 	} catch (e) {
 		console.error("Ungültige URL:", url, e);

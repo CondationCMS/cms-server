@@ -29,6 +29,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			payload: { response: 'Hallo Parent!' }
 		});
 	});
+	frameMessenger.send(window.parent, {
+		type: 'loaded',
+		payload: { }
+	});
 
 	const containers = document.querySelectorAll('[data-cms-edit]');
 	containers.forEach(contentEditing);

@@ -49,7 +49,7 @@
 {% endif %}
 {% endmacro %}
 <!doctype html>
-<html lang="en">
+<html lang="en" class="h-100">
 
 <head>
 	<meta charset="utf-8" />
@@ -79,7 +79,8 @@
 	</style>
 </head>
 
-<body>
+<body class="d-flex flex-column h-100 m-0">
+
 	<div id="menu">
 		<nav class="navbar navbar-expand-lg navbar-expand-md bg-primary">
 			<div class="container-fluid">
@@ -145,10 +146,11 @@
 			</div>
 		</nav>
 	</div>
-	<div id="content" class="w-100 h-100">
-		<div class="position-relative w-100 h-100" id="previewWrapper">
-			<iframe id="contentPreview" class="w-100 h-100 border-0 position-absolute" src="/?preview=true"
-				stylebla="position: absolute; height: 100%; width: 100%; border: none"></iframe>
+	<div id="content" class="flex-grow-1 d-flex flex-column overflow-hidden">
+		<div id="previewWrapper" class="flex-grow-1 position-relative">
+			<iframe id="contentPreview"
+				class="position-absolute top-0 start-0 w-100 h-100 border-0"
+				src="/?preview=true"></iframe>
 
 			<!-- Overlay -->
 			<div id="previewOverlay"

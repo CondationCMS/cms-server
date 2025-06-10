@@ -19,13 +19,42 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+/*
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  flex: 1 1 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#previewWrapper {
+  flex: 1;
+  position: relative;
+}
+
+iframe#contentPreview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+  */
 
 i[data-cms-section-handle] {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 tr[data-cms-file-directory] {
-	cursor: pointer;
+  cursor: pointer;
 }
 
 #drop-zone {
@@ -36,10 +65,11 @@ tr[data-cms-file-directory] {
   margin-top: 10px;
   transition: background-color 0.2s;
 }
+
 #drop-zone.dragover {
   background-color: #f0f8ff;
 }
 
-.dropdown-nocaret::after{
-  display: none; 
+.dropdown-nocaret::after {
+  display: none;
 }

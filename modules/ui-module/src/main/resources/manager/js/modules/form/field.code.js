@@ -30,7 +30,7 @@ const createCodeField = (options, value = '') => {
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
 	return `
-		<div class="mb-3" data-cms-form-field-type="code">
+		<div class="mb-3 h-100" data-cms-form-field-type="code">
 			<label class="form-label" cms-i18n-key="${key}">${title}</label>
 			<div id="${id}" class="monaco-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
 			<input type="hidden" name="${options.name}" data-monaco-id="${id}" data-initial-value="${encodeURIComponent(value)}">

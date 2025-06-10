@@ -3,18 +3,19 @@ title: Startpage
 template: start.html
 search:
   index: false
-published: true
+published: false
 description: Thats awesome
 parent:
   text: another text for the meta attribute , seems to work
 count: 16
-background_color: '#000000'
-range_test: 71
-choose_color: green
+background_color: '#0cdf24'
+range_test: 0
+choose_color: red
 unpublish_date: null
 publish_date: null
 features:
 - search
+- filter
 ---
 
 # Demo Project

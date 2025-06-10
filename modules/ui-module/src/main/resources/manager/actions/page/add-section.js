@@ -53,7 +53,7 @@ export async function runAction(params) {
 			
 		}),
 		fullscreen: false,
-		onCancel: (event) => console.log("modal canceled"),
+		onCancel: (event) => {},
 		validate: () => validate(contentNode, params.sectionName),
 		onOk: async (event) => {
 			var result = await createSection(contentNode.result.uri, params.sectionName);

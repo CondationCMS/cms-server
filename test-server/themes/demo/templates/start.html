@@ -5,7 +5,7 @@
 		{% include "libs/fragments.html" %}
 		
 		<script type="text/javascript">
-			window.cmsUITemplateInfo = {
+			window.cmsUIInfo = {
 				pageTemplates : [
 					{
 						name: "StartPage",
@@ -14,6 +14,43 @@
 					{
 						name: "Imprint",
 						template: "imprint.html"
+					}
+				],
+				metaForm : [
+					{
+						type: 'divider',
+						name: 'divider',
+						title: 'Custom attributes',
+					},
+					{
+						type: 'color',
+						name: 'background_color',
+						title: 'Background Color'
+					},
+					{
+						type: "range",
+						name: "range_test",
+						title: "RangField"
+					},
+					{
+						type: "radio",
+						name: "choose_color",
+						title: "Farbe wählen",
+						choices: [
+							{ label: "Rot", value: "red" },
+							{ label: "Grün", value: "green" },
+							{ label: "Blau", value: "blue" }
+						]
+					},
+					{
+						name: "features",
+						title: "Funktionen auswählen",
+						type: "checkbox",
+						choices: [
+							{ label: "Suche", value: "search" },
+							{ label: "Filter", value: "filter" },
+							{ label: "Export", value: "export" }
+						]
 					}
 				]
 			}

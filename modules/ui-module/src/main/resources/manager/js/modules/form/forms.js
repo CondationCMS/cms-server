@@ -33,10 +33,10 @@ import { DateTimeField } from "./field.datetime.js";
 import { RangeField } from "./field.range.js";
 import { RadioField } from "./field.radio.js";
 import { CheckboxField } from "./field.checkbox.js";
+import { Divider } from "./field.divider.js";
 
 
 const createForm = (options) => {
-	console.log("form", options)
 	const fields = options.fields || [];
 	const values = options.values || {};
 	const formId = createID();
@@ -45,38 +45,40 @@ const createForm = (options) => {
 		const val = values[field.name] || '';
 		switch (field.type) {
 			case 'email':
-				return MailField.markup(field, val);
+				return MailField.markup(field, val)
 			case 'text':
-				return TextField.markup(field, val);
+				return TextField.markup(field, val)
 			case 'select':
-				return SelectField.markup(field, val);
+				return SelectField.markup(field, val)
 			case 'code':
-				return CodeField.markup(field, val);
+				return CodeField.markup(field, val)
 			case 'markdown':
-				return MarkdownField.markup(field, val);
+				return MarkdownField.markup(field, val)
 			case 'easymde':
 				return EasyMDEField.markup(field, val)
 			case 'number':
 				return NumberField.markup(field, val)
 			case 'date':
-				return DateField.markup(field, val);
+				return DateField.markup(field, val)
 			case 'datetime':
-				return DateTimeField.markup(field, val);
+				return DateTimeField.markup(field, val)
 			case 'color':
-				return ColorField.markup(field, val);
+				return ColorField.markup(field, val)
 			case 'range':
-				return RangeField.markup(field, val);
+				return RangeField.markup(field, val)
 			case 'radio':
-				return RadioField.markup(field, val);
+				return RadioField.markup(field, val)
 			case 'checkbox':
 				return CheckboxField.markup(field, val)
+			case 'divider':
+				return Divider.markup(field, val)
 			default:
 				return '';
 		}
 	}).join('\n');
 
 	const html = `
-		<form id="${formId}" class="needs-validation" novalidate>
+		<form id="${formId}" class="needs-validation h-100" novalidate>
 			${fieldHtml}
 		</form>
 	`;

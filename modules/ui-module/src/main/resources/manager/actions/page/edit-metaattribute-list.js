@@ -68,7 +68,7 @@ export async function runAction(params) {
 		body: 'modal body',
 		form: form,
 		fullscreen: true,
-		onCancel: (event) => console.log("modal canceled"),
+		onCancel: (event) => {},
 		onOk: async (event) => {
 			var updateData = form.getData()
 			var setMetaResponse = await setMeta({

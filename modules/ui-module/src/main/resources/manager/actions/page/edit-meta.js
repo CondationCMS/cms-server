@@ -24,6 +24,34 @@ import { createForm } from '/manager/js/modules/form/forms.js'
 import { showToast } from '/manager/js/modules/toast.js'
 import { getContentNode, setMeta, getContent } from '/manager/js/modules/rpc/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
+import { getMetaForm } from '../../js/modules/ui-helpers.js'
+
+const DEFAULT_FIELDS = [
+	{ 
+		type: 'text', 
+		name: 'title', 
+		title: 'Title' 
+	},
+	{
+		type: 'select',
+		name: 'published',
+		title: 'Published',
+		options: [
+			{ label: 'No', value: false },
+			{ label: 'Yes', value: true }
+		]
+	},
+	{
+		type: 'date',
+		name: 'publish_date',
+		title: 'Publish Date',
+	},
+	{
+		type: 'datetime',
+		name: 'unpublish_date',
+		title: 'Unpublish Date',
+	}
+]
 
 export async function runAction(params) {
 
@@ -35,80 +63,30 @@ export async function runAction(params) {
 		uri: contentNode.result.uri
 	})
 
+	const previewMetaForm = getMetaForm()
+	const fields = [
+		...DEFAULT_FIELDS,
+		...previewMetaForm
+	]
+	
+	const values = {
+		'title': getContentResponse?.result?.meta?.title,
+		'published': getContentResponse?.result?.meta?.published,
+		'publish_date': getContentResponse?.result?.meta?.publish_date,
+		'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
+		...buildValuesFromFields(previewMetaForm, getContentResponse?.result?.meta)
+	}
+
 	const form = createForm({
-		fields: [
-			{ type: 'text', name: 'title', title: 'Title' },
-			{
-				type: 'select',
-				name: 'published',
-				title: 'Published',
-				options: [
-					{ label: 'No', value: false },
-					{ label: 'Yes', value: true }
-				]
-			},
-			{
-				type: 'date',
-				name: 'publish_date',
-				title: 'Publish Date',
-			},
-			{
-				type: 'datetime',
-				name: 'unpublish_date',
-				title: 'Unpublish Date',
-			},
-			{
-				type: 'color',
-				name: 'background_color',
-				title: 'Background Color'
-			},
-			{
-				type: "range",
-				name: "range_test",
-				title: "RangField"
-			},
-			{
-				type: "radio",
-				name: "choose_color",
-				title: "Farbe wählen",
-				choices: [
-					{ label: "Rot", value: "red" },
-					{ label: "Grün", value: "green" },
-					{ label: "Blau", value: "blue" }
-				]
-			},
-			{
-				name: "features",
-				title: "Funktionen auswählen",
-				type: "checkbox",
-				choices: [
-					{ label: "Suche", value: "search" },
-					{ label: "Filter", value: "filter" },
-					{ label: "Export", value: "export" }
-				]
-			}
-
-
-		],
-		values: {
-			'title': getContentResponse?.result?.meta?.title,
-			'published': getContentResponse?.result?.meta?.published,
-			'publish_date': getContentResponse?.result?.meta?.publish_date,
-			'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-			'background_color': getContentResponse?.result?.meta?.background_color,
-			'range_test': getContentResponse?.result?.meta?.range_test,
-			'choose_color': getContentResponse?.result?.meta?.choose_color,
-			'features': getContentResponse?.result?.meta?.features,
-		}
+		fields: fields,
+		values: values
 	});
 
-
-
 	openSidebar({
-		title: 'Example Model',
+		title: 'Page meta',
 		body: 'modal body',
 		form: form,
-		onCancel: (event) => console.log("modal canceled"),
+		onCancel: (event) => {},
 		onOk: async (event) => {
 			var updateData = form.getData()
 			var setMetaResponse = await setMeta({
@@ -125,3 +103,29 @@ export async function runAction(params) {
 		}
 	});
 }
+
+/**
+ * Retrieves a nested value from an object using a dot-notated path like "meta.title"
+ * @param {object} sourceObj - The object to retrieve the value from
+ * @param {string} path - Dot-notated string path, e.g., "meta.title"
+ * @returns {*} - The value found at the given path, or undefined if not found
+ */
+const getValueByPath = (sourceObj, path) => {
+	return path.split('.').reduce((acc, part) => acc?.[part], sourceObj);
+};
+
+/**
+ * Builds a values object from an array of form fields
+ * @param {Array} fields - Array of form field objects, each with a .name property
+ * @param {object} sourceObj - The source object to extract the values from
+ * @returns {object} values - An object mapping field names to their corresponding values
+ */
+const buildValuesFromFields = (fields, sourceObj) => {
+	const values = {};
+	for (const field of fields) {
+		if (!field.name) continue;
+		values[field.name] = getValueByPath(sourceObj, field.name);
+	}
+	return values;
+};
+

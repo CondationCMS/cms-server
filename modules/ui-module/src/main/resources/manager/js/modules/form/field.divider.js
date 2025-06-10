@@ -20,22 +20,27 @@
  * #L%
  */
 
-const getPageTemplates = () => {
-	var info = document.getElementById("contentPreview").contentWindow.cmsUIInfo;
-	if (!info) {
-		return []
-	}
+import { i18n } from "../localization.js";
 
-	return info.pageTemplates
-}
+const createDivider = (options = {}) => {
+	const key = "field." + options.name;
+	const title = i18n.t(key, options.title || "");
+	const showTitle = title && title.trim().length > 0;
 
-const getMetaForm = () => {
-	var info = document.getElementById("contentPreview").contentWindow.cmsUIInfo;
-	if (!info || !info.metaForm) {
-		return []
-	}
+	return `
+		<div class="my-4" data-cms-form-field-type="divider">
+			<hr class="mb-1">
+			${showTitle ? `<div class="text-muted small text-uppercase fw-bold mb-2" cms-i18n-key="${key}">${title}</div>` : ""}
+		</div>
+	`;
+};
 
-	return info.metaForm
-}
+const getData = () => {
+	return {}; // Divider liefert keine Daten zurück
+};
 
-export { getPageTemplates, getMetaForm };
+export const Divider = {
+	markup: createDivider,
+	init: () => {},
+	data: getData
+};

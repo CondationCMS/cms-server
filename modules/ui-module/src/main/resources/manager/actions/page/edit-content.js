@@ -42,7 +42,12 @@ export async function runAction(params) {
 
 	const form = createForm({
 		fields: [
-			{type: params.editor, name: 'content', title: 'Inhalt'}
+			{
+				type: params.editor, 
+				name: 'content', 
+				title: 'Inhalt',
+				height: '80%'
+			}
 		],
 		values: {
 			"content": nodeContent?.result?.content
@@ -54,7 +59,7 @@ export async function runAction(params) {
 		body: 'modal body',
 		form: form,
 		fullscreen: true,
-		onCancel: (event) => console.log("modal canceled"),
+		onCancel: (event) => {},
 		onOk: async (event) => {
 			var updateData = form.getData()
 			var setContentResponse = await setContent({

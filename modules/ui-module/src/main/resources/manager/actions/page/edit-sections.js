@@ -50,7 +50,7 @@ export async function runAction(params) {
 		title: 'Edit Sections',
 		body: template({ sections: sections }),
 		fullscreen: false,
-		onCancel: (event) => console.log("modal canceled"),
+		onCancel: (event) => {},
 		onOk: async (event) => {
 			await saveSections();
 			showToast({

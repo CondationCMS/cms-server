@@ -26,19 +26,16 @@ import { PreviewHistory } from "./preview.history.js";
 //PreviewHistory.init();
 // close overlay on preview loaded
 EventBus.on("preview:loaded", (data) => {
-	console.log("disable preview overlay");
 	deActivatePreviewOverlay();
 });
 
 export const activatePreviewOverlay = () => {
-	console.log("activatePreviewOverlay");
 	const overlay = document.getElementById("previewOverlay");
 	if (overlay) {
 		overlay.style.display = "flex";
 	}
 }
 export const deActivatePreviewOverlay = () => {
-	console.log("deActivatePreviewOverlay");
 	const overlay = document.getElementById("previewOverlay");
 	if (overlay) {
 		overlay.style.display = "none";

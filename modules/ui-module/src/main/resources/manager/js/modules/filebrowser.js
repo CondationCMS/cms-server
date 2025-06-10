@@ -139,7 +139,6 @@ const openFileBrowser = async (optionsParam) => {
 		body: '<div id="cms-file-browser"></div>',
 		fullscreen: true,
 		onOk: async (event) => {
-			console.log("modal ok");
 		},
 		onShow: async () => {
 			initFileBrowser();

@@ -39,6 +39,7 @@ import com.condation.cms.modules.ui.http.RemoteCallHandler;
 import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.http.UploadHandler;
 import com.condation.cms.modules.ui.http.CompositeHttpHandler;
+import com.condation.cms.modules.ui.http.PublicResourceHandler;
 import com.condation.cms.modules.ui.http.auth.LoginHandler;
 import com.condation.cms.modules.ui.http.auth.LoginResourceHandler;
 import com.condation.cms.modules.ui.http.auth.LogoutHandler;
@@ -67,7 +68,7 @@ import org.eclipse.jetty.http.pathmap.PathSpec;
 @Extension(HttpRoutesExtensionPoint.class)
 @Slf4j
 public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
-	
+
 	public static FileSystem createFileSystem(String base) {
 		try {
 			URL resource = UIJettyHttpHandlerExtension.class.getResource(base);
@@ -104,12 +105,12 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		var hookSystem = getRequestContext().get(HookSystemFeature.class).hookSystem();
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
-		
-		ICache<String, AtomicInteger> failedLoginsCounter = getContext().get(CacheManagerFeature.class).cacheManager().get("loginFails", 
-				new CacheManager.CacheConfig(10_000l, Duration.ofMinutes(1)), 
+
+		ICache<String, AtomicInteger> failedLoginsCounter = getContext().get(CacheManagerFeature.class).cacheManager().get("loginFails",
+				new CacheManager.CacheConfig(10_000l, Duration.ofMinutes(1)),
 				key -> new AtomicInteger(0)
 		);
-		
+
 		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
 
@@ -118,36 +119,52 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext()));
 			mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
 			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler(getRequestContext()));
-			
+
 			mapping.add(PathSpec.from("/manager/upload"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
 							new UploadHandler(
-							"/manager/upload",
-							getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS))
+									"/manager/upload",
+									getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS))
 					)));
-			mapping.add(PathSpec.from("/manager/rpc"), 
+			mapping.add(PathSpec.from("/manager/rpc"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
 							new RemoteCallHandler(remoteCallService, getContext())
 					)));
 
-			mapping.add(PathSpec.from("/manager/hooks"), 
+			mapping.add(PathSpec.from("/manager/hooks"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
 							new HookHandler(hookSystem)
 					)));
 
-			mapping.add(PathSpec.from("/manager/actions/*"), 
+			mapping.add(PathSpec.from("/manager/actions/*"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
 							new JSActionHandler(createFileSystem("/manager/actions"), "/manager/actions", getContext())
 					)));
 
+			mapping.add(PathSpec.from("/manager/bootstrap/*"),
+					new PublicResourceHandler(
+							createFileSystem("/manager"),
+							"/manager",
+							List.of(
+									"bootstrap/bootstrap.bundle.min.js",
+									"bootstrap/bootstrap.bundle.min.js.map",
+									"bootstrap/bootstrap.min.css",
+									"bootstrap/bootstrap-superhero.min.css",
+									"bootstrap/bootstrap-icons.min.css",
+									"bootstrap/fonts/bootstrap-icons.woff",
+									"bootstrap/fonts/bootstrap-icons.woff2"
+							)
+					)
+			);
+
 			mapping.add(PathSpec.from("/manager/*"),
 					new CompositeHttpHandler(
 							List.of(
-									new UIAuthRedirectHandler(getContext()), 
+									new UIAuthRedirectHandler(getContext()),
 									new ResourceHandler(createFileSystem("/manager"), "/manager", getContext(), getRequestContext())
 							)
 					)

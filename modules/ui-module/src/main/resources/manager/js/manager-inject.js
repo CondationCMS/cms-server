@@ -50,7 +50,7 @@ const sectionEdition = (container) => {
 
 	const editSectionsButton = document.createElement('button');
 	editSectionsButton.setAttribute('data-cms-action', 'editSections');
-	editSectionsButton.textContent = 'Sections';
+	editSectionsButton.textContent = 'Order';
 	editSectionsButton.addEventListener('click', editSections);
 	toolbar.appendChild(editSectionsButton);
 
@@ -119,7 +119,13 @@ const contentEditing = (container) => {
 
 	const button = document.createElement('button');
 	button.setAttribute('data-cms-action', 'edit');
-	button.textContent = 'Edit';
+	
+	if (container.dataset.cmsElement === "content") {
+		button.textContent = 'Edit Content';
+	} else {
+		button.textContent = 'Edit';
+	}
+	
 	button.addEventListener('click', edit);
 
 	toolbar.appendChild(button);

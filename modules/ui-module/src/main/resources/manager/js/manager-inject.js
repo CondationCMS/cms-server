@@ -82,17 +82,13 @@ const sectionEdition = (container) => {
 };
 
 const addSection = (event) => {
-	// data-cms-edit-sections='true' data-cms-section-name
 	var $editSections = event.target.closest("[data-cms-edit-sections]")
 	var sectionName = $editSections.dataset.cmsSectionName
-	var sectionTemplates = $editSections.dataset.cmsSectionTemplates
-	const validTemplates = sectionTemplates.split(",").map(s => s.trim());
-
+	
 	var command = {
 		type: 'add-section',
 		payload: {
-			sectionName: sectionName,
-			sectionTemplates: validTemplates
+			sectionName: sectionName
 		}
 	}
 	frameMessenger.send(window.parent, command);

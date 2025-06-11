@@ -25,6 +25,7 @@ import { addSection, getContentNode } from '/manager/js/modules/rpc/rpc-content.
 import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
 import Handlebars from '../../js/libs/handlebars.min.js';
 import { i18n } from '../../js/modules/localization.js'
+import { getSectionTemplates } from '../../js/modules/ui-helpers.js';
 
 export async function runAction(params) {
 
@@ -40,16 +41,15 @@ export async function runAction(params) {
 		<select id="cms-section-template-selection" class="form-select" aria-label="Select section template">
 			<option value="000" selected>Select template</option>
 			{{#each templates}}
-				<option value="{{this}}">{{this}}</option>
+				<option value="{{template}}">{{name}}</option>
 			{{/each}}
 		</select>
 		`);
 
-
 	openModal({
 		title: i18n.t("addsection.titles.modal", 'Add section'),
 		body: template({ 
-			templates: params.sectionTemplates,
+			templates: getSectionTemplates(params.sectionName),
 			
 		}),
 		fullscreen: false,

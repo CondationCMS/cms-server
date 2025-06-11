@@ -85,12 +85,11 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			return " data-cms-edit-sections='true' data-cms-section-name='%s' ".formatted(sectionName);
 		}
 		
-		public String addSection (String[] sectionTemplates) {
+		public String addSection () {
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
-			return " data-cms-add-section='true' data-cms-section-templates='%s' ".formatted(
-					Arrays.stream(sectionTemplates).collect(Collectors.joining(",")));
+			return " data-cms-add-section='true' ";
 		}
 		
 		public String editForm () {

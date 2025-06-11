@@ -28,19 +28,13 @@ import java.util.*;
 
 public class MetaConverter {
 
-    public static Map<String, Object> convertMeta(Map<String, Object> rawMeta) {
+    public static Map<String, Object> convertMeta(Map<String, Map<String, Object>> rawMeta) {
         Map<String, Object> result = new HashMap<>();
 
-        for (Map.Entry<String, Object> entry : rawMeta.entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> entry : rawMeta.entrySet()) {
             String key = entry.getKey();
-            Object valueObj = entry.getValue();
+            Map<String, Object> field = entry.getValue();
 
-            if (!(valueObj instanceof Map)) {
-                result.put(key, valueObj);
-                continue;
-            }
-
-            Map<?, ?> field = (Map<?, ?>) valueObj;
             Object typeObj = field.get("type");
             Object valObj = field.get("value");
 
@@ -54,15 +48,12 @@ public class MetaConverter {
 
             try {
                 switch (type) {
-                    case "date":
-                    case "datetime":
-                        // Erwartet vollständigen ISO-8601 String mit Z, z. B. 2025-05-31T13:30:00Z
-                        Instant instant = Instant.parse(valueStr);
-                        result.put(key, Date.from(instant));
-                        break;
-                    default:
-                        result.put(key, valObj);
-                        break;
+                    case "date", "datetime" -> {
+						// expected ISO String like 2025-05-31T13:30:00Z
+						Instant instant = Instant.parse(valueStr);
+						result.put(key, Date.from(instant));
+					}
+					default -> result.put(key, valObj);
                 }
             } catch (Exception e) {
                 // Falls Parsing fehlschlägt → originaler Wert

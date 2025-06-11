@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.modules.ui.utils.FormHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
 
 /**
@@ -82,7 +83,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 
-		var updatedContent = (String) parameters.get("content");
+		var updatedContent = FormHelper.getContent(parameters.get("content"));
 		var uri = (String) parameters.get("uri");
 
 		var contentFile = contentBase.resolve(uri);
@@ -112,8 +113,8 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 
-		var update = (Map<String, Object>) parameters.get("meta");
-		update = MetaConverter.convertMeta(update);
+		var updateParam = (Map<String, Map<String, Object>>) parameters.get("meta");
+		var update = MetaConverter.convertMeta(updateParam);
 		var uri = (String) parameters.get("uri");
 
 		var contentFile = contentBase.resolve(uri);
@@ -141,6 +142,8 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 
+	private record Update (String uri, Map<String, Map<String, Object>> meta) {}
+	
 	@RemoteMethod(name = "meta.set.batch")
 	public Object setMetaBatch(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
@@ -149,28 +152,31 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		Map<String, Object> result = new HashMap<>();
 		result.put("endpoint", "meta.set.batch");
 
-		List<Map<String, Object>> updates = (List<Map<String, Object>>) parameters.get("updates");
-		updates = updates.stream().map(MetaConverter::convertMeta).toList();
-
-		updates.forEach(entry -> {
-			var update = (Map<String, Object>) entry.get("meta");
-			var uri = (String) entry.get("uri");
-
-			var contentFile = contentBase.resolve(uri);
+		List<Map<String, Object>> updatesParam = (List<Map<String, Object>>) parameters.get("updates");
+		
+		var updates = updatesParam.stream().map(update -> {
+			return new Update(
+					(String)update.get("uri"), 
+					(Map<String, Map<String, Object>>)update.get("meta"));
+		}).toList();
+		
+		updates.forEach(update -> {
+			var contentFile = contentBase.resolve(update.uri);
 
 			if (contentFile != null) {
 				try {
 					ContentFileParser parser = new ContentFileParser(contentFile);
 
-					Map<String, Object> meta = parser.getHeader();
-					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
+					Map<String, Object> fileMeta = parser.getHeader();
+					var metaUpdated = MetaConverter.convertMeta(update.meta);
+					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(fileMeta, metaUpdated);
 
-					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(update.uri);
 
-					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
-					log.debug("file {} saved", uri);
+					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, fileMeta, parser.getContent());
+					log.debug("file {} saved", update.uri);
 
-					getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
+					getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(update.uri));
 				} catch (IOException ex) {
 					log.error("", ex);
 				}

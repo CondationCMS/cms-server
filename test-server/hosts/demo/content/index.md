@@ -4,7 +4,7 @@ template: start.html
 search:
   index: false
 published: true
-description: Thats awesome
+description: Thats awesome 123
 parent:
   text: another text for the meta attribute , seems to work
 count: 16
@@ -24,6 +24,8 @@ features:
 ![TestBild!](/media/images/test.jpg?format=small)
 
 That's a demo page with some extra features to show the manager application!
+
+Hello world!
 
 
 [about](/about)

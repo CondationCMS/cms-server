@@ -16,6 +16,14 @@
 						template: "imprint.html"
 					}
 				],
+				sectionTemplates : {
+					asection : [
+						{
+							name : "SectionTemplate",
+							template: "section.html"
+						}
+					]
+				},
 				metaForm : [
 					{
 						type: 'divider',
@@ -89,7 +97,7 @@
 		</div>
 		<div class="container" 
 			 {{ ui.editSections('asection')}}
-			 {{ ui.addSection(['section.html'])}}
+			 {{ ui.addSection()}}
 			 >
 			{% if sections.containsKey('asection') %}
 			{% for section in sections.get('asection') %}

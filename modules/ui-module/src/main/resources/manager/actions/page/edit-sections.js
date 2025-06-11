@@ -83,7 +83,10 @@ const saveSections = async () => {
 		updates.push({
 			uri: uri,
 			meta: {
-				"layout.order": parseInt(index)
+				"layout.order" : {
+					type: 'number',
+					value: parseInt(index)
+				}
 			}
 		});
 	}

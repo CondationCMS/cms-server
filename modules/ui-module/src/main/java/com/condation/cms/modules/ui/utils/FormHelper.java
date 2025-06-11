@@ -1,3 +1,5 @@
+package com.condation.cms.modules.ui.utils;
+
 /*-
  * #%L
  * ui-module
@@ -20,31 +22,25 @@
  * #L%
  */
 
-const getPageTemplates = () => {
-	var info = document.getElementById("contentPreview").contentWindow.cmsUIInfo;
-	if (!info) {
-		return []
+import java.util.Map;
+
+/**
+ *
+ * @author thorstenmarx
+ */
+public class FormHelper {
+
+	public static String getContent (Object formData) {
+		if (formData instanceof Map formMap) {
+			if ("markdown".equals(formMap.get("type"))) {
+				return (String)formMap.get("value");
+			} else if ("code".equals(formMap.get("type"))) {
+				return (String)formMap.get("value");
+			} else if ("easymde".equals(formMap.get("type"))) {
+				return (String)formMap.get("value");
+			}
+		}
+		
+		return "";
 	}
-
-	return info.pageTemplates
 }
-
-const getMetaForm = () => {
-	var info = document.getElementById("contentPreview").contentWindow.cmsUIInfo;
-	if (!info || !info.metaForm) {
-		return []
-	}
-
-	return info.metaForm
-}
-
-const getSectionTemplates = (section) => {
-	var info = document.getElementById("contentPreview").contentWindow.cmsUIInfo;
-	if (!info || !info.sectionTemplates || !info.sectionTemplates[section]) {
-		return {}
-	}
-
-	return info.sectionTemplates[section];
-}
-
-export { getPageTemplates, getMetaForm, getSectionTemplates };

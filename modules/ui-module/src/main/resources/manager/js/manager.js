@@ -125,7 +125,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			"module": "/manager/actions/page/add-section",
 			"function": "runAction",
 			"parameters": {
-				"sectionTemplates": payload.sectionTemplates,
 				"sectionName": payload.sectionName
 			}
 		}

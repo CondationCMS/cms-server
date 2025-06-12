@@ -36,9 +36,7 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @CommandLine.Command(name = "info")
-public class InfoCommand implements Runnable {
-
-	RemoteRepository repository = new RemoteRepository();
+public class InfoCommand extends AbstractExtensionCommand implements Runnable {
 
 	@CommandLine.Parameters(
 			paramLabel = "<extension>",
@@ -54,12 +52,12 @@ public class InfoCommand implements Runnable {
 			System.err.println("please provide extension name");
 			return;
 		}
-		if (!repository.exists(extension)) {
+		if (!getRepository().exists(extension)) {
 			System.err.printf("extension %s not found\r\n", extension);
 			return;
 		}
 		
-		final Optional<ExtensionInfo> extInfo = repository.getInfo(extension);
+		final Optional<ExtensionInfo> extInfo = getRepository().getInfo(extension);
 		var info = extInfo.get();
 
 		System.out.println("extension: " + info.getId());

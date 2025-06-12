@@ -23,8 +23,8 @@ package com.condation.cms.extensions.repository;
  */
 
 
-import com.condation.cms.extensions.repository.RemoteRepository;
-import org.assertj.core.api.Assertions;
+import java.util.List;
+	import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -35,7 +35,7 @@ public class RepositoryTest {
 	
 	@Test
 	public void getInfo() {
-		RemoteRepository repository = new RemoteRepository();
+		RemoteRepository repository = new RemoteRepository(List.of("https://raw.githubusercontent.com/CondationCMS/extension-registry/main"));
 		
 		var info = repository.getInfo("test-extension");
 		

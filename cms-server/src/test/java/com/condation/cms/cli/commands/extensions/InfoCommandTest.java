@@ -24,7 +24,6 @@ package com.condation.cms.cli.commands.extensions;
 
 
 
-import com.condation.cms.cli.commands.extensions.InfoCommand;
 import org.junit.jupiter.api.Test;
 
 /**

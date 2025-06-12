@@ -30,6 +30,8 @@ import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -91,6 +93,21 @@ public class ExtendedServerProperties implements ServerProperties {
 	@Override
 	public boolean dev() {
 		return !Constants.Environments.PROD.equals(env());
+	}
+
+	@Override
+	public List<String> moduleRepositories() {
+		return (List<String>) configuration.getOrDefault("urls.modules", Collections.emptyList());
+	}
+
+	@Override
+	public List<String> themeRepositories() {
+		return (List<String>) configuration.getOrDefault("urls.themes", Collections.emptyList());
+	}
+
+	@Override
+	public List<String> extensionRepositories() {
+		return (List<String>) configuration.getOrDefault("urls.extensions", Collections.emptyList());
 	}
 	
 	public static record Server (int port, String ip) {

@@ -30,17 +30,13 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SystemUtils;
 import org.yaml.snakeyaml.Yaml;
 
-/**
- *
- * @author t.marx
- * @param <T>
- */
 @Slf4j
 @RequiredArgsConstructor
 public class RemoteModuleRepository<T> {
@@ -51,70 +47,66 @@ public class RemoteModuleRepository<T> {
 			.build();
 
 	private final Class<T> type;
-	private final String baseUrl;
+	private final List<String> baseUrls;
 
 	public boolean exists(String id) {
-		try {
-			var moduleInfoUrl = baseUrl + "/main/%s/%s.yaml"
-					.formatted(id, id);
-
-			URI uri = URI.create(moduleInfoUrl);
-			HttpRequest request = HttpRequest.newBuilder(uri).build();
-			return client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode() == 200;
-		} catch (IOException | InterruptedException ex) {
-			log.error("", ex);
+		for (String baseUrl : baseUrls) {
+			try {
+				String moduleInfoUrl = baseUrl + "/%s/%s.yaml".formatted(id, id);
+				URI uri = URI.create(moduleInfoUrl);
+				HttpRequest request = HttpRequest.newBuilder(uri).build();
+				int status = client.send(request, HttpResponse.BodyHandlers.ofString()).statusCode();
+				if (status == 200) {
+					return true;
+				}
+			} catch (IOException | InterruptedException ex) {
+				log.warn("Failed checking existence at {}: {}", baseUrl, ex.getMessage());
+			}
 		}
-
 		return false;
 	}
 
 	public Optional<T> getInfo(String extension) {
-		try {
-			var moduleInfoUrl = baseUrl + "/main/%s/%s.yaml"
-					.formatted(extension, extension);
-
-			URI uri = URI.create(moduleInfoUrl);
-			HttpRequest request = HttpRequest.newBuilder(uri)
-					.build();
-			final HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			if (response.statusCode() != 200) {
-				return Optional.empty();
+		for (String baseUrl : baseUrls) {
+			try {
+				String moduleInfoUrl = baseUrl + "/%s/%s.yaml".formatted(extension, extension);
+				URI uri = URI.create(moduleInfoUrl);
+				HttpRequest request = HttpRequest.newBuilder(uri).build();
+				HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+				if (response.statusCode() == 200) {
+					String content = response.body();
+					return Optional.of(new Yaml().loadAs(content, type));
+				}
+			} catch (IOException | InterruptedException ex) {
+				log.warn("Failed loading info from {}: {}", baseUrl, ex.getMessage());
 			}
-			String content = response.body();
-
-			return Optional.of(new Yaml().loadAs(content, type));
-		} catch (IOException | InterruptedException ex) {
-			log.error("", ex);
 		}
-
 		return Optional.empty();
 	}
 
 	public void download(String url, Path target) {
-
 		try {
 			Path tempDirectory = Files.createTempDirectory("modules");
 			if (SystemUtils.IS_OS_UNIX) {
 				Files.setPosixFilePermissions(tempDirectory, PosixFilePermissions.fromString("rwx------"));
 			} else {
-				var f = tempDirectory.toFile();
+				File f = tempDirectory.toFile();
 				f.setReadable(true, true);
 				f.setWritable(true, true);
 				f.setExecutable(true, true);
 			}
 
-			var request = HttpRequest.newBuilder(URI.create(url)).GET().build();
+			HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
 			HttpResponse<Path> response = client.send(
 					request,
 					HttpResponse.BodyHandlers.ofFile(tempDirectory.resolve(System.currentTimeMillis() + ".zip")));
 
-			var downloaded = response.body();
-
+			Path downloaded = response.body();
 			File moduleTempDir = InstallationHelper.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
-
 			InstallationHelper.moveDirectoy(moduleTempDir, target.resolve(moduleTempDir.getName()).toFile());
+
 		} catch (Exception ex) {
-			log.error("", ex);
+			log.error("Error downloading module: {}", ex.getMessage(), ex);
 			throw new RuntimeException("error downloading module");
 		}
 	}

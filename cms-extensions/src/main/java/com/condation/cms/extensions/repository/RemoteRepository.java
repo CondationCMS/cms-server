@@ -22,70 +22,73 @@ package com.condation.cms.extensions.repository;
  * #L%
  */
 
-
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
 
-/**
- *
- * @author t.marx
- */
 @Slf4j
+@RequiredArgsConstructor
 public class RemoteRepository {
 
-	HttpClient client = HttpClient.newHttpClient();
-	
-	public boolean exists (String extension) {
-		try {
-			var moduleInfoUrl = "https://raw.githubusercontent.com/CondationCMS/extension-registry/main/%s/%s.yaml"
-					.formatted(extension, extension);
-			
-			URI uri = URI.create(moduleInfoUrl);
-			HttpRequest request = HttpRequest.newBuilder(uri).build();
-			return client.send(request, BodyHandlers.ofString()).statusCode() == 200;
-		} catch (IOException | InterruptedException ex) {
-			log.error("", ex);
-		}
-		
-		return false;
+	private final HttpClient client = HttpClient.newHttpClient();
+	private final List<String> baseUrls;
+
+	public boolean exists(String extension) {
+		return baseUrls.stream().anyMatch(baseUrl -> {
+			String url = baseUrl + "%s%s/%s.yaml".formatted(
+					baseUrl.endsWith("/") ? "" : "/",
+					extension, 
+					extension);
+			try {
+				HttpRequest request = HttpRequest.newBuilder(URI.create(url)).build();
+				int statusCode = client.send(request, BodyHandlers.ofString()).statusCode();
+				return statusCode == 200;
+			} catch (IOException | InterruptedException ex) {
+				log.warn("Failed checking existence at {}: {}", url, ex.getMessage());
+				return false;
+			}
+		});
 	}
-	
-	public Optional<String> getContent (String extension) {
-		try {
-			var moduleInfoUrl = "https://raw.githubusercontent.com/CondationCMS/extension-registry/main/%s/%s.js"
-					.formatted(extension, extension);
-			
-			URI uri = URI.create(moduleInfoUrl);
-			HttpRequest request = HttpRequest.newBuilder(uri).build();
-			return Optional.of(client.send(request, BodyHandlers.ofString()).body());
-		} catch (IOException | InterruptedException ex) {
-			log.error("", ex);
+
+	public Optional<String> getContent(String extension) {
+		for (String baseUrl : baseUrls) {
+			String url = baseUrl + "%s%s/%s.js".formatted(
+					baseUrl.endsWith("/") ? "" : "/",
+					extension, 
+					extension);
+			try {
+				HttpRequest request = HttpRequest.newBuilder(URI.create(url)).build();
+				String body = client.send(request, BodyHandlers.ofString()).body();
+				return Optional.ofNullable(body);
+			} catch (IOException | InterruptedException ex) {
+				log.warn("Failed loading content from {}: {}", url, ex.getMessage());
+			}
 		}
-		
 		return Optional.empty();
 	}
-	
-	public Optional<ExtensionInfo> getInfo (String extension) {
-		try {
-			var moduleInfoUrl = "https://raw.githubusercontent.com/CondationCMS/extension-registry/main/%s/%s.yaml"
-					.formatted(extension, extension);
-			
-			URI uri = URI.create(moduleInfoUrl);
-			HttpRequest request = HttpRequest.newBuilder(uri).build();
-			String content = client.send(request, BodyHandlers.ofString()).body();
-			
-			
-			return Optional.of(new Yaml().loadAs(content, ExtensionInfo.class));
-		} catch (IOException | InterruptedException ex) {
-			log.error("", ex);
+
+	public Optional<ExtensionInfo> getInfo(String extension) {
+		for (String baseUrl : baseUrls) {
+			String url = baseUrl + "%s%s/%s.yaml".formatted(
+					baseUrl.endsWith("/") ? "" : "/",
+					extension, 
+					extension);
+			try {
+				HttpRequest request = HttpRequest.newBuilder(URI.create(url)).build();
+				String content = client.send(request, BodyHandlers.ofString()).body();
+				ExtensionInfo info = new Yaml().loadAs(content, ExtensionInfo.class);
+				return Optional.of(info);
+			} catch (IOException | InterruptedException ex) {
+				log.warn("Failed loading info from {}: {}", url, ex.getMessage());
+			}
 		}
-		
 		return Optional.empty();
 	}
 }

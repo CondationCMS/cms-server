@@ -4,7 +4,7 @@ package com.condation.cms.extensions.repository;
  * #%L
  * cms-extensions
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,52 +22,112 @@ package com.condation.cms.extensions.repository;
  * #L%
  */
 
-
-import com.condation.cms.extensions.repository.RemoteModuleRepository;
-import com.condation.cms.extensions.repository.ModuleInfo;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import com.sun.net.httpserver.HttpServer;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
-/**
- *
- * @author t.marx
- */
-public class RemoteModuleRepositoryTest {
-	
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-	RemoteModuleRepository<ModuleInfo> moduleRepository = new RemoteModuleRepository<>(
-			ModuleInfo.class,
-			"https://raw.githubusercontent.com/CondationCMS/module-registry"
-			);
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class RemoteModuleRepositoryTest {
 
-	@Test
-	public void test_exist() {
-		Assertions.assertThat(moduleRepository.exists("none-module")).isFalse();
-		
-		Assertions.assertThat(moduleRepository.exists("downloads-module")).isTrue();
+    private HttpServer server1;
+    private HttpServer server2;
+
+    private String baseUrl1;
+    private String baseUrl2;
+
+	@Data
+	@NoArgsConstructor
+	@AllArgsConstructor
+    public static class DummyExtensionInfo {
+		String name;
+		String version; 
 	}
-	
-	@Test
-	public void test_info() {
-		Assertions.assertThat(moduleRepository.getInfo("none-module")).isEmpty();
-		
-		Assertions.assertThat(moduleRepository.getInfo("downloads-module"))
-				.isPresent()
-				.get()
-				.isInstanceOf(ModuleInfo.class)
-				;
-	}
-	
-	@Test
-	public void test_download() throws IOException {
-		var moduleInfo = moduleRepository.getInfo("downloads-module").get();
-		
-		var modulesPath = Path.of("target/modules-" + System.currentTimeMillis());
-		Files.createDirectories(modulesPath);
-		
-		moduleRepository.download(moduleInfo.getFile(), modulesPath);
-	}
+
+    @BeforeAll
+    void setupServers() throws IOException {
+        server1 = HttpServer.create(new InetSocketAddress(0), 0);
+        server2 = HttpServer.create(new InetSocketAddress(0), 0);
+
+        int port1 = server1.getAddress().getPort();
+        int port2 = server2.getAddress().getPort();
+
+        baseUrl1 = "http://localhost:" + port1 + "/main";
+        baseUrl2 = "http://localhost:" + port2 + "/main";
+
+        // Server 1: only provides moduleA
+        server1.createContext("/main/moduleA/moduleA.yaml", exchange -> {
+            String yaml = "name: ModuleA\nversion: 1.0";
+            exchange.sendResponseHeaders(200, yaml.getBytes().length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(yaml.getBytes(StandardCharsets.UTF_8));
+            }
+        });
+
+        // Server 2: only provides moduleB
+        server2.createContext("/main/moduleB/moduleB.yaml", exchange -> {
+            String yaml = "name: ModuleB\nversion: 2.0";
+            exchange.sendResponseHeaders(200, yaml.getBytes().length);
+            try (OutputStream os = exchange.getResponseBody()) {
+                os.write(yaml.getBytes(StandardCharsets.UTF_8));
+            }
+        });
+
+        server1.start();
+        server2.start();
+    }
+
+    @AfterAll
+    void tearDown() {
+        server1.stop(0);
+        server2.stop(0);
+    }
+
+    @Test
+    void shouldLoadModuleFromFirstRepository() {
+        var repo = new RemoteModuleRepository<>(DummyExtensionInfo.class, List.of(baseUrl1, baseUrl2));
+
+        Optional<DummyExtensionInfo> result = repo.getInfo("moduleA");
+
+        Assertions.assertThat(result)
+                .isPresent()
+                .get()
+                .satisfies(info -> {
+                    Assertions.assertThat(info.getName()).isEqualTo("ModuleA");
+                    Assertions.assertThat(info.getVersion()).isEqualTo("1.0");
+                });
+    }
+
+    @Test
+    void shouldLoadModuleFromSecondRepositoryIfNotInFirst() {
+        var repo = new RemoteModuleRepository<>(DummyExtensionInfo.class, List.of(baseUrl1, baseUrl2));
+
+        Optional<DummyExtensionInfo> result = repo.getInfo("moduleB");
+
+        Assertions.assertThat(result)
+                .isPresent()
+                .get()
+                .satisfies(info -> {
+                    Assertions.assertThat(info.getName()).isEqualTo("ModuleB");
+                    Assertions.assertThat(info.getVersion()).isEqualTo("2.0");
+                });
+    }
+
+    @Test
+    void shouldReturnEmptyIfModuleNotFoundInAnyRepository() {
+        var repo = new RemoteModuleRepository<>(DummyExtensionInfo.class, List.of(baseUrl1, baseUrl2));
+
+        Optional<DummyExtensionInfo> result = repo.getInfo("unknownModule");
+
+        Assertions.assertThat(result).isNotPresent();
+    }
 }

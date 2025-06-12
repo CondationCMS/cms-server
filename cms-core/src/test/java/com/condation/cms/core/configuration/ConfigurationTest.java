@@ -123,6 +123,20 @@ public class ConfigurationTest {
 		Assertions.assertThat(serverProperties.serverPort()).isEqualTo(1010);
 	}
 	
+	@Test
+	public void test_urls () {
+		var serverProperties = new ExtendedServerProperties(configuration);
+		
+		Assertions.assertThat(serverProperties.extensionRepositories())
+				.containsExactly("https://myextensions.com");
+		
+		Assertions.assertThat(serverProperties.moduleRepositories())
+				.containsExactly("https://mymodules.com");
+		
+		Assertions.assertThat(serverProperties.themeRepositories())
+				.containsExactly("https://mythemes.com");
+	}
+	
 	@Data
 	@NoArgsConstructor
 	public static class Server {

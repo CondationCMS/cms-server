@@ -44,7 +44,6 @@ import picocli.CommandLine;
 @CommandLine.Command(name = "install")
 public class InstallCommand extends AbstractExtensionCommand implements Runnable {
 
-	RemoteRepository repository = new RemoteRepository();
 	
 	@CommandLine.Parameters(
 			paramLabel = "<extension>",
@@ -72,13 +71,13 @@ public class InstallCommand extends AbstractExtensionCommand implements Runnable
 			return;
 		}
 		
-		if (repository.exists(extension)) {
+		if (getRepository().exists(extension)) {
 			
 			if (!isCompatibleWithServer(extension)) {
 				throw new RuntimeException("the extension is not compatible with server version");
 			}
 			
-			Optional<String> content = repository.getContent(extension);
+			Optional<String> content = getRepository().getContent(extension);
 			if (content.isEmpty()) {
 				System.err.println("the extension content not found");
 				return;

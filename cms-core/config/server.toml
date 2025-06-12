@@ -21,3 +21,8 @@ test = ["eins", "zwei"]
 
 [map]
 test = {"key1"="value2", "key2"="value2"}
+
+[urls]
+themes = ["https://mythemes.com"]
+extensions = ["https://myextensions.com"]
+modules = ["https://mymodules.com"]

@@ -25,14 +25,18 @@ package com.condation.cms.cli.commands.themes;
 
 import com.condation.cms.CMSServer;
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import com.condation.cms.extensions.repository.ModuleInfo;
 import com.condation.cms.extensions.repository.RemoteModuleRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +48,35 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class AbstractThemeCommand {
 
-	public static final String DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/CondationCMS/theme-registry";
+	public static final String DEFAULT_REGISTRY_URL = "https://raw.githubusercontent.com/CondationCMS/theme-registry/main";
 
 	@Getter
-	private RemoteModuleRepository<ModuleInfo> repository = new RemoteModuleRepository(ModuleInfo.class, DEFAULT_REGISTRY_URL);
+	private RemoteModuleRepository<ModuleInfo> repository = new RemoteModuleRepository(ModuleInfo.class, getRepositories());
 
+	private List<String> getRepositories () {
+		List<String> repos = new ArrayList<>();
+		repos.add(DEFAULT_REGISTRY_URL);
+		
+		try {
+			ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
+			
+			if (properties.themeRepositories() != null) {
+				var modUrls = properties.moduleRepositories().stream().map(url -> {
+					if (url.endsWith("/")) {
+						return url.substring(0, url.length() - 1);
+					}
+					return url;
+				}).toList();
+				repos.addAll(modUrls);
+			}
+		} catch (IOException e) {
+			log.error("", e);
+		}
+		
+		
+		return repos;
+	}
+	
 	protected static Path getThemeFolder (String theme) {
 		return ServerUtil.getPath(Constants.Folders.THEMES).resolve(theme);
 	}

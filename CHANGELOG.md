@@ -17,6 +17,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Aliases for content [442](https://github.com/CondationCMS/cms-server/issues/442)
 * **FEATURE** Add redirect support for aliases [454](https://github.com/CondationCMS/cms-server/issues/454)
 * **FEATURE** Custom repository urls for modules, extensions and themes [466](https://github.com/CondationCMS/cms-server/issues/466)
+* **FEATURE** UI to manage content [PR-446](https://github.com/CondationCMS/cms-server/pull/446)
 
 ### Developer experience
 

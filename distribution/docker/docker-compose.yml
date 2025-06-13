@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  condation-server:
+    image: condation-server:7.8.0
+    container_name: condation-server
+    volumes:
+      - ./data:/app/data
+    expose:
+      - 2020
+    networks:
+      - web
+
+  caddy:
+    image: caddy:2
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - condation-server
+    networks:
+      - web
+
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  web:
+    external: false

@@ -1,0 +1,3 @@
+http://condation-server {
+  reverse_proxy condation-server:2020
+}

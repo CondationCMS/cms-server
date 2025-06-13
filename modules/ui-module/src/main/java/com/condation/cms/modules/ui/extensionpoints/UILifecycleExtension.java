@@ -23,9 +23,7 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 
 import com.condation.cms.api.feature.features.CacheManagerFeature;
-import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.modules.ui.services.FileSystemService;
 import com.condation.cms.modules.ui.services.LockService;
 import com.condation.cms.modules.ui.utils.TemplateEngine;
 import lombok.Getter;
@@ -37,8 +35,6 @@ import lombok.Getter;
  */
 public class UILifecycleExtension {
 
-	@Getter
-	private FileSystemService fileSystemService;
 	@Getter
 	private LockService lockService;
 	@Getter
@@ -54,7 +50,6 @@ public class UILifecycleExtension {
 	}
 	
 	private UILifecycleExtension (CMSModuleContext context) {
-		fileSystemService = new FileSystemService(context.get(DBFeature.class).db());
 		lockService = new LockService();
 		templateEngine = new TemplateEngine(context.get(CacheManagerFeature.class).cacheManager());
 	}

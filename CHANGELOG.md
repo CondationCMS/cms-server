@@ -11,6 +11,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **BUGFIX** TemplateEngine should use cache only if activated [456](https://github.com/CondationCMS/cms-server/issues/456)
 * **MAINTENANCE** multiple dependencies updated
 * **MAINTENANCE** maven wrapper added to project
+* **MAINTENANCE** Deprecate/replace PathUtil.toURI with PathUtil.toURL [462](https://github.com/CondationCMS/cms-server/issues/462)
 * **FEATURE** Developer Experience [PR-440](https://github.com/CondationCMS/cms-server/pull/440)
 * **FEATURE** Aliases for content [442](https://github.com/CondationCMS/cms-server/issues/442)
 * **FEATURE** Add redirect support for aliases [454](https://github.com/CondationCMS/cms-server/issues/454)

@@ -71,7 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				"module": "/manager/actions/page/edit-content",
 				"function": "runAction",
 				"parameters": {
-					"editor": payload.editor
+					"editor": payload.editor,
+					"options": payload.options ? payload.options : {}
 				}
 			}
 			if (payload.uri) {
@@ -84,7 +85,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				"function": "runAction",
 				"parameters": {
 					"editor": payload.editor,
-					"attributes": payload.metaElements
+					"attributes": payload.metaElements,
+					"options": payload.options ? payload.options : {}
 				}
 			}
 			if (payload.uri) {
@@ -97,7 +99,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				"function": "runAction",
 				"parameters": {
 					"editor": payload.editor,
-					"attribute": payload.metaElement
+					"attribute": payload.metaElement,
+					"options": payload.options ? payload.options : {}
 				}
 			}
 			if (payload.uri) {

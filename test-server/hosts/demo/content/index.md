@@ -17,6 +17,11 @@ features:
 - search
 - filter
 - export
+checked:
+- farbe
+- form
+selected: form
+radioed: farbe
 ---
 
 # Demo Project

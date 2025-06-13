@@ -55,7 +55,7 @@ export async function runAction(params) {
 				type: attr.editor, 
 				name: attr.name, 
 				title: attr.name,
-				editorOptions: attr.editorOptions ? attr.editorOptions : {}
+				options: attr.options ? attr.options : {}
 			}
 		)
 	})

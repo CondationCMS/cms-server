@@ -160,7 +160,7 @@ const edit = (event) => {
 			payload: {
 				editor: $editor.dataset.cmsEditor,
 				element: $editor.dataset.cmsElement,
-				editorOptions: $editor.dataset.cmsEditorOptions ? JSON.parse($editor.dataset.cmsEditorOptions) : {}
+				options: $editor.dataset.cmsEditorOptions ? JSON.parse($editor.dataset.cmsEditorOptions) : {}
 			}
 		}
 		if ($editor.dataset.cmsMetaElement) {
@@ -173,7 +173,7 @@ const edit = (event) => {
 					elements.push({
 						name: $elem.dataset.cmsMetaElement,
 						editor: $elem.dataset.cmsEditor,
-						editorOptions: $elem.dataset.cmsEditorOptions ? JSON.parse($elem.dataset.cmsEditorOptions) : {}
+						options: $elem.dataset.cmsEditorOptions ? JSON.parse($elem.dataset.cmsEditorOptions) : {}
 					})
 				}
 			})

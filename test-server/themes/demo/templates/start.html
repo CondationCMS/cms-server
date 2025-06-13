@@ -48,21 +48,25 @@
 						type: "radio",
 						name: "choose_color",
 						title: "Farbe wählen",
-						choices: [
-							{ label: "Rot", value: "red" },
-							{ label: "Grün", value: "green" },
-							{ label: "Blau", value: "blue" }
-						]
+						options: {
+							choices: [
+								{ label: "Rot", value: "red" },
+								{ label: "Grün", value: "green" },
+								{ label: "Blau", value: "blue" }
+							]
+						}
 					},
 					{
 						name: "features",
 						title: "Funktionen auswählen",
 						type: "checkbox",
-						choices: [
-							{ label: "Suche", value: "search" },
-							{ label: "Filter", value: "filter" },
-							{ label: "Export", value: "export" }
-						]
+						options : {
+							choices: [
+								{ label: "Suche", value: "search" },
+								{ label: "Filter", value: "filter" },
+								{ label: "Export", value: "export" }
+							]
+						}
 					}
 				]
 			}
@@ -96,6 +100,15 @@
 				</div>
 				<div {{ ui.editFormElement("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
 					THE AGE: {{ node.meta.getOrDefault('count', 25 )}}
+				</div>
+				<div {{ ui.editFormElement("select", "selected", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
+					selected: {{ node.meta.getOrDefault('selected', "select value" )}}
+				</div>
+				<div {{ ui.editFormElement("checkbox", "checked", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
+					checked: {{ node.meta.getOrDefault('checked', "select value" )}}
+				</div>
+				<div {{ ui.editFormElement("radio", "radioed", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
+					radioed: {{ node.meta.getOrDefault('radioed', "select value" )}}
 				</div>
 			</div>
 		</div>

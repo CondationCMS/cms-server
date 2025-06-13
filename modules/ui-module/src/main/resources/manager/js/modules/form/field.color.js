@@ -30,7 +30,7 @@ const createColorField = (options, value = '#000000') => {
 	return `
 		<div class="mb-3" data-cms-form-field-type="color">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
-			<input type="color" class="form-control form-control-color" id="${id}" name="${options.name}" value="${value || '#000000'}" title="${options.title}">
+			<input type="color" class="form-control form-control-color" id="${id}" name="${options.name}" value="${value || '#000000'}" title="${title}">
 		</div>
 	`;
 };

@@ -47,7 +47,7 @@ export async function runAction(params) {
 		fields: [
 			{
 				type: params.editor, 
-				editorOptions: params.editorOptions ? params.editorOptions : {},
+				options: params.options ? params.options : {},
 				name: params.attribute, 
 				title: "Edit attribute: " + params.attribute
 			}

@@ -27,9 +27,9 @@ const createNumberField = (options, value = '') => {
 	const placeholder = options.placeholder || "";
 	const id = createID();
 	const key = "field." + options.name
-	const min = options.editorOptions.min != null ? `min="${options.editorOptions.min}"` : "";
-	const max = options.editorOptions.max != null ? `max="${options.editorOptions.max}"` : "";
-	const step = options.editorOptions.step != null ? `step="${options.editorOptions.step}"` : "";
+	const min = options.options.min != null ? `min="${options.options.min}"` : "";
+	const max = options.options.max != null ? `max="${options.options.max}"` : "";
+	const step = options.options.step != null ? `step="${options.options.step}"` : "";
 	const title = i18n.t(key, options.title)
 
 	return `

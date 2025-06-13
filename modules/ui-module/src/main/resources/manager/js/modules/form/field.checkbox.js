@@ -26,7 +26,7 @@ const createCheckboxField = (options, value = []) => {
 	const key = options.key || "";
 	const name = options.name || id;
 	const title = options.title || "";
-	const choices = options.choices || [];
+	const choices = options.options.choices || [];
 	const selectedValues = new Set(value);
 
 	const checkboxes = choices.map((choice, idx) => {

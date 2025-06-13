@@ -25,9 +25,9 @@ import { i18n } from "../localization.js"
 const createRangeField = (options, value = '') => {
 	const id = createID();
 	const key = "field." + options.name
-	const min = options.min ?? 0;
-	const max = options.max ?? 100;
-	const step = options.step ?? 1;
+	const min = options.options?.min ?? 0;
+	const max = options.options?.max ?? 100;
+	const step = options.options?.step ?? 1;
 	const title = i18n.t(key, options.title)
 
 	return `

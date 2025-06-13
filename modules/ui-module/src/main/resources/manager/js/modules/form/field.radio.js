@@ -27,7 +27,7 @@ const createRadioField = (options, value = '') => {
 	const key = "field." + options.name
 	const name = options.name || id;
 	const title = i18n.t(key, options.title)
-	const choices = options.choices || [];
+	const choices = options.options?.choices || [];
 
 	const radios = choices.map((choice, idx) => {
 		const inputId = `${id}-${idx}`;

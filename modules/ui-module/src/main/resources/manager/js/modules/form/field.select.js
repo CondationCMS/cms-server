@@ -26,7 +26,7 @@ const createSelectField = (options, value = '') => {
 	const id = createID();
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
-	const optionTags = (options.options || []).map(opt => {
+	const optionTags = (options.options?.choices || []).map(opt => {
 		const label = typeof opt === 'object' ? opt.label : opt;
 		const val = typeof opt === 'object' ? opt.value : opt;
 		const selected = val === value ? ' selected' : '';

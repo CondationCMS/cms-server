@@ -145,7 +145,13 @@ public class SiteModule extends AbstractModule {
 		
 		return cm;
 	}
-	
+	/**
+	 * must not be singleton because some site properties (theme...) are allowed to be changed
+	 * 
+	 * @param serverProperties
+	 * @return
+	 * @throws IOException 
+	 */
 	@Provides
 	public SiteProperties siteProperties(ServerProperties serverProperties) throws IOException {
 		return new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration(
@@ -153,6 +159,16 @@ public class SiteModule extends AbstractModule {
 				hostBase));
 	}
 
+	/**
+	 * This method must not be Singleton because it loads the configured theme for every request
+	 * 
+	 * @param siteProperties
+	 * @param serverProperties
+	 * @param messageSource
+	 * @param cacheManager
+	 * @return
+	 * @throws IOException 
+	 */
 	@Provides
 	public Theme loadTheme(
 		SiteProperties siteProperties, 

@@ -42,6 +42,11 @@ public class ThemeFeature implements Feature {
 		return theme;
 	}
 	
+	/**
+	 * This method is used for the ThemeFeature in the ModuleContext, because that feature is created once and not per request
+	 * 
+	 * @param theme 
+	 */
 	public void updateTheme (Theme theme) {
 		this.theme = theme;
 	}

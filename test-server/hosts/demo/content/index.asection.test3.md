@@ -1,7 +1,7 @@
 ---
 template: section.html
 layout:
-  order: 0
+  order: 1
 ---
 
 

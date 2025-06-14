@@ -122,4 +122,18 @@ class SignaturedRemoteModuleRepositoryTest {
 				.as("content.txt sollte entpackt vorhanden sein")
 				.isTrue();
 	}
+	
+	@Test
+	void shouldThrowAnExceptionOnInvalidSignature() throws Exception {
+
+		// Zielverzeichnis
+		Path installTarget = Files.createTempDirectory("install-target");
+
+		var repo = new RemoteModuleRepository<>(DummyExtensionInfo.class, List.of());
+
+		Assertions.assertThatCode(() -> {
+			repo.download(fileBaseUrl + "/test.zip", "wrong_signature", installTarget);
+		}).isInstanceOf(RuntimeException.class).hasMessage("error downloading module");
+				
+	}
 }

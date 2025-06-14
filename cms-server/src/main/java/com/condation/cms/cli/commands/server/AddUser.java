@@ -27,7 +27,6 @@ import com.condation.cms.api.utils.ServerUtil;
 
 
 import com.condation.cms.auth.services.UserService;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
@@ -46,7 +45,7 @@ public class AddUser implements Runnable {
 	@CommandLine.Option(names = {"-h", "--host"}, description = "The host", required = true)
 	String host = null;
 	
-	@CommandLine.Option(names = {"-g", "--groups"}, description = "The groups", split = ",")
+	@CommandLine.Option(names = {"-ro", "--roles"}, description = "The roles", split = ",")
 	String[] groups = null;
 	
 	@Parameters(

@@ -90,30 +90,40 @@ public class PathUtil {
 		return uri;
 	}
 
+	/**
+	 * 
+	 * @param contentFile
+	 * @param contentBase
+	 * @return
+	 * @deprecated use PathUtil.toURL instead
+	 */
+	@Deprecated(since = "8.0.0")
+	public static String toURI (final Path contentFile, final Path contentBase) {
+		return toURL(contentFile, contentBase);
+	}
+	/**
+	 * 
+	 * @param contentFile
+	 * @param contentBase
+	 * @return
+	 * @deprecated use PathUtil.toURL instead
+	 */
+	@Deprecated(since = "8.0.0")
+	public static String toURI(final ReadOnlyFile contentFile, final ReadOnlyFile contentBase) {
+		return toURL(contentFile, contentBase);
+	}
+	
 	public static String toURL(final Path contentFile, final Path contentBase) {
 		var relFile = toRelativeFile(contentFile, contentBase);
-		if (relFile.endsWith("index.md")) {
-			relFile = relFile.replace("index.md", "");
-		}
-
-		if (relFile.equals("")) {
-			relFile = "/";
-		} else if (relFile.endsWith("/")) {
-			relFile = relFile.substring(0, relFile.lastIndexOf("/"));
-		}
-
-		if (!relFile.startsWith("/")) {
-			relFile = "/" + relFile;
-		}
-		if (relFile.endsWith(".md")) {
-			relFile = relFile.substring(0, relFile.lastIndexOf(".md"));
-		}
-
-		return relFile;
+		return toURL(relFile);
 	}
 
 	public static String toURL(final ReadOnlyFile contentFile, final ReadOnlyFile contentBase) {
 		var relFile = toRelativeFile(contentFile, contentBase);
+		return toURL(relFile);
+	}
+	
+	private static String toURL (String relFile) {
 		if (relFile.endsWith("index.md")) {
 			relFile = relFile.replace("index.md", "");
 		}

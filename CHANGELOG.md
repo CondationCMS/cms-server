@@ -12,6 +12,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **MAINTENANCE** multiple dependencies updated
 * **MAINTENANCE** maven wrapper added to project
 * **MAINTENANCE** Dynamic themes, add some comments to make decisions clear [458](https://github.com/CondationCMS/cms-server/issues/458)
+* **MAINTENANCE** Deprecate/replace PathUtil.toURI with PathUtil.toURL [462](https://github.com/CondationCMS/cms-server/issues/462)
 * **FEATURE** Developer Experience [PR-440](https://github.com/CondationCMS/cms-server/pull/440)
 * **FEATURE** Aliases for content [442](https://github.com/CondationCMS/cms-server/issues/442)
 * **FEATURE** Add redirect support for aliases [454](https://github.com/CondationCMS/cms-server/issues/454)

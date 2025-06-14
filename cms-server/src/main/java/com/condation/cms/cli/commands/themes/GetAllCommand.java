@@ -28,8 +28,6 @@ import com.condation.cms.api.utils.ServerUtil;
 
 import com.condation.cms.cli.tools.ThemesUtil;
 import com.condation.cms.extensions.repository.InstallationHelper;
-import com.google.common.base.Strings;
-import java.nio.file.Path;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -75,7 +73,7 @@ public class GetAllCommand extends AbstractThemeCommand implements Runnable {
 		var info = getRepository().getInfo(theme).get();
 
 		System.out.println("get theme");
-		getRepository().download(info.getFile(), ServerUtil.getPath(Constants.Folders.THEMES));
+		getRepository().download(info.getFile(), info.getSignature(), ServerUtil.getPath(Constants.Folders.THEMES));
 		System.out.println("theme downloaded");
 	}
 

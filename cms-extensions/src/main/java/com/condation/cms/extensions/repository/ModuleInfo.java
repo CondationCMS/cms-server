@@ -40,4 +40,5 @@ public class ModuleInfo {
 	private String url;
 	private String compatibility;
 	private String file;
+	private String signature;
 }

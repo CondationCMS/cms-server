@@ -79,7 +79,7 @@ public class GetCommand extends AbstractThemeCommand implements Runnable {
 		var info = getRepository().getInfo(theme).get();
 
 		System.out.println("get theme");
-		getRepository().download(info.getFile(), ServerUtil.getPath(Constants.Folders.THEMES));
+		getRepository().download(info.getFile(), info.getSignature(), ServerUtil.getPath(Constants.Folders.THEMES));
 		System.out.println("theme downloaded");
 	}
 

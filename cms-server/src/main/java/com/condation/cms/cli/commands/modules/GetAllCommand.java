@@ -90,7 +90,7 @@ public class GetAllCommand extends AbstractModuleCommand implements Runnable {
 			var info = getRepository().getInfo(module).get();
 
 			System.out.printf("get module %s \r\n", module);
-			getRepository().download(info.getFile(), ServerUtil.getPath("modules/"));
+			getRepository().download(info.getFile(), info.getSignature(), ServerUtil.getPath("modules/"));
 			System.out.println("module downloaded");
 			return true;
 		} else {

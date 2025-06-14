@@ -23,7 +23,6 @@ package com.condation.cms.auth.services;
  */
 
 
-import com.condation.cms.auth.services.UserService;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,7 +49,7 @@ public class UserServiceTest {
 	
 
 	@Test
-	public void testSomeMethod() throws IOException {
+	public void test_login_and_remove() throws IOException {
 		
 		var realm = UserService.Realm.of("users");
 		

@@ -21,6 +21,7 @@ package com.condation.cms.extensions.repository;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.core.utils.HashVerifier;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -84,7 +85,7 @@ public class RemoteModuleRepository<T> {
 		return Optional.empty();
 	}
 
-	public void download(String url, Path target) {
+	public void download(String url, String signature, Path target) {
 		try {
 			Path tempDirectory = Files.createTempDirectory("modules");
 			if (SystemUtils.IS_OS_UNIX) {
@@ -102,6 +103,11 @@ public class RemoteModuleRepository<T> {
 					HttpResponse.BodyHandlers.ofFile(tempDirectory.resolve(System.currentTimeMillis() + ".zip")));
 
 			Path downloaded = response.body();
+			
+			if (!HashVerifier.verifySHA256(downloaded, signature)) {
+				throw new RuntimeException("sinature does not match");
+			}
+			
 			File moduleTempDir = InstallationHelper.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
 			InstallationHelper.moveDirectoy(moduleTempDir, target.resolve(moduleTempDir.getName()).toFile());
 

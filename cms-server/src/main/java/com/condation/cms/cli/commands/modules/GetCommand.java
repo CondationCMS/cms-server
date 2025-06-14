@@ -86,7 +86,7 @@ public class GetCommand extends AbstractModuleCommand implements Runnable {
 			var info = getRepository().getInfo(module).get();
 
 			System.out.printf("get module %s \r\n", module);
-			getRepository().download(info.getFile(), ServerUtil.getPath(Constants.Folders.MODULES));
+			getRepository().download(info.getFile(), info.getSignature(), ServerUtil.getPath(Constants.Folders.MODULES));
 			System.out.println("module downloaded");
 		} else {
 			System.out.printf("can not find module %s in registry", module);

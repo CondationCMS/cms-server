@@ -40,6 +40,7 @@ import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.http.UploadHandler;
 import com.condation.cms.modules.ui.http.CompositeHttpHandler;
 import com.condation.cms.modules.ui.http.PublicResourceHandler;
+import com.condation.cms.modules.ui.http.auth.CSRFHandler;
 import com.condation.cms.modules.ui.http.auth.LoginHandler;
 import com.condation.cms.modules.ui.http.auth.LoginResourceHandler;
 import com.condation.cms.modules.ui.http.auth.LogoutHandler;
@@ -123,6 +124,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/upload"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
+							new CSRFHandler(getContext()),
 							new UploadHandler(
 									"/manager/upload",
 									getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS))
@@ -130,12 +132,14 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/rpc"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
+							new CSRFHandler(getContext()),
 							new RemoteCallHandler(remoteCallService, getContext())
 					)));
 
 			mapping.add(PathSpec.from("/manager/hooks"),
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext()),
+							new CSRFHandler(getContext()),
 							new HookHandler(hookSystem)
 					)));
 

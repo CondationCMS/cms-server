@@ -43,6 +43,10 @@ const executeHookAction = async (action) => {
 		data.parameters = action.parameters
 	}
 	const response = await fetch("/manager/hooks", {
+    headers: {
+			'Content-Type': 'application/json',
+			'X-CSRF-Token': window.csrfToken
+		},
 		method: "POST",
 		body: JSON.stringify(data)
 	});

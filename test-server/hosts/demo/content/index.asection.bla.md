@@ -3,7 +3,7 @@ title: Startseite
 template: section.html
 search:
   index: false
-description: total awesome sectiondd
+description: my new descritpion for that awesome section
 parent:
   text: text for a section
 layout:

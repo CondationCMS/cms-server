@@ -36,10 +36,12 @@ const DEFAULT_FIELDS = [
 		type: 'select',
 		name: 'published',
 		title: 'Published',
-		options: [
-			{ label: 'No', value: false },
-			{ label: 'Yes', value: true }
-		]
+		options: {
+			choices: [
+				{ label: 'No', value: false },
+				{ label: 'Yes', value: true }
+			]
+		}
 	},
 	{
 		type: 'date',

@@ -21,12 +21,15 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.utils.ActionFactory;
+import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -68,8 +71,12 @@ public class ResourceHandler extends JettyHandler {
 		
 		if (resource.endsWith(".html")) {
 			try {
+				var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource, 
-						Map.of("actionFactory", actionFactory));
+						Map.of(
+								"actionFactory", actionFactory,
+								"csrfToken", TokenUtils.createToken("csrf", secret)
+						));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {
 				log.error("", e);

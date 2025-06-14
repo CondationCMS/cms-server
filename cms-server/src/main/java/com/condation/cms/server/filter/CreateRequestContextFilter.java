@@ -54,6 +54,10 @@ public class CreateRequestContextFilter extends Handler.Wrapper {
 			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
 
 			return super.handle(httpRequest, rspns, clbck);
+		} catch (Exception e) {
+			log.error("", e);
+			Response.writeError(httpRequest, rspns, clbck, e);
+			return true;
 		} finally {
 			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 		}

@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,6 +77,15 @@ public class UserService {
 		var users = loadUsers(realm);
 		users = new ArrayList<>(users.stream().filter(user -> !user.username.equals(username)).toList());
 		saveUsers(realm, users);
+	}
+
+	public Optional<User> byUsername(final Realm realm, final String username) {
+		try {
+			return loadUsers(realm).stream().filter(user -> user.username().equals(username)).findFirst();
+		} catch (Exception ex) {
+			log.error("", ex);
+		}
+		return Optional.empty();
 	}
 
 	private static User fromString(final String userString) {
@@ -163,6 +173,9 @@ public class UserService {
 
 	public static record User(String username, String passwordHash, String[] roles, Map<String, Object> data) {
 
+		public User(String username, String passwordHash, String[] roles) {
+			this(username, passwordHash, roles, Collections.emptyMap());
+		}
 		public String line() {
 			try {
 				String json = GSONProvider.GSON.toJson(data != null ? data : Map.of());

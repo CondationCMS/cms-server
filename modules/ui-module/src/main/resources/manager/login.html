@@ -1,0 +1,84 @@
+<!--
+  #%L
+  ui-module
+  %%
+  Copyright (C) 2023 - 2025 CondationCMS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+-->
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Manager</title>
+		<link href="/manager/bootstrap/bootstrap-superhero.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="/manager/bootstrap/bootstrap-icons.min.css" />
+
+		<style>
+			html,
+			body {
+				height: 100%;
+			}
+
+			.form-signin {
+				max-width: 330px;
+				padding: 1rem;
+			}
+
+			.form-signin .form-floating:focus-within {
+				z-index: 2;
+			}
+
+			.form-signin input[type="text"] {
+				margin-bottom: -1px;
+				border-bottom-right-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+
+			.form-signin input[type="password"] {
+				margin-bottom: 10px;
+				border-top-left-radius: 0;
+				border-top-right-radius: 0;
+			}
+		</style>
+
+	</head>
+
+	<body class="d-flex align-items-center py-4 bg-body-tertiary">
+		<main class="form-signin w-100 m-auto">
+			<h1 class="text-dark text-center">CondationCMS</h1>
+			<form action="/manager/login.action" method="POST" > 
+				<!--img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" -->
+				<h2 class="h3 mb-3 fw-normal text-dark">Please sign in</h2>
+				<div class="form-floating"> 
+					<input type="text" class="form-control" id="inputUsername" placeholder="username" name="username" /> 
+					<label for="inputUsername" class="text-dark">Username</label>
+				</div>
+				<div class="form-floating"> 
+					<input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" />
+					<label for="inputPassword" class="text-dark">Password</label> 
+				</div>
+				<button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+			</form>
+		</main>
+
+		<script src="/manager/bootstrap/bootstrap.bundle.min.js"></script>
+
+	</body>
+
+</html>

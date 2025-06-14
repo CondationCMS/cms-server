@@ -130,6 +130,11 @@ public class ExtendedSiteProperties implements SiteProperties {
 	}
 	
 	@Override
+	public boolean uiManagerEnabled() {
+		return configuration.getBoolean("ui.manager.enabled", false);
+	}
+	
+	@Override
 	public Object get (String field) {
 		return configuration.get(field);
 	}

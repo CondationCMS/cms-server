@@ -149,7 +149,7 @@ public class ContentResolver {
 		} else if (aliasRedirect) {
 			var doRedirect = contentNode.getMetaValue(Constants.MetaFields.ALIASES_REDIRECT, true);
 			if (doRedirect) {
-				var url = PathUtil.toURL(contentFile, contentBase);
+				var url = PathUtil.toURI(contentFile, contentBase);
 				url = HTTPUtil.modifyUrl(url, context);
 				return Optional.of(new RedirectContentResponse(url, 301));
 			}

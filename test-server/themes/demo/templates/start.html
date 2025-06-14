@@ -1,19 +1,130 @@
 <!DOCTYPE html SYSTEM>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-	{% include "libs/fragments.html" %}
-</head>
+	<head>
+		
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		{% include "libs/fragments.html" %}
+		
+		<script type="text/javascript">
+			window.cmsUIInfo = {
+				pageTemplates : [
+					{
+						name: "StartPage",
+						template: "start.html"
+					},
+					{
+						name: "Imprint",
+						template: "imprint.html"
+					}
+				],
+				sectionTemplates : {
+					asection : [
+						{
+							name : "SectionTemplate",
+							template: "section.html"
+						}
+					]
+				},
+				metaForm : [
+					{
+						type: 'divider',
+						name: 'divider',
+						title: 'Custom attributes',
+					},
+					{
+						type: 'color',
+						name: 'background_color',
+						title: 'Background Color'
+					},
+					{
+						type: "range",
+						name: "range_test",
+						title: "RangField"
+					},
+					{
+						type: "radio",
+						name: "choose_color",
+						title: "Farbe wählen",
+						options: {
+							choices: [
+								{ label: "Rot", value: "red" },
+								{ label: "Grün", value: "green" },
+								{ label: "Blau", value: "blue" }
+							]
+						}
+					},
+					{
+						name: "features",
+						title: "Funktionen auswählen",
+						type: "checkbox",
+						options : {
+							choices: [
+								{ label: "Suche", value: "search" },
+								{ label: "Filter", value: "filter" },
+								{ label: "Export", value: "export" }
+							]
+						}
+					}
+				]
+			}
+		</script>
+	</head>
 
-<body class="centered">
+	<body class="centered">
 
-	<div id="content">
-		<div class="container">
-			{{ node.content | raw}}
+		<div id="content">
+			<div class="container" {{ ui.editContent("markdown") }}>
+				{{ node.content | raw}}
+			</div>
+			<div>
+				<div class="container" {{ ui.editMeta("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					{{ node.meta.get('count') }}
+				</div>
+			</div>
+			<hr />
+			<div {{ ui.editForm() }}>
+				<div {{ ui.editFormElement("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div {{ ui.editFormElement("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+				<div {{ ui.editFormElement("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					THE AGE: {{ node.meta.getOrDefault('count', 25 )}}
+				</div>
+				<div {{ ui.editFormElement("select", "selected", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
+					selected: {{ node.meta.getOrDefault('selected', "select value" )}}
+				</div>
+				<div {{ ui.editFormElement("checkbox", "checked", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
+					checked: {{ node.meta.getOrDefault('checked', "select value" )}}
+				</div>
+				<div {{ ui.editFormElement("radio", "radioed", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
+					radioed: {{ node.meta.getOrDefault('radioed', "select value" )}}
+				</div>
+			</div>
 		</div>
-	</div>
+		<div class="container sections" 
+			 {{ ui.editSections('asection')}}
+			 {{ ui.addSection()}}
+			 >
+			{% if sections.containsKey('asection') %}
+			{% for section in sections.get('asection') %}
+			{{ section.content() | raw }}
+			{% endfor %}
+			{% endif %}
 
-</body>
+		</div>
+
+	</body>
 
 
 </html>

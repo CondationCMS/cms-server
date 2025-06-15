@@ -21,6 +21,7 @@ package com.condation.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,7 @@ import java.util.List;
 
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.theme.Theme;
+import java.util.stream.Stream;
 
 /**
  *
@@ -44,6 +46,12 @@ public class SiteUtil {
 				|| Files.exists(check.resolve("site.toml"));
 	}
 
+	public static Stream<Site> sitesStream () throws IOException {
+		return Files.list(ServerUtil.getPath(Constants.Folders.HOSTS))
+				.filter(SiteUtil::isSite)
+				.map(path -> new Site(path));
+	}
+	
 	public static List<String> getActiveModules(SiteProperties siteProperties, Theme theme) {
 		List<String> activeModules = new ArrayList<>();
 		activeModules.addAll(siteProperties.activeModules());
@@ -60,4 +68,6 @@ public class SiteUtil {
 	public static String getRequiredTheme(SiteProperties siteProperties, Theme theme) {
 		return siteProperties.theme();
 	}
+	
+	public record Site (Path basePath) {};
 }

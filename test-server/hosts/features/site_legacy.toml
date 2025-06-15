@@ -1,6 +1,6 @@
 id = "feature-site"
 hostname = [ "localhost2" ]
-baseurl = "http://localhost2:1010"
+baseurl = "http://localhost2:2020"
 language = "en"
 test = "Hallo"
 theme = "test"

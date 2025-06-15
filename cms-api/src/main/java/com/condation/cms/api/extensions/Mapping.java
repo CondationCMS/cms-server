@@ -36,21 +36,23 @@ import org.eclipse.jetty.http.pathmap.PathSpec;
  */
 public class Mapping {
 	
-	private Map<PathSpec, HttpHandler> handlerMapping;
+	private List<PathHandler> handlers;
+	
+	private static record PathHandler (PathSpec pathSpec, HttpHandler httpHandler){}
 	
 	public Mapping () {
-		handlerMapping = new HashMap<>();
+		handlers = new ArrayList<>();
 	}
 	
 	public void add (PathSpec pathSpec, HttpHandler handler) {
-		handlerMapping.put(pathSpec, handler);
+		handlers.add(new PathHandler(pathSpec, handler));
 	}
 	
 	public Optional<HttpHandler> getMatchingHandler (String uri) {
-		return handlerMapping.entrySet().stream().filter(entry -> entry.getKey().matches(uri)).map(entry -> entry.getValue()).findFirst();
+		return handlers.stream().filter(handler -> handler.pathSpec.matches(uri)).map(PathHandler::httpHandler).findFirst();
 	}
 	
 	public List<HttpHandler> getHandlers () {
-		return new ArrayList<>(handlerMapping.values());
+		return handlers.stream().map(PathHandler::httpHandler).toList();
 	}
 }

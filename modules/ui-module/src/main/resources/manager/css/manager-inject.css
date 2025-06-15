@@ -1,0 +1,93 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+.cms-ui-editable {
+	position: relative;
+}
+
+.cms-ui-editable:hover {
+	outline: 3px solid orange;
+	outline-offset: 2px;
+}
+.cms-ui-editable-sections {
+	position: relative;
+}
+
+.cms-ui-editable-sections:hover {
+	outline: 3px solid rgb(120, 187, 239);
+	outline-offset: 2px;
+}
+
+.cms-ui-editable-sections > .cms-ui-toolbar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1000;
+	display: flex;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.cms-ui-editable > .cms-ui-toolbar {
+	position: absolute;
+	top: 0;
+	right: 0;
+	z-index: 1000;
+	display: flex;
+	background-color: rgba(0, 0, 0, 0.7);
+	color: white;
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.cms-ui-editable-sections > .cms-ui-toolbar.visible, .cms-ui-editable > .cms-ui-toolbar.visible {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transition: opacity 0.2s ease;
+}
+
+.cms-ui-editable-sections > .cms-ui-toolbar > button, .cms-ui-editable > .cms-ui-toolbar button {
+	background: transparent;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.cms-ui-editable-sections > .cms-ui-toolbar > button:hover, .cms-ui-editable > .cms-ui-toolbar button:hover {
+	color: steelblue;
+}
+
+.cms-ui-editable:empty::before,
+.cms-ui-editable-sections:empty::before {
+	content: " ";
+	display: block;
+	min-height: 20px;
+	min-width: 100%;
+}

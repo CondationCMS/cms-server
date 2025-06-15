@@ -1,0 +1,5 @@
+id = "demo-site"
+hostname = [ "condation-server" ]
+baseurl = "http://condation-server:2020"
+language = "en"
+theme = "demo"

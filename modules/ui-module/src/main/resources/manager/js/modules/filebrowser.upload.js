@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { showToast } from '/manager/js/modules/toast.js'
-import { i18n } from '/manager/js/modules/localization.js';
+import { showToast } from './toast.js'
+import { i18n } from './localization.js';
 import { state } from './filebrowser.js';
 import { uploadFileWithProgress} from './upload.js'
 import { EventBus } from './event-bus.js';

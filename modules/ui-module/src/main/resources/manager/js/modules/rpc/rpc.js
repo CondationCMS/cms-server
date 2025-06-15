@@ -29,7 +29,7 @@ const executeRemoteMethodCall = async (method, parameters) => {
 		method: method,
 		parameters: parameters
 	}
-	var response = await fetch("/manager/rpc", {
+	var response = await fetch(window.managerBaseURL + "/rpc", {
 		method: "POST",
 		headers: {
 			'Content-Type': 'application/json',

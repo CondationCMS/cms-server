@@ -22,7 +22,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.modules.ui.utils.ActionFactory;
+import com.condation.cms.api.utils.HTTPUtil;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -45,10 +45,11 @@ public class JSActionHandler extends JettyHandler {
 	private final FileSystem fileSystem;
 	private final String base;
 	private final CMSModuleContext context;
-
+	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var resource = request.getHttpURI().getPath().replace("/manager/actions/", "") + ".js";
+		var resource = request.getHttpURI().getPath().replace(
+				managerURL("/manager/actions/", context), "") + ".js";
 
 		var files = fileSystem.getPath(base);
 

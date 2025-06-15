@@ -28,6 +28,7 @@ import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
@@ -68,7 +69,7 @@ public class LoginHandler extends JettyHandler {
 		}
 		if (getClientLoginAttempts(request) > ATTEMPTS_TO_BLOCK) {
 			response.setStatus(403);
-			response.getHeaders().add("Location", "/manager/login");
+			response.getHeaders().add("Location", managerURL("/manager/login", requestContext));
 			callback.succeeded();
 			return true;
 		}
@@ -97,12 +98,12 @@ public class LoginHandler extends JettyHandler {
 			Response.addCookie(response, cookie);
 
 			response.setStatus(302);
-			response.getHeaders().add("Location", "/manager/index.html");
+			response.getHeaders().add("Location", managerURL("/manager/index.html", requestContext));
 			callback.succeeded();
 		} else {
 			getClientLoginCounter(request).incrementAndGet();
 			response.setStatus(302);
-			response.getHeaders().add("Location", "/manager/login");
+			response.getHeaders().add("Location", managerURL("/manager/login", requestContext));
 			callback.succeeded();
 		}
 

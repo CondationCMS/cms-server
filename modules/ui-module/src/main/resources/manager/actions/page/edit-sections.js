@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openModal } from '/manager/js/modules/modal.js'
-import { showToast } from '/manager/js/modules/toast.js'
-import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
+import { openModal } from '../../js/modules/modal.js'
+import { showToast } from '../../js/modules/toast.js'
+import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js'
 import { Sortable } from '../../js/libs/sortablejs.min.js'
 import Handlebars from '../../js/libs/handlebars.min.js';
-import {getContentNode, setMetaBatch} from '/manager/js/modules/rpc/rpc-content.js'
+import {getContentNode, setMetaBatch} from '../../js/modules/rpc/rpc-content.js'
 // hook.js
 export async function runAction(params) {
 

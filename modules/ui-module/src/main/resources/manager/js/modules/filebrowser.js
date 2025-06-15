@@ -20,14 +20,14 @@
  * #L%
  */
 
-import { listFiles, deleteFile, deleteFolder, } from '/manager/js/modules/rpc/rpc-files.js'
-import { deletePage } from '/manager/js/modules/rpc/rpc-page.js'
-import { openModal } from '/manager/js/modules/modal.js'
+import { listFiles, deleteFile, deleteFolder, } from './rpc/rpc-files.js'
+import { deletePage } from './rpc/rpc-page.js'
+import { openModal } from './modal.js'
 import Handlebars from '../libs/handlebars.min.js';
-import { loadPreview } from '/manager/js/modules/preview.utils.js'
-import { i18n } from '/manager/js/modules/localization.js';
+import { loadPreview } from './preview.utils.js'
+import { i18n } from './localization.js';
 
-import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction } from '/manager/js/modules/filebrowser.actions.js'
+import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction } from './filebrowser.actions.js'
 import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
 import { EventBus } from './event-bus.js';
 

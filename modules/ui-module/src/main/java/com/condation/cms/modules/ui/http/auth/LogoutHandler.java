@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.http.auth;
  */
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,7 @@ public class LogoutHandler extends JettyHandler {
 		Response.addCookie(response, cookie);
 
 		response.setStatus(302);
-		response.getHeaders().add("Location", "/manager/login");
+		response.getHeaders().add("Location", managerURL("/manager/login", requestContext));
 		callback.succeeded();
 
 		return true;

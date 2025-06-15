@@ -21,7 +21,7 @@
  */
 
 import { EventBus } from './modules/event-bus.js';
-import { i18n, localizeUi } from '/manager/js/modules/localization.js';
+import { i18n, localizeUi } from './modules/localization.js';
 
 window.addEventListener("DOMContentLoaded", async () => {
 

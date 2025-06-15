@@ -1,3 +1,5 @@
+package com.condation.cms.modules.ui.utils.template;
+
 /*-
  * #%L
  * ui-module
@@ -19,17 +21,21 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '../../js/modules/system-commands.js'
-import {getPreviewUrl} from '../../js/modules/preview.utils.js'
-		// hook.js
-export async function runAction(params) {
+
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
+import lombok.RequiredArgsConstructor;
+
+/**
+ *
+ * @author thmar
+ */
+@RequiredArgsConstructor
+public class UILinkFunction {
+	private final RequestContext requestContext;
 	
-		var contentNode = await executeCommand({
-		command: "getContentNode",
-		parameters: {
-			url: getPreviewUrl()
-		}
-	})
-	
-	console.log(contentNode)
+	public String createUrl (String url) {
+		return HTTPUtil.modifyUrl(url, requestContext.get(SitePropertiesFeature.class).siteProperties());
+	}
 }

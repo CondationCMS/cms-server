@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openSidebar } from '/manager/js/modules/sidebar.js'
-import { createForm } from '/manager/js/modules/form/forms.js'
-import { showToast } from '/manager/js/modules/toast.js'
-import { getContentNode, setMeta, getContent } from '/manager/js/modules/rpc/rpc-content.js'
-import { getPreviewUrl, reloadPreview } from '/manager/js/modules/preview.utils.js'
+import { openSidebar } from '../../js/modules/sidebar.js'
+import { createForm } from '../../js/modules/form/forms.js'
+import { showToast } from '../../js/modules/toast.js'
+import { getContentNode, setMeta, getContent } from '../../js/modules/rpc/rpc-content.js'
+import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js'
 import { getMetaForm } from '../../js/modules/ui-helpers.js'
 
 const DEFAULT_FIELDS = [

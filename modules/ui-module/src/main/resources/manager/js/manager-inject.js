@@ -20,7 +20,7 @@
  * #L%
  */
 
-import frameMessenger from '/manager/js/modules/frameMessenger.js';
+import frameMessenger from './modules/frameMessenger.js';
 
 document.addEventListener("DOMContentLoaded", function () {
 	frameMessenger.on('init', (payload) => {

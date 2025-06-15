@@ -21,7 +21,6 @@
  */
 
 import { EventBus } from "./event-bus.js";
-import { PreviewHistory } from "./preview.history.js";
 
 //PreviewHistory.init();
 // close overlay on preview loaded

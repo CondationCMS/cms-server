@@ -21,9 +21,14 @@ package com.condation.cms.modules.ui.http.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.http.JettyHandler;
+import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +46,7 @@ import org.eclipse.jetty.util.Callback;
 public class LoginResourceHandler extends JettyHandler {
 
 	private final CMSModuleContext context;
+	private final RequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -48,9 +54,14 @@ public class LoginResourceHandler extends JettyHandler {
 		if (!request.getMethod().equalsIgnoreCase("GET")) {
 			return false;
 		}
-		
+
 		try {
-			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of());
+			var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of(
+					"csrfToken", TokenUtils.createToken("csrf", secret),
+					"links", new LinkFunction(requestContext),
+					"managerBaseURL", managerBaseURL(requestContext)
+			));
 			Content.Sink.write(response, true, content, callback);
 		} catch (Exception e) {
 			log.error("", e);

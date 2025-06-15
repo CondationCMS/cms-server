@@ -21,18 +21,13 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.feature.features.HookSystemFeature;
-import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.module.CMSRequestContext;
-import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
-import com.condation.cms.modules.ui.utils.ActionFactory;
+import com.condation.cms.api.utils.HTTPUtil;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
@@ -49,6 +44,7 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class PublicResourceHandler extends JettyHandler {
 
+	private final CMSModuleContext context;
 	private final FileSystem fileSystem;
 	private final String base;
 	private final List<String> publicResources;
@@ -56,7 +52,8 @@ public class PublicResourceHandler extends JettyHandler {
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		var resource = request.getHttpURI().getPath().replace("/manager/", "");
+		var resource = request.getHttpURI().getPath().replace(
+				managerURL("/manager/", context), "");
 
 		if (resource.equals("")) {
 			response.setStatus(404);

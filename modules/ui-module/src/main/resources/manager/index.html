@@ -55,9 +55,9 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Manager</title>
-	<link href="/manager/bootstrap/bootstrap-superhero.min.css" rel="stylesheet" />
+	<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-superhero.min.css') }}" rel="stylesheet" />
 
-	<link rel="stylesheet" href="/manager/bootstrap/bootstrap-icons.min.css" />
+	<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
 
 	<script type="module" src="https://unpkg.com/ninja-keys?module"></script>
 
@@ -67,9 +67,9 @@
 	<script src="https://cdn.jsdelivr.net/npm/cherry-markdown@0.9.3/dist/cherry-markdown.core.min.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cherry-markdown@0.9.3/dist/cherry-markdown.min.css">
 
-	<link rel="stylesheet" href="/manager/css/manager.css" />
-	<script src="/manager/js/manager-globals.js"></script>
-	<script src="/manager/js/manager.js" type="module"></script>
+	<link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager.css') }}" />
+	<script src="{{ links.createUrl('/manager/js/manager-globals.js') }}"></script>
+	<script src="{{ links.createUrl('/manager/js/manager.js') }}" type="module"></script>
 	<style>
 		html,
 		body,
@@ -79,6 +79,7 @@
 	</style>
 	<script>
 		window.csrfToken = '{{ csrfToken }}';
+		window.managerBaseURL = "{{ managerBaseURL }}";
 	</script>
 </head>
 
@@ -107,7 +108,7 @@
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a class="dropdown-item" id="cms-action-logout" href="/manager/logout"
+									<a class="dropdown-item" id="cms-action-logout" href="{{ links.createUrl('/manager/logout') }}"
 										data-cms-i18n-key="menu.settings.logout">Logout</a>
 								</li>
 							</ul>
@@ -139,7 +140,7 @@
 								<li>
 									<a class="dropdown-item" href="#" data-cms-i18n-lang="en"
 										data-cms-i18n-key="menu.meta"
-										data-cms-action-definition='{"function":"runAction","module":"/manager/actions/page/edit-meta","parameters":{},"type":"script"}'
+										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-meta') }}","parameters":{},"type":"script"}'
 										>Edit meta</a>
 								</li>
 							</ul>
@@ -153,7 +154,7 @@
 		<div id="previewWrapper" class="flex-grow-1 position-relative">
 			<iframe id="contentPreview"
 				class="position-absolute top-0 start-0 w-100 h-100 border-0"
-				src="/?preview=true"></iframe>
+				src="{{ links.createUrl('/?preview=true') }}"></iframe>
 
 			<!-- Overlay -->
 			<div id="previewOverlay"
@@ -166,10 +167,10 @@
 		</div>
 	</div>
 
-	<script src="/manager/bootstrap/bootstrap.bundle.min.js"></script>
+	<script src="{{ links.createUrl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs/loader.js"></script>
 
-	<script src="/manager/js/ui-actions.js" type="module"></script>
+	<script src="{{ links.createUrl('/manager/js/ui-actions.js') }}" type="module"></script>
 
 	<div id="modalContainer"></div>
 	<div id="sidebarContainer"></div>

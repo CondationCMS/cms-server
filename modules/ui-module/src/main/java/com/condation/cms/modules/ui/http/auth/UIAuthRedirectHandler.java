@@ -22,8 +22,11 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -48,14 +51,14 @@ public class UIAuthRedirectHandler extends JettyHandler {
 		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
 
 		if (tokenCookie.isEmpty()) {
-			redirectToLogin(response);
+			redirectToLogin(response, moduleContext);
 			callback.succeeded();
 			return true;
 		}
 		var token = tokenCookie.get().getValue();
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
 		if (!TokenUtils.validateToken(token, secret)) {
-			redirectToLogin(response);
+			redirectToLogin(response, moduleContext);
 			callback.succeeded();
 			return true;
 		}
@@ -63,9 +66,9 @@ public class UIAuthRedirectHandler extends JettyHandler {
 		return false;
 	}
 
-	private void redirectToLogin(Response response) {
+	private void redirectToLogin(Response response, FeatureContainer container) {
 		response.setStatus(302);
-		response.getHeaders().add("Location", "/manager/login");
+		response.getHeaders().add("Location", managerURL("/manager/login", container));
 	}
 
 }

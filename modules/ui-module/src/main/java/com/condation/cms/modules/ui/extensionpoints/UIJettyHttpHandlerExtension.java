@@ -117,7 +117,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		try {
 
-			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext()));
+			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext(), getRequestContext()));
 			mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
 			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler(getRequestContext()));
 
@@ -151,6 +151,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 			mapping.add(PathSpec.from("/manager/bootstrap/*"),
 					new PublicResourceHandler(
+							getContext(),
 							createFileSystem("/manager"),
 							"/manager",
 							List.of(

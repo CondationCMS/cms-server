@@ -26,8 +26,8 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>Manager</title>
-		<link href="/manager/bootstrap/bootstrap-superhero.min.css" rel="stylesheet" />
-		<link rel="stylesheet" href="/manager/bootstrap/bootstrap-icons.min.css" />
+		<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-superhero.min.css') }}" rel="stylesheet" />
+		<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
 
 		<style>
 			html,
@@ -62,7 +62,7 @@
 	<body class="d-flex align-items-center py-4 bg-body-tertiary">
 		<main class="form-signin w-100 m-auto">
 			<h1 class="text-dark text-center">CondationCMS</h1>
-			<form action="/manager/login.action" method="POST" > 
+			<form action="{{ links.createUrl('/manager/login.action') }}" method="POST" > 
 				<!--img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" -->
 				<h2 class="h3 mb-3 fw-normal text-dark">Please sign in</h2>
 				<div class="form-floating"> 
@@ -77,7 +77,7 @@
 			</form>
 		</main>
 
-		<script src="/manager/bootstrap/bootstrap.bundle.min.js"></script>
+		<script src="{{ links.createURl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
 
 	</body>
 

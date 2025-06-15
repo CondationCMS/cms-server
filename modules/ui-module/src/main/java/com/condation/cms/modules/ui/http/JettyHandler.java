@@ -23,9 +23,13 @@ package com.condation.cms.modules.ui.http;
  */
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.extensions.HttpHandler;
+import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.nio.charset.StandardCharsets;
@@ -61,11 +65,11 @@ public abstract class JettyHandler implements HttpHandler {
 			var token = tokenCookie.get().getValue();
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
 			var username = TokenUtils.getUserName(token, secret);
-			
+
 			if (username.isEmpty()) {
 				return Optional.empty();
 			}
-			
+
 			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(UserService.Realm.of("manager-users"), username.get());
 		} catch (Exception e) {
 			log.error("error getting user", e);
@@ -73,4 +77,11 @@ public abstract class JettyHandler implements HttpHandler {
 		return Optional.empty();
 	}
 
+	protected String managerBaseURL(FeatureContainer featureContainer) {
+		return managerURL("/manager", featureContainer);
+	}
+	
+	protected String managerURL(String url, FeatureContainer featureContainer) {
+		return HTTPUtil.modifyUrl(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
+	}
 }

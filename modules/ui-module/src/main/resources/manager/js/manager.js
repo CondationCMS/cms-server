@@ -25,7 +25,6 @@ import { loadPreview } from './modules/preview.utils.js';
 
 import { UIStateManager } from './modules/ui-state.js';
 
-import { PreviewHistory } from './modules/preview.history.js';
 import { updateStateButton } from './modules/manager-ui.js';
 import { EventBus } from './modules/event-bus.js';
 
@@ -68,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	frameMessenger.on('edit', (payload) => {
 		if (payload.element === "content") {
 			var cmd = {
-				"module": "/manager/actions/page/edit-content",
+				"module": window.managerBaseURL + "/actions/page/edit-content",
 				"function": "runAction",
 				"parameters": {
 					"editor": payload.editor,
@@ -81,7 +80,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			executeScriptAction(cmd)
 		} else if (payload.element === "meta" && payload.editor === "form") {
 			var cmd = {
-				"module": "/manager/actions/page/edit-metaattribute-list",
+				"module": window.managerBaseURL + "/actions/page/edit-metaattribute-list",
 				"function": "runAction",
 				"parameters": {
 					"editor": payload.editor,
@@ -95,7 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			executeScriptAction(cmd)
 		} else if (payload.element === "meta") {
 			var cmd = {
-				"module": "/manager/actions/page/edit-metaattribute",
+				"module": window.managerBaseURL + "/actions/page/edit-metaattribute",
 				"function": "runAction",
 				"parameters": {
 					"editor": payload.editor,
@@ -111,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 	frameMessenger.on('edit-sections', (payload) => {
 		var cmd = {
-			"module": "/manager/actions/page/edit-sections",
+			"module": window.managerBaseURL + "/actions/page/edit-sections",
 			"function": "runAction",
 			"parameters": {
 				"sectionName": payload.sectionName
@@ -125,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	frameMessenger.on('add-section', (payload) => {
 		var cmd = {
-			"module": "/manager/actions/page/add-section",
+			"module": window.managerBaseURL + "/actions/page/add-section",
 			"function": "runAction",
 			"parameters": {
 				"sectionName": payload.sectionName

@@ -21,7 +21,8 @@
  */
 const executeScriptAction = async (action) => {
   if (action.module && action.function === "runAction") {
-    import(action.module)
+	var modulePath = patchManagerPath(action.module, window.managerBaseURL);
+    import(modulePath)
       .then(mod => {
 		if (typeof mod[action.function] === "function") {
           mod[action.function](action.parameters || {});
@@ -42,7 +43,7 @@ const executeHookAction = async (action) => {
 	if (action.parameters) {
 		data.parameters = action.parameters
 	}
-	const response = await fetch("/manager/hooks", {
+	const response = await fetch(window.managerBaseURL + "/hooks", {
     headers: {
 			'Content-Type': 'application/json',
 			'X-CSRF-Token': window.csrfToken
@@ -50,4 +51,30 @@ const executeHookAction = async (action) => {
 		method: "POST",
 		body: JSON.stringify(data)
 	});
+}
+
+/**
+ * Patches a relative path so that it's correctly prefixed with the given manager base path.
+ * 
+ * @param {string} relativePath e.g. "/manager/module"
+ * @param {string} managerBasePath e.g. "/manager" or "/de/manager"
+ * @returns {string} e.g. "/de/manager/module"
+ */
+const patchManagerPath = (relativePath, managerBasePath) => {
+    if (!relativePath || !managerBasePath) {
+        throw new Error("Both paths must be provided.");
+    }
+
+    // Remove trailing slash from base path if present
+    const base = managerBasePath.endsWith('/') ? managerBasePath.slice(0, -1) : managerBasePath;
+
+    // Ensure relative path starts with a slash
+    const rel = relativePath.startsWith('/') ? relativePath : '/' + relativePath;
+
+    // If the relative path already starts with the base, avoid double prefixing
+    if (rel.startsWith(base)) {
+        return rel;
+    }
+
+    return base + rel;
 }

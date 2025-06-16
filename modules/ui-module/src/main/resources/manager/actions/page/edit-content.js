@@ -45,7 +45,7 @@ export async function runAction(params) {
 			{
 				type: params.editor, 
 				name: 'content', 
-				title: 'Inhalt',
+				title: 'Main content',
 				height: '80%'
 			}
 		],

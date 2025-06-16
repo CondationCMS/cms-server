@@ -3,4 +3,4 @@ hostname = [ "localhost" ]
 baseurl = "http://localhost:2020"
 language = "en"
 theme = "demo"
-context_path = "/de"
+context_path = "/"

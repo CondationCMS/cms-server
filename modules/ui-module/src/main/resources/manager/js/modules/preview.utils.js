@@ -67,6 +67,7 @@ const loadPreview = (url) => {
 		if (!parsedUrl.searchParams.has("preview")) {
 			parsedUrl.searchParams.append("preview", "true");
 		}
+		parsedUrl.searchParams.delete("nocache");
 		parsedUrl.searchParams.append("nocache", Date.now());
 
 		// Setze zusammengesetzten Pfad + Query zurück in das iframe

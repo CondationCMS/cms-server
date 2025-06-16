@@ -70,7 +70,7 @@ public abstract class JettyHandler implements HttpHandler {
 				return Optional.empty();
 			}
 
-			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(UserService.Realm.of("manager-users"), username.get());
+			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(UserService.Realm.of("manager-users"), username.get().username());
 		} catch (Exception e) {
 			log.error("error getting user", e);
 		}

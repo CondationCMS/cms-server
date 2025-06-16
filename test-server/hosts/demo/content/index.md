@@ -26,7 +26,7 @@ radioed: farbe
 
 # Demo Project
 
-![TestBild!](/de/media/images/test.jpg?format=small)
+![TestBild!](/media/images/test.jpg?format=small)
 
 That's a demo page with some extra features to show the manager application!
 

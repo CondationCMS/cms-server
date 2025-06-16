@@ -42,6 +42,7 @@ import com.condation.cms.auth.services.UserService;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.server.FileFolderPathResource;
 import com.condation.cms.server.filter.InitRequestContextFilter;
+import com.condation.cms.server.filter.UIPreviewFilter;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
@@ -79,6 +80,8 @@ public class SiteHandlerModule extends AbstractModule {
 		bind(InitRequestContextFilter.class).in(Singleton.class);
 
 		bind(APIHandler.class).in(Singleton.class);
+		
+		bind(UIPreviewFilter.class).in(Singleton.class);
 		
 		//bind(JettyAuthenticationHandler.class).in(Singleton.class);
 	}

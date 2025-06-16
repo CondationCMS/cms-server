@@ -15,5 +15,11 @@ $hooks.registerFilter("module/ui/translations", (context) => {
 	translations.en["field.title"] = "Title";
 	translations.de["field.title"] = "Titel";
 	
+	translations.en["field.parent.text"] = "Parent-Text";
+	translations.de["field.parent.text"] = "Eltern-Text";
+	
+	translations.en["field.description"] = "Description";
+	translations.de["field.description"] = "Beschreibung";
+	
 	return translations;
 })

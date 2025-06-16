@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 
+import com.google.gson.Gson;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -29,38 +30,50 @@ import java.util.Optional;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
-/**
- *
- * @author thorstenmarx
- */
 public class TokenUtils {
 
- 	public static Optional<String> getUserName(String token, String SECRET) throws Exception {
+	private static final Gson gson = new Gson();
+
+	public static Optional<Payload> getUserName(String token, String SECRET) throws Exception {
 		if (!validateToken(token, SECRET)) {
 			return Optional.empty();
 		}
 		String[] parts = token.split(":");
-		return Optional.of(parts[0]);
+		String json = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
+		Payload payload = gson.fromJson(json, Payload.class);
+		return Optional.of(payload);
 	}
-	
+
 	public static boolean validateToken(String token, String SECRET) throws Exception {
 		String[] parts = token.split(":");
-		if (parts.length != 3) {
+		if (parts.length != 2) {
 			return false;
 		}
 
-		String payload = parts[0] + ":" + parts[1];
-		String expectedSig = hmacSha256(payload, SECRET);
-		if (!expectedSig.equals(parts[2])) {
+		String base64Payload = parts[0];
+		String signature = parts[1];
+
+		String expectedSig = hmacSha256(base64Payload, SECRET);
+		if (!expectedSig.equals(signature)) {
 			return false;
 		}
 
-		long timestamp = Long.parseLong(parts[1]);
+		String json = new String(Base64.getUrlDecoder().decode(base64Payload), StandardCharsets.UTF_8);
+		Payload payload = gson.fromJson(json, Payload.class);
+
 		long now = Instant.now().getEpochSecond();
-		return (now - timestamp) < 3600; // z. B. 1 Stunde gültig
+		return (now - payload.timestamp()) < 3600;
 	}
 
-	public static String hmacSha256(String data, String key) throws Exception {
+	public static String createToken(String username, String SECRET) throws Exception {
+		Payload payload = new Payload(username, Instant.now().getEpochSecond());
+		String json = gson.toJson(payload);
+		String base64Payload = Base64.getUrlEncoder().withoutPadding().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+		String signature = hmacSha256(base64Payload, SECRET);
+		return base64Payload + ":" + signature;
+	}
+
+	private static String hmacSha256(String data, String key) throws Exception {
 		Mac mac = Mac.getInstance("HmacSHA256");
 		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
 		mac.init(secretKeySpec);
@@ -68,10 +81,5 @@ public class TokenUtils {
 		return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 	}
 
-	public static String createToken(String username, String SECRET) throws Exception {
-		long timestamp = Instant.now().getEpochSecond();
-		String payload = username + ":" + timestamp;
-		String signature = hmacSha256(payload, SECRET);
-		return payload + ":" + signature;
-	}
+	public record Payload(String username, long timestamp) {}
 }

@@ -24,7 +24,7 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.modules.ui.model.HookCall;
-import com.condation.cms.modules.ui.utils.GsonProvider;
+import com.condation.cms.modules.ui.utils.json.GsonProvider;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.utils;
+package com.condation.cms.modules.ui.utils.json;
 
 /*-
  * #%L
@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.modules.ui.extensionpoints.remotemethods.RemoteFileEnpoints;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -43,6 +44,7 @@ public class GsonProvider {
 			.setPrettyPrinting()
 			.setDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
 			.registerTypeAdapter(Date.class, new UtcDateSerializer())
+			.registerTypeAdapterFactory(new FileTypeAdapterFactory())
 			.setObjectToNumberStrategy(ToNumberPolicy.LONG_OR_DOUBLE)
 			.create();
 

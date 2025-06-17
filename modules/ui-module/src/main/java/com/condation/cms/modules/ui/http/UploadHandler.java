@@ -56,7 +56,7 @@ public class UploadHandler extends JettyHandler {
 
 	private final Path TEMP_UPLOAD_DIR;
 
-	private static final Set<String> ALLOWED_MIME_TYPES = Set.of(
+	public static final Set<String> ALLOWED_MIME_TYPES = Set.of(
 			"image/png",
 			"image/jpeg",
 			"image/gif",

@@ -26,7 +26,7 @@ import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCResult;
 import com.condation.cms.modules.ui.model.RemoteCall;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
-import com.condation.cms.modules.ui.utils.GsonProvider;
+import com.condation.cms.modules.ui.utils.json.GsonProvider;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

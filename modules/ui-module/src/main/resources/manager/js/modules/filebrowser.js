@@ -70,6 +70,13 @@ const template = Handlebars.compile(`
 				<th scope="row">
 					{{#if directory}}
 						<i class="bi bi-folder"></i>
+					{{else if media}}
+						<div class="position-relative d-inline-block cms-image-hover-wrapper">
+							<img src="/assets{{uri}}" alt="{{name}}" class="img-thumbnail cms-small-image" />
+							<div class="cms-overlay-image">
+								<img src="/assets{{uri}}" alt="Zoom" class="cms-enlarged-image" />
+							</div>
+						</div>
 					{{else}}
 						<i class="bi bi-file"></i>
 					{{/if}}

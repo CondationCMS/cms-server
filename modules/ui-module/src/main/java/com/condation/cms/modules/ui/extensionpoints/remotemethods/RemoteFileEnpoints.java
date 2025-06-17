@@ -96,15 +96,12 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			try {
 				if (contentFile.hasParent()) {
 					var parent = contentFile.getParent();
-					files.add(new File("..", parent.uri(), parent.isDirectory()));
+					files.add(new Directory("..", parent.uri()));
 				}
 				contentFile.children().stream()
 						.filter(child -> !SectionUtil.isSection(child.getFileName()))
-						.map(child -> new File(
-						child.getFileName(),
-						child.uri(),
-						child.isDirectory()
-				)).forEach(files::add);
+						.map(this::map)
+						.forEach(files::add);
 			} catch (IOException ex) {
 				log.error("", ex);
 			}
@@ -286,14 +283,63 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	public record File(String name, String uri, boolean directory, boolean content) {
-
-		public File(String name, String uri, boolean directory) {
-			this(name, uri, directory, name.endsWith(".md"));
+	private boolean isMedia (String filename) {
+		var name = filename.toLowerCase();
+		return name.endsWith(".jpg")
+				|| name.endsWith(".jpeg")
+				|| name.endsWith(".webp")
+				|| name.endsWith(".png")
+				|| name.endsWith(".svg")
+				|| name.endsWith(".gif");
+	}
+	
+	private File map (ReadOnlyFile readOnlyFile) {
+		if (readOnlyFile.isDirectory()) {
+			return new Directory(
+						readOnlyFile.getFileName(),
+						readOnlyFile.uri()
+			);
+		} else if (isMedia(readOnlyFile.getFileName())) {
+			return new Media(
+					readOnlyFile.getFileName(), 
+					readOnlyFile.uri()
+			);
+		} else {
+			return new Content(
+					readOnlyFile.getFileName(), 
+					readOnlyFile.uri()
+			);
 		}
-
-		public File(String name, String uri) {
-			this(name, uri, false, name.endsWith(".md"));
+	}
+	
+	public record Content(String name, String uri) implements File {
+	}
+	
+	public record Media(String name, String uri) implements File {
+		@Override
+		public boolean media() {
+			return true;
+		}		
+	}
+	
+	public record Directory (String name, String uri) implements File {
+		@Override
+		public boolean directory() {
+			return true;
+		}
+	}
+	
+	public static interface File {
+		String name ();
+		String uri ();
+		default boolean directory () {
+			return false;
+		}
+		default boolean content () {
+			return name().endsWith(".md");
+		}
+		default boolean media () {
+			return false;
 		}
 	}
 }

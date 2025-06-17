@@ -73,3 +73,35 @@ tr[data-cms-file-directory] {
 .dropdown-nocaret::after {
   display: none;
 }
+
+
+.cms-image-hover-wrapper {
+  position: relative;
+}
+
+.cms-small-image {
+  width: 50px; /* oder dein Wunschwert */
+  height: auto;
+  cursor: pointer;
+}
+
+.cms-overlay-image {
+  display: none;
+  position: absolute;
+  top: -10px;
+  left: 110%;
+  z-index: 1000;
+  background-color: white;
+  padding: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+}
+
+.cms-image-hover-wrapper:hover .cms-overlay-image {
+  display: block;
+}
+
+.cms-enlarged-image {
+  width: 300px;
+  height: auto;
+}

@@ -41,6 +41,12 @@ const state = {
 	currentFolder: ""
 };
 
+Handlebars.registerHelper("patchPathWithContext", patchPathWithContext);
+Handlebars.registerHelper('concat', function (...args) {
+  args.pop();
+  return args.join('');
+});
+
 const template = Handlebars.compile(`
 	<div>
 		<div class="dropdown">
@@ -72,9 +78,9 @@ const template = Handlebars.compile(`
 						<i class="bi bi-folder"></i>
 					{{else if media}}
 						<div class="position-relative d-inline-block cms-image-hover-wrapper">
-							<img src="/assets{{uri}}" alt="{{name}}" class="img-thumbnail cms-small-image" />
+							<img src="{{patchPathWithContext (concat "/assets" uri)}}" alt="{{name}}" class="img-thumbnail cms-small-image" />
 							<div class="cms-overlay-image">
-								<img src="/assets{{uri}}" alt="Zoom" class="cms-enlarged-image" />
+								<img src="{{patchPathWithContext (concat "/assets" uri)}}" alt="Zoom" class="cms-enlarged-image" />
 							</div>
 						</div>
 					{{else}}

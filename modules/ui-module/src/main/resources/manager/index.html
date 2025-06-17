@@ -78,8 +78,12 @@
 		}
 	</style>
 	<script>
-		window.csrfToken = '{{ csrfToken }}';
-		window.managerBaseURL = "{{ managerBaseURL }}";
+
+		window.manager = {
+			csrfToken : '{{ csrfToken }}',
+			baseUrl : '{{ managerBaseURL }}',
+			contextPath: '{{ contextPath }}'
+		}
 	</script>
 </head>
 

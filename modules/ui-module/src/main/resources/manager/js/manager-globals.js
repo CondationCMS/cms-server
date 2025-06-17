@@ -21,7 +21,7 @@
  */
 const executeScriptAction = async (action) => {
   if (action.module && action.function === "runAction") {
-	var modulePath = patchManagerPath(action.module, window.managerBaseURL);
+	var modulePath = patchManagerPath(action.module, window.manager.baseUrl);
     import(modulePath)
       .then(mod => {
 		if (typeof mod[action.function] === "function") {
@@ -43,10 +43,10 @@ const executeHookAction = async (action) => {
 	if (action.parameters) {
 		data.parameters = action.parameters
 	}
-	const response = await fetch(window.managerBaseURL + "/hooks", {
+	const response = await fetch(window.manager.baseUrl + "/hooks", {
     headers: {
 			'Content-Type': 'application/json',
-			'X-CSRF-Token': window.csrfToken
+			'X-CSRF-Token': window.manager.csrfToken
 		},
 		method: "POST",
 		body: JSON.stringify(data)
@@ -77,4 +77,25 @@ const patchManagerPath = (relativePath, managerBasePath) => {
     }
 
     return base + rel;
+}
+
+/**
+ * Patches a path with the context path, if not already present.
+ *
+ * @param {string} path - The original path (e.g. "/assets/images/test.jpg").
+ * @returns {string} - The patched path with context prefix if needed.
+ */
+const patchPathWithContext = (path) => {
+  const contextPath = window.manager.contextPath || "/";
+  
+  // Normalize context path (remove trailing slash if not just "/")
+  const normalizedContext = contextPath !== "/" ? contextPath.replace(/\/+$/, "") : "";
+
+  // Check if the path already starts with the context
+  if (normalizedContext && path.startsWith(normalizedContext + "/")) {
+    return path;
+  }
+
+  // Patch path (avoid double slashes)
+  return normalizedContext + (path.startsWith("/") ? path : "/" + path);
 }

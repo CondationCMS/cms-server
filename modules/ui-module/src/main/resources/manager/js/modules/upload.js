@@ -41,7 +41,7 @@ export function uploadFileWithProgress({ file, uri, onProgress, onSuccess, onErr
 
 	const xhr = new XMLHttpRequest();
 	xhr.open("POST", "/manager/upload", true);
-	xhr.setRequestHeader("X-CSRF-Token", window.csrfToken);
+	xhr.setRequestHeader("X-CSRF-Token", window.manager.csrfToken);
 
 	xhr.upload.onprogress = (event) => {
 		if (event.lengthComputable && typeof onProgress === "function") {

@@ -29,11 +29,11 @@ const executeRemoteMethodCall = async (method, parameters) => {
 		method: method,
 		parameters: parameters
 	}
-	var response = await fetch(window.managerBaseURL + "/rpc", {
+	var response = await fetch(window.manager.baseUrl + "/rpc", {
 		method: "POST",
 		headers: {
 			'Content-Type': 'application/json',
-			'X-CSRF-Token': window.csrfToken
+			'X-CSRF-Token': window.manager.csrfToken
 		},
 		body: JSON.stringify(data)
 	})

@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.utils.json;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.modules.ui.extensionpoints.remotemethods.RemoteFileEnpoints;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;

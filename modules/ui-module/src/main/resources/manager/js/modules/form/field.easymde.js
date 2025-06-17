@@ -29,7 +29,7 @@ const createMarkdownField = (options, value = '') => {
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
 	return `
-		<div class="mb-3" data-cms-form-field-type="easymde">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="easymde">
 			<label class="form-label" cms-i18n-key="${key}">${title}</label>
 			<textarea id="${id}" style="display: none; height:0;" data-initial-value="${encodeURIComponent(value)}" name="${options.name}"></textarea>
 		</div>

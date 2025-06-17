@@ -38,7 +38,7 @@ const createDateTimeField = (options, value = '') => {
 	}
 
 	return `
-		<div class="mb-3" data-cms-form-field-type="datetime">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="datetime">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<input type="datetime-local" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${val}">
 		</div>

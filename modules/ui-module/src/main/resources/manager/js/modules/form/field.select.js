@@ -34,7 +34,7 @@ const createSelectField = (options, value = '') => {
 	}).join('\n');
 
 	return `
-		<div class="mb-3" data-cms-form-field-type="select">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="select">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<select class="form-select" id="${id}" name="${options.name}">
 				${optionTags}

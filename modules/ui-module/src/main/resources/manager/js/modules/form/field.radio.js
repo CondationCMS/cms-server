@@ -33,7 +33,7 @@ const createRadioField = (options, value = '') => {
 		const inputId = `${id}-${idx}`;
 		const checked = value === choice.value ? 'checked' : '';
 		return `
-			<div class="form-check">
+			<div class="form-check cms-form-field">
 				<input class="form-check-input" type="radio" name="${name}" id="${inputId}" value="${choice.value}" ${checked}>
 				<label class="form-check-label" for="${inputId}">
 					${choice.label}

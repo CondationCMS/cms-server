@@ -34,6 +34,7 @@ import { RangeField } from "./field.range.js";
 import { RadioField } from "./field.radio.js";
 import { CheckboxField } from "./field.checkbox.js";
 import { Divider } from "./field.divider.js";
+import { MediaField } from "./field.media.js";
 
 
 const createForm = (options) => {
@@ -72,13 +73,15 @@ const createForm = (options) => {
 				return CheckboxField.markup(field, val)
 			case 'divider':
 				return Divider.markup(field, val)
+			case 'media':
+				return MediaField.markup(field, val)			
 			default:
 				return '';
 		}
 	}).join('\n');
 
 	const html = `
-		<form id="${formId}" class="needs-validation h-100" novalidate>
+		<form id="${formId}" class="needs-validation h-100 cms-form" novalidate>
 			${fieldHtml}
 		</form>
 	`;
@@ -110,6 +113,7 @@ const createForm = (options) => {
 		CodeField.init()
 		MarkdownField.init()
 		EasyMDEField.init()
+		MediaField.init()
 	};
 
 	const getData = () => {
@@ -131,6 +135,7 @@ const createForm = (options) => {
 			...RangeField.data(),
 			...RadioField.data(),
 			...CheckboxField.data(),
+			...MediaField.data(),
 		};
 		return data
 	};

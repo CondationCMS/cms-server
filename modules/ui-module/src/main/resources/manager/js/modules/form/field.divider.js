@@ -28,7 +28,7 @@ const createDivider = (options = {}) => {
 	const showTitle = title && title.trim().length > 0;
 
 	return `
-		<div class="my-4" data-cms-form-field-type="divider">
+		<div class="my-4 cms-form-field" data-cms-form-field-type="divider">
 			<hr class="mb-1">
 			${showTitle ? `<div class="text-muted small text-uppercase fw-bold mb-2" cms-i18n-key="${key}">${title}</div>` : ""}
 		</div>

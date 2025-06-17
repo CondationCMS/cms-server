@@ -21,6 +21,8 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.modules.ui.utils.json.GsonProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -28,6 +30,8 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tika.Tika;
@@ -56,6 +60,8 @@ public class UploadHandler extends JettyHandler {
 
 	private final Path TEMP_UPLOAD_DIR;
 
+	private final boolean useDateFolder;
+
 	public static final Set<String> ALLOWED_MIME_TYPES = Set.of(
 			"image/png",
 			"image/jpeg",
@@ -69,7 +75,12 @@ public class UploadHandler extends JettyHandler {
 	private static final Tika tika = new Tika();
 
 	public UploadHandler(String contextPath, Path outputDir) throws IOException {
+		this(contextPath, outputDir, false);
+	}
+
+	public UploadHandler(String contextPath, Path outputDir, boolean useDateFolder) throws IOException {
 		super();
+		this.useDateFolder = useDateFolder;
 		this.contextPath = contextPath;
 		this.outputDir = outputDir;
 		ensureDirExists(this.outputDir);
@@ -116,9 +127,9 @@ public class UploadHandler extends JettyHandler {
 					}
 
 					try {
-						process(parts);
+						var filename = process(parts);
 						response.setStatus(HttpStatus.OK_200);
-						callback.succeeded();
+						Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(Map.of("filename", filename)), callback);
 					} catch (Exception ex) {
 						log.error("Fehler beim Verarbeiten des Uploads", ex);
 						Response.writeError(request, response, callback, ex);
@@ -131,58 +142,76 @@ public class UploadHandler extends JettyHandler {
 		return true;
 	}
 
-	private void process(MultiPartFormData.Parts parts) throws IOException {
-		MultiPart.Part filePart = null;
-		String uri = null;
+	private String process(MultiPartFormData.Parts parts) throws IOException {
+		try {
+			MultiPart.Part filePart = null;
+			String uri = null;
 
-		for (MultiPart.Part part : parts) {
-			if ("uri".equals(part.getName())) {
-				try (InputStream is = Content.Source.asInputStream(part.getContentSource())) {
-					uri = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+			for (MultiPart.Part part : parts) {
+				if ("uri".equals(part.getName())) {
+					try (InputStream is = Content.Source.asInputStream(part.getContentSource())) {
+						uri = new String(is.readAllBytes(), StandardCharsets.UTF_8).trim();
+					}
+				} else if ("file".equals(part.getName())) {
+					filePart = part;
 				}
-			} else if ("file".equals(part.getName())) {
-				filePart = part;
+			}
+
+			if (useDateFolder) {
+				LocalDate now = LocalDate.now();
+				String year = String.valueOf(now.getYear());
+				String month = String.format("%02d", now.getMonthValue());
+
+				uri = "%s/%s/".formatted(year, month);
+			}
+
+			if (filePart != null) {
+				String rawFilename = filePart.getFileName();
+				if (StringUtil.isNotBlank(rawFilename)) {
+					// Temporäre Datei erzeugen, um MIME-Type zu ermitteln
+					Path tempFile = Files.createTempFile("upload-", ".tmp");
+					try (InputStream inputStream = Content.Source.asInputStream(filePart.getContentSource()); OutputStream outputStream = Files.newOutputStream(tempFile)) {
+						IO.copy(inputStream, outputStream);
+					}
+
+					String detectedMimeType = tika.detect(tempFile);
+					log.debug("Detected MIME type: {}", detectedMimeType);
+
+					if (!ALLOWED_MIME_TYPES.contains(detectedMimeType)) {
+						Files.deleteIfExists(tempFile);
+						throw new IOException("Unsupported file type: " + detectedMimeType);
+					}
+
+					// Zieldatei vorbereiten
+					String safeFilename = URLEncoder.encode(rawFilename, StandardCharsets.UTF_8);
+					Path targetDir = outputDir;
+
+					if (StringUtil.isNotBlank(uri)) {
+						uri = uri.replaceAll("[^a-zA-Z0-9/_\\-]", "_"); // nur sichere Zeichen
+						targetDir = outputDir.resolve(uri).normalize();
+					}
+
+					if (!PathUtil.isChild(outputDir, targetDir)) {
+						throw new RuntimeException("");
+					}
+
+					ensureDirExists(targetDir);
+					Path outputFile = targetDir.resolve(safeFilename);
+
+					// Temporäre Datei an Zielort verschieben
+					Files.move(tempFile, outputFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+					log.info("Saved uploaded file to {}", outputFile);
+					
+					return PathUtil.toRelativeFile(outputFile, outputDir);
+				}
+			}
+		} finally {
+			for (MultiPart.Part part : parts) {
+				part.delete();
 			}
 		}
-
-		if (filePart != null) {
-			String rawFilename = filePart.getFileName();
-			if (StringUtil.isNotBlank(rawFilename)) {
-				// Temporäre Datei erzeugen, um MIME-Type zu ermitteln
-				Path tempFile = Files.createTempFile("upload-", ".tmp");
-				try (InputStream inputStream = Content.Source.asInputStream(filePart.getContentSource()); OutputStream outputStream = Files.newOutputStream(tempFile)) {
-					IO.copy(inputStream, outputStream);
-				}
-
-				String detectedMimeType = tika.detect(tempFile);
-				log.debug("Detected MIME type: {}", detectedMimeType);
-
-				if (!ALLOWED_MIME_TYPES.contains(detectedMimeType)) {
-					Files.deleteIfExists(tempFile);
-					throw new IOException("Unsupported file type: " + detectedMimeType);
-				}
-
-				// Zieldatei vorbereiten
-				String safeFilename = URLEncoder.encode(rawFilename, StandardCharsets.UTF_8);
-				Path targetDir = outputDir;
-
-				if (StringUtil.isNotBlank(uri)) {
-					uri = uri.replaceAll("[^a-zA-Z0-9/_\\-]", "_"); // nur sichere Zeichen
-					targetDir = outputDir.resolve(uri).normalize();
-				}
-
-				ensureDirExists(targetDir);
-				Path outputFile = targetDir.resolve(safeFilename);
-
-				// Temporäre Datei an Zielort verschieben
-				Files.move(tempFile, outputFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-				log.info("Saved uploaded file to {}", outputFile);
-			}
-		}
-
-		for (MultiPart.Part part : parts) {
-			part.delete();
-		}
+		
+		return "";
 	}
 
 }

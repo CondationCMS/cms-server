@@ -29,7 +29,7 @@ const createEmailField = (options, value = '') => {
 	const title = i18n.t(key, options.title)
 
 	return `
-		<div class="mb-3" data-cms-form-field-type="mail">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="mail">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
 			<input type="email" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
 		</div>

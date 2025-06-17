@@ -33,7 +33,7 @@ const createCheckboxField = (options, value = []) => {
 		const inputId = `${id}-${idx}`;
 		const checked = selectedValues.has(choice.value) ? 'checked' : '';
 		return `
-			<div class="form-check">
+			<div class="form-check cms-form-field">
 				<input class="form-check-input" type="checkbox" name="${name}" id="${inputId}" value="${choice.value}" ${checked}>
 				<label class="form-check-label" for="${inputId}">
 					${choice.label}

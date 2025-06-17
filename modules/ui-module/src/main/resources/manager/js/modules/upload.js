@@ -20,18 +20,18 @@
  * #L%
  */
 // uploadFileWithProgress.js
-
 /**
  * Lädt eine Datei mit Fortschrittsanzeige via XMLHttpRequest hoch.
  * @param {File} file - Die hochzuladende Datei.
+ * @param {string} uploadEndpoint - Der Endpunkt für den Upload (optional, Standard: "/manager/upload").
  * @param {string} uri - Der Zielordner relativ zum Server-Ausgabeordner.
  * @param {function(percent: number): void} onProgress - Callback für Fortschrittsanzeige (0–100).
  * @param {function(): void} onSuccess - Callback bei Erfolg.
  * @param {function(error: string): void} onError - Callback bei Fehler.
  */
-export function uploadFileWithProgress({ file, uri, onProgress, onSuccess, onError }) {
+export function uploadFileWithProgress({ uploadEndpoint, file, uri, onProgress, onSuccess, onError }) {
 	if (!file) {
-		onError("No file selected.");
+		onError?.("No file selected.");
 		return;
 	}
 
@@ -40,7 +40,7 @@ export function uploadFileWithProgress({ file, uri, onProgress, onSuccess, onErr
 	formData.append("uri", uri);
 
 	const xhr = new XMLHttpRequest();
-	xhr.open("POST", "/manager/upload", true);
+	xhr.open("POST", uploadEndpoint ?? "/manager/upload", true);
 	xhr.setRequestHeader("X-CSRF-Token", window.manager.csrfToken);
 
 	xhr.upload.onprogress = (event) => {
@@ -52,15 +52,22 @@ export function uploadFileWithProgress({ file, uri, onProgress, onSuccess, onErr
 
 	xhr.onload = () => {
 		if (xhr.status === 200) {
-			if (typeof onSuccess === "function") onSuccess();
+			try {
+				const json = JSON.parse(xhr.responseText);
+				onSuccess?.(json); // Übergibt das JSON an den Callback
+			} catch (e) {
+				onError?.("Response is not valid JSON.");
+			}
 		} else {
-			if (typeof onError === "function") onError(`Upload failed: ${xhr.statusText}`);
+			onError?.(`Upload failed: ${xhr.status} ${xhr.statusText}`);
 		}
 	};
 
 	xhr.onerror = () => {
-		if (typeof onError === "function") onError("Upload error occurred.");
+		onError?.("Upload error occurred.");
 	};
 
 	xhr.send(formData);
 }
+
+

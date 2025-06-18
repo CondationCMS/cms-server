@@ -22,7 +22,7 @@ checked:
 - form
 selected: form
 radioed: farbe
-media_url: C:\fakepath\compass-7592444_1920.jpg
+media_url: 2025/06/picdump_kw22_2025-045.jpg
 ---
 
 # Demo Project

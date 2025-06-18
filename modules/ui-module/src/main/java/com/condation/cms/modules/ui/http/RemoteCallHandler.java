@@ -26,7 +26,7 @@ import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCResult;
 import com.condation.cms.modules.ui.model.RemoteCall;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
-import com.condation.cms.modules.ui.utils.json.GsonProvider;
+import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -57,7 +57,7 @@ public class RemoteCallHandler extends JettyHandler {
 		}
 
 		String body = getBody(request);
-		var remoteCall = GsonProvider.INSTANCE.fromJson(body, RemoteCall.class);
+		var remoteCall = UIGsonProvider.INSTANCE.fromJson(body, RemoteCall.class);
 
 		RPCResult rpcResult;
 		try {
@@ -75,7 +75,7 @@ public class RemoteCallHandler extends JettyHandler {
 
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
 		response.setStatus(200);
-		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(rpcResult), callback);
+		Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(rpcResult), callback);
 
 		return true;
 	}

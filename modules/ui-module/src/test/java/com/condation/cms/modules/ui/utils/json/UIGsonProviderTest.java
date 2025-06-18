@@ -32,15 +32,15 @@ import org.junit.jupiter.api.Test;
  *
  * @author thorstenmarx
  */
-public class GsonProviderTest {
+public class UIGsonProviderTest {
 	
-	public GsonProviderTest() {
+	public UIGsonProviderTest() {
 	}
 
     @Test
     void testContentSerializationIncludesInterfaceProperties() {
 		var content = new RemoteFileEnpoints.Content("readme.md", "/docs/readme.md");
-        String json = GsonProvider.INSTANCE.toJson(content);
+        String json = UIGsonProvider.INSTANCE.toJson(content);
         JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
 
         Assertions.assertThat(obj.get("name").getAsString()).isEqualTo("readme.md");

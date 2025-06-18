@@ -33,7 +33,8 @@ import { EventBus } from './event-bus.js';
 
 const defaultOptions = {
 	validate: () => true,
-	uri: ""
+	uri: "",
+	onSelect: null
 };
 
 const state = {
@@ -152,6 +153,12 @@ const openFileBrowser = async (optionsParam) => {
 		body: '<div id="cms-file-browser"></div>',
 		fullscreen: true,
 		onOk: async (event) => {
+			const selectedRow = document.querySelector("tr.table-active[data-cms-file-uri]:not([data-cms-file-directory])");
+			if (selectedRow && state.options.onSelect) {
+				const uri = selectedRow.getAttribute("data-cms-file-uri");
+				const name = selectedRow.getAttribute("data-cms-file-name");
+				state.options.onSelect({ uri, name });
+			}
 		},
 		onShow: async () => {
 			initFileBrowser();
@@ -177,6 +184,8 @@ const initFileBrowser = async (uri) => {
 			asset: state.options.type === "assets"
 		});
 		makeDirectoriesClickable();
+		makeFilesSelectable();
+		enableRowSelection();
 		fileActions();
 		initBootstrapTooltips();
 		initDragAndDropUpload();
@@ -189,6 +198,28 @@ const initBootstrapTooltips = () => {
 	});
 };
 
+const makeFilesSelectable = () => {
+	const rows = document.querySelectorAll("tr[data-cms-file-uri]:not([data-cms-file-directory])");
+	rows.forEach((row) => {
+		row.addEventListener("dblclick", () => {
+			const uri = row.getAttribute("data-cms-file-uri");
+			const name = row.getAttribute("data-cms-file-name");
+			if (state.options.onSelect) {
+				state.options.onSelect({ uri, name });
+			}
+			state.modal.hide();
+		});
+	});
+};
+const enableRowSelection = () => {
+	const rows = document.querySelectorAll("tr[data-cms-file-uri]:not([data-cms-file-directory])");
+	rows.forEach((row) => {
+		row.addEventListener("click", () => {
+			rows.forEach(r => r.classList.remove("table-active"));
+			row.classList.add("table-active");
+		});
+	});
+};
 
 
 const getActions = () => {

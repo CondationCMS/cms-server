@@ -22,7 +22,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.utils.PathUtil;
-import com.condation.cms.modules.ui.utils.json.GsonProvider;
+import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -129,7 +129,7 @@ public class UploadHandler extends JettyHandler {
 					try {
 						var filename = process(parts);
 						response.setStatus(HttpStatus.OK_200);
-						Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(Map.of("filename", filename)), callback);
+						Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(Map.of("filename", filename)), callback);
 					} catch (Exception ex) {
 						log.error("Fehler beim Verarbeiten des Uploads", ex);
 						Response.writeError(request, response, callback, ex);

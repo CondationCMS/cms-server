@@ -37,7 +37,7 @@ import java.lang.reflect.Type;
  *
  * @author thorstenmarx
  */
-public class GsonProvider {
+public class UIGsonProvider {
 
 	public static final Gson INSTANCE = new GsonBuilder()
 			.setPrettyPrinting()

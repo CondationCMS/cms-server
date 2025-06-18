@@ -24,7 +24,7 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.modules.ui.model.HookCall;
-import com.condation.cms.modules.ui.utils.json.GsonProvider;
+import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class HookHandler extends JettyHandler {
 		}
 
 		String body = getBody(request);
-		var command = GsonProvider.INSTANCE.fromJson(body, HookCall.class);
+		var command = UIGsonProvider.INSTANCE.fromJson(body, HookCall.class);
 		ActionContext<?> actionContext  = hookSystem.execute(command.hook(), command.parameters());
 		
 		Map<String, Object> commandResponse = new HashMap<>();
@@ -66,7 +66,7 @@ public class HookHandler extends JettyHandler {
 		
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
 		response.setStatus(200);
-		Content.Sink.write(response, true, GsonProvider.INSTANCE.toJson(commandResponse), callback);
+		Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(commandResponse), callback);
 		
 
 		return true;

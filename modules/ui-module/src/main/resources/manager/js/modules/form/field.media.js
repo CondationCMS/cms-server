@@ -22,22 +22,29 @@
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 import { uploadFileWithProgress } from "../upload.js";
+import { openFileBrowser } from "../filebrowser.js";
 
 const createMediaField = (options, value = '') => {
 	const id = createID();
 	const key = "field." + options.name;
 	const title = i18n.t(key, options.title);
-	const imageSrc = value !== "" ? patchPathWithContext(value) : "https://placehold.co/100x100";
+	var previewUrl = value;
+	if (value && value != '') {
+		previewUrl = patchPathWithContext("/assets/" + value)
+	} else {
+		previewUrl = "https://placehold.co/100x100"
+	}
 
 	return `
 		<div class="d-flex align-items-start cms-form-field" data-cms-form-field-type="media" data-field-id="${id}">
 			<div class="cms-media-preview flex-shrink-0-11 me-3">
-				<img src="${imageSrc}" alt="Image preview" class="cms-media-image">
+				<img src="${previewUrl}" alt="Image preview" class="cms-media-image">
 			</div>
 			<div class="d-flex flex-column">
 				<label class="cms-drop-zone">
 					<div><i class="bi bi-upload me-2"></i><span cms-i18n-key="${key}">${title}</span></div>
-					<input type="file" name=${options.name} accept="image/*" class="cms-media-input d-none">
+					<input type="file" name=${options.name} accept="image/*" class="d-none cms-media-input">
+					<input type="text" name=${options.name} class="d-none cms-media-input-value" value="${value}">
 				</label>
 				<button type="button" class="btn btn-outline-primary mt-2 cms-media-button">
 					<i class="bi bi-images me-1"></i> MediaManager
@@ -50,7 +57,7 @@ const createMediaField = (options, value = '') => {
 const getData = () => {
 	const data = {};
 	document.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
-		const input = wrapper.querySelector(".cms-media-input");
+		const input = wrapper.querySelector(".cms-media-input-value");
 		if (input) {
 			data[input.name] = {
 				type: 'media',
@@ -66,15 +73,9 @@ const init = () => {
 		const dropZone = wrapper.querySelector(".cms-drop-zone");
 		const input = wrapper.querySelector(".cms-media-input");
 		const preview = wrapper.querySelector(".cms-media-image");
-		const button = wrapper.querySelector(".cms-media-button");
+		const openMediaManager = wrapper.querySelector(".cms-media-button");
 
-		if (!input || !dropZone || !preview || !button) return;
-
-		// Assign a name to the input if not already
-		if (!input.name) {
-			const id = wrapper.getAttribute("data-field-id");
-			input.name = id;
-		}
+		if (!input || !dropZone || !preview || !openMediaManager) return;
 
 		// Handle file drop
 		dropZone.addEventListener("dragover", (e) => {
@@ -95,45 +96,73 @@ const init = () => {
 			if (e.dataTransfer.files.length > 0) {
 				input.files = e.dataTransfer.files;
 				preview.src = URL.createObjectURL(e.dataTransfer.files[0]);
-
 				var file = e.dataTransfer.files[0]
-				uploadFileWithProgress({
-					uploadEndpoint: "/manager/upload2",
-					file: file,
-					uri: "not relevant for media fields",
-					onProgress: (percent) => {
-						console.log(`Upload progress: ${percent}%`);
-					},
-					onSuccess: (data) => {
-						if (data.filename) {
-							input.value = data.filename; // Set the input value to the uploaded file's name
-						}
-					},
-					onError: (error) => {
-						console.error("Upload failed:", error);
-					}
-				});
+				handleUpload(wrapper, file);
 			}
 		});
 
 		// Handle click to open file chooser
-		dropZone.addEventListener("click", () => input.click());
+		//dropZone.addEventListener("click", () => input.click());
 
 		// Handle file selection
 		input.addEventListener("change", (e) => {
 			const file = e.target.files[0];
 			if (file) {
 				preview.src = URL.createObjectURL(file);
+				handleUpload(wrapper, file);
 			}
 		});
 
 		// Handle MediaManager button
-		button.addEventListener("click", () => {
-			// Hier könntest du ein Modal öffnen oder deine Mediensuche starten
-			alert("MediaManager öffnen – TODO: Implementieren");
+		openMediaManager.addEventListener("click", () => {
+			openFileBrowser({
+				type: "assets",
+				onSelect: (file) => {
+					console.log("Selected file:", file);
+
+					const preview = wrapper.querySelector(".cms-media-image");
+					const inputValue = wrapper.querySelector(".cms-media-input-value");
+					if (file && file.uri) {
+						var value = file.uri; // Use the file's URI
+						if (file.uri.startsWith("/")) {
+							value = file.uri.substring(1); // Remove leading slash if present
+						}
+						inputValue.value = value; // Set the input value to the selected file's name
+
+						var previewUrl = value;
+						if (value && value != '') {
+							previewUrl = patchPathWithContext("/assets/" + value)
+						} else {
+							previewUrl = "https://placehold.co/100x100"
+						}
+						preview.src = previewUrl; // Update the preview image
+					}
+				}
+			})
 		});
 	});
 };
+
+const handleUpload = (wrapper, file) => {
+	const inputValue = wrapper.querySelector(".cms-media-input-value");
+	uploadFileWithProgress({
+		uploadEndpoint: "/manager/upload2",
+		file: file,
+		uri: "not relevant for media fields",
+		onProgress: (percent) => {
+			console.log(`Upload progress: ${percent}%`);
+		},
+		onSuccess: (data) => {
+			console.log(data)
+			if (data.filename) {
+				inputValue.value = data.filename; // Set the input value to the uploaded file's name
+			}
+		},
+		onError: (error) => {
+			console.error("Upload failed:", error);
+		}
+	});
+}
 
 export const MediaField = {
 	markup: createMediaField,

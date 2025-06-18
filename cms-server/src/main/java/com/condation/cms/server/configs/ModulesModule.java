@@ -32,7 +32,6 @@ import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
-import com.condation.cms.content.markdown.module.CMSMarkdownRenderer;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.modules.api.ModuleManager;
 import com.condation.modules.api.ModuleRequestContextFactory;
@@ -75,7 +74,8 @@ public class ModulesModule extends AbstractModule {
 						"org.graalvm.polyglot",
 						"org.graalvm.js",
 						"org.eclipse.jetty",
-						"jakarta.servlet"
+						"jakarta.servlet",
+						"org.w3c"
 				));
 		var moduleManager = ModuleManagerImpl.builder()
 				.setClassLoader(classLoader)

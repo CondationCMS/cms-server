@@ -1,0 +1,136 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+/*
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  flex: 1 1 auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+#previewWrapper {
+  flex: 1;
+  position: relative;
+}
+
+iframe#contentPreview {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+  */
+
+i[data-cms-section-handle] {
+  cursor: pointer;
+}
+
+tr[data-cms-file-directory] {
+  cursor: pointer;
+}
+
+#drop-zone {
+  width: 100%;
+  padding: 50px;
+  border: 2px dashed #aaa;
+  text-align: center;
+  margin-top: 10px;
+  transition: background-color 0.2s;
+}
+
+#drop-zone.dragover {
+  background-color: #f0f8ff;
+}
+
+.dropdown-nocaret::after {
+  display: none;
+}
+
+
+.cms-image-hover-wrapper {
+  position: relative;
+}
+
+.cms-small-image {
+  width: 50px;
+  /* oder dein Wunschwert */
+  height: auto;
+  cursor: pointer;
+}
+
+.cms-overlay-image {
+  display: none;
+  position: absolute;
+  top: -10px;
+  left: 110%;
+  z-index: 1000;
+  background-color: white;
+  padding: 5px;
+  border: 1px solid #ccc;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.cms-image-hover-wrapper:hover .cms-overlay-image {
+  display: block;
+}
+
+.cms-enlarged-image {
+  width: 300px;
+  height: auto;
+}
+
+.cms-form .cms-drop-zone {
+  border: 2px dashed #6c757d;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.cms-form .cms-drop-zone:hover {
+  background-color: #e9ecef;
+}
+
+.cms-form .cms-drop-zone input {
+  display: none;
+}
+
+.cms-form .cms-media-preview img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 0.25rem;
+}
+.cms-form .cms-drop-zone.drag-over {
+	border: 2px dashed #007bff;
+	background-color: rgba(0,123,255,0.1);
+}

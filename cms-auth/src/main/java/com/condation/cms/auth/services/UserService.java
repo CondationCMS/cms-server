@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +56,7 @@ public class UserService {
 
 	private final Path hostBase;
 
-	public void addUser(Realm realm, String username, String password, String[] groups) throws IOException {
+	public void addUser(Realm realm, String username, String password, String[] roles) throws IOException {
 		List<User> users = loadUsers(realm);
 		users = new ArrayList<>(users.stream()
 				.filter(user -> !user.username().equals(username))
@@ -68,7 +69,7 @@ public class UserService {
 		Map<String, Object> data = new HashMap<>();
 		data.put("salt", saltBase64);
 
-		users.add(new User(username, passwordHash, groups, data));
+		users.add(new User(username, passwordHash, roles, data));
 		saveUsers(realm, users);
 	}
 
@@ -76,6 +77,15 @@ public class UserService {
 		var users = loadUsers(realm);
 		users = new ArrayList<>(users.stream().filter(user -> !user.username.equals(username)).toList());
 		saveUsers(realm, users);
+	}
+
+	public Optional<User> byUsername(final Realm realm, final String username) {
+		try {
+			return loadUsers(realm).stream().filter(user -> user.username().equals(username)).findFirst();
+		} catch (Exception ex) {
+			log.error("", ex);
+		}
+		return Optional.empty();
 	}
 
 	private static User fromString(final String userString) {
@@ -161,8 +171,11 @@ public class UserService {
 		Files.writeString(usersFile, userContent, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 	}
 
-	public static record User(String username, String passwordHash, String[] groups, Map<String, Object> data) {
+	public static record User(String username, String passwordHash, String[] roles, Map<String, Object> data) {
 
+		public User(String username, String passwordHash, String[] roles) {
+			this(username, passwordHash, roles, Collections.emptyMap());
+		}
 		public String line() {
 			try {
 				String json = GSONProvider.GSON.toJson(data != null ? data : Map.of());
@@ -170,7 +183,7 @@ public class UserService {
 				return "%s:%s:%s:%s\r\n".formatted(
 						username,
 						passwordHash,
-						groups != null ? String.join(",", groups) : "",
+						roles != null ? String.join(",", roles) : "",
 						encodedData
 				);
 			} catch (Exception e) {

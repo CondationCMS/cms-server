@@ -6,7 +6,9 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 
 # changelog
 
-## 7.9.0
+## 8.0.0
+
+* **BREAKING CHANGE** Sorted sections now use the _layout.order_ meta attribute for sorting
 
 * **BUGFIX** TemplateEngine should use cache only if activated [456](https://github.com/CondationCMS/cms-server/issues/456)
 * **MAINTENANCE** multiple dependencies updated
@@ -18,6 +20,8 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Add redirect support for aliases [454](https://github.com/CondationCMS/cms-server/issues/454)
 * **FEATURE** Signature for modules and themes [471](https://github.com/CondationCMS/cms-server/issues/471)
 * **FEATURE** Switch password has to secure algorithm [472](https://github.com/CondationCMS/cms-server/issues/472)
+* **FEATURE** Custom repository urls for modules, extensions and themes [466](https://github.com/CondationCMS/cms-server/issues/466)
+* **FEATURE** UI to manage content [PR-446](https://github.com/CondationCMS/cms-server/pull/446)
 
 ### Developer experience
 

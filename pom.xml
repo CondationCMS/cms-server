@@ -128,6 +128,11 @@
 				<artifactId>cms-system-modules</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.condation.cms.modules</groupId>
+				<artifactId>api-module</artifactId>
+				<version>${project.version}</version>
+			</dependency>
 			
 			<dependency>
 				<groupId>org.apache.commons</groupId>

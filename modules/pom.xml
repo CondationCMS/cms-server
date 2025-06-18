@@ -13,5 +13,6 @@
 	<modules>
 		<module>example-module</module>
 		<module>system-modules</module>
+		<module>api-module</module>
 	</modules>
 </project>

@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system.handlers;
+package com.condation.cms.modules.system.api.handlers;
 
 /*-
  * #%L
@@ -22,18 +22,21 @@ package com.condation.cms.modules.system.handlers;
  * #L%
  */
 
-import com.condation.cms.modules.system.handlers.v1.ContentHandler;
+import com.condation.cms.modules.system.api.handlers.v1.ContentHandler;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
 import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.modules.system.handlers.v1.NavigationHandler;
+import com.condation.cms.modules.system.api.ContentService;
+import com.condation.cms.modules.system.api.NavigationService;
+import com.condation.cms.modules.system.api.handlers.v1.NavigationHandler;
+import com.condation.modules.api.annotation.Extension;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
 /**
  *
  * @author thmar
  */
-//@Extension(APIHandlerExtensionPoint.class)
+@Extension(APIHandlerExtensionPoint.class)
 public class ApiEndpoints extends APIHandlerExtensionPoint {
 
 	@Override
@@ -42,12 +45,12 @@ public class ApiEndpoints extends APIHandlerExtensionPoint {
 		
 		mapping.add(PathSpec.from("/v1/content/*"), 
 				"GET", 
-				new ContentHandler(getContext().get(DBFeature.class).db())
+				new ContentHandler(new ContentService(getContext().get(DBFeature.class).db()))
 		);
 		
 		mapping.add(PathSpec.from("/v1/navigation/*"), 
 				"GET", 
-				new NavigationHandler(getContext().get(DBFeature.class).db())
+				new NavigationHandler(new NavigationService(getContext().get(DBFeature.class).db()))
 		);
 		
 		return mapping;

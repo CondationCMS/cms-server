@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system.helpers;
+package com.condation.cms.modules.system.api.helpers;
 
 /*-
  * #%L
@@ -26,6 +26,8 @@ import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.filesystem.metadata.AbstractMetaData;
+import java.util.Collections;
 import java.util.Map;
 import org.eclipse.jetty.server.Request;
 
@@ -38,6 +40,9 @@ public final class NodeHelper {
 	private NodeHelper() {}
 	
 	public static Map<String, String> getLinks (ContentNode node, Request request) {
+		if (!AbstractMetaData.isVisible(node)) {
+			return Collections.emptyMap();
+		}
 		return getLinks(node.uri(), request);
 	}
 	

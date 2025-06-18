@@ -1,10 +1,10 @@
-package com.condation.cms.modules.system.handlers.v1;
+package com.condation.cms.modules.system.api;
 
 /*-
  * #%L
  * cms-system-modules
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,60 +25,38 @@ package com.condation.cms.modules.system.handlers.v1;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
-import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.utils.PathUtil;
-import com.condation.cms.api.utils.RequestUtil;
-import com.condation.cms.modules.system.helpers.NodeHelper;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.condation.cms.modules.system.api.helpers.NodeHelper;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import org.eclipse.jetty.http.HttpHeader;
-import org.eclipse.jetty.io.Content;
+import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
-import org.eclipse.jetty.util.Callback;
 
 /**
  *
- * @author thmar
+ * @author thorstenmarx
  */
-public class ContentHandler implements HttpHandler {
+@RequiredArgsConstructor
+public class ContentService {
 
 	private final DB db;
-	public static final Gson GSON = new GsonBuilder()
-			.enableComplexMapKeySerialization()
-			.create();
-
-	public ContentHandler(DB db) {
-		this.db = db;
-	}
-
-	@Override
-	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var uri = RequestUtil.getContentPath(request);
-		uri = uri.replaceFirst("api/v1/content", "");
-		if (uri.startsWith("/")) {
-			uri = uri.substring(1);
-		}
-
+	
+	
+	public Optional<Map<String, Object>> resolve (String uri, Request request) {
 		var resolved = resolveContentNode(uri);
 		if (resolved.isEmpty()) {
-			Response.writeError(request, response, callback, 404);
-			return true;
+			return Optional.empty();
 		}
 		
 		final ContentNode node = resolved.get();
 		final Map<String, Object> data = new HashMap<>(node.data());
 		data.put("_links", NodeHelper.getLinks(node, request));
 		
-		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
-		Content.Sink.write(response, true, GSON.toJson(data), callback);
-		
-		return true;
+		return Optional.of(data);
 	}
-
+	
 	private Optional<ContentNode> resolveContentNode(String uri) {
 		var contentBase = db.getReadOnlyFileSystem().contentBase();
 		var contentPath = contentBase.resolve(uri);

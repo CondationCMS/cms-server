@@ -22,21 +22,11 @@ package com.condation.cms.modules.system.api.handlers.v1;
  * #L%
  */
 
-import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.extensions.http.HttpHandler;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.core.configuration.GSONProvider;
-import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.modules.system.api.NavNode;
 import com.condation.cms.modules.system.api.NavigationService;
-import com.condation.cms.modules.system.api.helpers.NodeHelper;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;

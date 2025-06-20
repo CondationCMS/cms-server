@@ -22,6 +22,7 @@ package com.condation.cms.modules.system.api.handlers;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Experimental;
 import com.condation.cms.modules.system.api.handlers.v1.ContentHandler;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
@@ -36,6 +37,7 @@ import org.eclipse.jetty.http.pathmap.PathSpec;
  *
  * @author thmar
  */
+@Experimental
 @Extension(APIHandlerExtensionPoint.class)
 public class ApiEndpoints extends APIHandlerExtensionPoint {
 

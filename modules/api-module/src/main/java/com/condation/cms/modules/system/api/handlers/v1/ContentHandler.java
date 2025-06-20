@@ -26,6 +26,7 @@ import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.utils.RequestUtil;
 import static com.condation.cms.core.configuration.GSONProvider.GSON;
 import com.condation.cms.modules.system.api.ContentService;
+import java.util.Map;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
@@ -55,12 +56,16 @@ public class ContentHandler implements HttpHandler {
 		var resolved = contentService.resolve(uri, request);
 		if (resolved.isEmpty()) {
 			response.setStatus(404);
-			callback.succeeded();
+			var respObject = Map.of(
+					"status", 404,
+					"error", "Not found"
+			);
+			Content.Sink.write(response, true, GSON.toJson(respObject), callback);
 			return true;
 		}
 		
 		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
-		Content.Sink.write(response, true, GSON.toJson(resolved), callback);
+		Content.Sink.write(response, true, GSON.toJson(resolved.get()), callback);
 		
 		return true;
 	}

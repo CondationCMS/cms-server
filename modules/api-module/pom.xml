@@ -6,7 +6,7 @@
 		<artifactId>cms-modules</artifactId>
 		<version>7.8.0</version>
 	</parent>
-	<artifactId>cms-system-modules</artifactId>
+	<artifactId>api-module</artifactId>
 	<packaging>jar</packaging>
     
 	<dependencies>

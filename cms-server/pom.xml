@@ -54,6 +54,10 @@
 			<groupId>com.condation.cms.modules</groupId>
 			<artifactId>cms-system-modules</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.condation.cms.modules</groupId>
+			<artifactId>api-module</artifactId>
+		</dependency>
 		
 		<dependency>
 			<groupId>com.condation.cms</groupId>

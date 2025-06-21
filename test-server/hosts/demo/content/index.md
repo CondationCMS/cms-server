@@ -3,6 +3,7 @@ title: Startseite
 template: start.html
 search:
     index: false
+published: false
 ---
 
 # Demo Project

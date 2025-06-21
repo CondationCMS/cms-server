@@ -1,1 +1,4 @@
 hostname = [ "localhost5" ]
+
+[api]
+enabled = true

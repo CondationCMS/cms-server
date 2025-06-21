@@ -1,8 +1,6 @@
 package com.condation.cms.server.handler.http;
 
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
-import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
-import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
 import com.condation.cms.api.feature.features.ConfigurationFeature;

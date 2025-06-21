@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system.api;
+package com.condation.cms.modules.system.api.services;
 
 /*-
  * #%L
@@ -25,6 +25,7 @@ package com.condation.cms.modules.system.api;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  *
@@ -34,4 +35,28 @@ public record NavNode (String path, Map<String, String> _links, List<NavNode> ch
 	public NavNode (String path, Map<String, String> _links) {
 		this(path, _links, Collections.emptyList());
 	}
+
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 29 * hash + Objects.hashCode(this.path);
+		return hash;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final NavNode other = (NavNode) obj;
+		return Objects.equals(this.path, other.path);
+	}
+	
+	
 }

@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system.api;
+package com.condation.cms.modules.system.api.services;
 
 /*-
  * #%L

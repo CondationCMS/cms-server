@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system.api;
+package com.condation.cms.modules.system.api.services;
 
 /*-
  * #%L
@@ -26,7 +26,6 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
-import com.condation.cms.modules.system.api.handlers.v1.NavigationHandler;
 import com.condation.cms.modules.system.api.helpers.NodeHelper;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -62,12 +61,14 @@ public class NavigationService {
 			ContentNode indexNode = dir.children().get("index.md");
 
 			if (indexNode != null && AbstractMetaData.isVisible(indexNode)) {
-				// Normales, sichtbares Verzeichnis mit index.md
-				children.add(new NavNode(
+				final NavNode navNode = new NavNode(
 						NodeHelper.getPath(indexNode),
 						NodeHelper.getLinks(indexNode, request),
 						Collections.emptyList()
-				));
+				);
+				if (!children.contains(navNode)) {
+					children.add(navNode);
+				}
 			} else {
 				// Kein sichtbares index.md – prüfen, ob darunter etwas Sichtbares liegt
 				boolean hasVisibleDescendants = dir.children().values()
@@ -75,12 +76,14 @@ public class NavigationService {
 						.anyMatch(AbstractMetaData::isVisible);
 
 				if (hasVisibleDescendants) {
-					// Virtueller Navigationsknoten für das Verzeichnis
-					children.add(new NavNode(
+					final NavNode navNode = new NavNode(
 							NodeHelper.getPath(dir),
 							Collections.emptyMap(),
 							Collections.emptyList()
-					));
+					);
+					if (!children.contains(navNode)) {
+						children.add(navNode);
+					}
 				}
 			}
 		});
@@ -94,78 +97,8 @@ public class NavigationService {
 				NodeHelper.getPath(child),
 				NodeHelper.getLinks(child, request),
 				Collections.emptyList()
-		))
+		)).filter(node -> !children.contains(node))
 				.forEach(children::add);
-
-		children.sort((node1, node2) -> node1.path().compareTo(node2.path()));
-
-		NavNode node;
-		if (contentNode.isPresent()) {
-			node = new NavNode(
-					NodeHelper.getPath(contentNode.get()),
-					NodeHelper.getLinks(contentNode.get(), request),
-					children
-			);
-		} else {
-			node = new NavNode(
-					"/" + uri,
-					Collections.emptyMap(),
-					children
-			);
-		}
-
-		return Optional.of(node);
-	}
-
-	public Optional<NavNode> list2(final String uri, final Request request) {
-		final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
-
-		var file = contentBase.resolve(uri);
-
-		if (!file.exists()) {
-			return Optional.empty();
-		}
-		var filePath = PathUtil.toRelativeFile(file, contentBase);
-		final Optional<ContentNode> contentNode = db.getContent().byUri(filePath);
-
-		List<NavNode> children = new ArrayList<>();
-		db.getContent().listDirectories(file, "").stream()
-				.map(child -> {
-					if (child.isDirectory()) {
-						if (child.children().containsKey("index.md")) {
-							return child.children().get("index.md");
-						}
-						return null;
-					}
-					return child;
-				})
-				.filter(child -> AbstractMetaData.isVisible(child))
-				.filter(child -> child != null)
-				.map(child -> new NavNode(
-					NodeHelper.getPath(child),
-					NodeHelper.getLinks(child, request))
-				).forEach(children::add);
-
-		final String nodeUri = NodeHelper.getPath(uri);
-		db.getContent().listContent(file, "").stream()
-				.filter(child -> AbstractMetaData.isVisible(child))
-				.map(child -> {
-					if (child.isDirectory()) {
-						if (child.children().containsKey("index.md")) {
-							return child.children().get("index.md");
-						}
-						return null;
-					}
-					return child;
-				})
-				.filter(child -> child != null)
-				.filter(child
-						-> !NodeHelper.getPath(child).equals(nodeUri)
-				)
-				.map(child -> new NavNode(
-				NodeHelper.getPath(child),
-				NodeHelper.getLinks(child, request))
-				).forEach(children::add);
 
 		children.sort((node1, node2) -> node1.path().compareTo(node2.path()));
 

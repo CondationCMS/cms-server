@@ -1,4 +1,4 @@
-package com.condation.cms.modules.system.api;
+package com.condation.cms.modules.system.api.services;
 
 /*-
  * #%L
@@ -34,8 +34,6 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.AfterAll;
@@ -52,10 +50,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @author thorstenmarx
  */
 @ExtendWith(MockitoExtension.class)
-public class NavigationServiceTest {
-
+public class ContentServiceTest {
+	
 	private static FileDB db;
-	private static NavigationService navService;
+	private static ContentService contentService;
 
 	@Mock
 	private Request request;
@@ -76,14 +74,14 @@ public class NavigationServiceTest {
 		}, config);
 		db.init();
 		
-		navService = new NavigationService(db);
+		contentService = new ContentService(db);
 	}
 	
 	@BeforeEach
 	public void setupRequestContext () {
 		var requestContext = new RequestContext();
 		var siteProperties = Mockito.mock(SiteProperties.class);
-		Mockito.when(siteProperties.contextPath()).thenReturn("/");
+		Mockito.lenient().when(siteProperties.contextPath()).thenReturn("/");
 		var siteConfiguration = new SiteConfiguration(siteProperties);
 		
 		var configuration = new Configuration();
@@ -92,7 +90,7 @@ public class NavigationServiceTest {
 		
 		requestContext.add(ConfigurationFeature.class, configFeature);
 		
-		Mockito.when(request.getAttribute("_requestContext")).thenReturn(requestContext);
+		Mockito.lenient().when(request.getAttribute("_requestContext")).thenReturn(requestContext);
 	}
 	
 	@AfterAll
@@ -100,51 +98,17 @@ public class NavigationServiceTest {
 		db.close();
 	}
 
-	private Optional<NavNode> getChildNode(List<NavNode> children, String path) {
-		return children.stream().filter(child -> child.path().equals(path)).findFirst();
+	@Test
+	public void publised_content_is_returned() {
+		var content = contentService.resolve("", request);
+		
+		Assertions.assertThat(content.isPresent());
 	}
 	
 	@Test
-	public void test_root_node() {
-		var result = navService.list("", request);
+	public void unpublised_content_is_not_returned() {
+		var content = contentService.resolve("sub", request);
 		
-		Assertions.assertThat(result).isPresent();
-		Assertions.assertThat(result.get().children()).hasSize(2);
-		
-		var subIndex = getChildNode(result.get().children(), "/sub");
-		Assertions.assertThat(subIndex)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isEmpty();
-				});
-		var childNode = getChildNode(result.get().children(), "/child");
-		Assertions.assertThat(childNode)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isNotEmpty();
-				});
-	}
-
-	
-
-	@Test
-	public void test_index_not_published() {
-		var result = navService.list("sub", request);
-		
-		Assertions.assertThat(result).isNotEmpty();
-		Assertions.assertThat(result.get().children()).hasSize(1);
-		
-		
-		Assertions.assertThat(result)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isEmpty();
-				});
-		var childNode = getChildNode(result.get().children(), "/sub/child");
-		Assertions.assertThat(childNode)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isNotEmpty();
-				});
+		Assertions.assertThat(content.isEmpty());
 	}
 }

@@ -25,7 +25,7 @@ package com.condation.cms.modules.system.api.handlers.v1;
 import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.utils.RequestUtil;
 import static com.condation.cms.core.configuration.GSONProvider.GSON;
-import com.condation.cms.modules.system.api.ContentService;
+import com.condation.cms.modules.system.api.services.ContentService;
 import java.util.Map;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;

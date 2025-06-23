@@ -27,12 +27,13 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.system.api.helpers.NodeHelper;
+import com.condation.cms.modules.system.api.helpers.WhitelistFilter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.server.Request;
-import org.eclipse.jetty.server.Response;
 
 /**
  *
@@ -42,19 +43,21 @@ import org.eclipse.jetty.server.Response;
 public class ContentService {
 
 	private final DB db;
+	private final Set<String> metaWhiteList;
 	
-	
-	public Optional<Map<String, Object>> resolve (String uri, Request request) {
+	public Optional<ApiContentNode> resolve (String uri, Request request) {
 		var resolved = resolveContentNode(uri);
 		if (resolved.isEmpty()) {
 			return Optional.empty();
 		}
 		
 		final ContentNode node = resolved.get();
-		final Map<String, Object> data = new HashMap<>(node.data());
-		data.put("_links", NodeHelper.getLinks(node, request));
 		
-		return Optional.of(data);
+		return Optional.of(new ApiContentNode(
+				uri, 
+				NodeHelper.getLinks(node, request), 
+				WhitelistFilter.applyWhitelist(node.data(), metaWhiteList)
+		));
 	}
 	
 	private Optional<ContentNode> resolveContentNode(String uri) {

@@ -100,7 +100,7 @@ public class NavigationServiceTest {
 		db.close();
 	}
 
-	private Optional<NavNode> getChildNode(List<NavNode> children, String path) {
+	private Optional<ApiNavNode> getChildNode(List<ApiNavNode> children, String path) {
 		return children.stream().filter(child -> child.path().equals(path)).findFirst();
 	}
 	

@@ -43,7 +43,7 @@ public class NavigationService {
 
 	private final DB db;
 
-	public Optional<NavNode> list(final String uri, final Request request) {
+	public Optional<ApiNavNode> list(final String uri, final Request request) {
 		final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
 		var file = contentBase.resolve(uri);
 
@@ -54,14 +54,14 @@ public class NavigationService {
 		var filePath = PathUtil.toRelativeFile(file, contentBase);
 		final Optional<ContentNode> contentNode = db.getContent().byUri(filePath);
 
-		List<NavNode> children = new ArrayList<>();
+		List<ApiNavNode> children = new ArrayList<>();
 
 		// Verzeichnisse mit (ggf. virtuellen) Knoten behandeln
 		db.getContent().listDirectories(file, "").forEach(dir -> {
 			ContentNode indexNode = dir.children().get("index.md");
 
 			if (indexNode != null && AbstractMetaData.isVisible(indexNode)) {
-				final NavNode navNode = new NavNode(
+				final ApiNavNode navNode = new ApiNavNode(
 						NodeHelper.getPath(indexNode),
 						NodeHelper.getLinks(indexNode, request),
 						Collections.emptyList()
@@ -76,7 +76,7 @@ public class NavigationService {
 						.anyMatch(AbstractMetaData::isVisible);
 
 				if (hasVisibleDescendants) {
-					final NavNode navNode = new NavNode(
+					final ApiNavNode navNode = new ApiNavNode(
 							NodeHelper.getPath(dir),
 							Collections.emptyMap(),
 							Collections.emptyList()
@@ -93,7 +93,7 @@ public class NavigationService {
 				.filter(AbstractMetaData::isVisible)
 				.filter(child -> !child.isDirectory())
 				.filter(child -> !NodeHelper.getPath(child).equals(NodeHelper.getPath(uri)))
-				.map(child -> new NavNode(
+				.map(child -> new ApiNavNode(
 				NodeHelper.getPath(child),
 				NodeHelper.getLinks(child, request),
 				Collections.emptyList()
@@ -102,15 +102,15 @@ public class NavigationService {
 
 		children.sort((node1, node2) -> node1.path().compareTo(node2.path()));
 
-		NavNode node;
+		ApiNavNode node;
 		if (contentNode.isPresent()) {
-			node = new NavNode(
+			node = new ApiNavNode(
 					NodeHelper.getPath(contentNode.get()),
 					NodeHelper.getLinks(contentNode.get(), request),
 					children
 			);
 		} else {
-			node = new NavNode(
+			node = new ApiNavNode(
 					"/" + uri,
 					Collections.emptyMap(),
 					children

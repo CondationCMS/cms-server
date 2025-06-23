@@ -23,14 +23,19 @@ package com.condation.cms.modules.system.api.handlers;
  */
 
 import com.condation.cms.api.annotations.Experimental;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.modules.system.api.handlers.v1.ContentHandler;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.modules.system.api.services.ContentService;
 import com.condation.cms.modules.system.api.services.NavigationService;
 import com.condation.cms.modules.system.api.handlers.v1.NavigationHandler;
 import com.condation.modules.api.annotation.Extension;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
 /**
@@ -45,9 +50,15 @@ public class ApiEndpoints extends APIHandlerExtensionPoint {
 	public PathMapping getMapping() {
 		var mapping = new PathMapping();
 		
+		var siteProperties = getContext().get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
+		var whitelist = siteProperties.getOrDefault("api.whitelist", List.of(""));
+		
 		mapping.add(PathSpec.from("/v1/content/*"), 
 				"GET", 
-				new ContentHandler(new ContentService(getContext().get(DBFeature.class).db()))
+				new ContentHandler(new ContentService(
+						getContext().get(DBFeature.class).db(),
+						new HashSet<>(whitelist)
+				))
 		);
 		
 		mapping.add(PathSpec.from("/v1/navigation/*"), 

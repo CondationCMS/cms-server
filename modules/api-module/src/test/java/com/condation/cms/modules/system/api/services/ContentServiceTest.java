@@ -34,6 +34,7 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import java.nio.file.Path;
+import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.AfterAll;
@@ -74,7 +75,7 @@ public class ContentServiceTest {
 		}, config);
 		db.init();
 		
-		contentService = new ContentService(db);
+		contentService = new ContentService(db, Set.of("title"));
 	}
 	
 	@BeforeEach

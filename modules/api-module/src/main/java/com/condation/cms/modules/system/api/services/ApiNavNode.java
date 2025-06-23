@@ -31,8 +31,8 @@ import java.util.Objects;
  *
  * @author thorstenmarx
  */
-public record NavNode (String path, Map<String, String> _links, List<NavNode> children) {
-	public NavNode (String path, Map<String, String> _links) {
+public record ApiNavNode (String path, Map<String, String> _links, List<ApiNavNode> children) {
+	public ApiNavNode (String path, Map<String, String> _links) {
 		this(path, _links, Collections.emptyList());
 	}
 
@@ -54,7 +54,7 @@ public record NavNode (String path, Map<String, String> _links, List<NavNode> ch
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final NavNode other = (NavNode) obj;
+		final ApiNavNode other = (ApiNavNode) obj;
 		return Objects.equals(this.path, other.path);
 	}
 	

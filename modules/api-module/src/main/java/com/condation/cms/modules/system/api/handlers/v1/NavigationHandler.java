@@ -25,7 +25,7 @@ package com.condation.cms.modules.system.api.handlers.v1;
 import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.core.configuration.GSONProvider;
-import com.condation.cms.modules.system.api.services.NavNode;
+import com.condation.cms.modules.system.api.services.ApiNavNode;
 import com.condation.cms.modules.system.api.services.NavigationService;
 import java.util.Optional;
 import org.eclipse.jetty.http.HttpHeader;
@@ -54,7 +54,7 @@ public class NavigationHandler implements HttpHandler {
 			uri = uri.substring(1);
 		}
 		
-		Optional<NavNode> node = navigationService.list(uri, request);
+		Optional<ApiNavNode> node = navigationService.list(uri, request);
 		
 		if (node.isEmpty()) {
 			response.setStatus(404);

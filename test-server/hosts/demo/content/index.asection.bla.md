@@ -7,7 +7,7 @@ description: my new descritpion for that awesome section
 parent:
   text: text for a section
 layout:
-  order: 2
+  order: 3
 ---
 
 # This is a section: bla

@@ -91,6 +91,17 @@ const validate = (contentNode, targetSectionName) => {
 		return false
 	}
 
+	const sectionName = document.getElementById("cms-section-name").value
+	if (sectionName === "" || sectionName === null) {
+		showToast({
+			title: i18n.t("addsection.titles.alert", 'Create section'),
+			message: i18n.t("addsection.alerts.noname.message", "No section name provided."),
+			type: 'error',
+			timeout: 3000
+		});
+		return false
+	}
+
 	const sectionUri = getSectionUri(contentNode.result.uri, targetSectionName)
 	if (isUriInSection(contentNode, targetSectionName, sectionUri)) {
 		showToast({

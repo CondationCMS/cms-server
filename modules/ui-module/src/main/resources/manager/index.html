@@ -103,6 +103,18 @@
 						{% for entry in actionFactory.createMenu().entries() %}
 						{{ menuEntry(entry) | raw }}
 						{% endfor %}
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button" 
+										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
+								<i class="bi bi-folder2-open"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button"
+										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
+								<i class="bi bi-images"></i>
+							</a>
+						</li>
 					</ul>
 					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 						<li class="nav-item dropdown">

@@ -184,8 +184,11 @@ const initFileBrowser = async (uri) => {
 			asset: state.options.type === "assets"
 		});
 		makeDirectoriesClickable();
-		makeFilesSelectable();
-		enableRowSelection();
+		if (state.options.onSelect) {
+			makeFilesSelectable();
+			enableRowSelection();
+		}
+		
 		fileActions();
 		initBootstrapTooltips();
 		initDragAndDropUpload();

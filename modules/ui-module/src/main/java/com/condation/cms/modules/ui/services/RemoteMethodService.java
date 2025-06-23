@@ -71,10 +71,16 @@ public class RemoteMethodService {
 		private final Function<Map<String, Object>, Object> function;
 		
 		public Object execute (final Map<String, Object> parameters, UserService.User user) {
-			if (RoleUtil.hasAccess(remoteMethodAnnotation.roles(), user.roles())) {
-				
+			if (!RoleUtil.hasAccess(remoteMethodAnnotation.roles(), user.roles())) {
+				throw new RemoteMethodException("access not allowed");
 			}
 			return function.apply(parameters);
 		};
+	}
+	
+	public static class RemoteMethodException extends RuntimeException {
+		public RemoteMethodException (String message) {
+			super(message);
+		}
 	}
 }

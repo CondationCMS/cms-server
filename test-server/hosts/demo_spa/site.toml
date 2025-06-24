@@ -1,0 +1,7 @@
+id = "demo-spa"
+hostname = [ "localhost2" ]
+baseurl = "http://localhosts:2020"
+language = "en"
+
+[spa]
+enabled = true

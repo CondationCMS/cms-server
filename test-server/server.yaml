@@ -1,5 +1,5 @@
 server:
-    port: 1010
+    port: 2020
     ip: "127.0.0.1"
 env: dev
 ipc:

@@ -18,6 +18,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Add redirect support for aliases [454](https://github.com/CondationCMS/cms-server/issues/454)
 * **FEATURE** Signature for modules and themes [471](https://github.com/CondationCMS/cms-server/issues/471)
 * **FEATURE** Switch password has to secure algorithm [472](https://github.com/CondationCMS/cms-server/issues/472)
+* **FEATURE** Add spa mode for sites [476](https://github.com/CondationCMS/cms-server/issues/476)
 
 ### Developer experience
 

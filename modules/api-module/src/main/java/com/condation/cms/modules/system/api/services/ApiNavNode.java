@@ -31,9 +31,9 @@ import java.util.Objects;
  *
  * @author thorstenmarx
  */
-public record ApiNavNode (String path, Map<String, String> _links, List<ApiNavNode> children) {
-	public ApiNavNode (String path, Map<String, String> _links) {
-		this(path, _links, Collections.emptyList());
+public record ApiNavNode (String path, String name, Map<String, String> _links, List<ApiNavNode> children) {
+	public ApiNavNode (String path, String name, Map<String, String> _links) {
+		this(path, name, _links, Collections.emptyList());
 	}
 
 	@Override

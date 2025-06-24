@@ -22,12 +22,18 @@ package com.condation.cms.modules.system.api.handlers.v1;
  * #L%
  */
 
+import com.condation.cms.api.db.DB;
 import com.condation.cms.api.extensions.http.HttpHandler;
+import com.condation.cms.api.model.NavNode;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
+import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.configuration.GSONProvider;
+import com.condation.cms.modules.system.api.helpers.NodeHelper;
 import com.condation.cms.modules.system.api.services.ApiNavNode;
-import com.condation.cms.modules.system.api.services.NavigationService;
-import java.util.Optional;
+import java.util.Collections;
+import java.util.List;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
@@ -40,10 +46,12 @@ import org.eclipse.jetty.util.Callback;
  */
 public class NavigationHandler implements HttpHandler {
 
-	private final NavigationService navigationService;
+	private final DB db;
+	private final RequestContext requestContext;
 	
-	public NavigationHandler(final NavigationService navigationService) {
-		this.navigationService = navigationService;
+	public NavigationHandler(final DB db, final RequestContext requestContext) {
+		this.requestContext = requestContext;
+		this.db = db;
 	}
 
 	@Override
@@ -54,18 +62,42 @@ public class NavigationHandler implements HttpHandler {
 			uri = uri.substring(1);
 		}
 		
-		Optional<ApiNavNode> node = navigationService.list(uri, request);
+		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+		var start = queryParameters.getOrDefault("start", List.of(".")).getFirst();
+		var depth = Integer.valueOf(queryParameters.getOrDefault("depth", List.of("1")).getFirst());
 		
-		if (node.isEmpty()) {
+		var startNode = db.getReadOnlyFileSystem().contentBase().resolve(uri);
+
+		if (startNode == null) {
 			response.setStatus(404);
 			callback.succeeded();
 			return true;
 		}
 		
+		NavigationFunction navFN = new NavigationFunction(db, startNode, requestContext);
+		
+		var navNodes = navFN.json().list(start, depth);
+		
+		var children = navNodes.stream().map(navNode -> {
+			return new ApiNavNode(navNode.path(), navNode.name(), NodeHelper.getLinks(navNode.path(), request), mapChildren(navNode.children(), request));
+		}).toList();
+		
+		ApiNavNode rootNode = new ApiNavNode(uri, "", NodeHelper.getLinks(uri, request), children);
+		
+		
 		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
-		Content.Sink.write(response, true, GSONProvider.GSON.toJson(node.get()), callback);
+		Content.Sink.write(response, true, GSONProvider.GSON.toJson(rootNode), callback);
 		
 		return true;
+	}
+	
+	private List<ApiNavNode> mapChildren (List<NavNode> children, Request request) {
+		if (children == null || children.isEmpty()) {
+			return Collections.emptyList();
+		}
+		return children.stream().map(child -> {
+			return new ApiNavNode(child.path(), child.name(), NodeHelper.getLinks(child.path(), request), mapChildren(child.children(), request));
+		}).toList();
 	}
 	
 }

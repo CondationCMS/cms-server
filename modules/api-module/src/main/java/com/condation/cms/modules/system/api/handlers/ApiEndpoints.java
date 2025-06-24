@@ -30,12 +30,10 @@ import com.condation.cms.api.extensions.http.PathMapping;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.modules.system.api.services.ContentService;
-import com.condation.cms.modules.system.api.services.NavigationService;
 import com.condation.cms.modules.system.api.handlers.v1.NavigationHandler;
 import com.condation.modules.api.annotation.Extension;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
 /**
@@ -63,7 +61,7 @@ public class ApiEndpoints extends APIHandlerExtensionPoint {
 		
 		mapping.add(PathSpec.from("/v1/navigation/*"), 
 				"GET", 
-				new NavigationHandler(new NavigationService(getContext().get(DBFeature.class).db()))
+				new NavigationHandler(getContext().get(DBFeature.class).db(), getRequestContext())
 		);
 		
 		return mapping;

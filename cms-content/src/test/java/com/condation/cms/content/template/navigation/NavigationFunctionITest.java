@@ -1,8 +1,8 @@
-package com.condation.cms.modules.system.api.services;
+package com.condation.cms.content.template.navigation;
 
 /*-
  * #%L
- * cms-system-modules
+ * cms-content
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -26,19 +26,31 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
+import com.condation.cms.api.feature.features.ContentParserFeature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.feature.features.MarkdownRendererFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.content.DefaultContentParser;
+import com.condation.cms.content.markdown.CMSMarkdown;
+import com.condation.cms.content.markdown.Options;
+import com.condation.cms.content.markdown.module.CMSMarkdownRenderer;
+import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -52,18 +64,20 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @author thorstenmarx
  */
 @ExtendWith(MockitoExtension.class)
-public class NavigationServiceTest {
-
+public class NavigationFunctionITest {
 	private static FileDB db;
-	private static NavigationService navService;
 
 	@Mock
 	private Request request;
 	
+	private RequestContext requestContext;
+	
+	private static ContentParser contentParser = new DefaultContentParser();
+	
 	@BeforeAll
 	public static void setup() throws Exception {
 
-		var contentParser = new DefaultContentParser();
+		
 		var hostBase = Path.of("src/test/resources/site");
 		var config = new Configuration();
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
@@ -75,15 +89,14 @@ public class NavigationServiceTest {
 			}
 		}, config);
 		db.init();
-		
-		navService = new NavigationService(db);
 	}
 	
 	@BeforeEach
 	public void setupRequestContext () {
-		var requestContext = new RequestContext();
+		requestContext = new RequestContext();
 		var siteProperties = Mockito.mock(SiteProperties.class);
 		Mockito.when(siteProperties.contextPath()).thenReturn("/");
+		Mockito.when(siteProperties.defaultContentType()).thenReturn(Constants.ContentTypes.JSON);
 		var siteConfiguration = new SiteConfiguration(siteProperties);
 		
 		var configuration = new Configuration();
@@ -91,60 +104,35 @@ public class NavigationServiceTest {
 		ConfigurationFeature configFeature = new ConfigurationFeature(configuration);
 		
 		requestContext.add(ConfigurationFeature.class, configFeature);
+		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
+		requestContext.add(ContentParserFeature.class, new ContentParserFeature(contentParser));
+		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(new ContentNodeMapper(db, contentParser)));		
+		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(new CMSMarkdownRenderer()));		
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(new HookSystem()));
 		
-		Mockito.when(request.getAttribute("_requestContext")).thenReturn(requestContext);
+		
+		Mockito.lenient().when(request.getAttribute("_requestContext")).thenReturn(requestContext);
+		
+		ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
+	}
+	
+	@AfterEach
+	public void clearRequestContext () {
+		ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 	}
 	
 	@AfterAll
 	public static void shutdown () throws Exception {
 		db.close();
 	}
-
-	private Optional<ApiNavNode> getChildNode(List<ApiNavNode> children, String path) {
-		return children.stream().filter(child -> child.path().equals(path)).findFirst();
-	}
 	
 	@Test
-	public void test_root_node() {
-		var result = navService.list("", request);
+	void test_root () {
+		var currentNode = db.getReadOnlyFileSystem().contentBase();
+		NavigationFunction fn = new NavigationFunction(db, currentNode, requestContext);
 		
-		Assertions.assertThat(result).isPresent();
-		Assertions.assertThat(result.get().children()).hasSize(2);
+		var nodes = fn.json().list(".");
 		
-		var subIndex = getChildNode(result.get().children(), "/sub");
-		Assertions.assertThat(subIndex)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isEmpty();
-				});
-		var childNode = getChildNode(result.get().children(), "/child");
-		Assertions.assertThat(childNode)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isNotEmpty();
-				});
-	}
-
-	
-
-	@Test
-	public void test_index_not_published() {
-		var result = navService.list("sub", request);
-		
-		Assertions.assertThat(result).isNotEmpty();
-		Assertions.assertThat(result.get().children()).hasSize(1);
-		
-		
-		Assertions.assertThat(result)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isEmpty();
-				});
-		var childNode = getChildNode(result.get().children(), "/sub/child/");
-		Assertions.assertThat(childNode)
-				.isPresent()
-				.hasValueSatisfying(node -> {
-					Assertions.assertThat(node._links()).isNotEmpty();
-				});
+		Assertions.assertThat(nodes).isNotEmpty();
 	}
 }

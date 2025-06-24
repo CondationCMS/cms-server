@@ -1,6 +1,6 @@
 ---
 title: the sub title
-published: false
+published: true
 ---
 
 some content

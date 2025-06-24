@@ -22,6 +22,7 @@ package com.condation.cms.modules.system.api.handlers.v1;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.model.NavNode;
@@ -65,6 +66,7 @@ public class NavigationHandler implements HttpHandler {
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		var start = queryParameters.getOrDefault("start", List.of(".")).getFirst();
 		var depth = Integer.valueOf(queryParameters.getOrDefault("depth", List.of("1")).getFirst());
+		var contentType = queryParameters.getOrDefault("contentType", List.of(Constants.ContentTypes.HTML)).getFirst();
 		
 		var startNode = db.getReadOnlyFileSystem().contentBase().resolve(uri);
 
@@ -76,20 +78,20 @@ public class NavigationHandler implements HttpHandler {
 		
 		NavigationFunction navFN = new NavigationFunction(db, startNode, requestContext);
 		
-		var navNodes = navFN.json().list(start, depth);
+		var navNodes = navFN.contentType(contentType).list(start, depth);
 		
-		var children = navNodes.stream().map(navNode -> {
+		var nodes = navNodes.stream().map(navNode -> {
 			return new ApiNavNode(navNode.path(), navNode.name(), NodeHelper.getLinks(navNode.path(), request), mapChildren(navNode.children(), request));
 		}).toList();
 		
-		ApiNavNode rootNode = new ApiNavNode(uri, "", NodeHelper.getLinks(uri, request), children);
-		
 		
 		response.getHeaders().add(HttpHeader.CONTENT_TYPE, "application/json; charset=utf-8");
-		Content.Sink.write(response, true, GSONProvider.GSON.toJson(rootNode), callback);
+		Content.Sink.write(response, true, GSONProvider.GSON.toJson(new NavResponse(nodes)), callback);
 		
 		return true;
 	}
+	
+	public static record NavResponse (List<ApiNavNode> nodes) {}
 	
 	private List<ApiNavNode> mapChildren (List<NavNode> children, Request request) {
 		if (children == null || children.isEmpty()) {

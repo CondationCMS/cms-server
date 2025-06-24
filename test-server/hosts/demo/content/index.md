@@ -3,7 +3,7 @@ title: Startseite
 template: start.html
 search:
     index: false
-published: false
+published: true
 meta:
     description: The description for this awesome page
     title: the meta title for the awesome page

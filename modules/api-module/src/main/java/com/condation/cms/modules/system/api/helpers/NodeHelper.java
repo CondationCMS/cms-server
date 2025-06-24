@@ -65,6 +65,10 @@ public final class NodeHelper {
 			nodeUri = nodeUri.substring(0, nodeUri.length() - 3);
 		}
 
+		if (nodeUri.equals("/")) {
+			nodeUri = "";
+		}
+		
 		if (requestContext.has(IsPreviewFeature.class)) {
 			if (nodeUri.contains("?")) {
 				nodeUri += "&preview=true";

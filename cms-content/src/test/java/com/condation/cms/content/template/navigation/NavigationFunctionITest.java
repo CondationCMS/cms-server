@@ -40,8 +40,6 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.content.DefaultContentParser;
-import com.condation.cms.content.markdown.CMSMarkdown;
-import com.condation.cms.content.markdown.Options;
 import com.condation.cms.content.markdown.module.CMSMarkdownRenderer;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
@@ -133,6 +131,8 @@ public class NavigationFunctionITest {
 		
 		var nodes = fn.json().list(".");
 		
-		Assertions.assertThat(nodes).isNotEmpty();
+		Assertions.assertThat(nodes)
+				.isNotEmpty()
+				.hasSize(3);
 	}
 }

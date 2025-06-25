@@ -172,7 +172,7 @@ public class SiteModule extends AbstractModule {
 			return DefaultTheme.load(themeFolder, siteProperties, messageSource, serverProperties, cacheManager);
 		}
 
-		return DefaultTheme.EMPTY;
+		return DefaultTheme.NO_THEME;
 	}
 
 	@Provides

@@ -48,13 +48,9 @@ public class HookSystem {
 
 	Multimap<String, FilterHook> filters = ArrayListMultimap.create();
 
-	private HookSystem(HookSystem source) {
+	public HookSystem(HookSystem source) {
 		this.actions.putAll(source.actions);
 		this.filters.putAll(source.filters);
-	}
-
-	public HookSystem clone() {
-		return new HookSystem(this);
 	}
 
 	public void register(Object sourceObject) {

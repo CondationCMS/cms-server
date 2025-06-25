@@ -9,7 +9,7 @@ parent:
   text: another text for the meta attribute , seems to work
 count: 16
 background_color: '#c2e0c6'
-range_test: 0
+range_test: 42
 choose_color: green
 unpublish_date: null
 publish_date: null
@@ -22,7 +22,7 @@ checked:
 - form
 selected: form
 radioed: farbe
-media_url: compass-7592444_1920.jpg
+media_url: images/fff.png
 ---
 
 # Demo Project

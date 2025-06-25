@@ -120,6 +120,11 @@ public class ExtendedSiteProperties implements SiteProperties {
 	}
 	
 	@Override
+	public boolean spaEnabled() {
+		return configuration.getBoolean("spa.enabled", false);
+	}
+	
+	@Override
 	public String templateEngine() {
 		return configuration.getString("template.engine");
 	}

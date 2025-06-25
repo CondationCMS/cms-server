@@ -19,6 +19,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Signature for modules and themes [471](https://github.com/CondationCMS/cms-server/issues/471)
 * **FEATURE** Switch password has to secure algorithm [472](https://github.com/CondationCMS/cms-server/issues/472)
 * **FEATURE** Simple http api for basic use cases [479](https://github.com/CondationCMS/cms-server/issues/479)
+* **FEATURE** Add spa mode for sites [476](https://github.com/CondationCMS/cms-server/issues/476)
 
 ### Developer experience
 

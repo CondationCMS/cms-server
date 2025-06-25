@@ -63,4 +63,8 @@ public interface SiteProperties {
 	public String templateEngine();
 
 	public List<String> activeModules();
+	
+	public default boolean spaEnabled () {
+		return false;
+	}
 }

@@ -23,9 +23,11 @@ package com.condation.cms.server.handler.content;
  */
 
 
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentResponse;
 import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.content.RedirectContentResponse;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
@@ -62,6 +64,14 @@ public class JettyContentHandler extends Handler.Abstract {
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 
+		// handle enabled spa mode
+		var spaEnabled = requestContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().spaEnabled();
+		var notFoundContent = "/.technical/404";
+		if (spaEnabled) {
+			uri = "";
+			notFoundContent = "/";
+		}
+		
 		try {
 			Optional<ContentResponse> content = contentResolver.getContent(requestContext);
 			response.setStatus(200);
@@ -73,7 +83,7 @@ public class JettyContentHandler extends Handler.Abstract {
 				if (content.isEmpty()) {
 					log.debug("content not found {}", uri);
 					try (var errorContext = requestContextFactory.create(request.getContext().getContextPath(),
-							"/.technical/404",
+							notFoundContent,
 							queryParameters, Optional.of(request))) {
 						content = contentResolver.getErrorContent(errorContext);
 						response.setStatus(404);

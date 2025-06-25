@@ -203,14 +203,14 @@ public class UserService {
 			}
 			return Objects.equals(username, other.username)
 					&& Objects.equals(passwordHash, other.passwordHash)
-					&& Arrays.equals(groups, other.groups)
+					&& Arrays.equals(roles, other.roles)
 					&& Objects.equals(data, other.data);
 		}
 
 		@Override
 		public int hashCode() {
 			int result = Objects.hash(username, passwordHash, data);
-			result = 31 * result + Arrays.hashCode(groups);
+			result = 31 * result + Arrays.hashCode(roles);
 			return result;
 		}
 	}

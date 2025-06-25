@@ -128,9 +128,9 @@
 			 {{ ui.addSection()}}
 			 >
 			{% if sections.containsKey('asection') %}
-			{% for section in sections.get('asection') %}
-			{{ section.content() | raw }}
-			{% endfor %}
+				{% for section in sections.get('asection') %}
+					{{ section.content() | raw }}
+				{% endfor %}
 			{% endif %}
 
 		</div>

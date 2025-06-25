@@ -76,7 +76,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 	/**
 	 * Returns the path from root to the current node.
 	 *
-	 * @return List of orderd nodes from root to current
+	 * @return List of ordered nodes from root to current
 	 */
 	public List<NavNode> path() {
 		List<NavNode> navNodes = new ArrayList<>();
@@ -140,9 +140,18 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		if (start.startsWith("/")) { // root
 			navNodes = getNodesFromBase(db.getReadOnlyFileSystem().contentBase(), start.substring(1), depth);
 		} else if (start.equals(".")) { // current
-			navNodes = getNodesFromBase(currentNode.getParent(), "", depth);
+			if (currentNode.equals(db.getReadOnlyFileSystem().contentBase())) {
+				navNodes = getNodesFromBase(currentNode, "", depth);
+			} else {
+				navNodes = getNodesFromBase(currentNode.getParent(), "", depth);
+			}
 		} else if (start.startsWith("./")) { // subfolder of current
-			navNodes = getNodesFromBase(currentNode.getParent(), start.substring(2), depth);
+			if (currentNode.equals(db.getReadOnlyFileSystem().contentBase())) {
+				navNodes = getNodesFromBase(currentNode, start.substring(2), depth);
+			} else {
+				navNodes = getNodesFromBase(currentNode.getParent(), start.substring(2), depth);
+			}
+			
 		}
 		if (name != null) {
 			var hookContext = hookSystem.filter(Hooks.NAVIGATION_LIST.hook(name), navNodes);

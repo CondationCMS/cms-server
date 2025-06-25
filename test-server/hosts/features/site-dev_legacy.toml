@@ -1,5 +1,0 @@
-[modules]
-active = [ "example-module" ]
-
-[ui.manager]
-enabled = true

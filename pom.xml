@@ -12,7 +12,7 @@
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.0.22</jetty.version>
-		<lucene.version>10.2.1</lucene.version>
+		<lucene.version>10.2.2</lucene.version>
 		<modules-framework.version>1.2.0</modules-framework.version>
 		<mockito.version>5.18.0</mockito.version>
 	</properties>
@@ -128,6 +128,12 @@
 				<artifactId>cms-system-modules</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.condation.cms.modules</groupId>
+				<artifactId>api-module</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
 			<dependency>
 				<groupId>com.condation.cms.modules</groupId>
 				<artifactId>ui-module</artifactId>
@@ -269,7 +275,7 @@
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
-				<version>1.20.1</version>
+				<version>1.21.1</version>
 			</dependency>
 			
 			<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
@@ -331,7 +337,7 @@
 			<dependency>
 				<groupId>org.semver4j</groupId>
 				<artifactId>semver4j</artifactId>
-				<version>5.7.1</version>
+				<version>5.8.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>
@@ -411,7 +417,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>2.5.0</version>
+					<version>2.6.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -577,7 +583,7 @@
 					<plugin>
 						<groupId>org.sonatype.central</groupId>
 						<artifactId>central-publishing-maven-plugin</artifactId>
-						<version>0.7.0</version>
+						<version>0.8.0</version>
 						<extensions>true</extensions>
 						<configuration>
 							<publishingServerId>central</publishingServerId>

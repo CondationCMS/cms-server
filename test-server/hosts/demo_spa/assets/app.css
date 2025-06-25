@@ -1,0 +1,14 @@
+body {
+	font-family: sans-serif;
+	padding: 2rem;
+}
+
+nav a {
+	margin-right: 1rem;
+	text-decoration: none;
+	color: steelblue;
+}
+
+nav a:hover {
+	text-decoration: underline;
+}

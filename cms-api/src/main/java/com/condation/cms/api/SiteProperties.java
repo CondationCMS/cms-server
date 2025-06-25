@@ -64,5 +64,8 @@ public interface SiteProperties {
 
 	public List<String> activeModules();
 	
+	public default boolean spaEnabled () {
+		return false;
+	}
 	public boolean uiManagerEnabled ();
 }

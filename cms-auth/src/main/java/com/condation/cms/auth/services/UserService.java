@@ -32,10 +32,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -176,6 +178,27 @@ public class UserService {
 			} catch (Exception e) {
 				throw new RuntimeException("Error writing user data", e);
 			}
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (!(obj instanceof User other)) {
+				return false;
+			}
+			return Objects.equals(username, other.username)
+					&& Objects.equals(passwordHash, other.passwordHash)
+					&& Arrays.equals(groups, other.groups)
+					&& Objects.equals(data, other.data);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = Objects.hash(username, passwordHash, data);
+			result = 31 * result + Arrays.hashCode(groups);
+			return result;
 		}
 	}
 

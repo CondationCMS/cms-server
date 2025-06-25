@@ -39,4 +39,4 @@ public record DefaultContentResponse(String content, String contentType, Content
 	public DefaultContentResponse (ContentNode node) {
 		this("", Constants.DEFAULT_CONTENT_TYPE, node);
 	}
-};
+}

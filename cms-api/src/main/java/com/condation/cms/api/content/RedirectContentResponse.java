@@ -28,4 +28,4 @@ package com.condation.cms.api.content;
  * @author t.marx
  */
 public record RedirectContentResponse(String location, int status) implements ContentResponse {
-};
+}

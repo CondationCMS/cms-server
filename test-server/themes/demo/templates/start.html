@@ -8,6 +8,7 @@
 		
 		{% include "libs/fragments.html" %}
 		
+		{% if PREVIEW_MODE %}
 		<script type="text/javascript">
 			window.cmsUIInfo = {
 				pageTemplates : [
@@ -76,6 +77,7 @@
 				]
 			}
 		</script>
+		{% endif %}
 	</head>
 
 	<body class="centered">

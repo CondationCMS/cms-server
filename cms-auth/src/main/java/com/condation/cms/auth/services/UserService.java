@@ -178,6 +178,7 @@ public class UserService {
 		public User(String username, String passwordHash, String[] roles) {
 			this(username, passwordHash, roles, Collections.emptyMap());
 		}
+
 		public String line() {
 			try {
 				String json = GSONProvider.GSON.toJson(data != null ? data : Map.of());
@@ -213,6 +214,17 @@ public class UserService {
 			result = 31 * result + Arrays.hashCode(roles);
 			return result;
 		}
+
+		@Override
+		public String toString() {
+			return "User{"
+					+ "username='" + username + '\''
+					+ ", passwordHash='***'"
+					+ ", roles=" + Arrays.toString(roles)
+					+ ", data=" + data
+					+ '}';
+		}
+
 	}
 
 	public static record Realm(String name) {

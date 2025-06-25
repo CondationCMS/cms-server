@@ -94,6 +94,10 @@
 				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
 					{{ node.meta.get('count') }}
 				</div>
+				<div>
+					{[ component color="blue" message="its a component" ]}
+					{[ endcomponent ]}
+				</div>
 			</div>
 			<hr />
 			<div {{ ui.editForm() }}>

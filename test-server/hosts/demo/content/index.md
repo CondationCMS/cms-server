@@ -19,10 +19,9 @@ features:
 - export
 checked:
 - farbe
-- form
 selected: form
-radioed: farbe
-media_url: images/fff.png
+radioed: form
+media_url: 2025/06/bookwire.png
 ---
 
 # Demo Project
@@ -33,5 +32,6 @@ That's a demo page with some extra features to show the manager application!
 
 Hello world!
 
+[[theme_name /]]
 
 [about](/about)

@@ -9,6 +9,14 @@ $hooks.registerAction("system/content/shortcodes", (context) => {
 	return null;
 })
 
+$hooks.registerAction("system/template/component", (context) => {
+	context.arguments().get("components").put(
+			"component",
+			(params) => `<div style="color: ${params.color}">${params.message}</div>.`
+	)
+	return null;
+})
+
 $hooks.registerFilter("module/ui/translations", (context) => {
 	var translations = context.value()
 	

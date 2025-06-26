@@ -23,6 +23,11 @@
 import frameMessenger from './modules/frameMessenger.js';
 
 document.addEventListener("DOMContentLoaded", function () {
+	
+	if (!isIframe()) {
+		return;
+	}
+	
 	frameMessenger.on('init', (payload) => {
 		frameMessenger.send(window.parent, {
 			type: 'helloFromIframe',
@@ -41,6 +46,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	const sectionContainers = document.querySelectorAll('[data-cms-edit-sections]');
 	sectionContainers.forEach(sectionEdition);
 });
+
+const isIframe = () => {
+	return typeof window !== 'undefined' && window.self !== window.top;
+}
 
 const sectionEdition = (container) => {
 	container.classList.add("cms-ui-editable-sections");

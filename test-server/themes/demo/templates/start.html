@@ -84,7 +84,7 @@
 
 		<div id="content">
 			<div class="container" {{ ui.editContent("markdown") }}>
-				{{ node.content | raw}}
+				{{ node.content | raw }}
 			</div>
 			<div>
 				<div class="container" {{ ui.editMeta("text", "description") }}>
@@ -97,7 +97,7 @@
 					{{ node.meta.get('count') }}
 				</div>
 				<div>
-					{[ component color="blue" message="its a component" ]}
+					{[ component color="red" message="its a component" ]}
 					{[ endcomponent ]}
 				</div>
 			</div>

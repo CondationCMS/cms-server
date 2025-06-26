@@ -10,5 +10,7 @@
 		<div class="container" {{ ui.editFormElement("text", "parent.text", node.uri) }}>
 			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here') | raw}}
 		</div>
+		<div style="display: none;" {{ ui.editFormElement("text", "beschreibung", node.uri) }}>
+		</div>
 	</div>
 </div>

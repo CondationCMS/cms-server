@@ -71,7 +71,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			id = "page-edit-meta",
 			name = "Edit MetaData",
 			position = 3,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-meta")
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-page-settings")
 	)
 	@ShortCut(
 			id = "page-edit-meta",

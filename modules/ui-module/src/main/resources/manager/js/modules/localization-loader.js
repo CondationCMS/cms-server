@@ -32,7 +32,8 @@ const DEFAULT_LOCALIZATIONS = {
 		"language.en": "English",
 		"language.de": "German",
 		"buttons.ok": "Ok",
-		"buttons.cancle": "Cancel"
+		"buttons.cancle": "Cancel",
+		"menu.page.settings": "Page Settings"
 	},
 	de: {
 		"ui.filebrowser.filename": "Dateiname",
@@ -42,7 +43,8 @@ const DEFAULT_LOCALIZATIONS = {
 		"language.en": "Englisch",
 		"language.de": "Deutsch",
 		"buttons.ok": "Ok",
-		"buttons.cancle": "Abbrechen"
+		"buttons.cancle": "Abbrechen",
+		"menu.page.settings": "Seiten-Einstellungen"
 	}
 };
 

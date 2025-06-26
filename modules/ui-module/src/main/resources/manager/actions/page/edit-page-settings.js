@@ -85,7 +85,7 @@ export async function runAction(params) {
 	});
 
 	openSidebar({
-		title: 'Page meta',
+		title: 'Page settings',
 		body: 'modal body',
 		form: form,
 		onCancel: (event) => {},

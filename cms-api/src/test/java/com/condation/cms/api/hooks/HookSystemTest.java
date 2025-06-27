@@ -25,7 +25,6 @@ package com.condation.cms.api.hooks;
 
 import com.condation.cms.api.annotations.Filter;
 import com.condation.cms.api.annotations.Action;
-import com.condation.cms.api.hooks.HookSystem;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;

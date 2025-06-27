@@ -80,7 +80,7 @@ public abstract class TestHelper {
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
 		context.add(RequestExtensions.class, new RequestExtensions(null));
-		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ShortCodes(Map.of(), shortCodeParser), DefaultTheme.EMPTY));
+		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ShortCodes(Map.of(), shortCodeParser), DefaultTheme.NO_THEME));
 
 		context.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(new FileMediaService(null)));
 		context.add(InjectorFeature.class, new InjectorFeature(Mockito.mock(Injector.class)));

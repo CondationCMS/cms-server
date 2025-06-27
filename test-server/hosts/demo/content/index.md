@@ -1,14 +1,37 @@
 ---
-title: Startseite
+title: Startpage
 template: start.html
 search:
-    index: false
+  index: false
 published: true
-meta:
-    description: The description for this awesome page
-    title: the meta title for the awesome page
+description: Thats awesome 123
+parent:
+  text: another text for the meta attribute , seems to work
+count: 16
+background_color: '#c2e0c6'
+range_test: 42
+choose_color: green
+unpublish_date: null
+publish_date: null
+features:
+- search
+- filter
+- export
+checked:
+- farbe
+selected: form
+radioed: form
+media_url: 2025/06/bookwire.png
 ---
 
 # Demo Project
 
 ![TestBild!](/media/images/test.jpg?format=small)
+
+That's a demo page with some extra features to show the manager application!
+
+Hello world!
+
+[[theme_name /]]
+
+[about](/about)

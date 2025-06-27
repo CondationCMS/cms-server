@@ -264,7 +264,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 					var index = section.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_LAYOUT_ORDER);
 					
 					sectionMap.computeIfAbsent(name, k -> new ArrayList<>())
-						.add(new Section(section.name(), index, "", uri));
+						.add(new Section(section.name(), index, "", section.data(), uri));
 				});
 				result.put("sections", sectionMap);
 			}

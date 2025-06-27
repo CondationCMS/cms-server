@@ -289,7 +289,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 					sections.put(name, new ArrayList<>());
 				}
 
-				sections.get(name).add(new Section(name, index, content));
+				sections.get(name).add(new Section(name, index, content, node.data()));
 			} catch (Exception ex) {
 				log.error("error render section", ex);
 			}

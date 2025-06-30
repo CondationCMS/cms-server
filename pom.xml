@@ -163,7 +163,7 @@
 			<dependency>
 				<groupId>com.github.usefulness</groupId>
 				<artifactId>webp-imageio</artifactId>
-				<version>0.10.0</version>
+				<version>0.10.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.yaml</groupId>
@@ -331,7 +331,7 @@
 			<dependency>
 				<groupId>org.semver4j</groupId>
 				<artifactId>semver4j</artifactId>
-				<version>5.8.0</version>
+				<version>6.0.0</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.code.gson</groupId>

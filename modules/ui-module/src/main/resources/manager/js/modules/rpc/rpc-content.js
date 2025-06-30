@@ -70,4 +70,12 @@ const addSection = async (options) => {
 	return await executeRemoteCall(data);
 };
 
-export { getContentNode, getContent, setContent, setMeta, setMetaBatch, addSection };
+const deleteSection = async (options) => {
+	var data = {
+		method: "content.section.delete",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+export { getContentNode, getContent, setContent, setMeta, setMetaBatch, addSection, deleteSection };

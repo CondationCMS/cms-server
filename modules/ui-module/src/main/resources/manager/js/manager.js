@@ -132,5 +132,16 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 		executeScriptAction(cmd)
 	});
+
+	frameMessenger.on('delete-section', (payload) => {
+		var cmd = {
+			"module": window.manager.baseUrl + "/actions/page/delete-section",
+			"function": "runAction",
+			"parameters": {
+				"sectionUri": payload.sectionUri
+			}
+		}
+		executeScriptAction(cmd)
+	});
 });
 // DOMContentLoaded  end

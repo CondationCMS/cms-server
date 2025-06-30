@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
@@ -45,6 +46,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.modules.ui.utils.FormHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  *
@@ -186,6 +189,33 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 
+	@RemoteMethod(name = "content.section.delete")
+	public Object deleteSection(Map<String, Object> parameters) {
+		final DB db = getContext().get(DBFeature.class).db();
+		var uri = (String) parameters.get("uri");
+		final Path contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
+
+		var contentFile = contentBase.resolve(uri);
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("uri", uri);
+		if (contentFile != null 
+				&& PathUtil.isChild(contentBase, contentFile)
+				&& Files.exists(contentFile)
+				&& !Files.isDirectory(contentFile)
+				) {
+			try {
+				Files.delete(contentFile);
+				getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateContentCacheEvent());
+			} catch (Exception ex) {
+				result.put("error", true);
+				log.error("", ex);
+			}
+		}
+
+		return result;
+	}
+	
 	@RemoteMethod(name = "content.section.add")
 	public Object addSection(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
@@ -201,7 +231,11 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		result.put("uri", uri);
 		if (contentFile != null) {
 			try {
-				Map<String, Object> meta = Map.of("template", template);
+				Map<String, Object> meta = Map.of(
+						"template", template,
+						"layout", Map.of(
+								"order", 1000)
+				);
 
 				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 

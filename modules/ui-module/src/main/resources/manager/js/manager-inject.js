@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	const containers = document.querySelectorAll('[data-cms-edit]');
 	containers.forEach(contentEditing);
 
+	const containers2 = document.querySelectorAll('[data-cms-edit-section]');
+	containers2.forEach(contentEditing2);
+
 	// data-cms-edit-sections='true' data-cms-section-name
 	const sectionContainers = document.querySelectorAll('[data-cms-edit-sections]');
 	sectionContainers.forEach(sectionEdition);
@@ -73,6 +76,13 @@ const SECTION_SORT_ICON = `
 const SECTION_ADD_ICON = `
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
   <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+</svg>
+`;
+
+const SECTION_DELETE_ICON = `
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16">
+  <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5m3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0z"/>
+  <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4zM2.5 3h11V2h-11z"/>
 </svg>
 `;
 
@@ -130,6 +140,19 @@ const addSection = (event) => {
 	frameMessenger.send(window.parent, command);
 }
 
+const deleteSection = (event) => {
+	var $editSections = event.target.closest("[data-cms-section-uri]")
+	var sectionUri = $editSections.dataset.cmsSectionUri
+	
+	var command = {
+		type: 'delete-section',
+		payload: {
+			sectionUri: sectionUri
+		}
+	}
+	frameMessenger.send(window.parent, command);
+}
+
 const editSections = (event) => {
 	// data-cms-edit-sections='true' data-cms-section-name
 	var $editSections = event.target.closest("[data-cms-edit-sections]")
@@ -143,6 +166,43 @@ const editSections = (event) => {
 	}
 	frameMessenger.send(window.parent, command);
 }
+
+const contentEditing2 = (container) => {
+	container.classList.add("cms-ui-editable");
+
+	if (container.querySelector('.cms-ui-section-toolbar'))
+		return;
+
+	const toolbar = document.createElement('div');
+	toolbar.className = 'cms-ui-section-toolbar';
+	
+	if (container.dataset.cmsDeleteSection) {
+		const deleteSectionButton = document.createElement('button');
+		deleteSectionButton.setAttribute('data-cms-action', 'deleteSection');
+		deleteSectionButton.setAttribute("title", 'Delete');
+		deleteSectionButton.innerHTML = SECTION_DELETE_ICON;
+		deleteSectionButton.addEventListener('click', deleteSection);
+		toolbar.appendChild(deleteSectionButton);
+	}
+
+	container.insertBefore(toolbar, container.firstChild);
+	
+	container.addEventListener('mouseover', () => {
+		toolbar.classList.add('visible');
+	});
+
+	container.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+};
 
 const contentEditing = (container) => {
 	container.classList.add("cms-ui-editable");
@@ -169,6 +229,16 @@ const contentEditing = (container) => {
 	button.addEventListener('click', edit);
 
 	toolbar.appendChild(button);
+
+
+	if (container.dataset.cmsDeleteSection) {
+		const deleteSectionButton = document.createElement('button');
+		deleteSectionButton.setAttribute('data-cms-action', 'deleteSection');
+		deleteSectionButton.setAttribute("title", 'Delete');
+		deleteSectionButton.innerHTML = SECTION_DELETE_ICON;
+		deleteSectionButton.addEventListener('click', deleteSection);
+		toolbar.appendChild(deleteSectionButton);
+	}
 
 	container.insertBefore(toolbar, container.firstChild);
 	//const toolbar = container.querySelector('.toolbar');

@@ -1,5 +1,5 @@
-<div class="section">
-	<div class="container" {{ ui.editContent("markdown", node.uri) }}">
+<div class="section" {{ ui.editSection(node.uri) }} {{ ui.deleteSection() }}>
+	<div class="container" {{ ui.editContent("markdown", node.uri) }}>
 		{{ node.content | default('your content here') | raw}}
 	</div>
 

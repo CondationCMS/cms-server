@@ -37,7 +37,8 @@
 	outline-offset: 2px;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar {
+.cms-ui-editable-sections > .cms-ui-toolbar, 
+.cms-ui-editable-sections > .cms-ui-section-toolbar {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -51,7 +52,8 @@
 	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-.cms-ui-editable > .cms-ui-toolbar {
+.cms-ui-editable > .cms-ui-toolbar, 
+.cms-ui-editable > .cms-ui-section-toolbar {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -65,14 +67,20 @@
 	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar.visible, .cms-ui-editable > .cms-ui-toolbar.visible {
+.cms-ui-editable-sections > .cms-ui-toolbar.visible, 
+.cms-ui-editable > .cms-ui-toolbar.visible,
+.cms-ui-editable-sections > .cms-ui-section-toolbar.visible, 
+.cms-ui-editable > .cms-ui-section-toolbar.visible {
 	opacity: 1;
 	visibility: visible;
 	pointer-events: auto;
 	transition: opacity 0.2s ease;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar > button, .cms-ui-editable > .cms-ui-toolbar button {
+.cms-ui-editable-sections > .cms-ui-toolbar > button, 
+.cms-ui-editable > .cms-ui-toolbar button,
+.cms-ui-editable-sections > .cms-ui-section-toolbar > button, 
+.cms-ui-editable > .cms-ui-section-toolbar button {
 	background: transparent;
 	color: white;
 	border: none;
@@ -80,7 +88,10 @@
 	cursor: pointer;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar > button:hover, .cms-ui-editable > .cms-ui-toolbar button:hover {
+.cms-ui-editable-sections > .cms-ui-toolbar > button:hover, 
+.cms-ui-editable > .cms-ui-toolbar button:hover,
+.cms-ui-editable-sections > .cms-ui-section-toolbar > button:hover, 
+.cms-ui-editable > .cms-ui-section-toolbar button:hover  {
 	color: steelblue;
 }
 

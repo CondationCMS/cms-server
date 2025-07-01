@@ -1,16 +1,20 @@
-<div class="section" {{ ui.editSection(node.uri) }} {{ ui.deleteSection() }}>
-	<div class="container" {{ ui.editContent("markdown", node.uri) }}>
+<div class="section"
+	{{ ui.toolbar(node.uri, "section", ["editContent", "editAttributes", "deleteSection"], {"uri": node.uri}) | raw }}
+	>
+	<div class="container">
 		{{ node.content | default('your content here') | raw}}
 	</div>
-
-	<div {{ ui.editForm(node.uri) }} >
-		<div class="container" {{ ui.editFormElement("text", "description", node.uri) }}>
+	<div  >
+		<div class="container" 
+			{{ ui.editMeta("text", "description", node.uri) }} 
+			{{ ui.toolbar(node.uri, node.uri) | raw }}>
 			{{ node.meta.getOrDefault('description', 'description here') | raw}}
 		</div>
-		<div class="container" {{ ui.editFormElement("text", "parent.text", node.uri) }}>
+		<div class="container" 
+			{{ ui.editMeta("text", "parent.text", node.uri) }} 
+			{{ ui.toolbar(node.uri, node.uri) | raw }}>
+		
 			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here') | raw}}
-		</div>
-		<div style="display: none;" {{ ui.editFormElement("text", "beschreibung", node.uri) }}>
 		</div>
 	</div>
 </div>

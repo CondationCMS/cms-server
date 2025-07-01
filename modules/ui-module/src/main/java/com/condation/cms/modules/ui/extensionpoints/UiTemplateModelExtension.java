@@ -28,11 +28,10 @@ import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.utils.JSONUtil;
 import com.condation.modules.api.annotation.Extension;
-import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -57,13 +56,6 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 		
 		private final CMSRequestContext requestContext;
 		
-		public String editContent (String editor) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-edit='true' data-cms-editor='%s' data-cms-element='content' ".formatted(editor);
-		}
-		
 		public String editMeta (String editor, String element) {
 			return editMeta(editor, element, Collections.emptyMap());
 		}
@@ -72,67 +64,10 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
-			return " data-cms-edit='true' data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' ".formatted(
+			return " data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' ".formatted(
 					editor, 
 					JSONUtil.toJson(options),
 					element);
-		}
-		
-		public String editSections (String sectionName) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-edit-sections='true' data-cms-section-name='%s' ".formatted(sectionName);
-		}
-		
-		public String editSection (String uri) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-edit-section='true' data-cms-section-uri='%s' ".formatted(uri);
-		}
-		
-		public String addSection () {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-add-section='true' ";
-		}
-		
-		public String deleteSection () {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-delete-section='true' ";
-		}
-		
-		public String editForm () {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-edit='true' data-cms-editor='form' data-cms-element='meta' ";
-		}
-		
-		public String editFormElement (String editor, String element) {
-			return editFormElement(editor, element, Collections.emptyMap());
-		}
-		
-		public String editFormElement (String editor, String element, Map<String, Object> options) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' ".formatted(
-					editor,
-					JSONUtil.toJson(options),
-					element
-			);
-		}
-		
-		public String editContent (String editor, String uri) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			return " data-cms-edit='true' data-cms-editor='%s' data-cms-element='content' data-cms-content-uri='%s' ".formatted(editor, uri);
 		}
 		
 		public String editMeta (String editor, String element, String uri) {
@@ -143,7 +78,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
-			return " data-cms-edit='true' data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' data-cms-content-uri='%s' ".formatted(
+			return " data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' data-cms-content-uri='%s' ".formatted(
 					editor, 
 					JSONUtil.toJson(options),
 					element, 
@@ -151,26 +86,46 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			);
 		}
 		
-		public String editForm (String uri) {
+		public String toolbar (String id, String type, String[] actions) {
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
-			return " data-cms-edit='true' data-cms-editor='form' data-cms-element='meta' data-cms-content-uri='%s' ".formatted(uri);
+			Map<String, Object> toolbar = Map.of(
+					"id", id,
+					"type", type,
+					"actions", actions
+			);
+			return " data-cms-toolbar='%s'  ".formatted(
+					JSONUtil.toJson(toolbar)
+			);
 		}
-		
-		public String editFormElement (String editor, String element, String uri) {
-			return editFormElement(editor, element, uri, Collections.emptyMap());
-		}
-		
-		public String editFormElement (String editor, String element, String uri, Map<String, String> options) {
+		public String toolbar (String id, String type, String[] actions, Map<String, Object> additional) {
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
-			return " data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' data-cms-content-uri='%s' ".formatted(
-					editor, 
-					JSONUtil.toJson(options),
-					element, 
-					uri);
+			Map<String, Object> base = Map.of(
+					"id", id,
+					"type", type,
+					"actions", actions
+			);
+			HashMap<String, Object> toolbar = new HashMap<>(additional);
+			toolbar.putAll(base);
+			return " data-cms-toolbar='%s'  ".formatted(
+					JSONUtil.toJson(toolbar)
+			);
 		}
+		public String toolbar (String id, String uri) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
+			Map<String, Object> toolbar = Map.of(
+					"id", id,
+					"uri", uri
+			);
+			return " data-cms-toolbar='%s'  ".formatted(
+					JSONUtil.toJson(toolbar)
+			);
+		}
+		
 	}
 }

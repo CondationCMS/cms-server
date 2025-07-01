@@ -7,7 +7,7 @@ published: true
 description: Thats awesome 123
 parent:
   text: another text for the meta attribute , seems to work
-count: 16
+count: 17
 background_color: '#c2e0c6'
 range_test: 42
 choose_color: green
@@ -30,7 +30,7 @@ media_url: 2025/06/bookwire.png
 
 That's a demo page with some extra features to show the manager application!
 
-Hello world!
+Hello world!test
 
 [[theme_name /]]
 

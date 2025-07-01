@@ -82,8 +82,10 @@
 
 	<body class="centered">
 
-		<div id="content">
-			<div class="container" {{ ui.editContent("markdown") }}>
+		<div id="content" 
+			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+		>
+			<div class="container">
 				{{ node.content | raw }}
 			</div>
 			<div>
@@ -102,31 +104,10 @@
 				</div>
 			</div>
 			<hr />
-			<div {{ ui.editForm() }}>
-				<div {{ ui.editFormElement("text", "description") }}>
-					{{ node.meta.get('description') | raw}}
-				</div>
-				<div {{ ui.editFormElement("text", "parent.text") }}>
-					{{ node.meta.get('parent.text') | raw}}
-				</div>
-				<div {{ ui.editFormElement("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
-					THE AGE: {{ node.meta.getOrDefault('count', 25 )}}
-				</div>
-				<div {{ ui.editFormElement("select", "selected", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
-					selected: {{ node.meta.getOrDefault('selected', "select value" )}}
-				</div>
-				<div {{ ui.editFormElement("checkbox", "checked", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
-					checked: {{ node.meta.getOrDefault('checked', "select value" )}}
-				</div>
-				<div {{ ui.editFormElement("radio", "radioed", {'choices': [{'label': "Farbe", 'value' : 'farbe'}, {'label': "Form", 'value' : 'form'}]}) }}>
-					radioed: {{ node.meta.getOrDefault('radioed', "select value" )}}
-				</div>
-			</div>
 		</div>
 		<div class="container sections" 
-			 {{ ui.editSections('asection')}}
-			 {{ ui.addSection()}}
-			 >
+			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
+			>
 			{% if sections.containsKey('asection') %}
 				{% for section in sections.get('asection') %}
 					{{ section.content() | raw }}

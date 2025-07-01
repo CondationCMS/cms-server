@@ -22,34 +22,6 @@
 
 import frameMessenger from './modules/frameMessenger.js';
 
-document.addEventListener("DOMContentLoaded", function () {
-	
-	if (!isIframe()) {
-		return;
-	}
-	
-	frameMessenger.on('init', (payload) => {
-		frameMessenger.send(window.parent, {
-			type: 'helloFromIframe',
-			payload: { response: 'Hallo Parent!' }
-		});
-	});
-	frameMessenger.send(window.parent, {
-		type: 'loaded',
-		payload: { }
-	});
-
-	const containers = document.querySelectorAll('[data-cms-edit]');
-	containers.forEach(contentEditing);
-
-	const containers2 = document.querySelectorAll('[data-cms-edit-section]');
-	containers2.forEach(contentEditing2);
-
-	// data-cms-edit-sections='true' data-cms-section-name
-	const sectionContainers = document.querySelectorAll('[data-cms-edit-sections]');
-	sectionContainers.forEach(sectionEdition);
-});
-
 const isIframe = () => {
 	return typeof window !== 'undefined' && window.self !== window.top;
 }
@@ -86,162 +58,138 @@ const SECTION_DELETE_ICON = `
 </svg>
 `;
 
-const sectionEdition = (container) => {
-	container.classList.add("cms-ui-editable-sections");
+document.addEventListener("DOMContentLoaded", function () {
 
-	const toolbar = document.createElement('div');
-	toolbar.className = 'cms-ui-toolbar';
-
-	const editSectionsButton = document.createElement('button');
-	editSectionsButton.setAttribute('data-cms-action', 'editSections');
-	editSectionsButton.setAttribute("title", 'Order');
-	editSectionsButton.innerHTML = SECTION_SORT_ICON;
-	editSectionsButton.addEventListener('click', editSections);
-	toolbar.appendChild(editSectionsButton);
-
-	if (container.dataset.cmsAddSection) {
-		const addSectionButton = document.createElement('button');
-		addSectionButton.setAttribute('data-cms-action', 'addSection');
-		addSectionButton.setAttribute("title", 'Add');
-		addSectionButton.innerHTML = SECTION_ADD_ICON;
-		addSectionButton.addEventListener('click', addSection);
-		toolbar.appendChild(addSectionButton);
+	if (!isIframe()) {
+		return;
 	}
 
-	container.insertBefore(toolbar, container.firstChild);
-
-	container.addEventListener('mouseover', () => {
-		toolbar.classList.add('visible');
+	frameMessenger.on('init', (payload) => {
+		frameMessenger.send(window.parent, {
+			type: 'helloFromIframe',
+			payload: { response: 'Hallo Parent!' }
+		});
 	});
 
-	container.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
-			toolbar.classList.remove('visible');
-		}
+	frameMessenger.send(window.parent, {
+		type: 'loaded',
+		payload: {}
 	});
 
-	toolbar.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
-			toolbar.classList.remove('visible');
-		}
-	});
-};
+	const toolbarContainers = document.querySelectorAll('[data-cms-toolbar]');
+	toolbarContainers.forEach(initToolbar);
+});
+
 
 const addSection = (event) => {
-	var $editSections = event.target.closest("[data-cms-edit-sections]")
-	var sectionName = $editSections.dataset.cmsSectionName
-	
+	var toolbar = event.target.closest('[data-cms-toolbar]');
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+
 	var command = {
 		type: 'add-section',
 		payload: {
-			sectionName: sectionName
+			sectionName: toolbarDefinition.sectionName,
 		}
 	}
 	frameMessenger.send(window.parent, command);
 }
 
 const deleteSection = (event) => {
-	var $editSections = event.target.closest("[data-cms-section-uri]")
-	var sectionUri = $editSections.dataset.cmsSectionUri
-	
+	var toolbar = event.target.closest('[data-cms-toolbar]');
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+
 	var command = {
 		type: 'delete-section',
 		payload: {
-			sectionUri: sectionUri
+			sectionUri: toolbarDefinition.uri
 		}
 	}
 	frameMessenger.send(window.parent, command);
 }
 
-const editSections = (event) => {
-	// data-cms-edit-sections='true' data-cms-section-name
-	var $editSections = event.target.closest("[data-cms-edit-sections]")
-	var sectionName = $editSections.dataset.cmsSectionName
+const orderSections = (event) => {
+	var toolbar = event.target.closest('[data-cms-toolbar]');
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
 
 	var command = {
 		type: 'edit-sections',
 		payload: {
-			sectionName: sectionName
+			sectionName: toolbarDefinition.sectionName
 		}
 	}
 	frameMessenger.send(window.parent, command);
 }
 
-const contentEditing2 = (container) => {
-	container.classList.add("cms-ui-editable");
+const initToolbar = (container) => {
 
-	if (container.querySelector('.cms-ui-section-toolbar'))
-		return;
-
-	const toolbar = document.createElement('div');
-	toolbar.className = 'cms-ui-section-toolbar';
-	
-	if (container.dataset.cmsDeleteSection) {
-		const deleteSectionButton = document.createElement('button');
-		deleteSectionButton.setAttribute('data-cms-action', 'deleteSection');
-		deleteSectionButton.setAttribute("title", 'Delete');
-		deleteSectionButton.innerHTML = SECTION_DELETE_ICON;
-		deleteSectionButton.addEventListener('click', deleteSection);
-		toolbar.appendChild(deleteSectionButton);
+	var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar)
+	if (!toolbarDefinition.actions) {
+		return
 	}
-
-	container.insertBefore(toolbar, container.firstChild);
+	if (toolbarDefinition.type === "sections") {
+		container.classList.add("cms-ui-editable-sections");
+	} else {
+		container.classList.add("cms-ui-editable");
+	}
 	
-	container.addEventListener('mouseover', () => {
-		toolbar.classList.add('visible');
-	});
-
-	container.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
-			toolbar.classList.remove('visible');
-		}
-	});
-
-	toolbar.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || !container.contains(event.relatedTarget)) {
-			toolbar.classList.remove('visible');
-		}
-	});
-};
-
-const contentEditing = (container) => {
-	container.classList.add("cms-ui-editable");
-
-	if (container.querySelector('.cms-ui-toolbar'))
-		return;
-
 	const toolbar = document.createElement('div');
 	toolbar.className = 'cms-ui-toolbar';
 
-	const button = document.createElement('button');
-	button.setAttribute('data-cms-action', 'edit');
+	toolbar.classList.add("cms-ui-toolbar");
+	toolbar.addEventListener('mouseover', () => {
+		toolbar.classList.add('visible');
+	});
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
 	
-	if (container.dataset.cmsElement === "content") {
-		//button.textContent = 'Edit Content';
-		button.innerHTML = EDIT_PAGE_ICON;
-		button.setAttribute("title", "Edit content");
-	} else {
-		//button.textContent = 'Edit';
-		button.innerHTML = EDIT_ATTRIBUTES_ICON;
-		button.setAttribute("title", "Edit attributes");
-	}
-	
-	button.addEventListener('click', edit);
+	toolbarDefinition.actions.forEach(action => {
+		if (action === "editContent") {
+			const button = document.createElement('button');
+			button.setAttribute('data-cms-action', 'edit');
+			button.innerHTML = EDIT_PAGE_ICON;
+			button.setAttribute("title", "Edit content");
+			button.addEventListener('click', editContent);
 
-	toolbar.appendChild(button);
+			toolbar.appendChild(button);
+		} else if (action === "editAttributes") {
+			const button = document.createElement('button');
+			button.setAttribute('data-cms-action', 'editAttributes');
+			button.innerHTML = EDIT_ATTRIBUTES_ICON;
+			button.setAttribute("title", "Edit attributes");
+			button.addEventListener('click', editAttributes);
 
+			toolbar.appendChild(button);
+		} else if (action === "orderSections") {
+			const button = document.createElement('button');
+			button.setAttribute('data-cms-action', 'editSections');
+			button.innerHTML = SECTION_SORT_ICON;
+			button.setAttribute("title", "Order");
+			button.addEventListener('click', orderSections);
 
-	if (container.dataset.cmsDeleteSection) {
-		const deleteSectionButton = document.createElement('button');
-		deleteSectionButton.setAttribute('data-cms-action', 'deleteSection');
-		deleteSectionButton.setAttribute("title", 'Delete');
-		deleteSectionButton.innerHTML = SECTION_DELETE_ICON;
-		deleteSectionButton.addEventListener('click', deleteSection);
-		toolbar.appendChild(deleteSectionButton);
-	}
+			toolbar.appendChild(button);
+		} else if (action === "addSection") {
+			const button = document.createElement('button');
+			button.setAttribute('data-cms-action', 'addSection');
+			button.innerHTML = SECTION_ADD_ICON;
+			button.setAttribute("title", "Add");
+			button.addEventListener('click', addSection);
+
+			toolbar.appendChild(button);
+		} else if (action === "deleteSection") {
+			const button = document.createElement('button');
+			button.setAttribute('data-cms-action', 'deleteSection');
+			button.innerHTML = SECTION_DELETE_ICON;
+			button.setAttribute("title", "Delete");
+			button.addEventListener('click', deleteSection);	
+			
+			toolbar.appendChild(button);
+		}
+	})
 
 	container.insertBefore(toolbar, container.firstChild);
-	//const toolbar = container.querySelector('.toolbar');
 
 	container.addEventListener('mouseover', () => {
 		toolbar.classList.add('visible');
@@ -258,42 +206,55 @@ const contentEditing = (container) => {
 			toolbar.classList.remove('visible');
 		}
 	});
-};
+}
 
-const edit = (event) => {
-	var $editor = event.target.closest('[data-cms-editor]');
-	if ($editor) {
-		var contentUri = event.target.closest('[data-cms-content-uri]')
 
-		var command = {
-			type: 'edit',
-			payload: {
-				editor: $editor.dataset.cmsEditor,
-				element: $editor.dataset.cmsElement,
-				options: $editor.dataset.cmsEditorOptions ? JSON.parse($editor.dataset.cmsEditorOptions) : {}
-			}
-		}
-		if ($editor.dataset.cmsMetaElement) {
-			command.payload.metaElement = $editor.dataset.cmsMetaElement
-		}
-		if ($editor.dataset.cmsEditor === "form") {
-			var elements = []
-			$editor.querySelectorAll("[data-cms-editor]").forEach($elem => {
-				if ($elem.dataset.cmsElement === "meta") {
-					elements.push({
-						name: $elem.dataset.cmsMetaElement,
-						editor: $elem.dataset.cmsEditor,
-						options: $elem.dataset.cmsEditorOptions ? JSON.parse($elem.dataset.cmsEditorOptions) : {}
-					})
-				}
-			})
-			command.payload.metaElements = elements
-		}
+const editContent = (event) => {
+	var toolbar = event.target.closest('[data-cms-toolbar]');
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
 
-		if (contentUri) {
-			command.payload.uri = contentUri.dataset.cmsContentUri
+	var command = {
+		type: 'edit',
+		payload: {
+			editor: "markdown",
+			element: "content"
 		}
-
-		frameMessenger.send(window.parent, command);
 	}
+	if (toolbarDefinition.uri) {
+		command.payload.uri = toolbarDefinition.uri;
+	}
+
+	frameMessenger.send(window.parent, command);
+}
+
+const editAttributes = (event) => {
+	var toolbar = event.target.closest('[data-cms-toolbar]');
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+
+	var command = {
+		type: 'edit',
+		payload: {
+			editor: "form",
+			element: "meta"
+		}
+	}
+	if (toolbarDefinition.uri) {
+		command.payload.uri = toolbarDefinition.uri;
+	}
+	var elements = []
+	toolbar.parentNode.querySelectorAll("[data-cms-editor]").forEach($elem => {
+		var toolbar = $elem.dataset.cmsToolbar ? JSON.parse($elem.dataset.cmsToolbar) : {};
+		if ($elem.dataset.cmsElement === "meta"
+			&& (!toolbar.id || toolbar.id === toolbarDefinition.id)
+		) {
+			elements.push({
+				name: $elem.dataset.cmsMetaElement,
+				editor: $elem.dataset.cmsEditor,
+				options: $elem.dataset.cmsEditorOptions ? JSON.parse($elem.dataset.cmsEditorOptions) : {}
+			})
+		}
+	})
+	command.payload.metaElements = elements
+
+	frameMessenger.send(window.parent, command);
 }

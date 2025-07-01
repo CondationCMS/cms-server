@@ -70,19 +70,19 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 					element);
 		}
 		
-		public String editMeta (String editor, String element, String uri) {
-			return editMeta(editor, element, uri, Collections.emptyMap());
+		public String editMeta (String editor, String element, String uri, String toolbar) {
+			return editMeta(editor, element, uri, toolbar, Collections.emptyMap());
 		}
 		
-		public String editMeta (String editor, String element, String uri, Map<String, Object> options) {
+		public String editMeta (String editor, String element, String uri, String toolbar, Map<String, Object> options) {
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
-			return " data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' data-cms-content-uri='%s' ".formatted(
+			return " data-cms-editor='%s' data-cms-editor-options='%s' data-cms-element='meta' data-cms-meta-element='%s' %s ".formatted(
 					editor, 
 					JSONUtil.toJson(options),
 					element, 
-					uri
+					toolbar(toolbar, uri)
 			);
 		}
 		

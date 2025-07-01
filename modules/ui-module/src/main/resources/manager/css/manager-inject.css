@@ -20,12 +20,19 @@
  * #L%
  */
 
+ :root {
+  --cms-edit-box: orange;
+  --cms-edit-box-sections: rgb(120, 187, 239);
+  --cms-toolbar-background-color: rgba(0, 0, 0, 0.7);
+  --cms-toolbar-color: white;
+}
+
 .cms-ui-editable {
 	position: relative;
 }
 
 .cms-ui-editable:hover {
-	outline: 3px solid orange;
+	outline: 3px solid var(--cms-edit-box);
 	outline-offset: 2px;
 }
 .cms-ui-editable-sections {
@@ -33,7 +40,7 @@
 }
 
 .cms-ui-editable-sections:hover {
-	outline: 3px solid rgb(120, 187, 239);
+	outline: 3px solid var(--cms-edit-box-sections);
 	outline-offset: 2px;
 }
 
@@ -44,8 +51,8 @@
 	left: 0;
 	z-index: 1000;
 	display: flex;
-	background-color: rgba(0, 0, 0, 0.7);
-	color: white;
+	background-color: var(--cms-toolbar-background-color);
+	color: var(--cms-toolbar-color);
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
@@ -59,8 +66,8 @@
 	right: 0;
 	z-index: 1000;
 	display: flex;
-	background-color: rgba(0, 0, 0, 0.7);
-	color: white;
+	background-color: var(--cms-toolbar-background-color);
+	color: var(--cms-toolbar-color);
 	opacity: 0;
 	visibility: hidden;
 	pointer-events: none;
@@ -102,3 +109,4 @@
 	min-height: 20px;
 	min-width: 100%;
 }
+

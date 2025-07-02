@@ -59,8 +59,8 @@ export async function runAction(params) {
 			var result = await createSection(contentNode.result.uri, params.sectionName);
 			if (result) {
 				showToast({
-					title: i18n.t("addsection.titles.alert", "Create section"),
-					message: i18n.t("addsection.alerts.success.message", "Section successfuly created."),
+					title: i18n.t("manager.actions.addsection.titles.alert", "Create section"),
+					message: i18n.t("manager.actions.addsection.alerts.success.message", "Section successfuly created."),
 					type: 'success', // optional: info | success | warning | error
 					timeout: 3000
 				});
@@ -68,8 +68,8 @@ export async function runAction(params) {
 				reloadPreview()
 			} else {
 				showToast({
-					title: i18n.t("addsection.titles.alert", 'Create section'),
-					message: i18n.t("addsection.alerts.error.message", "Section not created."),
+					title: i18n.t("manager.actions.addsection.titles.alert", 'Create section'),
+					message: i18n.t("manager.actions.addsection.alerts.error.message", "Section not created."),
 					type: 'warning', // optional: info | success | warning | error
 					timeout: 3000
 				});
@@ -83,8 +83,8 @@ const validate = (contentNode, targetSectionName) => {
 	const template = document.getElementById("cms-section-template-selection").value
 	if (template === "000") {
 		showToast({
-			title: i18n.t("addsection.titles.alert", 'Create section'),
-			message: i18n.t("addsection.alerts.notemplate.message", "No template selected."),
+			title: i18n.t("manager.actions.addsection.titles.alert", 'Create section'),
+			message: i18n.t("manager.actions.addsection.alerts.notemplate.message", "No template selected."),
 			type: 'error', // optional: info | success | warning | error
 			timeout: 3000
 		});
@@ -94,8 +94,8 @@ const validate = (contentNode, targetSectionName) => {
 	const sectionName = document.getElementById("cms-section-name").value
 	if (sectionName === "" || sectionName === null) {
 		showToast({
-			title: i18n.t("addsection.titles.alert", 'Create section'),
-			message: i18n.t("addsection.alerts.noname.message", "No section name provided."),
+			title: i18n.t("manager.actions.addsection.titles.alert", 'Create section'),
+			message: i18n.t("manager.actions.addsection.alerts.noname.message", "No section name provided."),
 			type: 'error',
 			timeout: 3000
 		});
@@ -105,8 +105,8 @@ const validate = (contentNode, targetSectionName) => {
 	const sectionUri = getSectionUri(contentNode.result.uri, targetSectionName)
 	if (isUriInSection(contentNode, targetSectionName, sectionUri)) {
 		showToast({
-			title: i18n.t("addsection.titles.alert", 'Create section'),
-			message: i18n.t("addsection.alerts.nameexists.message", "Section name already taken."),
+			title: i18n.t("manager.actions.addsection.titles.alert", 'Create section'),
+			message: i18n.t("manager.actions.addsection.alerts.nameexists.message", "Section name already taken."),
 			type: 'error', // optional: info | success | warning | error
 			timeout: 3000
 		});

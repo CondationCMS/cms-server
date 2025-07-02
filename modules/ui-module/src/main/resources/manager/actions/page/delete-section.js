@@ -44,15 +44,15 @@ export async function runAction(params) {
 	}).then((response) => {
 		if (response.error) {
 			showToast({
-				title: i18n.t("action.section.delete.error.title", "Error deleting section"),
-				message: i18n.t("action.section.delete.error.message", "Error deleting section"),
+				title: i18n.t("manager.actions.section.delete.error.title", "Error deleting section"),
+				message: i18n.t("manager.actions.section.delete.error.message", "Error deleting section"),
 				type: 'error',
 				timeout: 3000
 			});
 		} else {
 			showToast({
-				title: i18n.t("action.section.delete.success.title", "Delete section"),
-				message: i18n.t("action.section.delete.success.message", "Section deleted successfully"),
+				title: i18n.t("manager.actions.section.delete.success.title", "Delete section"),
+				message: i18n.t("manager.actions.section.delete.success.message", "Section deleted successfully"),
 				type: 'success',
 				timeout: 3000
 			});

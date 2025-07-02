@@ -22,6 +22,12 @@
 			</resources>
 		</copy>
 	</target>
+	
+	<target name="download-jre" description="--> download jres">
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.7_6.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.7_6.tar.gz"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_aarch64_windows_hotspot_21.0.7_6.zip" dest="temp/OpenJDK21U-jre_aarch64_windows_hotspot_21.0.7_6.zip"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.7_6.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.7_6.tar.gz"></get>
+	</target>
 
 	<target name="clean">
 		<delete dir="build" />
@@ -33,10 +39,107 @@
 		<mkdir  dir="build/modules/" />
 	</target>
 	
-	<target name="distribution" depends="clean,copy-server">
-		<zip destfile="dist/condation-server-${cms.version}.zip">
-			<fileset dir="build/"/>
+	<target name="dist-mac" description="--> build mac distribution">
+		<mkdir dir="dist/mac"/>
+		<mkdir dir="dist/mac/java-temp"/>
+
+		<!-- Kopiere Build-Inhalt -->
+		<copy todir="dist/mac">
+			<fileset dir="build"/>
+		</copy>
+
+		<!-- Entpacke JRE temporär -->
+		<untar src="temp/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.7_6.tar.gz"
+			   dest="dist/mac/java-temp"
+			   compression="gzip"/>
+
+		<!-- Verschiebe Inhalt aus Contents/Home in java -->
+		<move todir="dist/mac/java">
+			<fileset dir="dist/mac/java-temp/jdk-21.0.7+6-jre/Contents/Home"/>
+		</move>
+
+		<!-- temporären JRE-Entpack-Ordner löschen -->
+		<delete dir="dist/mac/java-temp"/>
+
+		<!-- Startskript kopieren und ausführbar machen -->
+		<copy file="scripts/start.sh" tofile="dist/mac/start.sh"/>
+		<chmod file="dist/mac/start.sh" perm="755"/>
+		<chmod file="dist/mac/java/bin/java" perm="755"/>
+	</target>
+	
+	<target name="dist-win" description="--> build windows distribution">
+		<mkdir dir="dist/win"/>
+		<mkdir dir="dist/win/java-temp"/>
+
+		<!-- Kopiere Build-Inhalt -->
+		<copy todir="dist/win">
+			<fileset dir="build"/>
+		</copy>
+
+		<!-- Entpacke JRE temporär -->
+		<unzip src="temp/OpenJDK21U-jre_aarch64_windows_hotspot_21.0.7_6.zip"
+			   dest="dist/win/java-temp"
+		/>
+
+		<!-- Verschiebe Inhalt aus Contents/Home in java -->
+		<move todir="dist/win/java">
+			<fileset dir="dist/win/java-temp/jdk-21.0.7+6-jre"/>
+		</move>
+
+		<!-- temporären JRE-Entpack-Ordner löschen -->
+		<delete dir="dist/win/java-temp"/>
+
+		<!-- Startskript kopieren und ausführbar machen -->
+		<copy file="scripts/start.bat" tofile="dist/win/start.bat"/>
+	</target>
+
+	<target name="dist-linux" depends="download-jre" description="--> build linux distribution">
+		<mkdir dir="dist/linux"/>
+		<mkdir dir="dist/linux/java-temp"/>
+
+		<!-- Kopiere Build-Inhalt -->
+		<copy todir="dist/linux">
+			<fileset dir="build"/>
+		</copy>
+
+		<!-- Entpacke JRE temporär -->
+		<untar src="temp/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.7_6.tar.gz"
+			   dest="dist/linux/java-temp"
+			   compression="gzip"
+		/>
+
+		<!-- Verschiebe Inhalt aus Contents/Home in java -->
+		<move todir="dist/linux/java">
+			<fileset dir="dist/linux/java-temp/jdk-21.0.7+6-jre/"/>
+		</move>
+
+		<!-- temporären JRE-Entpack-Ordner löschen -->
+		<delete dir="dist/linux/java-temp"/>
+
+		<!-- Startskript kopieren und ausführbar machen -->
+		<copy file="scripts/start.sh" tofile="dist/win/start.sh"/>
+		<chmod file="dist/linux/start.sh" perm="755"/>
+		<chmod file="dist/linux/java/bin/java" perm="755"/>
+	</target>
+	
+	<target name="distribution" depends="clean,download-jre,copy-server,dist-linux,dist-win,dist-mac">
+		<echo>build linux distribution</echo>
+		<tar destfile="dist/condation-server-linux-${cms.version}.tar.gz" compression="gzip">
+			<fileset dir="dist/linux"/>
 			<fileset dir="../" includes="README.md"/>
-		</zip>		
+			<fileset dir="../" includes="CHANGELOG.md"/>
+		</tar>
+		<echo>build windows distribution</echo>
+		<zip destfile="dist/condation-server-win-${cms.version}.zip">
+			<fileset dir="dist/win"/>
+			<fileset dir="../" includes="README.md"/>
+			<fileset dir="../" includes="CHANGELOG.md"/>
+		</zip>
+		<echo>build mac distribution</echo>
+		<tar destfile="dist/condation-server-mac-${cms.version}.tar.gz" compression="gzip">
+			<fileset dir="dist/mac"/>
+			<fileset dir="../" includes="README.md"/>
+			<fileset dir="../" includes="CHANGELOG.md"/>
+		</tar>
 	</target>
 </project>

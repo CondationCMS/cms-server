@@ -22,7 +22,7 @@ package	com.condation.cms.modules.system;
  * #L%
  */
 
-import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
+import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.model.Parameter;
@@ -35,11 +35,11 @@ import java.util.function.Function;
  *
  * @author thmar
  */
-@Extension(RegisterShortCodesExtensionPoint.class)
-public class AuthShortCodes extends RegisterShortCodesExtensionPoint {
+@Extension(RegisterTagsExtensionPoint.class)
+public class AuthTags extends RegisterTagsExtensionPoint {
 
 	@Override
-	public Map<String, Function<Parameter, String>> shortCodes() {
+	public Map<String, Function<Parameter, String>> tags() {
 		return Map.of(
 				"username", this::getUserName,
 				"cms:username", this::getUserName

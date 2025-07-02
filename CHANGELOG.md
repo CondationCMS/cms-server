@@ -9,6 +9,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 ## 8.0.0
 
 * **BREAKING CHANGE** Sorted sections now use the _layout.order_ meta attribute for sorting
+* **BREAKING CHANGE** ShortCodes are renamed to tags
 
 * **BUGFIX** TemplateEngine should use cache only if activated [456](https://github.com/CondationCMS/cms-server/issues/456)
 * **MAINTENANCE** multiple dependencies updated

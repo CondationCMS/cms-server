@@ -1,4 +1,4 @@
-package com.condation.cms.content.shortcodes;
+package com.condation.cms.content.tags;
 
 /*-
  * #%L

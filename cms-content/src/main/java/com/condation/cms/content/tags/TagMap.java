@@ -1,8 +1,8 @@
-package com.condation.cms.api.extensions;
+package com.condation.cms.content.tags;
 
 /*-
  * #%L
- * cms-api
+ * cms-content
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,24 +22,38 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-
 import com.condation.cms.api.model.Parameter;
 import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 /**
  *
  * @author t.marx
  */
-public abstract class RegisterShortCodesExtensionPoint extends AbstractExtensionPoint {
-	
-	public Map<String, Function<Parameter, String>> shortCodes () {
-		return Collections.emptyMap();
+public class TagMap {
+
+	private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
+
+	public Set<String> names () {
+		return Collections.unmodifiableSet(tags.keySet());
 	}
 	
-	public List<Object> shortCodeDefinitions () {
-		return Collections.emptyList();
+	public void put(String codeName, Function<Parameter, String> function) {
+		tags.put(codeName, function);
+	}
+
+	public void putAll(Map<String, Function<Parameter, String>> tags) {
+		this.tags.putAll(tags);
+	}
+	
+	public boolean has(String codeName) {
+		return tags.containsKey(codeName);
+	}
+
+	public Function<Parameter, String> get(String codeName) {
+		return tags.getOrDefault(codeName, (params) -> "");
 	}
 }

@@ -41,7 +41,7 @@ public class DefaultContentParserTest {
 	ContentParser sut;
 	
 	@BeforeEach
-	private void setup () {
+	void setup () {
 		sut = new DefaultContentParser();
 	}	
 	

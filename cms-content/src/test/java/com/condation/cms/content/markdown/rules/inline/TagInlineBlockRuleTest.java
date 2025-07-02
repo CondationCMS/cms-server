@@ -1,4 +1,5 @@
-package com.condation.cms.content.markdown.rules.block;
+
+package com.condation.cms.content.markdown.rules.inline;
 
 /*-
  * #%L
@@ -23,7 +24,7 @@ package com.condation.cms.content.markdown.rules.block;
  */
 
 
-import com.condation.cms.content.markdown.Block;
+import com.condation.cms.content.markdown.InlineBlock;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -33,30 +34,30 @@ import org.junit.jupiter.api.Test;
  *
  * @author t.marx
  */
-public class ShortCodeBlockRuleTest {
+public class TagInlineBlockRuleTest {
 	
-	private ShortCodeBlockRule sut = new ShortCodeBlockRule();
+	private TagInlineBlockRule sut = new TagInlineBlockRule();
 
 	@Test
 	void long_form() {
 
 		String md = "[[link url=\"https://google.de/\"]]Google[[/link]]";
 
-		Block next = sut.next(md);
+		InlineBlock next = sut.next(md);
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class);
-
-		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
+				.isInstanceOf(TagInlineBlockRule.TagInlineBlock.class);
+		
+		var tag = (TagInlineBlockRule.TagInlineBlock)next;
 		Assertions.assertThat(tag.tagInfo())
 				.hasFieldOrPropertyWithValue("name", "link")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"url", "https://google.de/",
 						"_content", "Google"
 				));
-		
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("[[link url=\"https://google.de/\"]]Google[[/link]]");
+
+		Assertions.assertThat(next.render()).isEqualTo("[[link url=\"https://google.de/\"]]Google[[/link]]");
 	}
 	
 	@Test
@@ -64,44 +65,20 @@ public class ShortCodeBlockRuleTest {
 
 		String md = "[[link url=\"https://google.de/\" /]]";
 
-		Block next = sut.next(md);
+		InlineBlock next = sut.next(md);
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class);
+				.isInstanceOf(TagInlineBlockRule.TagInlineBlock.class);
 
-		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
+		var tag = (TagInlineBlockRule.TagInlineBlock)next;
 		Assertions.assertThat(tag.tagInfo())
 				.hasFieldOrPropertyWithValue("name", "link")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"url", "https://google.de/"
 				));
 		
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
+		Assertions.assertThat(next.render()).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
 	}
 	
-	@Test
-	void test_issue () {
-		String md = "[[video type=\"youtube\" id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\" /]]";
-
-		Block next = sut.next(md);
-
-		Assertions.assertThat(next)
-				.isNotNull()
-				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class)
-				;
-
-		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
-		Assertions.assertThat(tag.tagInfo())
-				.hasFieldOrPropertyWithValue("name", "video")
-				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
-						"type", "youtube",
-						"id", "y0sF5xhGreA",
-						"title", "Everybody loves little cats"
-				));
-		
-		Assertions.assertThat(next.render((content) -> content))
-				.isEqualTo("[[video id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\" type=\"youtube\"]][[/video]]");
-
-	}
 }

@@ -58,7 +58,7 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
-import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.content.tags.TagParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;

@@ -54,7 +54,7 @@ import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
-import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
+import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
@@ -151,13 +151,13 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add("node", "sections", sections);
 		namespace.add("node", "uri", uri);
 
-		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
-		model.values.put(ShortCodeTemplateFunction.KEY, shortCodeFunction);
-		namespace.add("cms", ShortCodeTemplateFunction.KEY, shortCodeFunction);
+		TagTemplateFunction tagFunction = createTagFunction(context);
+		model.values.put(TagTemplateFunction.KEY, tagFunction);
+		namespace.add("cms", TagTemplateFunction.KEY, tagFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
 		model.values.put("navigation", navigationFunction);
-		namespace.add("cms", "navigation", shortCodeFunction);
+		namespace.add("cms", "navigation", navigationFunction);
 		
 		NodeListFunctionBuilder nodeListFunction = createNodeListFunction(contentFile, context);
 		model.values.put("nodeList", nodeListFunction);
@@ -301,8 +301,8 @@ public class DefaultContentRenderer implements ContentRenderer {
 		return sections;
 	}
 
-	private ShortCodeTemplateFunction createShortCodeFunction(RequestContext context) {
-		return new ShortCodeTemplateFunction(context, context.get(RenderContext.class).shortCodes());
+	private TagTemplateFunction createTagFunction(RequestContext context) {
+		return new TagTemplateFunction(context, context.get(RenderContext.class).tags());
 	}
 
 }

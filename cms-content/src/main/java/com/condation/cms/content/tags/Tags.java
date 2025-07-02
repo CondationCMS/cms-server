@@ -1,4 +1,4 @@
-package com.condation.cms.content.shortcodes;
+package com.condation.cms.content.tags;
 
 /*-
  * #%L
@@ -21,7 +21,6 @@ package com.condation.cms.content.shortcodes;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.annotations.ShortCode;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.AnnotationsUtil;
@@ -33,6 +32,7 @@ import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.api.annotations.Tag;
 
 /**
  *
@@ -40,18 +40,18 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class ShortCodes {
+public class Tags {
 
 	private final TagMap tagMap;
 	private final TagParser parser;
 
-	public ShortCodes(Map<String, Function<Parameter, String>> codes, TagParser tagParser) {
+	public Tags(Map<String, Function<Parameter, String>> codes, TagParser tagParser) {
 		this.parser = tagParser;
 		this.tagMap = new TagMap();
 		this.tagMap.putAll(codes);
 	}
 
-	public Set<String> getShortCodeNames() {
+	public Set<String> getTagNames() {
 		return tagMap.names();
 	}
 
@@ -85,7 +85,7 @@ public class ShortCodes {
 		return "";
 	}
 
-	public static ShortCodes.Builder builder(TagParser tagParser) {
+	public static Tags.Builder builder(TagParser tagParser) {
 		return new Builder(tagParser);
 	}
 
@@ -93,19 +93,19 @@ public class ShortCodes {
 
 		private final TagParser tagParser;
 
-		private final Map<String, Function<Parameter, String>> codes = new HashMap<>();
+		private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
 
 		private Builder(TagParser tagParser) {
 			this.tagParser = tagParser;
 		}
 
-		public Builder register(String name, Function<Parameter, String> shortCodeFN) {
-			codes.put(name, shortCodeFN);
+		public Builder register(String name, Function<Parameter, String> tagFN) {
+			tags.put(name, tagFN);
 			return this;
 		}
 
 		public Builder register(Map<String, Function<Parameter, String>> codes) {
-			this.codes.putAll(codes);
+			this.tags.putAll(codes);
 			return this;
 		}
 
@@ -124,16 +124,16 @@ public class ShortCodes {
 				return this;
 			}
 
-			// Wir erwarten Methoden mit @ShortCode(Parameter) -> String
-			var annotations = AnnotationsUtil.process(handler, ShortCode.class, List.of(Parameter.class), String.class);
+			// Wir erwarten Methoden mit @Tag(Parameter) -> String
+			var annotations = AnnotationsUtil.process(handler, Tag.class, List.of(Parameter.class), String.class);
 
 			for (var entry : annotations) {
 				String key = entry.annotation().value();
-				codes.put(key, param -> {
+				tags.put(key, param -> {
 					try {
 						return entry.invoke(param);
 					} catch (Exception e) {
-						throw new RuntimeException("Error calling shortcode: " + key, e);
+						throw new RuntimeException("Error calling tag: " + key, e);
 					}
 				});
 			}
@@ -141,8 +141,8 @@ public class ShortCodes {
 			return this;
 		}
 
-		public ShortCodes build() {
-			return new ShortCodes(codes, tagParser);
+		public Tags build() {
+			return new Tags(tags, tagParser);
 		}
 	}
 }

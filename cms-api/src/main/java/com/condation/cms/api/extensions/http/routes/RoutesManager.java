@@ -27,8 +27,6 @@ import com.condation.cms.api.extensions.http.PathMapping;
 import com.condation.cms.api.utils.AnnotationsUtil;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;

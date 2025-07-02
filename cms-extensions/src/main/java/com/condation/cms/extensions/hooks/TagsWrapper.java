@@ -1,8 +1,8 @@
-package com.condation.cms.content.template.functions.shortcode;
+package com.condation.cms.extensions.hooks;
 
 /*-
  * #%L
- * cms-content
+ * cms-extensions
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -23,9 +23,9 @@ package com.condation.cms.content.template.functions.shortcode;
  */
 
 
-import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.api.model.Parameter;
 import java.util.Map;
+import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -34,20 +34,20 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class ShortCodeTemplateFunction {
-	
-	public static final String KEY = "shortCodes";
-	
-	private final RequestContext requestContext;
-	
+public class TagsWrapper {
+
 	@Getter
-	private final ShortCodes shortCodes;
-	
-	public String call (String name, Map<String, Object> parameters) {
-		return shortCodes.execute(name, parameters, requestContext);
-	}
-	public String call (String name) {
-		return shortCodes.execute(name, Map.of(), requestContext);
+	private final Map<String, Function<Parameter, String>> tags;
+
+	public void put(final String tag, final Function<Parameter, String> function) {
+		tags.put(tag, function);
 	}
 
+	public boolean contains(final String tag) {
+		return tags.containsKey(tag);
+	}
+
+	public void remove(final String tag) {
+		tags.remove(tag);
+	}
 }

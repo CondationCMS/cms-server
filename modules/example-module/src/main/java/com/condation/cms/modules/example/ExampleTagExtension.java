@@ -1,8 +1,8 @@
-package com.condation.cms.content.shortcodes;
+package com.condation.cms.modules.example;
 
 /*-
  * #%L
- * cms-content
+ * example-module
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,38 +22,29 @@ package com.condation.cms.content.shortcodes;
  * #L%
  */
 
+
+import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.model.Parameter;
-import java.util.Collections;
+import com.condation.modules.api.annotation.Extension;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
 
 /**
  *
  * @author t.marx
  */
-public class TagMap {
+@Extension(RegisterTagsExtensionPoint.class)
+public class ExampleTagExtension extends RegisterTagsExtensionPoint {
 
-	private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
-
-	public Set<String> names () {
-		return Collections.unmodifiableSet(tags.keySet());
+	@Override
+	public Map<String, Function<Parameter, String>> tags() {
+		Map<String, Function<Parameter, String>> tags = new HashMap<>();
+		
+		tags.put("example", (params) -> "<b>example from module</b>");
+		
+		return tags;
 	}
+
 	
-	public void put(String codeName, Function<Parameter, String> function) {
-		tags.put(codeName, function);
-	}
-
-	public void putAll(Map<String, Function<Parameter, String>> tags) {
-		this.tags.putAll(tags);
-	}
-	
-	public boolean has(String codeName) {
-		return tags.containsKey(codeName);
-	}
-
-	public Function<Parameter, String> get(String codeName) {
-		return tags.getOrDefault(codeName, (params) -> "");
-	}
 }

@@ -45,11 +45,10 @@ public class ContentHooks implements Feature {
 	
 	private final RequestContext requestContext;
 	
-	public ShortCodesWrapper getShortCodes (Map<String, Function<Parameter, String>> codes) {
-		var codeWrapper = new ShortCodesWrapper(codes);
+	public TagsWrapper getTags (Map<String, Function<Parameter, String>> codes) {
+		var codeWrapper = new TagsWrapper(codes);
 		requestContext.get(HookSystemFeature.class).hookSystem()
-				.execute(Hooks.CONTENT_SHORTCODE.hook(), Map.of("shortCodes", codeWrapper));
-		
+				.execute(Hooks.CONTENT_TAGS.hook(), Map.of("tags", codeWrapper));
 		return codeWrapper;
 	}
 }

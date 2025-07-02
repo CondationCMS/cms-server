@@ -1,4 +1,4 @@
-package com.condation.cms.content.shortcodes;
+package com.condation.cms.content.tags;
 
 /*-
  * #%L
@@ -22,6 +22,8 @@ package com.condation.cms.content.shortcodes;
  * #L%
  */
 
+import com.condation.cms.content.tags.TagMap;
+import com.condation.cms.content.tags.TagParser;
 import com.condation.cms.api.request.RequestContext;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.assertj.core.api.Assertions;
@@ -47,7 +49,7 @@ public class TagParserTest {
 		tagMap = new TagMap();
 		tagMap.put("code", params -> {
 			// Verarbeitung der Parameter hier
-			return "Ausgabe des Shortcodes";
+			return "Ausgabe des Tags";
 		});
 		tagMap.put("content", params -> {
 			return (String)params.get("_content");
@@ -76,27 +78,27 @@ public class TagParserTest {
 	}
 
 	@Test
-	public void no_shortcode() {
-		String result = tagParser.parse("Dein Shortcode-Text hier", tagMap, requestContext);
-		Assertions.assertThat(result).isEqualTo("Dein Shortcode-Text hier");
+	public void no_tag() {
+		String result = tagParser.parse("Dein Tag-Text hier", tagMap, requestContext);
+		Assertions.assertThat(result).isEqualTo("Dein Tag-Text hier");
 	}
 	
 	@Test
 	public void self_closing_tag() {
 		String result = tagParser.parse("[[code/]]", tagMap, requestContext);
-		Assertions.assertThat(result).isEqualTo("Ausgabe des Shortcodes");
+		Assertions.assertThat(result).isEqualTo("Ausgabe des Tags");
 	}
 	
 	@Test
 	public void self_closing_tag_with_space() {
 		String result = tagParser.parse("[[code /]]", tagMap, requestContext);
-		Assertions.assertThat(result).isEqualTo("Ausgabe des Shortcodes");
+		Assertions.assertThat(result).isEqualTo("Ausgabe des Tags");
 	}
 
 	@Test
 	public void end_closing_tag() {
 		String result = tagParser.parse("[[code]][[/code]]", tagMap, requestContext);
-		Assertions.assertThat(result).isEqualTo("Ausgabe des Shortcodes");
+		Assertions.assertThat(result).isEqualTo("Ausgabe des Tags");
 	}
 	
 	@Test
@@ -142,7 +144,7 @@ public class TagParserTest {
 	}
 	
 	@Test
-	public void shortCode_in_text() {
+	public void tag_in_text() {
 		String result = tagParser.parse("Hello [[content]]CondationCMS[[/content]]!", tagMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Hello CondationCMS!");
 	}
@@ -160,13 +162,13 @@ public class TagParserTest {
 	public void multiline () {
 		String content = """
 				[[content]]
-					This is a multiline shortcode!
+					This is a multiline tag!
 				[[/content]]
 				""";
 
 		String result = tagParser.parse(content, tagMap, requestContext);
 
-		Assertions.assertThat(result).isEqualToIgnoringWhitespace("This is a multiline shortcode!");
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace("This is a multiline tag!");
 	}
 	
 	@Test

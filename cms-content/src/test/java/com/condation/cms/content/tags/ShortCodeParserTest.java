@@ -1,4 +1,4 @@
-package com.condation.cms.content.shortcodes;
+package com.condation.cms.content.tags;
 
 /*-
  * #%L
@@ -23,6 +23,7 @@ package com.condation.cms.content.shortcodes;
  */
 
 
+import com.condation.cms.content.tags.ShortCodeParser;
 import com.condation.cms.content.ContentBaseTest;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

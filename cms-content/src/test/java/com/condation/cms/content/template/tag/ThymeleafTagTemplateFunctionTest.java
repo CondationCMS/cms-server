@@ -1,4 +1,4 @@
-package com.condation.cms.content.template.shortcode;
+package com.condation.cms.content.template.tag;
 
 /*-
  * #%L
@@ -24,8 +24,8 @@ package com.condation.cms.content.template.shortcode;
 
 
 import com.condation.cms.content.ContentBaseTest;
-import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
-import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
+import com.condation.cms.content.tags.Tags;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -39,9 +39,9 @@ import org.thymeleaf.templateresolver.StringTemplateResolver;
  *
  * @author t.marx
  */
-public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
+public class ThymeleafTagTemplateFunctionTest extends ContentBaseTest {
 
-	ShortCodes shortCodes;
+	Tags tags;
 
 	static TemplateEngine templateEngine;
 
@@ -56,8 +56,8 @@ public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
 	}
 	
 	@BeforeEach
-	public void setupShortCodes() {
-		shortCodes = new ShortCodes(Map.of(
+	public void setupTags() {
+		tags = new Tags(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
 		), getTagParser());
@@ -65,20 +65,20 @@ public class ThymeleafShortCodeTemplateFunctionTest extends ContentBaseTest {
 
 	@Test
 	public void testSomeMethod() throws Exception {
-		String templateString = "[(${shortCode.call('echo')})]";
+		String templateString = "[(${tag.call('echo')})]";
 		
 		Context context = new Context();
-		context.setVariable("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
+		context.setVariable("tag", new TagTemplateFunction(null, tags));
 		String renderedString = templateEngine.process(templateString, context);
         Assertions.assertThat(renderedString).isEqualTo("Hello world");
 	}
 
 	@Test
 	public void test_greet() throws Exception {
-		String templateString = "[(${shortCode.call('greet', #{'name': 'CondationCMS'})})]";
+		String templateString = "[(${tag.call('greet', #{'name': 'CondationCMS'})})]";
 		
 		Context context = new Context();
-		context.setVariable("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
+		context.setVariable("tag", new TagTemplateFunction(null, tags));
 		String renderedString = templateEngine.process(templateString, context);
         Assertions.assertThat(renderedString).isEqualTo("Hello CondationCMS");
 	}

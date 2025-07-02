@@ -1,8 +1,8 @@
-package com.condation.cms.modules.example;
+package com.condation.cms.api.extensions;
 
 /*-
  * #%L
- * example-module
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -23,10 +23,9 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.model.Parameter;
-import com.condation.modules.api.annotation.Extension;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -34,17 +33,13 @@ import java.util.function.Function;
  *
  * @author t.marx
  */
-@Extension(RegisterShortCodesExtensionPoint.class)
-public class ExampleShortcodeExtension extends RegisterShortCodesExtensionPoint {
-
-	@Override
-	public Map<String, Function<Parameter, String>> shortCodes() {
-		Map<String, Function<Parameter, String>> codes = new HashMap<>();
-		
-		codes.put("example", (params) -> "<b>example from module</b>");
-		
-		return codes;
-	}
-
+public abstract class RegisterTagsExtensionPoint extends AbstractExtensionPoint {
 	
+	public Map<String, Function<Parameter, String>> tags () {
+		return Collections.emptyMap();
+	}
+	
+	public List<Object> tagDefinitions () {
+		return Collections.emptyList();
+	}
 }

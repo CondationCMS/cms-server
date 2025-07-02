@@ -23,8 +23,8 @@ package com.condation.cms.templates.content;
  */
 
 
-import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
-import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
+import com.condation.cms.content.tags.Tags;
 import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.TemplateEngineFactory;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
@@ -39,9 +39,9 @@ import org.junit.jupiter.api.Test;
  *
  * @author t.marx
  */
-public class ShortCodeTemplateFunctionTest extends ContentBaseTest {
+public class TagTemplateFunctionTest extends ContentBaseTest {
 
-	ShortCodes shortCodes;
+	Tags tags;
 
 	static CMSTemplateEngine engine;
 	static StringTemplateLoader templateLoader;
@@ -57,22 +57,22 @@ public class ShortCodeTemplateFunctionTest extends ContentBaseTest {
 				.create();
 	}
 	@BeforeEach
-	public void setupShortCodes() {
-		shortCodes = new ShortCodes(Map.of(
+	public void setupTags() {
+		tags = new Tags(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
 		), getTagParser());
 	}
 
 	@Test
-	public void test_call_shortcode() throws Exception {
-		String templateString = "{{shortCode.call('echo')}}";
+	public void test_call_tag() throws Exception {
+		String templateString = "{{tag.call('echo')}}";
 
-		templateLoader.add("test_call_shortcode", templateString);
-		var template = engine.getTemplate("test_call_shortcode");
+		templateLoader.add("test_call_tag", templateString);
+		var template = engine.getTemplate("test_call_tag");
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
+		context.put("tag", new TagTemplateFunction(null, tags));
 
 		var content = template.evaluate(context);
 
@@ -81,14 +81,14 @@ public class ShortCodeTemplateFunctionTest extends ContentBaseTest {
 
 	@Test
 	public void test_greet() throws Exception {
-		String templateString = "{{shortCode.call('greet', {'name': 'CondationCMS'})}}";
+		String templateString = "{{tag.call('greet', {'name': 'CondationCMS'})}}";
 
 		templateLoader.add("test_greet", templateString);
 		
 		var template = engine.getTemplate("test_greet");
 
 		Map<String, Object> context = new HashMap<>();
-		context.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
+		context.put("tag", new TagTemplateFunction(null, tags));
 
 		var content = template.evaluate(context);
 

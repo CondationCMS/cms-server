@@ -1,4 +1,4 @@
-package com.condation.cms.content.shortcodes;
+package com.condation.cms.content.tags;
 
 /*-
  * #%L
@@ -23,56 +23,84 @@ package com.condation.cms.content.shortcodes;
  */
 
 
+import com.condation.cms.content.tags.Tags;
+import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ContentBaseTest;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.condation.cms.api.annotations.Tag;
 
 /**
  *
  * @author t.marx
  */
-public class ShortCodeParserReplaceTest extends ContentBaseTest {
+public class TagsTest extends ContentBaseTest {
 	
-	static ShortCodeParser.Codes tags;
+	static Tags tags;
 	
 	@BeforeEach
 	public void init () {
+		var builder = Tags.builder(getTagParser());
 		
-		tags = new ShortCodeParser.Codes();
-		
-		tags.add(
+		builder.register(
 				"youtube", 
 				(params) -> "<video src='%s'></video>".formatted(params.getOrDefault("id", "")));
-		tags.add(
+		builder.register(
 				"hello_from", 
 				(params) -> "<p><h3>%s</h3><small>from %s</small></p>".formatted(params.getOrDefault("name", ""), params.getOrDefault("from", "")));
 		
-		tags.add(
+		builder.register(
 				"mark",
-				params -> "<mark>%s</mark>".formatted(params.get("content"))
+				params -> "<mark>%s</mark>".formatted(params.get("_content"))
 		);
 		
-		tags.add(
+		builder.register(
 				"mark2",
-				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("content"))
+				params -> "<mark class='%s'>%s</mark>".formatted(params.get("class"), params.get("_content"))
 		);
+		
+		builder.register(
+				"exp",
+				params -> "<span>%s</span>".formatted(params.get("expression"))
+		);
+		
+		builder.register(
+				"set_var",
+				params -> {
+					params.getRequestContext().getVariables().put("myVar", "Hello world!");
+					return "";
+				}
+		);
+		builder.register(
+				"get_var",
+				params -> {
+					return (String)params.getRequestContext().getVariables().getOrDefault("myVar", "DEFAULT");
+				}
+		);
+		
+		builder.register(new TagHandler());
+		
+		tags = builder.build();
 	}
 	
 
 	@Test
 	void simpleTest () {
-		var result = getShortCodeParser().replace("[[youtube    /]]", tags);
+		var result = tags.replace("[[youtube    /]]");
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 		
-		result = getShortCodeParser().replace("[[youtube/]]", tags);
+		result = tags.replace("[[youtube/]]");
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 	}
 	
 	@Test
 	void simple_with_text_before_and_After () {
-		var result = getShortCodeParser().replace("before [[youtube /]] after", tags);
+		var result = tags.replace("before [[youtube /]] after");
 		Assertions.assertThat(result).isEqualTo("before <video src=''></video> after");
 	}
 	
@@ -87,7 +115,7 @@ public class ShortCodeParserReplaceTest extends ContentBaseTest {
                 some text after
                 """;
 		
-		var result = getShortCodeParser().replace(content, tags);
+		var result = tags.replace(content);
 		
 		var expected = """
                 some text before
@@ -102,32 +130,32 @@ public class ShortCodeParserReplaceTest extends ContentBaseTest {
 	
 	@Test
 	void unknown_tag () {
-		var result = getShortCodeParser().replace("before [[vimeo id='TEST' /]] after", tags);
-		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before  after");
+		var result = tags.replace("before [[vimeo id='TEST' /]] after");
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before [[vimeo id='TEST' /]] after");
 	}
 	
 	@Test
 	void hello_from () {
-		var result = getShortCodeParser().replace("[[hello_from name='Thorsten' from='Bochum' /]]", tags);
+		var result = tags.replace("[[hello_from name=\"Thorsten\" from=\"Bochum\" /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = getShortCodeParser().replace("[[hello_from name='Thorsten' from='Bochum'    /]]", tags);
+		result = tags.replace("[[hello_from name='Thorsten' from='Bochum'    /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = getShortCodeParser().replace("[[hello_from name='Thorsten' from='Bochum' /]]", tags);
+		result = tags.replace("[[hello_from name='Thorsten' from='Bochum' /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
 	@Test
 	void test_long () {
-		var result = getShortCodeParser().replace("[[mark]]Important[[/mark]]", tags);
+		var result = tags.replace("[[mark]]Important[[/mark]]");
 		
 		Assertions.assertThat(result).isEqualTo("<mark>Important</mark>");
 	}
 	
 	@Test
 	void test_long_with_params () {
-		var result = getShortCodeParser().replace("[[mark2 class='test-class']]Important[[/mark2]]", tags);
+		var result = tags.replace("[[mark2 class='test-class']]Important[[/mark2]]");
 		
 		Assertions.assertThat(result).isEqualTo("<mark class='test-class'>Important</mark>");
 	}
@@ -143,7 +171,7 @@ public class ShortCodeParserReplaceTest extends ContentBaseTest {
                 some text after
                 """;
 		
-		var result = getShortCodeParser().replace(content,tags);
+		var result = tags.replace(content);
 		
 		var expected = """
                 some text before
@@ -164,7 +192,7 @@ public class ShortCodeParserReplaceTest extends ContentBaseTest {
 		var expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
               """;
-		var result = getShortCodeParser().replace(input, tags);
+		var result = tags.replace(input);
 		Assertions.assertThat(result).isEqualTo(expected);
 		
 		input = """
@@ -173,7 +201,53 @@ public class ShortCodeParserReplaceTest extends ContentBaseTest {
 		expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
               """;
-		result = getShortCodeParser().replace(input, tags);
+		result = tags.replace(input);
 		Assertions.assertThat(result).isEqualTo(expected);
+	}
+	
+	@Test
+	void test_mismach() {
+		var result = tags.replace("[[mark1 class='test-class']]Important[[/mark2]]");
+		
+		Assertions.assertThat(result).isEqualTo("[[mark1 class='test-class']]Important[[/mark2]]");
+	}
+	
+	@Test
+	void test_expression() {
+		var result = tags.replace("[[exp expression='${meta.title}' /]]",
+				Map.of(
+						"meta", Map.of("title", "CondationCMS")
+				)
+		);
+		
+		Assertions.assertThat(result).isEqualTo("<span>CondationCMS</span>");
+	}
+	
+	@Test
+	void test_variables() {
+		
+		RequestContext requestContext = new RequestContext();
+		
+		tags.replace("[[set_var /]]", Map.of(), requestContext);
+		
+		var result = tags.replace("[[get_var /]]", Map.of(), requestContext);
+		
+		Assertions.assertThat(result).isEqualTo("Hello world!");
+	}
+	
+	@Test
+	void test_handler () {
+		RequestContext requestContext = new RequestContext();
+		
+		var result = tags.replace("[[printHello name='CondationCMS' /]]", Map.of(), requestContext);
+		
+		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
+	}
+	
+	public static class TagHandler {
+		@Tag("printHello")
+		public String printHello (Parameter parameter) {
+			return "hello " + parameter.getOrDefault("name", "");
+		}
 	}
 }

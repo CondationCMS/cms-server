@@ -29,7 +29,7 @@ import com.condation.cms.content.markdown.rules.block.DefinitionListBlockRule;
 import com.condation.cms.content.markdown.rules.block.HeadingBlockRule;
 import com.condation.cms.content.markdown.rules.block.HorizontalRuleBlockRule;
 import com.condation.cms.content.markdown.rules.block.ListBlockRule;
-import com.condation.cms.content.markdown.rules.block.ShortCodeBlockRule;
+import com.condation.cms.content.markdown.rules.block.TagBlockRule;
 import com.condation.cms.content.markdown.rules.block.TableBlockRule;
 import com.condation.cms.content.markdown.rules.block.TaskListBlockRule;
 import com.condation.cms.content.markdown.rules.inline.HighlightInlineRule;
@@ -38,7 +38,7 @@ import com.condation.cms.content.markdown.rules.inline.ImageLinkInlineRule;
 import com.condation.cms.content.markdown.rules.inline.ItalicInlineRule;
 import com.condation.cms.content.markdown.rules.inline.LinkInlineRule;
 import com.condation.cms.content.markdown.rules.inline.NewlineInlineRule;
-import com.condation.cms.content.markdown.rules.inline.ShortCodeInlineBlockRule;
+import com.condation.cms.content.markdown.rules.inline.TagInlineBlockRule;
 import com.condation.cms.content.markdown.rules.inline.StrikethroughInlineRule;
 import com.condation.cms.content.markdown.rules.inline.StrongInlineRule;
 import com.condation.cms.content.markdown.rules.inline.SubscriptInlineRule;
@@ -54,7 +54,7 @@ public class Options {
 	
 	public static Options all () {
 		Options options = new Options();
-		options.addInlineRule(new ShortCodeInlineBlockRule());
+		options.addInlineRule(new TagInlineBlockRule());
 		options.addInlineRule(new StrongInlineRule());
 		options.addInlineRule(new ItalicInlineRule());
 		options.addInlineRule(new NewlineInlineRule());
@@ -66,7 +66,7 @@ public class Options {
 		options.addInlineRule(new SubscriptInlineRule());
 		options.addInlineRule(new SuperscriptInlineRule());
 
-		options.addBlockRule(new ShortCodeBlockRule());
+		options.addBlockRule(new TagBlockRule());
 		options.addBlockRule(new CodeBlockRule());
 		options.addBlockRule(new HeadingBlockRule());
 		options.addBlockRule(new TaskListBlockRule());

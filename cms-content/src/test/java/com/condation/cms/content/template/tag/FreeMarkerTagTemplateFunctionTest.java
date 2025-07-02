@@ -1,4 +1,4 @@
-package com.condation.cms.content.template.shortcode;
+package com.condation.cms.content.template.tag;
 
 /*-
  * #%L
@@ -24,8 +24,8 @@ package com.condation.cms.content.template.shortcode;
 
 
 import com.condation.cms.content.ContentBaseTest;
-import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
-import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
+import com.condation.cms.content.tags.Tags;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.StringReader;
@@ -42,11 +42,11 @@ import org.junit.jupiter.api.Test;
  *
  * @author t.marx
  */
-public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
+public class FreeMarkerTagTemplateFunctionTest extends ContentBaseTest {
 
 	static Configuration cfg;
 	
-	ShortCodes shortCodes;
+	Tags tags;
 	
 	@BeforeAll
 	public static void setup() {
@@ -55,8 +55,8 @@ public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
 	}
 
 	@BeforeEach
-	public void setupShortCodes() {
-		shortCodes = new ShortCodes(Map.of(
+	public void setupTags() {
+		tags = new Tags(Map.of(
 				"echo", (params) -> "Hello world",
 				"greet", (params) -> "Hello " + params.get("name")
 		), getTagParser());
@@ -64,11 +64,11 @@ public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
 	
 	@Test
 	public void testSomeMethod() throws Exception {
-		String templateString = "${shortCode.call('echo')}";
+		String templateString = "${tag.call('echo')}";
 		Template template = new Template("templateName", new StringReader(templateString), cfg);
 
 		Map<String, Object> model = new HashMap<>();
-		model.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
+		model.put("tag", new TagTemplateFunction(null, tags));
 		Writer out = new StringWriter();
 		template.process(model, out);
 
@@ -78,11 +78,11 @@ public class FreeMarkerShortCodeTemplateFunctionTest extends ContentBaseTest {
 	
 	@Test
 	public void test_greet() throws Exception {
-		String templateString = "${shortCode.call('greet', {'name':'CondationCMS'})}";
+		String templateString = "${tag.call('greet', {'name':'CondationCMS'})}";
 		Template template = new Template("templateName", new StringReader(templateString), cfg);
 
 		Map<String, Object> model = new HashMap<>();
-		model.put("shortCode", new ShortCodeTemplateFunction(null, shortCodes));
+		model.put("tag", new TagTemplateFunction(null, tags));
 		Writer out = new StringWriter();
 		template.process(model, out);
 

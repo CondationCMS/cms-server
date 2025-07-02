@@ -37,6 +37,13 @@ const executeRemoteMethodCall = async (method, parameters) => {
 		},
 		body: JSON.stringify(data)
 	})
+
+	if (response.status === 403) {
+		alert(i18n.t("ui.redirect.login", "You where logged out due to inactivity. Please log in again."));
+        window.location.href = window.manager.baseUrl + "/login";
+        return;
+    }
+
 	return await response.json();
 };
 

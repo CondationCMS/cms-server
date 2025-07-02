@@ -31,7 +31,12 @@ const executeScriptAction = async (action) => {
         }
       })
       .catch(err => {
-        console.error("Error loading module:", action.module, err);
+        if (err && (err.status === 403 || (err.message && err.message.includes("403")))) {
+          alert(i18n.t("ui.redirect.login", "You where logged out due to inactivity. Please log in again."));
+          window.location.href = window.manager.baseUrl + "/login";
+        } else {
+          console.error("Error loading module:", action.module, err);
+        }
       });
   }
 }

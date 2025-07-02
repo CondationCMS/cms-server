@@ -25,6 +25,7 @@ import {showToast} from '../../js/modules/toast.js'
 import {getPreviewUrl, reloadPreview} from '../../js/modules/preview.utils.js'
 import { getMetaValueByPath } from '../../js/modules/node.js'
 import {getContentNode, getContent, setMeta} from '../../js/modules/rpc/rpc-content.js'
+import { i18n } from '../../js/modules/localization.js'
 		// hook.js
 export async function runAction(params) {
 
@@ -76,8 +77,8 @@ export async function runAction(params) {
 				meta: updateData
 			})
 			showToast({
-				title: 'MetaData saved',
-				message: 'MetaData successfuly saved.',
+				title: i18n.t('manager.actions.page.edit-metaattribute-list.toast.title', "MetaData updated"),
+				message: i18n.t('manager.actions.page.edit-metaattribute-list.toast.message', "The metadata has been updated successfully."),
 				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});

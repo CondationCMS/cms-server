@@ -23,6 +23,8 @@ import {openModal} from '../../js/modules/modal.js'
 import {createForm} from '../../js/modules/form/forms.js'
 import {getPreviewUrl, reloadPreview} from '../../js/modules/preview.utils.js'
 import {getContentNode, getContent, setContent} from '../../js/modules/rpc/rpc-content.js'
+import { i18n } from '../../js/modules/localization.js'
+import { showToast } from '../../js/modules/toast.js'
 		// hook.js
 export async function runAction(params) {
 
@@ -66,6 +68,12 @@ export async function runAction(params) {
 				uri: uri,
 				content: updateData.content
 			})
+			showToast({
+				title: i18n.t('manager.actions.page.edit-content.toast.title', "Content updated"),
+				message: i18n.t('manager.actions.page.edit-content.toast.message', "The content has been updated successfully."),
+				type: 'success', // optional: info | success | warning | error
+				timeout: 3000
+			});
 			reloadPreview()
 		}
 	});

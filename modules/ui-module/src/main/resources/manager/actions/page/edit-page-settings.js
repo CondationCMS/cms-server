@@ -25,6 +25,7 @@ import { showToast } from '../../js/modules/toast.js'
 import { getContentNode, setMeta, getContent } from '../../js/modules/rpc/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js'
 import { getMetaForm } from '../../js/modules/ui-helpers.js'
+import { i18n } from '../../js/modules/localization.js'
 
 const DEFAULT_FIELDS = [
 	{ 
@@ -96,8 +97,8 @@ export async function runAction(params) {
 				meta: updateData
 			})
 			showToast({
-				title: 'MetaData saved',
-				message: 'MetaData successfuly saved.',
+				title: i18n.t('manager.actions.page.edit-page-settings.toast.title', "Page settings updated"),
+				message: i18n.t('manager.actions.page.edit-page-settings.toast.message', "The page settings have been updated successfully."),
 				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});

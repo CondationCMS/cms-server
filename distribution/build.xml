@@ -23,8 +23,8 @@
 		</copy>
 		<copy todir="dist/">
 			<fileset dir="scripts/">
-				<include name="start.sh"/>
-				<include name="start.bat"/>
+				<include name="server.sh"/>
+				<include name="server.bat"/>
 			</fileset>
 			<filterchain>
 				<replacetokens>
@@ -32,7 +32,7 @@
 				</replacetokens>
 			</filterchain>
 		</copy>
-		<fixcrlf srcdir="dist" includes="start.sh" eol="unix"/>
+		<fixcrlf srcdir="dist" includes="server.sh" eol="unix"/>
 	</target>
 	
 	<target name="download-jre" description="--> download jres">
@@ -68,7 +68,7 @@
 
 		<tar destfile="dist/condation-server-mac-aarch64-${cms.version}.tar.gz" compression="gzip">
 			<tarfileset dir="dist/mac" prefix="condation-server"/>
-			<tarfileset file="dist/start.sh" mode="755" fullpath="condation-server/start.sh"/>
+			<tarfileset file="dist/server.sh" mode="755" fullpath="condation-server/server.sh"/>
 			<tarfileset dir="dist/java/mac/jdk-21.0.7+6-jre/Contents/Home/" prefix="condation-server/java">
 				<exclude name="bin/java"/>
 			</tarfileset>
@@ -118,7 +118,7 @@
 		
 		<tar destfile="dist/condation-server-linux-x64-${cms.version}.tar.gz" compression="gzip">
 			<tarfileset dir="dist/linux" prefix="condation-server"/>
-			<tarfileset file="dist/start.sh" mode="755" fullpath="condation-server/start.sh"/>
+			<tarfileset file="dist/server.sh" mode="755" fullpath="condation-server/server.sh"/>
 			<tarfileset dir="dist/java/linux/jdk-21.0.7+6-jre/" prefix="condation-server/java">
 				<exclude name="bin/java"/>
 			</tarfileset>

@@ -28,7 +28,7 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
-import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
+import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
 import com.condation.cms.api.feature.features.ContentParserFeature;
@@ -54,8 +54,8 @@ import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.RenderContext;
-import com.condation.cms.content.shortcodes.ShortCodes;
-import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.content.tags.Tags;
+import com.condation.cms.content.tags.TagParser;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.extensions.hooks.ContentHooks;
 import com.condation.cms.extensions.hooks.DBHooks;
@@ -142,7 +142,7 @@ public class RequestContextFactory {
 
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer,
-				initShortCodes(requestContext),
+				initContentTags(requestContext),
 				theme);
 		requestContext.add(RenderContext.class, renderContext);
 
@@ -152,7 +152,11 @@ public class RequestContextFactory {
 	private void initHookSystem(RequestContext requestContext) {
 		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			
+			hookSystem.register(extensionPoint);
+		});
 	}
 	
 	/**
@@ -165,27 +169,31 @@ public class RequestContextFactory {
 	private HookSystem setupAndGetHookSystem() {
 		var hookSystem = injector.getInstance(HookSystem.class);
 		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> extensionPoint.register(hookSystem));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			
+			hookSystem.register(extensionPoint);
+		});
 
 		return hookSystem;
 	}
 
-	private ShortCodes initShortCodes(RequestContext requestContext) {
+	private Tags initContentTags(RequestContext requestContext) {
 		var parser = injector.getInstance(TagParser.class);
 
-		var builder = ShortCodes.builder(parser);
+		var builder = Tags.builder(parser);
 		
-		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
+		injector.getInstance(ModuleManager.class).extensions(RegisterTagsExtensionPoint.class)
 				.forEach(extension -> {
-					builder.register(extension.shortCodes());
+					builder.register(extension.tags());
 					
-					builder.register(extension.shortCodeDefinitions());
+					builder.register(extension.tagDefinitions());
 				});
 
 		var codes = new HashMap<String, Function<Parameter, String>>();
-		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
+		var wrapper = requestContext.get(ContentHooks.class).getTags(codes);
 		
-		builder.register(wrapper.getShortCodes());
+		builder.register(wrapper.getTags());
 
 		return builder.build();
 	}
@@ -226,7 +234,7 @@ public class RequestContextFactory {
 
 		RenderContext renderContext = new RenderContext(
 				markdownRenderer,
-				initShortCodes(requestContext),
+				initContentTags(requestContext),
 				theme);
 		requestContext.add(RenderContext.class, renderContext);
 		requestContext.add(MarkdownRendererFeature.class, new MarkdownRendererFeature(markdownRenderer));

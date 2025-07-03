@@ -33,6 +33,7 @@ import com.condation.cms.api.feature.features.ContentRenderFeature;
 import com.condation.cms.api.feature.features.CronJobSchedulerFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.MessagingFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
@@ -41,12 +42,10 @@ import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.content.ContentResolver;
-import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
-import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 
 import lombok.RequiredArgsConstructor;
@@ -89,6 +88,7 @@ public class SiteConfigInitializer {
 		cmsModuleContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
 		cmsModuleContext.add(CronJobSchedulerFeature.class, new CronJobSchedulerFeature(injector.getInstance(SiteCronJobScheduler.class)));
 		cmsModuleContext.add(CacheManagerFeature.class, new CacheManagerFeature(injector.getInstance(CacheManager.class)));
+		cmsModuleContext.add(InjectorFeature.class, new InjectorFeature(injector));
 
         var contentResolver = injector.getInstance(ContentResolver.class);
 		var requestContextFactory = injector.getInstance(RequestContextFactory.class);

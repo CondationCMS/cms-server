@@ -67,4 +67,5 @@ public interface SiteProperties {
 	public default boolean spaEnabled () {
 		return false;
 	}
+	public boolean uiManagerEnabled ();
 }

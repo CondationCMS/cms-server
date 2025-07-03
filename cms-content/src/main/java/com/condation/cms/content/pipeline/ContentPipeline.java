@@ -58,7 +58,7 @@ public class ContentPipeline {
 		pipeline.forEach(processor -> {
 			switch (processor) {
 				case "markdown" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processMarkdown, prio.getAndAdd(10));
-				case "shortcode" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processShortCodes, prio.getAndAdd(10));
+				case "tags" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processTags, prio.getAndAdd(10));
 				case "template" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processTemplate, prio.getAndAdd(10));
 			}
 		});
@@ -73,8 +73,8 @@ public class ContentPipeline {
 		return requestContext.get(RenderContext.class).markdownRenderer().render(context.value());
 	}
 
-	private String processShortCodes(FilterContext<String> context) {
-		return requestContext.get(RenderContext.class).shortCodes().replace(context.value(), model.values, requestContext);
+	private String processTags(FilterContext<String> context) {
+		return requestContext.get(RenderContext.class).tags().replace(context.value(), model.values, requestContext);
 	}
 
 	private String processTemplate(FilterContext<String> context) {

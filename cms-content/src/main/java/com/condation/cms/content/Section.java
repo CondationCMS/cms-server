@@ -24,15 +24,20 @@ package com.condation.cms.content;
 
 
 import com.condation.cms.api.Constants;
+import java.util.Map;
 
 
 /**
  *
  * @author t.marx
  */
-public record Section(String name, int index, String content) {
+public record Section(String name, int index, String content, Map<String, Object> data, String uri) {
 
-	public Section(String name, String content) {
-		this(name, Constants.DEFAULT_SECTION_ORDERED_INDEX, content);
+	public Section(String name, int index, String content, Map<String, Object> data) {
+		this(name, index, content, data, null);
+	}
+	
+	public Section(String name, String content, Map<String, Object> data) {
+		this(name, Constants.DEFAULT_SECTION_LAYOUT_ORDER, content, data, null);
 	}
 }

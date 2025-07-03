@@ -33,11 +33,13 @@ import java.util.Map;
  *
  * @author t.marx
  */
+/*
 @Extensions({
 	@Extension(UIActionsExtensionPoint.class),
 	@Extension(HookSystemRegisterExtensionPoint.class),
 	@Extension(UILocalizationExtensionPoint.class)
 })
+*/
 public class PageMenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint, UILocalizationExtensionPoint {
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(

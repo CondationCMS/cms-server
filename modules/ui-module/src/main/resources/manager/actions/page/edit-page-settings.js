@@ -45,7 +45,7 @@ const DEFAULT_FIELDS = [
 		}
 	},
 	{
-		type: 'date',
+		type: 'datetime',
 		name: 'publish_date',
 		title: 'Publish Date',
 	},

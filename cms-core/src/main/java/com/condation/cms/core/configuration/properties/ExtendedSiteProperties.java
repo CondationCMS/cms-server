@@ -148,4 +148,9 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public <T> T getOrDefault(String field, T defaultValue) {
 		return (T) configuration.getOrDefault(field, defaultValue);
 	}
+
+	@Override
+	public boolean force2fa() {
+		return configuration.getBoolean("ui.force2fa", false);
+	}
 }

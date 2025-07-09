@@ -68,4 +68,6 @@ public interface SiteProperties {
 		return false;
 	}
 	public boolean uiManagerEnabled ();
+	
+	public boolean force2fa();
 }

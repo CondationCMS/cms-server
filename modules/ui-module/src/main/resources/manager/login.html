@@ -55,30 +55,56 @@
 				border-top-left-radius: 0;
 				border-top-right-radius: 0;
 			}
+
+			.hidden {
+				display: none;
+			}
 		</style>
+		
+		<script>
+			window.ui = {
+				manager_url: "{{ links.createUrl('/manager/index.html') }}",
+				login_url: "{{ links.createUrl('/manager/login.action') }}"
+			}
+		</script>
 
 	</head>
 
 	<body class="d-flex align-items-center py-4 bg-body-tertiary">
 		<main class="form-signin w-100 m-auto">
 			<h1 class="text-dark text-center">CondationCMS</h1>
-			<form action="{{ links.createUrl('/manager/login.action') }}" method="POST" > 
+			<form id="loginForm" method="POST" > 
 				<!--img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" -->
 				<h2 class="h3 mb-3 fw-normal text-dark">Please sign in</h2>
-				<div class="form-floating"> 
-					<input type="text" class="form-control" id="inputUsername" placeholder="username" name="username" /> 
-					<label for="inputUsername" class="text-dark">Username</label>
+				<div id="signIn">
+					<div class="form-floating"> 
+						<input type="text" class="form-control" id="inputUsername" placeholder="username" name="username" /> 
+						<label for="inputUsername" class="text-dark">Username</label>
+					</div>
+					<div class="form-floating"> 
+						<input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" />
+						<label for="inputPassword" class="text-dark">Password</label> 
+					</div>
+					<button class="btn btn-primary w-100 py-2" id="signInButton">Sign in</button>
 				</div>
-				<div class="form-floating"> 
-					<input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" />
-					<label for="inputPassword" class="text-dark">Password</label> 
+				{% if force2fa %}
+				<div id="validate" class="hidden">
+					<div class="form-floating"> 
+						<input type="text" class="form-control" id="inputCode" placeholder="Code" name="code" />
+						<label for="inputCode" class="text-dark">Code</label> 
+					</div>
+					<button class="btn btn-primary w-100 py-2" id="validateButton">Validate</button>
 				</div>
-				<button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+				{% endif %}
 			</form>
+			<div>
+				<button class="btn btn-primary w-100 py-2 mt-3" id="resetButton">Reset</button>
+			</div>
+			
 		</main>
 
-		<script src="{{ links.createURl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
-
+		<script src="{{ links.createUrl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
+		<script src="{{ links.createUrl('/manager/public/manager-login.js') }}"></script>
 	</body>
 
 </html>

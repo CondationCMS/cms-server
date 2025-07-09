@@ -4,3 +4,16 @@ baseurl = "http://localhost:2020"
 language = "en"
 theme = "demo"
 context_path = "/"
+
+[ui]
+force2fa = true
+
+[ui.2fa]
+mail_from = "admin@localhost.de"
+mail_sender = "CondationCMS"
+mail_title = "CondationCMS: your login code"
+mail_message = '''
+Hello <username>,
+
+your login code: <code>
+'''

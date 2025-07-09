@@ -22,7 +22,6 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.utils.HTTPUtil;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;

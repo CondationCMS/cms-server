@@ -49,7 +49,7 @@ public class UserServiceTest {
 	
 
 	@Test
-	public void test_login_and_remove() throws IOException {
+	public void test_login_and_remove() throws Exception {
 		
 		com.condation.cms.auth.services.Realm realm = Realm.of("users");
 		
@@ -65,7 +65,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void test_multiple_users() throws IOException {
+	public void test_multiple_users() throws Exception {
 		
 		com.condation.cms.auth.services.Realm realm = Realm.of("musers");
 		

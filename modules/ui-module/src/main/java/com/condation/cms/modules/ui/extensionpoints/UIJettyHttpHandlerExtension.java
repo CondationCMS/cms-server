@@ -40,6 +40,7 @@ import com.condation.cms.modules.ui.http.ResourceHandler;
 import com.condation.cms.modules.ui.http.UploadHandler;
 import com.condation.cms.modules.ui.http.CompositeHttpHandler;
 import com.condation.cms.modules.ui.http.PublicResourceHandler;
+import com.condation.cms.modules.ui.http.auth.AjaxLoginHandler;
 import com.condation.cms.modules.ui.http.auth.CSRFHandler;
 import com.condation.cms.modules.ui.http.auth.LoginHandler;
 import com.condation.cms.modules.ui.http.auth.LoginResourceHandler;
@@ -112,13 +113,18 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 				key -> new AtomicInteger(0)
 		);
 
+		ICache<String, AjaxLoginHandler.Login> logins = getContext().get(CacheManagerFeature.class).cacheManager().get("logins",
+				new CacheManager.CacheConfig(10_000l, Duration.ofMinutes(5))
+		);
+		
 		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
 
 		try {
 
 			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext(), getRequestContext()));
-			mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
+			//mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
+			mapping.add(PathSpec.from("/manager/login.action"), new AjaxLoginHandler(getContext(), getRequestContext(), failedLoginsCounter, logins));
 			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler(getRequestContext()));
 
 			mapping.add(PathSpec.from("/manager/upload"),
@@ -172,6 +178,16 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 									"bootstrap/bootstrap-icons.min.css",
 									"bootstrap/fonts/bootstrap-icons.woff",
 									"bootstrap/fonts/bootstrap-icons.woff2"
+							)
+					)
+			);
+			mapping.add(PathSpec.from("/manager/public/*"),
+					new PublicResourceHandler(
+							getContext(),
+							createFileSystem("/manager"),
+							"/manager",
+							List.of(
+									"public/manager-login.js"
 							)
 					)
 			);

@@ -30,10 +30,12 @@ import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.Realm;
+import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -79,7 +81,7 @@ public class LoginHandler extends JettyHandler {
 		var username = form.getValue("username");
 		var password = form.getValue("password");
 
-		java.util.Optional<com.condation.cms.auth.services.User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
+		Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();

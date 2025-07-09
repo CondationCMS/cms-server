@@ -28,6 +28,9 @@ import com.condation.cms.auth.services.Realm;
 
 
 import com.condation.cms.auth.services.UserService;
+import com.google.common.base.Strings;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
@@ -47,7 +50,7 @@ public class AddUser implements Runnable {
 	String host = null;
 	
 	@CommandLine.Option(names = {"-ro", "--roles"}, description = "The roles", split = ",")
-	String[] groups = null;
+	String[] roles = null;
 	
 	@Parameters(
 			paramLabel = "<username>",
@@ -63,12 +66,23 @@ public class AddUser implements Runnable {
 	)
 	private String password = "";
 
+	@Parameters(
+			paramLabel = "<mail>",
+			index = "2",
+			description = "The users mail address."
+	)
+	private String mail = "";
+	
 	@Override
 	public void run() {
 		try {
 			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
 			
-			userService.addUser(Realm.of(realm), username, password, groups);
+			Map<String, Object> data = new HashMap<>();
+			if (!Strings.isNullOrEmpty(mail)) {
+				data.put("mail", mail);
+			}
+			userService.addUser(Realm.of(realm), username, password, roles, data);
 			log.info("user added successfuly");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

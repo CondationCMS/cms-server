@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.request.RequestContext;
@@ -57,10 +58,12 @@ public class LoginResourceHandler extends JettyHandler {
 
 		try {
 			var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+			var force2fa = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().force2fa();
 			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of(
 					"csrfToken", TokenUtils.createToken("csrf", secret),
 					"links", new LinkFunction(requestContext),
-					"managerBaseURL", managerBaseURL(requestContext)
+					"managerBaseURL", managerBaseURL(requestContext),
+					"force2fa", force2fa
 			));
 			Content.Sink.write(response, true, content, callback);
 		} catch (Exception e) {

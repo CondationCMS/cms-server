@@ -125,4 +125,9 @@ public class TestSiteProperties implements SiteProperties {
 		return (boolean) values.getOrDefault("ui.manager.enabled", false);
 	}
 
+	@Override
+	public boolean force2fa() {
+		return (boolean) values.getOrDefault("ui.force2fa", false);
+	}
+
 }

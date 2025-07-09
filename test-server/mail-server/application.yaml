@@ -1,0 +1,6 @@
+fakesmtp:
+  #The SMTP Server Port used by the Fake SMTP Server
+  port: 8025
+  authentication:
+    username: user
+    password: password

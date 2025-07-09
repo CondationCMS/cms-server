@@ -58,7 +58,11 @@ public class UserService {
 
 	private final Path hostBase;
 
-	public void addUser(Realm realm, String username, String password, String[] roles) throws IOException {
+	public void addUser (Realm realm, String username, String password, String[] roles) throws Exception {
+		addUser(realm, username, password, roles, Map.of());
+	}
+	
+	public void addUser(Realm realm, String username, String password, String[] roles, Map<String, Object> data) throws IOException {
 		List<User> users = loadUsers(realm);
 		users = new ArrayList<>(users.stream()
 				.filter(user -> !user.username().equals(username))
@@ -68,10 +72,10 @@ public class UserService {
 		String saltBase64 = Base64.getEncoder().encodeToString(salt);
 		String passwordHash = SecurityUtil.hashPBKDF2(password, salt);
 
-		Map<String, Object> data = new HashMap<>();
-		data.put("salt", saltBase64);
+		Map<String, Object> userData = new HashMap<>(data);
+		userData.put("salt", saltBase64);
 
-		users.add(new User(username, passwordHash, roles, data));
+		users.add(new User(username, passwordHash, roles, userData));
 		saveUsers(realm, users);
 	}
 

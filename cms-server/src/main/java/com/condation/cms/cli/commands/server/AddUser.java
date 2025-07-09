@@ -2,6 +2,7 @@ package com.condation.cms.cli.commands.server;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.auth.services.Realm;
 
 /*-
  * #%L
@@ -67,7 +68,7 @@ public class AddUser implements Runnable {
 		try {
 			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
 			
-			userService.addUser(UserService.Realm.of(realm), username, password, groups);
+			userService.addUser(Realm.of(realm), username, password, groups);
 			log.info("user added successfuly");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

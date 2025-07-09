@@ -27,7 +27,7 @@ import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.ui.action.UIScriptAction;
 import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.elements.MenuEntry;
-import com.condation.cms.auth.services.UserService;
+import com.condation.cms.auth.services.User;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.modules.api.ModuleManager;
 import java.util.ArrayList;
@@ -78,7 +78,7 @@ public class TemplateEngineTest {
 		);
 
 		Assertions.assertThatCode(() -> {
-			templateEngine.render("index.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager, new UserService.User("test", "asdasdfasdf", new String[]{"manager"}))));
+			templateEngine.render("index.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager, new User("test", "asdasdfasdf", new String[]{"manager"}))));
 		}).doesNotThrowAnyException();
 	}
 

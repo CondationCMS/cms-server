@@ -76,8 +76,8 @@ public class UserService {
 	}
 
 	public void removeUser(Realm realm, String username) throws IOException {
-		var users = loadUsers(realm);
-		users = new ArrayList<>(users.stream().filter(user -> !user.username.equals(username)).toList());
+		java.util.List<com.condation.cms.auth.services.User> users = loadUsers(realm);
+		users = new ArrayList<>(users.stream().filter(user -> !user.username().equals(username)).toList());
 		saveUsers(realm, users);
 	}
 
@@ -112,7 +112,7 @@ public class UserService {
 	}
 
 	private List<User> loadUsers(final Realm realm) throws IOException {
-		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name));
+		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		List<User> users = new ArrayList<>();
 		if (Files.exists(usersFile)) {
 			List<String> lines = Files.readAllLines(usersFile, StandardCharsets.UTF_8);
@@ -133,7 +133,7 @@ public class UserService {
 
 	public Optional<User> login(final Realm realm, final String username, final String password) {
 		try {
-			var userOpt = loadUsers(realm).stream()
+			java.util.Optional<com.condation.cms.auth.services.User> userOpt = loadUsers(realm).stream()
 					.filter(user -> user.username().equals(username))
 					.findFirst();
 
@@ -163,7 +163,7 @@ public class UserService {
 	}
 
 	private void saveUsers(Realm realm, List<User> users) throws IOException {
-		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name));
+		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		Files.deleteIfExists(usersFile);
 
 		StringBuilder userContent = new StringBuilder();
@@ -173,64 +173,5 @@ public class UserService {
 		Files.writeString(usersFile, userContent, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 	}
 
-	public static record User(String username, String passwordHash, String[] roles, Map<String, Object> data) {
 
-		public User(String username, String passwordHash, String[] roles) {
-			this(username, passwordHash, roles, Collections.emptyMap());
-		}
-
-		public String line() {
-			try {
-				String json = GSONProvider.GSON.toJson(data != null ? data : Map.of());
-				String encodedData = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
-				return "%s:%s:%s:%s\r\n".formatted(
-						username,
-						passwordHash,
-						roles != null ? String.join(",", roles) : "",
-						encodedData
-				);
-			} catch (Exception e) {
-				throw new RuntimeException("Error writing user data", e);
-			}
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (!(obj instanceof User other)) {
-				return false;
-			}
-			return Objects.equals(username, other.username)
-					&& Objects.equals(passwordHash, other.passwordHash)
-					&& Arrays.equals(roles, other.roles)
-					&& Objects.equals(data, other.data);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = Objects.hash(username, passwordHash, data);
-			result = 31 * result + Arrays.hashCode(roles);
-			return result;
-		}
-
-		@Override
-		public String toString() {
-			return "User{"
-					+ "username='" + username + '\''
-					+ ", passwordHash='***'"
-					+ ", roles=" + Arrays.toString(roles)
-					+ ", data=" + data
-					+ '}';
-		}
-
-	}
-
-	public static record Realm(String name) {
-
-		public static Realm of(String name) {
-			return new Realm(name);
-		}
-	}
 }

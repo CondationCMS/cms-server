@@ -28,8 +28,8 @@ import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
+import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
@@ -79,9 +79,9 @@ public class LoginHandler extends JettyHandler {
 		var username = form.getValue("username");
 		var password = form.getValue("password");
 
-		var userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(UserService.Realm.of("manager-users"), username, password);
+		java.util.Optional<com.condation.cms.auth.services.User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
-			var user = userOpt.get();
+			com.condation.cms.auth.services.User user = userOpt.get();
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
 			var token = TokenUtils.createToken(user.username(), secret);
 

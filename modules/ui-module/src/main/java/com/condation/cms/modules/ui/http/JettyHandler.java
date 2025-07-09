@@ -28,8 +28,9 @@ import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.auth.services.Realm;
+import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.nio.charset.StandardCharsets;
@@ -54,7 +55,7 @@ public abstract class JettyHandler implements HttpHandler {
 		return "";
 	}
 
-	public Optional<UserService.User> getUser(Request request, CMSModuleContext moduleContext) {
+	public Optional<User> getUser(Request request, CMSModuleContext moduleContext) {
 
 		try {
 			var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
@@ -70,7 +71,7 @@ public abstract class JettyHandler implements HttpHandler {
 				return Optional.empty();
 			}
 
-			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(UserService.Realm.of("manager-users"), username.get().username());
+			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(Realm.of("manager-users"), username.get().username());
 		} catch (Exception e) {
 			log.error("error getting user", e);
 		}

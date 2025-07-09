@@ -26,12 +26,12 @@ import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.AuthService;
+import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.StringTokenizer;
@@ -98,7 +98,7 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 							String username = credentials.substring(0, p).trim();
 							String password = credentials.substring(p + 1).trim();
 
-							var userOpt = userService.login(UserService.Realm.of(authPath.getRealm()), username, password);
+							java.util.Optional<com.condation.cms.auth.services.User> userOpt = userService.login(Realm.of(authPath.getRealm()), username, password);
 
 							if (userOpt.isEmpty()) {
 								unauthorized(request, response, callback, authPath.getRealm());

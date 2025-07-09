@@ -81,7 +81,7 @@ public class AuthService {
 		private String realm;
 		private List<String> roles;
 		
-		public boolean allowed (UserService.User user) {
+		public boolean allowed (User user) {
 			if (user.roles() == null || user.roles().length == 0) {
 				return false;
 			}

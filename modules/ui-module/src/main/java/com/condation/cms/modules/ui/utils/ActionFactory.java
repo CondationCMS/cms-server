@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.cms.api.utils.JSONUtil;
-import com.condation.cms.auth.services.UserService;
+import com.condation.cms.auth.services.User;
 import java.util.Arrays;
 
 /**
@@ -52,7 +52,7 @@ public class ActionFactory {
 
 	private final HookSystem hookSystem;
 	private final ModuleManager moduleManager;
-	private final UserService.User user;
+	private final User user;
 
 	public List<ShortCutHolder> createShortCuts() {
 		List<ShortCutHolder> shortCuts = new ArrayList<>();

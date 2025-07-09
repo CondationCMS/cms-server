@@ -47,7 +47,7 @@ import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.pipeline.ContentPipelineFactory;
 import com.condation.cms.content.views.model.View;
-import com.condation.cms.core.content.MapAccess;
+import com.condation.cms.api.content.MapAccess;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;

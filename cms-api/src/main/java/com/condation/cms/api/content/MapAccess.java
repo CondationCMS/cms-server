@@ -1,4 +1,4 @@
-package com.condation.cms.core.content;
+package com.condation.cms.api.content;
 
 /*-
  * #%L
@@ -35,6 +35,10 @@ public class MapAccess implements Map<String, Object> {
 
     private final Map<String, Object> wrapped;
 
+	public static MapAccess of (Map<String, Object> map) {
+		return new MapAccess(map);
+	}
+	
     @Override
     public int size() {
         return wrapped.size();

@@ -23,11 +23,10 @@ package com.condation.cms.modules.ui.services;
  */
 
 import com.condation.cms.api.ui.annotations.RemoteMethod;
-import com.condation.cms.auth.services.UserService;
+import com.condation.cms.auth.services.User;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
@@ -59,7 +58,7 @@ class RemoteMethodServiceTest {
                 parameters -> "should not be called"
         );
 
-        UserService.User user = new UserService.User("testUser", "hash", new String[]{"user"}, Collections.emptyMap());
+        User user = new User("testUser", "hash", new String[]{"user"}, Collections.emptyMap());
 
         // when / then
         assertThatThrownBy(() -> rMethod.execute(Map.of(), user))
@@ -92,7 +91,7 @@ class RemoteMethodServiceTest {
                 parameters -> "success"
         );
 
-        UserService.User user = new UserService.User("testUser", "hash", new String []{"user"}, Collections.emptyMap()); // passende Rolle
+        User user = new User("testUser", "hash", new String []{"user"}, Collections.emptyMap()); // passende Rolle
 
         // when
         Object result = rMethod.execute(Map.of(), user);

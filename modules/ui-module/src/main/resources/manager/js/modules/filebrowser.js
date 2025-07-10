@@ -234,10 +234,12 @@ const getActions = () => {
 			name: i18n.t("filebrowser.create.page", "Create page")
 		})
 	}
+	/*
 	actions.push({
 		id: "cms-filebrowser-action-createFile",
 		name: i18n.t("filebrowser.create.file", "Create file")
 	})
+	*/
 	actions.push({
 		id: "cms-filebrowser-action-createFolder",
 		name: i18n.t("filebrowser.create.folder", "Create folder")

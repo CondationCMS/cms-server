@@ -6,7 +6,7 @@ theme = "demo"
 context_path = "/"
 
 [ui]
-force2fa = true
+force2fa = false
 
 [ui.2fa]
 mail_from = "admin@localhost.de"

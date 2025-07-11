@@ -80,8 +80,8 @@
 	<script>
 
 		window.manager = {
-			csrfToken : '{{ csrfToken }}',
-			baseUrl : '{{ managerBaseURL }}',
+			csrfToken: '{{ csrfToken }}',
+			baseUrl: '{{ managerBaseURL }}',
 			contextPath: '{{ contextPath }}'
 		}
 	</script>
@@ -104,34 +104,51 @@
 						{{ menuEntry(entry) | raw }}
 						{% endfor %}
 						<li class="nav-item">
-							<a class="nav-link cms-toolbar-button" 
-										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
+							<a class="nav-link cms-toolbar-button"
+								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
 								<i class="bi bi-folder2-open"></i>
 							</a>
 						</li>
 						<li class="nav-item">
 							<a class="nav-link cms-toolbar-button"
-										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
+								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
 								<i class="bi bi-images"></i>
 							</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false"
+								title="Create new contentw">
+								<i class="bi bi-plus-circle"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item cms-ct-create" href="#">Create Page</a>
+								</li>
+								<li>
+									<a class="dropdown-item cms-ct-create" href="#">Create Blogpost</a>
+								</li>
+							</ul>
 						</li>
 					</ul>
 					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button" data-bs-toggle="dropdown"
-								aria-expanded="false" data-cms-i18n-key11="menu.settings">
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false" data-cms-i18n-key11="menu.settings">
 								<i class="bi bi-sliders2-vertical"></i>
 							</a>
 							<ul class="dropdown-menu">
 								<li>
-									<a class="dropdown-item" id="cms-action-logout" href="{{ links.createUrl('/manager/logout') }}"
+									<a class="dropdown-item" id="cms-action-logout"
+										href="{{ links.createUrl('/manager/logout') }}"
 										data-cms-i18n-key="menu.settings.logout">Logout</a>
 								</li>
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button" data-bs-toggle="dropdown"
-								aria-expanded="false" data-cms-i18n-key11="language" title="Language">
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false" data-cms-i18n-key11="language"
+								title="Language">
 								<i class="bi bi-globe2"></i>
 							</a>
 							<ul class="dropdown-menu">
@@ -146,18 +163,14 @@
 							</ul>
 						</li>
 						<li class="nav-item dropdown">
-							<a class="btn dropdown-toggle dropdown-nocaret" href="#" 
-							data-bs-toggle="dropdown" aria-expanded="false"
-								id="cms-btn-status"
-								data-cms-i18n-key="menu.status"
-								>Status
+							<a class="btn dropdown-toggle dropdown-nocaret" href="#" data-bs-toggle="dropdown"
+								aria-expanded="false" id="cms-btn-status" data-cms-i18n-key="menu.status">Status
 							</a>
 							<ul class="dropdown-menu dropdown-menu-end">
 								<li>
 									<a class="dropdown-item" href="#" data-cms-i18n-lang="en"
 										data-cms-i18n-key="menu.page.settings"
-										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings') }}","parameters":{},"type":"script"}'
-										>Page settings</a>
+										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings')}}","parameters":{},"type":"script"}'>Page settings</a>
 								</li>
 							</ul>
 						</li>
@@ -168,8 +181,7 @@
 	</div>
 	<div id="content" class="flex-grow-1 d-flex flex-column overflow-hidden">
 		<div id="previewWrapper" class="flex-grow-1 position-relative">
-			<iframe id="contentPreview"
-				class="position-absolute top-0 start-0 w-100 h-100 border-0"
+			<iframe id="contentPreview" class="position-absolute top-0 start-0 w-100 h-100 border-0"
 				src="{{ links.createUrl('/?preview=true') }}"></iframe>
 
 			<!-- Overlay -->
@@ -196,27 +208,27 @@
 
 	<script>
 
-var shortCuts = [
-	{% for entry in actionFactory.createShortCuts() %}
-	{
-		id: '{{ entry.id }}',
-		title: '{{ entry.title }}',
-		hotkey: '{{ entry.hotkey }}',
-		icon: '{{ entry.icon }}',
-		section: '{{ entry.section }}',
-		handler: () => {
-			var action = {{ entry.getActionDefinition() | raw }}
-			if (action.type === "hook") {
-				executeHookAction(action)
-			} else if (action.type === "script") {
-				executeScriptAction(action)
+		var shortCuts = [
+			{% for entry in actionFactory.createShortCuts() %}
+		{
+			id: '{{ entry.id }}',
+			title: '{{ entry.title }}',
+			hotkey: '{{ entry.hotkey }}',
+			icon: '{{ entry.icon }}',
+			section: '{{ entry.section }}',
+			handler: () => {
+				var action = {{ entry.getActionDefinition() | raw }}
+				if (action.type === "hook") {
+					executeHookAction(action)
+				} else if (action.type === "script") {
+					executeScriptAction(action)
+				}
 			}
-		}
-	},
-	{% endfor %}
-];
-const ninja = document.querySelector('ninja-keys');
-ninja.data = shortCuts;
+		},
+		{% endfor %}
+		];
+		const ninja = document.querySelector('ninja-keys');
+		ninja.data = shortCuts;
 	</script>
 </body>
 

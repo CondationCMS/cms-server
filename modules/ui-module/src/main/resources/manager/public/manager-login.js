@@ -109,7 +109,9 @@ document.querySelector("#resetButton").addEventListener("click", (e) => {
 	document.querySelector("#validate").classList.add("hidden");
 })
 
-document.querySelector("#validateButton").addEventListener("click", validate)
+if (document.querySelector("#validateButton")) {
+	document.querySelector("#validateButton").addEventListener("click", validate)
+}
 
 document.querySelector("#signInButton").addEventListener("click", signIn)
 document.querySelector("#loginForm").addEventListener("submit", formSubmit)

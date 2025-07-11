@@ -118,8 +118,6 @@ const init = () => {
 			openFileBrowser({
 				type: "assets",
 				onSelect: (file) => {
-					console.log("Selected file:", file);
-
 					const preview = wrapper.querySelector(".cms-media-image");
 					const inputValue = wrapper.querySelector(".cms-media-input-value");
 					if (file && file.uri) {
@@ -153,7 +151,6 @@ const handleUpload = (wrapper, file) => {
 			console.log(`Upload progress: ${percent}%`);
 		},
 		onSuccess: (data) => {
-			console.log(data)
 			if (data.filename) {
 				inputValue.value = data.filename; // Set the input value to the uploaded file's name
 			}

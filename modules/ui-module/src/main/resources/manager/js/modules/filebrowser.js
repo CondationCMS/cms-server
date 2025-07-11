@@ -23,13 +23,13 @@
 import { listFiles, deleteFile, deleteFolder, } from './rpc/rpc-files.js'
 import { deletePage } from './rpc/rpc-page.js'
 import { openModal } from './modal.js'
-import Handlebars from '../libs/handlebars.min.js';
 import { loadPreview } from './preview.utils.js'
 import { i18n } from './localization.js';
 
 import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction } from './filebrowser.actions.js'
 import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
 import { EventBus } from './event-bus.js';
+import { filebrowserTemplate } from './filebrowser.template.js';
 
 const defaultOptions = {
 	validate: () => true,
@@ -42,101 +42,6 @@ const state = {
 	currentFolder: ""
 };
 
-Handlebars.registerHelper("patchPathWithContext", patchPathWithContext);
-Handlebars.registerHelper('concat', function (...args) {
-  args.pop();
-  return args.join('');
-});
-
-const template = Handlebars.compile(`
-	<div>
-		<div class="dropdown">
-			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-				Actions
-			</button>
-			<ul class="dropdown-menu">
-				{{#each actions}}
-					<li><a class="dropdown-item" href="#" id="{{id}}">{{name}}</a></li>
-				{{/each}}
-			</ul>
-		</div>
-	<table class="table table-hover">
-		<thead>
-			<tr>
-				<th scope="col"></th>
-				<th scope="col">{{filenameHeader}}</th>
-				<th scope="col">{{actionHeader}}</th>
-			</tr>
-		</thead>
-		<tbody id="cms-filebrowser-files">
-		{{#each files}}
-			<tr 
-				data-cms-file-uri="{{uri}}"
-				data-cms-file-name="{{name}}"
-				{{#if directory}} data-cms-file-directory="true"{{/if}}>
-				<th scope="row">
-					{{#if directory}}
-						<i class="bi bi-folder"></i>
-					{{else if media}}
-						<div class="position-relative d-inline-block cms-image-hover-wrapper">
-							<img src="{{patchPathWithContext (concat "/assets" uri)}}" alt="{{name}}" class="img-thumbnail cms-small-image" />
-							<div class="cms-overlay-image">
-								<img src="{{patchPathWithContext (concat "/assets" uri)}}" alt="Zoom" class="cms-enlarged-image" />
-							</div>
-						</div>
-					{{else}}
-						<i class="bi bi-file"></i>
-					{{/if}}
-				</th>
-				<td>{{name}}</td>
-				<td>
-					{{#if directory}}
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder"
-							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Delete folder."
-						>
-							<i class="bi bi-folder-x"></i>
-						</button>
-					{{else if content}}
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="open"
-							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Open page."
-						>
-							<i class="bi bi-file-arrow-up"></i>
-							</button>
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deletePage"
-							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Delete page."
-						>
-							<i class="bi bi-file-earmark-x"></i>
-						</button>
-					{{else}}
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile"
-							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Delete file."
-						>
-							<i class="bi bi-file-earmark-x"></i>
-						</button>
-					{{/if}}
-					<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile"
-							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Rename file."
-						>
-							<i class="bi bi-pencil-square"></i>
-						</button>
-				</td>
-			<tr>
-		{{/each}}
-		</tbody>
-	</table>
-	{{#if asset}} 
-		<input id="cms-fileupload" type="file" name="cms-fileupload" accept="image/png, image/jpeg, image/web, image/gif, image/svg+xml, image/tiff, image/avif" />
-		<button id="cms-filebrowser-upload-button"> Upload </button>
-		<span id="cms-filebrowser-upload-progress"></span>
-		<div id="drop-zone">Drop files here</div>
-	{{/if}}
-	</div>
-`);
 
 EventBus.on("upload:success", (folder) => {
 	initFileBrowser(state.currentFolder);
@@ -176,7 +81,7 @@ const initFileBrowser = async (uri) => {
 
 	const fileBrowserElement = document.getElementById("cms-file-browser");
 	if (fileBrowserElement) {
-		fileBrowserElement.innerHTML = template({
+		fileBrowserElement.innerHTML = filebrowserTemplate({
 			files: contentFiles.result.files,
 			filenameHeader: i18n.t("filebrowser.filename", "Filename"),
 			actionHeader: i18n.t("filebrowser.action", "Action"),
@@ -320,6 +225,7 @@ const fileActions = () => {
 			await initFileBrowser(state.currentFolder);
 		});
 	})
+	/*
 	document.getElementById("cms-filebrowser-action-createFile").addEventListener("click", async (event) => {
 		createFileAction({
 			state: state,
@@ -328,6 +234,7 @@ const fileActions = () => {
 			await initFileBrowser(state.currentFolder);
 		});
 	})
+		*/
 	if (document.getElementById("cms-filebrowser-action-createPage")) {
 		document.getElementById("cms-filebrowser-action-createPage").addEventListener("click", async (event) => {
 			createPageAction({

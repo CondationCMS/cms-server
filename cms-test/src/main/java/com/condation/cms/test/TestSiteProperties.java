@@ -120,4 +120,14 @@ public class TestSiteProperties implements SiteProperties {
 		return (List<String>)values.getOrDefault("active.modules", List.of());
 	}
 
+	@Override
+	public boolean uiManagerEnabled() {
+		return (boolean) values.getOrDefault("ui.manager.enabled", false);
+	}
+
+	@Override
+	public boolean force2fa() {
+		return (boolean) values.getOrDefault("ui.force2fa", false);
+	}
+
 }

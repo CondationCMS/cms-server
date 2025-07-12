@@ -6,12 +6,13 @@
 <link rel="shortcut icon" href="/favicon.ico" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<script th:inline="javascript">
-  const CONTEXT_PATH = "{{ site.contextPath }}/";
-</script>
-
 <link
   rel="stylesheet"
   href="{{ links.createUrl('/theme/assets/style.css') }}"
   defer
 />
+
+{% if PREVIEW_MODE %}
+  <script  src="{{ links.createUrl('/manager/js/manager-inject.js') }}" type="module"></script>
+  <link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager-inject.css') }}" />
+{% endif %}

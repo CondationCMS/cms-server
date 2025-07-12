@@ -26,7 +26,6 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.request.RequestContext;
 import com.google.common.base.Strings;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;

@@ -22,10 +22,11 @@
 
 import { createFolder, createFile, renameFile } from './rpc/rpc-files.js'
 import { createPage } from './rpc/rpc-page.js'
-import { getPageTemplates } from './ui-helpers.js'
+
 import { i18n } from './localization.js';
 import { alertSelect, alertConfirm, alertPrompt } from './alerts.js'
 import { showToast } from './toast.js'
+import { getPageTemplates } from './rpc/rpc-manager.js';
 
 export async function renameFileAction({ state, getTargetFolder, filename }) {
 	const newName = await alertPrompt({
@@ -158,8 +159,9 @@ export async function createPageAction({ getTargetFolder }) {
 		label: i18n.t("filebrowser.createPage.label", "Page name"),
 		placeholder: i18n.t("filebrowser.createPage.placeholder", "New Page")
 	});
+	const pageResponse = await getPageTemplates();
 	if (pageName) {
-		const templateMap = getPageTemplates().reduce((acc, { name, template }) => {
+		const templateMap = pageResponse.result.reduce((acc, { name, template }) => {
 			acc[template] = name;
 			return acc;
 		}, {});

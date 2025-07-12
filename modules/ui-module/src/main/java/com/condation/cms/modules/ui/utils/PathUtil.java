@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -43,12 +42,12 @@ public class PathUtil {
 		uri = uri.replaceAll("\\\\", "/");
 		return uri;
 	}
-	
+
 	public static boolean isChild(Path possibleParent, Path maybeChild) throws IOException {
 		return maybeChild.toFile().getCanonicalPath().startsWith(possibleParent.toFile().getCanonicalPath());
 	}
-	
-	public static boolean hasChildren (Path path) {
+
+	public static boolean hasChildren(Path path) {
 		try {
 			if (!Files.isDirectory(path)) {
 				return false;
@@ -59,12 +58,31 @@ public class PathUtil {
 		}
 		return false;
 	}
-	
-	public static String getType (Path path) {
+
+	public static String getType(Path path) {
 		if (Files.isDirectory(path)) {
 			return "folder";
 		} else {
 			return "file";
 		}
+	}
+
+	public static String toValidMarkdownFilename(String input) {
+		if (input == null || input.isBlank()) {
+			return "untitled.md";
+		}
+
+		// Verbotene Zeichen durch "_" ersetzen (Windows + Unix sicher)
+		String sanitized = input.replaceAll("[\\\\/:*?\"<>|]", "_");
+
+		// Optional: Leerzeichen trimmen und doppelte Unterstriche bereinigen
+		sanitized = sanitized.trim().replaceAll("_+", "_");
+
+		// .md-Endung anhängen, falls nicht vorhanden
+		if (!sanitized.toLowerCase().endsWith(".md")) {
+			sanitized += ".md";
+		}
+
+		return sanitized;
 	}
 }

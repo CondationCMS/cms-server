@@ -25,7 +25,7 @@ import { addSection, getContentNode } from '../../js/modules/rpc/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js'
 import Handlebars from '../../js/libs/handlebars.min.js';
 import { i18n } from '../../js/modules/localization.js'
-import { getSectionTemplates } from '../../js/modules/ui-helpers.js';
+import { getSectionTemplates } from '../../js/modules/rpc/rpc-manager.js';
 
 export async function runAction(params) {
 
@@ -46,10 +46,14 @@ export async function runAction(params) {
 		</select>
 		`);
 
+		var sectionsResponse = await getSectionTemplates({
+			section: params.sectionName
+		});
+
 	openModal({
 		title: i18n.t("addsection.titles.modal", 'Add section'),
 		body: template({ 
-			templates: getSectionTemplates(params.sectionName),
+			templates: sectionsResponse.result,
 			
 		}),
 		fullscreen: false,

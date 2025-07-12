@@ -35,7 +35,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
-import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.modules.ui.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import com.google.common.base.Strings;
 import java.nio.file.Path;
@@ -59,6 +59,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
+			name = PathUtil.toValidMarkdownFilename(name);
 			var contentBase = db.getReadOnlyFileSystem().contentBase();
 
 			if (Strings.isNullOrEmpty(name)) {

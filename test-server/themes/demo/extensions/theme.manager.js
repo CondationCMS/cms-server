@@ -1,9 +1,19 @@
 import { $hooks } from 'system/hooks.mjs';
 
-$hooks.registerAction("manager/contentTypes/register", (context) => {
-	context.arguments().get("contentTypes").put(
-			"component",
-			(params) => `<div style="color: ${params.color}">${params.message}</div>`
-	)
-	return null;
+$hooks.registerFilter("manager/contentTypes/register", (context) => {
+	var contentTypes = context.value();
+	contentTypes.registerPageTemplate({
+		name: "StartPage",
+		template: "start.html"
+	});
+	contentTypes.registerPageTemplate({
+		name: "Default",
+		template: "default.html"
+	});
+	contentTypes.registerSectionTemplate({
+		section: "asection",
+		name: "SectionTemplate",
+		template: "section.html"
+	});
+	return contentTypes;
 })

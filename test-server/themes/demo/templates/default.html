@@ -1,0 +1,122 @@
+<!DOCTYPE html SYSTEM>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		{% include "libs/fragments.html" %}
+		
+		{% if PREVIEW_MODE %}
+		<script type="text/javascript">
+			window.cmsUIInfo = {
+				pageTemplates : [
+					{
+						name: "StartPage",
+						template: "start.html"
+					},
+					{
+						name: "Imprint",
+						template: "imprint.html"
+					}
+				],
+				sectionTemplates : {
+					asection : [
+						{
+							name : "SectionTemplate",
+							template: "section.html"
+						}
+					]
+				},
+				metaForm : [
+					{
+						type: 'divider',
+						name: 'divider',
+						title: 'Custom attributes',
+					},
+					{
+						type: "media",
+						name: "media_url",
+						title: "Media"
+					},
+					{
+						type: 'color',
+						name: 'background_color',
+						title: 'Background Color'
+					},
+					{
+						type: "range",
+						name: "range_test",
+						title: "RangField"
+					},
+					{
+						type: "radio",
+						name: "choose_color",
+						title: "Farbe wählen",
+						options: {
+							choices: [
+								{ label: "Rot", value: "red" },
+								{ label: "Grün", value: "green" },
+								{ label: "Blau", value: "blue" }
+							]
+						}
+					},
+					{
+						name: "features",
+						title: "Funktionen auswählen",
+						type: "checkbox",
+						options : {
+							choices: [
+								{ label: "Suche", value: "search" },
+								{ label: "Filter", value: "filter" },
+								{ label: "Export", value: "export" }
+							]
+						}
+					}
+				]
+			}
+		</script>
+		{% endif %}
+	</head>
+
+	<body class="centered">
+
+		<div id="content" 
+			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+		>
+			<div class="container">
+				{{ node.content | raw }}
+			</div>
+			<div>
+				<div class="container" {{ ui.editMeta("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					{{ node.meta.get('count') }}
+				</div>
+				<div>
+					{[ component color="red" message="its a component" ]}
+					{[ endcomponent ]}
+				</div>
+			</div>
+			<hr />
+		</div>
+		<div class="container sections" 
+			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
+			>
+			{% if sections.containsKey('asection') %}
+				{% for section in sections.get('asection') %}
+					{{ section.content() | raw }}
+				{% endfor %}
+			{% endif %}
+
+		</div>
+
+	</body>
+
+
+</html>

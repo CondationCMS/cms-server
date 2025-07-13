@@ -28,17 +28,36 @@ Handlebars.registerHelper('concat', function (...args) {
   return args.join('');
 });
 
+Handlebars.registerPartial('fileBrowserContentActions', `
+	<div class="dropdown">
+		<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+			Create
+		</button>
+		<ul class="dropdown-menu">
+			{{#each pageTemplates}}
+				<li><a class="dropdown-item" data-cms-filbrowser-ct-action="create" href="#" template="{{template}}">{{name}}</a></li>
+			{{/each}}
+		</ul>
+	</div>
+`);
+
 const template = Handlebars.compile(`
 	<div>
-		<div class="dropdown">
-			<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-				Actions
-			</button>
-			<ul class="dropdown-menu">
-				{{#each actions}}
-					<li><a class="dropdown-item" href="#" id="{{id}}">{{name}}</a></li>
-				{{/each}}
-			</ul>
+		<div class="d-flex gap-3">
+			<div class="dropdown">
+				<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+					Actions
+				</button>
+				<ul class="dropdown-menu">
+					{{#each actions}}
+						<li><a class="dropdown-item" href="#" id="{{id}}">{{name}}</a></li>
+					{{/each}}
+				</ul>
+			</div>
+
+			{{#unless isPublished}}
+				{{> fileBrowserContentActions pageTemplates=pageContentTypes }} 
+			{{/unless}}
 		</div>
 	<table class="table table-hover">
 		<thead>

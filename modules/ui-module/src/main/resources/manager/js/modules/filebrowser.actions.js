@@ -87,7 +87,7 @@ export async function deleteElementAction({ elementName, state, deleteFN, getTar
 		showToast({
 			title: 'Element deleted',
 			message: "Element deleted",
-			type: 'info', // optional: info | success | warning | error
+			type: 'success', // optional: info | success | warning | error
 			timeout: 3000
 		});
 	}
@@ -114,9 +114,9 @@ export async function createFolderAction({ state, getTargetFolder }) {
 			});
 		} else {
 			showToast({
-				title: i18n.t("filebrowser.createFolder.error.title", 'Folder created'),
+				title: i18n.t("filebrowser.createFolder.success.title", 'Folder created'),
 				message: i18n.t("filebrowser.createFolder.success.message", "Folder created successfully"),
-				type: 'info', // optional: info | success | warning | error
+				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});
 		}
@@ -146,7 +146,7 @@ export async function createFileAction({ state, getTargetFolder }) {
 			showToast({
 				title: i18n.t("filebrowser.createFile.success.title", 'File created'),
 				message: i18n.t("filebrowser.createFile.success.message", "File created successfully"),
-				type: 'info', // optional: info | success | warning | error
+				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});
 		}
@@ -192,7 +192,44 @@ export async function createPageAction({ getTargetFolder }) {
 				showToast({
 					title: i18n.t("filebrowser.createPage.success.title", 'Page created'),
 					message: i18n.t("filebrowser.createPage.success.message", 'Page successfuly created'),
-					type: 'info', // optional: info | success | warning | error
+					type: 'success', // optional: info | success | warning | error
+					timeout: 3000
+				});
+			}
+		}
+	}
+}
+
+export async function createPageActionFromTemplate({ getTargetFolder, selectedTemplate }) {
+	const pageName = await alertPrompt({
+		title: i18n.t("filebrowser.createPage.title", "Create new page"),
+		label: i18n.t("filebrowser.createPage.label", "Page name"),
+		placeholder: i18n.t("filebrowser.createPage.placeholder", "New Page")
+	});
+	const pageResponse = await getPageTemplates();
+	if (pageName) {
+		if (selectedTemplate) {
+			let response = await createPage({
+				uri: getTargetFolder(),
+				name: pageName,
+				meta: {
+					title: "New of: " + selectedTemplate,
+					template: selectedTemplate,
+					published: false
+				}
+			});
+			if (response.error) {
+				showToast({
+					title: i18n.t("filebrowser.createPage.error.title", 'Error creating page'),
+					message: response.error.message,
+					type: 'error', // optional: info | success | warning | error
+					timeout: 3000
+				});
+			} else {
+				showToast({
+					title: i18n.t("filebrowser.createPage.success.title", 'Page created'),
+					message: i18n.t("filebrowser.createPage.success.message", 'Page successfuly created'),
+					type: 'success', // optional: info | success | warning | error
 					timeout: 3000
 				});
 			}

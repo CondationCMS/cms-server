@@ -59,7 +59,6 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
-			name = PathUtil.toValidMarkdownFilename(name);
 			var contentBase = db.getReadOnlyFileSystem().contentBase();
 
 			if (Strings.isNullOrEmpty(name)) {
@@ -96,6 +95,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
+			name = PathUtil.toValidMarkdownFilename(name);
 			var metaParam = (Map<String, Object>) parameters.getOrDefault("meta", Map.of());
 			var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 			

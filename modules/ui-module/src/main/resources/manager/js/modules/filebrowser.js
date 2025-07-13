@@ -26,10 +26,11 @@ import { openModal } from './modal.js'
 import { loadPreview } from './preview.utils.js'
 import { i18n } from './localization.js';
 
-import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction } from './filebrowser.actions.js'
+import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction, createPageActionFromTemplate } from './filebrowser.actions.js'
 import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
 import { EventBus } from './event-bus.js';
 import { filebrowserTemplate } from './filebrowser.template.js';
+import { getPageTemplates } from './rpc/rpc-manager.js';
 
 const defaultOptions = {
 	validate: () => true,
@@ -86,7 +87,8 @@ const initFileBrowser = async (uri) => {
 			filenameHeader: i18n.t("filebrowser.filename", "Filename"),
 			actionHeader: i18n.t("filebrowser.action", "Action"),
 			actions: getActions(),
-			asset: state.options.type === "assets"
+			asset: state.options.type === "assets",
+			pageContentTypes : (await getPageTemplates()).result
 		});
 		makeDirectoriesClickable();
 		if (state.options.onSelect) {
@@ -133,12 +135,14 @@ const enableRowSelection = () => {
 const getActions = () => {
 	const actions = []
 
+	/*
 	if (state.options.type === "content") {
 		actions.push({
 			id: "cms-filebrowser-action-createPage",
 			name: i18n.t("filebrowser.create.page", "Create page")
 		})
 	}
+	*/
 	/*
 	actions.push({
 		id: "cms-filebrowser-action-createFile",
@@ -250,6 +254,21 @@ const fileActions = () => {
 			await handleFileUpload();
 		});
 	}
+
+	document.querySelectorAll("[data-cms-filbrowser-ct-action='create']").forEach((element) => {
+		element.addEventListener("click", async (event) => {
+			event.preventDefault();
+			const template = element.getAttribute("template");
+			if (template) {
+				createPageActionFromTemplate({
+					getTargetFolder: getTargetFolder,
+					selectedTemplate: template
+				}).then(async () => {
+					await initFileBrowser(state.currentFolder);
+				});
+			}
+		});
+	});
 
 };
 

@@ -28,6 +28,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.cli.tools.CLIServerUtils;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.cli.tools.ThemesUtil;
 import com.condation.cms.git.RepositoryManager;
@@ -53,6 +54,12 @@ public class Startup implements Runnable {
 	public void run() {
 		try {
 			
+			var cmsProcess = CLIServerUtils.getCMSProcess();
+			if (cmsProcess.isPresent()) {
+				System.err.println("cms server is running, please stop it firste");
+				System.exit(10);
+			}
+			
 			System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
 			System.setProperty("polyglotimpl.DisableClassPathIsolation", "true");
 			//System.setProperty("polyglot.engine.WarnVirtualThreadSupport", "false");
@@ -75,7 +82,7 @@ public class Startup implements Runnable {
 			ipcServer.start();
 
 			server.startup();
-			writePidFile();
+			CLIServerUtils.writePidFile();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -107,12 +114,6 @@ public class Startup implements Runnable {
 		} else {
 			log.trace("all required modules are intalled");
 		}
-	}
-	
-	
-	private static void writePidFile () throws IOException {
-		Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
-		Files.writeString(ServerUtil.getPath(Constants.PID_FILE), String.valueOf(ProcessHandle.current().pid()));
 	}
 
 

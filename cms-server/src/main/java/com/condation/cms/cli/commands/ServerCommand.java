@@ -24,6 +24,7 @@ package com.condation.cms.cli.commands;
 
 
 import com.condation.cms.cli.commands.server.AddUser;
+import com.condation.cms.cli.commands.server.Info;
 import com.condation.cms.cli.commands.server.RemoveUser;
 import com.condation.cms.cli.commands.server.Startup;
 import com.condation.cms.cli.commands.server.Stop;
@@ -35,7 +36,7 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @CommandLine.Command(name = "server", subcommands = {
-	Startup.class, AddUser.class, RemoveUser.class, Stop.class, HostCommands.class, ExtensionCommands.class, ModuleCommands.class, ThemeCommands.class})
+	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Info.class})
 @Slf4j
 public class ServerCommand implements Runnable {
 

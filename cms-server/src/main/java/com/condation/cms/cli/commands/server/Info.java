@@ -24,17 +24,7 @@ package com.condation.cms.cli.commands.server;
 
 
 
-import com.condation.cms.api.Constants;
-import com.condation.cms.api.ServerProperties;
-import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.cli.tools.CLIServerUtils;
-import com.condation.cms.core.configuration.ConfigurationFactory;
-import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
-import com.condation.cms.ipc.Command;
-import com.condation.cms.ipc.IPCClient;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -42,34 +32,24 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "stop")
+@CommandLine.Command(name = "info")
 @Slf4j
-public class Stop implements Runnable {
+public class Info implements Runnable {
 
 	@Override
 	public void run() {
 		try {
+			var info = new StringBuilder();
 			
-			Optional<ProcessHandle> handle = CLIServerUtils.getCMSProcess();
+			info.append("Info about CMS-Server").append(System.lineSeparator());
+			info.append("=====================").append(System.lineSeparator());
+			info.append("Version: ").append(CLIServerUtils.getVersion().toString()).append(System.lineSeparator());
+			info.append("Running: ").append(CLIServerUtils.getCMSProcess().isPresent()).append(System.lineSeparator());
 			
-			if (handle.isEmpty()) {
-				System.out.println("can not find cms process");
-			} else {
-				ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
-				IPCClient ipcClient = new IPCClient(properties.ipc());
-				
-				ipcClient.send(new Command("shutdown"));
-				
-				Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
-			}
-			
+			System.out.println(info.toString());
 			
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-
-
-	
 }

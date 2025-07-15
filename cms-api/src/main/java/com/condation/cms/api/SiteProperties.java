@@ -70,4 +70,6 @@ public interface SiteProperties {
 	public boolean uiManagerEnabled ();
 	
 	public boolean force2fa();
+	
+	public boolean backupEnabled ();
 }

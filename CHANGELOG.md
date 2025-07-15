@@ -25,6 +25,7 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Add spa mode for sites [476](https://github.com/CondationCMS/cms-server/issues/476)
 * **FEATURE** Custom repository urls for modules, extensions and themes [466](https://github.com/CondationCMS/cms-server/issues/466)
 * **FEATURE** UI to manage content [PR-446](https://github.com/CondationCMS/cms-server/pull/446)
+* **FEATURE** Simple solution for backups [492](https://github.com/CondationCMS/cms-server/pull/492)
 
 ### Developer experience
 

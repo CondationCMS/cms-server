@@ -17,3 +17,8 @@ Hello <username>,
 
 your login code: <code>
 '''
+
+[backup]
+enabled = true
+cron = "0 * * ? * *"
+target = "/Users/thorstenmarx/entwicklung/backups"

@@ -1,4 +1,4 @@
-package com.condation.cms.server;
+package com.condation.cms.server.host;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -62,6 +62,7 @@ import com.condation.cms.media.MediaManager;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.media.ThemeMediaManager;
 import com.condation.cms.request.RequestContextFactory;
+import com.condation.cms.server.FileFolderPathResource;
 import com.condation.cms.server.configs.ModulesModule;
 import com.condation.cms.server.configs.SiteConfigInitializer;
 import com.condation.cms.server.configs.SiteGlobalModule;
@@ -192,6 +193,9 @@ public class VHost {
 			injector.getInstance(TemplateEngine.class).invalidateCache();
 		});
 
+		Initializer initializer = new Initializer(this);
+		initializer.initBackup();
+		
 		initSiteGlobals();
 	}
 
@@ -211,7 +215,7 @@ public class VHost {
 				injector.getInstance(Theme.class)
 		);
 	}
-
+	
 	public Handler buildHttpHandler() {
 
 		Handler contentHandler = null;

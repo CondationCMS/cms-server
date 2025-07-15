@@ -21,6 +21,7 @@ package com.condation.cms.server;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.server.host.VHost;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.eventbus.Event;
@@ -100,7 +101,7 @@ public class JettyServer implements AutoCloseable {
 				host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
 				vhosts.add(host);
 				
-				globalInjector.getInstance(SiteService.class).add(new Site(host.injector));
+				globalInjector.getInstance(SiteService.class).add(new Site(host.getInjector()));
 			} catch (IOException ex) {
 				log.error(null, ex);
 			}

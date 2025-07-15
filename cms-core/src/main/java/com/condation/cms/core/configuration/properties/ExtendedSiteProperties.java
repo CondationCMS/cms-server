@@ -153,4 +153,9 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public boolean force2fa() {
 		return configuration.getBoolean("ui.force2fa", false);
 	}
+	
+	@Override
+	public boolean backupEnabled() {
+		return configuration.getBoolean("backup.enabled", false);
+	}
 }

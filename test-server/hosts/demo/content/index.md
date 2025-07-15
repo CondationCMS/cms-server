@@ -14,8 +14,6 @@ choose_color: green
 unpublish_date: null
 publish_date: null
 features:
-- search
-- filter
 - export
 checked:
 - farbe

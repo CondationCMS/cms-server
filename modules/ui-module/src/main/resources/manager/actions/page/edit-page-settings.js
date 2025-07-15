@@ -24,8 +24,8 @@ import { createForm } from '../../js/modules/form/forms.js'
 import { showToast } from '../../js/modules/toast.js'
 import { getContentNode, setMeta, getContent } from '../../js/modules/rpc/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js'
-import { getMetaForm } from '../../js/modules/ui-helpers.js'
 import { i18n } from '../../js/modules/localization.js'
+import { getPageTemplates } from '../../js/modules/rpc/rpc-manager.js'
 
 const DEFAULT_FIELDS = [
 	{ 
@@ -66,18 +66,28 @@ export async function runAction(params) {
 		uri: contentNode.result.uri
 	})
 
-	const previewMetaForm = getMetaForm()
+	var pageTemplates = (await getPageTemplates()).result
+
+	var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
+
+	var pageMetaForm = []
+	if (selected.length === 1) {
+		pageMetaForm = selected[0].data?.forms?.meta ? selected[0].data.forms.meta : []
+	}
+
+	//const previewMetaForm = getMetaForm()
 	const fields = [
 		...DEFAULT_FIELDS,
-		...previewMetaForm
+		...pageMetaForm
 	]
 	
+
 	const values = {
 		'title': getContentResponse?.result?.meta?.title,
 		'published': getContentResponse?.result?.meta?.published,
 		'publish_date': getContentResponse?.result?.meta?.publish_date,
 		'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-		...buildValuesFromFields(previewMetaForm, getContentResponse?.result?.meta)
+		...buildValuesFromFields(pageMetaForm, getContentResponse?.result?.meta)
 	}
 
 	const form = createForm({

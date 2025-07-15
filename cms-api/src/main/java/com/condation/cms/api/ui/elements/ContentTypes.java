@@ -1,5 +1,6 @@
 package com.condation.cms.api.ui.elements;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,11 @@ public class ContentTypes {
 					(String) data.getOrDefault("name", "<no name>"),
 					(String) data.getOrDefault("template", "<no template>"),
 					data);
+		}
+		
+		public Map<String, Object> getForm (String name) {
+			var forms = (Map<String, Object>)data.getOrDefault("forms", Collections.emptyMap());
+			return (Map<String, Object>)forms.getOrDefault(name, Collections.emptyMap());
 		}
 	}
 

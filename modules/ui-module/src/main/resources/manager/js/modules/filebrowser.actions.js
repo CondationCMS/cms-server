@@ -206,7 +206,7 @@ export async function createPageActionFromTemplate({ getTargetFolder, selectedTe
 		label: i18n.t("filebrowser.createPage.label", "Page name"),
 		placeholder: i18n.t("filebrowser.createPage.placeholder", "New Page")
 	});
-	const pageResponse = await getPageTemplates();
+	
 	if (pageName) {
 		if (selectedTemplate) {
 			let response = await createPage({

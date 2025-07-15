@@ -103,16 +103,21 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 	public boolean isDraft() {
 		return !((boolean) data().getOrDefault(Constants.MetaFields.PUBLISHED, true));
 	}
+	
+	public boolean isParentPathHidden () {
+		return uri().startsWith(".") || uri().contains("/.");
+	}
 
-	public boolean isPublished() {
+	public boolean isVisible() {
 		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null
 				&& ThreadLocalRequestContext.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
 			return true;
 		}
-
+		
 		if (isDraft()) {
 			return false;
 		}
+		
 		var publish_date = (Date) data.getOrDefault(Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now()));
 		
 		var unpublish_date = (Date) data.getOrDefault(Constants.MetaFields.UNPUBLISH_DATE, null);

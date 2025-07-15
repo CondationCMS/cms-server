@@ -72,12 +72,16 @@ public abstract class AbstractMetaData implements MetaData {
 	}
 	
 	public static boolean isVisible (ContentNode node) {
-		return node != null 
-				// check if some parent is hidden
-				&& !node.uri().startsWith(".") && !node.uri().contains("/.")
-				&& node.isPublished() 
-				&& !node.isHidden() 
-				&& !node.isSection();
+		
+		if (node == null || node.isSection()) {
+			return false;
+		}
+		
+		if (node.isParentPathHidden()) {
+			return false;
+		}
+		
+		return node.isVisible() && !node.isHidden();
 	}
 	
 	@Override

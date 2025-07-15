@@ -40,7 +40,7 @@ public class ContentNodeTest {
 	@Test
 	public void test_publish() {
 		var contentNode = new ContentNode("", "", Map.of());
-		Assertions.assertThat(contentNode.isPublished()).isTrue();
+		Assertions.assertThat(contentNode.isVisible()).isTrue();
 	}
 	
 	@Test
@@ -50,7 +50,7 @@ public class ContentNodeTest {
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime()
 		));
-		Assertions.assertThat(contentNode.isPublished()).isTrue();
+		Assertions.assertThat(contentNode.isVisible()).isTrue();
 	}
 	
 	@Test
@@ -60,7 +60,7 @@ public class ContentNodeTest {
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime()
 		));
-		Assertions.assertThat(contentNode.isPublished()).isFalse();
+		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}
 	
 	@Test
@@ -70,7 +70,7 @@ public class ContentNodeTest {
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime()
 		));
-		Assertions.assertThat(contentNode.isPublished()).isFalse();
+		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}
 	
 	@Test
@@ -80,6 +80,6 @@ public class ContentNodeTest {
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime()
 		));
-		Assertions.assertThat(contentNode.isPublished()).isTrue();
+		Assertions.assertThat(contentNode.isVisible()).isTrue();
 	}
 }

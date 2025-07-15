@@ -233,7 +233,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			metaData.getTree().values()
 					.stream()
 					.filter(node -> !node.isHidden())
-					.filter(node -> node.isPublished())
+					.filter(node -> node.isVisible())
 					.filter(node -> node.isSection())
 					.filter(node -> {
 						return isSectionOf.matcher(node.name()).matches() || isNamedSectionOf.matcher(node.name()).matches();
@@ -247,7 +247,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 				findFolder.get().children().values()
 						.stream()
 						.filter(node -> !node.isHidden())
-						.filter(node -> node.isPublished())
+						.filter(node -> node.isVisible())
 						.filter(node -> node.isSection())
 						.filter(node
 								-> isSectionOf.matcher(node.name()).matches() || isNamedSectionOf.matcher(node.name()).matches()

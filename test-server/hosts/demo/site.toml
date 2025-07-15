@@ -20,5 +20,5 @@ your login code: <code>
 
 [backup]
 enabled = true
-cron = "0 * * ? * *"
+cron = "0 0 2 * * ?"
 target = "/Users/thorstenmarx/entwicklung/backups"

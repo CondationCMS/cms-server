@@ -44,7 +44,7 @@ public abstract class TemplateModelExtendingExtensionPoint extends AbstractExten
 	}
 
 	public String getNamespace () {
-		return Constants.DEFAULT_MODULE_NAMESPACE;
+		return Constants.TemplateNamepsaces.DEFAULT_MODULE_NAMESPACE;
 	}
 
 }

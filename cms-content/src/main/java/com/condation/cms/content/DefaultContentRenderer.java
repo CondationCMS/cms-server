@@ -147,34 +147,34 @@ public class DefaultContentRenderer implements ContentRenderer {
 		model.values.put("meta", new MapAccess(meta));
 		model.values.put("sections", sections);
 
-		namespace.add(Constants.TemplateNamepsaces.NODE, "meta", new MapAccess(meta));
-		namespace.add(Constants.TemplateNamepsaces.NODE, "sections", sections);
-		namespace.add(Constants.TemplateNamepsaces.NODE, "uri", uri);
+		namespace.add(Constants.TemplateNamespaces.NODE, "meta", new MapAccess(meta));
+		namespace.add(Constants.TemplateNamespaces.NODE, "sections", sections);
+		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
 
 		TagTemplateFunction tagFunction = createTagFunction(context);
 		model.values.put(TagTemplateFunction.KEY, tagFunction);
-		namespace.add(Constants.TemplateNamepsaces.CMS, TagTemplateFunction.KEY, tagFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
 		model.values.put("navigation", navigationFunction);
-		namespace.add(Constants.TemplateNamepsaces.CMS, "navigation", navigationFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "navigation", navigationFunction);
 		
 		NodeListFunctionBuilder nodeListFunction = createNodeListFunction(contentFile, context);
 		model.values.put("nodeList", nodeListFunction);
-		namespace.add(Constants.TemplateNamepsaces.CMS, "nodeList", nodeListFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "nodeList", nodeListFunction);
 		
 		QueryFunction queryFunction = createQueryFunction(contentFile, context);
 		model.values.put("query", queryFunction);
-		namespace.add(Constants.TemplateNamepsaces.CMS, "query", queryFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "query", queryFunction);
 		
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
 		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
-		namespace.add(Constants.TemplateNamepsaces.CMS, "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
+		namespace.add(Constants.TemplateNamespaces.CMS, "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 
 		model.values.put("taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
-		namespace.add(Constants.TemplateNamepsaces.CMS, "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
+		namespace.add(Constants.TemplateNamespaces.CMS, "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
 		var theme = context.get(RenderContext.class).theme();
 		if (theme.empty()) {
@@ -184,10 +184,10 @@ public class DefaultContentRenderer implements ContentRenderer {
 		}
 		
 		model.values.put("hooks", context.get(HookSystemFeature.class).hookSystem());
-		namespace.add(Constants.TemplateNamepsaces.CMS, "hooks", context.get(HookSystemFeature.class).hookSystem());
+		namespace.add(Constants.TemplateNamespaces.CMS, "hooks", context.get(HookSystemFeature.class).hookSystem());
 
 		model.values.put("links", new LinkFunction(context));
-		namespace.add(Constants.TemplateNamepsaces.CMS, "links", new LinkFunction(context));
+		namespace.add(Constants.TemplateNamespaces.CMS, "links", new LinkFunction(context));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
 		model.values.put("DEV_MODE", isDevMode(context));
@@ -199,11 +199,11 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		context.get(TemplateHooks.class).getTemplateSupplier().getRegisterTemplateSupplier().forEach(service -> {
 			model.values.put(service.name(), service.supplier());
-			namespace.add(Constants.TemplateNamepsaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
+			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
 		});
 		context.get(TemplateHooks.class).getTemplateFunctions().getRegisterTemplateFunctions().forEach(service -> {
 			model.values.put(service.name(), service.function());
-			namespace.add(Constants.TemplateNamepsaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.function());
+			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.function());
 		});
 
 		extendModel(model, namespace);
@@ -213,7 +213,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		
 		String content = renderContent(rawContent, context, modelCopy);
 		model.values.put("content", content);
-		namespace.add(Constants.TemplateNamepsaces.NODE, "content", content);
+		namespace.add(Constants.TemplateNamespaces.NODE, "content", content);
 		
 		model.values.putAll(namespace.getNamespaces());
 

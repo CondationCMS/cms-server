@@ -2,7 +2,7 @@
 template: section.html
 description: test23
 layout:
-  order: 3
+  order: 0
 ---
 
 das ist der inhalt

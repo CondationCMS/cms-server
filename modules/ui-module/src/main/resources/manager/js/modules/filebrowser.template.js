@@ -31,7 +31,7 @@ Handlebars.registerHelper('concat', function (...args) {
 Handlebars.registerPartial('fileBrowserContentActions', `
 	<div class="dropdown">
 		<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-			Create
+			Create Content
 		</button>
 		<ul class="dropdown-menu">
 			{{#each pageTemplates}}
@@ -55,7 +55,7 @@ const template = Handlebars.compile(`
 				</ul>
 			</div>
 
-			{{#unless isPublished}}
+			{{#unless asset}}
 				{{> fileBrowserContentActions pageTemplates=pageContentTypes }} 
 			{{/unless}}
 		</div>

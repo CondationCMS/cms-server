@@ -33,3 +33,8 @@ Hello world!test
 [[theme_name /]]
 
 [about](/about)
+
+
+```java
+System.out.println("Hello world!");
+```

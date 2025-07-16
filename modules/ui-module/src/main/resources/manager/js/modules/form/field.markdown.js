@@ -74,6 +74,7 @@ const init = () => {
 					'header',
 					'|',
 					'list',
+					'code'
 				],
 				bubble: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'], // array or false
     			float: ['h1', 'h2', 'h3', '|', 'checklist', 'table', 'code']

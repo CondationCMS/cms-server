@@ -193,8 +193,8 @@ public class VHost {
 			injector.getInstance(TemplateEngine.class).invalidateCache();
 		});
 
-		Initializer initializer = new Initializer(this);
-		initializer.initBackup();
+		//Initializer initializer = new Initializer(this);
+		//initializer.initBackup();
 		
 		initSiteGlobals();
 	}

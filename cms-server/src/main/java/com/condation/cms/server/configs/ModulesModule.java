@@ -22,6 +22,7 @@ package com.condation.cms.server.configs;
  * #L%
  */
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
 import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
@@ -75,6 +76,7 @@ public class ModulesModule extends AbstractModule {
 						"org.graalvm.js",
 						"org.eclipse.jetty",
 						"jakarta.servlet",
+						"com.google",
 						"org.w3c"
 				));
 		var moduleManager = ModuleManagerImpl.builder()
@@ -112,7 +114,6 @@ public class ModulesModule extends AbstractModule {
 	 *
 	 * @param siteProperties
 	 * @param moduleManager
-	 * @param defaultMarkdownRenderer
 	 * @return
 	 */
 	@Provides
@@ -164,11 +165,19 @@ public class ModulesModule extends AbstractModule {
 	/**
 	 * new HookSystem for each request
 	 *
+	 * @param moduleManager
 	 * @return
 	 */
 	@Provides
-	public HookSystem hookSystem() {
+	public HookSystem hookSystem(final ModuleManager moduleManager) {
 		var hookSystem = new HookSystem();
+		
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			
+			hookSystem.register(extensionPoint);
+		});
+		
 		return hookSystem;
 	}
 }

@@ -136,7 +136,7 @@ public class RequestContextFactory {
 		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
 		var extensionManager = injector.getInstance(ExtensionManager.class);
 		
-		initHookSystem(requestContext);
+//		initHookSystem(requestContext);
 
 		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
 
@@ -149,16 +149,6 @@ public class RequestContextFactory {
 		requestContext.add(RequestExtensions.class, requestExtensions);
 	}
 	
-	private void initHookSystem(RequestContext requestContext) {
-		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
-		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
-			extensionPoint.register(hookSystem);
-			
-			hookSystem.register(extensionPoint);
-		});
-	}
-	
 	/**
 	 * Has to run as one of the last steps, because we need the requestContext
 	 * to be filled
@@ -166,18 +156,6 @@ public class RequestContextFactory {
 	 * @param requestContext
 	 * @return
 	 */
-	private HookSystem setupAndGetHookSystem() {
-		var hookSystem = injector.getInstance(HookSystem.class);
-		var moduleManager = injector.getInstance(ModuleManager.class);
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
-			extensionPoint.register(hookSystem);
-			
-			hookSystem.register(extensionPoint);
-		});
-
-		return hookSystem;
-	}
-
 	private Tags initContentTags(RequestContext requestContext) {
 		var parser = injector.getInstance(TagParser.class);
 
@@ -228,7 +206,7 @@ public class RequestContextFactory {
 		requestContext.add(DBHooks.class, new DBHooks(requestContext));
 		requestContext.add(ContentHooks.class, new ContentHooks(requestContext));
 
-		requestContext.add(HookSystemFeature.class, new HookSystemFeature(setupAndGetHookSystem()));
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(injector.getInstance(HookSystem.class)));
 
 		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
 

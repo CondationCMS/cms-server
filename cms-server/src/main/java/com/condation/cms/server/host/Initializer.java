@@ -24,8 +24,10 @@ package com.condation.cms.server.host;
 
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.extensions.BackupFilePostProcessingExtensionPoint;
 import com.condation.cms.core.backup.BackupUtil;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
+import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -74,8 +76,7 @@ public class Initializer {
 		var targetPath = Path.of(target);
 		Files.createDirectories(targetPath);
 		
-		scheduler.schedule(
-				cron, 
+		scheduler.schedule(cron, 
 				"backup-job-%s".formatted(siteProperties.id()), 
 				(context) -> {
 					try {
@@ -83,8 +84,13 @@ public class Initializer {
 						log.debug("start backup at {}", timestamp);
 						var sitePath = host.getInjector().getInstance(DB.class).getFileSystem().hostBase();					
 						var backupFilename = "%s-%s.tar.gz".formatted(siteProperties.id(), timestamp);
+						final Path targetFile = targetPath.resolve(backupFilename);
 						
-						BackupUtil.createTarGzBackup(sitePath, targetPath.resolve(backupFilename));
+						BackupUtil.createTarGzBackup(sitePath, targetFile);
+						
+						var moduleManager = host.getInjector().getInstance(ModuleManager.class);
+						moduleManager.extensions(BackupFilePostProcessingExtensionPoint.class)
+								.forEach(extension -> extension.postProcess(targetFile));
 					} catch (Exception e) {
 						log.error("error creating backup", e);
 					}

@@ -130,9 +130,4 @@ public class TestSiteProperties implements SiteProperties {
 		return (boolean) values.getOrDefault("ui.force2fa", false);
 	}
 
-	@Override
-	public boolean backupEnabled() {
-		return false;
-	}
-
 }

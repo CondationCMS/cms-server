@@ -1,6 +1,15 @@
+package com.condation.cms.api.ui.elements;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 /*-
  * #%L
- * ui-module
+ * cms-api
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -19,31 +28,25 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+/**
+ *
+ * @author thmar
+ */
+public class MediaForms {
 
-import { executeRemoteCall } from './rpc.js'
+	public Map<String, MetaForm> metaForms = new HashMap<>();
 
-const getSectionTemplates = async (options) => {
-	var data = {
-		method: "manager.contentTypes.sections",
-		parameters: options
+
+	public void registerForm(String name, Map<String, Object> metaForm) {
+		metaForms.put(name, new MetaForm(name, metaForm));
 	}
-	return await executeRemoteCall(data);
-};
 
-const getPageTemplates = async (options) => {
-	var data = {
-		method: "manager.contentTypes.pages",
-		parameters: options
+	
+	
+	public Map<String, MetaForm> getMetaForms () {
+		return new HashMap<>(metaForms);
 	}
-	return await executeRemoteCall(data);
-};
 
-const getMediaForm = async (options) => {
-	var data = {
-		method: "manager.media.form",
-		parameters: options
+	public static record MetaForm(String name, Map<String, Object> form) {	
 	}
-	return await executeRemoteCall(data);
-};
-
-export { getSectionTemplates, getPageTemplates, getMediaForm };
+}

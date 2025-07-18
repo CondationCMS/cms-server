@@ -23,6 +23,8 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
 import java.util.regex.Matcher;
@@ -53,9 +55,7 @@ public class ImageInlineRule implements InlineElementRule {
 			if (title != null && !"".equals(title.trim())) {
 				return "<img src=\"%s\" alt=\"%s\" title=\"%s\" />".formatted(src, alt, title);
 			}
-			return "<img src=\"%s\" alt=\"%s\" />".formatted(src, alt);
+			return  "<img src=\"%s\" alt=\"%s\" />".formatted(src, alt);
 		}
-		
 	}
-	
 }

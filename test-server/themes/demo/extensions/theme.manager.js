@@ -1,5 +1,19 @@
 import { $hooks } from 'system/hooks.mjs';
 
+$hooks.registerFilter("manager/media/forms", (context) => {
+	var mediaForms = context.value();
+	mediaForms.registerForm("meta", {
+		fields: [
+			{
+				type: "text",
+				name: "alt",
+				title: "Alt-Text"
+			}
+		]
+	});
+	return mediaForms;
+})
+
 $hooks.registerFilter("manager/contentTypes/register", (context) => {
 	var contentTypes = context.value();
 	contentTypes.registerPageTemplate({

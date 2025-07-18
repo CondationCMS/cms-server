@@ -21,12 +21,9 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.db.DB;
-import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
-import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
@@ -41,17 +38,22 @@ import com.condation.cms.modules.ui.utils.UIHooks;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 
+	@RemoteMethod(name = "manager.media.form")
+	public Object getMediaForm(Map<String, Object> parameters) throws RPCException {
+		try {
+			var form = (String) parameters.getOrDefault("form", "");
+			return uiHooks().mediaForms().getMetaForms().get(form);
+		} catch (Exception e) {
+			log.error("", e);
+			throw new RPCException(0, e.getMessage());
+		}
+	}
+	
 	@RemoteMethod(name = "manager.contentTypes.sections")
 	public Object getSectionTemplates(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
-
-		Map<String, Object> result = new HashMap<>();
-
 		try {
 			var section = (String) parameters.getOrDefault("section", "");
-
 			return uiHooks().contentTypes().getSectionTemplates(section);
-
 		} catch (Exception e) {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());
@@ -62,7 +64,6 @@ public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 	public Object getPageTemplates(Map<String, Object> parameters) throws RPCException {
 		try {
 			return uiHooks().contentTypes().getPageTemplates();
-
 		} catch (Exception e) {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());

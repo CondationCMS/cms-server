@@ -1,4 +1,4 @@
-package	com.condation.cms.modules.system;
+package	com.condation.cms.modules.system.tags;
 
 /*-
  * #%L

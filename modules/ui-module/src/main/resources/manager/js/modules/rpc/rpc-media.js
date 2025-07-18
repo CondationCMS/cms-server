@@ -22,28 +22,20 @@
 
 import { executeRemoteCall } from './rpc.js'
 
-const getSectionTemplates = async (options) => {
+const getMediaMetaData = async (options) => {
 	var data = {
-		method: "manager.contentTypes.sections",
+		method: "media.meta.get",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
 };
 
-const getPageTemplates = async (options) => {
+const setMediaMetaData = async (options) => {
 	var data = {
-		method: "manager.contentTypes.pages",
+		method: "media.meta.set",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
 };
 
-const getMediaForm = async (options) => {
-	var data = {
-		method: "manager.media.form",
-		parameters: options
-	}
-	return await executeRemoteCall(data);
-};
-
-export { getSectionTemplates, getPageTemplates, getMediaForm };
+export { getMediaMetaData, setMediaMetaData };

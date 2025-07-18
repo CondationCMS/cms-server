@@ -78,6 +78,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const toolbarContainers = document.querySelectorAll('[data-cms-toolbar]');
 	toolbarContainers.forEach(initToolbar);
+
+	const mediaToolbarContainers = document.querySelectorAll('img');
+	mediaToolbarContainers.forEach(initMediaToolbar);
 });
 
 
@@ -120,6 +123,122 @@ const orderSections = (event) => {
 	frameMessenger.send(window.parent, command);
 }
 
+const initMediaToolbar = (img) => {
+	const toolbar = document.createElement('div');
+	toolbar.className = 'cms-ui-toolbar';
+	
+	toolbar.style.position = 'absolute';
+	toolbar.style.display = 'none';
+	toolbar.style.zIndex = 1000;
+	toolbar.style.background = 'rgba(0,0,0,0.6)';
+	toolbar.style.color = '#fff';
+	toolbar.style.padding = '4px';
+	toolbar.style.borderRadius = '4px';
+
+	const button = document.createElement('button');
+	button.setAttribute('data-cms-action', 'editMediaForm');
+	button.setAttribute('data-cms-media-form', 'meta');
+	button.innerHTML = EDIT_ATTRIBUTES_ICON;
+	button.setAttribute("title", "Edit attributes");
+	button.addEventListener('click', (event) => {
+		editMediaForm(event, "meta", img.src);
+	});
+	toolbar.appendChild(button);
+
+	document.body.appendChild(toolbar);
+
+	const positionToolbar = () => {
+		const rect = img.getBoundingClientRect();
+		toolbar.style.top = `${window.scrollY + rect.top}px`;
+		toolbar.style.left = `${window.scrollX + rect.left}px`;
+	};
+
+	img.addEventListener('mouseenter', () => {
+		positionToolbar();
+		toolbar.style.display = 'block';
+	});
+
+	img.addEventListener('mouseleave', (event) => {
+		// nur ausblenden, wenn die Maus nicht gerade über der Toolbar ist
+		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
+			toolbar.style.display = 'none';
+		}
+	});
+
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || event.relatedTarget !== img) {
+			toolbar.style.display = 'none';
+		}
+	});
+
+	window.addEventListener('scroll', () => {
+		if (toolbar.style.display === 'block') positionToolbar();
+	});
+	window.addEventListener('resize', () => {
+		if (toolbar.style.display === 'block') positionToolbar();
+	});
+};
+
+
+const initMediaToolbar2 = (container) => {
+
+	container.classList.add("cms-ui-editable");
+
+	const toolbar = document.createElement('div');
+	toolbar.classList.add("cms-ui-toolbar");
+	toolbar.addEventListener('mouseover', () => {
+		toolbar.classList.add('visible');
+	});
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
+			toolbar.classList.remove('visible');
+		}
+	});
+
+	// actions
+	const button = document.createElement('button');
+	button.setAttribute('data-cms-action', 'editMediaForm');
+	button.setAttribute('data-cms-media-form', 'meta');
+	button.innerHTML = EDIT_ATTRIBUTES_ICON;
+	button.setAttribute("title", "Edit attributes");
+	button.addEventListener('click', editMediaForm);
+
+	toolbar.appendChild(button);
+
+	// add toolbar
+	document.body.appendChild(toolbar);
+
+	const positionToolbar = () => {
+		const rect = container.getBoundingClientRect();
+		toolbar.style.top = `${window.scrollY + rect.top}px`;
+		toolbar.style.left = `${window.scrollX + rect.left}px`;
+	};
+
+	container.addEventListener('mouseenter', () => {
+		positionToolbar();
+		toolbar.style.display = 'block';
+	});
+
+	container.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
+			toolbar.style.display = 'none';
+		}
+	});
+
+	toolbar.addEventListener('mouseleave', (event) => {
+		if (!event.relatedTarget || event.relatedTarget !== container) {
+			toolbar.style.display = 'none';
+		}
+	});
+
+	window.addEventListener('scroll', () => {
+		if (toolbar.style.display === 'block') positionToolbar();
+	});
+	window.addEventListener('resize', () => {
+		if (toolbar.style.display === 'block') positionToolbar();
+	});
+}
+
 const initToolbar = (container) => {
 
 	var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar)
@@ -131,7 +250,7 @@ const initToolbar = (container) => {
 	} else {
 		container.classList.add("cms-ui-editable");
 	}
-	
+
 	const toolbar = document.createElement('div');
 	toolbar.className = 'cms-ui-toolbar';
 
@@ -144,7 +263,7 @@ const initToolbar = (container) => {
 			toolbar.classList.remove('visible');
 		}
 	});
-	
+
 	toolbarDefinition.actions.forEach(action => {
 		if (action === "editContent") {
 			const button = document.createElement('button');
@@ -183,8 +302,8 @@ const initToolbar = (container) => {
 			button.setAttribute('data-cms-action', 'deleteSection');
 			button.innerHTML = SECTION_DELETE_ICON;
 			button.setAttribute("title", "Delete");
-			button.addEventListener('click', deleteSection);	
-			
+			button.addEventListener('click', deleteSection);
+
 			toolbar.appendChild(button);
 		}
 	})
@@ -255,6 +374,25 @@ const editAttributes = (event) => {
 		}
 	})
 	command.payload.metaElements = elements
+
+	frameMessenger.send(window.parent, command);
+}
+
+const editMediaForm = (event, form, image) => {
+	
+	
+	var command = {
+		type: 'edit',
+		payload: {
+			editor: "form",
+			element: "image",
+			options : {
+				form: form,
+				image: image
+			}
+		}
+	}
+
 
 	frameMessenger.send(window.parent, command);
 }

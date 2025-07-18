@@ -42,12 +42,13 @@ import lombok.RequiredArgsConstructor;
 public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoint {
 
 	@Override
-	public void extendModel(TemplateEngine.Model model) {
+	public Map<String, Object> getModel() {
+		return Map.of("ui", new UIHelper(getRequestContext()));	
 	}
 
 	@Override
-	public Map<String, Object> getModel() {
-		return Map.of("ui", new UIHelper(getRequestContext()));	
+	public void extendModel(TemplateEngine.Model model) {
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 	
 	

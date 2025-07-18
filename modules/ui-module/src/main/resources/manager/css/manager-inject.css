@@ -110,3 +110,15 @@
 	min-width: 100%;
 }
 
+
+.cms-ui-toolbar > button {
+	background: transparent;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.cms-ui-toolbar > button:hover{
+	color: steelblue;
+}

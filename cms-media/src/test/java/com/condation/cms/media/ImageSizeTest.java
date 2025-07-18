@@ -1,6 +1,8 @@
+package com.condation.cms.media;
+
 /*-
  * #%L
- * ui-module
+ * cms-media
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -20,30 +22,31 @@
  * #L%
  */
 
-import { executeRemoteCall } from './rpc.js'
+import java.nio.file.Path;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-const getSectionTemplates = async (options) => {
-	var data = {
-		method: "manager.contentTypes.sections",
-		parameters: options
+/**
+ *
+ * @author thorstenmarx
+ */
+public class ImageSizeTest {
+	
+	public ImageSizeTest() {
 	}
-	return await executeRemoteCall(data);
-};
 
-const getPageTemplates = async (options) => {
-	var data = {
-		method: "manager.contentTypes.pages",
-		parameters: options
+	@Test
+	public void image_does_not_exists() {
+		var size = ImageSize.getSize(Path.of("no.jpg"));
+		
+		Assertions.assertThat(size.width()).isEqualTo(-1);
+		Assertions.assertThat(size.heights()).isEqualTo(-1);
 	}
-	return await executeRemoteCall(data);
-};
-
-const getMediaForm = async (options) => {
-	var data = {
-		method: "manager.media.form",
-		parameters: options
+	
+	@Test
+	public void image_with_correct_size () {
+		var size = ImageSize.getSize(Path.of("src/test/resources/assets/test.jpg"));
+		Assertions.assertThat(size.width()).isEqualTo(689);
+		Assertions.assertThat(size.heights()).isEqualTo(689);
 	}
-	return await executeRemoteCall(data);
-};
-
-export { getSectionTemplates, getPageTemplates, getMediaForm };
+}

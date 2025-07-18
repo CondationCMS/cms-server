@@ -92,6 +92,20 @@ document.addEventListener("DOMContentLoaded", function () {
 				cmd.parameters.uri = payload.uri
 			}
 			executeScriptAction(cmd)
+		} else if (payload.element === "image" && payload.editor === "form") {
+			var cmd = {
+				"module": window.manager.baseUrl + "/actions/page/edit-media-form",
+				"function": "runAction",
+				"parameters": {
+					"editor": payload.editor,
+					"attribute": payload.metaElement,
+					"options": payload.options ? payload.options : {}
+				}
+			}
+			if (payload.uri) {
+				cmd.parameters.uri = payload.uri
+			}
+			executeScriptAction(cmd)
 		} else if (payload.element === "meta") {
 			var cmd = {
 				"module": window.manager.baseUrl + "/actions/page/edit-metaattribute",

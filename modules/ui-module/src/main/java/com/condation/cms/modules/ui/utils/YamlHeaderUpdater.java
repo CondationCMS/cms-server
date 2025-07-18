@@ -98,4 +98,22 @@ public class YamlHeaderUpdater {
         // Write to file
         Files.write(filePath, builder.toString().getBytes(StandardCharsets.UTF_8));
     }
+	
+	public static void saveMetaData(Path filePath, Map<String, Object> metadata) throws IOException {
+        // Configure pretty YAML output
+        DumperOptions options = new DumperOptions();
+        options.setIndent(2);
+        options.setPrettyFlow(true);
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+
+        Yaml yaml = new Yaml(options);
+        String yamlContent = yaml.dump(metadata);
+
+        // Build full file content
+        StringBuilder builder = new StringBuilder();
+        builder.append(yamlContent);
+
+        // Write to file
+        Files.write(filePath, builder.toString().getBytes(StandardCharsets.UTF_8));
+    }
 }

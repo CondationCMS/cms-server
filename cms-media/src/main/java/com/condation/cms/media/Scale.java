@@ -104,15 +104,18 @@ public class Scale {
 		try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
 			if (uncompressed) {
 				final ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
-				writer.setOutput(new MemoryCacheImageOutputStream(buffer));
-
+				
 				var writeParam = writer.getDefaultWriteParam();
 				if (writeParam.canWriteCompressed()) {
 					writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 					writeParam.setCompressionQuality(1f);
 				}
 
-				writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
+				try (MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer)) {
+					writer.setOutput(memoryCacheImageOutputStream);
+					writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
+				}
+				
 				return buffer.toByteArray();
 			} else {
 				ImageIO.write(imageBuff, "png", buffer);
@@ -128,8 +131,10 @@ public class Scale {
 				jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 				jpegParams.setCompressionQuality(1f);
 				final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
-				writer.setOutput(new MemoryCacheImageOutputStream(buffer));
-				writer.write(null, new IIOImage(imageBuff, null, null), jpegParams);
+				try (MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer)) {
+					writer.setOutput(memoryCacheImageOutputStream);
+					writer.write(null, new IIOImage(imageBuff, null, null), jpegParams);
+				}
 				return buffer.toByteArray();
 			} else {
 				ImageIO.write(imageBuff, "jpg", buffer);
@@ -145,10 +150,10 @@ public class Scale {
 				writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 				writeParam.setCompressionType(writeParam.getCompressionTypes()[WebPWriteParam.LOSSLESS_COMPRESSION]);
 				final ImageWriter writer = ImageIO.getImageWritersByMIMEType("image/webp").next();
-				final MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer);
-				writer.setOutput(memoryCacheImageOutputStream);
-				writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
-				memoryCacheImageOutputStream.close();
+				try (MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer)) {
+					writer.setOutput(memoryCacheImageOutputStream);
+					writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
+				}
 				return buffer.toByteArray();
 			} else {
 				ImageIO.write(imageBuff, "webp", buffer);

@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.utils;
  */
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.ui.elements.ContentTypes;
+import com.condation.cms.api.ui.elements.MediaForms;
 import com.condation.cms.api.ui.elements.Menu;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +37,7 @@ public class UIHooks {
 	public static final String HOOK_MENU = "module/ui/menu";
 	public static final String HOOK_TRANSLATIONS = "module/ui/translations";
 	public static final String HOOK_REGISTER_CONTENT_TYPES = "manager/contentTypes/register";
+	public static final String HOOK_REGISTER_MEDIA_FORMS = "manager/media/forms";
 
 	private final HookSystem hookSystem;
 	
@@ -47,6 +49,12 @@ public class UIHooks {
 		var contentTypes = new ContentTypes();
 		
 		return hookSystem.filter(HOOK_REGISTER_CONTENT_TYPES, contentTypes).value();
+	}
+	
+	public MediaForms mediaForms () {
+		var mediaForms = new MediaForms();
+		
+		return hookSystem.filter(HOOK_REGISTER_MEDIA_FORMS, mediaForms).value();
 	}
 	
 	public Menu menu() {

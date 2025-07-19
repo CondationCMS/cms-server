@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {openModal} from '../../js/modules/modal.js'
 import {createForm} from '../../js/modules/form/forms.js'
 import {showToast} from '../../js/modules/toast.js'
 import {getPreviewUrl, reloadPreview} from '../../js/modules/preview.utils.js'
 import { getMetaValueByPath } from '../../js/modules/node.js'
 import {getContentNode, getContent, setMeta} from '../../js/modules/rpc/rpc-content.js'
 import { i18n } from '../../js/modules/localization.js'
+import { openSidebar } from '../../js/modules/sidebar.js'
 		// hook.js
 export async function runAction(params) {
 
@@ -64,11 +64,10 @@ export async function runAction(params) {
 
 	const form = createForm(formDefinition)
 
-	openModal({
+	openSidebar({
 		title: 'Edit meta attribute',
 		body: 'modal body',
 		form: form,
-		fullscreen: true,
 		onCancel: (event) => {},
 		onOk: async (event) => {
 			var updateData = form.getData()

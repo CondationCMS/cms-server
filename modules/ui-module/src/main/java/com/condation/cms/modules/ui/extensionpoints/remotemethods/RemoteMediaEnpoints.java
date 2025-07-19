@@ -32,6 +32,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.modules.ui.utils.MetaConverter;
 import com.condation.cms.modules.ui.utils.UIHooks;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
@@ -96,11 +97,6 @@ public class RemoteMediaEnpoints extends UIRemoteMethodExtensionPoint {
 		var baseUrl = getContext().get(SitePropertiesFeature.class).siteProperties().getOrDefault("baseurl", "-----");
 		URI uri = URI.create(image);
 		var path = uri.getPath();
-		if (path.startsWith(contextPath + "media/")) {
-			path = path.substring((contextPath + "media/").length());
-		} else if (path.startsWith(contextPath + "assets/")) {
-			path = path.substring((contextPath + "assets/").length());
-		}
-		return path;
+		return ImageUtil.getRawPath(path, requestContext);
 	}
 }

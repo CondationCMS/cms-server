@@ -27,6 +27,7 @@ package com.condation.cms.cli.commands.server;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.cli.tools.CLIServerUtils;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.ipc.Command;
@@ -49,7 +50,7 @@ public class Stop implements Runnable {
 	public void run() {
 		try {
 			
-			Optional<ProcessHandle> handle = getCMSProcess();
+			Optional<ProcessHandle> handle = CLIServerUtils.getCMSProcess();
 			
 			if (handle.isEmpty()) {
 				System.out.println("can not find cms process");
@@ -68,14 +69,7 @@ public class Stop implements Runnable {
 		}
 	}
 	
-	private static Optional<ProcessHandle> getCMSProcess () throws Exception {
-		var pidFile = ServerUtil.getPath(Constants.PID_FILE);
-		if (!Files.exists(pidFile)) {
-			return Optional.empty();
-		}
-		var pid = Files.readString(pidFile);
-		return ProcessHandle.of(Long.parseLong(pid.trim()));
-	}
+
 
 	
 }

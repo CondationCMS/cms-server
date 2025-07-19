@@ -1,5 +1,8 @@
 package com.condation.cms.content.markdown;
 
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.request.ThreadLocalRequestContext;
+
 /*-
  * #%L
  * cms-content
@@ -21,15 +24,20 @@ package com.condation.cms.content.markdown;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 /**
  *
  * @author t.marx
  */
 public interface InlineBlock {
+
 	int start();
+
 	int end();
-	
-	String render ();
+
+	String render();
+
+	default boolean isPreview() {
+		var requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
+		return requestContext != null && requestContext.has(IsPreviewFeature.class);
+	}
 }

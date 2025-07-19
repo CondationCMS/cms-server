@@ -22,8 +22,8 @@ package com.condation.cms.templates.content;
  * #L%
  */
 
-import com.condation.cms.content.shortcodes.ShortCodeParser;
-import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.content.tags.ShortCodeParser;
+import com.condation.cms.content.tags.TagParser;
 import org.apache.commons.jexl3.JexlBuilder;
 
 /**

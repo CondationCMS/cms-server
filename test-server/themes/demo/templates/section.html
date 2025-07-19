@@ -1,0 +1,17 @@
+<div class="section"
+	{{ ui.toolbar(node.uri, "section", ["editContent", "editAttributes", "deleteSection"], {"uri": node.uri}) | raw }}
+	>
+	<div class="container">
+		{{ node.content | default('your content here') | raw}}
+	</div>
+	<div  >
+		<div class="container" 
+			{{ ui.editMeta("text", "description", node.uri, node.uri) | raw }} >
+			{{ node.meta.getOrDefault('description', 'description here') | raw}}
+		</div>
+		<div class="container" 
+			{{ ui.editMeta("text", "parent.text", node.uri, node.uri) | raw }} >
+			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here') | raw}}
+		</div>
+	</div>
+</div>

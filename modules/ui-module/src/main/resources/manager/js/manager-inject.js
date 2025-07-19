@@ -26,6 +26,23 @@ const isIframe = () => {
 	return typeof window !== 'undefined' && window.self !== window.top;
 }
 
+const isSameDomainImage = (imgElement) => {
+  if (!(imgElement instanceof HTMLImageElement)) {
+    return false; // ist kein <img>
+  }
+
+  if (!imgElement.src) {
+    return false;
+  }
+
+  try {
+    const imgUrl = new URL(imgElement.src, window.location.href);
+    return imgUrl.hostname === window.location.hostname;
+  } catch (e) {
+    return false;
+  }
+}
+
 const EDIT_PAGE_ICON = `
 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
   <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
@@ -124,17 +141,23 @@ const orderSections = (event) => {
 }
 
 const initMediaToolbar = (img) => {
+
+	if (!isSameDomainImage(img)) {
+		return;
+	}
+
+
 	const toolbar = document.createElement('div');
-	toolbar.className = 'cms-ui-toolbar';
-	
-	toolbar.style.position = 'absolute';
+	toolbar.classList.add("cms-ui-toolbar");
+	toolbar.classList.add("cms-ui-toolbar-tl");
+	/*toolbar.style.position = 'absolute';
 	toolbar.style.display = 'none';
 	toolbar.style.zIndex = 1000;
 	toolbar.style.background = 'rgba(0,0,0,0.6)';
 	toolbar.style.color = '#fff';
 	toolbar.style.padding = '4px';
 	toolbar.style.borderRadius = '4px';
-
+*/
 	const button = document.createElement('button');
 	button.setAttribute('data-cms-action', 'editMediaForm');
 	button.setAttribute('data-cms-media-form', 'meta');
@@ -155,89 +178,32 @@ const initMediaToolbar = (img) => {
 
 	img.addEventListener('mouseenter', () => {
 		positionToolbar();
-		toolbar.style.display = 'block';
+		//toolbar.style.display = 'block';
+		toolbar.classList.add('visible');
 	});
 
 	img.addEventListener('mouseleave', (event) => {
 		// nur ausblenden, wenn die Maus nicht gerade über der Toolbar ist
 		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
-			toolbar.style.display = 'none';
+			//toolbar.style.display = 'none';
+			toolbar.classList.remove('visible');
 		}
 	});
 
 	toolbar.addEventListener('mouseleave', (event) => {
 		if (!event.relatedTarget || event.relatedTarget !== img) {
-			toolbar.style.display = 'none';
-		}
-	});
-
-	window.addEventListener('scroll', () => {
-		if (toolbar.style.display === 'block') positionToolbar();
-	});
-	window.addEventListener('resize', () => {
-		if (toolbar.style.display === 'block') positionToolbar();
-	});
-};
-
-
-const initMediaToolbar2 = (container) => {
-
-	container.classList.add("cms-ui-editable");
-
-	const toolbar = document.createElement('div');
-	toolbar.classList.add("cms-ui-toolbar");
-	toolbar.addEventListener('mouseover', () => {
-		toolbar.classList.add('visible');
-	});
-	toolbar.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
+			//toolbar.style.display = 'none';
 			toolbar.classList.remove('visible');
 		}
 	});
 
-	// actions
-	const button = document.createElement('button');
-	button.setAttribute('data-cms-action', 'editMediaForm');
-	button.setAttribute('data-cms-media-form', 'meta');
-	button.innerHTML = EDIT_ATTRIBUTES_ICON;
-	button.setAttribute("title", "Edit attributes");
-	button.addEventListener('click', editMediaForm);
-
-	toolbar.appendChild(button);
-
-	// add toolbar
-	document.body.appendChild(toolbar);
-
-	const positionToolbar = () => {
-		const rect = container.getBoundingClientRect();
-		toolbar.style.top = `${window.scrollY + rect.top}px`;
-		toolbar.style.left = `${window.scrollX + rect.left}px`;
-	};
-
-	container.addEventListener('mouseenter', () => {
-		positionToolbar();
-		toolbar.style.display = 'block';
-	});
-
-	container.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
-			toolbar.style.display = 'none';
-		}
-	});
-
-	toolbar.addEventListener('mouseleave', (event) => {
-		if (!event.relatedTarget || event.relatedTarget !== container) {
-			toolbar.style.display = 'none';
-		}
-	});
-
 	window.addEventListener('scroll', () => {
-		if (toolbar.style.display === 'block') positionToolbar();
+		if (toolbar.style.visibility === 'visible') positionToolbar();
 	});
 	window.addEventListener('resize', () => {
-		if (toolbar.style.display === 'block') positionToolbar();
+		if (toolbar.style.visibility === 'visible') positionToolbar();
 	});
-}
+};
 
 const initToolbar = (container) => {
 
@@ -253,6 +219,12 @@ const initToolbar = (container) => {
 
 	const toolbar = document.createElement('div');
 	toolbar.className = 'cms-ui-toolbar';
+
+	if (toolbarDefinition.type === "sections") {
+		toolbar.classList.add("cms-ui-toolbar-tl");
+	} else {
+		toolbar.classList.add("cms-ui-toolbar-tr");
+	}
 
 	toolbar.classList.add("cms-ui-toolbar");
 	toolbar.addEventListener('mouseover', () => {

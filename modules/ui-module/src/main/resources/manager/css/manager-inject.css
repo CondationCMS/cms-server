@@ -44,50 +44,36 @@
 	outline-offset: 2px;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar, 
-.cms-ui-editable-sections > .cms-ui-section-toolbar {
+.cms-ui-toolbar {
 	position: absolute;
+	z-index: 1000;
+	display: flex;
+	background-color: var(--cms-toolbar-background-color);
+	color: var(--cms-toolbar-color);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.cms-ui-toolbar-tl {
 	top: 0;
 	left: 0;
-	z-index: 1000;
-	display: flex;
-	background-color: var(--cms-toolbar-background-color);
-	color: var(--cms-toolbar-color);
-	opacity: 0;
-	visibility: hidden;
-	pointer-events: none;
-	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-.cms-ui-editable > .cms-ui-toolbar, 
-.cms-ui-editable > .cms-ui-section-toolbar {
-	position: absolute;
+.cms-ui-toolbar-tr {
 	top: 0;
 	right: 0;
-	z-index: 1000;
-	display: flex;
-	background-color: var(--cms-toolbar-background-color);
-	color: var(--cms-toolbar-color);
-	opacity: 0;
-	visibility: hidden;
-	pointer-events: none;
-	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar.visible, 
-.cms-ui-editable > .cms-ui-toolbar.visible,
-.cms-ui-editable-sections > .cms-ui-section-toolbar.visible, 
-.cms-ui-editable > .cms-ui-section-toolbar.visible {
+.cms-ui-toolbar.visible {
 	opacity: 1;
 	visibility: visible;
 	pointer-events: auto;
 	transition: opacity 0.2s ease;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar > button, 
-.cms-ui-editable > .cms-ui-toolbar button,
-.cms-ui-editable-sections > .cms-ui-section-toolbar > button, 
-.cms-ui-editable > .cms-ui-section-toolbar button {
+.cms-ui-toolbar button {
 	background: transparent;
 	color: white;
 	border: none;
@@ -95,30 +81,6 @@
 	cursor: pointer;
 }
 
-.cms-ui-editable-sections > .cms-ui-toolbar > button:hover, 
-.cms-ui-editable > .cms-ui-toolbar button:hover,
-.cms-ui-editable-sections > .cms-ui-section-toolbar > button:hover, 
-.cms-ui-editable > .cms-ui-section-toolbar button:hover  {
-	color: steelblue;
-}
-
-.cms-ui-editable:empty::before,
-.cms-ui-editable-sections:empty::before {
-	content: " ";
-	display: block;
-	min-height: 20px;
-	min-width: 100%;
-}
-
-
-.cms-ui-toolbar > button {
-	background: transparent;
-	color: white;
-	border: none;
-	padding: 5px 10px;
-	cursor: pointer;
-}
-
-.cms-ui-toolbar > button:hover{
+.cms-ui-toolbar button:hover  {
 	color: steelblue;
 }

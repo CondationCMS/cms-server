@@ -31,6 +31,14 @@ import com.condation.cms.api.feature.Feature;
  * @author t.marx
  */
 @FeatureScope({FeatureScope.Scope.REQUEST})
-public record IsPreviewFeature() implements Feature {
+public record IsPreviewFeature(Type type) implements Feature {
 
+	public IsPreviewFeature() {
+		this(Type.PREVIEW);
+	}
+	
+	public static enum Type {
+		MANAGER,
+		PREVIEW
+	}
 }

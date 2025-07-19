@@ -65,7 +65,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().ui().secret();
 		if (TokenUtils.validateToken(token, secret) && queryParameters.containsKey("preview")) {
 			var requestContext = (RequestContext)request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
-			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
+			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
 		}
 		
 		return false;

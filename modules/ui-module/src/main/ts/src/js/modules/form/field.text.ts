@@ -22,37 +22,39 @@
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 
-const createRangeField = (options, value = '') => {
+export interface TextFieldOptions {
+	name?: string;
+	title?: string;
+	placeholder?: string;
+}
+
+const createTextField = (options: TextFieldOptions, value : string = '') => {
+	const placeholder = options.placeholder || "";
 	const id = createID();
 	const key = "field." + options.name
-	const min = options.options?.min ?? 0;
-	const max = options.options?.max ?? 100;
-	const step = options.options?.step ?? 1;
 	const title = i18n.t(key, options.title)
-
 	return `
-		<div class="mb-3 cms-form-field" data-cms-form-field-type="range">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}: <span id="${id}-value">${value || min}</span></label>
-			<input type="range" class="form-range" id="${id}" name="${options.name}" 
-				min="${min}" max="${max}" step="${step}" value="${value || min}" 
-				oninput="document.getElementById('${id}-value').textContent = this.value">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="text">
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
+			<input type="text" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}">
 		</div>
 	`;
 };
 
 const getData = () => {
-	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='range'] input").forEach(el => {
+	var data = {}
+	document.querySelectorAll("[data-cms-form-field-type='text'] input").forEach((el : HTMLInputElement) => {
+		let value = el.value
 		data[el.name] = {
-			type: 'range',
-			value: parseFloat(el.value)
-		};
-	});
-	return data;
-};
+			type: 'text',
+			value: value
+		}
+	})
+	return data
+}
 
-export const RangeField = {
-	markup: createRangeField,
+export const TextField = {
+	markup: createTextField,
 	init: () => {},
-	data: getData
-};
+	data : getData
+}

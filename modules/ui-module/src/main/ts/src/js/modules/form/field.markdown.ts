@@ -24,7 +24,7 @@ import { i18n } from "../localization.js"
 
 let cherryEditors = [];
 
-interface MarkdownFieldOptions {
+export interface MarkdownFieldOptions {
 	name: string;
 	placeholder?: string;
 	title?: string;

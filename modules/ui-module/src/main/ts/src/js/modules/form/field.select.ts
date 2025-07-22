@@ -22,7 +22,15 @@
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 
-const createSelectField = (options, value = '') => {
+export interface SelectFieldOptions {
+	name?: string;
+	title?: string;
+	options?: {
+		choices?: Array<string | { label: string; value: string }>;
+	};
+}
+
+const createSelectField = (options: SelectFieldOptions, value: string = '') => {
 	const id = createID();
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
@@ -45,12 +53,12 @@ const createSelectField = (options, value = '') => {
 
 const getData = () => {
 	var data = {}
-	document.querySelectorAll("[data-cms-form-field-type='select'] select").forEach(el => {
-		let value = el.value
+	document.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el : HTMLInputElement) => {
+		let value;
 
-		if (value === 'true') {
+		if (el.value === 'true') {
 			value = true;
-		} else if (value === 'false') {
+		} else if (el.value === 'false') {
 			value = false;
 		}
 

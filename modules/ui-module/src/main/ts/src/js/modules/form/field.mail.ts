@@ -22,7 +22,7 @@
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 
-interface MailFieldOptions {
+export interface MailFieldOptions {
 	name: string;
 	placeholder?: string;
 	title?: string;

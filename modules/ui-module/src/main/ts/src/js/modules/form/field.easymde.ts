@@ -24,7 +24,7 @@ import { i18n } from "../localization.js"
 
 let markdownEditors = [];
 
-interface EasyMDEFieldOptions {
+export interface EasyMDEFieldOptions {
 	name: string;
 	title?: string;
 }

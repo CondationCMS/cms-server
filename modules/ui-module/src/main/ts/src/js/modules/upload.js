@@ -20,15 +20,6 @@
  * #L%
  */
 // uploadFileWithProgress.js
-/**
- * Lädt eine Datei mit Fortschrittsanzeige via XMLHttpRequest hoch.
- * @param {File} file - Die hochzuladende Datei.
- * @param {string} uploadEndpoint - Der Endpunkt für den Upload (optional, Standard: "/manager/upload").
- * @param {string} uri - Der Zielordner relativ zum Server-Ausgabeordner.
- * @param {function(percent: number): void} onProgress - Callback für Fortschrittsanzeige (0–100).
- * @param {function(): void} onSuccess - Callback bei Erfolg.
- * @param {function(error: string): void} onError - Callback bei Fehler.
- */
 export function uploadFileWithProgress({ uploadEndpoint, file, uri, onProgress, onSuccess, onError }) {
 	if (!file) {
 		onError?.("No file selected.");

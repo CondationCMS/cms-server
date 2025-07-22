@@ -22,37 +22,47 @@
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 
-export interface ColorFieldOptions {
-	name: string;
-	title: string;
+export interface RangeFieldOptions {
+	name?: string;
+	title?: string;
+	options?: {
+		min?: number;
+		max?: number;
+		step?: number;
+	};
 }
 
-const createColorField = (options: ColorFieldOptions, value = '#000000') => {
+const createRangeField = (options: RangeFieldOptions, value : string = '') => {
 	const id = createID();
 	const key = "field." + options.name
+	const min = options.options?.min ?? 0;
+	const max = options.options?.max ?? 100;
+	const step = options.options?.step ?? 1;
 	const title = i18n.t(key, options.title)
 
 	return `
-		<div class="mb-3 cms-form-field" data-cms-form-field-type="color">
-			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
-			<input type="color" class="form-control form-control-color" id="${id}" name="${options.name}" value="${value || '#000000'}" title="${title}">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="range">
+			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}: <span id="${id}-value">${value || min}</span></label>
+			<input type="range" class="form-range" id="${id}" name="${options.name}" 
+				min="${min}" max="${max}" step="${step}" value="${value || min}" 
+				oninput="document.getElementById('${id}-value').textContent = this.value">
 		</div>
 	`;
 };
 
-const getColorData = () => {
+const getData = () => {
 	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='color'] input").forEach((el: HTMLInputElement )  => {
+	document.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el : HTMLInputElement) => {
 		data[el.name] = {
-			type: 'color',
-			value: el.value
-		}
+			type: 'range',
+			value: parseFloat(el.value)
+		};
 	});
 	return data;
 };
 
-export const ColorField = {
-	markup: createColorField,
+export const RangeField = {
+	markup: createRangeField,
 	init: () => {},
-	data: getColorData
+	data: getData
 };

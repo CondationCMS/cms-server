@@ -24,7 +24,7 @@ import { i18n } from "../localization.js"
 import { uploadFileWithProgress } from "../upload.js";
 import { openFileBrowser } from "../filebrowser.js";
 
-interface MediaFieldOptions {
+export interface MediaFieldOptions {
 	name: string;
 	title?: string;
 }

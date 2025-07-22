@@ -20,33 +20,32 @@
  * #L%
  */
 import { createID } from "./utils.js";
+import { i18n } from "../localization.js"
 
-export interface CheckboxOptions {
-	key?: string;
+export interface RadioFieldOptions {
 	name?: string;
 	title?: string;
-	options?: {
+	options?: {	
 		choices: Array<{
 			label: string;
 			value: string;
 		}>;
-	};
+	};	
 }
 
-const createCheckboxField = (options : CheckboxOptions, value = []) => {
+const createRadioField = (options: RadioFieldOptions, value: string = '') => {
 	const id = createID();
-	const key = options.key || "";
+	const key = "field." + options.name
 	const name = options.name || id;
-	const title = options.title || "";
-	const choices = options.options.choices || [];
-	const selectedValues = new Set(value);
+	const title = i18n.t(key, options.title)
+	const choices = options.options?.choices || [];
 
-	const checkboxes = choices.map((choice, idx) => {
+	const radios = choices.map((choice, idx) => {
 		const inputId = `${id}-${idx}`;
-		const checked = selectedValues.has(choice.value) ? 'checked' : '';
+		const checked = value === choice.value ? 'checked' : '';
 		return `
 			<div class="form-check cms-form-field">
-				<input class="form-check-input" type="checkbox" name="${name}" id="${inputId}" value="${choice.value}" ${checked}>
+				<input class="form-check-input" type="radio" name="${name}" id="${inputId}" value="${choice.value}" ${checked}>
 				<label class="form-check-label" for="${inputId}">
 					${choice.label}
 				</label>
@@ -55,29 +54,30 @@ const createCheckboxField = (options : CheckboxOptions, value = []) => {
 	}).join('');
 
 	return `
-		<div class="mb-3" data-cms-form-field-type="checkbox">
+		<div class="mb-3" data-cms-form-field-type="radio">
 			<label class="form-label" cms-i18n-key="${key}">${title}</label>
-			${checkboxes}
+			${radios}
 		</div>
 	`;
 };
 
 const getData = () => {
 	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
-		const name = (container.querySelector("input[type='checkbox']") as HTMLInputElement).name;
-		const checkedBoxes = container.querySelectorAll("input[type='checkbox']:checked");
-		const values = Array.from(checkedBoxes).map((el : HTMLInputElement) => el.value);
-		data[name] = {
-			type: 'checkbox',
-			value: values
-		};
+	document.querySelectorAll("[data-cms-form-field-type='radio']").forEach(container => {
+		const name = (container.querySelector("input[type='radio']") as HTMLInputElement).name;
+		const checked = container.querySelector("input[type='radio']:checked") as HTMLInputElement;
+		if (checked) {
+			data[name] = {
+				type: 'radio',
+				value: checked.value
+			};
+		}
 	});
 	return data;
 };
 
-export const CheckboxField = {
-	markup: createCheckboxField,
+export const RadioField = {
+	markup: createRadioField,
 	init: () => {},
 	data: getData
 };

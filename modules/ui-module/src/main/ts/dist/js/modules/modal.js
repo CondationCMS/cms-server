@@ -1,0 +1,96 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+import { i18n } from "./localization.js";
+const defaultOptions = {
+    validate: () => true
+};
+const openModal = (optionsParam) => {
+    const modalId = 'fullscreenModal_' + Date.now();
+    const options = {
+        ...defaultOptions,
+        ...optionsParam
+    };
+    let fullscreen = "";
+    if (options.fullscreen) {
+        fullscreen = "modal-fullscreen";
+    }
+    /*
+     * sm, lg, xl
+     */
+    let size = "";
+    if (options.size) {
+        size = "model-" + options.size;
+    }
+    const modalHtml = `
+		<div class="modal fade" id="${modalId}" tabindex="-1" aria-hidden="true">
+		  <div class="modal-dialog ${fullscreen} ${size}">
+			<div class="modal-content">
+			  <div class="modal-header">
+				<h5 class="modal-title">${options.title || 'Modal Title'}</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			  </div>
+			  <div class="modal-body" id="${modalId}_bodyContainer">
+				${options.body || '<p>Modal body content</p>'}
+			  </div>
+			  <div class="modal-footer">
+				<button type="button" class="btn btn-secondary" id="${modalId}_cancelBtn">${i18n.t("buttons.cancel", "Cancel")}</button>
+				<button type="button" class="btn btn-primary" id="${modalId}_okBtn">${i18n.t("buttons.ok", "Ok")}</button>
+			  </div>
+			</div>
+		  </div>
+		</div>`;
+    // Modal einfügen
+    const container = document.getElementById('modalContainer');
+    container.innerHTML = modalHtml;
+    if (options.form) {
+        options.form.init(`#${modalId}_bodyContainer`);
+    }
+    const modalElement = document.getElementById(modalId);
+    const modalInstance = new bootstrap.Modal(modalElement, {
+        backdrop: 'static',
+        keyboard: false,
+        focus: false
+    });
+    modalInstance.show();
+    // Event-Handler
+    document.getElementById(`${modalId}_cancelBtn`).addEventListener('click', () => {
+        modalInstance.hide();
+        if (typeof options.onCancel === 'function')
+            options.onCancel();
+    });
+    document.getElementById(`${modalId}_okBtn`).addEventListener('click', () => {
+        if (options.validate()) {
+            modalInstance.hide();
+            if (typeof options.onOk === 'function')
+                options.onOk();
+        }
+    });
+    // Clean-up nach Schließen
+    modalElement.addEventListener('hidden.bs.modal', () => {
+        container.innerHTML = '';
+    });
+    if (options.onShow) {
+        options.onShow();
+    }
+    return modalInstance;
+};
+export { openModal };

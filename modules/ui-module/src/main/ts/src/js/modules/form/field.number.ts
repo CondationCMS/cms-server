@@ -19,53 +19,52 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID, getUTCDateTimeFromInput, utcToLocalDateTimeInputValue } from "./utils.js";
+import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 
-export interface DateTimeFieldOptions {
+export interface NumberFieldOptions {
 	name: string;
-	title: string;
+	options: {
+		min?: number;
+		max?: number;
+		step?: number;
+	};
 	placeholder?: string;
+	title?: string;	
 }
 
-const createDateTimeField = (options: DateTimeFieldOptions, value : any = '') => {
+const createNumberField = (options: NumberFieldOptions, value: string = '') => {
+    
 	const placeholder = options.placeholder || "";
 	const id = createID();
 	const key = "field." + options.name
-
+	const min = options.options.min != null ? `min="${options.options.min}"` : "";
+	const max = options.options.max != null ? `max="${options.options.max}"` : "";
+	const step = options.options.step != null ? `step="${options.options.step}"` : "";
 	const title = i18n.t(key, options.title)
 
-	let val = '';
-
-	if (value instanceof Date) {
-		val = utcToLocalDateTimeInputValue(value.toISOString());
-	} else if (typeof value === 'string' && value.length > 0) {
-		val = utcToLocalDateTimeInputValue(value);
-	}
-
 	return `
-		<div class="mb-3 cms-form-field" data-cms-form-field-type="datetime">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="number">
 			<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
-			<input type="datetime-local" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${val}">
+			<input type="number" class="form-control" id="${id}" name="${options.name}" placeholder="${placeholder}" value="${value || ''}" ${min} ${max} ${step}>
 		</div>
 	`;
 };
 
-
-const getDateTimeData = () => {
+const getData = () => {
 	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='datetime'] input").forEach((el: HTMLInputElement) => {
-		const value = getUTCDateTimeFromInput(el); // "2025-05-31T15:30"
+	document.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el : HTMLInputElement) => {
+		const value = el.value;
 		data[el.name] = {
-			type: 'datetime',
-			value: value === "" ? null : value
+			type: 'number',
+			value: value !== '' ? Number(value) : null
 		};
 	});
 	return data;
 };
 
-export const DateTimeField = {
-	markup: createDateTimeField,
+export const NumberField = {
+	markup: createNumberField,
 	init: () => {},
-	data: getDateTimeData
+	data: getData
 };

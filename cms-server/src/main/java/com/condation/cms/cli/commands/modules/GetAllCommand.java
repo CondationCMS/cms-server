@@ -26,7 +26,6 @@ import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.extensions.repository.InstallationHelper;
 import java.io.IOException;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -35,7 +34,13 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "get-all")
+@CommandLine.Command(
+		name = "get-all",
+		description = {
+			"gets all modules that are use by theme or host",
+			"to update already installed modules use -f"
+		}
+)
 public class GetAllCommand extends AbstractModuleCommand implements Runnable {
 
 	@CommandLine.Option(names = "-f", description = "force the update if module is already installed")

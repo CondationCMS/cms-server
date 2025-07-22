@@ -21,9 +21,6 @@ package com.condation.cms.cli.commands.server;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
-
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.utils.ServerUtil;
@@ -42,34 +39,35 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "stop")
+@CommandLine.Command(
+		name = "stop",
+		description = {
+			"Stops the server"
+		}
+)
 @Slf4j
 public class Stop implements Runnable {
 
 	@Override
 	public void run() {
 		try {
-			
+
 			Optional<ProcessHandle> handle = CLIServerUtils.getCMSProcess();
-			
+
 			if (handle.isEmpty()) {
 				System.out.println("can not find cms process");
 			} else {
 				ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
 				IPCClient ipcClient = new IPCClient(properties.ipc());
-				
+
 				ipcClient.send(new Command("shutdown"));
-				
+
 				Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
 			}
-			
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
 
-
-	
 }

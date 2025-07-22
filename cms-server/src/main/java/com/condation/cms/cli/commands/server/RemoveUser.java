@@ -36,7 +36,12 @@ import picocli.CommandLine.Parameters;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "remove_user")
+@CommandLine.Command(
+		name = "remove_user",
+		description = {
+			"removes a user from the given realm of a host"
+		}
+)
 @Slf4j
 public class RemoveUser implements Runnable {
 

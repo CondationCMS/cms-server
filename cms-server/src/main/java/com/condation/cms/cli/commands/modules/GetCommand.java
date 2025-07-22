@@ -30,7 +30,6 @@ import com.condation.cms.api.utils.ServerUtil;
 import static com.condation.cms.cli.commands.modules.AbstractModuleCommand.createModulesFolder;
 import com.condation.cms.extensions.repository.InstallationHelper;
 import java.io.IOException;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -39,7 +38,13 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "get")
+@CommandLine.Command(
+		name = "get",
+		description = {
+			"gets a single module by id if not installed already",
+			"for update use -f to force reinstall"
+		}
+)
 public class GetCommand extends AbstractModuleCommand implements Runnable {
 
 	@CommandLine.Parameters(

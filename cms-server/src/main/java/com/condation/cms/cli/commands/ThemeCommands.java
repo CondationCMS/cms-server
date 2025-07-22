@@ -36,6 +36,10 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(
 		name = "theme",
+		mixinStandardHelpOptions = true,
+		description = {
+			"commands to manage themes"
+		},
 		subcommands = {
 			InfoCommand.class,
 			GetCommand.class,

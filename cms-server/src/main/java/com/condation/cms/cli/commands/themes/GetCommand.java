@@ -28,7 +28,6 @@ import com.condation.cms.api.utils.ServerUtil;
 
 import com.condation.cms.extensions.repository.InstallationHelper;
 import com.google.common.base.Strings;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 
@@ -37,7 +36,13 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "get")
+@CommandLine.Command(
+		name = "get",
+		description = {
+			"gets a theme from registry by id",
+			"to force update of already installed theme use -f"
+		}
+)
 public class GetCommand extends AbstractThemeCommand implements Runnable {
 
 	@CommandLine.Parameters(

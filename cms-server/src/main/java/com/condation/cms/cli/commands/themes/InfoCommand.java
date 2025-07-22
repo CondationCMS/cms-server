@@ -34,7 +34,12 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "info")
+@CommandLine.Command(
+		name = "info",
+		description = {
+			"prints some information about a theme"
+		}
+)
 public class InfoCommand extends AbstractThemeCommand implements Runnable {
 
 	@CommandLine.Parameters(

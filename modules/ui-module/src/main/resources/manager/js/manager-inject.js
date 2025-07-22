@@ -150,14 +150,7 @@ const initMediaToolbar = (img) => {
 	const toolbar = document.createElement('div');
 	toolbar.classList.add("cms-ui-toolbar");
 	toolbar.classList.add("cms-ui-toolbar-tl");
-	/*toolbar.style.position = 'absolute';
-	toolbar.style.display = 'none';
-	toolbar.style.zIndex = 1000;
-	toolbar.style.background = 'rgba(0,0,0,0.6)';
-	toolbar.style.color = '#fff';
-	toolbar.style.padding = '4px';
-	toolbar.style.borderRadius = '4px';
-*/
+
 	const button = document.createElement('button');
 	button.setAttribute('data-cms-action', 'editMediaForm');
 	button.setAttribute('data-cms-media-form', 'meta');

@@ -32,7 +32,12 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "info")
+@CommandLine.Command(
+		name = "info",
+		description = {
+			"returns some information about the server"
+		}
+)
 @Slf4j
 public class Info implements Runnable {
 
@@ -45,6 +50,8 @@ public class Info implements Runnable {
 			info.append("=====================").append(System.lineSeparator());
 			info.append("Version: ").append(CLIServerUtils.getVersion().toString()).append(System.lineSeparator());
 			info.append("Running: ").append(CLIServerUtils.getCMSProcess().isPresent()).append(System.lineSeparator());
+			info.append("Started at: ").append(CLIServerUtils.getStartedAt()).append(System.lineSeparator());
+			info.append("Uptime: ").append(CLIServerUtils.getUptime()).append(System.lineSeparator());
 			
 			System.out.println(info.toString());
 			

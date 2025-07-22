@@ -25,7 +25,6 @@ package com.condation.cms.cli.commands.extensions;
 
 import com.condation.cms.CMSServer;
 import com.condation.cms.extensions.repository.ExtensionInfo;
-import com.condation.cms.extensions.repository.RemoteRepository;
 import com.google.common.base.Strings;
 import java.util.Optional;
 import lombok.Setter;
@@ -35,7 +34,12 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "info")
+@CommandLine.Command(
+		name = "info",
+		description = {
+			"displays some information about a extension"
+		}
+)
 public class InfoCommand extends AbstractExtensionCommand implements Runnable {
 
 	@CommandLine.Parameters(

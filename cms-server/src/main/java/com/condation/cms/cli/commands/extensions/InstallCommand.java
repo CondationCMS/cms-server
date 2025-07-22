@@ -27,11 +27,9 @@ import com.condation.cms.api.utils.ServerUtil;
 
 
 
-import com.condation.cms.extensions.repository.RemoteRepository;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -41,7 +39,12 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "install")
+@CommandLine.Command(
+		name = "install",
+		description = {
+			"intalls an extension into a host"
+		}
+)
 public class InstallCommand extends AbstractExtensionCommand implements Runnable {
 
 	

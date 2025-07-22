@@ -24,10 +24,8 @@ package com.condation.cms.cli.commands.server;
 
 
 
-import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.ServerProperties;
-import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.cli.tools.CLIServerUtils;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.cli.tools.ThemesUtil;
@@ -37,7 +35,6 @@ import com.condation.cms.server.configs.ServerGlobalModule;
 import com.condation.cms.server.JettyServer;
 import com.google.inject.Guice;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -46,7 +43,9 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "start")
+@CommandLine.Command(
+		name = "start", 
+		description = "starts the server")
 @Slf4j
 public class Startup implements Runnable {
 

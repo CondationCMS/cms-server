@@ -34,6 +34,10 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(
 		name = "extension",
+		mixinStandardHelpOptions = true,
+		description = {
+			"commands to manage extensions"
+		},
 		subcommands = {
 			InfoCommand.class,
 			InstallCommand.class

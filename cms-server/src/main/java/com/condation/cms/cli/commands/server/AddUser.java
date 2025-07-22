@@ -39,7 +39,12 @@ import picocli.CommandLine.Parameters;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "add_user")
+@CommandLine.Command(
+		name = "add_user",
+		description = {
+			"adds a user to a realm of a host"
+		}
+)
 @Slf4j
 public class AddUser implements Runnable {
 

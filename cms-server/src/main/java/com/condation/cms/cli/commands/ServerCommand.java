@@ -35,7 +35,13 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "server", subcommands = {
+@CommandLine.Command(name = "server", 
+		descriptionHeading = "Server commands",
+		description = {
+			"Commands to manage server related issues."
+		},
+		mixinStandardHelpOptions = true,
+		subcommands = {
 	Startup.class, AddUser.class, RemoveUser.class, Stop.class, Info.class})
 @Slf4j
 public class ServerCommand implements Runnable {

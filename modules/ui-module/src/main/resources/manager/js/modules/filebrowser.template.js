@@ -8,26 +8,23 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import Handlebars from '../libs/handlebars.min.js';
-
 Handlebars.registerHelper("patchPathWithContext", patchPathWithContext);
 Handlebars.registerHelper('concat', function (...args) {
-  args.pop();
-  return args.join('');
+    args.pop();
+    return args.join('');
 });
-
 Handlebars.registerPartial('fileBrowserContentActions', `
 	<div class="dropdown">
 		<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -40,7 +37,6 @@ Handlebars.registerPartial('fileBrowserContentActions', `
 		</ul>
 	</div>
 `);
-
 const template = Handlebars.compile(`
 	<div>
 		<div class="d-flex gap-3">
@@ -136,5 +132,4 @@ const template = Handlebars.compile(`
 	{{/if}}
 	</div>
 `);
-
-export {template as filebrowserTemplate};
+export { template as filebrowserTemplate };

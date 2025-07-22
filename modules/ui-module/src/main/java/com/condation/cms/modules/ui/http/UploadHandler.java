@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.http;
  */
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
+import com.github.slugify.Slugify;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,6 +74,8 @@ public class UploadHandler extends JettyHandler {
 	);
 
 	private static final Tika tika = new Tika();
+
+	private static final Slugify SLUGIFY = Slugify.builder().build();
 
 	public UploadHandler(String contextPath, Path outputDir) throws IOException {
 		this(contextPath, outputDir, false);
@@ -183,7 +186,8 @@ public class UploadHandler extends JettyHandler {
 					}
 
 					// Zieldatei vorbereiten
-					String safeFilename = URLEncoder.encode(rawFilename, StandardCharsets.UTF_8);
+					//String safeFilename = URLEncoder.encode(rawFilename, StandardCharsets.UTF_8);
+					String safeFilename = slugifyFilename(rawFilename);
 					Path targetDir = outputDir;
 
 					if (StringUtil.isNotBlank(uri)) {
@@ -201,7 +205,7 @@ public class UploadHandler extends JettyHandler {
 					// Temporäre Datei an Zielort verschieben
 					Files.move(tempFile, outputFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 					log.info("Saved uploaded file to {}", outputFile);
-					
+
 					return PathUtil.toRelativeFile(outputFile, outputDir);
 				}
 			}
@@ -210,8 +214,25 @@ public class UploadHandler extends JettyHandler {
 				part.delete();
 			}
 		}
-		
+
 		return "";
+	}
+
+	private String slugifyFilename(String rawFilename) {
+		String extension = "";
+		int dotIndex = rawFilename.lastIndexOf('.');
+		String namePart = rawFilename;
+
+		if (dotIndex > 0 && dotIndex < rawFilename.length() - 1) {
+			extension = rawFilename.substring(dotIndex); // inkl. Punkt
+			namePart = rawFilename.substring(0, dotIndex);
+		}
+
+		// Slugify nur auf den Namensteil anwenden
+		String slug = SLUGIFY.slugify(namePart);
+
+		// Endung wieder anhängen
+		return slug + extension.toLowerCase();
 	}
 
 }

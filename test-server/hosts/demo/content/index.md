@@ -19,7 +19,7 @@ checked:
 - farbe
 selected: form
 radioed: form
-media_url: 2025/06/bookwire.png
+media_url: compass-7592444_1920.jpg
 ---
 
 # Demo Project

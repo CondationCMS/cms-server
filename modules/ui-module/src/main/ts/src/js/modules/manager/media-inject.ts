@@ -2,20 +2,20 @@ import { EDIT_ATTRIBUTES_ICON, IMAGE_ICON } from "./toolbar-icons";
 import frameMessenger from '../frameMessenger.js';
 
 const isSameDomainImage = (imgElement) => {
-  if (!(imgElement instanceof HTMLImageElement)) {
-    return false; // ist kein <img>
-  }
+	if (!(imgElement instanceof HTMLImageElement)) {
+		return false; // ist kein <img>
+	}
 
-  if (!imgElement.src) {
-    return false;
-  }
+	if (!imgElement.src) {
+		return false;
+	}
 
-  try {
-    const imgUrl = new URL(imgElement.src, window.location.href);
-    return imgUrl.hostname === window.location.hostname;
-  } catch (e) {
-    return false;
-  }
+	try {
+		const imgUrl = new URL(imgElement.src, window.location.href);
+		return imgUrl.hostname === window.location.hostname;
+	} catch (e) {
+		return false;
+	}
 }
 
 export const initMediaUploadOverlay = (img: HTMLImageElement) => {
@@ -81,15 +81,30 @@ export const initMediaToolbar = (img) => {
 	toolbar.classList.add("cms-ui-toolbar");
 	toolbar.classList.add("cms-ui-toolbar-tl");
 
-	const button = document.createElement('button');
-	button.setAttribute('data-cms-action', 'editMediaForm');
-	button.setAttribute('data-cms-media-form', 'meta');
-	button.innerHTML = EDIT_ATTRIBUTES_ICON;
-	button.setAttribute("title", "Edit attributes");
-	button.addEventListener('click', (event) => {
-		editMediaForm("meta", img.src);
-	});
-	toolbar.appendChild(button);
+	var toolbarDefinition = JSON.parse(img.dataset.cmsMediaToolbar);
+
+	if (toolbarDefinition.actions.includes('select')) {
+		const selectButton = document.createElement('button');
+		selectButton.innerHTML = IMAGE_ICON;
+		selectButton.setAttribute("title", "Select media");
+		selectButton.addEventListener('click', (event) => {
+			selectMedia(toolbarDefinition.options.element, toolbarDefinition.options.uri);
+		});
+		toolbar.appendChild(selectButton);
+	}
+	if (toolbarDefinition.actions.includes('meta')) {
+		const metaButton = document.createElement('button');
+		metaButton.setAttribute('data-cms-action', 'editMediaForm');
+		metaButton.setAttribute('data-cms-media-form', 'meta');
+		metaButton.innerHTML = EDIT_ATTRIBUTES_ICON;
+		metaButton.setAttribute("title", "Edit attributes");
+		metaButton.addEventListener('click', (event) => {
+			editMediaForm("meta", img.src);
+		});
+		toolbar.appendChild(metaButton);
+
+	}
+
 
 	document.body.appendChild(toolbar);
 
@@ -134,7 +149,7 @@ const selectMedia = (metaElement: string, uri?: string) => {
 		payload: {
 			editor: "select",
 			element: "image",
-			options : {
+			options: {
 				metaElement: metaElement,
 				uri: uri
 			}
@@ -149,7 +164,7 @@ const editMediaForm = (form: string, image: string) => {
 		payload: {
 			editor: "form",
 			element: "image",
-			options : {
+			options: {
 				form: form,
 				image: image
 			}

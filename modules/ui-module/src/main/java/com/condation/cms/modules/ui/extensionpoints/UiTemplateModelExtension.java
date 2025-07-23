@@ -127,15 +127,19 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			);
 		}
 		
-		/*public String editMedia (String id, String [] actions, String attr) {
+		public String mediaToolbar (String [] actions, Map<String, Object> options) {
 			if (!requestContext.has(IsPreviewFeature.class)) {
 				return "";
 			}
 			
-			return " data-cms-image-actions='%s'  ".formatted(
+			Map<String, Object> toolbar = Map.of(
+					"actions", actions,
+					"options", options
+			);
+			return " data-cms-media-toolbar='%s'  ".formatted(
 					JSONUtil.toJson(toolbar)
 			);
-		}*/
+		}
 		
 	}
 }

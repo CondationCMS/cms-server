@@ -87,15 +87,27 @@ export const initMediaToolbar = (img) => {
     const toolbar = document.createElement('div');
     toolbar.classList.add("cms-ui-toolbar");
     toolbar.classList.add("cms-ui-toolbar-tl");
-    const button = document.createElement('button');
-    button.setAttribute('data-cms-action', 'editMediaForm');
-    button.setAttribute('data-cms-media-form', 'meta');
-    button.innerHTML = EDIT_ATTRIBUTES_ICON;
-    button.setAttribute("title", "Edit attributes");
-    button.addEventListener('click', (event) => {
-        editMediaForm("meta", img.src);
-    });
-    toolbar.appendChild(button);
+    var toolbarDefinition = JSON.parse(img.dataset.cmsMediaToolbar);
+    if (toolbarDefinition.actions.includes('select')) {
+        const selectButton = document.createElement('button');
+        selectButton.innerHTML = IMAGE_ICON;
+        selectButton.setAttribute("title", "Select media");
+        selectButton.addEventListener('click', (event) => {
+            selectMedia(toolbarDefinition.options.element, toolbarDefinition.options.uri);
+        });
+        toolbar.appendChild(selectButton);
+    }
+    if (toolbarDefinition.actions.includes('meta')) {
+        const metaButton = document.createElement('button');
+        metaButton.setAttribute('data-cms-action', 'editMediaForm');
+        metaButton.setAttribute('data-cms-media-form', 'meta');
+        metaButton.innerHTML = EDIT_ATTRIBUTES_ICON;
+        metaButton.setAttribute("title", "Edit attributes");
+        metaButton.addEventListener('click', (event) => {
+            editMediaForm("meta", img.src);
+        });
+        toolbar.appendChild(metaButton);
+    }
     document.body.appendChild(toolbar);
     const positionToolbar = () => {
         const rect = img.getBoundingClientRect();

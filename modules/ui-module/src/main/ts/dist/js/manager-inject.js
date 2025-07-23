@@ -41,10 +41,10 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     const toolbarContainers = document.querySelectorAll('[data-cms-toolbar]');
     toolbarContainers.forEach(initToolbar);
-    const mediaToolbarContainers = document.querySelectorAll('img[data-cms-media-actions~=meta]');
+    const mediaToolbarContainers = document.querySelectorAll('img[data-cms-media-toolbar]');
     mediaToolbarContainers.forEach(initMediaToolbar);
-    const mediaUploadContainers = document.querySelectorAll('img[data-cms-media-actions~=upload]');
-    mediaUploadContainers.forEach(initMediaUploadOverlay);
+    //const mediaUploadContainers = document.querySelectorAll('img[data-cms-media-actions~=upload]');
+    //mediaUploadContainers.forEach(initMediaUploadOverlay);
 });
 const addSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');

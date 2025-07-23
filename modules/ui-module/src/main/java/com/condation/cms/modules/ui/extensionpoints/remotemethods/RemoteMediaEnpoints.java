@@ -69,13 +69,11 @@ public class RemoteMediaEnpoints extends UIRemoteMethodExtensionPoint {
 			var data = (Map<String, Map<String, Object>>) parameters.getOrDefault("meta", Map.of());
 			var image = (String) parameters.getOrDefault("image", "");
 			
-			
-			var media = getRequestContext().get(SiteMediaServiceFeature.class).mediaService().get(image);
+			var imagePath = getMediaPath(image);
+			var media = getRequestContext().get(SiteMediaServiceFeature.class).mediaService().get(imagePath);
 			
 			var metaData = new HashMap<String, Object>(media.meta());
 			YamlHeaderUpdater.mergeFlatMapIntoNestedMap(metaData, MetaConverter.convertMeta(data));
-			
-			var imagePath = getMediaPath(image);
 			
 			var fs = getContext().get(DBFeature.class).db().getFileSystem();
 			var assets = fs.resolve(Constants.Folders.ASSETS);

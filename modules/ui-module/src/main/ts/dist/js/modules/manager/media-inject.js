@@ -1,4 +1,4 @@
-import { EDIT_ATTRIBUTES_ICON } from "./toolbar-icons";
+import { EDIT_ATTRIBUTES_ICON, IMAGE_ICON } from "./toolbar-icons";
 import frameMessenger from '../frameMessenger.js';
 const isSameDomainImage = (imgElement) => {
     if (!(imgElement instanceof HTMLImageElement)) {
@@ -22,7 +22,7 @@ export const initMediaUploadOverlay = (img) => {
     // Overlay erstellen
     const overlay = document.createElement('div');
     overlay.classList.add("cms-ui-overlay-bottom");
-    overlay.innerText = "Bild austauschen…";
+    overlay.innerHTML = IMAGE_ICON;
     document.body.appendChild(overlay);
     const positionOverlay = () => {
         const rect = img.getBoundingClientRect();

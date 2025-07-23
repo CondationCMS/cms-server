@@ -25,7 +25,6 @@ import { getPreviewUrl, reloadPreview } from "../../js/modules/preview.utils.js"
 import { getContentNode, setMeta } from "../../js/modules/rpc/rpc-content.js";
 import { showToast } from "../../js/modules/toast.js";
 export async function runAction(params) {
-    console.log('select-media', params);
     var uri = null;
     if (params.options.uri) {
         uri = params.options.uri;
@@ -39,7 +38,6 @@ export async function runAction(params) {
     openFileBrowser({
         type: "assets",
         onSelect: async (file) => {
-            console.log('Selected file:', file);
             if (file && file.uri) {
                 var updateData = {};
                 updateData[params.options.metaElement] = {

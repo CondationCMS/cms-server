@@ -168,10 +168,9 @@ const executeImageForm = (payload) => {
 
 const executeImageSelect = (payload) => {
 	const cmd = {
-		"module": window.manager.baseUrl + "/actions/media/select-image",
+		"module": window.manager.baseUrl + "/actions/media/select-media",
 		"function": "runAction",
 		"parameters": {
-			"attribute": payload.metaElement,
 			"options": payload.options ? payload.options : {}
 		}
 	}

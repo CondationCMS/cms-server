@@ -20,12 +20,44 @@
  * #L%
  */
 import { openFileBrowser } from "../../js/modules/filebrowser.js";
+import { i18n } from "../../js/modules/localization.js";
+import { getPreviewUrl, reloadPreview } from "../../js/modules/preview.utils.js";
+import { getContentNode, setMeta } from "../../js/modules/rpc/rpc-content.js";
+import { showToast } from "../../js/modules/toast.js";
 export async function runAction(params) {
     console.log('select-media', params);
+    var uri = null;
+    if (params.options.uri) {
+        uri = params.options.uri;
+    }
+    else {
+        const contentNode = await getContentNode({
+            url: getPreviewUrl()
+        });
+        uri = contentNode.result.uri;
+    }
     openFileBrowser({
         type: "assets",
-        onSelect: (file) => {
+        onSelect: async (file) => {
             console.log('Selected file:', file);
+            if (file && file.uri) {
+                var updateData = {};
+                updateData[params.options.metaElement] = {
+                    type: 'media',
+                    value: file.uri
+                };
+                var setMetaResponse = await setMeta({
+                    uri: uri,
+                    meta: updateData
+                });
+                showToast({
+                    title: i18n.t('manager.actions.media.select-media.toast.title', "Media updated"),
+                    message: i18n.t('manager.actions.media.select-media.toast.message', "New media has been updated successfully."),
+                    type: 'success', // optional: info | success | warning | error
+                    timeout: 3000
+                });
+                reloadPreview();
+            }
         }
     });
 }

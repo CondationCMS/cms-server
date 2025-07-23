@@ -47,7 +47,7 @@ export const initMediaUploadOverlay = (img) => {
         }
     });
     overlay.addEventListener('click', (e) => {
-        selectMedia(e);
+        selectMedia(img.dataset.cmsMetaElement, img.dataset.cmsNodeUri);
     });
     window.addEventListener('scroll', () => {
         if (overlay.classList.contains('visible'))
@@ -72,7 +72,7 @@ export const initMediaToolbar = (img) => {
     button.innerHTML = EDIT_ATTRIBUTES_ICON;
     button.setAttribute("title", "Edit attributes");
     button.addEventListener('click', (event) => {
-        editMediaForm(event, "meta", img.src);
+        editMediaForm("meta", img.src);
     });
     toolbar.appendChild(button);
     document.body.appendChild(toolbar);
@@ -108,20 +108,21 @@ export const initMediaToolbar = (img) => {
             positionToolbar();
     });
 };
-const selectMedia = (event) => {
+const selectMedia = (metaElement, uri) => {
     var command = {
         type: 'edit',
         payload: {
             editor: "select",
             element: "image",
             options: {
-                metaElement: event.target.dataset.cmsMetaElement,
+                metaElement: metaElement,
+                uri: uri
             }
         }
     };
     frameMessenger.send(window.parent, command);
 };
-const editMediaForm = (event, form, image) => {
+const editMediaForm = (form, image) => {
     var command = {
         type: 'edit',
         payload: {

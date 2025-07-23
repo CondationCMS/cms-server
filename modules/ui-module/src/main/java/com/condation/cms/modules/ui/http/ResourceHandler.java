@@ -61,24 +61,24 @@ public class ResourceHandler extends JettyHandler {
 
 		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
 		var moduleManager = context.get(ModuleManagerFeature.class).moduleManager();
-		
+
 		var actionFactory = new ActionFactory(hookSystem, moduleManager, getUser(request, context).get());
 
-		var resource = request.getHttpURI().getPath().replace(
+		var resource = request.getHttpURI().getPath().replaceFirst(
 				managerURL("/manager/", requestContext), "");
 
 		if (resource.equals("")) {
 			resource = "index.html";
 		}
-		
+
 		if (resource.endsWith(".html")) {
 			try {
 				var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
-				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource, 
+				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource,
 						Map.of(
 								"actionFactory", actionFactory,
 								"csrfToken", TokenUtils.createToken("csrf", secret),
-								"links" , new UILinkFunction(requestContext),
+								"links", new UILinkFunction(requestContext),
 								"managerBaseURL", managerBaseURL(requestContext)
 						));
 				Content.Sink.write(response, true, content, callback);
@@ -98,7 +98,13 @@ public class ResourceHandler extends JettyHandler {
 				response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
 				Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
 			} else {
-				callback.succeeded();
+				path = files.resolve(resource + ".js");
+				if (Files.exists(path)) {
+					response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
+					Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
+				} else {
+					callback.succeeded();
+				}
 			}
 		}
 

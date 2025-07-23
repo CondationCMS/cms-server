@@ -30,8 +30,6 @@ import { getMediaMetaData, setMediaMetaData } from '../../js/modules/rpc/rpc-med
 
 export async function runAction(params) {
 
-	console.log('runAction', params)
-
 	var mediaForm = (await getMediaForm({
 		form: params.options.form || 'meta'
 	})).result
@@ -63,8 +61,8 @@ export async function runAction(params) {
 				meta: updateData
 			})
 			showToast({
-				title: i18n.t('manager.actions.page.edit-media-form.toast.title', "Media meta updated"),
-				message: i18n.t('manager.actions.page.edit-media-form.toast.message', "The media meta have been updated successfully."),
+				title: i18n.t('manager.actions.media.edit-media-form.toast.title', "Media meta updated"),
+				message: i18n.t('manager.actions.media.edit-media-form.toast.message', "The media meta have been updated successfully."),
 				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});

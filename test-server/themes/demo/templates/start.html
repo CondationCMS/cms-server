@@ -36,6 +36,14 @@
 			</div>
 			<hr />
 		</div>
+		--
+		<div cms-test="{{node.meta.media_url}}">
+			{% if node.meta.containsKey('media_url') %}
+				{% assign media = mediaService.get(node.meta.media_url) %}
+				<img src="/media/{{ media.uri }}?format=small" alt="{{ media.meta.alt }}" data-cms-media-actions="meta upload" data-cms-meta-element="media_url"  />
+			{% endif %}
+		</div>
+		--
 		<div class="container sections" 
 			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
 			>

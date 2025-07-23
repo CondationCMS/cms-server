@@ -84,3 +84,28 @@
 .cms-ui-toolbar button:hover  {
 	color: steelblue;
 }
+
+/*
+	image upload
+*/
+.cms-ui-overlay-bottom {
+	position: absolute;
+	background: rgba(0,0,0,0.5);
+	color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	font-size: 14px;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s;
+}
+
+.cms-ui-overlay-bottom.visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+/*
+	end image upload
+*/

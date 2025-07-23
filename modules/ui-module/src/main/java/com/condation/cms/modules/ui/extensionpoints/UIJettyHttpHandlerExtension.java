@@ -42,7 +42,6 @@ import com.condation.cms.modules.ui.http.CompositeHttpHandler;
 import com.condation.cms.modules.ui.http.PublicResourceHandler;
 import com.condation.cms.modules.ui.http.auth.AjaxLoginHandler;
 import com.condation.cms.modules.ui.http.auth.CSRFHandler;
-import com.condation.cms.modules.ui.http.auth.LoginHandler;
 import com.condation.cms.modules.ui.http.auth.LoginResourceHandler;
 import com.condation.cms.modules.ui.http.auth.LogoutHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthHandler;

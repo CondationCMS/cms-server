@@ -30,7 +30,6 @@ import com.condation.cms.api.utils.JSONUtil;
 import com.condation.modules.api.annotation.Extension;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 
@@ -48,7 +47,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 
 	@Override
 	public void extendModel(TemplateEngine.Model model) {
-		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 	
 	
@@ -127,6 +126,16 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 					JSONUtil.toJson(toolbar)
 			);
 		}
+		
+		/*public String editMedia (String id, String [] actions, String attr) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
+			
+			return " data-cms-image-actions='%s'  ".formatted(
+					JSONUtil.toJson(toolbar)
+			);
+		}*/
 		
 	}
 }

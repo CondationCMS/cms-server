@@ -8,6 +8,7 @@ parent:
   text: text for a section
 layout:
   order: 3
+media_url: /compass-7592444_1920.jpg
 ---
 
 # This is a section: bla

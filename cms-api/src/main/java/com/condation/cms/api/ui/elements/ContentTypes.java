@@ -3,6 +3,7 @@ package com.condation.cms.api.ui.elements;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -37,6 +38,10 @@ public class ContentTypes {
 
 	public Set<SectionTemplate> sectionTemplates = new HashSet<>();
 
+	public Optional<PageTemplate> getPageTemplate (String name) {
+		return pageTemplates.stream().filter(pt -> pt.name.equals(name)).findFirst();
+	}
+	
 	public void registerPageTemplate(Map<String, Object> pageTemplate) {
 		pageTemplates.add(new PageTemplate(pageTemplate));
 	}

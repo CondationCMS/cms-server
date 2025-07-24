@@ -200,7 +200,7 @@ export async function createPageAction({ getTargetFolder }) {
 	}
 }
 
-export async function createPageActionFromTemplate({ getTargetFolder, selectedTemplate }) {
+export async function createPageActionOfContentType({ getTargetFolder, contentType }) {
 	const pageName = await alertPrompt({
 		title: i18n.t("filebrowser.createPage.title", "Create new page"),
 		label: i18n.t("filebrowser.createPage.label", "Page name"),
@@ -208,15 +208,11 @@ export async function createPageActionFromTemplate({ getTargetFolder, selectedTe
 	});
 	
 	if (pageName) {
-		if (selectedTemplate) {
+		if (contentType) {
 			let response = await createPage({
 				uri: getTargetFolder(),
 				name: pageName,
-				meta: {
-					title: "New of: " + selectedTemplate,
-					template: selectedTemplate,
-					published: false
-				}
+				contentType: contentType,
 			});
 			if (response.error) {
 				showToast({

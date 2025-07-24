@@ -69,7 +69,7 @@ public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 			throw new RPCException(0, e.getMessage());
 		}
 	}
-
+	
 	private UIHooks uiHooks() {
 		return new UIHooks(getRequestContext().get(HookSystemFeature.class).hookSystem());
 	}

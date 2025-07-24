@@ -27,6 +27,9 @@ Handlebars.registerHelper('concat', function (...args) {
   args.pop();
   return args.join('');
 });
+Handlebars.registerHelper('ifNotEquals', function(arg1, arg2, options) {
+    return (arg1 !== arg2) ? options.fn(this) : options.inverse(this);
+});
 
 Handlebars.registerPartial('fileBrowserContentActions', `
 	<div class="dropdown">
@@ -35,7 +38,7 @@ Handlebars.registerPartial('fileBrowserContentActions', `
 		</button>
 		<ul class="dropdown-menu">
 			{{#each pageTemplates}}
-				<li><a class="dropdown-item" data-cms-filbrowser-ct-action="create" href="#" template="{{template}}">{{name}}</a></li>
+				<li><a class="dropdown-item" data-cms-filbrowser-ct-action="create" href="#" data-cms-contenttype="{{name}}">{{name}}</a></li>
 			{{/each}}
 		</ul>
 	</div>
@@ -90,12 +93,14 @@ const template = Handlebars.compile(`
 				<td>{{name}}</td>
 				<td>
 					{{#if directory}}
-						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder"
-							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Delete folder."
-						>
-							<i class="bi bi-folder-x"></i>
-						</button>
+						{{#ifNotEquals naem ".."}}
+							<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder"
+								data-bs-toggle="tooltip" data-bs-placement="top"
+								data-bs-title="Delete folder."
+							>
+								<i class="bi bi-folder-x"></i>
+							</button>
+						{{/ifNotEquals}}
 					{{else if content}}
 						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="open"
 							data-bs-toggle="tooltip" data-bs-placement="top"

@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.github.slugify.Slugify;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -67,22 +68,19 @@ public class PathUtil {
 		}
 	}
 
-	public static String toValidMarkdownFilename(String input) {
-		if (input == null || input.isBlank()) {
-			return "untitled.md";
+	public static String toValidFilename(String input) {
+		
+		input = input.toLowerCase();
+		String extension = "";
+		if (input.endsWith(".md")) {
+			extension = input.substring(input.lastIndexOf("."));
+			input = input.substring(0, input.lastIndexOf("."));
 		}
-
-		// Verbotene Zeichen durch "_" ersetzen (Windows + Unix sicher)
-		String sanitized = input.replaceAll("[\\\\/:*?\"<>|]", "_");
-
-		// Optional: Leerzeichen trimmen und doppelte Unterstriche bereinigen
-		sanitized = sanitized.trim().replaceAll("_+", "_");
-
-		// .md-Endung anhängen, falls nicht vorhanden
-		if (!sanitized.toLowerCase().endsWith(".md")) {
-			sanitized += ".md";
-		}
-
-		return sanitized;
+		
+		var slugify = Slugify.builder().lowerCase(true).build();
+		
+		var slugified = slugify.slugify(input);
+		
+		return slugified + extension;
 	}
 }

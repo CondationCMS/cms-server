@@ -24,7 +24,7 @@ import { deletePage } from './rpc/rpc-page.js';
 import { openModal } from './modal.js';
 import { loadPreview } from './preview.utils.js';
 import { i18n } from './localization.js';
-import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction, createPageActionFromTemplate } from './filebrowser.actions.js';
+import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction, createPageActionOfContentType } from './filebrowser.actions.js';
 import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
 import { EventBus } from './event-bus.js';
 import { filebrowserTemplate } from './filebrowser.template.js';
@@ -239,11 +239,11 @@ const fileActions = () => {
     document.querySelectorAll("[data-cms-filbrowser-ct-action='create']").forEach((element) => {
         element.addEventListener("click", async (event) => {
             event.preventDefault();
-            const template = element.getAttribute("template");
-            if (template) {
-                createPageActionFromTemplate({
+            const contentType = element.getAttribute("data-cms-contenttype");
+            if (contentType) {
+                createPageActionOfContentType({
                     getTargetFolder: getTargetFolder,
-                    selectedTemplate: template
+                    contentType: contentType
                 }).then(async () => {
                     await initFileBrowser(state.currentFolder);
                 });

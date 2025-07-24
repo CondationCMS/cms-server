@@ -25,6 +25,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.modules.api.annotation.Extension;
@@ -36,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.modules.ui.utils.PathUtil;
+import com.condation.cms.modules.ui.utils.UIHooks;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import com.google.common.base.Strings;
 import java.nio.file.Path;
@@ -95,15 +97,38 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
-			name = PathUtil.toValidMarkdownFilename(name);
-			var metaParam = (Map<String, Object>) parameters.getOrDefault("meta", Map.of());
+			
+			if (Strings.isNullOrEmpty(name)) {
+				throw new RPCException(1, "name must not be empty");
+			}
+			
 			var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 			
-			Map<String, Object> meta = new HashMap<>(metaParam);
+			var contentType = (String) parameters.getOrDefault("contentType", "");
+			
+			var pageTemplate = uiHooks().contentTypes().getPageTemplate(contentType);
+			
+			if (pageTemplate.isEmpty()) {
+				throw new RPCException(1, "no contentType selected");
+			}
+			
+			Map<String, Object> meta = new HashMap<>();
 			meta.put("createdAt", Date.from(Instant.now()));
 			meta.put("createdBy", getUserName());
+			meta.put(Constants.MetaFields.TITLE, name);
+			meta.put(Constants.MetaFields.TEMPLATE, pageTemplate.get().template());
+			meta.put(Constants.MetaFields.PUBLISHED, false);
 
-			Path newFile = contentBase.resolve(uri).resolve(name);
+			name = PathUtil.toValidFilename(name);
+			
+			Path newFile = null;
+			if (name.endsWith(".md")) {
+				newFile = contentBase.resolve(uri).resolve(name);
+			} else {
+				newFile = contentBase.resolve(uri).resolve(name).resolve("index.md");
+			}
+			
+			
 			if (newFile.isAbsolute()) {
 				throw new RPCException(1, "absolut path is not supported");
 			} else if (Files.exists(newFile)) {
@@ -128,5 +153,9 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 			return getRequestContext().get(AuthFeature.class).username();
 		}
 		return "";
+	}
+	
+	private UIHooks uiHooks() {
+		return new UIHooks(getRequestContext().get(HookSystemFeature.class).hookSystem());
 	}
 }

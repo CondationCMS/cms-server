@@ -33,13 +33,12 @@ import java.util.Map;
  *
  * @author t.marx
  */
-/*
+
 @Extensions({
 	@Extension(UIActionsExtensionPoint.class),
 	@Extension(HookSystemRegisterExtensionPoint.class),
 	@Extension(UILocalizationExtensionPoint.class)
 })
-*/
 public class PageMenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint, UILocalizationExtensionPoint {
 
 	@com.condation.cms.api.ui.annotations.MenuEntry(
@@ -51,40 +50,43 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 
 	}
 
+	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "pageMenu",
 			id = "page-create",
 			name = "Create new page",
 			position = 1,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/create-page")
-	)
+	)*/
 	@ShortCut(
 			id = "page-create",
 			title = "Create new page",
 			hotkey = "ctrl-3",
-			section = "Page"
+			section = "Page",
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/create-page")
 	)
 	public void create_page() {
 
 	}
-
+	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "pageMenu",
 			id = "page-edit-meta",
 			name = "Edit MetaData",
 			position = 3,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-page-settings")
-	)
+	)*/
 	@ShortCut(
 			id = "page-edit-meta",
 			title = "Edit MetaData",
 			hotkey = "ctrl-2",
-			section = "Page"
+			section = "Page",
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-page-settings")
 	)
-	public void test_sidebar() {
+	public void page_settings() {
 
 	}
-	
+	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "pageMenu",
 			id = "manage-assets",
@@ -92,49 +94,18 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			position = 10,
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/manage-assets")
 	)
+	*/
 	@ShortCut(
-			id = "manager-asets",
+			id = "manager-assets",
 			title = "Manage assets",
 			hotkey = "ctrl-4",
-			section = "Assets"
+			section = "Assets",
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/manage-assets")
 	)
 	public void manage_media() {
 
 	}
-	/*
-	@com.condation.cms.api.ui.annotations.MenuEntry(
-			parent = "parentDemo",
-			id = "test-get-contentNode",
-			name = "GetContentNode",
-			position = 1,
-			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/test-command")
-	)
-	@ShortCut(
-		id = "test-get-contentNode",
-		title = "GetContentNode",
-		section = "script"
-	)
-	public void get_Content_node() {
-
-	}
 	
-	@com.condation.cms.api.ui.annotations.MenuEntry(
-			parent = "parentDemo",
-			id = "demo-hook-action",
-			name = "HookDemo",
-			position = 2
-	)
-	@Action("demo-hook-action")
-	@ShortCut(
-		id = "demo-hook-action",
-		title = "Demo Call hook",
-		hotkey = "ctrl-3",
-		section = "hook"
-	)
-	public void demoScriptAction(ActionContext<?> context) {
-		System.out.println("demo-hook-action called");
-	}
-	 */
 
 	@Override
 	public Map<String, Map<String, String>> getLocalizations() {

@@ -45,6 +45,15 @@ document.addEventListener("DOMContentLoaded", function () {
     mediaToolbarContainers.forEach(initMediaToolbar);
     //const mediaUploadContainers = document.querySelectorAll('img[data-cms-media-actions~=upload]');
     //mediaUploadContainers.forEach(initMediaUploadOverlay);
+    document.addEventListener('keydown', (event) => {
+        if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {
+            event.preventDefault();
+            frameMessenger.send(window.parent, {
+                type: 'shortkeys',
+                payload: {}
+            });
+        }
+    });
 });
 const addSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');

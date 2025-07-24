@@ -93,7 +93,7 @@ const template = Handlebars.compile(`
 				<td>{{name}}</td>
 				<td>
 					{{#if directory}}
-						{{#ifNotEquals naem ".."}}
+						{{#ifNotEquals name ".."}}
 							<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder"
 								data-bs-toggle="tooltip" data-bs-placement="top"
 								data-bs-title="Delete folder."

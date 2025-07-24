@@ -136,6 +136,10 @@ document.addEventListener("DOMContentLoaded", function () {
         };
         executeScriptAction(cmd);
     });
+    frameMessenger.on('shortkeys', (payload) => {
+        const ninja = document.querySelector('ninja-keys');
+        ninja.open();
+    });
 });
 // DOMContentLoaded  end
 const executeImageForm = (payload) => {

@@ -26,7 +26,7 @@ import { openModal } from './modal.js'
 import { loadPreview } from './preview.utils.js'
 import { i18n } from './localization.js';
 
-import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageAction, createPageActionOfContentType } from './filebrowser.actions.js'
+import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageActionOfContentType } from './filebrowser.actions.js'
 import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
 import { EventBus } from './event-bus.js';
 import { filebrowserTemplate } from './filebrowser.template.js';
@@ -35,7 +35,10 @@ import { getPageTemplates } from './rpc/rpc-manager.js';
 const defaultOptions = {
 	validate: () => true,
 	uri: "",
-	onSelect: null
+	onSelect: null,
+	filter : (file) => {
+		return true; // Default filter allows all files
+	}
 };
 
 const state = {
@@ -80,10 +83,15 @@ const initFileBrowser = async (uri) => {
 		uri: state.currentFolder
 	});
 
+	var files = contentFiles.result.files;
+	if (state.options.filter) {
+		files = files.filter(state.options.filter);
+	}
+
 	const fileBrowserElement = document.getElementById("cms-file-browser");
 	if (fileBrowserElement) {
 		fileBrowserElement.innerHTML = filebrowserTemplate({
-			files: contentFiles.result.files,
+			files: files,
 			filenameHeader: i18n.t("filebrowser.filename", "Filename"),
 			actionHeader: i18n.t("filebrowser.action", "Action"),
 			actions: getActions(),
@@ -121,6 +129,7 @@ const makeFilesSelectable = () => {
 		});
 	});
 };
+
 const enableRowSelection = () => {
 	const rows = document.querySelectorAll("tr[data-cms-file-uri]:not([data-cms-file-directory])");
 	rows.forEach((row) => {
@@ -135,20 +144,6 @@ const enableRowSelection = () => {
 const getActions = () => {
 	const actions = []
 
-	/*
-	if (state.options.type === "content") {
-		actions.push({
-			id: "cms-filebrowser-action-createPage",
-			name: i18n.t("filebrowser.create.page", "Create page")
-		})
-	}
-	*/
-	/*
-	actions.push({
-		id: "cms-filebrowser-action-createFile",
-		name: i18n.t("filebrowser.create.file", "Create file")
-	})
-	*/
 	actions.push({
 		id: "cms-filebrowser-action-createFolder",
 		name: i18n.t("filebrowser.create.folder", "Create folder")
@@ -229,25 +224,6 @@ const fileActions = () => {
 			await initFileBrowser(state.currentFolder);
 		});
 	})
-	/*
-	document.getElementById("cms-filebrowser-action-createFile").addEventListener("click", async (event) => {
-		createFileAction({
-			state: state,
-			getTargetFolder: getTargetFolder
-		}).then(async () => {
-			await initFileBrowser(state.currentFolder);
-		});
-	})
-		*/
-	if (document.getElementById("cms-filebrowser-action-createPage")) {
-		document.getElementById("cms-filebrowser-action-createPage").addEventListener("click", async (event) => {
-			createPageAction({
-				getTargetFolder: getTargetFolder
-			}).then(async () => {
-				await initFileBrowser(state.currentFolder);
-			});
-		})
-	}
 
 	if (document.getElementById("cms-filebrowser-upload-button")) {
 		document.getElementById("cms-filebrowser-upload-button").addEventListener("click", async (event) => {

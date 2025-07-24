@@ -122,6 +122,9 @@ const init = () => {
 		openMediaManager.addEventListener("click", () => {
 			openFileBrowser({
 				type: "assets",
+				filter : (file) => {
+					return file.media || file.directory;
+				},
 				onSelect: (file : any) => {
 					const preview = wrapper.querySelector(".cms-media-image") as HTMLImageElement;
 					const inputValue = wrapper.querySelector(".cms-media-input-value") as HTMLInputElement;

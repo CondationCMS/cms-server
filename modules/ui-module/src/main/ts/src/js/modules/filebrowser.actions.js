@@ -153,53 +153,6 @@ export async function createFileAction({ state, getTargetFolder }) {
 	}
 }
 
-export async function createPageAction({ getTargetFolder }) {
-	const pageName = await alertPrompt({
-		title: i18n.t("filebrowser.createPage.title", "Create new page"),
-		label: i18n.t("filebrowser.createPage.label", "Page name"),
-		placeholder: i18n.t("filebrowser.createPage.placeholder", "New Page")
-	});
-	const pageResponse = await getPageTemplates();
-	if (pageName) {
-		const templateMap = pageResponse.result.reduce((acc, { name, template }) => {
-			acc[template] = name;
-			return acc;
-		}, {});
-		const selectedTemplate = await alertSelect({
-			title: i18n.t("filebrowser.createPage.selectTemplate.title", "Select a template"),
-			placeholder: i18n.t("filebrowser.createPage.selectTemplate.placeholder", "Select a template"),
-			values: templateMap
-		});
-
-		if (selectedTemplate) {
-			let response = await createPage({
-				uri: getTargetFolder(),
-				name: pageName,
-				meta: {
-					title: "New of: " + selectedTemplate,
-					template: selectedTemplate,
-					published: false
-				}
-			});
-			if (response.error) {
-				showToast({
-					title: i18n.t("filebrowser.createPage.error.title", 'Error creating page'),
-					message: response.error.message,
-					type: 'error', // optional: info | success | warning | error
-					timeout: 3000
-				});
-			} else {
-				showToast({
-					title: i18n.t("filebrowser.createPage.success.title", 'Page created'),
-					message: i18n.t("filebrowser.createPage.success.message", 'Page successfuly created'),
-					type: 'success', // optional: info | success | warning | error
-					timeout: 3000
-				});
-			}
-		}
-	}
-}
-
 export async function createPageActionOfContentType({ getTargetFolder, contentType }) {
 	const pageName = await alertPrompt({
 		title: i18n.t("filebrowser.createPage.title", "Create new page"),

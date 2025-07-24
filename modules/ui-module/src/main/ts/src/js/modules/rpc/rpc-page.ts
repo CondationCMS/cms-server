@@ -22,7 +22,12 @@
 
 import { executeRemoteCall } from './rpc.js'
 
-const createPage = async (options: any) => {
+export interface PageCreateOptions {
+	uri: string; // The URI of the folder where the page should be created
+	name: string; // The name of the page to be created
+	contentType: string; // Optional content type for the page
+}
+const createPage = async (options: PageCreateOptions) => {
 	var data = {
 		method: "page.create",
 		parameters: options

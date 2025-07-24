@@ -41,13 +41,22 @@ export async function runAction(params) {
 
 	openFileBrowser({
 		type: "assets",
+		filter : (file) => {
+			return file.media || file.directory;
+		},
 		onSelect: async (file: any) => {
 
 			if (file && file.uri) {
+
+				var selectedFile = file.uri; // Use the file's URI
+				if (file.uri.startsWith("/")) {
+					selectedFile = file.uri.substring(1); // Remove leading slash if present
+				}
+
 				var updateData = {}
 				updateData[params.options.metaElement] = {
 					type: 'media',
-					value: file.uri
+					value: selectedFile
 				}
 				var setMetaResponse = await setMeta({
 					uri: uri,

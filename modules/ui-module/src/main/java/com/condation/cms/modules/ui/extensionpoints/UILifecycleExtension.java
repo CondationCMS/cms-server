@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.CacheManagerFeature;
 import com.condation.cms.api.feature.features.DBFeature;
@@ -34,7 +33,6 @@ import java.nio.file.Files;
 import lombok.Getter;
 import org.simplejavamail.config.ConfigLoader;
 
-
 /**
  *
  * @author t.marx
@@ -45,25 +43,27 @@ public class UILifecycleExtension {
 	private LockService lockService;
 	@Getter
 	private TemplateEngine templateEngine;
-	
+
 	private static UILifecycleExtension INSTANCE = null;
-	
-	public static UILifecycleExtension getInstance (CMSModuleContext context) {
+
+	public static UILifecycleExtension getInstance(CMSModuleContext context) {
 		if (INSTANCE == null) {
 			INSTANCE = new UILifecycleExtension(context);
 		}
 		return INSTANCE;
 	}
-	
-	private UILifecycleExtension (CMSModuleContext context) {
+
+	private UILifecycleExtension(CMSModuleContext context) {
 		lockService = new LockService();
 		templateEngine = new TemplateEngine(context.get(CacheManagerFeature.class).cacheManager());
-		
+
 		var mailConfig = context.get(DBFeature.class).db().getFileSystem().resolve("config/mail.properties");
-		try (InputStream in = Files.newInputStream(mailConfig)) {
-			ConfigLoader.loadProperties(in, true);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		if (Files.exists(mailConfig)) {
+			try (InputStream in = Files.newInputStream(mailConfig)) {
+				ConfigLoader.loadProperties(in, true);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }

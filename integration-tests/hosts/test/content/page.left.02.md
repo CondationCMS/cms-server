@@ -1,6 +1,7 @@
 ---
 title: Startseite
 template: test.ftl
+published: true
 layout:
   order: 2
 ---

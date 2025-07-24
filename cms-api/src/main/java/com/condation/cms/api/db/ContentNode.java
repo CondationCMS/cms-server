@@ -101,7 +101,7 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 	}
 
 	public boolean isDraft() {
-		return !((boolean) data().getOrDefault(Constants.MetaFields.PUBLISHED, true));
+		return !((boolean) data().getOrDefault(Constants.MetaFields.PUBLISHED, false));
 	}
 	
 	public boolean isParentPathHidden () {

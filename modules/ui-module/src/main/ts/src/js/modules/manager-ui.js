@@ -50,8 +50,8 @@ export function updateStateButton() {
           document.querySelector('#cms-btn-status').classList.add('btn-info');
         }
       } else {
-        document.querySelector('#cms-btn-status').classList.remove('btn-info');
         document.querySelector('#cms-btn-status').classList.remove('btn-success');
+        document.querySelector('#cms-btn-status').classList.remove('btn-info');
         document.querySelector('#cms-btn-status').classList.add('btn-warning');
       }
     })

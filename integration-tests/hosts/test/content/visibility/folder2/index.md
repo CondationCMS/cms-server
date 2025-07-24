@@ -1,6 +1,7 @@
 ---
 title: Startseite
 template: start.ftl
+published: true
 menu:
   visible: false
 ---

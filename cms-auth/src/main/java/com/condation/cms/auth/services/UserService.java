@@ -170,6 +170,8 @@ public class UserService {
 		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		Files.deleteIfExists(usersFile);
 
+		Files.createDirectories(usersFile.getParent());
+		
 		StringBuilder userContent = new StringBuilder();
 		users.forEach(user -> userContent.append(user.line()));
 

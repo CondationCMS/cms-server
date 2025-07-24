@@ -49,8 +49,8 @@ export function updateStateButton() {
                 }
             }
             else {
-                document.querySelector('#cms-btn-status').classList.remove('btn-info');
                 document.querySelector('#cms-btn-status').classList.remove('btn-success');
+                document.querySelector('#cms-btn-status').classList.remove('btn-info');
                 document.querySelector('#cms-btn-status').classList.add('btn-warning');
             }
         });

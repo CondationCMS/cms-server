@@ -3,6 +3,7 @@
 	<div class="container">
 		{{ node.content | default('your content here') | raw}}
 	</div>
+		
 	<div>
 		<div class="container" {{ ui.editMeta("text", "description" , node.uri, node.uri) | raw }}>
 			{{ node.meta.getOrDefault('description', 'description here') | raw}}

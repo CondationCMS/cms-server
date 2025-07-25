@@ -23,7 +23,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
@@ -34,11 +33,8 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.modules.ui.utils.MetaConverter;
-import com.condation.cms.modules.ui.utils.UIHooks;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
-import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.net.URI;
-import java.nio.file.Files;
 import java.util.HashMap;
 
 /**

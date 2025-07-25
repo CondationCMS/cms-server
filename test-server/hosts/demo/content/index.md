@@ -34,6 +34,8 @@ Hello world!test
 
 [about](/about)
 
+[das ist eine neue seite](/das-ist-eine-neue-seite)
+
 
 ```java
 System.out.println("Hello world!");

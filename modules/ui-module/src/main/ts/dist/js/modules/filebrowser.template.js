@@ -118,12 +118,14 @@ const template = Handlebars.compile(`
 							<i class="bi bi-file-earmark-x"></i>
 						</button>
 					{{/if}}
-					<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile"
+					{{#ifNotEquals name ".."}}
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile"
 							data-bs-toggle="tooltip" data-bs-placement="top"
         					data-bs-title="Rename file."
 						>
 							<i class="bi bi-pencil-square"></i>
 						</button>
+					{{/ifNotEquals}}
 				</td>
 			<tr>
 		{{/each}}

@@ -36,7 +36,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
-import com.condation.cms.modules.ui.utils.PathUtil;
+import com.condation.cms.modules.ui.utils.UIPathUtil;
 import com.condation.cms.modules.ui.utils.UIHooks;
 import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
 import com.google.common.base.Strings;
@@ -119,7 +119,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 			meta.put(Constants.MetaFields.TEMPLATE, pageTemplate.get().template());
 			meta.put(Constants.MetaFields.PUBLISHED, false);
 
-			name = PathUtil.toValidFilename(name);
+			name = UIPathUtil.toValidFilename(name);
 			
 			Path newFile = null;
 			if (name.endsWith(".md")) {
@@ -133,7 +133,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 				throw new RPCException(1, "absolut path is not supported");
 			} else if (Files.exists(newFile)) {
 				throw new RPCException(1, "directory already exists");
-			} else if (!PathUtil.isChild(contentBase, newFile)) {
+			} else if (!UIPathUtil.isChild(contentBase, newFile)) {
 				throw new RPCException(1, "invalid path");
 			}
 			Files.createDirectories(newFile.getParent());

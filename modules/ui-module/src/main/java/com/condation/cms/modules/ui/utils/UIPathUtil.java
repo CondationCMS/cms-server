@@ -32,8 +32,18 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-public class PathUtil {
+public class UIPathUtil {
 
+	public static Slugify slugify = Slugify.builder()
+			.customReplacement("ä", "ae")
+			.customReplacement("Ä", "ae")
+			.customReplacement("ü", "ue")
+			.customReplacement("Ü", "ue")
+			.customReplacement("ö", "oe")
+			.customReplacement("Ö", "oe")
+			.customReplacement("ß", "ss")
+			.lowerCase(true).build();
+	
 	public static String toUri(final Path contentFile, final Path contentBase) {
 		Path relativize = contentBase.relativize(contentFile);
 //		if (Files.isDirectory(contentFile)) {
@@ -76,8 +86,6 @@ public class PathUtil {
 			extension = input.substring(input.lastIndexOf("."));
 			input = input.substring(0, input.lastIndexOf("."));
 		}
-		
-		var slugify = Slugify.builder().lowerCase(true).build();
 		
 		var slugified = slugify.slugify(input);
 		

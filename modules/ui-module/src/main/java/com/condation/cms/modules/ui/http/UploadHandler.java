@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.modules.ui.utils.UIPathUtil;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import com.github.slugify.Slugify;
 import java.io.IOException;
@@ -74,8 +75,6 @@ public class UploadHandler extends JettyHandler {
 	);
 
 	private static final Tika tika = new Tika();
-
-	private static final Slugify SLUGIFY = Slugify.builder().build();
 
 	public UploadHandler(String contextPath, Path outputDir) throws IOException {
 		this(contextPath, outputDir, false);
@@ -229,7 +228,7 @@ public class UploadHandler extends JettyHandler {
 		}
 
 		// Slugify nur auf den Namensteil anwenden
-		String slug = SLUGIFY.slugify(namePart);
+		String slug = UIPathUtil.slugify.slugify(namePart);
 
 		// Endung wieder anhängen
 		return slug + extension.toLowerCase();

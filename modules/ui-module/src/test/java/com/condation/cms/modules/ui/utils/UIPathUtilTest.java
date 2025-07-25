@@ -30,28 +30,28 @@ import org.junit.jupiter.api.Test;
  *
  * @author thorstenmarx
  */
-public class PathUtilTest {
+public class UIPathUtilTest {
 	
-	public PathUtilTest() {
+	public UIPathUtilTest() {
 	}
 
 	@Test
 	public void test_filenames() {
-		Assertions.assertThat(PathUtil.toValidFilename("das ist mein text")).isEqualTo("das-ist-mein-text");
+		Assertions.assertThat(UIPathUtil.toValidFilename("das ist mein text")).isEqualTo("das-ist-mein-text");
 		
-		Assertions.assertThat(PathUtil.toValidFilename("das ist mein text.md")).isEqualTo("das-ist-mein-text.md");
+		Assertions.assertThat(UIPathUtil.toValidFilename("das ist mein text.md")).isEqualTo("das-ist-mein-text.md");
 	}
 	
 	
 	@Test
 	public void test_umlauts() {
-		Assertions.assertThat(PathUtil.toValidFilename("ä")).isEqualTo("ae");
-		Assertions.assertThat(PathUtil.toValidFilename("Ä")).isEqualTo("ae");
-		Assertions.assertThat(PathUtil.toValidFilename("ü")).isEqualTo("ue");
-		Assertions.assertThat(PathUtil.toValidFilename("Ü")).isEqualTo("ue");
-		Assertions.assertThat(PathUtil.toValidFilename("Ö")).isEqualTo("oe");
-		Assertions.assertThat(PathUtil.toValidFilename("Ö")).isEqualTo("oe");
-		Assertions.assertThat(PathUtil.toValidFilename("ß")).isEqualTo("ss");
+		Assertions.assertThat(UIPathUtil.toValidFilename("ä")).isEqualTo("ae");
+		Assertions.assertThat(UIPathUtil.toValidFilename("Ä")).isEqualTo("ae");
+		Assertions.assertThat(UIPathUtil.toValidFilename("ü")).isEqualTo("ue");
+		Assertions.assertThat(UIPathUtil.toValidFilename("Ü")).isEqualTo("ue");
+		Assertions.assertThat(UIPathUtil.toValidFilename("Ö")).isEqualTo("oe");
+		Assertions.assertThat(UIPathUtil.toValidFilename("Ö")).isEqualTo("oe");
+		Assertions.assertThat(UIPathUtil.toValidFilename("ß")).isEqualTo("ss");
 	}
 	
 }

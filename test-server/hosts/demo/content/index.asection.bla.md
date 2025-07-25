@@ -9,6 +9,7 @@ parent:
 layout:
   order: 3
 media_url: /2025/06/bookwire.png
+published: true
 ---
 
 # This is a section: bla

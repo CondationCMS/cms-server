@@ -37,9 +37,12 @@ export const deActivatePreviewOverlay = () => {
         overlay.style.display = "none";
     }
 };
+const getPreviewFrame = () => {
+    return document.getElementById("contentPreview");
+};
 const getPreviewUrl = () => {
     try {
-        return document.getElementById("contentPreview").contentWindow.location.href;
+        return getPreviewFrame().contentWindow.location.href;
     }
     catch (e) {
         console.warn("Konnte iframe-URL nicht auslesen", e);
@@ -48,7 +51,7 @@ const getPreviewUrl = () => {
 };
 const reloadPreview = () => {
     activatePreviewOverlay();
-    document.getElementById("contentPreview").contentDocument.location.reload(true);
+    getPreviewFrame().contentDocument.location.reload(true);
 };
 const loadPreview = (url) => {
     activatePreviewOverlay();
@@ -71,4 +74,4 @@ const loadPreview = (url) => {
         console.error("Ungültige URL:", url, e);
     }
 };
-export { getPreviewUrl, reloadPreview, loadPreview };
+export { getPreviewUrl, reloadPreview, loadPreview, getPreviewFrame };

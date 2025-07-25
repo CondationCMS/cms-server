@@ -128,7 +128,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 			mapping.add(PathSpec.from("/manager/upload"),
 					new CompositeHttpHandler(List.of(
-							new UIAuthHandler(getContext()),
+							new UIAuthHandler(getContext(), getRequestContext()),
 							new CSRFHandler(getContext()),
 							new UploadHandler(
 									"/manager/upload",
@@ -136,7 +136,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 					)));
 			mapping.add(PathSpec.from("/manager/upload2"),
 					new CompositeHttpHandler(List.of(
-							new UIAuthHandler(getContext()),
+							new UIAuthHandler(getContext(), getRequestContext()),
 							new CSRFHandler(getContext()),
 							new UploadHandler(
 									"/manager/upload2",
@@ -146,21 +146,21 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 					)));
 			mapping.add(PathSpec.from("/manager/rpc"),
 					new CompositeHttpHandler(List.of(
-							new UIAuthHandler(getContext()),
+							new UIAuthHandler(getContext(), getRequestContext()),
 							new CSRFHandler(getContext()),
 							new RemoteCallHandler(remoteCallService, getContext())
 					)));
 
 			mapping.add(PathSpec.from("/manager/hooks"),
 					new CompositeHttpHandler(List.of(
-							new UIAuthHandler(getContext()),
+							new UIAuthHandler(getContext(), getRequestContext()),
 							new CSRFHandler(getContext()),
 							new HookHandler(hookSystem)
 					)));
 
 			mapping.add(PathSpec.from("/manager/actions/*"),
 					new CompositeHttpHandler(List.of(
-							new UIAuthHandler(getContext()),
+							new UIAuthHandler(getContext(), getRequestContext()),
 							new JSActionHandler(createFileSystem("/manager/actions"), "/manager/actions", getContext())
 					)));
 
@@ -194,7 +194,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/*"),
 					new CompositeHttpHandler(
 							List.of(
-									new UIAuthRedirectHandler(getContext()),
+									new UIAuthRedirectHandler(getContext(), getRequestContext()),
 									new ResourceHandler(createFileSystem("/manager"), "/manager", getContext(), getRequestContext())
 							)
 					)

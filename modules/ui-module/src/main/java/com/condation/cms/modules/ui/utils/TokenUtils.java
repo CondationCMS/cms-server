@@ -22,7 +22,7 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 
-import com.google.gson.Gson;
+import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Base64;
@@ -32,7 +32,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class TokenUtils {
 
-	private static final Gson gson = new Gson();
 
 	public static Optional<Payload> getUserName(String token, String SECRET) throws Exception {
 		if (!validateToken(token, SECRET)) {
@@ -40,7 +39,7 @@ public class TokenUtils {
 		}
 		String[] parts = token.split(":");
 		String json = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-		Payload payload = gson.fromJson(json, Payload.class);
+		Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
 		return Optional.of(payload);
 	}
 
@@ -59,7 +58,7 @@ public class TokenUtils {
 		}
 
 		String json = new String(Base64.getUrlDecoder().decode(base64Payload), StandardCharsets.UTF_8);
-		Payload payload = gson.fromJson(json, Payload.class);
+		Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
 
 		long now = Instant.now().getEpochSecond();
 		return (now - payload.timestamp()) < 3600;
@@ -67,7 +66,7 @@ public class TokenUtils {
 
 	public static String createToken(String username, String SECRET) throws Exception {
 		Payload payload = new Payload(username, Instant.now().getEpochSecond());
-		String json = gson.toJson(payload);
+		String json = UIGsonProvider.INSTANCE.toJson(payload);
 		String base64Payload = Base64.getUrlEncoder().withoutPadding().encodeToString(json.getBytes(StandardCharsets.UTF_8));
 		String signature = hmacSha256(base64Payload, SECRET);
 		return base64Payload + ":" + signature;

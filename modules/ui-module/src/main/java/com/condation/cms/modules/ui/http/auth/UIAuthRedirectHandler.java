@@ -25,6 +25,7 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +43,7 @@ import org.eclipse.jetty.util.Callback;
 public class UIAuthRedirectHandler extends JettyHandler {
 
 	private final CMSModuleContext moduleContext;
+	private final CMSRequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -60,6 +62,13 @@ public class UIAuthRedirectHandler extends JettyHandler {
 			callback.succeeded();
 			return true;
 		}
+		var username = TokenUtils.getUserName(token, secret);
+		if (username.isEmpty()) {
+			redirectToLogin(response, moduleContext);
+			callback.succeeded();
+			return true;
+		}
+		setAuthFeature(username.get().username(), requestContext);
 
 		return false;
 	}

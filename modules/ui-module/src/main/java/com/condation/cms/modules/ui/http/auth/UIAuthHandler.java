@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.http.auth;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ import org.eclipse.jetty.util.Callback;
 public class UIAuthHandler extends JettyHandler {
 
 	private final CMSModuleContext moduleContext;
+	private final CMSRequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -55,10 +57,22 @@ public class UIAuthHandler extends JettyHandler {
 		var token = tokenCookie.get().getValue();
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
 		if (!TokenUtils.validateToken(token, secret)) {
+			
+			var username = TokenUtils.getUserName(token, secret);
+			setAuthFeature(username.get().username(), requestContext);
+			
 			response.setStatus(403);
 			callback.succeeded();
 			return true;
 		}
+		
+		var username = TokenUtils.getUserName(token, secret);
+		if (username.isEmpty()) {
+			response.setStatus(403);
+			callback.succeeded();
+			return true;
+		}
+		setAuthFeature(username.get().username(), requestContext);
 
 		return false;
 	}

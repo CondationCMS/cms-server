@@ -41,14 +41,14 @@ import java.util.Map;
 })
 public class PageMenuExtension extends HookSystemRegisterExtensionPoint implements UIActionsExtensionPoint, UILocalizationExtensionPoint {
 
-	@com.condation.cms.api.ui.annotations.MenuEntry(
-			id = "pageMenu",
-			name = "Page",
-			position = 10
-	)
-	public void parentDefinition() {
-
-	}
+//	@com.condation.cms.api.ui.annotations.MenuEntry(
+//			id = "pageMenu",
+//			name = "Page",
+//			position = 10
+//	)
+//	public void parentDefinition() {
+//
+//	}
 
 	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(

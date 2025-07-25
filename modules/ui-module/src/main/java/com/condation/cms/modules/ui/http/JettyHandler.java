@@ -24,10 +24,12 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.extensions.HttpHandler;
 import com.condation.cms.api.feature.FeatureContainer;
+import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
@@ -55,6 +57,13 @@ public abstract class JettyHandler implements HttpHandler {
 		return "";
 	}
 
+	public void setAuthFeature (String username, CMSRequestContext requestContext) {
+		if (requestContext.has(AuthFeature.class)) {
+			return;
+		}
+		requestContext.add(AuthFeature.class, new AuthFeature(username));
+	}
+	
 	public Optional<User> getUser(Request request, CMSModuleContext moduleContext) {
 
 		try {

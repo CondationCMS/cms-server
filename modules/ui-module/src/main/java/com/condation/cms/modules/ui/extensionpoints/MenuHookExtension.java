@@ -38,7 +38,7 @@ import java.util.Map;
  *
  * @author t.marx
  */
-@Extension(HookSystemRegisterExtensionPoint.class)
+//@Extension(HookSystemRegisterExtensionPoint.class)
 public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 
 	@Override

@@ -22,8 +22,6 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
-import com.condation.cms.templates.Component;
-import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.lexer.TokenStream;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
@@ -166,7 +164,7 @@ public class Parser {
 				case IDENTIFIER: {
 					ASTNode currentNode = nodeStack.peek();
 					if (currentNode instanceof TagNode tagNode1) {
-						tagNode1.setName(token.value);
+						tagNode1.setName(token.value != null ? token.value.trim() : token.value);
 					} else if (currentNode instanceof VariableNode variableNode1) {
 						var identifier = token.value;
 						if (TemplateUtils.hasFilters(identifier)) {

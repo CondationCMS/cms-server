@@ -1,19 +1,62 @@
 <!DOCTYPE html SYSTEM>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-	{% include "libs/fragments.html" %}
-</head>
+	<head>
+		
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		{% include "libs/fragments.html" %}
+		
+		
+	</head>
 
-<body class="centered">
+	<body class="centered">
 
-	<div id="content">
-		<div class="container">
-			{{ node.content | raw}}
+		<div id="content" 
+			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+		>
+			<div class="container">
+				{{ node.content | raw }}
+			</div>
+			<div>
+				<div class="container" {{ ui.editMeta("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					{{ node.meta.get('count') }}
+				</div>
+				<div>
+					{[ component color="red" message="its a component" ]}
+					{[ endcomponent ]}
+				</div>
+			</div>
+			<hr />
 		</div>
-	</div>
 
-</body>
+		<div>
+			{% if node.meta.containsKey('media_url') %}
+				{% assign media = mediaService.get(node.meta.media_url) %}
+				<img src="/media/{{ media.uri }}?format=small" alt="{{ media.meta.alt }}" 
+					{{ ui.mediaToolbar(["select", "meta"], {"uri": node.uri, "element": "media_url" }) | raw }} />
+			{% endif %}
+		</div>
+
+		<div class="container sections" 
+			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
+			>
+			{% if sections.containsKey('asection') %}
+				{% for section in sections.get('asection') %}
+					{{ section.content() | raw }}
+				{% endfor %}
+			{% endif %}
+
+		</div>
+
+	</body>
 
 
 </html>

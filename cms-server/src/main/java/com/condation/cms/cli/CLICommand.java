@@ -31,7 +31,11 @@ import com.condation.cms.cli.commands.*;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "", subcommands = {
+@CommandLine.Command(
+		name = "",
+		description = "CondationServer CLI",
+		mixinStandardHelpOptions = true,
+		subcommands = {
 	ServerCommand.class,  HostCommands.class, ExtensionCommands.class, ModuleCommands.class, ThemeCommands.class, RepoCommands.class})
 @Slf4j
 public class CLICommand implements Runnable {

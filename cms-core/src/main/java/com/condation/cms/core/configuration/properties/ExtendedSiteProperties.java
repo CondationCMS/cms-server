@@ -135,6 +135,11 @@ public class ExtendedSiteProperties implements SiteProperties {
 	}
 	
 	@Override
+	public boolean uiManagerEnabled() {
+		return configuration.getBoolean("ui.manager.enabled", false);
+	}
+	
+	@Override
 	public Object get (String field) {
 		return configuration.get(field);
 	}
@@ -142,5 +147,10 @@ public class ExtendedSiteProperties implements SiteProperties {
 	@Override
 	public <T> T getOrDefault(String field, T defaultValue) {
 		return (T) configuration.getOrDefault(field, defaultValue);
+	}
+
+	@Override
+	public boolean force2fa() {
+		return configuration.getBoolean("ui.force2fa", false);
 	}
 }

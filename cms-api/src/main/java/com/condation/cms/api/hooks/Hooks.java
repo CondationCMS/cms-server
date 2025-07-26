@@ -31,7 +31,7 @@ public enum Hooks {
 	
 	NAVIGATION_PATH("system/navigation/%s/path"),
 	NAVIGATION_LIST("system/navigation/%s/list"),
-	CONTENT_SHORTCODE("system/content/shortcodes"),
+	CONTENT_TAGS("system/content/tags"),
 	CONTENT_FILTER("system/content/filter"),
 	TEMPLATE_COMPONENT("system/template/component"),
 	DB_QUERY_OPERATIONS("system/db/query/operations"),

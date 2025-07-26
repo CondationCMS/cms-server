@@ -24,9 +24,11 @@ package com.condation.cms.server.configs;
 
 
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.core.site.DefaultSiteService;
 import com.condation.cms.git.RepositoryManager;
 import com.google.inject.Binder;
 import com.google.inject.Provides;
@@ -96,5 +98,11 @@ public class ServerGlobalModule implements com.google.inject.Module {
 		repositoryManager.init(gitConfig);
 
 		return repositoryManager;
+	}
+	
+	@Provides
+	@Singleton
+	public SiteService siteService () {
+		return new DefaultSiteService();
 	}
 }

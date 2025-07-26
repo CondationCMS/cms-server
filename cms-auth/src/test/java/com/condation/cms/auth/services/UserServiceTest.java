@@ -49,9 +49,9 @@ public class UserServiceTest {
 	
 
 	@Test
-	public void test_login_and_remove() throws IOException {
+	public void test_login_and_remove() throws Exception {
 		
-		var realm = UserService.Realm.of("users");
+		com.condation.cms.auth.services.Realm realm = Realm.of("users");
 		
 		Assertions.assertThat(userService.login(realm, "test", "demo")).isEmpty();
 		
@@ -65,9 +65,9 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void test_multiple_users() throws IOException {
+	public void test_multiple_users() throws Exception {
 		
-		var realm = UserService.Realm.of("musers");
+		com.condation.cms.auth.services.Realm realm = Realm.of("musers");
 		
 		userService.addUser(realm, "test1", "demo", new String[]{"eins","zwei"});
 		userService.addUser(realm, "test2", "demo", new String[]{"eins","zwei"});

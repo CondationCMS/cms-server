@@ -33,7 +33,6 @@ import com.condation.cms.ipc.Command;
 import com.condation.cms.ipc.IPCClient;
 import com.google.common.base.Strings;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -42,7 +41,12 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "reload")
+@CommandLine.Command(
+		name = "reload",
+		description = {
+			"reloads a host"
+		}
+)
 @Slf4j
 public class ReloadHost implements Runnable {
 

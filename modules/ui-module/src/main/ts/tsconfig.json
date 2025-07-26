@@ -7,7 +7,8 @@
     "moduleResolution": "node",
     "allowJs": true,
     "checkJs": false,
-    "lib": ["dom", "es2020"]
+    "lib": ["dom", "es2020"],
+    "sourceMap": false,
   },
   "include": [
     "src/**/*",

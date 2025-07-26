@@ -187,6 +187,7 @@ export const initToolbar = (container: HTMLElement) => {
 		const button = document.createElement('button');
 		button.setAttribute('data-cms-action', 'publish');
 		button.setAttribute('data-cms-section-uri', toolbarDefinition.uri);
+		button.classList.add('cms-unpublished');
 		button.innerHTML = SECTION_UNPUBLISHED_ICON;
 		button.setAttribute("title", "Publish");
 		button.addEventListener('click', setPublishForSection);

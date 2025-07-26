@@ -25,6 +25,8 @@
   --cms-edit-box-sections: rgb(120, 187, 239);
   --cms-toolbar-background-color: rgba(0, 0, 0, 0.7);
   --cms-toolbar-color: white;
+  --cms-published: #5cb85c;
+  --cms-unpublished: #ffc107;
 }
 
 .cms-ui-editable {
@@ -83,6 +85,13 @@
 
 .cms-ui-toolbar button:hover  {
 	color: steelblue;
+}
+
+.cms-ui-toolbar button.cms-published {
+	color: var(--cms-published);
+}
+.cms-ui-toolbar button.cms-unpublished {
+	color: var(--cms-unpublished);
 }
 
 /*

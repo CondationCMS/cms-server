@@ -63,11 +63,15 @@ document.addEventListener("DOMContentLoaded", function () {
                     sectionContainer.innerHTML = SECTION_PUBLISHED_ICON;
                     sectionContainer.setAttribute('data-cms-action', 'unpublish');
                     sectionContainer.setAttribute("title", "Unpublish");
+                    sectionContainer.classList.remove('cms-unpublished');
+                    sectionContainer.classList.add('cms-published');
                 }
                 else {
                     sectionContainer.innerHTML = SECTION_UNPUBLISHED_ICON;
                     sectionContainer.setAttribute('data-cms-action', 'publish');
                     sectionContainer.setAttribute("title", "Publish");
+                    sectionContainer.classList.remove('cms-published');
+                    sectionContainer.classList.add('cms-unpublished');
                 }
             }
         }

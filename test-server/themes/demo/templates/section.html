@@ -6,10 +6,14 @@
 		
 	<div>
 		<div class="container" {{ ui.editMeta("text", "description" , node.uri, node.uri) | raw }}>
-			{{ node.meta.getOrDefault('description', 'description here') | raw}}
+			{{ node.meta.getOrDefault('description', 'description here')}}
 		</div>
 		<div class="container" {{ ui.editMeta("text", "parent.text" , node.uri, node.uri) | raw }}>
-			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here') | raw}}
+			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here')}}
+		</div>
+		<div class="container" {{ ui.editMeta("markdown", "about" , node.uri, node.uri) | raw }}>
+
+			{{ cms.markdown.render(node.meta.getOrDefault('about', '--about--')) | raw}}
 		</div>
 	</div>
 	<div>

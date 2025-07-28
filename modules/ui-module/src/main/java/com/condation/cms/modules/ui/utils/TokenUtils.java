@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.utils;
 
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Optional;
@@ -52,9 +53,12 @@ public class TokenUtils {
 		String base64Payload = parts[0];
 		String signature = parts[1];
 
+		
 		String expectedSig = hmacSha256(base64Payload, SECRET);
-		if (!expectedSig.equals(signature)) {
-			return false;
+		byte[] expectedBytes = expectedSig.getBytes(StandardCharsets.UTF_8);
+		byte[] providedBytes = signature.getBytes(StandardCharsets.UTF_8);
+		if (!MessageDigest.isEqual(expectedBytes, providedBytes)) {
+				return false;
 		}
 
 		String json = new String(Base64.getUrlDecoder().decode(base64Payload), StandardCharsets.UTF_8);

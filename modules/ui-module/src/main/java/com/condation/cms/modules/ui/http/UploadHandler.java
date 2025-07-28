@@ -24,11 +24,10 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
-import com.github.slugify.Slugify;
+import com.google.common.io.ByteStreams;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,6 +62,9 @@ public class UploadHandler extends JettyHandler {
 	private final Path TEMP_UPLOAD_DIR;
 
 	private final boolean useDateFolder;
+	
+	/** Maximum allowed size of uploaded files in bytes (10 MB). */
+    public static final long MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 	public static final Set<String> ALLOWED_MIME_TYPES = Set.of(
 			"image/png",
@@ -173,7 +175,12 @@ public class UploadHandler extends JettyHandler {
 					// Temporäre Datei erzeugen, um MIME-Type zu ermitteln
 					Path tempFile = Files.createTempFile("upload-", ".tmp");
 					try (InputStream inputStream = Content.Source.asInputStream(filePart.getContentSource()); OutputStream outputStream = Files.newOutputStream(tempFile)) {
-						IO.copy(inputStream, outputStream);
+						long bytesCopied = ByteStreams.copy(inputStream, outputStream);
+						
+						if (bytesCopied > MAX_FILE_SIZE_BYTES) {
+							Files.deleteIfExists(tempFile);
+							throw new IOException("Uploaded file too large (" + bytesCopied + " bytes)");
+						}
 					}
 
 					String detectedMimeType = tika.detect(tempFile);

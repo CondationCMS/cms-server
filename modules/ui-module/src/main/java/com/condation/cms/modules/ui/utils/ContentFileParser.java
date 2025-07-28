@@ -28,7 +28,10 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.Savepoint;
 import java.util.Map;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 public class ContentFileParser {
 
@@ -60,7 +63,7 @@ public class ContentFileParser {
 	}
 
 	private void parseHeader(String headerContent) {
-		Yaml yaml = new Yaml();
+		Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
 		this.header = yaml.load(headerContent);
 	}
 

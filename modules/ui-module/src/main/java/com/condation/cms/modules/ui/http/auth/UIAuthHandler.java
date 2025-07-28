@@ -57,10 +57,6 @@ public class UIAuthHandler extends JettyHandler {
 		var token = tokenCookie.get().getValue();
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
 		if (!TokenUtils.validateToken(token, secret)) {
-			
-			var username = TokenUtils.getUserName(token, secret);
-			setAuthFeature(username.get().username(), requestContext);
-			
 			response.setStatus(403);
 			callback.succeeded();
 			return true;

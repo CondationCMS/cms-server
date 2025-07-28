@@ -36,6 +36,7 @@ import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.MarkdownRendererFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
@@ -51,6 +52,7 @@ import com.condation.cms.api.content.MapAccess;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
+import com.condation.cms.content.template.functions.MarkdownFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
@@ -167,6 +169,9 @@ public class DefaultContentRenderer implements ContentRenderer {
 		model.values.put("query", queryFunction);
 		namespace.add(Constants.TemplateNamespaces.CMS, "query", queryFunction);
 		
+		MarkdownFunction markdownFunction = createMarkdownFunction(context);
+		namespace.add(Constants.TemplateNamespaces.CMS, "markdown", markdownFunction);
+
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
@@ -218,6 +223,10 @@ public class DefaultContentRenderer implements ContentRenderer {
 		model.values.putAll(namespace.getNamespaces());
 
 		return templates.get().render((String) meta.get("template"), model);
+	}
+
+	protected MarkdownFunction createMarkdownFunction(final RequestContext context) {
+		return new MarkdownFunction(context.get(MarkdownRendererFeature.class).markdownRenderer());
 	}
 
 	protected QueryFunction createQueryFunction(final ReadOnlyFile contentFile, final RequestContext context) {

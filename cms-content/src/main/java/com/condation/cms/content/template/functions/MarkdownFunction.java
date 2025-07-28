@@ -1,10 +1,10 @@
-package com.condation.cms.api.cache;
+package com.condation.cms.content.template.functions;
 
 /*-
  * #%L
- * cms-api
+ * cms-content
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,16 +22,17 @@ package com.condation.cms.api.cache;
  * #L%
  */
 
+import com.condation.cms.api.markdown.MarkdownRenderer;
 
-import java.util.function.Function;
+public class MarkdownFunction {
 
-/**
- *
- * @author t.marx
- */
-public interface CacheProvider {
-	
-	<K, V> ICache<K, V> getCache (String name, CacheManager.CacheConfig config);
-	
-	<K, V> ICache<K, V> getCache (String name, CacheManager.CacheConfig config, Function<K, V> loader);
+    private final MarkdownRenderer renderer;
+
+    public MarkdownFunction(MarkdownRenderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public String render (String markdown) {
+        return renderer.render(markdown);
+    }
 }

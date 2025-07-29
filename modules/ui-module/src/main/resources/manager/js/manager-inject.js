@@ -60,15 +60,16 @@ document.addEventListener("DOMContentLoaded", function () {
             for (const item of items) {
                 const sectionContainer = document.querySelector(`[data-cms-section-uri="${item.uri}"]`);
                 if (item.data.published) {
-                    sectionContainer.innerHTML = SECTION_PUBLISHED_ICON;
                     sectionContainer.setAttribute('data-cms-action', 'unpublish');
                     sectionContainer.setAttribute("title", "Unpublish");
                     if (isSectionPublishedExpired(item)) {
+                        sectionContainer.innerHTML = SECTION_UNPUBLISHED_ICON;
                         sectionContainer.classList.remove('cms-unpublished');
                         sectionContainer.classList.remove('cms-published');
                         sectionContainer.classList.add('cms-published-expired');
                     }
                     else {
+                        sectionContainer.innerHTML = SECTION_PUBLISHED_ICON;
                         sectionContainer.classList.remove('cms-unpublished');
                         sectionContainer.classList.remove('cms-published-expired');
                         sectionContainer.classList.add('cms-published');

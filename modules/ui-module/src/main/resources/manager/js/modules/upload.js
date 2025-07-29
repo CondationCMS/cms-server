@@ -25,6 +25,11 @@ export function uploadFileWithProgress({ uploadEndpoint, file, uri, onProgress, 
         onError?.("No file selected.");
         return;
     }
+    const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+        onError?.(`File is too large. Maximum size is ${MAX_FILE_SIZE_BYTES} bytes.`);
+        return;
+    }
     const formData = new FormData();
     formData.append("file", file);
     formData.append("uri", uri);

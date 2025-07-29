@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.http.auth;
  */
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.api.module.CMSRequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
@@ -69,6 +70,8 @@ public class UIAuthHandler extends JettyHandler {
 			return true;
 		}
 		setAuthFeature(username.get().username(), requestContext);
+		
+		requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
 
 		return false;
 	}

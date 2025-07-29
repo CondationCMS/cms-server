@@ -27,7 +27,8 @@
   --cms-toolbar-color: white;
   --cms-published: #5cb85c;
   --cms-unpublished: #ffc107;
-}
+  --cms-published-expired: #5bc0de;
+ }
 
 .cms-ui-editable {
 	position: relative;
@@ -89,6 +90,9 @@
 
 .cms-ui-toolbar button.cms-published {
 	color: var(--cms-published);
+}
+.cms-ui-toolbar button.cms-published-expired {
+	color: var(--cms-published-expired);
 }
 .cms-ui-toolbar button.cms-unpublished {
 	color: var(--cms-unpublished);

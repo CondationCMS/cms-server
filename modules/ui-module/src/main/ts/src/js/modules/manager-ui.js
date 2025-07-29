@@ -40,14 +40,14 @@ export function updateStateButton() {
       var published = getContentResponse?.result?.meta?.published
       if (published) {
 
-        if (isPagePublished(getContentResponse)) {
-          document.querySelector('#cms-btn-status').classList.remove('btn-warning');
-          document.querySelector('#cms-btn-status').classList.remove('btn-info');
-          document.querySelector('#cms-btn-status').classList.add('btn-success');
-        } else {
+        if (isPagePublishedExpired(getContentResponse)) {
           document.querySelector('#cms-btn-status').classList.remove('btn-warning');
           document.querySelector('#cms-btn-status').classList.remove('btn-success');
           document.querySelector('#cms-btn-status').classList.add('btn-info');
+        } else {
+          document.querySelector('#cms-btn-status').classList.remove('btn-warning');
+          document.querySelector('#cms-btn-status').classList.remove('btn-info');
+          document.querySelector('#cms-btn-status').classList.add('btn-success');
         }
       } else {
         document.querySelector('#cms-btn-status').classList.remove('btn-success');
@@ -58,7 +58,7 @@ export function updateStateButton() {
   })
 }
 
-export function isPagePublished(contentResponse) {
+export function isPagePublishedExpired(contentResponse) {
   const publishDateStr = contentResponse?.result?.meta?.publish_date;
   const unpublishDateStr = contentResponse?.result?.meta?.unpublish_date;
 
@@ -67,12 +67,12 @@ export function isPagePublished(contentResponse) {
   const publishDate = publishDateStr ? new Date(publishDateStr) : null;
   const unpublishDate = unpublishDateStr ? new Date(unpublishDateStr) : null;
 
-  // Seite ist veröffentlicht, wenn:
-  // - publishDate leer ist oder in der Vergangenheit liegt
-  // - und unpublishDate leer ist oder in der Zukunft liegt
+  // page is published if:
+  // - publishDate empty or in the past
+  // - und unpublishDate empty or in the future
   const isPublished =
     (!publishDate || publishDate <= now) &&
     (!unpublishDate || unpublishDate > now);
 
-  return isPublished;
+  return !isPublished;
 }

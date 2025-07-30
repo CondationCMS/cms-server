@@ -20,7 +20,7 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 		name: "StartPage",
 		template: "start.html",
 		forms: {
-			meta: [
+			settings: [
 				{
 					type: 'divider',
 					name: 'divider',

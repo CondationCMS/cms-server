@@ -48,9 +48,11 @@
 }
 
 .cms-ui-toolbar {
+	all: unset;
 	position: absolute;
 	z-index: 1000;
-	display: flex;
+	display: inline-flex;
+	width: auto;
 	background-color: var(--cms-toolbar-background-color);
 	color: var(--cms-toolbar-color);
 	opacity: 0;

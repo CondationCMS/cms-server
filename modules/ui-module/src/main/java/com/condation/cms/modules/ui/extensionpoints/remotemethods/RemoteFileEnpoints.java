@@ -41,6 +41,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Path;
 
 /**
@@ -236,6 +237,8 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			var type = (String) parameters.get("type");
 			var contentBase = getWritableBase(db.getFileSystem(), type);
 
+			name = UIPathUtil.slugify(name);
+			
 			Path newFile = contentBase.resolve(uri).resolve(name);
 			if (newFile.isAbsolute()) {
 				throw new RPCException(1, "absolut path is not supported");
@@ -265,11 +268,13 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 			var type = (String) parameters.get("type");
 			var contentBase = getWritableBase(db.getFileSystem(), type);
 
+			name = UIPathUtil.slugify(name);
+			
 			Path newFile = contentBase.resolve(uri).resolve(name);
 			if (newFile.isAbsolute()) {
 				throw new RPCException(1, "absolut path is not supported");
 			} else if (Files.exists(newFile)) {
-				throw new RPCException(1, "directory already exists");
+				throw new RPCException(1, "file already exists");
 			} else if (!PathUtil.isChild(contentBase, newFile)) {
 				throw new RPCException(1, "invalid path");
 			}

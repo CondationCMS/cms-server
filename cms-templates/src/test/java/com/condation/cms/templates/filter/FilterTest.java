@@ -23,8 +23,10 @@ package com.condation.cms.templates.filter;
  */
 
 import com.condation.cms.templates.filter.impl.DateFilter;
+import com.condation.cms.templates.filter.impl.RawFilter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.apache.commons.text.StringEscapeUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -90,5 +92,23 @@ public class FilterTest {
 		
         Object result = pipeline.execute(date);
         Assertions.assertThat(result).isEqualTo(formatted);
+    }
+	
+	@Test
+    void raw() {
+		
+		FilterRegistry registry = new FilterRegistry();
+		FilterPipeline pipeline = new FilterPipeline(registry);
+		registry.register(RawFilter.NAME, new RawFilter());
+		
+		pipeline.addStep("raw");
+		
+		String input = """
+                 <p>"We believe that great content is the foundation for successful communication and lasting connections. With Condation, we aim to create the base where ideas can grow and thrive. Our goal is to provide a solid, reliable platform that enables everyone to easily create, manage, and share their content—helping to change the world, one idea at a time."</p><p></p>
+                 """;
+
+		String escaped = StringEscapeUtils.ESCAPE_HTML4.translate(input);
+		Object result = pipeline.execute(escaped);
+		Assertions.assertThat(result).isEqualTo(input);
     }
 }

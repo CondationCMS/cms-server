@@ -70,15 +70,15 @@ export async function runAction(params) {
 
 	var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
 
-	var pageMetaForm = []
+	var pageSettingsForm = []
 	if (selected.length === 1) {
-		pageMetaForm = selected[0].data?.forms?.meta ? selected[0].data.forms.meta : []
+		pageSettingsForm = selected[0].data?.forms?.settings ? selected[0].data.forms.settings : []
 	}
 
 	//const previewMetaForm = getMetaForm()
 	const fields = [
 		...DEFAULT_FIELDS,
-		...pageMetaForm
+		...pageSettingsForm
 	]
 	
 
@@ -87,7 +87,7 @@ export async function runAction(params) {
 		'published': getContentResponse?.result?.meta?.published,
 		'publish_date': getContentResponse?.result?.meta?.publish_date,
 		'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-		...buildValuesFromFields(pageMetaForm, getContentResponse?.result?.meta)
+		...buildValuesFromFields(pageSettingsForm, getContentResponse?.result?.meta)
 	}
 
 	const form = createForm({

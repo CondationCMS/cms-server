@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UIPathUtil {
 
-	public static Slugify slugify = Slugify.builder()
+	public static Slugify SLUGIFY = Slugify.builder()
 			.customReplacement("ä", "ae")
 			.customReplacement("Ä", "ae")
 			.customReplacement("ü", "ue")
@@ -78,6 +78,10 @@ public class UIPathUtil {
 		}
 	}
 
+	public static String slugify (String input) {
+		return SLUGIFY.slugify(input);
+	}
+	
 	public static String toValidFilename(String input) {
 		
 		input = input.toLowerCase();
@@ -87,7 +91,7 @@ public class UIPathUtil {
 			input = input.substring(0, input.lastIndexOf("."));
 		}
 		
-		var slugified = slugify.slugify(input);
+		var slugified = slugify(input);
 		
 		return slugified + extension;
 	}

@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 export function isSectionPublishedExpired(section) {
-    console.log('section', section.data);
     const publishDateStr = section.data.publish_date;
     const unpublishDateStr = section.data.unpublish_date;
     const now = new Date();

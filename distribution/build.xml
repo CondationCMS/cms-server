@@ -36,10 +36,10 @@
 	</target>
 	
 	<target name="download-jre" description="--> download jres">
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.7_6.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.7_6.tar.gz"></get>
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip" dest="temp/OpenJDK21U-jre_x64_windows_hotspot_21.0.7_6.zip"></get>
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz" dest="temp/OpenJDK21U-jre_x64_linux_hotspot_21.0.7_6.tar.gz"></get>
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.7%2B6/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.7_6.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.7_6.tar.gz"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.8_9.tar.gz"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.8_9.zip" dest="temp/OpenJDK21U-jre_x64_windows_hotspot_21.0.8_9.zip"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_x64_linux_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_x64_linux_hotspot_21.0.8_9.tar.gz"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.8_9.tar.gz"></get>
 	</target>
 
 	<target name="clean">
@@ -52,14 +52,14 @@
 		<mkdir  dir="build/modules/" />
 	</target>
 	
-	<target name="dist" description="--> build linux distribution">
+	<target name="dist" description="--> build distribution">
 		<echo>build ${system.name} ${system.arch} distribution </echo>
 
 		<property name="dist.path">dist/${system.name}_${system.arch}</property>
 		<property name="dist.java.path">dist/java/${system.name}_${system.arch}</property>
 		<property name="dist.name">condation-server-${system.name}-${system.arch}-${cms.version}</property>
 		
-		<property name="java.filename">OpenJDK21U-jre_${system.arch}_${system.name}_hotspot_21.0.7_6</property>
+		<property name="java.filename">OpenJDK21U-jre_${system.arch}_${system.name}_hotspot_21.0.8_9</property>
 		
 		
 		<condition property="is.windows">
@@ -126,25 +126,25 @@
 		<antcall target="dist">
 			<param name="system.name" value="linux" />
 			<param name="system.arch" value="x64" />
-			<param name="java.path" value="jdk-21.0.7+6-jre" />
+			<param name="java.path" value="jdk-21.0.8+9-jre" />
 		</antcall>
 		
 		<antcall target="dist">
 			<param name="system.name" value="linux" />
 			<param name="system.arch" value="aarch64" />
-			<param name="java.path" value="jdk-21.0.7+6-jre" />
+			<param name="java.path" value="jdk-21.0.8+9-jre" />
 		</antcall>
 		
 		<antcall target="dist">
 			<param name="system.name" value="windows" />
 			<param name="system.arch" value="x64" />
-			<param name="java.path" value="jdk-21.0.7+6-jre" />
+			<param name="java.path" value="jdk-21.0.8+9-jre" />
 		</antcall>
 		
 		<antcall target="dist">
 			<param name="system.name" value="mac" />
 			<param name="system.arch" value="aarch64" />
-			<param name="java.path" value="jdk-21.0.7+6-jre/Contents/Home" />
+			<param name="java.path" value="jdk-21.0.8+9-jre/Contents/Home" />
 		</antcall>
 	</target>
 </project>

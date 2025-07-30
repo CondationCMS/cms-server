@@ -29,7 +29,7 @@
   --cms-unpublished: #ffc107;
   --cms-published-expired: #5bc0de;
  }
-
+/*
 .cms-ui-editable {
 	position: relative;
 }
@@ -46,6 +46,49 @@
 	outline: 3px solid var(--cms-edit-box-sections);
 	outline-offset: 2px;
 }
+*/
+.cms-ui-editable {
+  position: relative; /* falls noch nicht gesetzt */
+}
+
+.cms-ui-editable::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 3px solid var(--cms-edit-box);
+  pointer-events: none;
+  z-index: 2000; /* ggf. höher setzen */
+  display: none;
+}
+
+.cms-ui-editable:hover::after {
+  display: block;
+}
+
+.cms-ui-editable-sections {
+  position: relative; /* falls noch nicht gesetzt */
+}
+
+.cms-ui-editable-sections::after {
+  content: "";
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 3px solid var(--cms-edit-box-sections);
+  pointer-events: none;
+  z-index: 1000; /* ggf. höher setzen */
+  display: none;
+}
+
+.cms-ui-editable-sections:hover::after {
+  display: block;
+}
+
 
 .cms-ui-toolbar {
 	all: unset;

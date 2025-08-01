@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.extensions.HttpHandler;
 import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.AuthFeature;
@@ -73,7 +73,7 @@ public abstract class JettyHandler implements HttpHandler {
 				Optional.empty();
 			}
 			var token = tokenCookie.get().getValue();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
 			var username = TokenUtils.getUserName(token, secret);
 
 			if (username.isEmpty()) {

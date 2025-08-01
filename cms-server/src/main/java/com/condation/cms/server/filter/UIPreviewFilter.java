@@ -24,13 +24,12 @@ package com.condation.cms.server.filter;
 
 
 import com.condation.cms.api.configuration.Configuration;
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.google.inject.Inject;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -62,7 +61,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		
 		var token = tokenCookie.get().getValue();
-		var secret = configuration.get(ServerConfiguration.class).serverProperties().ui().secret();
+		var secret = configuration.get(SiteConfiguration.class).siteProperties().ui().secret();
 		if (TokenUtils.validateToken(token, secret) && queryParameters.containsKey("preview")) {
 			var requestContext = (RequestContext)request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));

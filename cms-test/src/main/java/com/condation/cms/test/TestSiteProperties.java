@@ -24,6 +24,7 @@ package com.condation.cms.test;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.UIProperties;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -121,13 +122,10 @@ public class TestSiteProperties implements SiteProperties {
 	}
 
 	@Override
-	public boolean uiManagerEnabled() {
-		return (boolean) values.getOrDefault("ui.manager.enabled", false);
+	public UIProperties ui() {
+		return new TestUiProperties();
 	}
 
-	@Override
-	public boolean force2fa() {
-		return (boolean) values.getOrDefault("ui.force2fa", false);
-	}
+	
 
 }

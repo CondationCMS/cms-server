@@ -22,7 +22,6 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.cache.ICache;
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -34,6 +33,7 @@ import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
+import com.condation.cms.modules.ui.utils.MailerProvider;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.security.SecureRandom;
@@ -48,7 +48,6 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 import org.simplejavamail.email.EmailBuilder;
-import org.simplejavamail.mailer.MailerBuilder;
 
 /**
  *
@@ -104,7 +103,8 @@ public class AjaxLoginHandler extends JettyHandler {
 	}
 	
 	private boolean is2FAenabled () {
-		return moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().force2fa();
+		return moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties()
+				.ui().force2fa();
 	}
 	
 	private void simpleLogin (Request request, Response response, Callback callback, Command command) throws Exception {
@@ -114,7 +114,7 @@ public class AjaxLoginHandler extends JettyHandler {
 		Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
 			var token = TokenUtils.createToken(user.username(), secret);
 
 			boolean isDev = requestContext.has(IsDevModeFeature.class);
@@ -186,7 +186,7 @@ public class AjaxLoginHandler extends JettyHandler {
 
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
 			var token = TokenUtils.createToken(user.username(), secret);
 
 			boolean isDev = requestContext.has(IsDevModeFeature.class);
@@ -225,7 +225,7 @@ public class AjaxLoginHandler extends JettyHandler {
 
 		var siteProperties = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
 		
-		var mailer = MailerBuilder.buildMailer();
+		var mailer = MailerProvider.provide(siteProperties.id());
 		var mail = EmailBuilder.startingBlank()
 				.to(user.username(), (String) user.data().getOrDefault("mail", "test@localhost.de"))
 				.from(

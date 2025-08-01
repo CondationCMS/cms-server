@@ -1,10 +1,10 @@
-package com.condation.cms.api;
+package com.condation.cms.test;
 
 /*-
  * #%L
- * cms-api
+ * cms-test
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,34 +21,43 @@ package com.condation.cms.api;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import java.nio.file.Path;
-import java.util.List;
+
+import com.condation.cms.api.UIProperties;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-public interface ServerProperties  {
+public class TestUiProperties implements UIProperties {
 
-	public boolean dev();
+	private String secret;
+	private boolean force2Fa;
+	private boolean managerEnabled;
 
-	public String env();
+	public TestUiProperties() {
+	}
 
-	public String serverIp();
+	public TestUiProperties(String secret, boolean force2Fa, boolean managerEnabled) {
+		this.secret = secret;
+		this.force2Fa = force2Fa;
+		this.managerEnabled = managerEnabled;
+	}
 
-	public int serverPort();
-
-	public Path getThemesFolder();
-
-	public APMProperties apm();
-
-	public IPCProperties ipc();
-
-	public PerformanceProperties performance();
 	
-	public List<String> moduleRepositories ();
 	
-	public List<String> themeRepositories ();
 	
-	public List<String> extensionRepositories ();
+	@Override
+	public String secret() {
+		return secret;
+	}
+
+	@Override
+	public boolean force2fa() {
+		return force2Fa;
+	}
+
+	@Override
+	public boolean managerEnabled() {
+		return managerEnabled;
+	}
 }

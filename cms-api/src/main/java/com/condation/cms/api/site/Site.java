@@ -44,6 +44,6 @@ public record Site(Injector injector) {
 	}
 	
 	public boolean manager () {
-		return injector.getInstance(SiteProperties.class).uiManagerEnabled();
+		return injector.getInstance(SiteProperties.class).ui().managerEnabled();
 	}
 }

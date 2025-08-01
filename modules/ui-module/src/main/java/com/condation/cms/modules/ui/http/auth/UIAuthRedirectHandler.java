@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
@@ -56,7 +56,7 @@ public class UIAuthRedirectHandler extends JettyHandler {
 			return true;
 		}
 		var token = tokenCookie.get().getValue();
-		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
 		if (!TokenUtils.validateToken(token, secret)) {
 			redirectToLogin(response, moduleContext);
 			callback.succeeded();

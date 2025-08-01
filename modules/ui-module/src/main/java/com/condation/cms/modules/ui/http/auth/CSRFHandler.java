@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.module.CMSModuleContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
@@ -53,7 +53,7 @@ public class CSRFHandler extends JettyHandler {
 			return false;
 		}
 
-		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
+		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
 
 		// ⛔️ CSRF-Token header
 		String csrfToken = request.getHeaders().get("X-CSRF-Token");

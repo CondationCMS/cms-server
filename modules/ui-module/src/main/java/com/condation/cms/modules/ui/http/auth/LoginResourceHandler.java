@@ -57,8 +57,9 @@ public class LoginResourceHandler extends JettyHandler {
 		}
 
 		try {
-			var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().ui().secret();
-			var force2fa = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().force2fa();
+			var siteProperties = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
+			var secret = siteProperties.ui().secret();
+			var force2fa = siteProperties.ui().force2fa();
 			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of(
 					"csrfToken", TokenUtils.createToken("csrf", secret),
 					"links", new LinkFunction(requestContext),

@@ -27,7 +27,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.IPCProperties;
 import com.condation.cms.api.PerformanceProperties;
 import com.condation.cms.api.ServerProperties;
-import com.condation.cms.api.UIProperties;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.nio.file.Path;
@@ -59,11 +58,6 @@ public class ExtendedServerProperties implements ServerProperties {
 	@Override
 	public APMProperties apm() {
 		return configuration.get("apm", ExtendedAPMProperties.class);
-	}
-
-	@Override
-	public UIProperties ui() {
-		return configuration.get("ui", ExtendedUIProperties.class);
 	}
 	
 	@Override

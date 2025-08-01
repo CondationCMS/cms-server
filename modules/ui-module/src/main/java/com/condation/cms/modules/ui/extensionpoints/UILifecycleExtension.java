@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.CacheManagerFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.CMSModuleContext;
@@ -56,14 +55,5 @@ public class UILifecycleExtension {
 	private UILifecycleExtension(CMSModuleContext context) {
 		lockService = new LockService();
 		templateEngine = new TemplateEngine(context.get(CacheManagerFeature.class).cacheManager());
-
-		var mailConfig = context.get(DBFeature.class).db().getFileSystem().resolve("config/mail.properties");
-		if (Files.exists(mailConfig)) {
-			try (InputStream in = Files.newInputStream(mailConfig)) {
-				ConfigLoader.loadProperties(in, true);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
 	}
 }

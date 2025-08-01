@@ -100,7 +100,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		Mapping mapping = new Mapping();
 
 		var siteProperties = getContext().get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
-		if (!siteProperties.uiManagerEnabled()) {
+		if (!siteProperties.ui().managerEnabled()) {
 			return mapping;
 		}
 

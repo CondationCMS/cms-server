@@ -24,6 +24,7 @@ package com.condation.cms.core.configuration.properties;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.UIProperties;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.util.List;
 import java.util.Locale;
@@ -135,11 +136,6 @@ public class ExtendedSiteProperties implements SiteProperties {
 	}
 	
 	@Override
-	public boolean uiManagerEnabled() {
-		return configuration.getBoolean("ui.manager.enabled", false);
-	}
-	
-	@Override
 	public Object get (String field) {
 		return configuration.get(field);
 	}
@@ -148,9 +144,9 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public <T> T getOrDefault(String field, T defaultValue) {
 		return (T) configuration.getOrDefault(field, defaultValue);
 	}
-
+	
 	@Override
-	public boolean force2fa() {
-		return configuration.getBoolean("ui.force2fa", false);
+	public UIProperties ui() {
+		return configuration.get("ui", ExtendedUIProperties.class);
 	}
 }

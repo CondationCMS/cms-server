@@ -31,6 +31,7 @@ import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js
 import { EventBus } from './event-bus.js';
 import { filebrowserTemplate } from './filebrowser.template.js';
 import { getPageTemplates } from './rpc/rpc-manager.js';
+import { showToast } from './toast.js';
 
 const defaultOptions = {
 	validate: () => true,
@@ -177,6 +178,25 @@ const fileActions = () => {
 			if (action === "open") {
 				await loadPreview(uri);
 				state.modal.hide();
+			} else if (action === "copyUrl") {
+				navigator.clipboard.writeText(uri).then(
+					() => {
+						showToast({
+							title: i18n.t('filebrowser.actions.url.copy.title', "URL copied"),
+							message: i18n.t('filebrowser.actions.url.copy.message', "URL copied to clipboard"),
+							type: 'success',
+							timeout: 3000
+						});
+					},
+					() => {
+						showToast({
+							title: i18n.t('filebrowser.actions.url.copy.title.error', "Error copying URL"),
+							message: i18n.t('filebrowser.actions.url.copy.message.error', "Failed to copy URL"),
+							type: 'success',
+							timeout: 3000
+						});
+					},
+  				);
 			} else if (action === "deletePage") {
 				deleteElementAction({
 					elementName: filename,

@@ -110,6 +110,12 @@ const template = Handlebars.compile(`
 						>
 							<i class="bi bi-file-earmark-x"></i>
 						</button>
+						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="copyUrl"
+							data-bs-toggle="tooltip" data-bs-placement="top"
+        					data-bs-title="Copy url."
+						>
+							<i class="bi bi-copy"></i>
+						</button>
 					{{else}}
 						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile"
 							data-bs-toggle="tooltip" data-bs-placement="top"

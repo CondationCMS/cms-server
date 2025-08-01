@@ -156,7 +156,7 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 	}
 
 	private Comparator<ContentNode> getComparator() {
-		if (sort == null || "name".equals("sort")) {
+		if (sort == null || "name".equals(sort)) {
 			return nameComparator;
 		} else {
 

@@ -40,13 +40,13 @@ public class ImageSizeTest {
 		var size = ImageSize.getSize(Path.of("no.jpg"));
 		
 		Assertions.assertThat(size.width()).isEqualTo(-1);
-		Assertions.assertThat(size.heights()).isEqualTo(-1);
+		Assertions.assertThat(size.height()).isEqualTo(-1);
 	}
 	
 	@Test
 	public void image_with_correct_size () {
 		var size = ImageSize.getSize(Path.of("src/test/resources/assets/test.jpg"));
 		Assertions.assertThat(size.width()).isEqualTo(689);
-		Assertions.assertThat(size.heights()).isEqualTo(689);
+		Assertions.assertThat(size.height()).isEqualTo(689);
 	}
 }

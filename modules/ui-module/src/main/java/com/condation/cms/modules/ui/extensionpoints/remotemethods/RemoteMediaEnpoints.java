@@ -22,7 +22,9 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
@@ -76,6 +78,8 @@ public class RemoteMediaEnpoints extends UIRemoteMethodExtensionPoint {
 			var metaFile = assets.resolve(imagePath + ".meta.yaml");
 			
 			YamlHeaderUpdater.saveMetaData(metaFile, metaData);
+			
+			getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateMediaCache(assets.resolve(imagePath)));
 			
 			return Map.of(
 					"status", "success"

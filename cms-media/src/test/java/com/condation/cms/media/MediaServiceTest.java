@@ -52,8 +52,8 @@ public class MediaServiceTest {
 	
 	@Test
 	public void media_exists_without_meta() {
-		Assertions.assertThat(mediaService.hasMetaData("demo.jpg")).isFalse();
-		var media = mediaService.get("demo.jpg");
+		Assertions.assertThat(mediaService.hasMetaData("demo_1.jpg")).isFalse();
+		var media = mediaService.get("demo_1.jpg");
 		Assertions.assertThat(media.exists()).isTrue();
 		Assertions.assertThat(media.meta()).isEmpty();
 	}
@@ -68,7 +68,7 @@ public class MediaServiceTest {
 	
 	@Test
 	public void subfolder_media_exists_without_meta() {
-		Assertions.assertThat(mediaService.hasMetaData("images/demo.jpg")).isFalse();
+		Assertions.assertThat(mediaService.hasMetaData("images/demo_1.jpg")).isFalse();
 	}
 	
 	@Test

@@ -23,12 +23,12 @@ package com.condation.cms.media;
  */
 
 
-import com.condation.cms.api.ThemeProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.api.media.MediaUtils;
+import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.test.PropertiesLoader;
@@ -50,9 +50,12 @@ public class MediaManagerTest {
 	@BeforeAll
 	public static void setup () throws IOException {
 		
+		FileUtils.deleteFolder(Path.of("target/media"));
+		
 		Configuration config = new Configuration();
 		config.add(MediaConfiguration.class, new MediaConfiguration(List.of(
-				new MediaFormat("cropped", 40, 40, MediaUtils.Format.PNG, true, true)
+				new MediaFormat("cropped", 40, 40, MediaUtils.Format.PNG, true, true),
+				new MediaFormat("focal", 400, 100, MediaUtils.Format.PNG, true, true)
 		)));
 		var serverConfig = new ServerConfiguration(new ExtendedServerProperties(ConfigurationFactory.serverConfiguration()));
 		config.add(ServerConfiguration.class, serverConfig);
@@ -66,10 +69,17 @@ public class MediaManagerTest {
 	}
 
 	@Test
-	public void testSomeMethod() throws IOException {
+	public void test_cropped() throws IOException {
 		var content = mediaManager.getScaledContent("test.jpg", mediaManager.getMediaFormat("cropped"));
 		
 		Files.write(Path.of("target/test_cropped.jpg"), content.get());
+	}
+	
+	@Test
+	public void test_focal() throws IOException {
+		var content = mediaManager.getScaledContent("demo.jpg", mediaManager.getMediaFormat("focal"));
+		
+		Files.write(Path.of("target/demo_focal.jpg"), content.get());
 	}
 	
 }

@@ -33,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,10 +64,10 @@ public class JettyMediaHandler extends Handler.Abstract {
 
 			if ("##original##".equalsIgnoreCase(formatValue)) {
 				var mediaPath = getRelativeMediaPath(request);
-				Path assetPath = mediaManager.resolve(mediaPath);
-				if (assetPath != null) {
-					var bytes = Files.readAllBytes(assetPath);
-					var mimetype = Files.probeContentType(assetPath);
+				Optional<Path> assetPath = mediaManager.resolve(mediaPath);
+				if (assetPath.isPresent()) {
+					var bytes = Files.readAllBytes(assetPath.get());
+					var mimetype = Files.probeContentType(assetPath.get());
 
 					deliver(bytes, mimetype, response);
 					

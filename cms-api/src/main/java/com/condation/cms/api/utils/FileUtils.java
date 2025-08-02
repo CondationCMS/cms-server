@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Comparator;
 
 /**
@@ -40,6 +38,9 @@ public class FileUtils {
 	}
 
 	public static void deleteFolder(Path pathToBeDeleted) throws IOException {
+		if (!Files.exists(pathToBeDeleted)) {
+			return;
+		}
 		Files.walk(pathToBeDeleted)
 				.sorted(Comparator.reverseOrder())
 				.map(Path::toFile)

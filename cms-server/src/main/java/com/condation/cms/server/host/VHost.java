@@ -46,6 +46,7 @@ import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
+import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
 import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
@@ -263,6 +264,9 @@ public class VHost {
 
 		var assetsMediaManager = this.injector.getInstance(SiteMediaManager.class);
 		injector.getInstance(EventBus.class).register(ConfigurationReloadEvent.class, assetsMediaManager);
+		injector.getInstance(EventBus.class).register(InvalidateMediaCache.class, (event) -> {
+			assetsMediaManager.deleteTempFile(event.mediaPath());
+		});
 		final JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("site")));
 		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
 

@@ -1,4 +1,4 @@
-package com.condation.cms.api.media;
+package com.condation.cms.api.eventbus.events;
 
 /*-
  * #%L
@@ -23,19 +23,11 @@ package com.condation.cms.api.media;
  */
 
 
-import com.condation.cms.api.media.meta.Meta;
+import com.condation.cms.api.eventbus.Event;
+import java.nio.file.Path;
 
 /**
  *
  * @author t.marx
  */
-public record Media (String uri, Meta meta, boolean exists, Size size) {
-
-	public static Size NO_SIZE = new Size(-1, -1);
-	
-	public Media (String uri, Meta meta, boolean exists) {
-		this(uri, meta, exists, NO_SIZE);
-	}
-	
-	public static record Size(int width, int height) {}
-}
+public record InvalidateMediaCache (Path mediaPath) implements Event {}

@@ -39,14 +39,14 @@ public class ImageInlineRuleTest {
 	public void test_image_rule() {
 		var result = SUT.next("![TestBild!](/assets/images/test.jpg)");
 		Assertions.assertThat(result.render())
-				.isEqualTo("<img src=\"/assets/images/test.jpg\" alt=\"TestBild!\" />");
+				.isEqualToIgnoringWhitespace("<img src=\"/assets/images/test.jpg\" alt=\"TestBild!\" />");
 	}
 	
 	@Test
 	public void test_image_rule_title() {
 		var result = SUT.next("![TestBild!](/assets/images/test.jpg \"Test Bild\")");
 		Assertions.assertThat(result.render())
-				.isEqualTo("<img src=\"/assets/images/test.jpg\" alt=\"TestBild!\" title=\"Test Bild\" />");
+				.isEqualToIgnoringWhitespace("<img src=\"/assets/images/test.jpg\" alt=\"TestBild!\" title=\"Test Bild\" />");
 	}
 	
 }

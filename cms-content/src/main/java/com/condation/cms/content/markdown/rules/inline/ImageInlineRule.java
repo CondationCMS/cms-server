@@ -64,10 +64,15 @@ public class ImageInlineRule implements InlineElementRule {
 				}
 			}
 			
-			if (title != null && !"".equals(title.trim())) {
-				return "<img src=\"%s\" alt=\"%s\" title=\"%s\" />".formatted(src, altText, title);
+			var uiSelector = "";
+			if (isPreview()) {
+				uiSelector = " data-cms-ui-selector=\"content-image\" ";
 			}
-			return  "<img src=\"%s\" alt=\"%s\" />".formatted(src, altText);
+			
+			if (title != null && !"".equals(title.trim())) {
+				return "<img src=\"%s\" alt=\"%s\" title=\"%s\" %s />".formatted(src, altText, title, uiSelector);
+			}
+			return  "<img src=\"%s\" alt=\"%s\" %s />".formatted(src, altText, uiSelector);
 		}
 	}
 }

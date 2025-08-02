@@ -23,16 +23,16 @@
 import { i18n } from "./localization.js";
 
 const defaultOptions = {
-    validate: () => true
-  };
+	validate: () => true
+};
 
 const openModal = (optionsParam) => {
 	const modalId = 'fullscreenModal_' + Date.now();
 
 	const options = {
-    	...defaultOptions,
-    	...optionsParam
-  	};
+		...defaultOptions,
+		...optionsParam
+	};
 
 	let fullscreen = "";
 	if (options.fullscreen) {
@@ -76,9 +76,16 @@ const openModal = (optionsParam) => {
 	const modalElement = document.getElementById(modalId);
 	const modalInstance = new bootstrap.Modal(modalElement, {
 		backdrop: 'static',
-  		keyboard: false,
+		keyboard: false,
 		focus: false
 	});
+
+	modalElement.addEventListener('shown.bs.modal', function (event) {
+		if (options.onShow) {
+			options.onShow()
+		}
+	});
+
 	modalInstance.show();
 
 	// Event-Handler
@@ -101,11 +108,8 @@ const openModal = (optionsParam) => {
 		container.innerHTML = '';
 	});
 
-	if (options.onShow) {
-		options.onShow()
-	}
 
 	return modalInstance
 };
 
-export {openModal};
+export { openModal };

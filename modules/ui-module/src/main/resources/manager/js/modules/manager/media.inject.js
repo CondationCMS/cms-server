@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { EDIT_ATTRIBUTES_ICON, IMAGE_ICON } from "./toolbar-icons";
+import { EDIT_ATTRIBUTES_ICON, IMAGE_ICON, MEDIA_CROP_ICON } from "./toolbar-icons";
 import frameMessenger from '../frameMessenger.js';
 const isSameDomainImage = (imgElement) => {
     if (!(imgElement instanceof HTMLImageElement)) {
@@ -80,14 +80,37 @@ export const initMediaUploadOverlay = (img) => {
     });
     positionOverlay();
 };
+export const initContentMediaToolbar = (img) => {
+    if (!isSameDomainImage(img)) {
+        return;
+    }
+    var toolbar = img.closest('[data-cms-toolbar]');
+    var parentToolbarDef = JSON.parse(toolbar.dataset.cmsToolbar);
+    if (!parentToolbarDef) {
+        return;
+    }
+    var toolbarDefinition = {
+        "options": {
+            "uri": parentToolbarDef.uri
+        },
+        "actions": [
+            "meta",
+            "focalPoint"
+        ]
+    };
+    initToolbar(img, toolbarDefinition);
+};
 export const initMediaToolbar = (img) => {
     if (!isSameDomainImage(img)) {
         return;
     }
+    var toolbarDefinition = JSON.parse(img.dataset.cmsMediaToolbar);
+    initToolbar(img, toolbarDefinition);
+};
+export const initToolbar = (img, toolbarDefinition) => {
     const toolbar = document.createElement('div');
     toolbar.classList.add("cms-ui-toolbar");
     toolbar.classList.add("cms-ui-toolbar-tl");
-    var toolbarDefinition = JSON.parse(img.dataset.cmsMediaToolbar);
     if (toolbarDefinition.actions.includes('select')) {
         const selectButton = document.createElement('button');
         selectButton.innerHTML = IMAGE_ICON;
@@ -108,6 +131,17 @@ export const initMediaToolbar = (img) => {
         });
         toolbar.appendChild(metaButton);
     }
+    if (toolbarDefinition.actions.includes('focalPoint')) {
+        const metaButton = document.createElement('button');
+        metaButton.setAttribute('data-cms-action', 'editFocalPoint');
+        metaButton.setAttribute('data-cms-media-form', 'meta');
+        metaButton.innerHTML = MEDIA_CROP_ICON;
+        metaButton.setAttribute("title", "Edit focal point");
+        metaButton.addEventListener('click', (event) => {
+            focalPoint(img.src);
+        });
+        toolbar.appendChild(metaButton);
+    }
     document.body.appendChild(toolbar);
     const positionToolbar = () => {
         const rect = img.getBoundingClientRect();
@@ -120,8 +154,8 @@ export const initMediaToolbar = (img) => {
         toolbar.classList.add('visible');
     });
     img.addEventListener('mouseleave', (event) => {
-        // nur ausblenden, wenn die Maus nicht gerade über der Toolbar ist
-        if (!event.relatedTarget || !toolbar.contains(event.relatedTarget)) {
+        const related = event.relatedTarget;
+        if (!event.relatedTarget || !toolbar.contains(related)) {
             //toolbar.style.display = 'none';
             toolbar.classList.remove('visible');
         }
@@ -149,6 +183,19 @@ const selectMedia = (metaElement, uri) => {
             element: "image",
             options: {
                 metaElement: metaElement,
+                uri: uri
+            }
+        }
+    };
+    frameMessenger.send(window.parent, command);
+};
+const focalPoint = (uri) => {
+    var command = {
+        type: 'edit',
+        payload: {
+            editor: "focal-point",
+            element: "image",
+            options: {
                 uri: uri
             }
         }

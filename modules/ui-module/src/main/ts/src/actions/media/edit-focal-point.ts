@@ -20,67 +20,106 @@
  * #L%
  */
 
-import { openFileBrowser } from "../../js/modules/filebrowser.js";
 import { i18n } from "../../js/modules/localization.js";
-import { getPreviewUrl, reloadPreview } from "../../js/modules/preview.utils.js";
-import { getContentNode, setMeta } from "../../js/modules/rpc/rpc-content.js";
+import { openModal } from "../../js/modules/modal.js";
+import { reloadPreview } from "../../js/modules/preview.utils.js";
+import { getMediaMetaData, setMediaMetaData } from "../../js/modules/rpc/rpc-media.js";
 import { showToast } from "../../js/modules/toast.js";
 
 export async function runAction(params) {
 
-	// editor for focal points: https://codepen.io/primalivet/pen/XWbrMXm
-
-	var uri = null
-	if (params.options.uri) {
-		uri = params.options.uri
-	} else {
-		const contentNode = await getContentNode({
-			url: getPreviewUrl()
-		})
-		uri = contentNode.result.uri
-	}
+	var uri = params.options.uri || null;
+	var mediaUrl = removeFormatParamFromUrl(uri);
 
 	const template = `
-		<div class="focal-point">
-			<div class="controls">
-			<div class="picker aspect-square">
-				<img draggable="false" src="" />
-			<div class="dot"></div>
-			</div>
+		<div class="cms-focal-wrapper" id="cmsFocalWrapper">
+  			<img src="${mediaUrl}" id="cms-image"  />
+  			<div class="cms-focal-point" id="cmsFocalPoint" style="display: none;"></div>
 		</div>
 	`;
 
-	openFileBrowser({
-		type: "assets",
-		filter : (file) => {
-			return file.media || file.directory;
+	var mediaMeta = (await getMediaMetaData({ image: params.options.uri })).result.meta;
+	const focal = mediaMeta?.focal || {};
+
+	const focalX = typeof focal.x === 'number' ? focal.x : 0.5;
+	const focalY = typeof focal.y === 'number' ? focal.y : 0.5;
+
+	openModal({
+		title: i18n.t("media.focal.title", "Edit focal point"),
+		body: template,
+		onCancel: (event) => { },
+		onOk: async (event) => {
+			var setMetaResponse = await setMediaMetaData({
+				image: mediaUrl,
+				meta: {
+					"focal.x": {
+						"type": "number",
+						"value": focal.x
+					},
+					"focal.y": {
+						"type": "number",
+						"value": focal.y
+					}
+				}
+			});
+			showToast({
+				title: i18n.t('manager.actions.media.focal-point.toast.title', "Media focal point updated"),
+				message: i18n.t('manager.actions.media.focal-point.toast.message', "The focal point was successfuly updated."),
+				type: 'success',
+				timeout: 3000
+			});
+			reloadPreview();
 		},
-		onSelect: async (file: any) => {
+		onShow: () => {
+			const wrapper: HTMLElement = document.getElementById("cmsFocalWrapper");
+			const image: HTMLImageElement = document.getElementById("cms-image") as HTMLImageElement;
+			const point: HTMLElement = document.getElementById("cmsFocalPoint");
 
-			if (file && file.uri) {
-
-				var selectedFile = file.uri; // Use the file's URI
-				if (file.uri.startsWith("/")) {
-					selectedFile = file.uri.substring(1); // Remove leading slash if present
-				}
-
-				var updateData = {}
-				updateData[params.options.metaElement] = {
-					type: 'media',
-					value: selectedFile
-				}
-				var setMetaResponse = await setMeta({
-					uri: uri,
-					meta: updateData
-				})
-				showToast({
-					title: i18n.t('manager.actions.media.select-media.toast.title', "Media updated"),
-					message: i18n.t('manager.actions.media.select-media.toast.message', "New media has been updated successfully."),
-					type: 'success', // optional: info | success | warning | error
-					timeout: 3000
-				});
-				reloadPreview()
+			if (image.complete) {
+				setFocalPoint(image, point, focalX, focalY);
+			} else {
+				image.onload = () => setFocalPoint(image, point, focalX, focalY);
 			}
+
+			wrapper.addEventListener("click", function (e) {
+				const rect = image.getBoundingClientRect();
+				const x = e.clientX - rect.left;
+				const y = e.clientY - rect.top;
+
+				const relX = (x / rect.width).toFixed(4);
+				const relY = (y / rect.height).toFixed(4);
+
+				// Punkt anzeigen
+				point.style.left = `${x}px`;
+				point.style.top = `${y}px`;
+				point.style.display = "block";
+
+				focal.x = parseFloat(relX);
+				focal.y = parseFloat(relY);
+				// Ausgabe
+				console.log(`Focal Point: x: ${relX}, y: ${relY}`);
+			});
 		}
-	})
+	});
+}
+
+const setFocalPoint = (image: HTMLImageElement, point: HTMLElement, relX: number, relY: number) => {
+	const rect = image.getBoundingClientRect();
+	const x = rect.width * relX;
+	const y = rect.height * relY;
+
+	point.style.left = `${x}px`;
+	point.style.top = `${y}px`;
+	point.style.display = "block";
+}
+
+const removeFormatParamFromUrl = (url: string) => {
+  try {
+    const parsedUrl = new URL(url, window.location.origin); // Fallback-Basis falls nur Pfad übergeben wird
+    parsedUrl.searchParams.delete("format");
+    return parsedUrl.toString();
+  } catch (e) {
+    console.warn("Ungültige URL:", url);
+    return url; // Fallback: gib Original zurück
+  }
 }

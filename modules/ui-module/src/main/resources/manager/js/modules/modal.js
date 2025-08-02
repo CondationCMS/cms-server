@@ -70,6 +70,11 @@ const openModal = (optionsParam) => {
         keyboard: false,
         focus: false
     });
+    modalElement.addEventListener('shown.bs.modal', function (event) {
+        if (options.onShow) {
+            options.onShow();
+        }
+    });
     modalInstance.show();
     // Event-Handler
     document.getElementById(`${modalId}_cancelBtn`).addEventListener('click', () => {
@@ -88,9 +93,6 @@ const openModal = (optionsParam) => {
     modalElement.addEventListener('hidden.bs.modal', () => {
         container.innerHTML = '';
     });
-    if (options.onShow) {
-        options.onShow();
-    }
     return modalInstance;
 };
 export { openModal };

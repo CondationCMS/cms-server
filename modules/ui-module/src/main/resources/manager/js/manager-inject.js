@@ -20,7 +20,7 @@
  * #L%
  */
 import frameMessenger from './modules/frameMessenger.js';
-import { initMediaToolbar, initMediaUploadOverlay } from './modules/manager/media.inject.js';
+import { initContentMediaToolbar, initMediaToolbar, initMediaUploadOverlay } from './modules/manager/media.inject.js';
 import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_PUBLISHED_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from './modules/manager/toolbar-icons';
 import { initToolbar } from './modules/manager/toolbar.inject.js';
 const isIframe = () => {
@@ -44,6 +44,8 @@ document.addEventListener("DOMContentLoaded", function () {
     toolbarContainers.forEach(initToolbar);
     const mediaToolbarContainers = document.querySelectorAll('img[data-cms-media-toolbar]');
     mediaToolbarContainers.forEach(initMediaToolbar);
+    const contentMediaContainers = document.querySelectorAll('img[data-cms-ui-selector=content-image]');
+    contentMediaContainers.forEach(initContentMediaToolbar);
     //const mediaUploadContainers = document.querySelectorAll('img[data-cms-media-actions~=upload]');
     //mediaUploadContainers.forEach(initMediaUploadOverlay);
     document.addEventListener('keydown', (event) => {

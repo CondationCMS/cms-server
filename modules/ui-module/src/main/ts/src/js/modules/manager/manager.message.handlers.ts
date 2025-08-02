@@ -66,6 +66,18 @@ const initMessageHandlers = () => {
             executeImageForm(payload);
         } else if (payload.element === "image" && payload.editor === "select") {
             executeImageSelect(payload);
+        } else if (payload.element === "image" && payload.editor === "focal-point") {
+            var cmd: any = {
+                "module": window.manager.baseUrl + "/actions/media/edit-focal-point",
+                "function": "runAction",
+                "parameters": {
+                    "options": payload.options ? payload.options : {}
+                }
+            }
+            if (payload.uri) {
+                cmd.parameters.uri = payload.uri
+            }
+            executeScriptAction(cmd);
         } else if (payload.element === "meta") {
             var cmd : any = {
                 "module": window.manager.baseUrl + "/actions/page/edit-metaattribute",

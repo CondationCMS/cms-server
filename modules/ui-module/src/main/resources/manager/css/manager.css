@@ -138,3 +138,27 @@ tr[data-cms-file-directory] {
 .cms-toolbar-button:hover {
   cursor: pointer;
 }
+
+/* focal poit editor */
+.cms-focal-wrapper {
+	position: relative;
+	display: inline-block;
+	border: 1px solid #ccc;
+}
+
+.cms-focal-wrapper img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+}
+
+.cms-focal-point {
+	position: absolute;
+	width: 14px;
+	height: 14px;
+	background: red;
+	border-radius: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+}
+/* end focal point editor */

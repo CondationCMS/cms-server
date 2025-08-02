@@ -1,0 +1,137 @@
+/*
+*, *:before {
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+}
+
+*/
+img {
+  max-width: 100%;
+}
+/*
+.focal-point {
+  display: grid;
+  grid-template-areas:
+    "preview preview"
+    "controls controls";
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-gap: 1px;
+  width: 90vw;
+  height: 90vh;
+}
+
+@media (orientation: landscape) {
+  .focal-point {
+    grid-template-areas: 
+      "preview controls"
+      "preview controls";
+  }
+}
+*/
+
+.focal-point .controls {
+  grid-area: controls;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+@media (orientation: landscape) {
+  .focal-point .controls {
+    align-items: center;
+  }
+}
+
+.focal-point .picker {
+  position: relative;
+}
+
+.focal-point .picker img {
+  user-select: none;
+}
+
+.focal-point .controls .dot {
+  position: absolute;
+  top: calc(50% - 10px);
+  left: calc(50% - 10px);
+  width: 20px;
+  height: 20px;
+  background: hsla(0, 100%, 50%, 1);
+  border-radius: 20px;
+  border: 2px solid white;
+  box-shadow: 0 0 4px black;
+}
+
+.focal-point .previews {
+  grid-area: preview;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+@media (orientation: landscape) {
+  .focal-point .previews {
+    align-items: center;
+  }
+}
+
+.focal-point .previews .collage {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:
+    "preview-2-1 preview-2-1 preview-2-1"
+    "preview-1-2 preview-1-1 preview-1-1"
+    "preview-1-2 preview-1-1 preview-1-1";
+  grid-gap: 1px;
+}
+
+.focal-point .previews .collage [class*="preview-"] {
+  position: relative;
+}
+
+.focal-point .preview-2-1 {
+  grid-area: preview-2-1;
+}
+
+.focal-point .preview-1-2 {
+  grid-area: preview-1-2;
+}
+
+.focal-point .preview-1-1 {
+  grid-area: preview-1-1;
+}
+
+.focal-point .previews img {
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.aspect-square {
+  width: 90vw;
+  height: 45vh;
+  max-width: 45vh;
+  max-height: 90vw;
+}
+
+@media (orientation: landscape) {
+  .aspect-square {
+    width: 45vw;
+    height: 90vh;
+    max-width: 90vh;
+    max-height: 45vw;
+  }
+}
+

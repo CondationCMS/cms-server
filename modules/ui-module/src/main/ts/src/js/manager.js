@@ -33,6 +33,7 @@ frameMessenger.on('load', (payload) => {
 	EventBus.emit("preview:loaded", {});
 });
 
+
 document.addEventListener("DOMContentLoaded", function () {
 
 	//PreviewHistory.init("/");
@@ -59,14 +60,12 @@ document.addEventListener("DOMContentLoaded", function () {
 			UIStateManager.setTabState("preview", preview_update)
 
 			updateStateButton();
-
 		} catch (e) {
 			console.log(e)
 		}
 	})
 
 	initMessageHandlers();
-	
+
 });
 // DOMContentLoaded  end
-

@@ -63,7 +63,7 @@ public class UIAuthHandler extends JettyHandler {
 			return true;
 		}
 		
-		var username = TokenUtils.getUserName(token, secret);
+		var username = TokenUtils.getPayLoad(token, secret);
 		if (username.isEmpty()) {
 			response.setStatus(403);
 			callback.succeeded();

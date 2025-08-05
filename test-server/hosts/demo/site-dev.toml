@@ -4,9 +4,7 @@ hostname = [ "localhost5" ]
 enabled = true
 whitelist = ["meta.*", "title"]
 
-[ui]
-secret = "super-secret-token"
-managerEnabled = true
+
 
 
 [cache]

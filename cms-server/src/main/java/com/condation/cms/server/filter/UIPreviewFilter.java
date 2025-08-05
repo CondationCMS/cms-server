@@ -21,16 +21,19 @@ package com.condation.cms.server.filter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.api.feature.features.AuthFeature;
+import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.google.inject.Inject;
+import java.time.Duration;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -49,25 +52,71 @@ public class UIPreviewFilter extends Handler.Abstract {
 	public UIPreviewFilter(Configuration configuration) {
 		this.configuration = configuration;
 	}
-	
+
 	@Override
 	public boolean handle(final Request request, final Response rspns, final Callback clbck) throws Exception {
-	
-		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
+
+		handlePreviewParameter(request, rspns);
+		
+		
+		if (!handleTokenCookie(request, "cms-token")) {
+			handleTokenCookie(request, "cms-preview-token");
+		}
+		
+
+		return false;
+	}
+
+	private boolean handleTokenCookie (Request request, String cookieName) throws Exception {
+		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> cookieName.equals(cookie.getName())).findFirst();
 		if (tokenCookie.isEmpty()) {
 			return false;
 		}
-		
+
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
-		
+
 		var token = tokenCookie.get().getValue();
 		var secret = configuration.get(SiteConfiguration.class).siteProperties().ui().secret();
 		if (TokenUtils.validateToken(token, secret) && queryParameters.containsKey("preview")) {
-			var requestContext = (RequestContext)request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+			var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
+
+			var username = TokenUtils.getPayLoad(token, secret);
+			username.ifPresent(payload -> {
+				requestContext.add(AuthFeature.class, new AuthFeature(payload.username()));
+			});
+			return true;
 		}
-		
 		return false;
+	}
+	
+	private void handlePreviewParameter(Request request, Response response) throws Exception {
+		var secret = configuration.get(SiteConfiguration.class).siteProperties().ui().secret();
+		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+		if (queryParameters.containsKey("preview-token")) {
+			var token = queryParameters.get("preview-token").getFirst();
+			if (TokenUtils.validateToken(token, secret)) {
+				setCookie(request, "cms-preview-token", token, response);
+			}
+		}
+	}
+
+	private void setCookie(Request request, String name, String token, Response response) {
+		
+		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		
+		boolean isDev = requestContext.has(IsDevModeFeature.class);
+
+		HttpCookie cookie = HttpCookie.from(name, token,
+				Map.of(
+						HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
+						HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
+						HttpCookie.MAX_AGE_ATTRIBUTE, String.valueOf(Duration.ofHours(1).toSeconds())
+				));
+		if (!isDev) {
+			cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
+		}
+		Response.addCookie(response, cookie);
 	}
 
 }

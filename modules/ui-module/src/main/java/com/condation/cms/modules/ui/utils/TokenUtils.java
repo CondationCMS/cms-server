@@ -27,6 +27,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -34,7 +36,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class TokenUtils {
 
 
-	public static Optional<Payload> getUserName(String token, String SECRET) throws Exception {
+	public static Optional<Payload> getPayLoad(String token, String SECRET) throws Exception {
 		if (!validateToken(token, SECRET)) {
 			return Optional.empty();
 		}
@@ -68,12 +70,16 @@ public class TokenUtils {
 		return (now - payload.timestamp()) < 3600;
 	}
 
-	public static String createToken(String username, String SECRET) throws Exception {
-		Payload payload = new Payload(username, Instant.now().getEpochSecond());
+	public static String createToken(String username, String SECRET, Map<String, Object> payloadData) throws Exception {
+		Payload payload = new Payload(username, Instant.now().getEpochSecond(), payloadData);
 		String json = UIGsonProvider.INSTANCE.toJson(payload);
 		String base64Payload = Base64.getUrlEncoder().withoutPadding().encodeToString(json.getBytes(StandardCharsets.UTF_8));
 		String signature = hmacSha256(base64Payload, SECRET);
 		return base64Payload + ":" + signature;
+	}
+	
+	public static String createToken(String username, String SECRET) throws Exception {
+		return createToken(username, SECRET, Collections.emptyMap());
 	}
 
 	private static String hmacSha256(String data, String key) throws Exception {
@@ -84,5 +90,6 @@ public class TokenUtils {
 		return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 	}
 
-	public record Payload(String username, long timestamp) {}
+	public record Payload(String username, long timestamp, Map<String, Object> data) {
+	}
 }

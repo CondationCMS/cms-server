@@ -37,6 +37,7 @@ import com.condation.cms.modules.ui.utils.MailerProvider;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -194,7 +195,8 @@ public class AjaxLoginHandler extends JettyHandler {
 			HttpCookie cookie = HttpCookie.from("cms-token", token,
 					Map.of(
 							HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
-							HttpCookie.HTTP_ONLY_ATTRIBUTE, "true"
+							HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
+							HttpCookie.MAX_AGE_ATTRIBUTE, String.valueOf(Duration.ofHours(1).toSeconds())
 					));
 			if (!isDev) {
 				cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");

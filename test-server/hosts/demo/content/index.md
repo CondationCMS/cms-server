@@ -1,9 +1,9 @@
 ---
-title: Startpage
+title: Startpage1
 template: start.html
 search:
   index: false
-published: true
+published: false
 description: Thats awesome 123
 parent:
   text: another text for the meta attribute , seems to work
@@ -30,7 +30,8 @@ That's a demo page with some extra features to show the manager application!
 
 Hello world!test
 
-[[theme_name /]]
+Hello: [[cms:username]][[/cms:username]]
+Theme: [[theme_name]][[/theme_name]]
 
 [about](/about)
 

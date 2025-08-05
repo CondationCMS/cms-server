@@ -30,12 +30,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!isIframe()) {
         return;
     }
-    frameMessenger.on('init', (payload) => {
-        frameMessenger.send(window.parent, {
-            type: 'helloFromIframe',
-            payload: { response: 'Hallo Parent!' }
-        });
-    });
     frameMessenger.send(window.parent, {
         type: 'loaded',
         payload: {}

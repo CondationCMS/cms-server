@@ -46,4 +46,12 @@ const getMediaForm = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
-export { getSectionTemplates, getPageTemplates, getMediaForm };
+const getTagNames = async (options : any) => {
+	var data = {
+		method: "manager.content.tags",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames };

@@ -74,7 +74,7 @@ public abstract class JettyHandler implements HttpHandler {
 			}
 			var token = tokenCookie.get().getValue();
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
-			var username = TokenUtils.getUserName(token, secret);
+			var username = TokenUtils.getPayLoad(token, secret);
 
 			if (username.isEmpty()) {
 				return Optional.empty();
@@ -85,6 +85,14 @@ public abstract class JettyHandler implements HttpHandler {
 			log.error("error getting user", e);
 		}
 		return Optional.empty();
+	}
+	
+	protected String getUsername (Request request, CMSModuleContext moduleContext) {
+		var user = getUser(request, moduleContext);
+		if (user.isPresent()) {
+			return user.get().username();
+		}
+		return "";
 	}
 
 	protected String managerBaseURL(FeatureContainer featureContainer) {

@@ -21,6 +21,7 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { getTagNames } from "../rpc/rpc-manager.js";
 
 let cherryEditors = [];
 
@@ -55,11 +56,13 @@ const getData = () => {
 	return data;
 };
 
-const init = () => {
+const init = async () => {
 	cherryEditors = [];
 
+	const cmsTagsMenu = await buildCmsTagsMenu();
+
 	const editorInputs = document.querySelectorAll('[data-cms-form-field-type="markdown"] input');
-	editorInputs.forEach((input : HTMLInputElement) => {
+	editorInputs.forEach((input: HTMLInputElement) => {
 		const containerId = input.dataset.cherryId;
 		const initialValue = decodeURIComponent(input.dataset.initialValue || "");
 
@@ -81,10 +84,15 @@ const init = () => {
 					'header',
 					'|',
 					'list',
-					'code'
+					'code',
+					'|',
+					'cmsTagsMenu'
 				],
 				bubble: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'], // array or false
-    			float: ['h1', 'h2', 'h3', '|', 'checklist', 'table', 'code']
+				float: ['h1', 'h2', 'h3', '|', 'checklist', 'table', 'code'],
+				customMenu: {
+					cmsTagsMenu: cmsTagsMenu,
+				},
 			}
 		});
 
@@ -97,3 +105,59 @@ export const MarkdownField = {
 	init: init,
 	data: getData
 };
+
+const buildCmsTagsMenu = async () => {
+	const response = await getTagNames({});
+	const tagNames = response.result || [];
+
+	const submenuConfig = tagNames.map(tag => ({
+		name: tag.charAt(0).toUpperCase() + tag.slice(1),
+		value: tag,
+		noIcon: true,
+		onclick: (event) => {
+			const editorId = event.target.closest('.cherry-editor-container')?.id;
+			const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+			if (editor) {
+				editor.toolbar.menus.hooks["cmsTagsMenu"].fire(null, tag);
+			}
+		}
+	}));
+
+	return window.Cherry.createMenuHook("cmsTagsMenu", {
+		title: "CMS Tags",
+		text: "CMS Tags",
+		onClick: (selection, tag) => {
+			return `[[${tag}]]${selection || ""}[[/${tag}]]`;
+		},
+		subMenuConfig: submenuConfig
+	});
+};
+
+const cmsTagsMenuleg = window.Cherry.createMenuHook("CMS-Tags", {
+	title: "CMS Tags",
+	text: "CMS Tags",
+	onClick: (selection, tag) => {
+		return `[[${tag}]]${selection || ""}[[/${tag}]]`
+	},
+	subMenuConfig: [
+		{
+			name: "Info",
+			noIcon: true,
+			onclick: (event) => {
+				const editorId = event.target.closest('.cherry-editor-container')?.id;
+				const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+				editor.toolbar.menus.hooks.cmsTagsMenu.fire(null, 'info');
+			}
+		},
+		{
+			name: "Warning",
+			value: "warning",
+			onclick: (event) => {
+				const editorId = event.target.closest('.cherry-editor-container')?.id;
+				const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+				editor.toolbar.menus.hooks.cmsTagsMenu.fire(null, 'warning');
+			}
+		},
+		// Weitere Tags ...
+	]
+});

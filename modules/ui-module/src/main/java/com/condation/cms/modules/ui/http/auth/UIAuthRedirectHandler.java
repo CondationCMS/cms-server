@@ -62,7 +62,7 @@ public class UIAuthRedirectHandler extends JettyHandler {
 			callback.succeeded();
 			return true;
 		}
-		var username = TokenUtils.getUserName(token, secret);
+		var username = TokenUtils.getPayLoad(token, secret);
 		if (username.isEmpty()) {
 			redirectToLogin(response, moduleContext);
 			callback.succeeded();

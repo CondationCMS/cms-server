@@ -28,6 +28,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.content.RenderContext;
 import com.condation.cms.modules.ui.utils.UIHooks;
 
 /**
@@ -38,6 +39,11 @@ import com.condation.cms.modules.ui.utils.UIHooks;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 
+	@RemoteMethod(name = "manager.content.tags")
+	public Object getShortCodeNames (Map<String, Object> parameters) throws RPCException {
+		return getRequestContext().get(RenderContext.class).tags().getTagNames();
+	}
+	
 	@RemoteMethod(name = "manager.media.form")
 	public Object getMediaForm(Map<String, Object> parameters) throws RPCException {
 		try {

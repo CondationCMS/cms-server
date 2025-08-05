@@ -79,7 +79,8 @@ public class ResourceHandler extends JettyHandler {
 								"actionFactory", actionFactory,
 								"csrfToken", TokenUtils.createToken("csrf", secret),
 								"links", new UILinkFunction(requestContext),
-								"managerBaseURL", managerBaseURL(requestContext)
+								"managerBaseURL", managerBaseURL(requestContext),
+								"previewToken", TokenUtils.createToken(getUsername(request, context), secret)
 						));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {

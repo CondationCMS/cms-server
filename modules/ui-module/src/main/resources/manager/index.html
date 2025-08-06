@@ -101,13 +101,19 @@
 				<div class="collapse navbar-collapse" id="navbarSupportedContent">
 					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 						<li class="nav-item">
-							<a class="nav-link cms-toolbar-button"
+							<a class="nav-link cms-toolbar-button" title="Reload"
+								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/reload-preview') }}","parameters":{},"type":"script"}'>
+								<i class="bi bi-arrow-clockwise"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button" title="New page"
 								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
 								<i class="bi bi-folder2-open"></i>
 							</a>
 						</li>
 						<li class="nav-item">
-							<a class="nav-link cms-toolbar-button"
+							<a class="nav-link cms-toolbar-button" title="Manage media"
 								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
 								<i class="bi bi-images"></i>
 							</a>

@@ -265,7 +265,11 @@ public class VHost {
 		var assetsMediaManager = this.injector.getInstance(SiteMediaManager.class);
 		injector.getInstance(EventBus.class).register(ConfigurationReloadEvent.class, assetsMediaManager);
 		injector.getInstance(EventBus.class).register(InvalidateMediaCache.class, (event) -> {
-			assetsMediaManager.deleteTempFile(event.mediaPath());
+			if (event.mediaPath() != null) {
+				assetsMediaManager.deleteTempFile(event.mediaPath());
+			} else {
+				assetsMediaManager.clearTempDirectory();
+			}
 		});
 		final JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("site")));
 		

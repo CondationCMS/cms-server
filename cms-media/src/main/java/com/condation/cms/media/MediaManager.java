@@ -30,6 +30,7 @@ import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.api.media.MediaUtils;
 import com.condation.cms.api.media.meta.Meta;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.api.utils.PathUtil;
 import java.io.File;
 import java.io.IOException;
@@ -96,6 +97,14 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 		return tempDirectory;
 	}
 
+	public void clearTempDirectory () {
+		try {
+			FileUtils.deleteDirectoryContents(getTempDirectory());
+		} catch (IOException e) {
+			log.error("error clearing media tempfolder", e);
+		}
+	}
+	
 	public void deleteTempFile(final Path mediaPath) {
 		var baseDir = assetBase.stream().filter((base) -> PathUtil.isChild(base, mediaPath)).findFirst();
 

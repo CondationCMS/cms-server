@@ -44,7 +44,7 @@ const executeScriptAction = async (action) => {
 };
 const executeHookAction = async (action) => {
     var data = {
-        type: action.hook
+        hook: action.hook
     };
     if (action.parameters) {
         data.parameters = action.parameters;

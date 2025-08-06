@@ -22,76 +22,44 @@ package com.condation.cms.modules.ui.extensionpoints;
  * #L%
  */
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
-import com.condation.cms.api.feature.features.InjectorFeature;
-import com.condation.cms.api.site.Site;
-import com.condation.cms.api.site.SiteService;
-import com.condation.cms.api.ui.action.UIScriptAction;
-import com.condation.cms.api.ui.elements.Menu;
-import com.condation.cms.api.ui.elements.MenuEntry;
+import com.condation.cms.api.ui.annotations.HookAction;
+import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.modules.api.annotation.Extensions;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
  * @author t.marx
  */
-/*
 @Extensions({
 	@Extension(UIActionsExtensionPoint.class),})
-*/
 public class SiteMenuExtension extends AbstractExtensionPoint implements UIActionsExtensionPoint {
 
-	@Override
-	public void addMenuItems(Menu menu) {
-		menu.addMenuEntry(MenuEntry.builder()
-				.id("site-menu")
-				.name("Sites")
-				.position(1)
-				.roles(List.of("admin"))
-				.children(siteMenus())
-				.build());
+	@com.condation.cms.api.ui.annotations.MenuEntry(
+			id = "toolMenu",
+			name = "Tools",
+			position = 10
+	)
+	public void parentDefinition() {
+
 	}
 
-	private List<MenuEntry> siteMenus() {
-		var siteService = getContext().get(InjectorFeature.class).injector().getInstance(SiteService.class);
+	@com.condation.cms.api.ui.annotations.MenuEntry(
+			parent = "toolMenu",
+			id = "media-cache-clear",
+			name = "Clear media cache",
+			position = 1,
+			hookAction = @HookAction(value = "ui/manager/tools/media/cache/clear")
+	)
+	@ShortCut(
+			id = "media-cache-clear",
+			title = "Clear media cache",
+			section = "tools",
+			hookAction = @HookAction(value = "ui/manager/tools/media/cache/clear")
+	)
+	public void create_page() {
 
-		var counter = new AtomicInteger(1);
-		return new ArrayList<>(siteService.sites().map(site -> {
-			return MenuEntry.builder()
-					.id("site-" + site.id())
-					.name(site.id())
-					.position(counter.getAndIncrement())
-					.children(siteSubMenu(site))
-					.build();
-		}).toList());
-	}
-
-	private List<MenuEntry> siteSubMenu(Site site) {
-		List<MenuEntry> entries = new ArrayList<>();
-
-		var url = site.baseurl().endsWith("/") ? site.baseurl() : site.baseurl() + "/";
-		entries.add(MenuEntry.builder()
-				.id("www-" + site.id())
-				.name("Website")
-				.action(new UIScriptAction("/manager/actions/site-change", Map.of("href", url)))
-				.position(1)
-				.build());
-
-		if (site.manager()) {
-			entries.add(MenuEntry.builder()
-					.id("manager-" + site.id())
-					.name("Manager")
-					.action(new UIScriptAction("/manager/actions/site-change", Map.of("href", url + "manager/index.html")))
-					.position(2)
-					.build());
-		}
-
-		return entries;
 	}
 
 }

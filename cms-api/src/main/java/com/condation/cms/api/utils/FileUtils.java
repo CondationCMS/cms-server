@@ -23,8 +23,11 @@ package com.condation.cms.api.utils;
  */
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.util.Comparator;
 
@@ -47,6 +50,28 @@ public class FileUtils {
 				.forEach(File::delete);
 	}
 
+	public static void deleteDirectoryContents(Path directory) throws IOException {
+        if (!Files.exists(directory) || !Files.isDirectory(directory)) {
+            throw new IllegalArgumentException("Pfad ist kein existierendes Verzeichnis: " + directory);
+        }
+
+        Files.walkFileTree(directory, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                Files.delete(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (!dir.equals(directory)) {
+                    Files.delete(dir);
+                }
+                return FileVisitResult.CONTINUE;
+            }
+        });
+    }
+	
 	public static void touch(Path path) throws IOException{
 		long timeMillis = System.currentTimeMillis();
 		FileTime accessFileTime = FileTime.fromMillis(timeMillis);

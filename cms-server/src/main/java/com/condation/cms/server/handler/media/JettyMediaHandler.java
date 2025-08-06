@@ -24,9 +24,12 @@ package com.condation.cms.server.handler.media;
 
 
 import com.condation.cms.api.ServerContext;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.media.MediaUtils;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.media.MediaManager;
+import com.condation.cms.server.filter.CreateRequestContextFilter;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -69,7 +72,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 					var bytes = Files.readAllBytes(assetPath.get());
 					var mimetype = Files.probeContentType(assetPath.get());
 
-					deliver(bytes, mimetype, response);
+					deliver(bytes, mimetype, request, response);
 					
 					callback.succeeded();
 					return true;
@@ -88,7 +91,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 				var result = mediaManager.getScaledContent(mediaPath, format);
 				if (result.isPresent()) {
 
-					deliver(result.get(), MediaUtils.mime4Format(format.format()), response);
+					deliver(result.get(), MediaUtils.mime4Format(format.format()), request, response);
 					
 					callback.succeeded();
 					return true;
@@ -104,10 +107,15 @@ public class JettyMediaHandler extends Handler.Abstract {
 		return true;
 	}
 
-	private void deliver(final byte[] bytes, final String mimetype, Response response) throws IOException {
+	private boolean isPreview (Request request) {
+		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		return requestContext.has(IsPreviewFeature.class);
+	}
+
+	private void deliver(final byte[] bytes, final String mimetype, Request request, Response response) throws IOException {
 		response.getHeaders().add("Content-Type", mimetype);
 		response.getHeaders().add("Content-Length", bytes.length);
-		if (!ServerContext.IS_DEV) {
+		if (!ServerContext.IS_DEV && !isPreview(request)) {
 			response.getHeaders().add("Access-Control-Max-Age", Duration.ofDays(10).toSeconds());
 			response.getHeaders().add("Cache-Control", "max-age=" + Duration.ofDays(10).toSeconds());
 		}		

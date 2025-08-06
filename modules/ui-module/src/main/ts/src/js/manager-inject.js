@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	frameMessenger.on('getContentNodeResponse', async (payload) => {
 		for (const [sectionName, items] of Object.entries(payload.contentNode.sections)) {
-			
+
 			for (const item of items) {
 				const sectionContainer = document.querySelector(`[data-cms-section-uri="${item.uri}"]`);
 				if (item.data.published) {
@@ -103,23 +103,43 @@ document.addEventListener("DOMContentLoaded", function () {
 		type: 'getContentNode',
 		payload: {}
 	});
+
+	document.addEventListener('click', function (event) {
+		if (event.target.matches('[data-cms-action]')) {
+			const button = event.target;
+
+			// Wenn bereits disabled, nichts tun
+			if (button.disabled) {
+				event.preventDefault();
+				return;
+			}
+
+			// Button deaktivieren
+			button.disabled = true;
+
+			// Nach 2 Sekunden wieder aktivieren
+			setTimeout(() => {
+				button.disabled = false;
+			}, 2000);
+		}
+	});
 });
 
 export function isSectionPublishedExpired(section) {
-  const publishDateStr = section.data.publish_date;
-  const unpublishDateStr = section.data.unpublish_date;
+	const publishDateStr = section.data.publish_date;
+	const unpublishDateStr = section.data.unpublish_date;
 
-  const now = new Date();
+	const now = new Date();
 
-  const publishDate = publishDateStr ? new Date(publishDateStr) : null;
-  const unpublishDate = unpublishDateStr ? new Date(unpublishDateStr) : null;
+	const publishDate = publishDateStr ? new Date(publishDateStr) : null;
+	const unpublishDate = unpublishDateStr ? new Date(unpublishDateStr) : null;
 
-  // section is published if:
-  // - publishDate empty or in the past
-  // - und unpublishDate empty or in the future
-  const isPublished =
-    (!publishDate || publishDate <= now) &&
-    (!unpublishDate || unpublishDate > now);
+	// section is published if:
+	// - publishDate empty or in the past
+	// - und unpublishDate empty or in the future
+	const isPublished =
+		(!publishDate || publishDate <= now) &&
+		(!unpublishDate || unpublishDate > now);
 
-  return !isPublished;
+	return !isPublished;
 }

@@ -34,6 +34,7 @@ const defaultOptions = {
     validate: () => true,
     uri: "",
     onSelect: null,
+    fullscreen: true,
     filter: (file) => {
         return true; // Default filter allows all files
     }
@@ -53,7 +54,7 @@ const openFileBrowser = async (optionsParam) => {
     state.modal = openModal({
         title: i18n.t("filebrowser.title", "Filesystem"),
         body: '<div id="cms-file-browser"></div>',
-        fullscreen: true,
+        fullscreen: state.options.fullscreen,
         onOk: async (event) => {
             const selectedRow = document.querySelector("tr.table-active[data-cms-file-uri]:not([data-cms-file-directory])");
             if (selectedRow && state.options.onSelect) {

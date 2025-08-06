@@ -58,12 +58,8 @@ public class UIPreviewFilter extends Handler.Abstract {
 
 		handlePreviewParameter(request, rspns);
 		
+		handleTokenCookie(request, "cms-preview-token");
 		
-		if (!handleTokenCookie(request, "cms-token")) {
-			handleTokenCookie(request, "cms-preview-token");
-		}
-		
-
 		return false;
 	}
 
@@ -73,11 +69,9 @@ public class UIPreviewFilter extends Handler.Abstract {
 			return false;
 		}
 
-		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
-
 		var token = tokenCookie.get().getValue();
 		var secret = configuration.get(SiteConfiguration.class).siteProperties().ui().secret();
-		if (TokenUtils.validateToken(token, secret) && queryParameters.containsKey("preview")) {
+		if (TokenUtils.validateToken(token, secret)) {
 			var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
 

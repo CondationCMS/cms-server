@@ -21,6 +21,8 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.configuration.configs.MediaConfiguration;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
@@ -53,6 +55,12 @@ public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());
 		}
+	}
+	
+	@RemoteMethod(name = "manager.media.formats")
+	public Object getMediaFormats (Map<String, Object> parameters) throws RPCException {
+		var configuration = getContext().get(ConfigurationFeature.class).configuration();
+		return configuration.get(MediaConfiguration.class).getFormats();
 	}
 	
 	@RemoteMethod(name = "manager.contentTypes.sections")

@@ -55,7 +55,7 @@ public class LogoutHandler extends JettyHandler {
 						HttpCookie.MAX_AGE_ATTRIBUTE, "0"
 				));
 		if (!isDev) {
-			cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE);
+			cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
 		}
 		Response.addCookie(response, cookie);
 

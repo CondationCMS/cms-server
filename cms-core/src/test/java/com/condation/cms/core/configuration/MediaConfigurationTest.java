@@ -65,10 +65,10 @@ public class MediaConfigurationTest {
 				.hasSize(4);
 
 		MediaConfiguration.Format f1 = medias.getFirst();
-		Assertions.assertThat(f1.getName()).isEqualTo("yaml");
+		Assertions.assertThat(f1.getName()).isEqualTo("big");
 		Assertions.assertThat(f1.getFormat()).isEqualTo("webp");
 		Assertions.assertThat(f1.isCompression()).isTrue();
-		Assertions.assertThat(f1.getHeight()).isEqualTo(256);
-		Assertions.assertThat(f1.getWidth()).isEqualTo(256);
+		Assertions.assertThat(f1.getHeight()).isEqualTo(512);
+		Assertions.assertThat(f1.getWidth()).isEqualTo(512);
 	}
 }

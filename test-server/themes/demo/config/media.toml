@@ -14,8 +14,8 @@ compression = true
 
 [[formats]]
 name = "cropped"
-width = 512
-height = 256
+width = 240
+height = 120
 format = "webp"
 compression = true
 cropped = true

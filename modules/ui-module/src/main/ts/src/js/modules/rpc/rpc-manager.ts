@@ -46,6 +46,32 @@ const getMediaForm = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
+export enum Format {
+  WEBP,
+  JPEG,
+  PNG
+}
+
+export interface MediaFormat {
+  name: string;
+  height?: number;
+  width?: number;
+  format: Format;
+  compression: boolean;
+  cropped: boolean
+}
+
+export interface MediaFormatsResponse {
+  result: MediaFormat[];
+}
+const getMediaFormats = async (options : any): Promise<MediaFormatsResponse> => {
+	var data = {
+		method: "manager.media.formats",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
 const getTagNames = async (options : any) => {
 	var data = {
 		method: "manager.content.tags",
@@ -54,4 +80,4 @@ const getTagNames = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
-export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames };
+export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats };

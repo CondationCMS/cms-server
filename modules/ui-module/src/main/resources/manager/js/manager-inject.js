@@ -86,6 +86,22 @@ document.addEventListener("DOMContentLoaded", function () {
         type: 'getContentNode',
         payload: {}
     });
+    document.addEventListener('click', function (event) {
+        if (event.target.matches('[data-cms-action]')) {
+            const button = event.target;
+            // Wenn bereits disabled, nichts tun
+            if (button.disabled) {
+                event.preventDefault();
+                return;
+            }
+            // Button deaktivieren
+            button.disabled = true;
+            // Nach 2 Sekunden wieder aktivieren
+            setTimeout(() => {
+                button.disabled = false;
+            }, 2000);
+        }
+    });
 });
 export function isSectionPublishedExpired(section) {
     const publishDateStr = section.data.publish_date;

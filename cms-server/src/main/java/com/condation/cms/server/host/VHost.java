@@ -268,7 +268,13 @@ public class VHost {
 			assetsMediaManager.deleteTempFile(event.mediaPath());
 		});
 		final JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("site")));
-		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), mediaHandler);
+		
+		var siteMediaHandlerSequence = new Handler.Sequence(
+				uiPreviewFilter,
+				mediaHandler
+		);
+		var siteMediaWithContextHandler = new CreateRequestContextFilter(siteMediaHandlerSequence, injector.getInstance(RequestContextFactory.class));
+		pathMappingsHandler.addMapping(PathSpec.from("/media/*"), siteMediaWithContextHandler);
 
 		pathMappingsHandler.addMapping(PathSpec.from("/" + JettyModuleHandler.PATH + "/*"),
 				createModuleHandler()

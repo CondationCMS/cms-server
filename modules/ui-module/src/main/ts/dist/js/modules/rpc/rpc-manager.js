@@ -41,6 +41,19 @@ const getMediaForm = async (options) => {
     };
     return await executeRemoteCall(data);
 };
+export var Format;
+(function (Format) {
+    Format[Format["WEBP"] = 0] = "WEBP";
+    Format[Format["JPEG"] = 1] = "JPEG";
+    Format[Format["PNG"] = 2] = "PNG";
+})(Format || (Format = {}));
+const getMediaFormats = async (options) => {
+    var data = {
+        method: "manager.media.formats",
+        parameters: options
+    };
+    return await executeRemoteCall(data);
+};
 const getTagNames = async (options) => {
     var data = {
         method: "manager.content.tags",
@@ -48,4 +61,4 @@ const getTagNames = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames };
+export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats };

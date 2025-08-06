@@ -43,7 +43,7 @@ const openModal = (optionsParam) => {
 	 */
 	let size = ""
 	if (options.size) {
-		size = "model-" + options.size
+		size = "modal-" + options.size
 	}
 
 	const modalHtml = `
@@ -67,7 +67,12 @@ const openModal = (optionsParam) => {
 
 	// Modal einfügen
 	const container = document.getElementById('modalContainer');
-	container.innerHTML = modalHtml;
+
+	const modalDiv = document.createElement('div');
+	modalDiv.innerHTML = modalHtml.trim();
+	const modalNode = modalDiv.firstChild;
+
+	container.appendChild(modalNode);
 
 	if (options.form) {
 		options.form.init(`#${modalId}_bodyContainer`)
@@ -105,7 +110,10 @@ const openModal = (optionsParam) => {
 
 	// Clean-up nach Schließen
 	modalElement.addEventListener('hidden.bs.modal', () => {
-		container.innerHTML = '';
+		modalNode.remove();
+		if (options.onClose) {
+			options.onClose()
+		}
 	});
 
 

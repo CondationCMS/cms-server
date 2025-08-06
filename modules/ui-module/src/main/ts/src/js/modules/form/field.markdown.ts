@@ -21,7 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
-import { getTagNames } from "../rpc/rpc-manager.js";
+import { getMediaFormats, getTagNames } from "../rpc/rpc-manager.js";
+import { openFileBrowser } from "../filebrowser.js";
+import { alertSelect } from "../alerts.js";
 
 let cherryEditors = [];
 
@@ -86,12 +88,14 @@ const init = async () => {
 					'list',
 					'code',
 					'|',
-					'cmsTagsMenu'
+					'cmsImageSelection',
+					'cmsTagsMenu',
 				],
 				bubble: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'], // array or false
 				float: ['h1', 'h2', 'h3', '|', 'checklist', 'table', 'code'],
 				customMenu: {
 					cmsTagsMenu: cmsTagsMenu,
+					cmsImageSelection: cmsImageSelection
 				},
 			}
 		});
@@ -114,7 +118,7 @@ const buildCmsTagsMenu = async () => {
 		name: tag.charAt(0).toUpperCase() + tag.slice(1),
 		value: tag,
 		noIcon: true,
-		onclick: (event) => {
+		onclick: (event: any) => {
 			const editorId = event.target.closest('.cherry-editor-container')?.id;
 			const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
 			if (editor) {
@@ -123,9 +127,8 @@ const buildCmsTagsMenu = async () => {
 		}
 	}));
 
-	return window.Cherry.createMenuHook("cmsTagsMenu", {
+	return window.Cherry.createMenuHook("CMS-Tags", {
 		title: "CMS Tags",
-		text: "CMS Tags",
 		onClick: (selection, tag) => {
 			return `[[${tag}]]${selection || ""}[[/${tag}]]`;
 		},
@@ -133,31 +136,60 @@ const buildCmsTagsMenu = async () => {
 	});
 };
 
-const cmsTagsMenuleg = window.Cherry.createMenuHook("CMS-Tags", {
-	title: "CMS Tags",
-	text: "CMS Tags",
-	onClick: (selection, tag) => {
-		return `[[${tag}]]${selection || ""}[[/${tag}]]`
-	},
-	subMenuConfig: [
-		{
-			name: "Info",
-			noIcon: true,
-			onclick: (event) => {
-				const editorId = event.target.closest('.cherry-editor-container')?.id;
-				const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
-				editor.toolbar.menus.hooks.cmsTagsMenu.fire(null, 'info');
+const cmsImageSelection = window.Cherry.createMenuHook("Image", {
+	iconName: "image",
+	title: "Image",
+	onClick: (
+		selection: any,
+		name: any,
+		event: any) => {
+
+		openFileBrowser({
+			type: "assets",
+			fullscreen: false,
+			filter: (file) => {
+				return file.media || file.directory;
+			},
+			onSelect: async (file: any) => {
+				if (file && file.uri) {
+					var value = file.uri; // Use the file's URI
+					if (file.uri.startsWith("/")) {
+						value = file.uri.substring(1); // Remove leading slash if present
+					}
+
+					var imageUrl = value;
+					if (value && value != '') {
+						imageUrl = patchPathWithContext("/media/" + value)
+					}
+					let altText = file.title || file.name || "Image";
+
+					// select media format
+					var mediaFormats  = (await getMediaFormats({})).result || [];
+					var formatOptions = {};
+					formatOptions["original"] = "Original";
+					mediaFormats.forEach((format : any) => {
+						formatOptions[format.name] = format.name;
+					});
+					console.log("Media Formats", mediaFormats, formatOptions);
+					var selectedFormat = await alertSelect({
+						title: i18n.t("form.media.format.title", "Select Media Format"),
+						values: formatOptions
+					})
+					if (selectedFormat && selectedFormat !== "original") {
+						imageUrl += "?format=" + selectedFormat
+					}
+
+					const editorId = event.target.closest('.cherry-editor-container')?.id;
+					const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+
+					const cm = editor.editor?.editor;
+					if (cm) {
+						const markdown = `![${altText}](${imageUrl})`;
+						cm.replaceSelection(markdown, "end");
+						cm.focus();
+					}
+				}
 			}
-		},
-		{
-			name: "Warning",
-			value: "warning",
-			onclick: (event) => {
-				const editorId = event.target.closest('.cherry-editor-container')?.id;
-				const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
-				editor.toolbar.menus.hooks.cmsTagsMenu.fire(null, 'warning');
-			}
-		},
-		// Weitere Tags ...
-	]
+		})
+	}
 });

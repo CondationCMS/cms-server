@@ -1,5 +1,5 @@
 ---
-title: Startpage1
+title: Startpage
 template: start.html
 search:
   index: false

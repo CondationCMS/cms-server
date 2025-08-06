@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.ui.annotations.HookAction;
+import com.condation.cms.api.ui.annotations.MenuEntry;
 import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
@@ -36,7 +37,7 @@ import com.condation.modules.api.annotation.Extensions;
 	@Extension(UIActionsExtensionPoint.class),})
 public class SiteMenuExtension extends AbstractExtensionPoint implements UIActionsExtensionPoint {
 
-	@com.condation.cms.api.ui.annotations.MenuEntry(
+	@MenuEntry(
 			id = "toolMenu",
 			name = "Tools",
 			position = 10
@@ -45,7 +46,7 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 
 	}
 
-	@com.condation.cms.api.ui.annotations.MenuEntry(
+	@MenuEntry(
 			parent = "toolMenu",
 			id = "media-cache-clear",
 			name = "Clear media cache",
@@ -58,8 +59,36 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 			section = "tools",
 			hookAction = @HookAction(value = "ui/manager/tools/media/cache/clear")
 	)
-	public void create_page() {
-
-	}
+	public void clear_media_cache() {}
+	
+		@MenuEntry(
+			parent = "toolMenu",
+			id = "content-cache-clear",
+			name = "Clear content cache",
+			position = 2,
+			hookAction = @HookAction(value = "ui/manager/tools/content/cache/clear")
+	)
+	@ShortCut(
+			id = "content-cache-clear",
+			title = "Clear content cache",
+			section = "tools",
+			hookAction = @HookAction(value = "ui/manager/tools/content/cache/clear")
+	)
+	public void clear_content_cache() {}
+	
+		@MenuEntry(
+			parent = "toolMenu",
+			id = "template-cache-clear",
+			name = "Clear template cache",
+			position = 3,
+			hookAction = @HookAction(value = "ui/manager/tools/template/cache/clear")
+	)
+	@ShortCut(
+			id = "template-cache-clear",
+			title = "Clear template cache",
+			section = "tools",
+			hookAction = @HookAction(value = "ui/manager/tools/template/cache/clear")
+	)
+	public void clear_template_cache() {}
 
 }

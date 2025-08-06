@@ -22,7 +22,9 @@ package com.condation.cms.modules.ui.extensionpoints;
  * #L%
  */
 import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
+import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.hooks.ActionContext;
@@ -40,4 +42,13 @@ public class SiteHookExtension extends HookSystemRegisterExtensionPoint {
 		getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateMediaCache(null));
 	}
 
+	@Action(value = "ui/manager/tools/template/cache/clear")
+	public void clear_template_cache(ActionContext<?> context) {
+		getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateTemplateCacheEvent());
+	}
+	
+	@Action(value = "ui/manager/tools/content/cache/clear")
+	public void clear_content_cache(ActionContext<?> context) {
+		getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateContentCacheEvent());
+	}
 }

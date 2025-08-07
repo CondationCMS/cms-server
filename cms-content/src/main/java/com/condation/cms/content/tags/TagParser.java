@@ -59,11 +59,19 @@ public class TagParser {
 						tagContent = tagContent.substring(0, tagContent.length() - 1).trim();
 					}
 
-					int spaceIndex = tagContent.indexOf(' ');
-					String tagName = spaceIndex == -1 ? tagContent : tagContent.substring(0, spaceIndex);
-					Parameter rawAttributes = spaceIndex == -1
+					// Suche erstes Whitespace-Zeichen (auch Zeilenumbrüche etc.)
+					int firstWhitespaceIndex = -1;
+					for (int j = 0; j < tagContent.length(); j++) {
+						if (Character.isWhitespace(tagContent.charAt(j))) {
+							firstWhitespaceIndex = j;
+							break;
+						}
+
+					}
+					String tagName = firstWhitespaceIndex == -1 ? tagContent : tagContent.substring(0, firstWhitespaceIndex);
+					Parameter rawAttributes = firstWhitespaceIndex == -1
 							? new Parameter()
-							: parseRawAttributes(tagContent.substring(spaceIndex + 1));
+							: parseRawAttributes(tagContent.substring(firstWhitespaceIndex + 1));
 
 					int closingTagIndex = -1;
 					if (!isSelfClosing) {
@@ -125,8 +133,18 @@ public class TagParser {
 	}
 
 	// Methode zum Finden des Endes eines Tags
-	private int findTagEnd(String text, int startIndex) {
+	private int findTagEnd2(String text, int startIndex) {
 		for (int i = startIndex; i < text.length() - 1; i++) {
+			if (text.charAt(i) == ']' && text.charAt(i + 1) == ']') {
+				return i;
+			}
+		}
+		return -1; // Kein schließendes ']]' gefunden
+	}
+
+	// Methode zum Finden des Endes eines Tags, auch über mehrere Zeilen
+	private int findTagEnd(String text, int startIndex) {
+		for (int i = startIndex + 2; i < text.length() - 1; i++) {
 			if (text.charAt(i) == ']' && text.charAt(i + 1) == ']') {
 				return i;
 			}
@@ -195,9 +213,9 @@ public class TagParser {
 			var contextMap = new HashMap<String, Object>();
 			contextMap.putAll(contextModel);
 			if (requestContext != null) {
-				contextMap.putAll(requestContext.getVariables());			
+				contextMap.putAll(requestContext.getVariables());
 			}
-			
+
 			var expression = engine.createExpression(expressionString);
 			return expression.evaluate(new MapContext(contextMap));
 		}

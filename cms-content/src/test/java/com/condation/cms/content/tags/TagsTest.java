@@ -244,6 +244,18 @@ public class TagsTest extends ContentBaseTest {
 		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
 	}
 	
+	@Test
+	void test_multiline () {
+		var template = """
+                 [[hello_from 
+                 name=\"Thorsten\" 
+                 from=\"Bochum\" /]]
+                 """;
+		var result = tags.replace(template);
+		System.out.println(result);
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
+	}
+	
 	public static class TagHandler {
 		@Tag("printHello")
 		public String printHello (Parameter parameter) {

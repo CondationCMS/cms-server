@@ -57,7 +57,9 @@ public class DocumentHelper {
 	public static void addData(final Document document, Map<String, Object> data) {
 		var flatten = FlattenMap.flattenMap(data);
 
-		flatten.entrySet().forEach(entry -> {
+		flatten.entrySet().stream()
+				.filter(entry -> entry.getValue() != null)
+				.forEach(entry -> {
 
 			switch (entry.getValue()) {
 				case List listValue ->

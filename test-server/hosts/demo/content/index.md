@@ -28,7 +28,9 @@ media_url: compass-7592444_1920.jpg
 
 That's a demo page with some extra features to show the manager application!
 
-Hello world!test
+Hello world!
+
+Here some content!
 
 Hello: [[cms:username]][[/cms:username]]
 Theme: [[theme_name]][[/theme_name]]

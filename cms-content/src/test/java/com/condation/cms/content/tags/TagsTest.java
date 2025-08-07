@@ -253,6 +253,15 @@ public class TagsTest extends ContentBaseTest {
                  """;
 		var result = tags.replace(template);
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
+		
+		template = """
+                 [[hello_from
+                 name=\"Thorsten\" 
+                 from=\"Bochum\"]]
+				 [[/hello_from]]
+                 """;
+		result = tags.replace(template);
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
 	public static class TagHandler {

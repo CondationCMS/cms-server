@@ -132,16 +132,6 @@ public class TagParser {
 		return result.toString();
 	}
 
-	// Methode zum Finden des Endes eines Tags
-	private int findTagEnd2(String text, int startIndex) {
-		for (int i = startIndex; i < text.length() - 1; i++) {
-			if (text.charAt(i) == ']' && text.charAt(i + 1) == ']') {
-				return i;
-			}
-		}
-		return -1; // Kein schließendes ']]' gefunden
-	}
-
 	// Methode zum Finden des Endes eines Tags, auch über mehrere Zeilen
 	private int findTagEnd(String text, int startIndex) {
 		for (int i = startIndex + 2; i < text.length() - 1; i++) {
@@ -152,39 +142,73 @@ public class TagParser {
 		return -1; // Kein schließendes ']]' gefunden
 	}
 
-	// Methode zur Attribut-Analyse im ersten Schritt (Rohwerte als Strings speichern)
 	private Parameter parseRawAttributes(String attributesString) {
 		Parameter attributes = new Parameter();
-		StringBuilder key = new StringBuilder();
+		String key = null;
 		StringBuilder value = new StringBuilder();
 		boolean inQuotes = false;
-		boolean readingKey = true;
+		char quoteChar = 0;
+		boolean readingValue = false;
 
+		StringBuilder buffer = new StringBuilder();
 		for (int i = 0; i < attributesString.length(); i++) {
 			char c = attributesString.charAt(i);
-			if (c == '"' || c == '\'') {
-				inQuotes = !inQuotes;
-			} else if (!inQuotes && (c == '=' || c == ' ')) {
-				if (readingKey) {
-					readingKey = false;
-				} else {
-					attributes.put(key.toString().trim(), value.toString().trim()); // Rohwert speichern
-					key.setLength(0);
+
+			if (c == '\n' || c == '\r') {
+				// Zeilenumbrüche im Attributwert oder Key sind nicht erlaubt → aktuelles Attribut abbrechen
+				key = null;
+				value.setLength(0);
+				readingValue = false;
+				inQuotes = false;
+				buffer.setLength(0);
+				continue;
+			}
+
+			if (!inQuotes && (c == '"' || c == '\'')) {
+				inQuotes = true;
+				quoteChar = c;
+				continue;
+			}
+
+			if (inQuotes && c == quoteChar) {
+				inQuotes = false;
+				if (key != null) {
+					attributes.put(key.trim(), value.toString().trim());
+					key = null;
 					value.setLength(0);
-					readingKey = true;
+					readingValue = false;
 				}
+				continue;
+			}
+
+			if (!inQuotes && c == '=') {
+				key = buffer.toString().trim();
+				buffer.setLength(0);
+				readingValue = true;
+				continue;
+			}
+
+			if (!inQuotes && Character.isWhitespace(c)) {
+				if (readingValue && key != null && value.length() > 0) {
+					// Nur dann speichern, wenn der Wert abgeschlossen wurde (z. B. name="abc")
+					attributes.put(key.trim(), value.toString().trim());
+					key = null;
+					value.setLength(0);
+					readingValue = false;
+				}
+				continue;
+			}
+
+			if (readingValue) {
+				value.append(c);
 			} else {
-				if (readingKey) {
-					key.append(c);
-				} else {
-					value.append(c);
-				}
+				buffer.append(c);
 			}
 		}
 
-		// Letztes Attribut verarbeiten
-		if (key.length() > 0 && value.length() > 0) {
-			attributes.put(key.toString().trim(), value.toString().trim()); // Rohwert speichern
+		// Falls etwas am Ende übrig bleibt (nur gültig, wenn kein Zeilenumbruch):
+		if (key != null && value.length() > 0 && !inQuotes) {
+			attributes.put(key.trim(), value.toString().trim());
 		}
 
 		return attributes;

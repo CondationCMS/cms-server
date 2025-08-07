@@ -252,7 +252,6 @@ public class TagsTest extends ContentBaseTest {
                  from=\"Bochum\" /]]
                  """;
 		var result = tags.replace(template);
-		System.out.println(result);
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	

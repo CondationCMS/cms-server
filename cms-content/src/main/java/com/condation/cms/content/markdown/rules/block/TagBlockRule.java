@@ -73,7 +73,7 @@ public class TagBlockRule implements BlockElementRule {
 					.formatted(
 							tagInfo.name(),
 							String.join(" ", params),
-							tagInfo.rawAttributes().getOrDefault("_content", ""),
+							inlineRenderer.render((String)tagInfo.rawAttributes().getOrDefault("_content", "")),
 							tagInfo.name()
 					);
 		}

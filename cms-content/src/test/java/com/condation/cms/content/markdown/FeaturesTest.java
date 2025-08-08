@@ -26,6 +26,7 @@ import java.io.IOException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -38,6 +39,7 @@ public class FeaturesTest extends MarkdownTest {
 	@BeforeAll
 	public static void setup() {
 		SUT = new CMSMarkdown(Options.all());
+		
 	}
 
 	@RepeatedTest(1)
@@ -97,6 +99,24 @@ public class FeaturesTest extends MarkdownTest {
 
 		var result = SUT.render(md);
 		result = "<div>" + result + "</div>";
+		Assertions.assertThat(result).isEqualToIgnoringWhitespace(expected);
+	}
+	
+	
+	@Test
+	void tag_with_markdown () throws IOException {
+		var md = """
+           [[hello]]
+           **bold text**
+           [[/hello]]
+           """;
+		var expected = """
+            [[hello]]
+			<strong>bold text</strong>
+			[[/hello]]
+            <p></p>
+            """.trim();
+		var result = SUT.render(md).trim();
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace(expected);
 	}
 }

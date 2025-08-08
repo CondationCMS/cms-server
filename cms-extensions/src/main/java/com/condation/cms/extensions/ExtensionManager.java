@@ -106,18 +106,19 @@ public class ExtensionManager {
 	}
 
 	public RequestExtensions newContext(Theme theme, RequestContext requestContext) throws IOException {
+		var libsClassLoader = getClassLoader();
 		var context = Context.newBuilder()
 				.allowAllAccess(true)
 				.allowHostClassLookup(className -> true)
 				.allowHostAccess(HostAccess.ALL)
 				.allowValueSharing(true)
-				.hostClassLoader(getClassLoader())
+				.hostClassLoader(libsClassLoader)
 				.allowIO(IOAccess.newBuilder()
 						.fileSystem(new ExtensionFileSystem(db.getFileSystem().resolve("extensions/"), theme))
 						.build())
 				.engine(engine).build();
 
-		RequestExtensions requestExtensions = new RequestExtensions(context);
+		RequestExtensions requestExtensions = new RequestExtensions(context, libsClassLoader);
 
 		final Value bindings = context.getBindings("js");
 		setUpBinding(bindings, requestExtensions, theme, requestContext);

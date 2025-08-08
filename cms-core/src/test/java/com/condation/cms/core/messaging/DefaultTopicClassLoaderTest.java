@@ -29,7 +29,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import com.condation.cms.api.messaging.Listener;
 import com.condation.cms.api.messaging.Topic;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 
 @Slf4j
 class DefaultTopicClassLoaderTest {
@@ -52,6 +54,12 @@ class DefaultTopicClassLoaderTest {
         constructor.setAccessible(true);
         topic = (DefaultTopic) constructor.newInstance("TestTopic");
     }
+	
+	@AfterEach
+	void teardown () throws IOException {
+		loader1.close();
+		loader2.close();
+	}
 
     @Test
     void testPublishWithDifferentClassLoaders() throws Exception {

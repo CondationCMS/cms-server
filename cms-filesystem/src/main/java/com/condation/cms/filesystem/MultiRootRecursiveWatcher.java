@@ -168,6 +168,8 @@ public class MultiRootRecursiveWatcher {
 				watchService.close();
 				running.set(false);
 				watchThread.interrupt();
+				
+				scheduler.shutdown();
 			} catch (IOException e) {
 				// Don't care
 			}

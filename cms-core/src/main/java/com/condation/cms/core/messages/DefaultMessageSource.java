@@ -69,8 +69,12 @@ public class DefaultMessageSource implements MessageSource {
 
 	protected synchronized void fromClassLoader(final String bundleName, final Locale locale) throws Exception {
 		URL[] urls = { messageFolder.toUri().toURL() };
-		ClassLoader loader = new URLClassLoader(urls);
-		var bundle = ResourceBundle.getBundle(bundleName, locale, loader);
-		bundle.keySet().forEach(key -> messages.put(key, bundle.getString(key)));
+		URLClassLoader loader = new URLClassLoader(urls);
+		try {
+			var bundle = ResourceBundle.getBundle(bundleName, locale, loader);
+			bundle.keySet().forEach(key -> messages.put(key, bundle.getString(key)));
+		} finally {
+			loader.close();
+		}
 	}
 }

@@ -21,18 +21,18 @@ package com.condation.cms.templates.loaders;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.exceptions.TemplateNotFoundException;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.stream.Collectors;
 
 /**
- * Lädt Templates aus dem Klassenpfad.
- * z. B. für Ressourcen im Ordner /templates innerhalb des JARs.
- * 
+ * Lädt Templates aus dem Klassenpfad. z. B. für Ressourcen im Ordner /templates
+ * innerhalb des JARs.
+ *
  * @author t.marx
  */
 public class ClasspathTemplateLoader implements TemplateLoader {
@@ -46,16 +46,18 @@ public class ClasspathTemplateLoader implements TemplateLoader {
 	@Override
 	public String load(String template) {
 		var resourcePath = basePath + template;
-		var resourceStream = getClass().getClassLoader().getResourceAsStream(resourcePath);
-		
-		if (resourceStream == null) {
-			throw new TemplateNotFoundException("Template not found in classpath: " + resourcePath);
-		}
-		
-		try (var reader = new BufferedReader(new InputStreamReader(resourceStream, StandardCharsets.UTF_8))) {
-			return reader.lines().collect(Collectors.joining("\n"));
-		} catch (Exception e) {
-			throw new TemplateNotFoundException("Error loading template from classpath: " + e.getMessage());
+		try (var resourceStream = getClass().getClassLoader().getResourceAsStream(resourcePath);) {
+			if (resourceStream == null) {
+				throw new TemplateNotFoundException("Template not found in classpath: " + resourcePath);
+			}
+
+			try (var reader = new BufferedReader(new InputStreamReader(resourceStream, StandardCharsets.UTF_8))) {
+				return reader.lines().collect(Collectors.joining("\n"));
+			} catch (Exception e) {
+				throw new TemplateNotFoundException("Error loading template from classpath: " + e.getMessage());
+			}
+		} catch (IOException ex) {
+			throw new TemplateNotFoundException("Error loading template from classpath: " + ex.getMessage());
 		}
 	}
 }

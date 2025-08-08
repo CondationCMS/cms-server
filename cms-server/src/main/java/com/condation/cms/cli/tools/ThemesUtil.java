@@ -91,8 +91,8 @@ public class ThemesUtil {
 
 	private static Set<String> getRequiredParentThemes() {
 		Set<String> requiredThemes = new HashSet<>();
-		try {
-			Files.list(ServerUtil.getPath(Constants.Folders.THEMES))
+		try (var themesStream = Files.list(ServerUtil.getPath(Constants.Folders.THEMES))) {
+			themesStream
 					.filter(ThemesUtil::isTheme)
 					.forEach(themeConfig -> {
 						try {

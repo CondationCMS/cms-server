@@ -72,7 +72,8 @@ public class ModulesUtil {
 				}
 			}
 			if (Files.exists(themes)) {
-				Files.list(themes)
+				try (var themesStream = Files.list(themes)) {
+					themesStream
 						.filter(ModulesUtil::isTheme)
 						.forEach(themeConfig -> {
 							try {
@@ -82,6 +83,7 @@ public class ModulesUtil {
 								log.error("", ex);
 							}
 						});
+				}
 			}
 		} catch (IOException ex) {
 			log.error("", ex);

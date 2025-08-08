@@ -44,7 +44,9 @@ public class YamlConfigSource implements ConfigSource {
 	public static ConfigSource build (Path yamlFile) throws IOException {
 		Map<String, Object> result = null;
 		if (Files.exists(yamlFile)) {
-			result = (Map<String, Object>) new Yaml().load(Files.newBufferedReader(yamlFile, StandardCharsets.UTF_8));
+			try (var configReader = Files.newBufferedReader(yamlFile, StandardCharsets.UTF_8)) {
+				result = (Map<String, Object>) new Yaml().load(configReader);
+			}
 		} else {
 			result = Collections.emptyMap();
 		}

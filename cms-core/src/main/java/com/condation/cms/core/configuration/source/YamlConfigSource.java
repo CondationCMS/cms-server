@@ -83,7 +83,9 @@ public class YamlConfigSource implements ConfigSource {
 			}
 			lastModified = modified;
 			
-			result = (Map<String, Object>) new Yaml().load(Files.newBufferedReader(configFile, StandardCharsets.UTF_8));
+			try (var configByteBuffer = Files.newBufferedReader(configFile, StandardCharsets.UTF_8)) {
+				result = (Map<String, Object>) new Yaml().load(configByteBuffer);
+			}
 			return true;
 		} catch (IOException ex) {
 			log.error("", ex);

@@ -30,8 +30,14 @@
 					{{ node.meta.get('count') }}
 				</div>
 				<div>
+					<h2>simple compontent</h2>
 					{[ component color="red" message="its a component" ]}
 					{[ endcomponent ]}
+				</div>
+				<div>
+					<h2>Template component</h2>
+					{[ tempcomp name="CondationCMS" message="a compontent rendered by a template" ]}
+					{[ endtempcomp ]}
 				</div>
 			</div>
 			<hr />

@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.utils.FileUtils;
 import com.github.slugify.Slugify;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -63,7 +64,7 @@ public class UIPathUtil {
 			if (!Files.isDirectory(path)) {
 				return false;
 			}
-			return Files.list(path).count() > 0;
+			return FileUtils.countChildren(path) > 0;
 		} catch (IOException ex) {
 			log.error(null, ex);
 		}

@@ -44,38 +44,45 @@ public class FileUtils {
 		if (!Files.exists(pathToBeDeleted)) {
 			return;
 		}
-		Files.walk(pathToBeDeleted)
-				.sorted(Comparator.reverseOrder())
-				.map(Path::toFile)
-				.forEach(File::delete);
+		try (var walkStream = Files.walk(pathToBeDeleted)) {
+			walkStream.sorted(Comparator.reverseOrder())
+					.map(Path::toFile)
+					.forEach(File::delete);
+		}
 	}
 
 	public static void deleteDirectoryContents(Path directory) throws IOException {
-        if (!Files.exists(directory) || !Files.isDirectory(directory)) {
-            throw new IllegalArgumentException("Pfad ist kein existierendes Verzeichnis: " + directory);
-        }
+		if (!Files.exists(directory) || !Files.isDirectory(directory)) {
+			throw new IllegalArgumentException("Pfad ist kein existierendes Verzeichnis: " + directory);
+		}
 
-        Files.walkFileTree(directory, new SimpleFileVisitor<>() {
-            @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                Files.delete(file);
-                return FileVisitResult.CONTINUE;
-            }
+		Files.walkFileTree(directory, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+				Files.delete(file);
+				return FileVisitResult.CONTINUE;
+			}
 
-            @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-                if (!dir.equals(directory)) {
-                    Files.delete(dir);
-                }
-                return FileVisitResult.CONTINUE;
-            }
-        });
-    }
-	
-	public static void touch(Path path) throws IOException{
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				if (!dir.equals(directory)) {
+					Files.delete(dir);
+				}
+				return FileVisitResult.CONTINUE;
+			}
+		});
+	}
+
+	public static void touch(Path path) throws IOException {
 		long timeMillis = System.currentTimeMillis();
 		FileTime accessFileTime = FileTime.fromMillis(timeMillis);
 		Files.setAttribute(path, "lastAccessTime", accessFileTime);
 		Files.setLastModifiedTime(path, accessFileTime);
+	}
+
+	public static long countChildren(final Path path) throws IOException {
+		try (var children = Files.list(path)) {
+			return children.count();
+		}
 	}
 }

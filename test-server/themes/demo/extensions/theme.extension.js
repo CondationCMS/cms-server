@@ -1,4 +1,5 @@
 import { $hooks } from 'system/hooks.mjs';
+import { $templates } from 'system/templates.mjs';
 
 
 $hooks.registerAction("system/content/tags", (context) => {
@@ -14,6 +15,18 @@ $hooks.registerAction("system/template/component", (context) => {
 			"component",
 			(params) => `<div style="color: ${params.color}">${params.message}</div>`
 	)
+	
+	context.arguments().get("components").put(
+			"tempcomp",
+			(params) => {
+				var model = {
+					"name": params.get("name"),
+					"message": params.get("message")
+				}
+				return $templates.render("components/test.html", model);
+			}
+	)
+	
 	return null;
 })
 

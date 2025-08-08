@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 @FeatureScope({FeatureScope.Scope.REQUEST})
 public record TemplateEngineFeature(TemplateEngine templateEngine) implements Feature {
 
-	public String render(String template, Map<String, String> model, RequestContext requestContext) {
+	public String render(String template, Map<String, Object> model, RequestContext requestContext) {
 		try {
 			var templateModel = new TemplateEngine.Model(null, null, requestContext);
 			templateModel.values.putAll(model);

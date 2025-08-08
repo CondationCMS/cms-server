@@ -24,8 +24,6 @@ import com.condation.cms.api.utils.ServerUtil;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.cli.commands.modules.AbstractModuleCommand;
 import com.condation.cms.core.configuration.ConfigurationFactory;
@@ -61,16 +59,17 @@ public class ModulesUtil {
 			var hosts = ServerUtil.getPath(Constants.Folders.HOSTS);
 			var themes = ServerUtil.getPath(Constants.Folders.THEMES);
 			if (Files.exists(hosts)) {
-				Files.list(hosts)
-						.filter(ModulesUtil::isHost)
-						.forEach(site -> {
-							try {
-								var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
-								requiredModules.addAll(hostProperties.activeModules());
-							} catch (IOException ex) {
-								log.error("", ex);
-							}
-						});
+				try (var hostStream = Files.list(hosts)) {
+					hostStream.filter(ModulesUtil::isHost)
+							.forEach(site -> {
+								try {
+									var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
+									requiredModules.addAll(hostProperties.activeModules());
+								} catch (IOException ex) {
+									log.error("", ex);
+								}
+							});
+				}
 			}
 			if (Files.exists(themes)) {
 				Files.list(themes)

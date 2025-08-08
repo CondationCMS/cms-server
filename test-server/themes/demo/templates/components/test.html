@@ -1,0 +1,10 @@
+{% if name != null && message != null %}
+<div>
+	<h5>{{ name }}</h5>
+	<p>
+		{{ message }}
+	</p>
+</div>
+{% else %}
+<h6>name and message missing</h6>
+{% endif %}

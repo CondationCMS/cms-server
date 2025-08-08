@@ -64,7 +64,8 @@ public class ExtensionManager {
 		Path libs = db.getFileSystem().resolve("libs/");
 		List<URL> urls = new ArrayList<>();
 		if (Files.exists(libs)) {
-			Files.list(libs)
+			try (var libsStream = Files.list(libs)) {
+				libsStream
 					.filter(path -> path.getFileName().toString().endsWith(".jar"))
 					.forEach(path -> {
 						try {
@@ -73,6 +74,7 @@ public class ExtensionManager {
 							log.error("", ex);
 						}
 					});
+			}
 		}
 		return new URLClassLoader(urls.toArray(URL[]::new), ClassLoader.getSystemClassLoader());
 	}
@@ -81,7 +83,8 @@ public class ExtensionManager {
 		if (!Files.exists(extPath)) {
 			return;
 		}
-		Files.list(extPath)
+		try (var extStream = Files.list(extPath)) {
+			extStream
 				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
 				.map(extFile -> {
 					try {
@@ -99,6 +102,7 @@ public class ExtensionManager {
 					return null;
 				}).filter(source -> source != null)
 				.forEach(loader);
+		}
 	}
 
 	public RequestExtensions newContext(Theme theme, RequestContext requestContext) throws IOException {

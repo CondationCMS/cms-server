@@ -23,7 +23,6 @@ package com.condation.cms.api.cache;
  */
 
 
-import java.io.Serializable;
 import java.util.function.Function;
 
 /**

@@ -59,7 +59,7 @@ public class ExtendedServerProperties implements ServerProperties {
 	public APMProperties apm() {
 		return configuration.get("apm", ExtendedAPMProperties.class);
 	}
-
+	
 	@Override
 	public Path getThemesFolder() {
 		return ServerUtil.getPath(Constants.Folders.THEMES);

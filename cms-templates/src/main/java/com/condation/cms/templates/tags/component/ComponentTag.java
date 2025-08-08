@@ -22,7 +22,6 @@ package com.condation.cms.templates.tags.component;
  * #L%
  */
 
-import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.templates.Component;
 import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.exceptions.RenderException;
@@ -67,9 +66,9 @@ public class ComponentTag implements Component {
 
 			params.put("_content", content);
 			
-			var shortCodeResult = components.execute(componentName, params, context.dynamicConfiguration().requestContext());
-			if (!Strings.isNullOrEmpty(shortCodeResult)) {
-				writer.write(shortCodeResult);
+			var componentResult = components.execute(componentName, params, context.dynamicConfiguration().requestContext());
+			if (!Strings.isNullOrEmpty(componentResult)) {
+				writer.write(componentResult);
 			}
 		} catch (Exception e) {	
 			throw new RenderException(e.getMessage(), node.getLine(), node.getColumn());

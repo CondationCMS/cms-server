@@ -2,6 +2,7 @@ package com.condation.cms.cli.commands.server;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.auth.services.Realm;
 
 /*-
  * #%L
@@ -27,7 +28,6 @@ import com.condation.cms.api.utils.ServerUtil;
 
 
 import com.condation.cms.auth.services.UserService;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
@@ -36,7 +36,12 @@ import picocli.CommandLine.Parameters;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "remove_user")
+@CommandLine.Command(
+		name = "remove_user",
+		description = {
+			"removes a user from the given realm of a host"
+		}
+)
 @Slf4j
 public class RemoveUser implements Runnable {
 
@@ -58,7 +63,7 @@ public class RemoveUser implements Runnable {
 		try {
 			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
 			
-			userService.removeUser(UserService.Realm.of(realm), username);
+			userService.removeUser(Realm.of(realm), username);
 			log.info("user added successfuly");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

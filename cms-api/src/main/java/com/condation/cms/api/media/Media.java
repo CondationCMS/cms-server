@@ -29,4 +29,13 @@ import com.condation.cms.api.media.meta.Meta;
  *
  * @author t.marx
  */
-public record Media (String uri, Meta meta, boolean exists) {}
+public record Media (String uri, Meta meta, boolean exists, Size size) {
+
+	public static Size NO_SIZE = new Size(-1, -1);
+	
+	public Media (String uri, Meta meta, boolean exists) {
+		this(uri, meta, exists, NO_SIZE);
+	}
+	
+	public static record Size(int width, int height) {}
+}

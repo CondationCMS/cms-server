@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.ui.annotations.HookAction;
 import com.condation.cms.api.ui.annotations.MenuEntry;
@@ -40,7 +41,8 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 	@MenuEntry(
 			id = "toolMenu",
 			name = "Tools",
-			position = 10
+			position = 10,
+			permissions = {Permissions.CACHE_INVALIDATE}
 	)
 	public void parentDefinition() {
 
@@ -50,45 +52,54 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 			parent = "toolMenu",
 			id = "media-cache-clear",
 			name = "Clear media cache",
+			permissions = {Permissions.CACHE_INVALIDATE},
 			position = 1,
 			hookAction = @HookAction(value = "ui/manager/tools/media/cache/clear")
 	)
 	@ShortCut(
 			id = "media-cache-clear",
 			title = "Clear media cache",
+			permissions = {Permissions.CACHE_INVALIDATE},
 			section = "tools",
 			hookAction = @HookAction(value = "ui/manager/tools/media/cache/clear")
 	)
-	public void clear_media_cache() {}
-	
-		@MenuEntry(
+	public void clear_media_cache() {
+	}
+
+	@MenuEntry(
 			parent = "toolMenu",
 			id = "content-cache-clear",
 			name = "Clear content cache",
+			permissions = {Permissions.CACHE_INVALIDATE},
 			position = 2,
 			hookAction = @HookAction(value = "ui/manager/tools/content/cache/clear")
 	)
 	@ShortCut(
 			id = "content-cache-clear",
 			title = "Clear content cache",
+			permissions = {Permissions.CACHE_INVALIDATE},
 			section = "tools",
 			hookAction = @HookAction(value = "ui/manager/tools/content/cache/clear")
 	)
-	public void clear_content_cache() {}
-	
-		@MenuEntry(
+	public void clear_content_cache() {
+	}
+
+	@MenuEntry(
 			parent = "toolMenu",
 			id = "template-cache-clear",
 			name = "Clear template cache",
+			permissions = {Permissions.CACHE_INVALIDATE},
 			position = 3,
 			hookAction = @HookAction(value = "ui/manager/tools/template/cache/clear")
 	)
 	@ShortCut(
 			id = "template-cache-clear",
 			title = "Clear template cache",
+			permissions = {Permissions.CACHE_INVALIDATE},
 			section = "tools",
 			hookAction = @HookAction(value = "ui/manager/tools/template/cache/clear")
 	)
-	public void clear_template_cache() {}
+	public void clear_template_cache() {
+	}
 
 }

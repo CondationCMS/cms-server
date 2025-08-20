@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
@@ -47,7 +48,7 @@ import java.util.HashMap;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteMediaEnpoints extends UIRemoteMethodExtensionPoint {
 
-	@RemoteMethod(name = "media.meta.get")
+	@RemoteMethod(name = "media.meta.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getMediaMeta(Map<String, Object> parameters) throws RPCException {
 		try {
 			var image = (String) parameters.getOrDefault("image", "");
@@ -61,7 +62,7 @@ public class RemoteMediaEnpoints extends UIRemoteMethodExtensionPoint {
 		}
 	}
 	
-	@RemoteMethod(name = "media.meta.set")
+	@RemoteMethod(name = "media.meta.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setMediaMeta(Map<String, Object> parameters) throws RPCException {
 		try {
 			var data = (Map<String, Map<String, Object>>) parameters.getOrDefault("meta", Map.of());

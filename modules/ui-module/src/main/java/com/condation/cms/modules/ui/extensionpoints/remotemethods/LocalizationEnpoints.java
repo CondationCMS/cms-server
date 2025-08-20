@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.ui.extensions.UILocalizationExtensionPoint;
@@ -44,7 +45,7 @@ public class LocalizationEnpoints extends UIRemoteMethodExtensionPoint {
 
 
 
-	@RemoteMethod(name = "i18n.load")
+	@RemoteMethod(name = "i18n.load", permissions = {Permissions.CONTENT_EDIT})
 	public Object list(Map<String, Object> parameters) {
 		
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();

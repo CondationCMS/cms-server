@@ -45,7 +45,7 @@ public class MenuEntry {
 	private boolean divider = false;
 	
 	@Builder.Default
-	private List<String> roles = new ArrayList<>();
+	private List<String> permissions = new ArrayList<>();
 	
 	@Builder.Default
 	private int position = 0;

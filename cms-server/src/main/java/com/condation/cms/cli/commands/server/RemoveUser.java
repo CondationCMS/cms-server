@@ -39,7 +39,7 @@ import picocli.CommandLine.Parameters;
 @CommandLine.Command(
 		name = "remove_user",
 		description = {
-			"removes a user from the given realm of a host"
+			"removes a user from the given realm"
 		}
 )
 @Slf4j
@@ -47,9 +47,6 @@ public class RemoveUser implements Runnable {
 
 	@CommandLine.Option(names = {"-r", "--realm"}, description = "The realm")
 	String realm = "users";
-
-	@CommandLine.Option(names = {"-h", "--host"}, description = "The host", required = true)
-	String host = null;
 	
 	@Parameters(
 			paramLabel = "<username>",
@@ -61,7 +58,7 @@ public class RemoveUser implements Runnable {
 	@Override
 	public void run() {
 		try {
-			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
+			UserService userService = new UserService(ServerUtil.getHome());
 			
 			userService.removeUser(Realm.of(realm), username);
 			log.info("user added successfuly");

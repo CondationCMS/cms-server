@@ -7,7 +7,6 @@ context_path = "/"
 
 [ui]
 force2fa = false
-secret = "super-secret-token"
 managerEnabled = true
 
 [ui.2fa]

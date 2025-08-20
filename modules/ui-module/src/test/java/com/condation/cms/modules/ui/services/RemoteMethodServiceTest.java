@@ -22,7 +22,10 @@ package com.condation.cms.modules.ui.services;
  * #L%
  */
 
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.auth.permissions.Permission;
+import com.condation.cms.auth.permissions.PermissionRegistry;
 import com.condation.cms.auth.services.User;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
@@ -30,9 +33,15 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
 
 class RemoteMethodServiceTest {
 
+	@BeforeAll
+	public static void setup () {
+		PermissionRegistry.register(new Permission("no", "test permission"));
+	}
+	
     @Test
     void shouldThrowRemoteMethodException_whenUserHasNoAccess() {
         // given
@@ -48,8 +57,8 @@ class RemoteMethodServiceTest {
             }
 
             @Override
-            public String[] roles() {
-                return new String[]{"admin"};
+            public String[] permissions() {
+                return new String[]{"no"};
             }
         };
 
@@ -81,8 +90,8 @@ class RemoteMethodServiceTest {
             }
 
             @Override
-            public String[] roles() {
-                return new String[]{"user"};
+            public String[] permissions() {
+                return new String[]{Permissions.CONTENT_EDIT};
             }
         };
 
@@ -91,7 +100,7 @@ class RemoteMethodServiceTest {
                 parameters -> "success"
         );
 
-        User user = new User("testUser", "hash", new String []{"user"}, Collections.emptyMap()); // passende Rolle
+        User user = new User("testUser", "hash", new String []{"editor"}, Collections.emptyMap()); // passende Rolle
 
         // when
         Object result = rMethod.execute(Map.of(), user);

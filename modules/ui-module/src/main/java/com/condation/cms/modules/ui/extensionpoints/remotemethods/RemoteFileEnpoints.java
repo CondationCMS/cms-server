@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
@@ -74,7 +75,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		};
 	}
 
-	@RemoteMethod(name = "files.list")
+	@RemoteMethod(name = "files.list", permissions = {Permissions.CONTENT_EDIT})
 	public Object list(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var uri = (String) parameters.getOrDefault("uri", "");
@@ -122,7 +123,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	@RemoteMethod(name = "files.delete")
+	@RemoteMethod(name = "files.delete", permissions = {Permissions.CONTENT_EDIT})
 	public Object delete(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 
@@ -163,7 +164,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	@RemoteMethod(name = "files.rename")
+	@RemoteMethod(name = "files.rename", permissions = {Permissions.CONTENT_EDIT})
 	public Object renameFile(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		Map<String, Object> result = new HashMap<>();
@@ -225,7 +226,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	@RemoteMethod(name = "folders.create")
+	@RemoteMethod(name = "folders.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object createFolder(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 
@@ -256,7 +257,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	@RemoteMethod(name = "files.create")
+	@RemoteMethod(name = "files.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object createFile(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 

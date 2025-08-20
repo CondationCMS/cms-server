@@ -21,11 +21,11 @@ package com.condation.cms.server.configs;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.db.DB;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.auth.services.UserService;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.site.DefaultSiteService;
@@ -62,9 +62,9 @@ public class ServerGlobalModule implements com.google.inject.Module {
 
 			DirectSchedulerFactory schedulerFactory = DirectSchedulerFactory.getInstance();
 			schedulerFactory.createScheduler(
-					"cms-scheduler", 
-					"cms-scheduler", 
-					new SimpleThreadPool(5, Thread.NORM_PRIORITY), 
+					"cms-scheduler",
+					"cms-scheduler",
+					new SimpleThreadPool(5, Thread.NORM_PRIORITY),
 					new RAMJobStore());
 			var scheduler = schedulerFactory.getScheduler("cms-scheduler");
 			scheduler.start();
@@ -80,29 +80,35 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	public ServerProperties serverProperties() throws IOException {
 		return new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
 	}
-	
+
 	@Provides
 	public Engine engine() throws IOException {
 		return Engine.newBuilder("js")
-					.option("engine.WarnInterpreterOnly", "false")
-					.build();
+				.option("engine.WarnInterpreterOnly", "false")
+				.build();
 	}
-	
+
 	@Provides
 	@Singleton
-	public RepositoryManager repositoryManager (Scheduler scheduler) throws Exception {
+	public UserService userService() {
+		return new UserService(ServerUtil.getHome());
+	}
+
+	@Provides
+	@Singleton
+	public RepositoryManager repositoryManager(Scheduler scheduler) throws Exception {
 		Path gitConfig = ServerUtil.getPath("git.yaml");
-		
+
 		log.info("repository configuration found");
 		final RepositoryManager repositoryManager = new RepositoryManager(scheduler);
 		repositoryManager.init(gitConfig);
 
 		return repositoryManager;
 	}
-	
+
 	@Provides
 	@Singleton
-	public SiteService siteService () {
+	public SiteService siteService() {
 		return new DefaultSiteService();
 	}
 }

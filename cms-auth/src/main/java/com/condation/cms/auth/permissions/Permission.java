@@ -1,8 +1,8 @@
-package com.condation.cms.api.ui.annotations;
+package com.condation.cms.auth.permissions;
 
 /*-
  * #%L
- * cms-api
+ * cms-auth
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,27 +22,10 @@ package com.condation.cms.api.ui.annotations;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
  *
- * @author thorstenmarx
+ * @author thmar
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ShortCut {
-	String title();
-	String id();
-	String parent() default "";
-	String icon() default "";
-	String hotkey () default "";
-	String section () default "";
-	
-	String[] permissions();
-	
-	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
-	HookAction hookAction () default @HookAction("");
+public record Permission(String key, String description) {
+    public static final Permission CONTENT_EDIT = new Permission("content.edit", "Inhalte bearbeiten");
 }

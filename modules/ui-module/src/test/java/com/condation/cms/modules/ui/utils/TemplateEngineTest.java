@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
@@ -61,10 +62,10 @@ public class TemplateEngineTest {
 			menu.addMenuEntry(MenuEntry.builder()
 					.children(new ArrayList<>(
 							List.of(
-									MenuEntry.builder().id("child1").roles(List.of("manager")).name("Child 1").position(0).build(),
-									MenuEntry.builder().id("div1").roles(List.of("manager")).divider(true).position(1).build(),
+									MenuEntry.builder().id("child1").permissions(List.of(Permissions.CONTENT_EDIT)).name("Child 1").position(0).build(),
+									MenuEntry.builder().id("div1").permissions(List.of(Permissions.CONTENT_EDIT)).divider(true).position(1).build(),
 									MenuEntry.builder().id("child2").name("Child 2")
-											.roles(List.of("manager"))
+											.permissions(List.of(Permissions.CONTENT_EDIT))
 											.position(2)
 											.action(new UIScriptAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()

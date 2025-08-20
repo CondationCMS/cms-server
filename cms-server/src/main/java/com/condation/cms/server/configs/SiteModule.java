@@ -174,12 +174,6 @@ public class SiteModule extends AbstractModule {
 
 		return DefaultTheme.NO_THEME;
 	}
-
-	@Provides
-	@Singleton
-	public UserService userService(DB db) {
-		return new UserService(db.getFileSystem().hostBase());
-	}
 	
 	@Provides
 	@Singleton

@@ -22,6 +22,7 @@ package com.condation.cms.server.filter;
  * #L%
  */
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
@@ -70,7 +71,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 		}
 
 		var token = tokenCookie.get().getValue();
-		var secret = configuration.get(SiteConfiguration.class).siteProperties().ui().secret();
+		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 		if (TokenUtils.validateToken(token, secret)) {
 			var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
 			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
@@ -85,7 +86,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 	}
 	
 	private void handlePreviewParameter(Request request, Response response) throws Exception {
-		var secret = configuration.get(SiteConfiguration.class).siteProperties().ui().secret();
+		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		if (queryParameters.containsKey("preview-token")) {
 			var token = queryParameters.get("preview-token").getFirst();

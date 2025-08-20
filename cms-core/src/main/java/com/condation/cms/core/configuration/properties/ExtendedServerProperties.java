@@ -32,6 +32,7 @@ import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -108,6 +109,13 @@ public class ExtendedServerProperties implements ServerProperties {
 	@Override
 	public List<String> extensionRepositories() {
 		return (List<String>) configuration.getOrDefault("urls.extensions", Collections.emptyList());
+	}
+	
+	@Override
+	public String secret() {
+		return Optional.ofNullable(System.getenv("CMS_UI_SECRET"))
+	               .filter(s -> !s.isEmpty())
+	               .orElse(configuration.getString("ui.secret"));
 	}
 	
 	public static record Server (int port, String ip) {

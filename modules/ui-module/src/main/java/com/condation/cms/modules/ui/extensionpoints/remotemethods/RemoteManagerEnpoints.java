@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
@@ -41,12 +42,12 @@ import com.condation.cms.modules.ui.utils.UIHooks;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 
-	@RemoteMethod(name = "manager.content.tags")
+	@RemoteMethod(name = "manager.content.tags", permissions = {Permissions.CONTENT_EDIT})
 	public Object getShortCodeNames (Map<String, Object> parameters) throws RPCException {
 		return getRequestContext().get(RenderContext.class).tags().getTagNames();
 	}
 	
-	@RemoteMethod(name = "manager.media.form")
+	@RemoteMethod(name = "manager.media.form", permissions = {Permissions.CONTENT_EDIT})
 	public Object getMediaForm(Map<String, Object> parameters) throws RPCException {
 		try {
 			var form = (String) parameters.getOrDefault("form", "");
@@ -57,13 +58,13 @@ public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 		}
 	}
 	
-	@RemoteMethod(name = "manager.media.formats")
+	@RemoteMethod(name = "manager.media.formats", permissions = {Permissions.CONTENT_EDIT})
 	public Object getMediaFormats (Map<String, Object> parameters) throws RPCException {
 		var configuration = getContext().get(ConfigurationFeature.class).configuration();
 		return configuration.get(MediaConfiguration.class).getFormats();
 	}
 	
-	@RemoteMethod(name = "manager.contentTypes.sections")
+	@RemoteMethod(name = "manager.contentTypes.sections", permissions = {Permissions.CONTENT_EDIT})
 	public Object getSectionTemplates(Map<String, Object> parameters) throws RPCException {
 		try {
 			var section = (String) parameters.getOrDefault("section", "");
@@ -74,7 +75,7 @@ public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 		}
 	}
 
-	@RemoteMethod(name = "manager.contentTypes.pages")
+	@RemoteMethod(name = "manager.contentTypes.pages", permissions = {Permissions.CONTENT_EDIT})
 	public Object getPageTemplates(Map<String, Object> parameters) throws RPCException {
 		try {
 			return uiHooks().contentTypes().getPageTemplates();

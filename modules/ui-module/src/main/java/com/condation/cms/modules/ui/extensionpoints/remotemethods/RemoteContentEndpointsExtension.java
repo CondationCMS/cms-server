@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
@@ -57,7 +58,7 @@ import java.nio.file.Path;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoint {
 
-	@RemoteMethod(name = "content.get")
+	@RemoteMethod(name = "content.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -81,7 +82,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 
-	@RemoteMethod(name = "content.set")
+	@RemoteMethod(name = "content.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -111,7 +112,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 
-	@RemoteMethod(name = "meta.set")
+	@RemoteMethod(name = "meta.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setMeta(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -147,7 +148,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 
 	private record Update (String uri, Map<String, Map<String, Object>> meta) {}
 	
-	@RemoteMethod(name = "meta.set.batch")
+	@RemoteMethod(name = "meta.set.batch", permissions = {Permissions.CONTENT_EDIT})
 	public Object setMetaBatch(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -189,7 +190,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 
-	@RemoteMethod(name = "content.section.delete")
+	@RemoteMethod(name = "content.section.delete", permissions = {Permissions.CONTENT_EDIT})
 	public Object deleteSection(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var uri = (String) parameters.get("uri");
@@ -216,7 +217,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 	
-	@RemoteMethod(name = "content.section.add")
+	@RemoteMethod(name = "content.section.add", permissions = {Permissions.CONTENT_EDIT})
 	public Object addSection(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -252,7 +253,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		return result;
 	}
 	
-	@RemoteMethod(name = "content.node")
+	@RemoteMethod(name = "content.node", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContentNode (Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);

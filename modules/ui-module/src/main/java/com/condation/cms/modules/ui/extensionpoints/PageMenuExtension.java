@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.extensionpoints;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.modules.api.annotation.Extension;
@@ -61,6 +62,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 	@ShortCut(
 			id = "page-create",
 			title = "Create new page",
+			permissions = {Permissions.CONTENT_EDIT},
 			hotkey = "ctrl-3",
 			section = "Page",
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/create-page")
@@ -79,6 +81,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 	@ShortCut(
 			id = "page-edit-meta",
 			title = "Edit page settings",
+			permissions = {Permissions.CONTENT_EDIT},
 			hotkey = "ctrl-2",
 			section = "Page",
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-page-settings")
@@ -98,6 +101,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 	@ShortCut(
 			id = "manager-assets",
 			title = "Manage assets",
+			permissions = {Permissions.CONTENT_EDIT},
 			hotkey = "ctrl-4",
 			section = "Assets",
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/manage-assets")

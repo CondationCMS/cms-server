@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.cache.ICache;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -115,7 +116,7 @@ public class AjaxLoginHandler extends JettyHandler {
 		Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
+			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 			var token = TokenUtils.createToken(user.username(), secret);
 
 			boolean isDev = requestContext.has(IsDevModeFeature.class);
@@ -187,7 +188,7 @@ public class AjaxLoginHandler extends JettyHandler {
 
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
+			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 			var token = TokenUtils.createToken(user.username(), secret);
 
 			boolean isDev = requestContext.has(IsDevModeFeature.class);

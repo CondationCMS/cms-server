@@ -51,4 +51,6 @@ public interface ServerProperties  {
 	public List<String> themeRepositories ();
 	
 	public List<String> extensionRepositories ();
+	
+	String secret();
 }

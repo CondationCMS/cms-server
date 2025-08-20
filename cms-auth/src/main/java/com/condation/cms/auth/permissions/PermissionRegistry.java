@@ -1,8 +1,8 @@
-package com.condation.cms.api.ui.annotations;
+package com.condation.cms.auth.permissions;
 
 /*-
  * #%L
- * cms-api
+ * cms-auth
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,27 +22,27 @@ package com.condation.cms.api.ui.annotations;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
- * @author thorstenmarx
+ * @author thmar
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ShortCut {
-	String title();
-	String id();
-	String parent() default "";
-	String icon() default "";
-	String hotkey () default "";
-	String section () default "";
-	
-	String[] permissions();
-	
-	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
-	HookAction hookAction () default @HookAction("");
+public class PermissionRegistry {
+
+	private static final Map<String, Permission> registry = new HashMap<>();
+
+	public static void register(Permission permission) {
+		registry.put(permission.key(), permission);
+	}
+
+	public static Permission get(String key) {
+		return registry.get(key);
+	}
+
+	public static Collection<Permission> all() {
+		return registry.values();
+	}
 }

@@ -30,27 +30,16 @@ import com.condation.cms.api.UIProperties;
  */
 public class TestUiProperties implements UIProperties {
 
-	private String secret;
 	private boolean force2Fa;
 	private boolean managerEnabled;
 
 	public TestUiProperties() {
 	}
 
-	public TestUiProperties(String secret, boolean force2Fa, boolean managerEnabled) {
-		this.secret = secret;
+	public TestUiProperties( boolean force2Fa, boolean managerEnabled) {
 		this.force2Fa = force2Fa;
 		this.managerEnabled = managerEnabled;
 	}
-
-	
-	
-	
-	@Override
-	public String secret() {
-		return secret;
-	}
-
 	@Override
 	public boolean force2fa() {
 		return force2Fa;

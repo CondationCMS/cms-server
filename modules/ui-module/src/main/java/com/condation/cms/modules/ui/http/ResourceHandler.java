@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
@@ -73,7 +74,7 @@ public class ResourceHandler extends JettyHandler {
 
 		if (resource.endsWith(".html")) {
 			try {
-				var secret = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().ui().secret();
+				var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource,
 						Map.of(
 								"actionFactory", actionFactory,

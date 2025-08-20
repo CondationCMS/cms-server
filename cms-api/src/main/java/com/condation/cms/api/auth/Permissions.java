@@ -1,4 +1,4 @@
-package com.condation.cms.api.ui.annotations;
+package com.condation.cms.api.auth;
 
 /*-
  * #%L
@@ -22,27 +22,11 @@ package com.condation.cms.api.ui.annotations;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
  *
- * @author thorstenmarx
+ * @author thmar
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface ShortCut {
-	String title();
-	String id();
-	String parent() default "";
-	String icon() default "";
-	String hotkey () default "";
-	String section () default "";
-	
-	String[] permissions();
-	
-	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
-	HookAction hookAction () default @HookAction("");
+public class Permissions {
+	public static final String CONTENT_EDIT = "content.edit";
+	public static final String CACHE_INVALIDATE = "cache.invalidate";
 }

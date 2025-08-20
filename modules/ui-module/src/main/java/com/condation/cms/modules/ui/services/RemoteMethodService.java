@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.modules.ui.utils.RoleUtil;
 import java.util.function.Function;
@@ -42,6 +43,8 @@ import lombok.RequiredArgsConstructor;
 public class RemoteMethodService {
 	
 	public Map<String, RMethod> handlers = new HashMap<>();
+	
+	protected static AuthorizationService authService = new AuthorizationService();
 	
 	public void init (final ModuleManager moduleManager) {
 		moduleManager.extensions(UIRemoteMethodExtensionPoint.class).forEach(this::register);
@@ -71,7 +74,7 @@ public class RemoteMethodService {
 		private final Function<Map<String, Object>, Object> function;
 		
 		public Object execute (final Map<String, Object> parameters, User user) {
-			if (!RoleUtil.hasAccess(remoteMethodAnnotation.roles(), user.roles())) {
+			if (!RemoteMethodService.authService.hasAnyPermission(user, remoteMethodAnnotation.permissions())) {
 				throw new RemoteMethodException("access not allowed");
 			}
 			return function.apply(parameters);

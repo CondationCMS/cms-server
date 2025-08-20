@@ -31,18 +31,10 @@ import java.util.Optional;
  */
 public class ExtendedUIProperties implements UIProperties {
 
-	private String secret = null;
 	
 	private boolean force2fa = false;
 	
 	private boolean managerEnabled = false;
-	
-	@Override
-	public String secret() {
-		return Optional.ofNullable(System.getenv("CMS_UI_SECRET"))
-	               .filter(s -> !s.isEmpty())
-	               .orElse(secret);
-	}
 
 	@Override
 	public boolean force2fa() {

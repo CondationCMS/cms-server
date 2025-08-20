@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.DBFeature;
@@ -52,7 +53,7 @@ import java.util.Date;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 
-	@RemoteMethod(name = "page.delete")
+	@RemoteMethod(name = "page.delete", permissions = {Permissions.CONTENT_EDIT})
 	public Object deletePage(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 
@@ -88,7 +89,7 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	@RemoteMethod(name = "page.create")
+	@RemoteMethod(name = "page.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object createPage(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 

@@ -42,7 +42,7 @@ import picocli.CommandLine.Parameters;
 @CommandLine.Command(
 		name = "add_user",
 		description = {
-			"adds a user to a realm of a host"
+			"adds a user to a realm"
 		}
 )
 @Slf4j
@@ -50,9 +50,6 @@ public class AddUser implements Runnable {
 
 	@CommandLine.Option(names = {"-r", "--realm"}, description = "The realm")
 	String realm = "users";
-
-	@CommandLine.Option(names = {"-h", "--host"}, description = "The host", required = true)
-	String host = null;
 	
 	@CommandLine.Option(names = {"-ro", "--roles"}, description = "The roles", split = ",")
 	String[] roles = null;
@@ -81,7 +78,7 @@ public class AddUser implements Runnable {
 	@Override
 	public void run() {
 		try {
-			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
+			UserService userService = new UserService(ServerUtil.getHome());
 			
 			Map<String, Object> data = new HashMap<>();
 			if (!Strings.isNullOrEmpty(mail)) {

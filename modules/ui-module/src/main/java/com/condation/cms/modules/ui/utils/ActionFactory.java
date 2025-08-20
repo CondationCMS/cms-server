@@ -39,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.cms.api.utils.JSONUtil;
+import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
 import java.util.Arrays;
 
@@ -54,6 +55,8 @@ public class ActionFactory {
 	private final ModuleManager moduleManager;
 	private final User user;
 
+	AuthorizationService authService = new AuthorizationService();
+	
 	public List<ShortCutHolder> createShortCuts() {
 		List<ShortCutHolder> shortCuts = new ArrayList<>();
 		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
@@ -90,7 +93,7 @@ public class ActionFactory {
 		var filteredMenu = new Menu();
 		var menuEntries = menu.entries();
 		menuEntries.stream()
-				.filter(entry -> RoleUtil.hasAccess(entry.getRoles(), user.roles()))
+				.filter(entry -> authService.hasAllPermissions(user, entry.getPermissions().toArray(new String[0])))
 				.forEach(filteredMenu::addMenuEntry);
 				
 		return filteredMenu;
@@ -141,7 +144,7 @@ public class ActionFactory {
 					shortcutAnnotation.parent(), 
 					shortcutAnnotation.section(),
 					menuAction,
-					shortcutAnnotation.roles()));
+					shortcutAnnotation.permissions()));
 			}
 
 		}
@@ -181,7 +184,7 @@ public class ActionFactory {
 					.position(menuAnn.position())
 					.action(menuAction)
 					.children(new ArrayList<>())
-					.roles(Arrays.asList(menuAnn.roles()))
+					.permissions(Arrays.asList(menuAnn.permissions()))
 					.build();
 
 			entries.add(new EntryHolder(menuAnn.parent(), entry));
@@ -261,7 +264,7 @@ public class ActionFactory {
 
 	}
 
-	public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action, String[] roles) {
+	public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action, String[] permissions) {
 
 		public String getActionDefinition() {
 			return action != null ? JSONUtil.toJson(action) : "";

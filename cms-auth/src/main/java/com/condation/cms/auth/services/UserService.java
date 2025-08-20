@@ -53,7 +53,7 @@ public class UserService {
 	private final static Splitter userSplitter = Splitter.on(":").trimResults();
 	private final static Splitter groupSplitter = Splitter.on(",").trimResults();
 
-	private final Path hostBase;
+	private final Path serverBase;
 
 	public void addUser (Realm realm, String username, String password, String[] roles) throws Exception {
 		addUser(realm, username, password, roles, Map.of());
@@ -113,7 +113,7 @@ public class UserService {
 	}
 
 	private List<User> loadUsers(final Realm realm) throws IOException {
-		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
+		Path usersFile = serverBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		List<User> users = new ArrayList<>();
 		if (Files.exists(usersFile)) {
 			List<String> lines = Files.readAllLines(usersFile, StandardCharsets.UTF_8);
@@ -164,7 +164,7 @@ public class UserService {
 	}
 
 	private void saveUsers(Realm realm, List<User> users) throws IOException {
-		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
+		Path usersFile = serverBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		Files.deleteIfExists(usersFile);
 
 		Files.createDirectories(usersFile.getParent());

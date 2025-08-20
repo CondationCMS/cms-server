@@ -27,8 +27,6 @@ package com.condation.cms.api;
  * @author thorstenmarx
  */
 public interface UIProperties {
-	String secret();
-	
 	boolean force2fa();
 	
 	boolean managerEnabled ();

@@ -11,10 +11,10 @@
 		<maven.compiler.target>21</maven.compiler.target>
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
-		<jetty.version>12.0.24</jetty.version>
+		<jetty.version>12.0.25</jetty.version>
 		<lucene.version>10.2.2</lucene.version>
 		<modules-framework.version>1.2.0</modules-framework.version>
-		<mockito.version>5.18.0</mockito.version>
+		<mockito.version>5.19.0</mockito.version>
 	</properties>
 	<modules>
 		<module>cms-api</module>
@@ -302,7 +302,7 @@
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.27.3</version>
+				<version>3.27.4</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -489,7 +489,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.2</version>
+				<version>3.11.3</version>
 				<configuration>
 					<failOnError>false</failOnError>
 				</configuration>

@@ -45,7 +45,6 @@ import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
-import org.eclipse.jetty.util.IO;
 import static org.eclipse.jetty.util.IO.ensureDirExists;
 import org.eclipse.jetty.util.StringUtil;
 
@@ -62,9 +61,11 @@ public class UploadHandler extends JettyHandler {
 	private final Path TEMP_UPLOAD_DIR;
 
 	private final boolean useDateFolder;
-	
-	/** Maximum allowed size of uploaded files in bytes (10 MB). */
-    public static final long MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
+
+	/**
+	 * Maximum allowed size of uploaded files in bytes (10 MB).
+	 */
+	public static final long MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 
 	public static final Set<String> ALLOWED_MIME_TYPES = Set.of(
 			"image/png",
@@ -118,12 +119,12 @@ public class UploadHandler extends JettyHandler {
 		try {
 			formData.parse(request, new org.eclipse.jetty.util.Promise.Invocable<MultiPartFormData.Parts>() {
 				@Override
-				public void accept(MultiPartFormData.Parts parts, Throwable u) {
-					if (u != null) {
-						Response.writeError(request, response, callback, u);
-						return;
-					}
+				public void failed(Throwable x) {
+					Response.writeError(request, response, callback, x);
+				}
 
+				@Override
+				public void succeeded(MultiPartFormData.Parts parts) {
 					if (parts == null || parts.size() == 0) {
 						log.warn("Multipart upload received, but no parts found.");
 						Response.writeError(request, response, callback, HttpStatus.BAD_REQUEST_400, "No parts in upload.");
@@ -176,7 +177,7 @@ public class UploadHandler extends JettyHandler {
 					Path tempFile = Files.createTempFile("upload-", ".tmp");
 					try (InputStream inputStream = Content.Source.asInputStream(filePart.getContentSource()); OutputStream outputStream = Files.newOutputStream(tempFile)) {
 						long bytesCopied = ByteStreams.copy(inputStream, outputStream);
-						
+
 						if (bytesCopied > MAX_FILE_SIZE_BYTES) {
 							Files.deleteIfExists(tempFile);
 							throw new IOException("Uploaded file too large (" + bytesCopied + " bytes)");

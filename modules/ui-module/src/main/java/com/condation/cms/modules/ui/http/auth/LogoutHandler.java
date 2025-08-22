@@ -22,7 +22,7 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.feature.features.IsDevModeFeature;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import java.util.Map;
@@ -41,7 +41,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class LogoutHandler extends JettyHandler {
 
-	private final CMSRequestContext requestContext;
+	private final SiteRequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

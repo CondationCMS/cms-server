@@ -22,19 +22,29 @@ package com.condation.cms.server.configs;
  * #L%
  */
 import com.condation.cms.api.ServerProperties;
-import com.condation.cms.api.db.DB;
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
+import com.condation.cms.api.module.ServerModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.site.DefaultSiteService;
+import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.git.RepositoryManager;
+import com.condation.modules.api.ModuleManager;
+import com.condation.modules.api.ModuleRequestContextFactory;
+import com.condation.modules.manager.ModuleAPIClassLoader;
+import com.condation.modules.manager.ModuleManagerImpl;
 import com.google.inject.Binder;
+import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.graalvm.polyglot.Engine;
 import org.quartz.Scheduler;
@@ -110,5 +120,43 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	@Singleton
 	public SiteService siteService() {
 		return new DefaultSiteService();
+	}
+	
+	@Provides
+	@Singleton
+	public ServerModuleContext serverModuleContext () {
+		return new ServerModuleContext();
+	}
+	
+	@Provides
+	@Singleton
+	@Named("server")
+	public ModuleManager serverModuleManager(Injector injector, ServerModuleContext context) {
+		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
+				List.of(
+						"org.slf4j",
+						"com.condation.cms",
+						"com.condation.modules",
+						"org.apache.logging",
+						"org.graalvm.polyglot",
+						"org.graalvm.js",
+						"org.eclipse.jetty",
+						"jakarta.servlet",
+						"com.google",
+						"org.w3c"
+				));
+		
+		var homePath = ServerUtil.getHome();
+		var moduleManager = ModuleManagerImpl.builder()
+				.setClassLoader(classLoader)
+				.setInjector((instance) -> injector.injectMembers(instance))
+				.setModulesDataPath(homePath.resolve("modules_data").toFile())
+				.setModulesPath(homePath.toFile())
+				.setContext(context)
+				.build();
+
+		context.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManager));
+
+		return moduleManager;
 	}
 }

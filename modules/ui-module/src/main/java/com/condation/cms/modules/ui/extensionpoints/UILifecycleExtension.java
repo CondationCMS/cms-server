@@ -23,7 +23,7 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 import com.condation.cms.api.feature.features.CacheManagerFeature;
 import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.modules.ui.services.LockService;
 import com.condation.cms.modules.ui.utils.TemplateEngine;
 import java.io.IOException;
@@ -45,14 +45,14 @@ public class UILifecycleExtension {
 
 	private static UILifecycleExtension INSTANCE = null;
 
-	public static UILifecycleExtension getInstance(CMSModuleContext context) {
+	public static UILifecycleExtension getInstance(SiteModuleContext context) {
 		if (INSTANCE == null) {
 			INSTANCE = new UILifecycleExtension(context);
 		}
 		return INSTANCE;
 	}
 
-	private UILifecycleExtension(CMSModuleContext context) {
+	private UILifecycleExtension(SiteModuleContext context) {
 		lockService = new LockService();
 		templateEngine = new TemplateEngine(context.get(CacheManagerFeature.class).cacheManager());
 	}

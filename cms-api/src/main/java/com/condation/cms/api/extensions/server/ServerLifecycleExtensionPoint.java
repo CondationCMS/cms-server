@@ -1,10 +1,10 @@
-package com.condation.cms.api.ui.extensions;
+package com.condation.cms.api.extensions.server;
 
 /*-
  * #%L
- * ui-api
+ * cms-api
  * %%
- * Copyright (C) 2024 Marx-Software
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,16 +22,14 @@ package com.condation.cms.api.ui.extensions;
  * #L%
  */
 
-import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
-import com.condation.cms.api.ui.elements.Menu;
-import com.condation.modules.api.ExtensionPoint;
-
 /**
  *
- * @author t.marx
+ * @author thmar
  */
-public interface UIActionsExtensionPoint extends ExtensionPoint<SiteModuleContext, SiteRequestContext> {
+public abstract class ServerLifecycleExtensionPoint extends ServerExtensionPoint {
+
+	public abstract void started ();
 	
-	public default void addMenuItems (Menu menu) {};
+	public abstract void stopped ();
+
 }

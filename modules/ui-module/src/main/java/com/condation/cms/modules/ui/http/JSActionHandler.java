@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
@@ -44,7 +44,7 @@ public class JSActionHandler extends JettyHandler {
 
 	private final FileSystem fileSystem;
 	private final String base;
-	private final CMSModuleContext context;
+	private final SiteModuleContext context;
 	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

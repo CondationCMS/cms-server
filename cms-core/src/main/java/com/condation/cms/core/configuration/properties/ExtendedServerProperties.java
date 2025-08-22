@@ -118,6 +118,11 @@ public class ExtendedServerProperties implements ServerProperties {
 	               .orElse(configuration.getString("ui.secret"));
 	}
 	
+	@Override
+	public List<String> activeModules() {
+		return configuration.getList("modules.active", String.class);
+	}
+	
 	public static record Server (int port, String ip) {
 		
 	}

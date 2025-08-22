@@ -26,7 +26,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.rpc.RPCException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -45,7 +45,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 public class RemoteFileEnpointsTest {
 	
 	@Mock
-	CMSModuleContext moduleContext;
+	SiteModuleContext moduleContext;
 	
 	@Mock
 	private DB db;

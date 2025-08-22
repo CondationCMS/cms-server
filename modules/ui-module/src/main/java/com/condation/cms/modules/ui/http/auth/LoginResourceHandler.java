@@ -24,7 +24,7 @@ package com.condation.cms.modules.ui.http.auth;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
@@ -46,7 +46,7 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class LoginResourceHandler extends JettyHandler {
 
-	private final CMSModuleContext context;
+	private final SiteModuleContext context;
 	private final RequestContext requestContext;
 
 	@Override

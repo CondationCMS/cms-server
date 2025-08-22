@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
@@ -43,7 +43,7 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor
 public class PublicResourceHandler extends JettyHandler {
 
-	private final CMSModuleContext context;
+	private final SiteModuleContext context;
 	private final FileSystem fileSystem;
 	private final String base;
 	private final List<String> publicResources;

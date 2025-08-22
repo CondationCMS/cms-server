@@ -25,8 +25,8 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
-import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +43,8 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class UIAuthHandler extends JettyHandler {
 
-	private final CMSModuleContext moduleContext;
-	private final CMSRequestContext requestContext;
+	private final SiteModuleContext moduleContext;
+	private final SiteRequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

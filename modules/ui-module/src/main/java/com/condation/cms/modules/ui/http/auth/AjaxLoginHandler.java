@@ -27,7 +27,7 @@ import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.Realm;
@@ -59,7 +59,7 @@ import org.simplejavamail.email.EmailBuilder;
 @Slf4j
 public class AjaxLoginHandler extends JettyHandler {
 
-	private final CMSModuleContext moduleContext;
+	private final SiteModuleContext moduleContext;
 	private final RequestContext requestContext;
 
 	private final ICache<String, AtomicInteger> loginFails;

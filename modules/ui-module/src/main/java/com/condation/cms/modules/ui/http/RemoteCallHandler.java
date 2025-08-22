@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCResult;
 import com.condation.cms.modules.ui.model.RemoteCall;
@@ -46,7 +46,7 @@ import org.eclipse.jetty.util.Callback;
 public class RemoteCallHandler extends JettyHandler {
 
 	private final RemoteMethodService remoteCallService;
-	private final CMSModuleContext moduleContext;
+	private final SiteModuleContext moduleContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

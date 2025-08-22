@@ -22,8 +22,8 @@ package com.condation.cms.api.ui.extensions;
  * #L%
  */
 
-import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.modules.api.ExtensionPoint;
 import java.util.Map;
 
@@ -31,7 +31,7 @@ import java.util.Map;
  *
  * @author t.marx
  */
-public interface UILocalizationExtensionPoint extends ExtensionPoint<CMSModuleContext, CMSRequestContext> {
+public interface UILocalizationExtensionPoint extends ExtensionPoint<SiteModuleContext, SiteRequestContext> {
 	
 	public Map<String, Map<String, String>> getLocalizations ();
 }

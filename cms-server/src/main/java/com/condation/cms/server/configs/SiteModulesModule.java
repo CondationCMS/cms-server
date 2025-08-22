@@ -28,8 +28,8 @@ import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.markdown.MarkdownRenderer;
-import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.request.ThreadLocalRequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
@@ -55,7 +55,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class ModulesModule extends AbstractModule {
+public class SiteModulesModule extends AbstractModule {
 
 	private final Path modulesPath;
 
@@ -65,7 +65,7 @@ public class ModulesModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public ModuleManager moduleManager(Injector injector, CMSModuleContext context, ModuleRequestContextFactory requestContextFactory) {
+	public ModuleManager moduleManager(Injector injector, SiteModuleContext context, ModuleRequestContextFactory requestContextFactory) {
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
 						"org.slf4j",
@@ -97,14 +97,14 @@ public class ModulesModule extends AbstractModule {
 	@Singleton
 	public ModuleRequestContextFactory requestContextFactory() {
 		return () -> {
-			return new CMSRequestContext(ThreadLocalRequestContext.REQUEST_CONTEXT.get());
+			return new SiteRequestContext(ThreadLocalRequestContext.REQUEST_CONTEXT.get());
 		};
 	}
 
 	@Provides
 	@Singleton
-	public CMSModuleContext moduleContext() {
-		final CMSModuleContext cmsModuleContext = new CMSModuleContext();
+	public SiteModuleContext moduleContext() {
+		final SiteModuleContext cmsModuleContext = new SiteModuleContext();
 
 		return cmsModuleContext;
 	}

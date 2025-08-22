@@ -53,4 +53,6 @@ public interface ServerProperties  {
 	public List<String> extensionRepositories ();
 	
 	String secret();
+	
+	public List<String> activeModules();
 }

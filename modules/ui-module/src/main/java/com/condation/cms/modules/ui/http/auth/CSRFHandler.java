@@ -24,7 +24,7 @@ package com.condation.cms.modules.ui.http.auth;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import java.util.Set;
@@ -42,7 +42,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class CSRFHandler extends JettyHandler {
 
-	private final CMSModuleContext moduleContext;
+	private final SiteModuleContext moduleContext;
 
 	private static final Set<String> METHODS_TO_CHECK = Set.of("POST", "PUT", "DELETE", "PATCH");
 

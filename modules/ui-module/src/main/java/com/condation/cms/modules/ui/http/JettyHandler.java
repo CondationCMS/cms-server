@@ -29,8 +29,8 @@ import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.module.CMSModuleContext;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
@@ -58,14 +58,14 @@ public abstract class JettyHandler implements HttpHandler {
 		return "";
 	}
 
-	public void setAuthFeature (String username, CMSRequestContext requestContext) {
+	public void setAuthFeature (String username, SiteRequestContext requestContext) {
 		if (requestContext.has(AuthFeature.class)) {
 			return;
 		}
 		requestContext.add(AuthFeature.class, new AuthFeature(username));
 	}
 	
-	public Optional<User> getUser(Request request, CMSModuleContext moduleContext) {
+	public Optional<User> getUser(Request request, SiteModuleContext moduleContext) {
 
 		try {
 			var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
@@ -88,7 +88,7 @@ public abstract class JettyHandler implements HttpHandler {
 		return Optional.empty();
 	}
 	
-	protected String getUsername (Request request, CMSModuleContext moduleContext) {
+	protected String getUsername (Request request, SiteModuleContext moduleContext) {
 		var user = getUser(request, moduleContext);
 		if (user.isPresent()) {
 			return user.get().username();

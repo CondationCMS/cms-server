@@ -1,10 +1,10 @@
-package com.condation.cms.api.extensions;
+package com.condation.cms.api.extensions.server;
 
 /*-
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,24 +22,23 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-
-import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.module.ServerModuleContext;
+import com.condation.cms.api.module.ServerRequestContext;
 import com.condation.modules.api.ExtensionPoint;
 import com.condation.modules.api.ModuleConfiguration;
 import lombok.Getter;
 
 /**
  *
- * @author t.marx
+ * @author thmar
  */
-public abstract class AbstractExtensionPoint implements ExtensionPoint<SiteModuleContext, SiteRequestContext> {
+public abstract class ServerExtensionPoint implements ExtensionPoint<ServerModuleContext, ServerRequestContext> {
 	@Getter
 	protected ModuleConfiguration moduleConfiguration;
 	@Getter
-	protected SiteModuleContext context;
+	protected ServerModuleContext context;
 	@Getter
-	protected SiteRequestContext requestContext;
+	protected ServerRequestContext requestContext;
 
 	@Override
 	public void setConfiguration(ModuleConfiguration configuration) {
@@ -47,14 +46,15 @@ public abstract class AbstractExtensionPoint implements ExtensionPoint<SiteModul
 	}
 
 	@Override
-	public void setContext(SiteModuleContext context) {
+	public void setContext(ServerModuleContext context) {
 		this.context = context;
 	}
+
 	@Override
-	public void setRequestContext(SiteRequestContext requestContext) {
+	public void setRequestContext(ServerRequestContext requestContext) {
 		this.requestContext = requestContext;
 	}
-	
+
 	@Override
 	public void init() {
 	}

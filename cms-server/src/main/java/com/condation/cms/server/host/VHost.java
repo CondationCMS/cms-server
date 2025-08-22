@@ -10,7 +10,6 @@ import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.PathMappingsHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 
 /*-
  * #%L
@@ -33,8 +32,6 @@ import org.eclipse.jetty.server.handler.gzip.GzipHandler;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
@@ -51,7 +48,7 @@ import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
 import com.condation.cms.api.feature.features.ThemeFeature;
-import com.condation.cms.api.module.CMSModuleContext;
+import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.SiteUtil;
@@ -64,7 +61,7 @@ import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.media.ThemeMediaManager;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.server.FileFolderPathResource;
-import com.condation.cms.server.configs.ModulesModule;
+import com.condation.cms.server.configs.SiteModulesModule;
 import com.condation.cms.server.configs.SiteConfigInitializer;
 import com.condation.cms.server.configs.SiteGlobalModule;
 import com.condation.cms.server.configs.SiteHandlerModule;
@@ -93,6 +90,8 @@ import com.google.inject.name.Names;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.compression.server.CompressionConfig;
+import org.eclipse.jetty.compression.server.CompressionHandler;
 
 /**
  *
@@ -108,7 +107,7 @@ public class VHost {
 
 	@Getter
 	protected Injector injector;
-	
+
 	private final Configuration configuration = new Configuration();
 
 	public VHost(final Path hostBase) {
@@ -146,7 +145,7 @@ public class VHost {
 			themeAssetsHandler.start();
 
 			this.injector.getInstance(TemplateEngine.class).updateTheme(theme);
-			this.injector.getInstance(CMSModuleContext.class).get(ThemeFeature.class).updateTheme(theme);
+			this.injector.getInstance(SiteModuleContext.class).get(ThemeFeature.class).updateTheme(theme);
 
 			injector.getInstance(EventBus.class).syncPublish(new HostReloadedEvent(id()));
 		} catch (Exception e) {
@@ -159,10 +158,9 @@ public class VHost {
 	}
 
 	public void init(Path modulesPath, Injector globalInjector) throws IOException {
-		this.injector = globalInjector.createChildInjector(
-				new SiteGlobalModule(),
+		this.injector = globalInjector.createChildInjector(new SiteGlobalModule(),
 				new SiteModule(hostBase, this.configuration),
-				new ModulesModule(modulesPath),
+				new SiteModulesModule(modulesPath),
 				new SiteHandlerModule(),
 				new ThemeModule());
 
@@ -170,7 +168,7 @@ public class VHost {
 		injector.getInstance(ConfigManagement.class).initConfiguration(configuration);
 		// run site initializer
 		injector.getInstance(SiteConfigInitializer.class).init();
-		
+
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		moduleManager.initModules();
 		List<String> activeModules = getActiveModules();
@@ -196,7 +194,6 @@ public class VHost {
 
 		//Initializer initializer = new Initializer(this);
 		//initializer.initBackup();
-		
 		initSiteGlobals();
 	}
 
@@ -216,7 +213,7 @@ public class VHost {
 				injector.getInstance(Theme.class)
 		);
 	}
-	
+
 	public Handler buildHttpHandler() {
 
 		Handler contentHandler = null;
@@ -232,7 +229,7 @@ public class VHost {
 		var routesHandler = injector.getInstance(RoutesHandler.class);
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
-		
+
 		var uiPreviewFilter = injector.getInstance(UIPreviewFilter.class);
 
 		var defaultHandlerSequence = new Handler.Sequence(
@@ -272,7 +269,7 @@ public class VHost {
 			}
 		});
 		final JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("site")));
-		
+
 		var siteMediaHandlerSequence = new Handler.Sequence(
 				uiPreviewFilter,
 				mediaHandler
@@ -310,18 +307,12 @@ public class VHost {
 
 		RequestLoggingFilter logContextHandler = new RequestLoggingFilter(contextCollection, injector.getInstance(SiteProperties.class));
 
-		GzipHandler gzipHandler = new GzipHandler(logContextHandler);
-		gzipHandler.setMinGzipSize(1024);
-		gzipHandler.addIncludedMimeTypes("text/plain");
-		gzipHandler.addIncludedMimeTypes("text/html");
-		gzipHandler.addIncludedMimeTypes("text/css");
-		gzipHandler.addIncludedMimeTypes("application/javascript");
-
-		hostHandler = gzipHandler;
-
+		hostHandler = logContextHandler;
+		
+		
 		return hostHandler;
 	}
-	
+
 	private Handler.Wrapper createAPIHandler() {
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
@@ -345,7 +336,7 @@ public class VHost {
 		);
 		return requestContextFilter(handlerSequence, injector);
 	}
-	
+
 	private Handler.Wrapper createModuleHandler() {
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);

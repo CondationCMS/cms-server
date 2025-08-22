@@ -31,18 +31,25 @@ import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.extensions.server.ServerLifecycleExtensionPoint;
 import com.condation.cms.api.site.Site;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.git.RepositoryManager;
+import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
+import com.google.inject.Key;
+import com.google.inject.name.Names;
+import jakarta.inject.Named;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.compression.server.CompressionConfig;
+import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
@@ -100,7 +107,7 @@ public class JettyServer implements AutoCloseable {
 				var host = new VHost(site.basePath());
 				host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
 				vhosts.add(host);
-				
+
 				globalInjector.getInstance(SiteService.class).add(new Site(host.getInjector()));
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -127,6 +134,9 @@ public class JettyServer implements AutoCloseable {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.debug("shutting down");
 
+			var moduleManager = globalInjector.getInstance(Key.get(ModuleManager.class, Names.named("server")));
+			moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::stopped);
+			
 			vhosts.forEach(host -> {
 				log.debug("shutting down vhost : " + host.hostnames());
 				host.shutdown();
@@ -161,12 +171,21 @@ public class JettyServer implements AutoCloseable {
 
 		server.addConnector(connector);
 
+		CompressionHandler compressionHandler = new CompressionHandler(handlerCollection);
+		CompressionConfig compressionConfig = CompressionConfig.builder()
+				.compressIncludeMimeType("text/plain")
+				.compressIncludeMimeType("text/html")
+				.compressIncludeMimeType("text/css")
+				.compressIncludeMimeType("application/javascript")
+				.build();
+		compressionHandler.putConfiguration("/*", compressionConfig);
+
 		var apm = properties.apm();
 		if (apm.enabled()) {
 			log.info("enable application performance management");
 			ThreadLimitHandler threadLimitHandler = new ThreadLimitHandler(HttpHeader.X_FORWARDED_FOR.asString());
 			threadLimitHandler.setThreadLimit(apm.thread_limit());
-			threadLimitHandler.setHandler(handlerCollection);
+			threadLimitHandler.setHandler(compressionHandler);
 
 			QoSHandler qosHandler = new QoSHandler(threadLimitHandler);
 			qosHandler.setMaxRequestCount(apm.max_requests());
@@ -174,7 +193,7 @@ public class JettyServer implements AutoCloseable {
 
 			server.setHandler(qosHandler);
 		} else {
-			server.setHandler(handlerCollection);
+			server.setHandler(compressionHandler);
 		}
 
 		try {
@@ -184,11 +203,31 @@ public class JettyServer implements AutoCloseable {
 				host.getInjector().getInstance(EventBus.class).publish(new HostReadyEvent(host.id()));
 				host.getInjector().getInstance(EventBus.class).publish(new ServerReadyEvent());
 			});
+			
+			initServerModules();
 
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
 		System.out.println("cms startup successfully");
+	}
+
+	private void initServerModules() {
+		var moduleManager = globalInjector.getInstance(Key.get(ModuleManager.class, Names.named("server")));
+		moduleManager.initModules();
+		List<String> activeModules = globalInjector.getInstance(ServerProperties.class).activeModules();
+		activeModules.stream()
+				.filter(module_id -> moduleManager.getModuleIds().contains(module_id))
+				.forEach(module_id -> {
+					try {
+						log.debug("activate module {}", module_id);
+						moduleManager.activateModule(module_id);
+					} catch (IOException ex) {
+						log.error(null, ex);
+					}
+				});
+		
+		moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::started);
 	}
 
 	@Override

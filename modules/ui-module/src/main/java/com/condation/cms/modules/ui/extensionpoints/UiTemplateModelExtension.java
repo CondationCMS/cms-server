@@ -24,7 +24,7 @@ package com.condation.cms.modules.ui.extensionpoints;
 
 import com.condation.cms.api.extensions.TemplateModelExtendingExtensionPoint;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.utils.JSONUtil;
 import com.condation.modules.api.annotation.Extension;
@@ -54,7 +54,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 	@RequiredArgsConstructor
 	public static class UIHelper {
 		
-		private final CMSRequestContext requestContext;
+		private final SiteRequestContext requestContext;
 		
 		public String editMeta (String editor, String element) {
 			return editMeta(editor, element, Collections.emptyMap());

@@ -26,7 +26,7 @@ import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.model.Parameter;
-import com.condation.cms.api.module.CMSRequestContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.modules.api.annotation.Extension;
 import java.util.Map;
 import java.util.function.Function;
@@ -54,7 +54,7 @@ public class AuthTags extends RegisterTagsExtensionPoint {
 				"");
 	}
 	
-	private <F extends Feature> Object getFeatureValueOrDefault(CMSRequestContext context,
+	private <F extends Feature> Object getFeatureValueOrDefault(SiteRequestContext context,
 			Class<F> feature, Function<F, Object> valueFunction, Object defaultValue) {
 		if (context.has(feature)) {
 			return valueFunction.apply(context.get(feature));

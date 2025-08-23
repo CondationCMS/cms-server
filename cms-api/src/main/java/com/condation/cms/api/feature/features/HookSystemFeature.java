@@ -33,5 +33,4 @@ import com.condation.cms.api.hooks.HookSystem;
  */
 @FeatureScope({FeatureScope.Scope.REQUEST})
 public record HookSystemFeature(HookSystem hookSystem) implements Feature {
-
 }

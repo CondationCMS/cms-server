@@ -174,7 +174,6 @@ public class SiteModulesModule extends AbstractModule {
 		
 		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
 			extensionPoint.register(hookSystem);
-			
 			hookSystem.register(extensionPoint);
 		});
 		

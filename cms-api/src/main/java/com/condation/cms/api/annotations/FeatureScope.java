@@ -43,7 +43,8 @@ public @interface FeatureScope {
 	public enum Scope {
 		REQUEST,
 		GLOBAL,
-		MODULE
+		MODULE,
+		SERVER
 	}
 }
 

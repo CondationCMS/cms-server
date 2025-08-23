@@ -31,7 +31,11 @@ import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.server.ServerLifecycleExtensionPoint;
+import com.condation.cms.api.feature.features.ServerHookSystemFeature;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.module.ServerModuleContext;
 import com.condation.cms.api.site.Site;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
@@ -226,6 +230,12 @@ public class JettyServer implements AutoCloseable {
 						log.error(null, ex);
 					}
 				});
+		
+		var hookSystem = globalInjector.getInstance(Key.get(HookSystem.class, Names.named("server")));
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			hookSystem.register(extensionPoint);
+		});
 		
 		moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::started);
 	}

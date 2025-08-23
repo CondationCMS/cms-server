@@ -22,19 +22,21 @@ package com.condation.cms.server.configs;
  * #L%
  */
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
+import com.condation.cms.api.feature.features.ServerHookSystemFeature;
+import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.module.ServerModuleContext;
-import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.core.scheduler.ServerCronJobScheduler;
 import com.condation.cms.core.site.DefaultSiteService;
-import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.git.RepositoryManager;
 import com.condation.modules.api.ModuleManager;
-import com.condation.modules.api.ModuleRequestContextFactory;
 import com.condation.modules.manager.ModuleAPIClassLoader;
 import com.condation.modules.manager.ModuleManagerImpl;
 import com.google.inject.Binder;
@@ -87,6 +89,13 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	}
 
 	@Provides
+	@Singleton
+	@Named("server")
+	public CronJobScheduler serverCronJobScheudler (Scheduler scheduler) {
+		return new ServerCronJobScheduler(scheduler);
+	}
+	
+	@Provides
 	public ServerProperties serverProperties() throws IOException {
 		return new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
 	}
@@ -121,11 +130,24 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	public SiteService siteService() {
 		return new DefaultSiteService();
 	}
+
+	@Provides
+	@Singleton
+	@Named("server")
+	public HookSystem hookSystem () {
+		return new HookSystem();
+	}
 	
 	@Provides
 	@Singleton
-	public ServerModuleContext serverModuleContext () {
-		return new ServerModuleContext();
+	@Named("server")
+	public ServerModuleContext serverModuleContext (Injector injector, @Named("server") HookSystem hookSystem) {
+		var context = new ServerModuleContext();
+		
+		context.add(InjectorFeature.class, new InjectorFeature(injector));
+		context.add(ServerHookSystemFeature.class, new ServerHookSystemFeature(hookSystem));
+		
+		return context;
 	}
 	
 	@Provides

@@ -140,7 +140,6 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	
 	@Provides
 	@Singleton
-	@Named("server")
 	public ServerModuleContext serverModuleContext (Injector injector, @Named("server") HookSystem hookSystem) {
 		var context = new ServerModuleContext();
 		
@@ -173,7 +172,7 @@ public class ServerGlobalModule implements com.google.inject.Module {
 				.setClassLoader(classLoader)
 				.setInjector((instance) -> injector.injectMembers(instance))
 				.setModulesDataPath(homePath.resolve("modules_data").toFile())
-				.setModulesPath(homePath.toFile())
+				.setModulesPath(homePath.resolve("modules").toFile())
 				.setContext(context)
 				.build();
 

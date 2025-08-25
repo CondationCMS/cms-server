@@ -21,12 +21,12 @@ see wiki for more information: [wiki](https://github.com/thmarx/cms/wiki)
 * **FEATURE** Aliases for content [442](https://github.com/CondationCMS/cms-server/issues/442)
 * **FEATURE** Add redirect support for aliases [454](https://github.com/CondationCMS/cms-server/issues/454)
 * **FEATURE** Signature for modules and themes [471](https://github.com/CondationCMS/cms-server/issues/471)
-* **FEATURE** Switch password has to secure algorithm [472](https://github.com/CondationCMS/cms-server/issues/472)
+* **FEATURE** Switch password hash to secure algorithm [472](https://github.com/CondationCMS/cms-server/issues/472)
 * **FEATURE** Simple http api for basic use cases [479](https://github.com/CondationCMS/cms-server/issues/479)
 * **FEATURE** Add spa mode for sites [476](https://github.com/CondationCMS/cms-server/issues/476)
 * **FEATURE** Custom repository urls for modules, extensions and themes [466](https://github.com/CondationCMS/cms-server/issues/466)
 * **FEATURE** UI to manage content [PR-446](https://github.com/CondationCMS/cms-server/pull/446)
-* **FEATURE** Simple solution for backups [492](https://github.com/CondationCMS/cms-server/pull/492)
+* **FEATURE** Introduce server modules [503](https://github.com/CondationCMS/cms-server/issues/503)
 
 ### Developer experience
 

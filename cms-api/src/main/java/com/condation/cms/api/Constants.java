@@ -131,4 +131,5 @@ public abstract class Constants {
 		public static final String DEFAULT_SINGLE_TEMPLATE = "taxonomy.single.html";
 	}
 	
+	public static final String REQUEST_CONTEXT_ATTRIBUTE_NAME = "_requestContext";
 }

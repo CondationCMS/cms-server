@@ -90,8 +90,6 @@ import com.google.inject.name.Names;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.compression.server.CompressionConfig;
-import org.eclipse.jetty.compression.server.CompressionHandler;
 
 /**
  *

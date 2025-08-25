@@ -21,9 +21,9 @@ package com.condation.cms.server.filter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
-import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
@@ -73,7 +73,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 		var token = tokenCookie.get().getValue();
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 		if (TokenUtils.validateToken(token, secret)) {
-			var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+			var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
 
 			var username = TokenUtils.getPayLoad(token, secret);
@@ -98,7 +98,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 
 	private void setCookie(Request request, String name, String token, Response response) {
 		
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 		
 		boolean isDev = requestContext.has(IsDevModeFeature.class);
 

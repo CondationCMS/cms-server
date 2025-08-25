@@ -26,7 +26,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.eventbus.Event;
 import com.condation.cms.api.eventbus.EventBus;
-import com.condation.cms.api.eventbus.events.RepoCheckoutEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;

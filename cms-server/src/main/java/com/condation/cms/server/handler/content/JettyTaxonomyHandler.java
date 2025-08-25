@@ -23,6 +23,7 @@ package com.condation.cms.server.handler.content;
  */
 
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.content.TaxonomyResponse;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.TaxonomyResolver;
@@ -48,7 +49,7 @@ public class JettyTaxonomyHandler extends Handler.Abstract {
 	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 		try {
 			
 			if (!taxonomyResolver.isTaxonomy(requestContext)) {

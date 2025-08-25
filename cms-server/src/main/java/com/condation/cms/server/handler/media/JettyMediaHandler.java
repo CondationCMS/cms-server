@@ -24,12 +24,11 @@ package com.condation.cms.server.handler.media;
 
 
 import com.condation.cms.api.ServerContext;
-import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.media.MediaUtils;
-import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.media.MediaManager;
-import com.condation.cms.server.filter.CreateRequestContextFilter;
+import com.condation.cms.server.handler.AbstractHandler;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -41,7 +40,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -52,7 +50,7 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class JettyMediaHandler extends Handler.Abstract {
+public class JettyMediaHandler extends AbstractHandler {
 
 	@Getter
 	private final MediaManager mediaManager;
@@ -107,11 +105,8 @@ public class JettyMediaHandler extends Handler.Abstract {
 		return true;
 	}
 
-	private boolean isPreview (Request request) {
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
-		return requestContext.has(IsPreviewFeature.class);
-	}
 
+	
 	private void deliver(final byte[] bytes, final String mimetype, Request request, Response response) throws IOException {
 		response.getHeaders().add("Content-Type", mimetype);
 		response.getHeaders().add("Content-Length", bytes.length);
@@ -126,7 +121,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 
 	private String getRelativeMediaPath(Request request) {
 		var path = request.getHttpURI().getPath();
-		var contextPath = request.getContext().getContextPath();
+		var contextPath = RequestUtil.getContextPath(request);
 		if (!contextPath.endsWith("/")) {
 			contextPath += "/";
 		}

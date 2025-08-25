@@ -23,6 +23,9 @@ package com.condation.cms.api.utils;
  */
 
 
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.RequestContext;
 import java.net.InetSocketAddress;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.Request;
@@ -33,6 +36,11 @@ import org.eclipse.jetty.server.Request;
  */
 public class RequestUtil {
 
+	public static String getContextPath(Request request) {
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
+		return requestContext.get(SitePropertiesFeature.class).siteProperties().contextPath();
+	}
+	
 	/**
 	 * removes the context from the path
 	 * @param request
@@ -40,7 +48,7 @@ public class RequestUtil {
 	 */
 	public static String getContentPath(Request request) {
 		var path = request.getHttpURI().getPath();
-		var contextPath = request.getContext().getContextPath();
+		var contextPath = getContextPath(request);
 		if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
 			path = path.replaceFirst(contextPath, "");
 		}

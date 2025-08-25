@@ -21,6 +21,7 @@ package com.condation.cms.server.handler.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.request.RequestContext;
@@ -28,7 +29,6 @@ import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.UserService;
-import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -107,7 +107,7 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 
 							if (authPath.allowed(userOpt.get())) {
 
-								var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+								var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 								requestContext.add(AuthFeature.class, new AuthFeature(username));
 
 								loginFails.invalidate(RequestUtil.clientAddress(request));

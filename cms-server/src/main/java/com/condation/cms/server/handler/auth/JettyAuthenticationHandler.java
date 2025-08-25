@@ -21,19 +21,17 @@ package com.condation.cms.server.handler.auth;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.AuthService;
+import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.UserService;
-import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetSocketAddress;
 import java.util.Base64;
 import java.util.Optional;
 import java.util.StringTokenizer;
@@ -60,10 +58,6 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 	private final ICache<String, AtomicInteger> loginFails;
 
 //	LoadingCache<String, AtomicInteger> loginFails = Caffeine.newBuilder()
-//			.maximumSize(10_000)
-//			.expireAfterWrite(Duration.ofMinutes(1))
-//			.expireAfterAccess(Duration.ofMinutes(1))
-//			.build(key -> new AtomicInteger(0));
 
 	static final int ATTEMPTS_TO_BLOCK = 3;
 
@@ -104,7 +98,7 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 							String username = credentials.substring(0, p).trim();
 							String password = credentials.substring(p + 1).trim();
 
-							var userOpt = userService.login(UserService.Realm.of(authPath.getRealm()), username, password);
+							java.util.Optional<com.condation.cms.auth.services.User> userOpt = userService.login(Realm.of(authPath.getRealm()), username, password);
 
 							if (userOpt.isEmpty()) {
 								unauthorized(request, response, callback, authPath.getRealm());
@@ -112,11 +106,11 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 							}
 
 							if (authPath.allowed(userOpt.get())) {
-								
-								var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+
+								var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 								requestContext.add(AuthFeature.class, new AuthFeature(username));
-								
-								loginFails.invalidate(clientAddress(request));
+
+								loginFails.invalidate(RequestUtil.clientAddress(request));
 								return false;
 							}
 
@@ -143,13 +137,8 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 		callback.succeeded();
 	}
 
-	private String clientAddress(Request request) {
-		return ((InetSocketAddress) request.getConnectionMetaData().getRemoteSocketAddress())
-				.getAddress().getHostAddress();
-	}
-
 	private AtomicInteger getClientLoginCounter(Request request) {
-		return loginFails.get(clientAddress(request));
+		return loginFails.get(RequestUtil.clientAddress(request));
 	}
 
 }

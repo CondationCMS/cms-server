@@ -30,6 +30,5 @@ import com.condation.cms.api.hooks.HookSystem;
  */
 public abstract class HookSystemRegisterExtensionPoint extends AbstractExtensionPoint{
 
-	public abstract void register (final HookSystem hookSystem);
-	
+	public void register (final HookSystem hookSystem) {}
 }

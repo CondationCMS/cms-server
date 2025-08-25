@@ -125,7 +125,10 @@ public class ContentResolver {
 			}
 		} else {
 			var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-			contentNode = db.getContent().byUri(uri).get();
+			final Optional<ContentNode> nodeByUri = db.getContent().byUri(uri);
+			if (nodeByUri.isPresent()) {
+				contentNode = nodeByUri.get();
+			}
 		}
 		
 		if (contentNode == null) {
@@ -149,7 +152,7 @@ public class ContentResolver {
 		} else if (aliasRedirect) {
 			var doRedirect = contentNode.getMetaValue(Constants.MetaFields.ALIASES_REDIRECT, true);
 			if (doRedirect) {
-				var url = PathUtil.toURL(contentFile, contentBase);
+				var url = PathUtil.toURI(contentFile, contentBase);
 				url = HTTPUtil.modifyUrl(url, context);
 				return Optional.of(new RedirectContentResponse(url, 301));
 			}

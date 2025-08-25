@@ -34,7 +34,13 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "remove")
+@CommandLine.Command(
+		name = "remove",
+		description = {
+			"removes an installed module",
+			"prints an error if the module is in use by a host or theme"
+		}
+)
 public class RemoveCommand extends AbstractModuleCommand implements Runnable {
 
 	@CommandLine.Parameters(

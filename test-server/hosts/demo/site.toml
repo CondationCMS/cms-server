@@ -3,3 +3,23 @@ hostname = [ "localhost" ]
 baseurl = "http://localhost:2020"
 language = "en"
 theme = "demo"
+context_path = "/"
+
+[ui]
+force2fa = false
+managerEnabled = true
+
+[ui.2fa]
+mail_from = "admin@localhost.de"
+mail_sender = "CondationCMS"
+mail_title = "CondationCMS: your login code"
+mail_message = '''
+Hello <username>,
+
+your login code: <code>
+'''
+
+[backup]
+enabled = true
+cron = "0 0 2 * * ?"
+target = "/Users/thorstenmarx/entwicklung/backups"

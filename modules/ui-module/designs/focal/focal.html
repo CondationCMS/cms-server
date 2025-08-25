@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Focal Point Auswahl</title>
+  <style>
+    .focal-wrapper {
+      position: relative;
+      display: inline-block;
+      border: 1px solid #ccc;
+    }
+
+    .focal-wrapper img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .focal-point {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: red;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    .info {
+      margin-top: 10px;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Focal Point auswählen</h2>
+
+<div class="focal-wrapper" id="focalWrapper">
+  <img src="https://placehold.co/600x400" id="image" alt="Testbild">
+  <div class="focal-point" id="focalPoint" style="display: none;"></div>
+</div>
+
+<div class="info" id="output">Klicke auf das Bild, um einen Vokalpunkt zu setzen.</div>
+
+<script>
+  const wrapper = document.getElementById("focalWrapper");
+  const image = document.getElementById("image");
+  const point = document.getElementById("focalPoint");
+  const output = document.getElementById("output");
+
+  wrapper.addEventListener("click", function (e) {
+    const rect = image.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    const relX = (x / rect.width).toFixed(4);
+    const relY = (y / rect.height).toFixed(4);
+
+    // Punkt anzeigen
+    point.style.left = `${x}px`;
+    point.style.top = `${y}px`;
+    point.style.display = "block";
+
+    // Ausgabe
+    output.textContent = `Focal Point: x: ${relX}, y: ${relY}`;
+  });
+</script>
+
+</body>
+</html>

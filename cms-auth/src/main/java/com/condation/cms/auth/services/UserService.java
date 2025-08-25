@@ -32,12 +32,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,9 +53,13 @@ public class UserService {
 	private final static Splitter userSplitter = Splitter.on(":").trimResults();
 	private final static Splitter groupSplitter = Splitter.on(",").trimResults();
 
-	private final Path hostBase;
+	private final Path serverBase;
 
-	public void addUser(Realm realm, String username, String password, String[] groups) throws IOException {
+	public void addUser (Realm realm, String username, String password, String[] roles) throws Exception {
+		addUser(realm, username, password, roles, Map.of());
+	}
+	
+	public void addUser(Realm realm, String username, String password, String[] roles, Map<String, Object> data) throws IOException {
 		List<User> users = loadUsers(realm);
 		users = new ArrayList<>(users.stream()
 				.filter(user -> !user.username().equals(username))
@@ -67,17 +69,26 @@ public class UserService {
 		String saltBase64 = Base64.getEncoder().encodeToString(salt);
 		String passwordHash = SecurityUtil.hashPBKDF2(password, salt);
 
-		Map<String, Object> data = new HashMap<>();
-		data.put("salt", saltBase64);
+		Map<String, Object> userData = new HashMap<>(data);
+		userData.put("salt", saltBase64);
 
-		users.add(new User(username, passwordHash, groups, data));
+		users.add(new User(username, passwordHash, roles, userData));
 		saveUsers(realm, users);
 	}
 
 	public void removeUser(Realm realm, String username) throws IOException {
-		var users = loadUsers(realm);
-		users = new ArrayList<>(users.stream().filter(user -> !user.username.equals(username)).toList());
+		java.util.List<com.condation.cms.auth.services.User> users = loadUsers(realm);
+		users = new ArrayList<>(users.stream().filter(user -> !user.username().equals(username)).toList());
 		saveUsers(realm, users);
+	}
+
+	public Optional<User> byUsername(final Realm realm, final String username) {
+		try {
+			return loadUsers(realm).stream().filter(user -> user.username().equals(username)).findFirst();
+		} catch (Exception ex) {
+			log.error("", ex);
+		}
+		return Optional.empty();
 	}
 
 	private static User fromString(final String userString) {
@@ -102,7 +113,7 @@ public class UserService {
 	}
 
 	private List<User> loadUsers(final Realm realm) throws IOException {
-		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name));
+		Path usersFile = serverBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		List<User> users = new ArrayList<>();
 		if (Files.exists(usersFile)) {
 			List<String> lines = Files.readAllLines(usersFile, StandardCharsets.UTF_8);
@@ -123,7 +134,7 @@ public class UserService {
 
 	public Optional<User> login(final Realm realm, final String username, final String password) {
 		try {
-			var userOpt = loadUsers(realm).stream()
+			java.util.Optional<com.condation.cms.auth.services.User> userOpt = loadUsers(realm).stream()
 					.filter(user -> user.username().equals(username))
 					.findFirst();
 
@@ -153,9 +164,11 @@ public class UserService {
 	}
 
 	private void saveUsers(Realm realm, List<User> users) throws IOException {
-		Path usersFile = hostBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name));
+		Path usersFile = serverBase.resolve("config/" + FILENAME_PATTERN.formatted(realm.name()));
 		Files.deleteIfExists(usersFile);
 
+		Files.createDirectories(usersFile.getParent());
+		
 		StringBuilder userContent = new StringBuilder();
 		users.forEach(user -> userContent.append(user.line()));
 
@@ -163,49 +176,5 @@ public class UserService {
 		Files.writeString(usersFile, userContent, StandardCharsets.UTF_8, StandardOpenOption.CREATE);
 	}
 
-	public static record User(String username, String passwordHash, String[] groups, Map<String, Object> data) {
 
-		public String line() {
-			try {
-				String json = GSONProvider.GSON.toJson(data != null ? data : Map.of());
-				String encodedData = Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
-				return "%s:%s:%s:%s\r\n".formatted(
-						username,
-						passwordHash,
-						groups != null ? String.join(",", groups) : "",
-						encodedData
-				);
-			} catch (Exception e) {
-				throw new RuntimeException("Error writing user data", e);
-			}
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (!(obj instanceof User other)) {
-				return false;
-			}
-			return Objects.equals(username, other.username)
-					&& Objects.equals(passwordHash, other.passwordHash)
-					&& Arrays.equals(groups, other.groups)
-					&& Objects.equals(data, other.data);
-		}
-
-		@Override
-		public int hashCode() {
-			int result = Objects.hash(username, passwordHash, data);
-			result = 31 * result + Arrays.hashCode(groups);
-			return result;
-		}
-	}
-
-	public static record Realm(String name) {
-
-		public static Realm of(String name) {
-			return new Realm(name);
-		}
-	}
 }

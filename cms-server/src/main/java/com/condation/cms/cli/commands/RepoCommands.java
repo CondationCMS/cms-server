@@ -33,6 +33,10 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(
 		name = "repo",
+		mixinStandardHelpOptions = true,
+		description = {
+			"commands to manage git repos"
+		},
 		subcommands = {
 			Checkout.class
 		})

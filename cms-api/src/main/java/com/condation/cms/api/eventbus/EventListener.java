@@ -26,6 +26,7 @@ package com.condation.cms.api.eventbus;
 /**
  *
  * @author t.marx
+ * @param <T>
  */
 public interface EventListener<T extends Event> {
 	

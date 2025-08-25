@@ -64,7 +64,8 @@ public class ExtensionManager {
 		Path libs = db.getFileSystem().resolve("libs/");
 		List<URL> urls = new ArrayList<>();
 		if (Files.exists(libs)) {
-			Files.list(libs)
+			try (var libsStream = Files.list(libs)) {
+				libsStream
 					.filter(path -> path.getFileName().toString().endsWith(".jar"))
 					.forEach(path -> {
 						try {
@@ -73,6 +74,7 @@ public class ExtensionManager {
 							log.error("", ex);
 						}
 					});
+			}
 		}
 		return new URLClassLoader(urls.toArray(URL[]::new), ClassLoader.getSystemClassLoader());
 	}
@@ -81,7 +83,8 @@ public class ExtensionManager {
 		if (!Files.exists(extPath)) {
 			return;
 		}
-		Files.list(extPath)
+		try (var extStream = Files.list(extPath)) {
+			extStream
 				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
 				.map(extFile -> {
 					try {
@@ -99,21 +102,23 @@ public class ExtensionManager {
 					return null;
 				}).filter(source -> source != null)
 				.forEach(loader);
+		}
 	}
 
 	public RequestExtensions newContext(Theme theme, RequestContext requestContext) throws IOException {
+		var libsClassLoader = getClassLoader();
 		var context = Context.newBuilder()
 				.allowAllAccess(true)
 				.allowHostClassLookup(className -> true)
 				.allowHostAccess(HostAccess.ALL)
 				.allowValueSharing(true)
-				.hostClassLoader(getClassLoader())
+				.hostClassLoader(libsClassLoader)
 				.allowIO(IOAccess.newBuilder()
 						.fileSystem(new ExtensionFileSystem(db.getFileSystem().resolve("extensions/"), theme))
 						.build())
 				.engine(engine).build();
 
-		RequestExtensions requestExtensions = new RequestExtensions(context);
+		RequestExtensions requestExtensions = new RequestExtensions(context, libsClassLoader);
 
 		final Value bindings = context.getBindings("js");
 		setUpBinding(bindings, requestExtensions, theme, requestContext);

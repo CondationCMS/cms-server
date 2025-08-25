@@ -1,7 +1,7 @@
 server:
     port: 2020
     ip: "127.0.0.1"
-env: prod
+env: dev
 ipc:
   port: 6868
   password: test_pwd

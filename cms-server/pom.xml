@@ -35,10 +35,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.condation.cms</groupId>
-			<artifactId>cms-git</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.condation.cms</groupId>
 			<artifactId>cms-content</artifactId>
 		</dependency>
 		<dependency>

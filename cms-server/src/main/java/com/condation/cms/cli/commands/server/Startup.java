@@ -29,7 +29,6 @@ import com.condation.cms.api.ServerProperties;
 import com.condation.cms.cli.tools.CLIServerUtils;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.cli.tools.ThemesUtil;
-import com.condation.cms.git.RepositoryManager;
 import com.condation.cms.ipc.IPCServer;
 import com.condation.cms.server.configs.ServerGlobalModule;
 import com.condation.cms.server.JettyServer;
@@ -72,8 +71,6 @@ public class Startup implements Runnable {
 			printStartup(properties);
 
 			ServerContext.IS_DEV = properties.dev();
-
-			globalInjector.getInstance(RepositoryManager.class);
 			
 			var server = new JettyServer(globalInjector);
 			

@@ -31,10 +31,8 @@ import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
-import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.server.ServerHookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.server.ServerLifecycleExtensionPoint;
-import com.condation.cms.api.feature.features.ServerHookSystemFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.module.ServerModuleContext;
 import com.condation.cms.api.site.Site;
@@ -42,12 +40,10 @@ import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
-import com.condation.cms.git.RepositoryManager;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.name.Names;
-import jakarta.inject.Named;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,9 +127,6 @@ public class JettyServer implements AutoCloseable {
 
 		serverEventBus.register(ReloadHostEvent.class, (event) -> {
 			reloadVHost(event.host());
-		});
-		serverEventBus.register(RepoCheckoutEvent.class, (event) -> {
-			globalInjector.getInstance(RepositoryManager.class).updateRepo(event.repo());
 		});
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {

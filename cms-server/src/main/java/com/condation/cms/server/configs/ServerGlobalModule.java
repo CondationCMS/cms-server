@@ -22,10 +22,12 @@ package com.condation.cms.server.configs;
  * #L%
  */
 import com.condation.cms.api.ServerProperties;
+import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.feature.features.ServerHookSystemFeature;
 import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.ServerModuleContext;
 import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.condation.cms.api.site.SiteService;
@@ -33,9 +35,11 @@ import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
+import com.condation.cms.core.eventbus.DefaultEventBus;
+import com.condation.cms.core.eventbus.MessagingEventBus;
+import com.condation.cms.core.messaging.DefaultMessaging;
 import com.condation.cms.core.scheduler.ServerCronJobScheduler;
 import com.condation.cms.core.site.DefaultSiteService;
-import com.condation.cms.git.RepositoryManager;
 import com.condation.modules.api.ModuleManager;
 import com.condation.modules.manager.ModuleAPIClassLoader;
 import com.condation.modules.manager.ModuleManagerImpl;
@@ -91,6 +95,20 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	@Provides
 	@Singleton
 	@Named("server")
+	public Messaging serverMessaging () {
+		return new DefaultMessaging();
+	}
+	
+	@Provides
+	@Singleton
+	@Named("server")
+	public EventBus serverEventBus (@Named("server") Messaging messaging) {
+		return new MessagingEventBus(messaging);
+	}
+	
+	@Provides
+	@Singleton
+	@Named("server")
 	public CronJobScheduler serverCronJobScheudler (Scheduler scheduler) {
 		return new ServerCronJobScheduler(scheduler);
 	}
@@ -111,18 +129,6 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	@Singleton
 	public UserService userService() {
 		return new UserService(ServerUtil.getHome());
-	}
-
-	@Provides
-	@Singleton
-	public RepositoryManager repositoryManager(Scheduler scheduler) throws Exception {
-		Path gitConfig = ServerUtil.getPath("git.yaml");
-
-		log.info("repository configuration found");
-		final RepositoryManager repositoryManager = new RepositoryManager(scheduler);
-		repositoryManager.init(gitConfig);
-
-		return repositoryManager;
 	}
 
 	@Provides

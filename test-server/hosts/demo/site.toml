@@ -23,3 +23,6 @@ your login code: <code>
 enabled = true
 cron = "0 0 2 * * ?"
 target = "/Users/thorstenmarx/entwicklung/backups"
+
+[cache]
+content = true

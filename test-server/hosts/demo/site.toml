@@ -10,7 +10,7 @@ force2fa = false
 managerEnabled = true
 
 [ui.2fa]
-mail_from = "admin@localhost.de"
+mail_from = "noreply@localhost.de"
 mail_sender = "CondationCMS"
 mail_title = "CondationCMS: your login code"
 mail_message = '''

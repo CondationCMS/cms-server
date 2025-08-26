@@ -43,13 +43,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 	@Override
 	public Map<String, Object> getModel() {
 		return Map.of("ui", new UIHelper(getRequestContext()));	
-	}
-
-	@Override
-	public void extendModel(TemplateEngine.Model model) {
-		throw new UnsupportedOperationException("Not supported yet.");
-	}
-	
+	}	
 	
 	@RequiredArgsConstructor
 	public static class UIHelper {

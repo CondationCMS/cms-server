@@ -48,7 +48,7 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	
 	@Override
 	public String uri () {
-		return PathUtil.toURI(file, basePath);
+		return PathUtil.toURL(file, basePath);
 	}
 	
 	@Override

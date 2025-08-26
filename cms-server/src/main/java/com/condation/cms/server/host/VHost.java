@@ -82,7 +82,6 @@ import com.condation.cms.server.handler.http.APIHandler;
 import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
-import com.condation.cms.server.handler.module.JettyRouteHandler;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -223,7 +222,6 @@ public class VHost {
 
 		var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
 		var viewHandler = injector.getInstance(JettyViewHandler.class);
-		var routeHandler = injector.getInstance(JettyRouteHandler.class);
 		var routesHandler = injector.getInstance(RoutesHandler.class);
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
@@ -234,7 +232,6 @@ public class VHost {
 				authHandler,
 				initContextHandler,
 				uiPreviewFilter,
-				routeHandler,
 				routesHandler,
 				viewHandler,
 				taxonomyHandler,

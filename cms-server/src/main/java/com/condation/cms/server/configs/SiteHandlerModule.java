@@ -52,7 +52,6 @@ import com.condation.cms.server.handler.http.APIHandler;
 import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
-import com.condation.cms.server.handler.module.JettyRouteHandler;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -74,7 +73,6 @@ public class SiteHandlerModule extends AbstractModule {
 		bind(JettyViewHandler.class).in(Singleton.class);
 		bind(JettyContentHandler.class).in(Singleton.class);
 		bind(JettyTaxonomyHandler.class).in(Singleton.class);
-		bind(JettyRouteHandler.class).in(Singleton.class);
 		bind(RoutesHandler.class).in(Singleton.class);
 		bind(JettyHttpHandlerExtensionHandler.class).in(Singleton.class);
 		bind(InitRequestContextFilter.class).in(Singleton.class);

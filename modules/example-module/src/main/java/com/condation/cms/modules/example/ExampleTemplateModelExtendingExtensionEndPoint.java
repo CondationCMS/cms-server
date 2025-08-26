@@ -40,10 +40,6 @@ import com.condation.modules.api.annotation.Extension;
 public class ExampleTemplateModelExtendingExtensionEndPoint extends TemplateModelExtendingExtensionPoint {
 
 	@Override
-	public void extendModel(TemplateEngine.Model model) {
-	}
-
-	@Override
 	public Map<String, Object> getModel() {
 		return Map.of("searcher", new Searcher());
 	}

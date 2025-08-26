@@ -43,23 +43,23 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void test_to_uri() {
+	public void test_to_url() {
 		
 		Path contentBase = Path.of("src/");
 		
-		String toURI = PathUtil.toURI(contentBase.resolve("index.md"), contentBase);
+		String toURI = PathUtil.toURL(contentBase.resolve("index.md"), contentBase);
 		assertThat(toURI).isEqualTo("/");
 		
-		toURI = PathUtil.toURI(contentBase.resolve("modules/index.md"), contentBase);
+		toURI = PathUtil.toURL(contentBase.resolve("modules/index.md"), contentBase);
 		assertThat(toURI).isEqualTo("/modules");
 		
-		toURI = PathUtil.toURI(contentBase.resolve("modules/test.md"), contentBase);
+		toURI = PathUtil.toURL(contentBase.resolve("modules/test.md"), contentBase);
 		assertThat(toURI).isEqualTo("/modules/test");
 		
-		toURI = PathUtil.toURI(contentBase.resolve("test.md"), contentBase);
+		toURI = PathUtil.toURL(contentBase.resolve("test.md"), contentBase);
 		assertThat(toURI).isEqualTo("/test");
 		
-		toURI = PathUtil.toURI(contentBase.resolve(""), contentBase);
+		toURI = PathUtil.toURL(contentBase.resolve(""), contentBase);
 		assertThat(toURI).isEqualTo("/");
 	}
 	

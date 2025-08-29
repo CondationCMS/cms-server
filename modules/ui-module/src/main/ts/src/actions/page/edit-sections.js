@@ -35,7 +35,13 @@ export async function runAction(params) {
 	var template = Handlebars.compile(`
 			<ul class="list-group cms-sortable">
 				{{#each sections}}
-    				<li class="list-group-item" data-cms-section-uri="{{uri}}" data-cms-section-index="{{index}}"><i class="bi bi-grip-vertical" data-cms-section-handle=''></i> {{name}}</li>
+    				<li class="list-group-item" data-cms-section-uri="{{uri}}" data-cms-section-index="{{index}}"><i class="bi bi-grip-vertical" data-cms-section-handle=''></i> 
+					{{#if data.title}}
+          				{{data.title}}
+					{{else}}
+						{{uri}}
+					{{/if}}
+					</li>
   				{{/each}}
 			</ul>
 		`);

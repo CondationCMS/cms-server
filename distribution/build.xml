@@ -21,6 +21,25 @@
 				<file file="../LICENSE"/>
 			</resources>
 		</copy>
+		<copy todir="dist/">
+			<fileset dir="scripts/">
+				<include name="server.sh"/>
+				<include name="server.bat"/>
+			</fileset>
+			<filterchain>
+				<replacetokens>
+					<token key="CMS_VERSION" value="${cms.version}"/>
+				</replacetokens>
+			</filterchain>
+		</copy>
+		<fixcrlf srcdir="dist" includes="server.sh" eol="unix"/>
+	</target>
+	
+	<target name="download-jre" description="--> download jres">
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.8_9.tar.gz"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.8_9.zip" dest="temp/OpenJDK21U-jre_x64_windows_hotspot_21.0.8_9.zip"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_x64_linux_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_x64_linux_hotspot_21.0.8_9.tar.gz"></get>
+		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.8_9.tar.gz"></get>
 	</target>
 
 	<target name="clean">
@@ -33,10 +52,99 @@
 		<mkdir  dir="build/modules/" />
 	</target>
 	
-	<target name="distribution" depends="clean,copy-server">
-		<zip destfile="dist/condation-server-${cms.version}.zip">
-			<fileset dir="build/"/>
-			<fileset dir="../" includes="README.md"/>
-		</zip>		
+	<target name="dist" description="--> build distribution">
+		<echo>build ${system.name} ${system.arch} distribution </echo>
+
+		<property name="dist.path">dist/${system.name}_${system.arch}</property>
+		<property name="dist.java.path">dist/java/${system.name}_${system.arch}</property>
+		<property name="dist.name">condation-server-${system.name}-${system.arch}-${cms.version}</property>
+		
+		<property name="java.filename">OpenJDK21U-jre_${system.arch}_${system.name}_hotspot_21.0.8_9</property>
+		
+		
+		<condition property="is.windows">
+			<equals arg1="${system.name}" arg2="windows"/>
+		</condition>
+
+		<mkdir dir="${dist.path}"/>
+
+		<!-- Kopiere Build-Inhalt -->
+		<copy todir="${dist.path}">
+			<fileset dir="build"/>
+		</copy>
+
+		<!-- Entpacke JRE temporär -->
+		<antcall target="unpack-java-tgz" />
+		<antcall target="unpack-java-zip" />
+		
+		
+		<antcall target="package-zip"/>
+		<antcall target="package-tar"/>
+	</target>
+	
+	<target name="unpack-java-tgz" unless="is.windows">
+		<untar src="temp/${java.filename}.tar.gz"
+			   dest="${dist.java.path}"
+			   compression="gzip"/>
+	</target>
+	
+	<target name="unpack-java-zip" if="is.windows">
+		<unzip src="temp/${java.filename}.zip"
+			   dest="${dist.java.path}"/>
+	</target>
+	
+	<target name="package-tar" unless="is.windows">
+		<tar destfile="dist/${dist.name}.tar.gz" compression="gzip">
+			<tarfileset dir="${dist.path}" prefix="condation-server"/>
+			<tarfileset file="dist/server.sh" mode="755" fullpath="condation-server/server.sh"/>
+			<tarfileset dir="dist/java/${system.name}_${system.arch}/${java.path}/" prefix="condation-server/java">
+				<exclude name="bin/java"/>
+			</tarfileset>
+			<tarfileset file="dist/java/${system.name}_${system.arch}/${java.path}/bin/java" mode="755" fullpath="condation-server/java/bin/java"/>
+			<tarfileset dir="../" includes="README.md" prefix="condation-server"/>
+			<tarfileset dir="../" includes="CHANGELOG.md" prefix="condation-server"/>
+		</tar>
+	</target>
+
+	<target name="package-zip" if="is.windows">
+		<zip destfile="dist/${dist.name}.zip">
+			<zipfileset dir="${dist.path}" prefix="condation-server"/>
+			<zipfileset file="dist/server.bat" fullpath="condation-server/server.bat"/>
+			<zipfileset dir="dist/java/${system.name}_${system.arch}/${java.path}/" prefix="condation-server/java">
+				<exclude name="bin/java"/>
+			</zipfileset>
+			<zipfileset file="dist/java/${system.name}_${system.arch}/${java.path}/bin/java" fullpath="condation-server/java/bin/java"/>
+			<zipfileset dir="../" includes="README.md" prefix="condation-server"/>
+			<zipfileset dir="../" includes="CHANGELOG.md" prefix="condation-server"/>
+		</zip>
+	</target>
+	
+	<target name="distribution" depends="clean,download-jre,copy-server">
+		
+		<echo>create binary distributions</echo>
+		
+		<antcall target="dist">
+			<param name="system.name" value="linux" />
+			<param name="system.arch" value="x64" />
+			<param name="java.path" value="jdk-21.0.8+9-jre" />
+		</antcall>
+		
+		<antcall target="dist">
+			<param name="system.name" value="linux" />
+			<param name="system.arch" value="aarch64" />
+			<param name="java.path" value="jdk-21.0.8+9-jre" />
+		</antcall>
+		
+		<antcall target="dist">
+			<param name="system.name" value="windows" />
+			<param name="system.arch" value="x64" />
+			<param name="java.path" value="jdk-21.0.8+9-jre" />
+		</antcall>
+		
+		<antcall target="dist">
+			<param name="system.name" value="mac" />
+			<param name="system.arch" value="aarch64" />
+			<param name="java.path" value="jdk-21.0.8+9-jre/Contents/Home" />
+		</antcall>
 	</target>
 </project>

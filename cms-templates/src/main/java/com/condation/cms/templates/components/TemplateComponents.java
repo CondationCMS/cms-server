@@ -24,6 +24,7 @@ package com.condation.cms.templates.components;
 import com.condation.cms.api.annotations.TemplateComponent;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.AnnotationsUtil;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -64,25 +65,18 @@ public class TemplateComponents {
 			return;
 		}
 
-		Class<?> clazz = handler.getClass();
-		for (Method method : clazz.getDeclaredMethods()) {
-			if (method.isAnnotationPresent(TemplateComponent.class)) {
-				if (method.getParameterCount() == 1 && method.getParameterTypes()[0] == Parameter.class) {
-					method.setAccessible(true);
-					var annotation = method.getAnnotation(TemplateComponent.class);
-					String key = annotation.value();
+		var annotations = AnnotationsUtil.process(handler, TemplateComponent.class, List.of(Parameter.class), String.class);
 
-					componentMap.put(key, param -> {
-						try {
-							return (String) method.invoke(handler, param);
-						} catch (Exception e) {
-							throw new RuntimeException("Error calling component: " + key, e);
-						}
-					});
-				} else {
-					log.error("ignore methode" + method.getName() + " – wrong signature.");
+		for (var entry : annotations) {
+			String key = entry.annotation().value();
+
+			componentMap.put(key, param -> {
+				try {
+					return entry.invoke(param);
+				} catch (Exception e) {
+					throw new RuntimeException("Error calling component: " + key, e);
 				}
-			}
+			});
 		}
 	}
 

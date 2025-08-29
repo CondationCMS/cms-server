@@ -1,0 +1,151 @@
+/*-
+ * #%L
+ * ui-module
+ * %%
+ * Copyright (C) 2023 - 2025 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public
+ * License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/gpl-3.0.html>.
+ * #L%
+ */
+
+:root {
+	--cms-edit-box: orange;
+	--cms-edit-box-sections: rgb(120, 187, 239);
+	--cms-toolbar-background-color: rgba(0, 0, 0, 0.7);
+	--cms-toolbar-color: white;
+	--cms-published: #5cb85c;
+	--cms-unpublished: #ffc107;
+	--cms-published-expired: #5bc0de;
+}
+.cms-ui-editable {
+	position: relative; /* falls noch nicht gesetzt */
+}
+
+.cms-ui-editable::after {
+	content: "";
+	position: absolute;
+	top: -4px;
+	left: -4px;
+	right: -4px;
+	bottom: -4px;
+	border: 3px solid var(--cms-edit-box);
+	pointer-events: none;
+	z-index: 2000; /* ggf. höher setzen */
+	display: none;
+}
+
+.cms-ui-editable:hover::after {
+	display: block;
+}
+
+.cms-ui-editable-sections {
+	position: relative; /* falls noch nicht gesetzt */
+}
+
+.cms-ui-editable-sections::after {
+	content: "";
+	position: absolute;
+	top: -4px;
+	left: -4px;
+	right: -4px;
+	bottom: -4px;
+	border: 3px solid var(--cms-edit-box-sections);
+	pointer-events: none;
+	z-index: 1000; /* ggf. höher setzen */
+	display: none;
+}
+
+.cms-ui-editable-sections:hover::after {
+	display: block;
+}
+
+
+.cms-ui-toolbar {
+	all: unset;
+	position: absolute;
+	z-index: 1000;
+	display: inline-flex;
+	width: auto;
+	background-color: var(--cms-toolbar-background-color);
+	color: var(--cms-toolbar-color);
+	opacity: 0;
+	visibility: hidden;
+	pointer-events: none;
+	transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+}
+
+.cms-ui-toolbar-tl {
+	top: 0;
+	left: 0;
+}
+
+.cms-ui-toolbar-tr {
+	top: 0;
+	right: 0;
+}
+
+.cms-ui-toolbar.visible {
+	opacity: 1;
+	visibility: visible;
+	pointer-events: auto;
+	transition: opacity 0.2s ease;
+}
+
+.cms-ui-toolbar button {
+	background: transparent;
+	color: white;
+	border: none;
+	padding: 5px 10px;
+	cursor: pointer;
+}
+
+.cms-ui-toolbar button:hover  {
+	color: steelblue;
+}
+
+.cms-ui-toolbar button.cms-published {
+	color: var(--cms-published);
+}
+.cms-ui-toolbar button.cms-published-expired {
+	color: var(--cms-published-expired);
+}
+.cms-ui-toolbar button.cms-unpublished {
+	color: var(--cms-unpublished);
+}
+
+/*
+	image upload
+*/
+.cms-ui-overlay-bottom {
+	position: absolute;
+	background: rgba(0,0,0,0.5);
+	color: #fff;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	cursor: pointer;
+	font-size: 14px;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.3s;
+}
+
+.cms-ui-overlay-bottom.visible {
+	opacity: 1;
+	pointer-events: auto;
+}
+/*
+	end image upload
+*/

@@ -43,7 +43,7 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 	static DynamicConfiguration dynamicConfiguration;
 
 	@BeforeAll
-	public void setupShortCodes() {
+	public void setupComponents() {
 		components = new TemplateComponents();
 		components.register(Map.of(
 						"tag1", (params) -> {

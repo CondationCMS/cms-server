@@ -90,29 +90,6 @@ public class PathUtil {
 		return uri;
 	}
 
-	/**
-	 * 
-	 * @param contentFile
-	 * @param contentBase
-	 * @return
-	 * @deprecated use PathUtil.toURL instead
-	 */
-	@Deprecated(since = "8.0.0")
-	public static String toURI (final Path contentFile, final Path contentBase) {
-		return toURL(contentFile, contentBase);
-	}
-	/**
-	 * 
-	 * @param contentFile
-	 * @param contentBase
-	 * @return
-	 * @deprecated use PathUtil.toURL instead
-	 */
-	@Deprecated(since = "8.0.0")
-	public static String toURI(final ReadOnlyFile contentFile, final ReadOnlyFile contentBase) {
-		return toURL(contentFile, contentBase);
-	}
-	
 	public static String toURL(final Path contentFile, final Path contentBase) {
 		var relFile = toRelativeFile(contentFile, contentBase);
 		return toURL(relFile);

@@ -1,0 +1,4 @@
+# paths:
+#     - path: "/manager"
+#       realm: "users"
+#       roles: ["manager"]

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "module": "esnext",
+    "target": "es2020",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": false,
+    "lib": ["dom", "es2020"],
+    "sourceMap": false,
+  },
+  "include": [
+    "src/**/*",
+    "globals.d.ts"
+  ]
+}

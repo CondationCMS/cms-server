@@ -108,9 +108,9 @@ public class FileFolderPathResource extends Resource {
 
 		URI uri = getURI();
 		URI resolvedUri = URIUtil.addPath(uri, subUriPath);
-		Path path = Paths.get(resolvedUri);
-		if (Files.exists(path) && !(path.getFileName().toString().endsWith(".meta.yaml"))) {
-			return newResource(path);
+		Path resolvedPath = Paths.get(resolvedUri);
+		if (Files.exists(resolvedPath) && !(resolvedPath.getFileName().toString().endsWith(".meta.yaml"))) {
+			return newResource(resolvedPath);
 		}
 
 		return null;

@@ -21,12 +21,10 @@ package com.condation.cms.cli.commands.server;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
-
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.cli.tools.CLIServerUtils;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.ipc.Command;
@@ -41,41 +39,35 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "stop")
+@CommandLine.Command(
+		name = "stop",
+		description = {
+			"Stops the server"
+		}
+)
 @Slf4j
 public class Stop implements Runnable {
 
 	@Override
 	public void run() {
 		try {
-			
-			Optional<ProcessHandle> handle = getCMSProcess();
-			
+
+			Optional<ProcessHandle> handle = CLIServerUtils.getCMSProcess();
+
 			if (handle.isEmpty()) {
 				System.out.println("can not find cms process");
 			} else {
 				ServerProperties properties = new ExtendedServerProperties(ConfigurationFactory.serverConfiguration());
 				IPCClient ipcClient = new IPCClient(properties.ipc());
-				
+
 				ipcClient.send(new Command("shutdown"));
-				
+
 				Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
 			}
-			
-			
+
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
-	
-	private static Optional<ProcessHandle> getCMSProcess () throws Exception {
-		var pidFile = ServerUtil.getPath(Constants.PID_FILE);
-		if (!Files.exists(pidFile)) {
-			return Optional.empty();
-		}
-		var pid = Files.readString(pidFile);
-		return ProcessHandle.of(Long.parseLong(pid.trim()));
-	}
 
-	
 }

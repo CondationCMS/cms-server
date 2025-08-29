@@ -40,7 +40,7 @@ public class ContentNodeTest {
 	@Test
 	public void test_publish() {
 		var contentNode = new ContentNode("", "", Map.of());
-		Assertions.assertThat(contentNode.isPublished()).isTrue();
+		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}
 	
 	@Test
@@ -48,9 +48,10 @@ public class ContentNodeTest {
 		var cal = Calendar.getInstance();
 		cal.set(2023, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.PUBLISH_DATE, cal.getTime()
+				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
+				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isPublished()).isTrue();
+		Assertions.assertThat(contentNode.isVisible()).isTrue();
 	}
 	
 	@Test
@@ -58,9 +59,10 @@ public class ContentNodeTest {
 		var cal = Calendar.getInstance();
 		cal.set(2123, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.PUBLISH_DATE, cal.getTime()
+				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
+				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isPublished()).isFalse();
+		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}
 	
 	@Test
@@ -68,9 +70,10 @@ public class ContentNodeTest {
 		var cal = Calendar.getInstance();
 		cal.set(2023, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime()
+				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
+				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isPublished()).isFalse();
+		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}
 	
 	@Test
@@ -78,8 +81,9 @@ public class ContentNodeTest {
 		var cal = Calendar.getInstance();
 		cal.set(2123, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime()
+				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
+				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isPublished()).isTrue();
+		Assertions.assertThat(contentNode.isVisible()).isTrue();
 	}
 }

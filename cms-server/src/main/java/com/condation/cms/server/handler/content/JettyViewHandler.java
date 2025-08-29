@@ -23,6 +23,7 @@ package com.condation.cms.server.handler.content;
  */
 
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.content.ContentResponse;
 import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.request.RequestContext;
@@ -51,7 +52,7 @@ public class JettyViewHandler extends Handler.Abstract {
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 		try {
 
 			Optional<ContentResponse> viewResponse = viewResolver.getViewContent(requestContext);

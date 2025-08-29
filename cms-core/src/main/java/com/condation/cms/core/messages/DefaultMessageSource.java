@@ -29,10 +29,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.ResourceBundle;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,8 +69,12 @@ public class DefaultMessageSource implements MessageSource {
 
 	protected synchronized void fromClassLoader(final String bundleName, final Locale locale) throws Exception {
 		URL[] urls = { messageFolder.toUri().toURL() };
-		ClassLoader loader = new URLClassLoader(urls);
-		var bundle = ResourceBundle.getBundle(bundleName, locale, loader);
-		bundle.keySet().forEach(key -> messages.put(key, bundle.getString(key)));
+		URLClassLoader loader = new URLClassLoader(urls);
+		try {
+			var bundle = ResourceBundle.getBundle(bundleName, locale, loader);
+			bundle.keySet().forEach(key -> messages.put(key, bundle.getString(key)));
+		} finally {
+			loader.close();
+		}
 	}
 }

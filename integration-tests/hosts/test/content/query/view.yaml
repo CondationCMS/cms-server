@@ -1,5 +1,6 @@
 ## YAML Template.
 ---
+published: true
 template: views/test.html
 content:
   query:

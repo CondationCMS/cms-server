@@ -27,6 +27,7 @@ import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.cli.commands.modules.AbstractModuleCommand;
 import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import java.io.IOException;
@@ -56,6 +57,10 @@ public class ModulesUtil {
 		Set<String> requiredModules = new HashSet<>();
 		try {
 
+			var serverConfig = ConfigurationFactory.serverConfiguration();
+			ExtendedServerProperties serverProperties = new ExtendedServerProperties(serverConfig);
+			requiredModules.addAll(serverProperties.activeModules());
+			
 			var hosts = ServerUtil.getPath(Constants.Folders.HOSTS);
 			var themes = ServerUtil.getPath(Constants.Folders.THEMES);
 			if (Files.exists(hosts)) {

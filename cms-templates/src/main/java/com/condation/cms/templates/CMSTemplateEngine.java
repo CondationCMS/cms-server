@@ -25,13 +25,17 @@ package com.condation.cms.templates;
 import com.condation.cms.templates.exceptions.TemplateNotFoundException;
 import com.condation.cms.templates.expression.CMSPermissions;
 import com.condation.cms.templates.expression.RecordResolverStrategy;
+import com.condation.cms.templates.functions.JexlTemplateFunction;
+import com.condation.cms.templates.functions.impl.DateFunction;
 import com.condation.cms.templates.lexer.Lexer;
 import com.condation.cms.templates.parser.Parser;
 import com.condation.cms.templates.renderer.Renderer;
+import com.condation.cms.templates.renderer.ScopeStack;
+import java.util.function.Consumer;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 
-public class CMSTemplateEngine {
+public class CMSTemplateEngine implements Consumer<ScopeStack> {
 
 	private final JexlEngine jexl;
 	
@@ -84,7 +88,7 @@ public class CMSTemplateEngine {
 	public Template getTemplateFromString (String templateContent) {
 		var tokenStream = lexer.tokenize(templateContent);
 		var rootNode = parser.parse(tokenStream);
-		return new DefaultTemplate(rootNode, renderer);
+		return new DefaultTemplate(rootNode, renderer, this);
 	}
 	
 	private boolean useCache () {
@@ -103,12 +107,17 @@ public class CMSTemplateEngine {
 		}
 		var tokenStream = lexer.tokenize(templateString);
 		var rootNode = parser.parse(tokenStream);
-		var temp = new DefaultTemplate(rootNode, renderer);
+		var temp = new DefaultTemplate(rootNode, renderer, this);
 		
 		if (useCache()) {
 			templateCache.put(template, temp);
 		}
 		
 		return temp;
+	}
+
+	@Override
+	public void accept(ScopeStack scope) {
+		scope.setVariable("date", new JexlTemplateFunction(new DateFunction()));
 	}
 }

@@ -23,10 +23,13 @@ package com.condation.cms.templates;
  */
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.templates.components.TemplateComponents;
+import com.condation.cms.templates.functions.TemplateFunction;
 import com.condation.cms.templates.tags.component.EndComponentTag;
 import com.condation.cms.templates.tags.component.ComponentTag;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,11 +37,12 @@ import java.util.Optional;
  *
  * @author t.marx
  */
-public record DynamicConfiguration(TemplateComponents templateComponents, Map<String, Component> components, RequestContext requestContext) {
+public record DynamicConfiguration(TemplateComponents templateComponents, Map<String, Component> components, List<TemplateFunction> templateFunctions, RequestContext requestContext) {
 
 	public static final DynamicConfiguration EMPTY = new DynamicConfiguration(
 			new TemplateComponents(),
 			Collections.emptyMap(),
+			Collections.emptyList(),
 			null
 	);
 
@@ -53,7 +57,7 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 	}
 
 	public DynamicConfiguration(TemplateComponents templateComponents, RequestContext requestContext) {
-		this(templateComponents, new HashMap<>(), requestContext);
+		this(templateComponents, new HashMap<>(), new ArrayList<>(), requestContext);
 	}
 
 	public boolean hasComponent(String name) {

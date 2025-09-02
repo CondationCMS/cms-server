@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
+import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -44,10 +45,13 @@ public class DefaultTemplate implements Template {
 	
 	private final Renderer renderer;
 	
+	private final Consumer<ScopeStack> contextInitializer;
+	
 	@Override
 	public void evaluate(Map<String, Object> context, Writer writer, DynamicConfiguration dynamicConfiguration) throws IOException {
 		
 		ScopeStack scopes = new ScopeStack(context);
+		contextInitializer.accept(scopes);
 		
 		evaluate(scopes, writer, dynamicConfiguration);
 		
@@ -57,6 +61,7 @@ public class DefaultTemplate implements Template {
 	@Override
 	public String evaluate(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) throws IOException {
 		ScopeStack scopes = new ScopeStack(context);
+		contextInitializer.accept(scopes);
 		
 		try (var writer = new StringWriter()) {
 			renderer.render(rootNode, scopes, writer, dynamicConfiguration);

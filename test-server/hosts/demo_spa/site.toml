@@ -1,6 +1,6 @@
 id = "demo-spa"
 hostname = [ "localhost2" ]
-baseurl = "http://localhosts:2020"
+baseurl = "http://localhost:2020"
 language = "en"
 
 [spa]

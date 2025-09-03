@@ -40,7 +40,7 @@ import com.condation.cms.modules.ui.utils.UIHooks;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
+public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 
 	@RemoteMethod(name = "manager.content.tags", permissions = {Permissions.CONTENT_EDIT})
 	public Object getShortCodeNames (Map<String, Object> parameters) throws RPCException {
@@ -83,9 +83,5 @@ public class RemoteManagerEnpoints extends UIRemoteMethodExtensionPoint {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());
 		}
-	}
-	
-	private UIHooks uiHooks() {
-		return new UIHooks(getRequestContext().get(HookSystemFeature.class).hookSystem());
 	}
 }

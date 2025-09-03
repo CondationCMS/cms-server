@@ -51,7 +51,7 @@ import java.util.Date;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
+public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 
 	@RemoteMethod(name = "page.delete", permissions = {Permissions.CONTENT_EDIT})
 	public Object deletePage(Map<String, Object> parameters) throws RPCException {
@@ -149,14 +149,5 @@ public class RemotePageEnpoints extends UIRemoteMethodExtensionPoint {
 		return result;
 	}
 
-	private String getUserName() {
-		if (getRequestContext().has(AuthFeature.class)) {
-			return getRequestContext().get(AuthFeature.class).username();
-		}
-		return "";
-	}
 	
-	private UIHooks uiHooks() {
-		return new UIHooks(getRequestContext().get(HookSystemFeature.class).hookSystem());
-	}
 }

@@ -23,12 +23,21 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.site.Site;
+import com.condation.cms.api.site.SiteService;
+import com.condation.cms.api.ui.action.UIScriptAction;
 import com.condation.cms.api.ui.annotations.HookAction;
 import com.condation.cms.api.ui.annotations.MenuEntry;
 import com.condation.cms.api.ui.annotations.ShortCut;
+import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.modules.api.annotation.Extensions;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  *
@@ -102,4 +111,30 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 	public void clear_template_cache() {
 	}
 
+	
+	@Override
+	public void addMenuItems(Menu menu) {
+		menu.addMenuEntry(com.condation.cms.api.ui.elements.MenuEntry.builder()
+				.id("site-menu")
+				.name("Sites")
+				.position(1)
+				.permissions(List.of(Permissions.CONTENT_EDIT))
+				.children(siteMenus())
+				.build());
+	}
+
+	private List<com.condation.cms.api.ui.elements.MenuEntry> siteMenus() {
+		var siteService = getContext().get(InjectorFeature.class).injector().getInstance(SiteService.class);
+
+		var counter = new AtomicInteger(1);
+		return new ArrayList<>(siteService.sites().map(site -> {
+			var url = site.baseurl().endsWith("/") ? site.baseurl() : site.baseurl() + "/";
+			return com.condation.cms.api.ui.elements.MenuEntry.builder()
+					.id("site-" + site.id())
+					.name(site.id())
+					.action(new UIScriptAction("/manager/actions/site-change", Map.of("href", url + "manager/index.html")))
+					.position(counter.getAndIncrement())
+					.build();
+		}).toList());
+	}
 }

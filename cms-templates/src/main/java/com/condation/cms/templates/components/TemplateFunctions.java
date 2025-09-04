@@ -88,7 +88,7 @@ public class TemplateFunctions {
 
 			functionMap.put(key, param -> {
 				try {
-					return entry.invoke(param);
+					return entry.invoke(null);
 				} catch (Exception e) {
 					throw new RuntimeException("Error calling component: " + key, e);
 				}

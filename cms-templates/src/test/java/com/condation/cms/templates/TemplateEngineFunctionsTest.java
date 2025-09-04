@@ -22,12 +22,28 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.api.annotations.TemplateFunction;
+import com.condation.cms.api.extensions.RegisterTemplateFunctionExtensionPoint;
+import com.condation.cms.api.feature.features.HookSystemFeature;
+import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
+import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.extensions.hooks.TemplateHooks;
+import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
+import com.condation.modules.api.ModuleManager;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -50,5 +66,55 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 		Template simpleTemplate = SUT.getTemplate("date");
 		Assertions.assertThat(simpleTemplate).isNotNull();
 		Assertions.assertThat(simpleTemplate.evaluate()).isEqualToIgnoringWhitespace(year);
+	}
+	
+	
+	@Test
+	void getFunctionsFromDynamicConig () {
+		var requestContext = new RequestContext();
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(new HookSystem()));
+		requestContext.add(TemplateHooks.class, new TemplateHooks(requestContext));
+		
+		var injectorMock = Mockito.mock(Injector.class);
+		requestContext.add(InjectorFeature.class, new InjectorFeature(injectorMock));
+		
+		var moduleManagerMock = Mockito.mock(ModuleManager.class);
+		requestContext.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManagerMock));
+		
+		Mockito.when(injectorMock.getInstance(ModuleManager.class)).thenReturn(moduleManagerMock);
+		Mockito.when(moduleManagerMock.extensions(RegisterTemplateFunctionExtensionPoint.class)).thenReturn(
+				List.of(new TestFunctions())
+		);
+		
+		DynamicConfiguration dc = new DynamicConfiguration(new TemplateComponents(), requestContext);
+		
+		var tfs = dc.templateFunctions();
+		
+		Assertions.assertThat(tfs).isNotNull().hasSize(3);
+	}
+	
+	public static class TestFunctions extends RegisterTemplateFunctionExtensionPoint {
+
+		@Override
+		public Map<String, Function<Parameter, ?>> functions() {
+			return Map.of("testfn1", (params) -> {
+				return "hi I'm testfn1";
+			});
+		}
+
+		@Override
+		public List<Object> functionDefinitions() {
+			return List.of(this);
+		}
+		
+		@TemplateFunction("testfn2")
+		public Object testfn2 (Parameter params) {
+			return "hi I'm testfn2";
+		}
+		
+		@TemplateFunction("testfn3")
+		public Object testfn3 () {
+			return "hi I'm testfn3";
+		}
 	}
 }

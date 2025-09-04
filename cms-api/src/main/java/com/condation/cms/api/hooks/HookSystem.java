@@ -41,13 +41,15 @@ import lombok.extern.slf4j.Slf4j;
  * @author t.marx
  */
 @Slf4j
-@RequiredArgsConstructor
 public class HookSystem {
 
 	Multimap<String, ActionHook> actions = ArrayListMultimap.create();
 
 	Multimap<String, FilterHook> filters = ArrayListMultimap.create();
 
+	public HookSystem () {
+		
+	}
 	public HookSystem(HookSystem source) {
 		this.actions.putAll(source.actions);
 		this.filters.putAll(source.filters);
@@ -70,57 +72,6 @@ public class HookSystem {
 		for (AnnotationsUtil.CMSAnnotation<Filter, Object> ann : filterMethods) {
 			Filter annotation = ann.annotation();
 			registerFilter(annotation.value(), context -> ann.invoke(context), annotation.priority());
-		}
-	}
-
-	public void registerqq(Object sourceObject) {
-		Class<?> objectClass = sourceObject.getClass();
-		for (Method method : objectClass.getDeclaredMethods()) {
-			// regsiter actions
-			var actionAnnotation = method.getAnnotation(Action.class);
-			if (actionAnnotation != null) {
-
-				var parameters = method.getParameterTypes();
-				if (parameters.length != 1 || !ActionContext.class.isAssignableFrom(parameters[0])) {
-					log.warn("Method {}.{} ignored: must have exactly one parameter of type ActionContext",
-							objectClass.getSimpleName(), method.getName());
-				} else {
-					if (!method.canAccess(sourceObject)) {
-						method.setAccessible(true);
-					}
-
-					registerAction(actionAnnotation.value(), context -> {
-						try {
-							return method.invoke(sourceObject, context);
-						} catch (Exception e) {
-							log.error("Error invoking action method {}.{}", objectClass.getSimpleName(), method.getName(), e);
-							throw new RuntimeException(e);
-						}
-					}, actionAnnotation.priority());
-				}
-			}
-
-			// register filters
-			var filterAnnotation = method.getAnnotation(Filter.class);
-			if (filterAnnotation != null) {
-				var parameters = method.getParameterTypes();
-				if (parameters.length != 1 || !FilterContext.class.isAssignableFrom(parameters[0])) {
-					log.warn("Method {}.{} ignored for Filter: must have exactly one parameter of type FilterContext",
-							objectClass.getSimpleName(), method.getName());
-				} else {
-					if (!method.canAccess(sourceObject)) {
-						method.setAccessible(true);
-					}
-					registerFilter(filterAnnotation.value(), context -> {
-						try {
-							return method.invoke(sourceObject, context);
-						} catch (Exception e) {
-							log.error("Error invoking filter method {}.{}", objectClass.getSimpleName(), method.getName(), e);
-							throw new RuntimeException(e);
-						}
-					}, filterAnnotation.priority());
-				}
-			}
 		}
 	}
 

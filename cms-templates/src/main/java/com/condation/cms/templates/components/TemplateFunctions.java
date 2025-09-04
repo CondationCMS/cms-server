@@ -22,6 +22,7 @@ package com.condation.cms.templates.components;
  * #L%
  */
 import com.condation.cms.api.annotations.TemplateComponent;
+import com.condation.cms.api.annotations.TemplateFunction;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.AnnotationsUtil;
@@ -66,7 +67,21 @@ public class TemplateFunctions {
 			return;
 		}
 
-		var annotations = AnnotationsUtil.process(handler, TemplateComponent.class, List.of(Parameter.class), Object.class);
+		var annotations = AnnotationsUtil.process(handler, TemplateFunction.class, List.of(Parameter.class), Object.class);
+
+		for (var entry : annotations) {
+			String key = entry.annotation().value();
+
+			functionMap.put(key, param -> {
+				try {
+					return entry.invoke(param);
+				} catch (Exception e) {
+					throw new RuntimeException("Error calling component: " + key, e);
+				}
+			});
+		}
+		
+		annotations = AnnotationsUtil.process(handler, TemplateFunction.class, List.of(), Object.class);
 
 		for (var entry : annotations) {
 			String key = entry.annotation().value();

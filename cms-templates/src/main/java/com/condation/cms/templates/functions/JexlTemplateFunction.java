@@ -40,7 +40,7 @@ public class JexlTemplateFunction implements JexlMethod {
 
 	@Override
 	public Class<?> getReturnType() {
-		return function.returnType();
+		return Object.class;
 	}
 
 	@Override

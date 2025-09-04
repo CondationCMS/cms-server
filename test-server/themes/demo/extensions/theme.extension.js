@@ -10,6 +10,14 @@ $hooks.registerAction("system/content/tags", (context) => {
 	return null;
 })
 
+$hooks.registerAction("system/template/function", (context) => {
+	context.arguments().get("functions").put(
+			"message",
+			(params) => `<div style="color: ${params.color}">${params.message}</div>`
+	)
+	return null;
+})
+
 $hooks.registerAction("system/template/component", (context) => {
 	context.arguments().get("components").put(
 			"component",

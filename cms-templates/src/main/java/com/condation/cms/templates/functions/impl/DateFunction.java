@@ -37,11 +37,6 @@ public class DateFunction implements TemplateFunction {
 	}
 
 	@Override
-	public Class<?> returnType() {
-		return Date.class;
-	}
-
-	@Override
 	public String name() {
 		return "date";
 	}

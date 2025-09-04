@@ -1,8 +1,8 @@
-package com.condation.cms.templates.functions;
+package com.condation.cms.tests.template.xml.ast;
 
 /*-
  * #%L
- * cms-templates
+ * tests
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,12 +22,36 @@ package com.condation.cms.templates.functions;
  * #L%
  */
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author thorstenmarx
  */
-public interface TemplateFunction {
-	Object invoke (Object... params);
-	
-	String name();
+public class IfNode extends AstNode {
+
+	private final String var;
+	private final List<AstNode> children = new ArrayList<>();
+
+	public IfNode(String var) {
+		this.var = var;
+	}
+
+	public void addChild(AstNode node) {
+		children.add(node);
+	}
+
+	@Override
+	public String render(Map<String, Object> context) {
+		if (Boolean.TRUE.equals(context.get(var))) {
+			StringBuilder sb = new StringBuilder();
+			for (AstNode child : children) {
+				sb.append(child.render(context));
+			}
+			return sb.toString();
+		}
+		return "";
+	}
 }

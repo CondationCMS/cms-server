@@ -35,11 +35,11 @@ import java.util.function.Function;
  */
 public abstract class RegisterTemplateFunctionExtensionPoint extends AbstractExtensionPoint {
 	
-	public Map<String, Function<Parameter, String>> components () {
+	public Map<String, Function<Parameter, ?>> functions () {
 		return Collections.emptyMap();
 	}
 	
-	public List<Object> componentDefinitions () {
+	public List<Object> functionDefinitions () {
 		return Collections.emptyList();
 	}
 }

@@ -39,6 +39,10 @@
 					{[ tempcomp name="CondationCMS" message="a compontent rendered by a template" ]}
 					{[ endtempcomp ]}
 				</div>
+				<div>
+					<h4>template function test</h4>
+					{{ message({'message': "Hello", 'color': "red"}) | raw }}
+				</div>
 			</div>
 			<hr />
 		</div>

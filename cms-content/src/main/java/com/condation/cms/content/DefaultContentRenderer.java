@@ -206,10 +206,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 			model.values.put(service.name(), service.supplier());
 			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
 		});
+		/*
 		context.get(TemplateHooks.class).getTemplateFunctions().getRegisterTemplateFunctions().forEach(service -> {
 			model.values.put(service.name(), service.function());
 			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.function());
 		});
+		*/
 
 		extendModel(model, namespace);
 

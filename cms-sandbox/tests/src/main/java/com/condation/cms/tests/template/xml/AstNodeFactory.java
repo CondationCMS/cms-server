@@ -1,8 +1,8 @@
-package com.condation.cms.templates.functions;
+package com.condation.cms.tests.template.xml;
 
 /*-
  * #%L
- * cms-templates
+ * tests
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,12 +22,18 @@ package com.condation.cms.templates.functions;
  * #L%
  */
 
+import com.condation.cms.tests.template.xml.ast.AstNode;
+import com.condation.cms.tests.template.xml.ast.HtmlElementNode;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 /**
  *
  * @author thorstenmarx
  */
-public interface TemplateFunction {
-	Object invoke (Object... params);
-	
-	String name();
+public interface AstNodeFactory {
+
+	boolean supports(String namespace, String localName);
+
+	AstNode create(XMLStreamReader reader, StAXTemplateRenderer parser, HtmlElementNode current) throws XMLStreamException;
 }

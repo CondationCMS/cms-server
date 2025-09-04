@@ -1,8 +1,10 @@
-package com.condation.cms.templates.functions;
+package com.condation.cms.tests.template.xml;
+
+import com.condation.cms.tests.template.xml.ast.AstNode;
 
 /*-
  * #%L
- * cms-templates
+ * tests
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -26,8 +28,7 @@ package com.condation.cms.templates.functions;
  *
  * @author thorstenmarx
  */
-public interface TemplateFunction {
-	Object invoke (Object... params);
-	
-	String name();
+public interface TemplateLoader {
+
+	AstNode load(String name) throws Exception;
 }

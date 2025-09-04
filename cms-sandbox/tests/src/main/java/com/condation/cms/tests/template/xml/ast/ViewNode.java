@@ -1,8 +1,8 @@
-package com.condation.cms.templates.functions;
+package com.condation.cms.tests.template.xml.ast;
 
 /*-
  * #%L
- * cms-templates
+ * tests
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,12 +22,18 @@ package com.condation.cms.templates.functions;
  * #L%
  */
 
-/**
- *
- * @author thorstenmarx
- */
-public interface TemplateFunction {
-	Object invoke (Object... params);
-	
-	String name();
+import java.util.Map;
+
+public class ViewNode extends AstNode {
+
+	private final String key;
+
+	public ViewNode(String key) {
+		this.key = key;
+	}
+
+	@Override
+	public String render(Map<String, Object> context) {
+		return String.valueOf(context.getOrDefault(key, ""));
+	}
 }

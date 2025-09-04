@@ -1,8 +1,8 @@
-package com.condation.cms.templates.functions;
+package com.condation.cms.tests.template.xml.ast;
 
 /*-
  * #%L
- * cms-templates
+ * tests
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,12 +22,30 @@ package com.condation.cms.templates.functions;
  * #L%
  */
 
+import com.condation.cms.tests.template.xml.TemplateLoader;
+import java.util.Map;
+
 /**
  *
  * @author thorstenmarx
  */
-public interface TemplateFunction {
-	Object invoke (Object... params);
-	
-	String name();
+public class IncludeNode extends AstNode {
+
+	private final String templateName;
+	private final TemplateLoader loader;
+
+	public IncludeNode(String templateName, TemplateLoader loader) {
+		this.templateName = templateName;
+		this.loader = loader;
+	}
+
+	@Override
+	public String render(Map<String, Object> context) {
+		try {
+			AstNode node = loader.load(templateName);
+			return node.render(context);
+		} catch (Exception e) {
+			return "<!-- include error: " + e.getMessage() + " -->";
+		}
+	}
 }

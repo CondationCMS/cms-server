@@ -23,10 +23,11 @@ package com.condation.cms.extensions;
  */
 
 
+import com.condation.cms.api.model.Parameter;
 import java.util.function.Function;
 
 /**
  *
  * @author t.marx
  */
-public record TemplateFunctionExtension (String name, Function<?,?> function) {}
+public record TemplateFunctionExtension (String name, Function<Parameter,?> function) {}

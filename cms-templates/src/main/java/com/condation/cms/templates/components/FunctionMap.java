@@ -1,8 +1,8 @@
-package com.condation.cms.extensions.hooks;
+package com.condation.cms.templates.components;
 
 /*-
  * #%L
- * cms-extensions
+ * cms-content
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -21,25 +21,40 @@ package com.condation.cms.extensions.hooks;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.model.Parameter;
-import com.condation.cms.extensions.TemplateFunctionExtension;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
-import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-public class TemplateFunctionWrapper {
+@Slf4j
+public class FunctionMap {
 
-	@Getter
-	private final List<TemplateFunctionExtension> registerTemplateFunctions = new ArrayList<>();
+	private final Map<String, Function<Parameter, ?>> tags = new HashMap<>();
 
-	public void put(final String path, final Function<Parameter, ?> function) {
-		registerTemplateFunctions.add(new TemplateFunctionExtension(path, function));
+	public Set<String> names() {
+		return Collections.unmodifiableSet(tags.keySet());
+	}
+
+	public void put(String codeName, Function<Parameter, ?> function) {
+		tags.put(codeName, function);
+	}
+
+	public void putAll(Map<String, Function<Parameter, ?>> tags) {
+		this.tags.putAll(tags);
+	}
+
+	public boolean has(String codeName) {
+		return tags.containsKey(codeName);
+	}
+
+	public Function<Parameter, ?> get(String name) {
+		return tags.getOrDefault(name, (params) -> "");
 	}
 }

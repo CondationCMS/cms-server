@@ -22,6 +22,8 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.templates.functions.JexlTemplateFunction;
+import com.condation.cms.templates.functions.impl.DateFunction;
 import com.condation.cms.templates.parser.ASTNode;
 import com.condation.cms.templates.renderer.Renderer;
 import com.condation.cms.templates.renderer.ScopeStack;
@@ -29,7 +31,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Map;
-import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -45,13 +46,9 @@ public class DefaultTemplate implements Template {
 	
 	private final Renderer renderer;
 	
-	private final Consumer<ScopeStack> contextInitializer;
-	
 	@Override
 	public void evaluate(Map<String, Object> context, Writer writer, DynamicConfiguration dynamicConfiguration) throws IOException {
-		
-		ScopeStack scopes = new ScopeStack(context);
-		contextInitializer.accept(scopes);
+		ScopeStack scopes = createScope(context, dynamicConfiguration);
 		
 		evaluate(scopes, writer, dynamicConfiguration);
 		
@@ -60,8 +57,7 @@ public class DefaultTemplate implements Template {
 
 	@Override
 	public String evaluate(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) throws IOException {
-		ScopeStack scopes = new ScopeStack(context);
-		contextInitializer.accept(scopes);
+		ScopeStack scopes = createScope(context, dynamicConfiguration);
 		
 		try (var writer = new StringWriter()) {
 			renderer.render(rootNode, scopes, writer, dynamicConfiguration);
@@ -74,4 +70,15 @@ public class DefaultTemplate implements Template {
 		renderer.render(rootNode, scopes, writer, dynamicConfiguration);
 	}
 
+	private ScopeStack createScope (Map<String, Object> context, DynamicConfiguration dynamicConfiguration) {
+		var scope = new ScopeStack(context);
+		scope.setVariable("date", new JexlTemplateFunction(new DateFunction()));
+		
+		dynamicConfiguration.templateFunctions().forEach(tf -> {
+			scope.setVariable(tf.name(), new JexlTemplateFunction(tf));
+		});
+		
+		return scope;
+	}
+	
 }

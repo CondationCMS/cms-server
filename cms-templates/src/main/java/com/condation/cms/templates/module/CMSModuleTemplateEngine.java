@@ -35,7 +35,6 @@ import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.TemplateEngineFactory;
 import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.components.TemplateComponents;
-import com.condation.cms.templates.functions.TemplateFunction;
 import com.condation.cms.templates.loaders.CompositeTemplateLoader;
 import com.condation.cms.templates.loaders.FileTemplateLoader;
 import com.condation.modules.api.ModuleManager;
@@ -43,7 +42,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -148,7 +146,7 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 		
 		return templateComponents;
 	}
-
+	
 	@Override
 	public String renderFromString(String templateString, Model model) throws IOException {
 		var template = templateEngine.getTemplateFromString(templateString);

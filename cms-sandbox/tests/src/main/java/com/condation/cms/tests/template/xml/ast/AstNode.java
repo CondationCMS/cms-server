@@ -1,8 +1,8 @@
-package com.condation.cms.templates.functions;
+package com.condation.cms.tests.template.xml.ast;
 
 /*-
  * #%L
- * cms-templates
+ * tests
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,12 +22,10 @@ package com.condation.cms.templates.functions;
  * #L%
  */
 
-/**
- *
- * @author thorstenmarx
- */
-public interface TemplateFunction {
-	Object invoke (Object... params);
-	
-	String name();
+import java.util.*;
+
+// === AST Nodes ===
+public abstract class AstNode {
+
+	public abstract String render(Map<String, Object> context);
 }

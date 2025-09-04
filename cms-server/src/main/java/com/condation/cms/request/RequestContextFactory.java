@@ -34,7 +34,6 @@ import com.condation.cms.api.feature.features.ContentParserFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
-import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.MarkdownRendererFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
@@ -126,11 +125,6 @@ public class RequestContextFactory {
 		var theme = requestContext.get(ThemeFeature.class).theme();
 		
 		requestContext.add(RequestFeature.class, new RequestFeature(request.getContext().getContextPath(), uri, queryParameters, request));
-		if (ServerContext.IS_DEV) {
-			if (queryParameters.containsKey("preview")) {
-				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
-			}
-		}
 		
 		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
 		var extensionManager = injector.getInstance(ExtensionManager.class);
@@ -237,11 +231,6 @@ public class RequestContextFactory {
 		var requestContext = create();
 
 		requestContext.add(RequestFeature.class, new RequestFeature(contextPath, uri, queryParameters, request.orElse(null)));
-		if (ServerContext.IS_DEV) {
-			if (queryParameters.containsKey("preview")) {
-				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
-			}
-		}
 
 		return requestContext;
 	}

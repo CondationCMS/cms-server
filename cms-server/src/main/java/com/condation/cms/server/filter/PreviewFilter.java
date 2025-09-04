@@ -22,6 +22,7 @@ package com.condation.cms.server.filter;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.feature.features.AuthFeature;
@@ -45,12 +46,12 @@ import org.eclipse.jetty.util.Callback;
  * @author t.marx
  */
 @Slf4j
-public class UIPreviewFilter extends Handler.Abstract {
+public class PreviewFilter extends Handler.Abstract {
 
 	private final Configuration configuration;
 
 	@Inject
-	public UIPreviewFilter(Configuration configuration) {
+	public PreviewFilter(Configuration configuration) {
 		this.configuration = configuration;
 	}
 
@@ -58,13 +59,21 @@ public class UIPreviewFilter extends Handler.Abstract {
 	public boolean handle(final Request request, final Response rspns, final Callback clbck) throws Exception {
 
 		handlePreviewParameter(request, rspns);
-		
-		handleTokenCookie(request, "cms-preview-token");
-		
+
+		if (!handleTokenCookie(request, "cms-preview-token")) {
+			if (ServerContext.IS_DEV) {
+				var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
+				var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
+				if (queryParameters.containsKey("preview")) {
+					requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
+				}
+			}
+		}
+
 		return false;
 	}
 
-	private boolean handleTokenCookie (Request request, String cookieName) throws Exception {
+	private boolean handleTokenCookie(Request request, String cookieName) throws Exception {
 		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> cookieName.equals(cookie.getName())).findFirst();
 		if (tokenCookie.isEmpty()) {
 			return false;
@@ -84,7 +93,7 @@ public class UIPreviewFilter extends Handler.Abstract {
 		}
 		return false;
 	}
-	
+
 	private void handlePreviewParameter(Request request, Response response) throws Exception {
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
@@ -97,9 +106,9 @@ public class UIPreviewFilter extends Handler.Abstract {
 	}
 
 	private void setCookie(Request request, String name, String token, Response response) {
-		
+
 		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
-		
+
 		boolean isDev = requestContext.has(IsDevModeFeature.class);
 
 		HttpCookie cookie = HttpCookie.from(name, token,

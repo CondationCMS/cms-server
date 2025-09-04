@@ -71,7 +71,7 @@ import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.condation.cms.server.filter.InitRequestContextFilter;
 import com.condation.cms.server.filter.PooledRequestContextFilter;
 import com.condation.cms.server.filter.RequestLoggingFilter;
-import com.condation.cms.server.filter.UIPreviewFilter;
+import com.condation.cms.server.filter.PreviewFilter;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
 import com.condation.cms.server.handler.cache.CacheHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
@@ -226,7 +226,7 @@ public class VHost {
 		var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
 		var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
 
-		var uiPreviewFilter = injector.getInstance(UIPreviewFilter.class);
+		var uiPreviewFilter = injector.getInstance(PreviewFilter.class);
 
 		var defaultHandlerSequence = new Handler.Sequence(
 				authHandler,

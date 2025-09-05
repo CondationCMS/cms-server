@@ -80,6 +80,9 @@ public class AuthorizationService {
 
     /**
      * Checks if a user has a specific permission.
+	 * @param user
+	 * @param permissionKey
+	 * @return 
      */
     public boolean hasPermission(User user, String permissionKey) {
         return getPermissionKeys(user).contains(permissionKey);
@@ -87,6 +90,9 @@ public class AuthorizationService {
 
     /**
      * Checks if a user has at least one of the given permissions.
+	 * @param user
+	 * @param required
+	 * @return 
      */
     public boolean hasAnyPermission(User user, String... required) {
         Set<String> userPerms = getPermissionKeys(user);
@@ -108,6 +114,6 @@ public class AuthorizationService {
 
     // --- Register default/core permissions ---
     static {
-        PermissionRegistry.register(new Permission("content.edit", "Edit content"));
+        PermissionRegistry.register(Permission.CONTENT_EDIT);
     }
 }

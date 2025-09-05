@@ -27,5 +27,5 @@ package com.condation.cms.auth.permissions;
  * @author thmar
  */
 public record Permission(String key, String description) {
-    public static final Permission CONTENT_EDIT = new Permission("content.edit", "Inhalte bearbeiten");
+	public static final Permission CONTENT_EDIT = new Permission("content.edit", "Edit content");
 }

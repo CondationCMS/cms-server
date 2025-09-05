@@ -12,7 +12,7 @@ $hooks.registerAction("system/content/tags", (context) => {
 
 $hooks.registerAction("system/template/function", (context) => {
 	context.arguments().get("functions").put(
-			"message",
+			"fn_message",
 			(params) => `<div style="color: ${params.color}">${params.message}</div>`
 	)
 	return null;

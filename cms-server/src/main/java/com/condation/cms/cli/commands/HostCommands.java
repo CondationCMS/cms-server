@@ -33,6 +33,10 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(
 		name = "host",
+		description = {
+			"Host/site related commands"
+		},
+		mixinStandardHelpOptions = true,
 		subcommands = {
 			ReloadHost.class
 		})

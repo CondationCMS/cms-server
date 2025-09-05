@@ -21,6 +21,7 @@ package com.condation.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +30,8 @@ import java.util.List;
 
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.theme.Theme;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -44,20 +47,36 @@ public class SiteUtil {
 				|| Files.exists(check.resolve("site.toml"));
 	}
 
+	public static Stream<Site> sitesStream() throws IOException {
+		List<Site> sites;
+		try (var siteStream = Files.list(ServerUtil.getPath(Constants.Folders.HOSTS))) {
+			sites = siteStream
+					.filter(SiteUtil::isSite)
+					.map(Site::new)
+					.collect(Collectors.toList());
+		}
+		return sites.stream();
+	}
+
 	public static List<String> getActiveModules(SiteProperties siteProperties, Theme theme) {
 		List<String> activeModules = new ArrayList<>();
 		activeModules.addAll(siteProperties.activeModules());
 		if (!theme.empty()) {
 			activeModules.addAll(theme.properties().activeModules());
-			
+
 			if (theme.getParentTheme() != null) {
 				activeModules.addAll(theme.getParentTheme().properties().activeModules());
 			}
 		}
 		return activeModules;
 	}
-	
+
 	public static String getRequiredTheme(SiteProperties siteProperties, Theme theme) {
 		return siteProperties.theme();
 	}
+
+	public record Site(Path basePath) {
+
+	}
+;
 }

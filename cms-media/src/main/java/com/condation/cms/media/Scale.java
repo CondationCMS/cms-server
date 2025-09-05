@@ -21,7 +21,6 @@ package com.condation.cms.media;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.api.media.MediaUtils;
 import com.luciad.imageio.webp.WebPWriteParam;
@@ -73,15 +72,22 @@ public class Scale {
 				BufferedImage imageBuff = new BufferedImage(result.width,
 						result.height,
 						BufferedImage.TYPE_INT_RGB);
-				imageBuff.getGraphics().drawImage(scaledImage, 0, 0, new Color(0, 0, 0), null);
-				// output
-				if (MediaUtils.Format.JPEG.equals(format)) {
-					result.data = toJPG(imageBuff, uncompressed);
-				} else if (MediaUtils.Format.WEBP.equals(format)) {
-					result.data = toWEBP(imageBuff, uncompressed);
-				} else if (MediaUtils.Format.PNG.equals(format)) {
-					result.data = toPNG(imageBuff, uncompressed);
+
+				var g = imageBuff.getGraphics();
+				try {
+					g.drawImage(scaledImage, 0, 0, new Color(0, 0, 0), null);
+					// output
+					if (MediaUtils.Format.JPEG.equals(format)) {
+						result.data = toJPG(imageBuff, uncompressed);
+					} else if (MediaUtils.Format.WEBP.equals(format)) {
+						result.data = toWEBP(imageBuff, uncompressed);
+					} else if (MediaUtils.Format.PNG.equals(format)) {
+						result.data = toPNG(imageBuff, uncompressed);
+					}
+				} finally {
+					g.dispose();
 				}
+
 			}
 		} catch (IOException e) {
 			log.error("scaleWithAspectIfTooLarge(): IOexception ", e);
@@ -92,9 +98,12 @@ public class Scale {
 	public static byte[] toFormat(final BufferedImage imageBuff, final MediaFormat mediaFormat) throws IOException {
 		if (null != mediaFormat.format()) {
 			return switch (mediaFormat.format()) {
-				case JPEG -> toJPG(imageBuff, !mediaFormat.compression());
-				case WEBP -> toWEBP(imageBuff, !mediaFormat.compression());
-				case PNG -> toPNG(imageBuff, !mediaFormat.compression());
+				case JPEG ->
+					toJPG(imageBuff, !mediaFormat.compression());
+				case WEBP ->
+					toWEBP(imageBuff, !mediaFormat.compression());
+				case PNG ->
+					toPNG(imageBuff, !mediaFormat.compression());
 			};
 		}
 		throw new IllegalArgumentException("unknown media format");
@@ -104,16 +113,22 @@ public class Scale {
 		try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
 			if (uncompressed) {
 				final ImageWriter writer = ImageIO.getImageWritersByFormatName("png").next();
-				writer.setOutput(new MemoryCacheImageOutputStream(buffer));
+				try {
+					var writeParam = writer.getDefaultWriteParam();
+					if (writeParam.canWriteCompressed()) {
+						writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+						writeParam.setCompressionQuality(1f);
+					}
 
-				var writeParam = writer.getDefaultWriteParam();
-				if (writeParam.canWriteCompressed()) {
-					writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-					writeParam.setCompressionQuality(1f);
+					try (MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer)) {
+						writer.setOutput(memoryCacheImageOutputStream);
+						writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
+					}
+
+					return buffer.toByteArray();
+				} finally {
+					writer.dispose();
 				}
-
-				writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
-				return buffer.toByteArray();
 			} else {
 				ImageIO.write(imageBuff, "png", buffer);
 				return buffer.toByteArray();
@@ -128,9 +143,14 @@ public class Scale {
 				jpegParams.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 				jpegParams.setCompressionQuality(1f);
 				final ImageWriter writer = ImageIO.getImageWritersByFormatName("jpg").next();
-				writer.setOutput(new MemoryCacheImageOutputStream(buffer));
-				writer.write(null, new IIOImage(imageBuff, null, null), jpegParams);
-				return buffer.toByteArray();
+				try (MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer)) {
+					writer.setOutput(memoryCacheImageOutputStream);
+					writer.write(null, new IIOImage(imageBuff, null, null), jpegParams);
+					
+					return buffer.toByteArray();
+				} finally {
+					writer.dispose();
+				}
 			} else {
 				ImageIO.write(imageBuff, "jpg", buffer);
 				return buffer.toByteArray();
@@ -145,11 +165,15 @@ public class Scale {
 				writeParam.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 				writeParam.setCompressionType(writeParam.getCompressionTypes()[WebPWriteParam.LOSSLESS_COMPRESSION]);
 				final ImageWriter writer = ImageIO.getImageWritersByMIMEType("image/webp").next();
-				final MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer);
-				writer.setOutput(memoryCacheImageOutputStream);
-				writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
-				memoryCacheImageOutputStream.close();
-				return buffer.toByteArray();
+				try (MemoryCacheImageOutputStream memoryCacheImageOutputStream = new MemoryCacheImageOutputStream(buffer)) {
+					writer.setOutput(memoryCacheImageOutputStream);
+					writer.write(null, new IIOImage(imageBuff, null, null), writeParam);
+					
+					return buffer.toByteArray();
+				} finally {
+					writer.dispose();
+				}
+				
 			} else {
 				ImageIO.write(imageBuff, "webp", buffer);
 				return buffer.toByteArray();

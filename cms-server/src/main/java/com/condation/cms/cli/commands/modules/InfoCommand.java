@@ -31,7 +31,12 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "info")
+@CommandLine.Command(
+		name = "info",
+		description = {
+			"displays some information about a module"
+		}
+)
 public class InfoCommand extends AbstractModuleCommand implements Runnable {
 
 	@CommandLine.Parameters(

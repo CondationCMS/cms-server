@@ -1,3 +1,0 @@
-/**
- * parent theme js
- */

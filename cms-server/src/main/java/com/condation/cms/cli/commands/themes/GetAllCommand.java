@@ -37,7 +37,13 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "get-all")
+@CommandLine.Command(
+		name = "get-all",
+		description = {
+			"gets all themes used by host or child theme",
+			"to force update of already installed themes use -f"
+		}
+)
 public class GetAllCommand extends AbstractThemeCommand implements Runnable {
 
 	@CommandLine.Option(names = "-f", description = "force the update if theme is already installed")

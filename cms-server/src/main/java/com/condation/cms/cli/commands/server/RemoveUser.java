@@ -2,6 +2,7 @@ package com.condation.cms.cli.commands.server;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.auth.services.Realm;
 
 /*-
  * #%L
@@ -27,7 +28,6 @@ import com.condation.cms.api.utils.ServerUtil;
 
 
 import com.condation.cms.auth.services.UserService;
-import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
@@ -36,15 +36,17 @@ import picocli.CommandLine.Parameters;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "remove_user")
+@CommandLine.Command(
+		name = "remove_user",
+		description = {
+			"removes a user from the given realm"
+		}
+)
 @Slf4j
 public class RemoveUser implements Runnable {
 
 	@CommandLine.Option(names = {"-r", "--realm"}, description = "The realm")
 	String realm = "users";
-
-	@CommandLine.Option(names = {"-h", "--host"}, description = "The host", required = true)
-	String host = null;
 	
 	@Parameters(
 			paramLabel = "<username>",
@@ -56,9 +58,9 @@ public class RemoveUser implements Runnable {
 	@Override
 	public void run() {
 		try {
-			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
+			UserService userService = new UserService(ServerUtil.getHome());
 			
-			userService.removeUser(UserService.Realm.of(realm), username);
+			userService.removeUser(Realm.of(realm), username);
 			log.info("user added successfuly");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

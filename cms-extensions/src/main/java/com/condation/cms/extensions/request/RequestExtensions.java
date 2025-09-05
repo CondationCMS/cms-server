@@ -25,19 +25,7 @@ package com.condation.cms.extensions.request;
 
 import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
-import com.condation.cms.api.model.Parameter;
-import com.condation.cms.extensions.HttpHandlerExtension;
-import com.condation.cms.extensions.TemplateFunctionExtension;
-import com.condation.cms.extensions.TemplateSupplierExtension;
-import com.condation.cms.extensions.http.ExtensionHttpHandler;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiPredicate;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.net.URLClassLoader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.graalvm.polyglot.Context;
@@ -53,8 +41,16 @@ public class RequestExtensions implements AutoCloseable, Feature {
 	@Getter
 	private final Context context;
 
+	@Getter
+	private final ClassLoader libsClassLoader;
+	
 	@Override
 	public void close() throws Exception {
-		context.close();
+		if (context != null) {
+			context.close();
+		}
+		if (libsClassLoader != null) {
+			((URLClassLoader)libsClassLoader).close();
+		}
 	}
 }

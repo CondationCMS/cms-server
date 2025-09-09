@@ -55,6 +55,9 @@ document.addEventListener("DOMContentLoaded", function () {
         for (const [sectionName, items] of Object.entries(payload.contentNode.sections)) {
             for (const item of items) {
                 const sectionContainer = document.querySelector(`[data-cms-section-uri="${item.uri}"]`);
+                if (!sectionContainer) {
+                    continue;
+                }
                 if (item.data.published) {
                     sectionContainer.setAttribute('data-cms-action', 'unpublish');
                     sectionContainer.setAttribute("title", "Unpublish");

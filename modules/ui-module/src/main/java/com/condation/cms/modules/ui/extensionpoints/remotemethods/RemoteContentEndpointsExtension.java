@@ -47,6 +47,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.modules.ui.utils.FormHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
+import com.condation.cms.modules.ui.utils.UIFileNameUtil;
+import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -223,17 +225,25 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 
 		var content = (String) parameters.getOrDefault("content", "");
-		var uri = (String) parameters.get("uri");
+		var parentUri = (String) parameters.get("parentUri");
+		var parentSectionName = (String) parameters.get("parentSectionName");
+		var sectionItemName = (String) parameters.get("sectionItemName");
 		var template = (String) parameters.get("template");
 
+		var title = sectionItemName;
+		sectionItemName = UIPathUtil.slugify(sectionItemName);
+		
+		var uri = UIFileNameUtil.createSectionFileName(parentUri, parentSectionName, sectionItemName);
+		
 		var contentFile = contentBase.resolve(uri);
-
+		
 		Map<String, Object> result = new HashMap<>();
 		result.put("uri", uri);
 		if (contentFile != null) {
 			try {
 				Map<String, Object> meta = Map.of(
 						"template", template,
+						"title", title,
 						"layout", Map.of(
 								"order", 1000)
 				);
@@ -248,6 +258,8 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 				result.put("error", true);
 				log.error("", ex);
 			}
+		} else {
+			result.put("error", true);
 		}
 
 		return result;

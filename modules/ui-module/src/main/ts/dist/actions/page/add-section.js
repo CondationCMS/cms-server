@@ -76,6 +76,9 @@ export async function runAction(params) {
         }
     });
 }
+const getSectionItemName = () => {
+    return document.getElementById("cms-section-name").value;
+};
 const validate = (contentNode, targetSectionName) => {
     const template = document.getElementById("cms-section-template-selection").value;
     if (template === "000") {
@@ -87,8 +90,8 @@ const validate = (contentNode, targetSectionName) => {
         });
         return false;
     }
-    const sectionName = document.getElementById("cms-section-name").value;
-    if (sectionName === "" || sectionName === null) {
+    const sectionItemName = getSectionItemName();
+    if (sectionItemName === "" || sectionItemName === null) {
         showToast({
             title: i18n.t("manager.actions.addsection.titles.alert", 'Create section'),
             message: i18n.t("manager.actions.addsection.alerts.noname.message", "No section name provided."),
@@ -97,26 +100,7 @@ const validate = (contentNode, targetSectionName) => {
         });
         return false;
     }
-    const sectionUri = getSectionUri(contentNode.result.uri, targetSectionName);
-    if (isUriInSection(contentNode, targetSectionName, sectionUri)) {
-        showToast({
-            title: i18n.t("manager.actions.addsection.titles.alert", 'Create section'),
-            message: i18n.t("manager.actions.addsection.alerts.nameexists.message", "Section name already taken."),
-            type: 'error', // optional: info | success | warning | error
-            timeout: 3000
-        });
-        return false;
-    }
     return true;
-};
-const getSectionUri = (parentUri, targetSectionName) => {
-    const sectionName = document.getElementById("cms-section-name").value;
-    const parts = parentUri.split("/");
-    const fileName = parts.pop(); // "index.md"
-    const baseName = fileName.replace(/\.md$/, ""); // "index"
-    const newFileName = `${baseName}.${targetSectionName}.${sectionName}.md`;
-    const sectionUri = [...parts, newFileName].join("/");
-    return sectionUri;
 };
 function isUriInSection(data, sectionKey, targetUri) {
     if (!data ||
@@ -136,9 +120,10 @@ const createSection = async (parentUri, parentSectionName) => {
     if (template === "000") {
         return false;
     }
-    const sectionUri = getSectionUri(parentUri, parentSectionName);
     await addSection({
-        uri: sectionUri,
+        parentUri: parentUri,
+        sectionItemName: getSectionItemName(),
+        parentSectionName: parentSectionName,
         template: template
     });
     return true;

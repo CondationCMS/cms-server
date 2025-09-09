@@ -51,7 +51,7 @@
 
 		<div>
 			{% if node.meta.containsKey('media_url') %}
-				{% assign media = mediaService.get(node.meta.media_url) %}
+				{% assign media = cms.mediaService.get(node.meta.media_url) %}
 				<img src="/media/{{ media.uri }}?format=cropped" alt="{{ media.meta.alt }}" 
 					{{ ui.mediaToolbar(["select", "meta", "focalPoint"], {"uri": node.uri, "element": "media_url" }) | raw }} />
 			{% endif %}
@@ -60,8 +60,8 @@
 		<div class="container sections" 
 			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
 			>
-			{% if sections.containsKey('asection') %}
-				{% for section in sections.get('asection') %}
+			{% if node.sections.containsKey('asection') %}
+				{% for section in node.sections.get('asection') %}
 					{{ section.content() | raw }}
 				{% endfor %}
 			{% endif %}

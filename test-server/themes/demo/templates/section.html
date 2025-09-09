@@ -22,7 +22,7 @@
 	</div>
 	<div>
 		{% if node.meta.containsKey('media_url') %}
-		{% assign media = mediaService.get(node.meta.media_url) %}
+		{% assign media = cms.mediaService.get(node.meta.media_url) %}
 		<img src="/media/{{ media.uri }}?format=small" alt="{{ media.meta.alt }}" 
 			{{ ui.mediaToolbar(["select", "meta"], {"uri": node.uri, "element": "media_url" }) | raw }} />
 		{% endif %}

@@ -146,9 +146,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		Namespace namespace = new Namespace();
 
-		model.values.put("meta", new MapAccess(meta));
-		model.values.put("sections", sections);
-
 		namespace.add(Constants.TemplateNamespaces.NODE, "meta", new MapAccess(meta));
 		namespace.add(Constants.TemplateNamespaces.NODE, "sections", sections);
 		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
@@ -166,7 +163,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.CMS, "nodeList", nodeListFunction);
 		
 		QueryFunction queryFunction = createQueryFunction(contentFile, context);
-		model.values.put("query", queryFunction);
 		namespace.add(Constants.TemplateNamespaces.CMS, "query", queryFunction);
 		
 		MarkdownFunction markdownFunction = createMarkdownFunction(context);
@@ -175,10 +171,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
 		model.values.put("site", siteProperties);
-		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 		namespace.add(Constants.TemplateNamespaces.CMS, "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
-
-		model.values.put("taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 		namespace.add(Constants.TemplateNamespaces.CMS, "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
 		var theme = context.get(RenderContext.class).theme();
@@ -188,10 +181,8 @@ public class DefaultContentRenderer implements ContentRenderer {
 			model.values.put("messages", theme.getMessages());
 		}
 		
-		model.values.put("hooks", context.get(HookSystemFeature.class).hookSystem());
 		namespace.add(Constants.TemplateNamespaces.CMS, "hooks", context.get(HookSystemFeature.class).hookSystem());
 
-		model.values.put("links", new LinkFunction(context));
 		namespace.add(Constants.TemplateNamespaces.CMS, "links", new LinkFunction(context));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
@@ -206,12 +197,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 			model.values.put(service.name(), service.supplier());
 			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
 		});
-		/*
-		context.get(TemplateHooks.class).getTemplateFunctions().getRegisterTemplateFunctions().forEach(service -> {
-			model.values.put(service.name(), service.function());
-			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.function());
-		});
-		*/
 
 		extendModel(model, namespace);
 

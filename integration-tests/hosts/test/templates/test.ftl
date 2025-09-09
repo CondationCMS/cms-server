@@ -1,8 +1,8 @@
 <html>
 	<head>
-		<title>${meta.title}</title>
+		<title>${node.meta.title}</title>
 	</head>
 	<body>
-		${content}
+		${node.content}
 	</body>
 </html>

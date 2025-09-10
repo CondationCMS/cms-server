@@ -21,9 +21,8 @@ package com.condation.cms.server.handler.content;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentResponse;
 import com.condation.cms.api.content.DefaultContentResponse;
@@ -35,6 +34,9 @@ import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
 import com.google.inject.Inject;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +73,7 @@ public class JettyContentHandler extends Handler.Abstract {
 			uri = "";
 			notFoundContent = "/";
 		}
-		
+
 		try {
 			Optional<ContentResponse> content = contentResolver.getContent(requestContext);
 			response.setStatus(200);
@@ -109,7 +111,16 @@ public class JettyContentHandler extends Handler.Abstract {
 			log.error("error handling content", e);
 			response.setStatus(500);
 			response.getHeaders().add(HttpHeader.CONTENT_TYPE, "text/html; charset=utf-8");
-			callback.succeeded();
+
+			if (ServerContext.IS_DEV) {
+				try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
+					e.printStackTrace(pw);
+					Content.Sink.write(response, true, sw.toString(), callback);
+				} catch (IOException ioEx) {
+					log.error("failed to write error response", ioEx);
+					callback.succeeded();
+				}
+			}
 		}
 		return true;
 	}

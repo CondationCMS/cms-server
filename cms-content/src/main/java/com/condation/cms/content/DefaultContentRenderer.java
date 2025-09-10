@@ -151,15 +151,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
 
 		TagTemplateFunction tagFunction = createTagFunction(context);
-		model.values.put(TagTemplateFunction.KEY, tagFunction);
 		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
-		model.values.put("navigation", navigationFunction);
 		namespace.add(Constants.TemplateNamespaces.CMS, "navigation", navigationFunction);
 		
 		NodeListFunctionBuilder nodeListFunction = createNodeListFunction(contentFile, context);
-		model.values.put("nodeList", nodeListFunction);
 		namespace.add(Constants.TemplateNamespaces.CMS, "nodeList", nodeListFunction);
 		
 		QueryFunction queryFunction = createQueryFunction(contentFile, context);

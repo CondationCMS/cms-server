@@ -1,0 +1,8 @@
+POST http://localhost:1010/module/ui-module/hooks
+
+{
+    type: "module/ui/menu",
+    parameters: {
+        
+    }
+}

@@ -21,7 +21,6 @@ package com.condation.cms.core.configuration.configs;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.core.configuration.ConfigSource;
 import com.condation.cms.core.configuration.IConfiguration;
@@ -30,8 +29,14 @@ import com.condation.cms.core.configuration.reload.NoReload;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.api.media.MediaUtils;
+import com.google.common.hash.HashCode;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.UUID;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -55,7 +60,7 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 		this.eventBus = builder.eventBus;
 		this.id = builder.id;
 		reloadStrategy.register(this);
-		
+
 		reload();
 	}
 
@@ -63,87 +68,117 @@ public class MediaConfiguration extends AbstractConfiguration implements IConfig
 	public List<ConfigSource> getSources() {
 		return sources;
 	}
-	
+
 	@Override
-	public String id () {
+	public String id() {
 		return id;
 	}
 
 	@Override
-	public void reload () {
+	public void reload() {
 		sources.forEach(source -> {
 			if (source.reload()) {
-				eventBus.publish(new ConfigurationReloadEvent(id));				
+				eventBus.publish(new ConfigurationReloadEvent(id));
 			}
 		});
 	}
-	
-	
-	public List<Format> getFormats () {
-		return getList("formats", Format.class);
+
+	public List<Format> getFormats() {
+		var sorted = new TreeSet<Format>((o1, o2) -> o1.name.compareTo(o2.name));
+		sorted.addAll(getList("formats", Format.class));
+		return new ArrayList<>(sorted);
 	}
-	
-	public List<MediaFormat> getMediaFormats () {
+
+	public List<MediaFormat> getMediaFormats() {
 		return getFormats().stream().map(format -> {
-			return new MediaFormat(format.name, format.width, format.height, toFormat(format.format), format.compression);
+			return new MediaFormat(format.name, format.width, format.height, toFormat(format.format), format.compression, format.cropped);
 		}).toList();
 	}
-	
-	private MediaUtils.Format toFormat (String format) {
+
+	private MediaUtils.Format toFormat(String format) {
 		return switch (format) {
-			case "png" -> MediaUtils.Format.PNG;
-			case "webp" -> MediaUtils.Format.WEBP;
-			case "jpeg" -> MediaUtils.Format.JPEG;
-			default -> throw new AssertionError();
+			case "png" ->
+				MediaUtils.Format.PNG;
+			case "webp" ->
+				MediaUtils.Format.WEBP;
+			case "jpeg" ->
+				MediaUtils.Format.JPEG;
+			default ->
+				throw new AssertionError();
 		};
 	}
-	
-	public static MediaConfiguration.Builder builder (EventBus eventBus) {
+
+	public static MediaConfiguration.Builder builder(EventBus eventBus) {
 		return new MediaConfiguration.Builder(eventBus);
 	}
-	
+
 	public static class Builder {
+
 		private final List<ConfigSource> sources = new ArrayList<>();
 		private ReloadStrategy reloadStrategy = new NoReload();
 		private String id = UUID.randomUUID().toString();
 		private final EventBus eventBus;
-		
-		public Builder (EventBus eventbus) {
+
+		public Builder(EventBus eventbus) {
 			this.eventBus = eventbus;
 		}
-		
-		public Builder id (String uniqueId) {
+
+		public Builder id(String uniqueId) {
 			this.id = uniqueId;
 			return this;
 		}
-		
+
 		public Builder addSource(ConfigSource source) {
 			sources.add(source);
 			return this;
 		}
-		
-		public Builder addAllSources (List<ConfigSource> sources) {
+
+		public Builder addAllSources(List<ConfigSource> sources) {
 			this.sources.addAll(sources);
 			return this;
 		}
-		
-		public Builder reloadStrategy (ReloadStrategy reload) {
+
+		public Builder reloadStrategy(ReloadStrategy reload) {
 			this.reloadStrategy = reload;
 			return this;
 		}
-		
-		public MediaConfiguration build () {
+
+		public MediaConfiguration build() {
 			return new MediaConfiguration(this);
 		}
 	}
-	
+
 	@Data
 	@NoArgsConstructor
 	public static class Format {
+
 		private String name;
 		private String format;
 		private boolean compression;
 		private int width;
 		private int height;
+		private boolean cropped;
+
+		@Override
+		public final int hashCode() {
+			int hash = 7;
+			hash = 31 * hash + (name == null ? 0 : name.hashCode());
+			return hash;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final Format other = (Format) obj;
+			return Objects.equals(this.name, other.name);
+		}
 	}
 }

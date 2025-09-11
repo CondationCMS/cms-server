@@ -125,7 +125,10 @@ public class ContentResolver {
 			}
 		} else {
 			var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-			contentNode = db.getContent().byUri(uri).get();
+			final Optional<ContentNode> nodeByUri = db.getContent().byUri(uri);
+			if (nodeByUri.isPresent()) {
+				contentNode = nodeByUri.get();
+			}
 		}
 		
 		if (contentNode == null) {

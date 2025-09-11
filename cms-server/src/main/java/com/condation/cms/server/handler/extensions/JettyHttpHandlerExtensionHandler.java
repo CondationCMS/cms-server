@@ -23,7 +23,9 @@ package com.condation.cms.server.handler.extensions;
  */
 
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.hooks.ServerHooks;
 import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
@@ -48,7 +50,7 @@ public class JettyHttpHandlerExtensionHandler extends Handler.Abstract {
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 
 		String extension = getExtensionName(request);
 		var method = request.getMethod();
@@ -69,7 +71,7 @@ public class JettyHttpHandlerExtensionHandler extends Handler.Abstract {
 
 	private String getExtensionName(Request request) {
 		var path = request.getHttpURI().getPath();
-		var contextPath = request.getContext().getContextPath();
+		var contextPath = RequestUtil.getContentPath(request);
 
 		if (!contextPath.endsWith("/")) {
 			contextPath += "/";

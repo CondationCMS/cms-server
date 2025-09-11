@@ -1,0 +1,115 @@
+<!--
+  #%L
+  ui-module
+  %%
+  Copyright (C) 2023 - 2025 CondationCMS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+-->
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Manager</title>
+		<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-superhero.min.css') }}" rel="stylesheet" />
+		<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
+
+		<style>
+			html,
+			body {
+				height: 100%;
+			}
+
+			.form-signin {
+				max-width: 330px;
+				padding: 1rem;
+			}
+
+			.form-signin .form-floating:focus-within {
+				z-index: 2;
+			}
+
+			.form-signin input[type="text"] {
+				margin-bottom: -1px;
+				border-bottom-right-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+
+			.form-signin input[type="password"] {
+				margin-bottom: 10px;
+				border-top-left-radius: 0;
+				border-top-right-radius: 0;
+			}
+
+			.hidden {
+				display: none;
+			}
+		</style>
+		
+		<script>
+			window.ui = {
+				manager_url: "{{ links.createUrl('/manager/index.html') }}",
+				login_url: "{{ links.createUrl('/manager/login.action') }}"
+			}
+		</script>
+
+	</head>
+
+	<body class="d-flex align-items-center py-4 bg-body-tertiary">
+		<main class="form-signin w-100 m-auto">
+			<h1 class="text-dark text-center">CondationCMS</h1>
+			<form id="loginForm" method="POST" > 
+				<!--img class="mb-4" src="/docs/5.3/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57" -->
+				<h2 class="h3 mb-3 fw-normal text-dark">Please sign in</h2>
+				<div id="signIn">
+					<div class="form-floating"> 
+						<input type="text" class="form-control" id="inputUsername" placeholder="username" name="username" /> 
+						<label for="inputUsername" class="text-dark">Username</label>
+					</div>
+					<div class="form-floating"> 
+						<input type="password" class="form-control" id="inputPassword" placeholder="Password" name="password" />
+						<label for="inputPassword" class="text-dark">Password</label> 
+					</div>
+					<button class="btn btn-primary w-100 py-2" id="signInButton">Sign in</button>
+				</div>
+				{% if force2fa %}
+				<div id="validate" class="hidden">
+					<div class="form-floating"> 
+						<input type="text" class="form-control" id="inputCode" placeholder="Code" name="code" />
+						<label for="inputCode" class="text-dark">Code</label> 
+					</div>
+					<button class="btn btn-primary w-100 py-2 mt-3" id="validateButton">Validate</button>
+				</div>
+				{% endif %}
+				<div id="loginMessage" class="alert mt-3" role="alert">
+					
+				</div>
+			</form>
+			{% if force2fa %}
+				<div>
+					<button class="btn btn-primary w-100 py-2 mt-3" id="resetButton">Reset</button>
+				</div>
+			{% endif %}
+			
+		</main>
+
+		<script src="{{ links.createUrl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
+		<script src="{{ links.createUrl('/manager/public/manager-login.js') }}"></script>
+	</body>
+
+</html>

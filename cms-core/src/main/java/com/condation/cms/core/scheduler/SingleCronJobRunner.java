@@ -24,8 +24,6 @@ package com.condation.cms.core.scheduler;
 import com.condation.cms.api.scheduler.CronJob;
 import com.condation.cms.api.scheduler.CronJobContext;
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import lombok.extern.slf4j.Slf4j;
 
 import org.quartz.DisallowConcurrentExecution;

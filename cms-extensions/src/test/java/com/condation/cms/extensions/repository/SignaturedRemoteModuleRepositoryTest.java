@@ -115,14 +115,17 @@ class SignaturedRemoteModuleRepositoryTest {
 		repo.download(fileBaseUrl + "/test.zip", hash, installTarget);
 
 		// Prüfung, ob Datei im entpackten Verzeichnis vorhanden ist
-		boolean found = Files.walk(installTarget)
-				.anyMatch(p -> p.getFileName().toString().equals("content.txt"));
+		boolean found = false;
+		try (var walkStream = Files.walk(installTarget)) {
+			found = walkStream
+					.anyMatch(p -> p.getFileName().toString().equals("content.txt"));
 
+		}
 		Assertions.assertThat(found)
 				.as("content.txt sollte entpackt vorhanden sein")
 				.isTrue();
 	}
-	
+
 	@Test
 	void shouldThrowAnExceptionOnInvalidSignature() throws Exception {
 
@@ -134,6 +137,6 @@ class SignaturedRemoteModuleRepositoryTest {
 		Assertions.assertThatCode(() -> {
 			repo.download(fileBaseUrl + "/test.zip", "wrong_signature", installTarget);
 		}).isInstanceOf(RuntimeException.class).hasMessage("error downloading module");
-				
+
 	}
 }

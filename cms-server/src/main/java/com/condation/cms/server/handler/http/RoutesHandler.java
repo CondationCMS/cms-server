@@ -22,6 +22,7 @@ package com.condation.cms.server.handler.http;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.extensions.HttpRoutesExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
 import com.condation.cms.api.extensions.http.routes.RoutesExtensionPoint;
@@ -81,11 +82,7 @@ public class RoutesHandler extends Handler.Abstract {
 		
 		
 		moduleManager.extensions(RoutesExtensionPoint.class)
-				.stream()
-				.map(RoutesExtensionPoint::getRouteDefinitions)
-				.filter(routeDefinitions -> routeDefinitions != null && !routeDefinitions.isEmpty())
-				.flatMap(List::stream)
-				.forEach(controller -> routesManager.register(controller));
+				.forEach(routesManager::register);
 		
 		var handler = routesManager.findFirst(route, request.getMethod());
 		if (handler.isPresent()) {
@@ -114,7 +111,7 @@ public class RoutesHandler extends Handler.Abstract {
 	}
 
 	private boolean tryExtensionRoutes(Request request, Response response, Callback callback) throws Exception {
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 
 		String route = "/" + RequestUtil.getContentPath(request);
 		var method = request.getMethod();

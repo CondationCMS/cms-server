@@ -1,3 +1,4 @@
+
 package com.condation.cms.filesystem;
 
 /*-
@@ -21,7 +22,6 @@ package com.condation.cms.filesystem;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.utils.PathUtil;
 import java.io.File;
 import java.io.IOException;
@@ -45,16 +45,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Flow;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.SubmissionPublisher;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * The recursive file watcher monitors a folder (and its sub-folders).
  */
+
 @Slf4j
 public class MultiRootRecursiveWatcher {
 
@@ -64,7 +67,8 @@ public class MultiRootRecursiveWatcher {
 	private Thread watchThread;
 	private final Map<Path, WatchKey> watchPathKeyMap;
 
-	private Timer timer;
+	private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+	private ScheduledFuture<?> scheduledFuture;
 
 	private final Map<Path, Root> roots;
 
@@ -78,8 +82,6 @@ public class MultiRootRecursiveWatcher {
 		this.watchService = null;
 		this.watchThread = null;
 		this.watchPathKeyMap = new HashMap<>();
-
-		this.timer = null;
 
 		this.roots = new HashMap<>();
 		roots.forEach(path -> {
@@ -97,12 +99,15 @@ public class MultiRootRecursiveWatcher {
 	}
 
 	/**
-	 * Starts the watcher service and registers watches in all of the sub-folders of the given root folder.
+	 * Starts the watcher service and registers watches in all of the
+	 * sub-folders of the given root folder.
 	 *
 	 * <p>
-	 * <b>Important:</b> This method returns immediately, even though the watches might not be in place yet. For large
-	 * file trees, it might take several seconds until all directories are being monitored. For normal cases (1-100
-	 * folders), this should not take longer than a few milliseconds.
+	 * <b>Important:</b> This method returns immediately, even though the
+	 * watches might not be in place yet. For large file trees, it might take
+	 * several seconds until all directories are being monitored. For normal
+	 * cases (1-100 folders), this should not take longer than a few
+	 * milliseconds.
 	 */
 	public void start() throws IOException {
 		watchService = FileSystems.getDefault().newWatchService();
@@ -110,16 +115,16 @@ public class MultiRootRecursiveWatcher {
 		watchThread = Thread.ofVirtual().name("Watcher").start(() -> {
 			running.set(true);
 			walkTreeAndSetWatches();
-			
+
 			while (running.get()) {
 				try {
 					WatchKey watchKey = watchService.take();
 					List<WatchEvent<?>> events = watchKey.pollEvents();
-					
+
 					events.forEach((event) -> {
 						Path path = (Path) watchKey.watchable();
 						File file = path.resolve((Path) event.context()).toFile();
-						
+
 						final FileEvent fileEvent;
 						if (event.kind().equals(ENTRY_CREATE)) {
 							fileEvent = new FileEvent(file, FileEvent.Type.CREATED);
@@ -127,10 +132,14 @@ public class MultiRootRecursiveWatcher {
 							fileEvent = new FileEvent(file, FileEvent.Type.DELETED);
 						} else if (event.kind().equals(ENTRY_MODIFY)) {
 							fileEvent = new FileEvent(file, FileEvent.Type.MODIFIED);
+						} else if (event.kind() == OVERFLOW) {
+							log.warn("Overflow occurred, resyncing watches");
+							walkTreeAndSetWatches();
+							fileEvent = null;
 						} else {
 							fileEvent = null;
 						}
-						
+
 						if (fileEvent != null) {
 							roots.values().forEach((root) -> {
 								if (PathUtil.isChild(root.path, file.toPath())) {
@@ -139,7 +148,7 @@ public class MultiRootRecursiveWatcher {
 							});
 						}
 					});
-					
+
 					// fire events
 					watchKey.reset();
 					resetWaitSettlementTimer();
@@ -159,6 +168,8 @@ public class MultiRootRecursiveWatcher {
 				watchService.close();
 				running.set(false);
 				watchThread.interrupt();
+				
+				scheduler.shutdown();
 			} catch (IOException e) {
 				// Don't care
 			}
@@ -166,20 +177,16 @@ public class MultiRootRecursiveWatcher {
 	}
 
 	private synchronized void resetWaitSettlementTimer() {
-		if (timer != null) {
-			timer.cancel();
-			timer = null;
+		if (scheduledFuture != null) {
+			scheduledFuture.cancel(false);
 		}
+		scheduledFuture = scheduler.schedule(this::updateWatches, 10, TimeUnit.SECONDS);
+	}
 
-		timer = new Timer("WatchTimer");
-		timer.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				log.debug("File system actions (on watched folders) settled. Updating watches ...");
-				walkTreeAndSetWatches();
-				unregisterStaleWatches();
-			}
-		}, 10000);
+	private void updateWatches() {
+		log.debug("File system actions settled. Updating watches...");
+		walkTreeAndSetWatches();
+		unregisterStaleWatches();
 	}
 
 	private synchronized void walkTreeAndSetWatches() {
@@ -210,7 +217,7 @@ public class MultiRootRecursiveWatcher {
 					}
 				});
 			} catch (IOException e) {
-				// Don't care
+				log.warn("Failed to walkTreeAndSetWatches {}", root, e);
 			}
 		});
 
@@ -243,7 +250,7 @@ public class MultiRootRecursiveWatcher {
 				WatchKey watchKey = dir.register(watchService, ENTRY_CREATE, ENTRY_DELETE, ENTRY_MODIFY, OVERFLOW);
 				watchPathKeyMap.put(dir, watchKey);
 			} catch (IOException e) {
-				// Don't care!
+				log.warn("Failed to register watch for {}", dir, e);
 			}
 		}
 	}

@@ -36,6 +36,10 @@ import picocli.CommandLine;
  */
 @CommandLine.Command(
 		name = "module",
+		mixinStandardHelpOptions = true,
+		description = {
+			"commands to manage modules"
+		},
 		subcommands = {
 			InfoCommand.class,
 			GetCommand.class,

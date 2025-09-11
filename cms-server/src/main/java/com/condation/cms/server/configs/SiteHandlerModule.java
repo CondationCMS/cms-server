@@ -42,6 +42,7 @@ import com.condation.cms.auth.services.UserService;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.server.FileFolderPathResource;
 import com.condation.cms.server.filter.InitRequestContextFilter;
+import com.condation.cms.server.filter.PreviewFilter;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
@@ -51,7 +52,6 @@ import com.condation.cms.server.handler.http.APIHandler;
 import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
-import com.condation.cms.server.handler.module.JettyRouteHandler;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -73,12 +73,13 @@ public class SiteHandlerModule extends AbstractModule {
 		bind(JettyViewHandler.class).in(Singleton.class);
 		bind(JettyContentHandler.class).in(Singleton.class);
 		bind(JettyTaxonomyHandler.class).in(Singleton.class);
-		bind(JettyRouteHandler.class).in(Singleton.class);
 		bind(RoutesHandler.class).in(Singleton.class);
 		bind(JettyHttpHandlerExtensionHandler.class).in(Singleton.class);
 		bind(InitRequestContextFilter.class).in(Singleton.class);
 
 		bind(APIHandler.class).in(Singleton.class);
+		
+		bind(PreviewFilter.class).in(Singleton.class);
 		
 		//bind(JettyAuthenticationHandler.class).in(Singleton.class);
 	}

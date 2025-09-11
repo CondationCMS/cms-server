@@ -24,6 +24,7 @@ package com.condation.cms.core.configuration.properties;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.UIProperties;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.util.List;
 import java.util.Locale;
@@ -142,5 +143,10 @@ public class ExtendedSiteProperties implements SiteProperties {
 	@Override
 	public <T> T getOrDefault(String field, T defaultValue) {
 		return (T) configuration.getOrDefault(field, defaultValue);
+	}
+	
+	@Override
+	public UIProperties ui() {
+		return configuration.get("ui", ExtendedUIProperties.class);
 	}
 }

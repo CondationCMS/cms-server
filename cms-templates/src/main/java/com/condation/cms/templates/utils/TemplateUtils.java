@@ -42,54 +42,85 @@ public class TemplateUtils {
 
 	public static boolean hasFilters(String expression) {
 		if (expression == null || expression.isBlank()) {
-            return false;
-        }
+			return false;
+		}
 
-        String[] parts = expression.split("\\s+\\|\\s+"); // Nur " | " als Trenner verwenden
-        return parts.length > 1;
+		String[] parts = expression.split("\\s+\\|\\s+"); // Nur " | " als Trenner verwenden
+		return parts.length > 1;
 	}
 
 	public static List<String> extractFilters(String expression) {
 		List<String> filters = new ArrayList<>();
-        if (expression == null || expression.isBlank()) {
-            return filters; 
-        }
+		if (expression == null || expression.isBlank()) {
+			return filters;
+		}
 
-        String[] parts = expression.split("\\s+\\|\\s+"); 
-        if (parts.length < 2) {
-            return filters; 
-        }
+		String[] parts = expression.split("\\s+\\|\\s+");
+		if (parts.length < 2) {
+			return filters;
+		}
 
-        for (int i = 1; i < parts.length; i++) {
-            filters.add(parts[i]);
-        }
+		for (int i = 1; i < parts.length; i++) {
+			filters.add(parts[i]);
+		}
 
-        return filters;
+		return filters;
 	}
 
 	public static Filter parseFilter(String filterDefinition) {
-        // Regular expression to match the filter name and parameters
-        String regex = "^(\\w+)(?:\\((.*?)\\))?$";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(filterDefinition);
+		// Regex nur für Filtername und Gesamte Parameter
+		String regex = "^(\\w+)\\s*(?:\\((.*)\\))?$";
+		Pattern pattern = Pattern.compile(regex, Pattern.DOTALL);
+		Matcher matcher = pattern.matcher(filterDefinition.trim());
 
-        if (matcher.matches()) {
-            String filterName = matcher.group(1); // Filter name
-            String paramsString = matcher.group(2); // Optional parameters
+		if (!matcher.matches()) {
+			throw new IllegalArgumentException("Invalid filter definition: " + filterDefinition);
+		}
 
-            // Split the parameters if present, otherwise return an empty list
-            List<String> parameters = new ArrayList<>();
-            if (paramsString != null && !paramsString.isBlank()) {
-                for (String param : paramsString.split(",")) {
-                    parameters.add(param.trim());
-                }
-            }
+		String filterName = matcher.group(1);
+		String paramsString = matcher.group(2);
 
-            return new Filter(filterName, parameters);
-        } else {
-            throw new IllegalArgumentException("Invalid filter definition: " + filterDefinition);
-        }
-    }
+		List<String> parameters = parseParameters(paramsString);
+		return new Filter(filterName, parameters);
+	}
+
+	/**
+	 * Parst eine Parameterliste, unterstützt Kommas innerhalb von Hochkommas.
+	 */
+	private static List<String> parseParameters(String paramsString) {
+		List<String> parameters = new ArrayList<>();
+		if (paramsString == null || paramsString.isBlank()) {
+			return parameters;
+		}
+
+		StringBuilder current = new StringBuilder();
+		boolean inSingleQuotes = false;
+		boolean inDoubleQuotes = false;
+
+		for (int i = 0; i < paramsString.length(); i++) {
+			char c = paramsString.charAt(i);
+
+			if (c == '\'' && !inDoubleQuotes) {
+				inSingleQuotes = !inSingleQuotes;
+				current.append(c);
+			} else if (c == '"' && !inSingleQuotes) {
+				inDoubleQuotes = !inDoubleQuotes;
+				current.append(c);
+			} else if (c == ',' && !inSingleQuotes && !inDoubleQuotes) {
+				// Parameterende
+				parameters.add(current.toString().trim());
+				current.setLength(0);
+			} else {
+				current.append(c);
+			}
+		}
+
+		if (current.length() > 0) {
+			parameters.add(current.toString().trim());
+		}
+
+		return parameters;
+	}
 
 	public static String extractVariableName(String input) {
 		// Split basierend auf "|"

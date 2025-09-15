@@ -12,7 +12,7 @@
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.1.1</jetty.version>
-		<lucene.version>10.2.2</lucene.version>
+		<lucene.version>10.3.0</lucene.version>
 		<modules-framework.version>1.2.0</modules-framework.version>
 		<mockito.version>5.19.0</mockito.version>
 	</properties>
@@ -416,7 +416,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.5.3</version>
+					<version>3.5.4</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>

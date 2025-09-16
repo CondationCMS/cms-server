@@ -56,7 +56,6 @@ public class AnnotationsUtil {
 				continue;
 			}
 			if (!hasValidSignatur(method, parameters, returnType)) {
-				log.warn("method {} has wrong signature", method);
 				continue;
 			}
 

@@ -2,7 +2,7 @@ package com.condation.cms.content.markdown;
 
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import java.util.Optional;
 
 /*-
@@ -39,11 +39,17 @@ public interface InlineBlock {
 	String render();
 
 	default boolean isPreview() {
-		var requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
+		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			return false;
+		}
+		var requestContext = RequestContextScope.REQUEST_CONTEXT.get();
 		return requestContext != null && requestContext.has(IsPreviewFeature.class);
 	}
 	
 	default Optional<RequestContext> getRequestContext () {
-		return Optional.ofNullable(ThreadLocalRequestContext.REQUEST_CONTEXT.get());
+		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(RequestContextScope.REQUEST_CONTEXT.get());
 	}
 }

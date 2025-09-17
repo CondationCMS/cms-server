@@ -26,7 +26,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.DateRange;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.api.utils.SectionUtil;
@@ -70,8 +70,8 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 	
 	public String contentType() {
 		String defaultContentType = Constants.DEFAULT_CONTENT_TYPE;
-		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null) {
-			RequestContext requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
+		if (RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			RequestContext requestContext = RequestContextScope.REQUEST_CONTEXT.get();
 			defaultContentType = requestContext.get(SitePropertiesFeature.class).siteProperties().defaultContentType();
 		}
 		return (String) ((Map<String, Object>) data
@@ -109,8 +109,8 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 	}
 
 	public boolean isVisible() {
-		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null
-				&& ThreadLocalRequestContext.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
+		if (RequestContextScope.REQUEST_CONTEXT.isBound()
+				&& RequestContextScope.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
 			return true;
 		}
 		

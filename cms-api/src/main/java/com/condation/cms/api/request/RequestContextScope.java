@@ -4,7 +4,7 @@ package com.condation.cms.api.request;
  * #%L
  * cms-api
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,11 +22,10 @@ package com.condation.cms.api.request;
  * #L%
  */
 
-
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-public class ThreadLocalRequestContext {
-	public static ThreadLocal<RequestContext> REQUEST_CONTEXT = new ThreadLocal<>();
+public class RequestContextScope {
+	public static final ScopedValue<RequestContext> REQUEST_CONTEXT = ScopedValue.newInstance();
 }

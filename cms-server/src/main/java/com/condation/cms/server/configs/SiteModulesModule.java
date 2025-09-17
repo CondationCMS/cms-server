@@ -30,7 +30,7 @@ import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.module.SiteRequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.filesystem.FileDB;
@@ -97,7 +97,7 @@ public class SiteModulesModule extends AbstractModule {
 	@Singleton
 	public ModuleRequestContextFactory requestContextFactory() {
 		return () -> {
-			return new SiteRequestContext(ThreadLocalRequestContext.REQUEST_CONTEXT.get());
+			return new SiteRequestContext(RequestContextScope.REQUEST_CONTEXT.get());
 		};
 	}
 

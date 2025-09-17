@@ -97,7 +97,12 @@ public class SiteModulesModule extends AbstractModule {
 	@Singleton
 	public ModuleRequestContextFactory requestContextFactory() {
 		return () -> {
-			return new SiteRequestContext(RequestContextScope.REQUEST_CONTEXT.get());
+			if (RequestContextScope.REQUEST_CONTEXT.isBound()) {
+				return new SiteRequestContext(RequestContextScope.REQUEST_CONTEXT.get());
+			} else {
+				return new SiteRequestContext(null);
+			}
+			
 		};
 	}
 

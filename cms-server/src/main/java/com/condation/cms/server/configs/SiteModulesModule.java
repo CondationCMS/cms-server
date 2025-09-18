@@ -177,10 +177,12 @@ public class SiteModulesModule extends AbstractModule {
 	public HookSystem hookSystem(final ModuleManager moduleManager) {
 		var hookSystem = new HookSystem();
 		
-		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+		/*
+			moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
 			extensionPoint.register(hookSystem);
 			hookSystem.register(extensionPoint);
-		});
+			});
+		*/
 		
 		return hookSystem;
 	}

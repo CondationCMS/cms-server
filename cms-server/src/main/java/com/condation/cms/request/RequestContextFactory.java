@@ -27,6 +27,7 @@ import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
@@ -35,6 +36,7 @@ import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.feature.features.MarkdownRendererFeature;
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
@@ -129,7 +131,7 @@ public class RequestContextFactory {
 		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
 		var extensionManager = injector.getInstance(ExtensionManager.class);
 		
-//		initHookSystem(requestContext);
+		initHookSystem(requestContext);
 
 		RequestExtensions requestExtensions = extensionManager.newContext(theme, requestContext);
 
@@ -233,5 +235,20 @@ public class RequestContextFactory {
 		requestContext.add(RequestFeature.class, new RequestFeature(contextPath, uri, queryParameters, request.orElse(null)));
 
 		return requestContext;
+	}
+
+	/**
+	 * HookSystem must be registered here instead of the guice module because otherwise the RequestContext may not be present
+	 * @param requestContext 
+	 */
+	private void initHookSystem(RequestContext requestContext) {
+		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
+		var moduleManager = injector.getInstance(ModuleManager.class);
+		
+		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+			extensionPoint.register(hookSystem);
+			hookSystem.register(extensionPoint);
+		});
+		
 	}
 }

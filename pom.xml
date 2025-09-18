@@ -183,7 +183,7 @@
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
-				<version>1.18.40</version>
+				<version>1.18.42</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -194,7 +194,7 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>33.4.8-jre</version>
+				<version>33.5.0-jre</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.inject</groupId>
@@ -383,7 +383,7 @@
 							<path>
 								<groupId>org.projectlombok</groupId>
 								<artifactId>lombok</artifactId>
-								<version>1.18.40</version>
+								<version>1.18.42</version>
 							</path>
 							<path>
 								<groupId>com.google.auto.service</groupId>
@@ -514,7 +514,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.40</version>
+							<version>1.18.42</version>
 						</path>
 						<path>
 							<groupId>com.google.auto.service</groupId>

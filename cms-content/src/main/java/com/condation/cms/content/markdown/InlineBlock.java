@@ -1,5 +1,10 @@
 package com.condation.cms.content.markdown;
 
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContextScope;
+import java.util.Optional;
+
 /*-
  * #%L
  * cms-content
@@ -21,15 +26,30 @@ package com.condation.cms.content.markdown;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 /**
  *
  * @author t.marx
  */
 public interface InlineBlock {
+
 	int start();
+
 	int end();
+
+	String render();
+
+	default boolean isPreview() {
+		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			return false;
+		}
+		var requestContext = RequestContextScope.REQUEST_CONTEXT.get();
+		return requestContext != null && requestContext.has(IsPreviewFeature.class);
+	}
 	
-	String render ();
+	default Optional<RequestContext> getRequestContext () {
+		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			return Optional.empty();
+		}
+		return Optional.ofNullable(RequestContextScope.REQUEST_CONTEXT.get());
+	}
 }

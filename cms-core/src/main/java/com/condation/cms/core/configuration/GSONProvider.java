@@ -33,7 +33,7 @@ import java.time.Duration;
  *
  * @author t.marx
  */
-public class GSONProvider {
+ public class GSONProvider {
 
 	public static final Gson GSON = new GsonBuilder()
 			.enableComplexMapKeySerialization()

@@ -30,13 +30,13 @@ import com.condation.cms.api.Constants;
  */
 public class SectionUtil {
 
-	public static boolean isOrderedSection(final String name) {
-		return Constants.SECTION_ORDERED_PATTERN.matcher(name).matches();
+	public static boolean isNamedSection(final String name) {
+		return Constants.SECTION_NAMED_PATTERN.matcher(name).matches();
 	}
 
 	public static String getSectionName(final String name) {
-		if (isOrderedSection(name)) {
-			var matcher = Constants.SECTION_ORDERED_PATTERN.matcher(name);
+		if (isNamedSection(name)) {
+			var matcher = Constants.SECTION_NAMED_PATTERN.matcher(name);
 			matcher.matches();
 			return matcher.group("section");
 		} else {
@@ -46,18 +46,8 @@ public class SectionUtil {
 		}
 	}
 
-	public static int getSectionIndex(final String name) {
-		if (isOrderedSection(name)) {
-			var matcher = Constants.SECTION_ORDERED_PATTERN.matcher(name);
-			matcher.matches();
-			return Integer.parseInt(matcher.group("index"));
-		} else {
-			return Constants.DEFAULT_SECTION_ORDERED_INDEX;
-		}
-	}
-
 	public static boolean isSection(final String name) {
 		return Constants.SECTION_PATTERN.matcher(name).matches()
-				|| Constants.SECTION_ORDERED_PATTERN.matcher(name).matches();
+				|| Constants.SECTION_NAMED_PATTERN.matcher(name).matches();
 	}
 }

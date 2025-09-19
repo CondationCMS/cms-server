@@ -1,5 +1,6 @@
 package com.condation.cms.server.handler.http;
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.extensions.http.APIHandlerExtensionPoint;
 import com.condation.cms.api.extensions.http.PathMapping;
@@ -28,10 +29,12 @@ import com.condation.cms.api.feature.features.ConfigurationFeature;
  */
 
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.hooks.ServerHooks;
 import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
 import com.condation.cms.server.filter.CreateRequestContextFilter;
+import com.condation.cms.server.handler.AbstractHandler;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Inject;
 
@@ -50,14 +53,14 @@ import org.eclipse.jetty.util.Callback;
 @RequiredArgsConstructor(onConstructor = @__({
         @Inject }))
 @Slf4j
-public class APIHandler extends Handler.Abstract {
+public class APIHandler extends AbstractHandler {
 
     public static final String PATH = "api";
 
     private final ModuleManager moduleManager;
 
 	private boolean isApiActivated (Request request) {
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 		var siteProperties = requestContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
 		
 		return siteProperties.getOrDefault("api.enabled", Boolean.FALSE);
@@ -109,7 +112,7 @@ public class APIHandler extends Handler.Abstract {
     }
 
     private boolean handleExtensionRoute(Request request, Response response, Callback callback) throws Exception {
-        var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+        var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 
         String extension = getApiRoute(request);
         var method = request.getMethod();
@@ -126,7 +129,7 @@ public class APIHandler extends Handler.Abstract {
 
     private String getApiRoute(Request request) {
         var path = request.getHttpURI().getPath();
-        var contextPath = request.getContext().getContextPath();
+        var contextPath = RequestUtil.getContextPath(request);
 
         if (!contextPath.endsWith("/")) {
             contextPath += "/";

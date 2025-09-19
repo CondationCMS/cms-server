@@ -79,18 +79,18 @@ public class AuthService {
 	public static class AuthPath {
 		private String path;
 		private String realm;
-		private List<String> groups;
+		private List<String> roles;
 		
-		public boolean allowed (UserService.User user) {
-			if (user.groups() == null || user.groups().length == 0) {
+		public boolean allowed (User user) {
+			if (user.roles() == null || user.roles().length == 0) {
 				return false;
 			}
-			if (groups == null || groups.isEmpty()) {
+			if (roles == null || roles.isEmpty()) {
 				return false;
 			}
 			
-			for (String group : user.groups()) {
-				if (groups.contains(group)) {
+			for (String role : user.roles()) {
+				if (roles.contains(role)) {
 					return true;
 				}
 			}

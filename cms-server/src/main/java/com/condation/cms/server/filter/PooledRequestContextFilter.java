@@ -27,7 +27,7 @@ import com.condation.cms.api.annotations.Experimental;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.request.RequestContextFactory;
@@ -88,15 +88,14 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
 			}
 
-			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
-
 			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
 
-			return super.handle(httpRequest, rspns, clbck);
+			return ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).call(() -> {
+				return super.handle(httpRequest, rspns, clbck);
+			});
 		} finally {
 			requestContext.features.remove(RequestFeature.class);
 			requestContext.features.remove(IsPreviewFeature.class);
-			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
 			requestContextPoolable.release();
 		}
 	}

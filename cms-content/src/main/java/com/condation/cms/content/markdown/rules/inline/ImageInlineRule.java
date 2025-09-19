@@ -23,8 +23,11 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 
+import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
+import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
+import com.google.common.base.Strings;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,12 +53,26 @@ public class ImageInlineRule implements InlineElementRule {
 
 		@Override
 		public String render() {
-			if (title != null && !"".equals(title.trim())) {
-				return "<img src=\"%s\" alt=\"%s\" title=\"%s\" />".formatted(src, alt, title);
+			var altText = alt;
+			var requestContext = getRequestContext();
+			if (Strings.isNullOrEmpty(altText) && requestContext.isPresent()) {
+				var imageUrl = ImageUtil.getRawPath(src, requestContext.get());
+				var media = requestContext.get().get(SiteMediaServiceFeature.class).mediaService().get(imageUrl);
+			
+				if (media != null && media.meta().containsKey("alt")) {
+					altText = (String) media.meta().get("alt");
+				}
 			}
-			return "<img src=\"%s\" alt=\"%s\" />".formatted(src, alt);
+			
+			var uiSelector = "";
+			if (isPreview()) {
+				uiSelector = " data-cms-ui-selector=\"content-image\" ";
+			}
+			
+			if (title != null && !"".equals(title.trim())) {
+				return "<img src=\"%s\" alt=\"%s\" title=\"%s\" %s />".formatted(src, altText, title, uiSelector);
+			}
+			return  "<img src=\"%s\" alt=\"%s\" %s />".formatted(src, altText, uiSelector);
 		}
-		
 	}
-	
 }

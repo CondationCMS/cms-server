@@ -21,11 +21,10 @@ package com.condation.cms.media;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.media.Media;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.media.meta.Meta;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -48,8 +47,8 @@ public class FileMediaService implements MediaService {
 		var metaFile = getMetaFile(media);
 		return Files.exists(metaFile);
 	}
-	
-	private Path getMetaFile (final String media) {
+
+	private Path getMetaFile(final String media) {
 		String mediaPath = media;
 		if (mediaPath.startsWith("/")) {
 			mediaPath = mediaPath.substring(1);
@@ -57,12 +56,12 @@ public class FileMediaService implements MediaService {
 		var mediaFile = assetBase.resolve(mediaPath);
 		var metaFileName = mediaFile.getFileName().toString() + ".meta.yaml";
 		var metaFile = mediaFile.getParent().resolve(metaFileName);
-		
+
 		return metaFile;
 	}
-	
-	private Meta loadMeta (final String media) {
-		
+
+	private Meta loadMeta(final String media) {
+
 		var metaFile = getMetaFile(media);
 		if (Files.exists(metaFile)) {
 			try {
@@ -72,19 +71,25 @@ public class FileMediaService implements MediaService {
 				log.error(null, ex);
 			}
 		}
-		
+
 		return new Meta();
 	}
 
 	@Override
 	public Media get(final String media) {
+		if (Strings.isNullOrEmpty(media)) {
+			var meta = new Meta();
+			return new Media("", meta, false);
+		}
 		String mediaPath = media;
 		if (mediaPath.startsWith("/")) {
 			mediaPath = mediaPath.substring(1);
 		}
 		var mediaFile = assetBase.resolve(mediaPath);
 		var meta = loadMeta(media);
-		
-		return new Media(mediaPath, meta, Files.exists(mediaFile));
+
+		var size = ImageSize.getSize(mediaFile);
+
+		return new Media(mediaPath, meta, Files.exists(mediaFile), size);
 	}
 }

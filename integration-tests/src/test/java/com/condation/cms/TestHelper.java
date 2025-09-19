@@ -42,8 +42,8 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.RenderContext;
-import com.condation.cms.content.shortcodes.ShortCodes;
-import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.content.tags.Tags;
+import com.condation.cms.content.tags.TagParser;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.extensions.hooks.DBHooks;
@@ -76,11 +76,11 @@ public abstract class TestHelper {
 		var markdownRenderer = TestHelper.getRenderer();
 		RequestContext context = new RequestContext();
 		
-		var shortCodeParser = new TagParser(new JexlBuilder().create());
+		var tagparser = new TagParser(new JexlBuilder().create());
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
-		context.add(RequestExtensions.class, new RequestExtensions(null));
-		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ShortCodes(Map.of(), shortCodeParser), DefaultTheme.EMPTY));
+		context.add(RequestExtensions.class, new RequestExtensions(null, null));
+		context.add(RenderContext.class, new RenderContext(markdownRenderer, new Tags(Map.of(), tagparser), DefaultTheme.NO_THEME));
 
 		context.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(new FileMediaService(null)));
 		context.add(InjectorFeature.class, new InjectorFeature(Mockito.mock(Injector.class)));

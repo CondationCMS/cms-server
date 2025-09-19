@@ -4,14 +4,14 @@
 	<parent>
 		<groupId>com.condation.cms</groupId>
 		<artifactId>cms-parent</artifactId>
-		<version>7.8.0</version>
+		<version>8.0.0</version>
 	</parent>
 	<artifactId>cms-server</artifactId>
 	<packaging>jar</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 		<exec.mainClass>com.condation.cms.cli.CMSCli</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 	</properties>
@@ -35,10 +35,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.condation.cms</groupId>
-			<artifactId>cms-git</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.condation.cms</groupId>
 			<artifactId>cms-content</artifactId>
 		</dependency>
 		<dependency>
@@ -58,6 +54,10 @@
 			<groupId>com.condation.cms.modules</groupId>
 			<artifactId>api-module</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.condation.cms.modules</groupId>
+			<artifactId>ui-module</artifactId>
+		</dependency>
 		
 		<dependency>
 			<groupId>com.condation.cms</groupId>
@@ -72,6 +72,26 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.compression</groupId>
+			<artifactId>jetty-compression-server</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.compression</groupId>
+			<artifactId>jetty-compression-brotli</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.compression</groupId>
+			<artifactId>jetty-compression-gzip</artifactId>
+			<version>${jetty.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty.compression</groupId>
+			<artifactId>jetty-compression-zstandard</artifactId>
+			<version>${jetty.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -135,12 +155,17 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
-		</plugins>
+	 <plugins>
+	  <plugin>
+	   <groupId>org.apache.maven.plugins</groupId>
+	   <artifactId>maven-compiler-plugin</artifactId>
+	   <configuration>
+	    <compilerArgs>
+	     <arg>--enable-preview</arg>
+	    </compilerArgs>
+	   </configuration>
+	  </plugin>
+	 </plugins>
 	</build>
 	
 	<profiles>

@@ -50,18 +50,18 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class DefaultTheme implements Theme {
 
-	public static final Theme EMPTY = new DefaultTheme(null, new EmptyThemeProperties(Map.of()), true, new EmptyMessageSource());
+	public static final Theme NO_THEME = new DefaultTheme(null, new EmptyThemeProperties(Map.of()), true, new EmptyMessageSource());
 
 	private final Path themePath;
 	private final ThemeProperties properties;
 	private final MessageSource messages;
-	private boolean empty = false;
+	private boolean noTheme = false;
 	
 	private Theme parent;
 
-	private DefaultTheme(final Path themePath, final ThemeProperties themeProperties, final boolean empty, final MessageSource messages) {
+	private DefaultTheme(final Path themePath, final ThemeProperties themeProperties, final boolean noTheme, final MessageSource messages) {
 		this(themePath, themeProperties, messages);
-		this.empty = empty;
+		this.noTheme = noTheme;
 	}
 
 	public static Theme load(
@@ -110,7 +110,7 @@ public class DefaultTheme implements Theme {
 
 	@Override
 	public boolean empty() {
-		return empty;
+		return noTheme;
 	}
 
 	@Override

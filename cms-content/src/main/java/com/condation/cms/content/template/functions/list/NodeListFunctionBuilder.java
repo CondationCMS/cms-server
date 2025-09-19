@@ -21,7 +21,6 @@ package com.condation.cms.content.template.functions.list;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
@@ -56,7 +55,7 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 
 	String sort = "title";
 	boolean reverse = false;
-	
+
 	String contentType = Constants.DEFAULT_CONTENT_TYPE;
 
 	final NodeListFunction nodeListFunction;
@@ -95,37 +94,37 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 		this.contentType = contentType;
 		return this;
 	}
-	
+
 	public NodeListFunctionBuilder json() {
 		this.contentType = "application/json";
 		return this;
 	}
-	
+
 	public NodeListFunctionBuilder excerpt(long length) {
-		this.excerptLength = (int)length;
+		this.excerptLength = (int) length;
 		return this;
 	}
-	
+
 	public NodeListFunctionBuilder page(long page) {
-		this.page = (int)page;
+		this.page = (int) page;
 		return this;
 	}
-	
+
 	public NodeListFunctionBuilder page(String page) {
 		this.page = Integer.parseInt(page.trim());
 		return this;
 	}
 
 	public NodeListFunctionBuilder size(long size) {
-		this.size = (int)size;
+		this.size = (int) size;
 		return this;
 	}
-	
+
 	public NodeListFunctionBuilder size(String size) {
 		this.size = Integer.parseInt(size.trim());
 		return this;
 	}
-	
+
 	public NodeListFunctionBuilder index(boolean index) {
 		this.index = index;
 		return this;
@@ -156,26 +155,33 @@ public class NodeListFunctionBuilder extends AbstractCurrentNodeFunction {
 	}
 
 	private Comparator<ContentNode> getComparator() {
-		if (sort == null || "name".equals("sort")) {
+		if (sort == null || "name".equals(sort)) {
 			return nameComparator;
 		} else {
-
-			return Comparator.comparing(new Function<ContentNode, Object>() {
-				@Override
-				public Object apply(ContentNode node) {
-					return node.data().get(sort);
-				}
-			}, Comparator.nullsLast((key1, key2) -> {
-				if (Objects.equals(key1, key2)) {
+			// Comparator für die extrahierten Werte
+			Comparator<Object> valueComparator = Comparator.nullsLast((Object o1, Object o2) -> {
+				if (Objects.equals(o1, o2)) {
 					return 0;
 				}
-				if (key1 == null && key2 != null) {
+				// null-Handling
+				if (o1 == null) {
 					return -1;
-				} else if (key1 != null && key2 == null) {
+				}
+				if (o2 == null) {
 					return 1;
 				}
-				return ((Comparable)key1).compareTo((Comparable)key2);
-			})
+				// falls beides Strings, case‐insensitive vergleichen
+				if (o1 instanceof String && o2 instanceof String) {
+					return ((String) o1).compareToIgnoreCase((String) o2);
+				}
+				// sonst normaler Comparable‐Vergleich
+				return ((Comparable) o1).compareTo(o2);
+			});
+
+			// Comparator auf den ContentNode anwenden
+			return Comparator.comparing(
+					(ContentNode node) -> node.data().get(sort),
+					valueComparator
 			);
 		}
 	}

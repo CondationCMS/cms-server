@@ -24,9 +24,6 @@ import com.condation.cms.api.utils.ServerUtil;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
-
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.cli.commands.themes.AbstractThemeCommand;
 import com.condation.cms.core.configuration.ConfigurationFactory;
@@ -49,29 +46,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ThemesUtil {
 
-	public static boolean allInstalled (Set<String> themes) {
+	public static boolean allInstalled(Set<String> themes) {
 		return themes.stream().allMatch(AbstractThemeCommand::isInstalled);
 	}
-	
-	public static Set<String> filterUnInstalled (Set<String> themes) {
+
+	public static Set<String> filterUnInstalled(Set<String> themes) {
 		return themes.stream().filter(theme -> !AbstractThemeCommand.isInstalled(theme)).collect(Collectors.toSet());
 	}
-	
-	public static Set<String> getRequiredThemes () {
+
+	public static Set<String> getRequiredThemes() {
 		if (!Files.exists(ServerUtil.getPath(Constants.Folders.THEMES))) {
 			return Collections.emptySet();
 		}
 		var themes = getRequiredSiteThemes();
-		
+
 		themes.addAll(getRequiredParentThemes());
-		
+
 		return themes;
 	}
-	
-	public static Set<String> getRequiredSiteThemes () {
+
+	public static Set<String> getRequiredSiteThemes() {
 		Set<String> requiredThemes = new HashSet<>();
-		try {
-			Files.list(ServerUtil.getPath(Constants.Folders.THEMES))
+		try (var themeStream = Files.list(ServerUtil.getPath(Constants.Folders.THEMES))) {
+			themeStream
 					.filter(ThemesUtil::isHost)
 					.forEach(site -> {
 						try {
@@ -88,14 +85,14 @@ public class ThemesUtil {
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
-		
+
 		return requiredThemes;
 	}
-	
-	private static Set<String> getRequiredParentThemes () {
+
+	private static Set<String> getRequiredParentThemes() {
 		Set<String> requiredThemes = new HashSet<>();
-		try {
-			Files.list(ServerUtil.getPath(Constants.Folders.THEMES))
+		try (var themesStream = Files.list(ServerUtil.getPath(Constants.Folders.THEMES))) {
+			themesStream
 					.filter(ThemesUtil::isTheme)
 					.forEach(themeConfig -> {
 						try {
@@ -110,14 +107,14 @@ public class ThemesUtil {
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
-		
+
 		return requiredThemes;
 	}
-	
+
 	public static boolean isTheme(Path host) {
 		return Files.exists(host.resolve("theme.yaml"));
 	}
-	
+
 	public static boolean isHost(Path host) {
 		return SiteUtil.isSite(host);
 	}

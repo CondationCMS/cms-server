@@ -23,7 +23,8 @@ package com.condation.cms.server.filter;
  */
 
 
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.request.RequestContextFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
@@ -40,8 +41,6 @@ public class CreateRequestContextFilter extends Handler.Wrapper {
 
 	private final RequestContextFactory requestContextFactory;
 
-	public static final String REQUEST_CONTEXT = "_requestContext";
-
 	public CreateRequestContextFilter(final Handler handler, final RequestContextFactory requestContextFactory) {
 		super(handler);
 		this.requestContextFactory = requestContextFactory;
@@ -50,12 +49,16 @@ public class CreateRequestContextFilter extends Handler.Wrapper {
 	@Override
 	public boolean handle(final Request httpRequest, final Response rspns, final Callback clbck) throws Exception {
 		try (var requestContext = requestContextFactory.createContext()) {
-			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
-			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
+			httpRequest.setAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME, requestContext);
 
-			return super.handle(httpRequest, rspns, clbck);
-		} finally {
-			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
+			return ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).call(() -> {
+				return super.handle(httpRequest, rspns, clbck);
+			});
+			
+		} catch (Exception e) {
+			log.error("", e);
+			Response.writeError(httpRequest, rspns, clbck, e);
+			return true;
 		}
 	}
 

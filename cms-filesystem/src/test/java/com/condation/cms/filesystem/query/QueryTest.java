@@ -49,15 +49,18 @@ public class QueryTest {
 		nodes = new ArrayList<>();
 		ContentNode node = new ContentNode("/", "index.md", Map.of(
 				"featured", true,
+				Constants.MetaFields.PUBLISHED, true,
 				Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().plus(1, ChronoUnit.DAYS))));
 		nodes.add(node);
 		node = new ContentNode("/2", "index2.md", Map.of(
 				"featured", true,
+				Constants.MetaFields.PUBLISHED, true,
 				Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().minus(1, ChronoUnit.DAYS))));
 		nodes.add(node);
 		node = new ContentNode("/test1", "test1.md", Map.of(
 				"featured", false,
 				"index", 1,
+				Constants.MetaFields.PUBLISHED, true,
 				Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
 				"tags", List.of("three", "four")
 		));
@@ -65,6 +68,7 @@ public class QueryTest {
 		node = new ContentNode("/test2", "test2.md", Map.of(
 				"featured", false,
 				"index", 2,
+				Constants.MetaFields.PUBLISHED, true,
 				Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
 				"tags", List.of("one", "two"))
 		);
@@ -73,6 +77,7 @@ public class QueryTest {
 		node = new ContentNode("/json", "test-json.md", Map.of(
 				"featured", false,
 				"index", 2,
+				Constants.MetaFields.PUBLISHED, true,
 				Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
 				"tags", List.of("one", "two"),
 				"content", Map.of("type", Constants.ContentTypes.JSON))

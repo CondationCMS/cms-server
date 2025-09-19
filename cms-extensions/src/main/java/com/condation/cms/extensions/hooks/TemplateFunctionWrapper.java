@@ -23,6 +23,7 @@ package com.condation.cms.extensions.hooks;
  */
 
 
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.extensions.TemplateFunctionExtension;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +39,7 @@ public class TemplateFunctionWrapper {
 	@Getter
 	private final List<TemplateFunctionExtension> registerTemplateFunctions = new ArrayList<>();
 
-	public void add(final String path, final Function<?, ?> function) {
+	public void put(final String path, final Function<Parameter, ?> function) {
 		registerTemplateFunctions.add(new TemplateFunctionExtension(path, function));
 	}
 }

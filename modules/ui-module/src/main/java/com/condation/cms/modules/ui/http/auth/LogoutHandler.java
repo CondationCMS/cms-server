@@ -59,6 +59,17 @@ public class LogoutHandler extends JettyHandler {
 		}
 		Response.addCookie(response, cookie);
 
+		HttpCookie preview_cookie = HttpCookie.from("cms-preview-token", "",
+				Map.of(
+						HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
+						HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
+						HttpCookie.MAX_AGE_ATTRIBUTE, "0"
+				));
+		if (!isDev) {
+			preview_cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
+		}
+		Response.addCookie(response, preview_cookie);
+		
 		response.setStatus(302);
 		response.getHeaders().add("Location", managerURL("/manager/login", requestContext));
 		callback.succeeded();

@@ -115,7 +115,8 @@ public class PreviewFilter extends Handler.Abstract {
 				Map.of(
 						HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
 						HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
-						HttpCookie.MAX_AGE_ATTRIBUTE, String.valueOf(Duration.ofHours(1).toSeconds())
+						HttpCookie.MAX_AGE_ATTRIBUTE, String.valueOf(Duration.ofHours(1).toSeconds()),
+						HttpCookie.PATH_ATTRIBUTE, "/"
 				));
 		if (!isDev) {
 			cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");

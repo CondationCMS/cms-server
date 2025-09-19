@@ -52,7 +52,8 @@ public class LogoutHandler extends JettyHandler {
 				Map.of(
 						HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
 						HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
-						HttpCookie.MAX_AGE_ATTRIBUTE, "0"
+						HttpCookie.MAX_AGE_ATTRIBUTE, "0",
+						HttpCookie.PATH_ATTRIBUTE, "/"
 				));
 		if (!isDev) {
 			cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
@@ -63,10 +64,11 @@ public class LogoutHandler extends JettyHandler {
 				Map.of(
 						HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
 						HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
-						HttpCookie.MAX_AGE_ATTRIBUTE, "0"
+						HttpCookie.MAX_AGE_ATTRIBUTE, "0",
+						HttpCookie.PATH_ATTRIBUTE, "/"
 				));
 		if (!isDev) {
-			preview_cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
+			preview_cookie = HttpCookie.from(preview_cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
 		}
 		Response.addCookie(response, preview_cookie);
 		

@@ -40,6 +40,7 @@ import java.io.StringWriter;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
@@ -113,13 +114,8 @@ public class JettyContentHandler extends Handler.Abstract {
 			response.getHeaders().add(HttpHeader.CONTENT_TYPE, "text/html; charset=utf-8");
 
 			if (ServerContext.IS_DEV) {
-				try (StringWriter sw = new StringWriter(); PrintWriter pw = new PrintWriter(sw)) {
-					e.printStackTrace(pw);
-					Content.Sink.write(response, true, sw.toString(), callback);
-				} catch (IOException ioEx) {
-					log.error("failed to write error response", ioEx);
-					callback.succeeded();
-				}
+				var stacktrace = ExceptionUtils.getStackTrace(e);
+				Content.Sink.write(response, true, "<pre>%s</pre>".formatted(stacktrace), callback);
 			}
 		}
 		return true;

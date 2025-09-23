@@ -14,7 +14,7 @@
 		<jetty.version>12.1.1</jetty.version>
 		<lucene.version>10.3.0</lucene.version>
 		<modules-framework.version>1.2.0</modules-framework.version>
-		<mockito.version>5.19.0</mockito.version>
+		<mockito.version>5.20.0</mockito.version>
 	</properties>
 	<modules>
 		<module>cms-api</module>
@@ -243,17 +243,17 @@
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-api</artifactId>
-				<version>2.25.1</version>
+				<version>2.25.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-core</artifactId>
-				<version>2.25.1</version>
+				<version>2.25.2</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.logging.log4j</groupId>
 				<artifactId>log4j-slf4j2-impl</artifactId>
-				<version>2.25.1</version>
+				<version>2.25.2</version>
 			</dependency>
 			<!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
 			<dependency>
@@ -292,7 +292,7 @@
 			<dependency>
 				<groupId>org.assertj</groupId>
 				<artifactId>assertj-core</artifactId>
-				<version>3.27.5</version>
+				<version>3.27.6</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
@@ -373,7 +373,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.14.0</version>
+					<version>3.14.1</version>
 					<configuration>
 						<annotationProcessorPaths>
 							<path>
@@ -407,7 +407,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>license-maven-plugin</artifactId>
-					<version>2.6.0</version>
+					<version>2.7.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -479,7 +479,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>3.11.3</version>
+				<version>3.12.0</version>
 				<configuration>
 					<failOnError>false</failOnError>
 				</configuration>
@@ -510,7 +510,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.14.0</version>
+				<version>3.14.1</version>
 				<configuration>
 					<annotationProcessorPaths>
 						<path>

@@ -32,6 +32,8 @@ import com.condation.cms.filesystem.metadata.memory.QueryUtil;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
 import com.condation.cms.filesystem.metadata.query.Queries;
+import com.condation.cms.filesystem.metadata.query.parser.Parser;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.Expression;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -76,6 +78,8 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
 	private List<Predicate<ContentNode>> extensionOperations = new ArrayList<>();
 
+	private final Parser expressionsParser = new Parser();
+	
 	public LuceneQuery(
 			final String startUri,
 			final LuceneIndex index,
@@ -273,6 +277,15 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	@Override
 	public ContentQuery<T> whereExists(String field) {
 		QueryHelper.exists(queryBuilder, field);
+		return this;
+	}
+	
+	@Override
+	public ContentQuery<T> expression (final String expression) {
+		Expression expAst = expressionsParser.parse(expression);
+		
+		QueryHelper.buildFromExpression(queryBuilder, expAst);
+		
 		return this;
 	}
 

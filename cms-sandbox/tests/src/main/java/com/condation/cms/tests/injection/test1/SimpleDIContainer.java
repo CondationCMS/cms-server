@@ -1,4 +1,4 @@
-package com.condation.cms.tests.injection;
+package com.condation.cms.tests.injection.test1;
 
 /*-
  * #%L
@@ -39,71 +39,6 @@ import java.util.function.Supplier;
 
 public class SimpleDIContainer implements AutoCloseable {
 
-    // --- annotations ---
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD})
-    public @interface Inject { }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.FIELD, ElementType.PARAMETER, ElementType.TYPE})
-    public @interface Named { String value(); }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.TYPE)
-    public @interface AllowMultiple { }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE, ElementType.METHOD})
-    public @interface Scope { Type value(); enum Type { SINGLETON, PROTOTYPE } }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target({ElementType.TYPE, ElementType.METHOD})
-    public @interface Primary { }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public @interface PostConstruct { }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    @Target(ElementType.METHOD)
-    public @interface PreDestroy { }
-
-    // --- core types ---
-    private static final class BeanDefinition<T> {
-        final Class<T> exposedType; // interface or base type used for registration
-        final Class<? extends T> implType; // concrete implementation
-        final String name;
-        final Supplier<T> supplier;
-        final Scope.Type scope;
-        final boolean primary;
-        final boolean allowMultiple;
-        volatile T singletonInstance;
-
-        BeanDefinition(Class<T> exposedType, Class<? extends T> implType, String name, Supplier<T> supplier, Scope.Type scope, boolean primary, boolean allowMultiple) {
-            this.exposedType = exposedType;
-            this.implType = implType;
-            this.name = name;
-            this.supplier = supplier;
-            this.scope = scope;
-            this.primary = primary;
-            this.allowMultiple = allowMultiple;
-        }
-
-        T get(SimpleDIContainer container) {
-            if (scope == Scope.Type.SINGLETON) {
-                if (singletonInstance == null) {
-                    synchronized (this) {
-                        if (singletonInstance == null) {
-                            singletonInstance = container.createAndInject(this);
-                        }
-                    }
-                }
-                return singletonInstance;
-            } else {
-                return container.createAndInject(this);
-            }
-        }
-    }
 
     // type -> list of bean defs
     private final Map<Class<?>, List<BeanDefinition<?>>> beans = new ConcurrentHashMap<>();
@@ -183,7 +118,7 @@ public class SimpleDIContainer implements AutoCloseable {
     }
 
     // --- instantiation & injection ---
-    private <T> T createAndInject(BeanDefinition<T> def) {
+    <T> T createAndInject(BeanDefinition<T> def) {
         T instance = def.supplier.get();
         injectFields(instance);
         callAnnotatedMethods(instance, PostConstruct.class);
@@ -302,32 +237,5 @@ public class SimpleDIContainer implements AutoCloseable {
         }
     }
 
-    // Example usage
-    public static void main(String[] args) {
-        SimpleDIContainer c = new SimpleDIContainer();
-
-        // register interface implementations
-        c.register(Service.class, ServiceImpl1.class);
-        c.register(Service.class, ServiceImpl2.class);
-
-        for (Service s : c.getBeans(Service.class)) {
-            s.execute();
-        }
-
-        c.debugDump();
-    }
-
-    public interface Service {
-        void execute();
-    }
-
-    @AllowMultiple
-    public static class ServiceImpl1 implements Service {
-        public void execute() { System.out.println("ServiceImpl1 executed"); }
-    }
-
-    @AllowMultiple
-    public static class ServiceImpl2 implements Service {
-        public void execute() { System.out.println("ServiceImpl2 executed"); }
-    }
+    
 }

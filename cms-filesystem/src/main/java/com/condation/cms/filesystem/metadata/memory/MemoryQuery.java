@@ -197,6 +197,11 @@ public class MemoryQuery<T> extends ExtendableQuery<T> {
 		return QueryUtil.groupby(context.getNodes(), field);
 	}
 
+	@Override
+	public ContentQuery<T> expression(String expressions) {
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+	}
+
 	public static record Sort<T>(String field, QueryContext context) implements ContentQuery.Sort<T> {
 
 		public MemoryQuery<T> asc() {

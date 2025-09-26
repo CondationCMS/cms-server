@@ -10,7 +10,6 @@
 	<packaging>jar</packaging>
     
 	<dependencies>
-		
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>

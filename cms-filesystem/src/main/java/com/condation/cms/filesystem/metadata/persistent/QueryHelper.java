@@ -21,10 +21,16 @@ package com.condation.cms.filesystem.metadata.persistent;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.metadata.query.Queries;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.Condition;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.ContainsCondition;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.Expression;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.InCondition;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.Logical;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.LogicalOperator;
+import com.condation.cms.filesystem.metadata.query.parser.values.Value;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -48,13 +54,9 @@ import org.apache.lucene.search.TermRangeQuery;
 public class QueryHelper {
 
 	public static void exists(BooleanQuery.Builder queryBuilder, String field) {
-
-		if (true) {
-			queryBuilder.add(
-					new TermQuery(new Term("_fields", field)),
-					BooleanClause.Occur.FILTER);
-			return;
-		}
+		queryBuilder.add(
+				new TermQuery(new Term("_fields", field)),
+				BooleanClause.Occur.FILTER);
 	}
 
 	public static void lt(BooleanQuery.Builder queryBuilder, String field, Object value) {
@@ -247,4 +249,123 @@ public class QueryHelper {
 
 		return tempNodes;
 	}
+
+	public static void buildFromExpression(BooleanQuery.Builder queryBuilder, Expression expression) {
+		if (expression instanceof Condition condition) {
+			buildCondition(queryBuilder, condition);
+		} else if (expression instanceof Logical logical) {
+			// Subqueries bauen
+			BooleanQuery.Builder leftBuilder = new BooleanQuery.Builder();
+			buildFromExpression(leftBuilder, logical.left());
+
+			BooleanQuery.Builder rightBuilder = new BooleanQuery.Builder();
+			buildFromExpression(rightBuilder, logical.right());
+
+			BooleanQuery subQuery = new BooleanQuery.Builder()
+					.add(leftBuilder.build(), toOccur(logical.operator()))
+					.add(rightBuilder.build(), toOccur(logical.operator()))
+					.build();
+
+			queryBuilder.add(subQuery, BooleanClause.Occur.MUST);
+		} else if (expression instanceof InCondition inCondition) {
+			buildInCondition(queryBuilder, inCondition);
+		} else if (expression instanceof ContainsCondition containsCondition) {
+			buildContainsCondition(queryBuilder, containsCondition);
+		}
+	}
+
+	private static void buildInCondition(BooleanQuery.Builder queryBuilder, InCondition condition) {
+		var field = condition.field();
+		var not = condition.negated();
+
+		exists(queryBuilder, field);
+		
+		var values = condition.values().stream().map(Value::get).toList();
+
+		if (not) {
+			in(queryBuilder, field, values, BooleanClause.Occur.MUST_NOT);
+		} else {
+			in(queryBuilder, field, values, BooleanClause.Occur.MUST);
+		}
+	}
+
+	private static void buildContainsCondition(BooleanQuery.Builder queryBuilder, ContainsCondition condition) {
+		var field = condition.field();
+		var not = condition.negated();
+
+		exists(queryBuilder, field);
+		
+		var values = condition.values().stream().map(Value::get).toList();
+		if (values.isEmpty()) {
+			return; // nichts zu tun
+		}
+
+		BooleanQuery.Builder containsBuilder = new BooleanQuery.Builder();
+		for (Object item : values) {
+			Query termQuery = toQuery(field, item);
+			containsBuilder.add(termQuery, BooleanClause.Occur.SHOULD);
+		}
+
+		Query containsQuery = containsBuilder.build();
+
+		if (not) {
+			// Variante A: KEINER der Werte darf vorkommen
+			// also: Dokumente ausschließen, die einen Treffer hätten
+			queryBuilder.add(containsQuery, BooleanClause.Occur.MUST_NOT);
+		} else {
+			// Variante B: Mindestens EIN Wert muss vorkommen
+			queryBuilder.add(containsQuery, BooleanClause.Occur.MUST);
+		}
+	}
+
+	private static void buildCondition(BooleanQuery.Builder queryBuilder, Condition condition) {
+		String field = condition.field();
+		Value value = condition.value();
+
+		exists(queryBuilder, field);
+		
+		switch (condition.operator()) {
+			case EQ ->
+				eq(queryBuilder, field, value.get(), BooleanClause.Occur.MUST);
+			case NEQ -> {
+				BooleanQuery.Builder notBuilder = new BooleanQuery.Builder();
+				eq(notBuilder, field, value.get(), BooleanClause.Occur.MUST);
+				queryBuilder.add(notBuilder.build(), BooleanClause.Occur.MUST_NOT);
+			}
+			case GT ->
+				gt(queryBuilder, field, value.get());
+			case GTE ->
+				gte(queryBuilder, field, value.get());
+			case LT ->
+				lt(queryBuilder, field, value.get());
+			case LTE ->
+				lte(queryBuilder, field, value.get());
+			case IN ->
+				in(queryBuilder, field, value.get(), BooleanClause.Occur.MUST);
+			case NOT_IN -> {
+				BooleanQuery.Builder notInBuilder = new BooleanQuery.Builder();
+				in(notInBuilder, field, value.get(), BooleanClause.Occur.MUST);
+				queryBuilder.add(notInBuilder.build(), BooleanClause.Occur.MUST_NOT);
+			}
+			case CONTAINS ->
+				contains(queryBuilder, field, value.get(), BooleanClause.Occur.MUST);
+			case CONTAINS_NOT -> {
+				BooleanQuery.Builder notContains = new BooleanQuery.Builder();
+				contains(notContains, field, value.get(), BooleanClause.Occur.MUST);
+				queryBuilder.add(notContains.build(), BooleanClause.Occur.MUST_NOT);
+			}
+			default ->
+				throw new UnsupportedOperationException("Unsupported operator: " + condition.operator());
+		}
+	}
+
+	private static BooleanClause.Occur toOccur(LogicalOperator operator) {
+		return switch (operator) {
+			case AND ->
+				BooleanClause.Occur.MUST;
+			case OR ->
+				BooleanClause.Occur.SHOULD;
+		};
+	}
+
 }

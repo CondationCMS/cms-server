@@ -41,7 +41,12 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "checkout")
+@CommandLine.Command(
+		name = "checkout",
+		description = {
+			"forces the immediate mull of the repo"
+		}
+)
 @Slf4j
 public class Checkout implements Runnable {
 

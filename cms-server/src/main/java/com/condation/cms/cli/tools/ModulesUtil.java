@@ -24,11 +24,10 @@ import com.condation.cms.api.utils.ServerUtil;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.utils.SiteUtil;
 import com.condation.cms.cli.commands.modules.AbstractModuleCommand;
 import com.condation.cms.core.configuration.ConfigurationFactory;
+import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import java.io.IOException;
@@ -58,22 +57,28 @@ public class ModulesUtil {
 		Set<String> requiredModules = new HashSet<>();
 		try {
 
+			var serverConfig = ConfigurationFactory.serverConfiguration();
+			ExtendedServerProperties serverProperties = new ExtendedServerProperties(serverConfig);
+			requiredModules.addAll(serverProperties.activeModules());
+			
 			var hosts = ServerUtil.getPath(Constants.Folders.HOSTS);
 			var themes = ServerUtil.getPath(Constants.Folders.THEMES);
 			if (Files.exists(hosts)) {
-				Files.list(hosts)
-						.filter(ModulesUtil::isHost)
-						.forEach(site -> {
-							try {
-								var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
-								requiredModules.addAll(hostProperties.activeModules());
-							} catch (IOException ex) {
-								log.error("", ex);
-							}
-						});
+				try (var hostStream = Files.list(hosts)) {
+					hostStream.filter(ModulesUtil::isHost)
+							.forEach(site -> {
+								try {
+									var hostProperties = new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration("bla", site));
+									requiredModules.addAll(hostProperties.activeModules());
+								} catch (IOException ex) {
+									log.error("", ex);
+								}
+							});
+				}
 			}
 			if (Files.exists(themes)) {
-				Files.list(themes)
+				try (var themesStream = Files.list(themes)) {
+					themesStream
 						.filter(ModulesUtil::isTheme)
 						.forEach(themeConfig -> {
 							try {
@@ -83,6 +88,7 @@ public class ModulesUtil {
 								log.error("", ex);
 							}
 						});
+				}
 			}
 		} catch (IOException ex) {
 			log.error("", ex);

@@ -23,6 +23,7 @@ package com.condation.cms.api.mapper;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.content.MapAccess;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
@@ -32,7 +33,6 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.NodeUtil;
 import com.condation.cms.api.utils.PathUtil;
-import com.google.inject.Inject;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +75,7 @@ public class ContentNodeMapper {
 		
 		var md = parse(temp_path);
 		var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, context.get(MarkdownRendererFeature.class).markdownRenderer());
-		return new ListNode(name, url, excerpt, node.data());
+		return new ListNode(name, url, excerpt, MapAccess.of(node.data()));
 
 	}
 

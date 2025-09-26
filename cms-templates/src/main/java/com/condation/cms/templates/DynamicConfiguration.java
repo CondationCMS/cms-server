@@ -21,14 +21,26 @@ package com.condation.cms.templates;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.extensions.RegisterTemplateFunctionExtensionPoint;
+import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.extensions.TemplateFunctionExtension;
+import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.templates.components.TemplateComponents;
+import com.condation.cms.templates.components.TemplateFunctions;
+import com.condation.cms.templates.functions.TemplateFunction;
 import com.condation.cms.templates.tags.component.EndComponentTag;
 import com.condation.cms.templates.tags.component.ComponentTag;
+import com.condation.modules.api.ModuleManager;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
+import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -42,7 +54,7 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 			null
 	);
 
-	public DynamicConfiguration   {
+	public DynamicConfiguration    {
 		for (var tag : templateComponents.getComponentNames()) {
 			var openTag = new ComponentTag(tag, templateComponents);
 			var closeTag = new EndComponentTag(tag);
@@ -62,5 +74,61 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 
 	public Optional<Component> getComponent(String name) {
 		return Optional.ofNullable(components.get(name));
+	}
+
+	public List<TemplateFunction> templateFunctions() {
+		if (requestContext == null) {
+			return Collections.emptyList();
+		}
+		var templateFunctions = requestContext.get(TemplateHooks.class).getTemplateFunctions();
+		var tfs = new ArrayList<TemplateFunction>();
+		templateFunctions.getRegisterTemplateFunctions().stream()
+				.map(function -> new FunctionWrapper(function.name(), function.function(), requestContext))
+				.forEach(tfs::add);
+		
+		var injector = requestContext.get(InjectorFeature.class).injector();
+		
+		var templateFunctionsModel = new TemplateFunctions();
+		injector.getInstance(ModuleManager.class)
+				.extensions(RegisterTemplateFunctionExtensionPoint.class)
+				.forEach(extension -> {
+					templateFunctionsModel.register(extension.functions());
+					templateFunctionsModel.register(extension.functionDefinitions());
+				});
+		
+		templateFunctionsModel.getFunctionMap().names().forEach(name -> {
+			tfs.add(
+					new FunctionWrapper(name, templateFunctionsModel.getFunctionMap().get(name), requestContext)
+			);
+		});
+		
+		return tfs;
+	}
+
+	@RequiredArgsConstructor
+	public static class FunctionWrapper implements TemplateFunction {
+
+		private final String name;
+		private final Function<Parameter, ?> function;
+		private final RequestContext requestContext;
+		
+		@Override
+		public Object invoke(Object... params) {
+			Parameter parameter = null;
+				if (params.length == 1 && params[0] instanceof Parameter) {
+					parameter = (Parameter)params[0];
+				} else if (params.length == 1 && params[0] instanceof Map) {
+					parameter = new Parameter((Map<String, Object>)params[0], requestContext);
+				} else {
+					parameter = new Parameter();
+				}
+				return function.apply(parameter);
+		}
+
+		@Override
+		public String name() {
+			return name;
+		}
+		
 	}
 }

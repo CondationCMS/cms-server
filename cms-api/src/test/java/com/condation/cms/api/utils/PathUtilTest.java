@@ -43,7 +43,7 @@ public class PathUtilTest {
 	}
 
 	@Test
-	public void test_to_uri() {
+	public void test_to_url() {
 		
 		Path contentBase = Path.of("src/");
 		

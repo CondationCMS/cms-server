@@ -74,11 +74,17 @@ public class PresistentFileSystemTest {
 	public void test_query() throws IOException {
 		var nodes = fileSystem.query((node, i) -> node).where("featured", true).get();
 		Assertions.assertThat(nodes).hasSize(2);
+		
+		nodes = fileSystem.query((node, i) -> node).expression("featured = true").get();
+		Assertions.assertThat(nodes).hasSize(2);
 	}
 	
 	@Test
 	public void test_query_in() throws IOException {
 		var nodes = fileSystem.query((node, i) -> node).whereIn("name", "test1", "test2").get();
+		Assertions.assertThat(nodes).hasSize(2);
+		
+		nodes = fileSystem.query((node, i) -> node).expression("name IN ('test1', 'test2')").get();
 		Assertions.assertThat(nodes).hasSize(2);
 	}
 	
@@ -87,16 +93,26 @@ public class PresistentFileSystemTest {
 		var nodes = fileSystem.query((node, i) -> node).whereNotIn("name", "test1", "test2").get();
 		Assertions.assertThat(nodes).hasSize(1);
 		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("start");
+		
+		nodes = fileSystem.query((node, i) -> node).expression("name NOT IN ('test1', 'test2')").get();
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("start");
 	}
 	@Test
 	public void test_query_contains() throws IOException {
 		var nodes = fileSystem.query((node, i) -> node).whereContains("taxonomy.tags", "eins").get();
+		Assertions.assertThat(nodes).hasSize(1);
+		
+		nodes = fileSystem.query((node, i) -> node).expression("taxonomy.tags CONTAINS ('eins')").get();
 		Assertions.assertThat(nodes).hasSize(1);
 	}
 	
 	@Test
 	public void test_query_contains_not() throws IOException {
 		var nodes = fileSystem.query((node, i) -> node).whereNotContains("taxonomy.tags", "eins").get();
+		Assertions.assertThat(nodes).hasSize(1);
+		
+		nodes = fileSystem.query((node, i) -> node).expression("taxonomy.tags CONTAINS NOT ('eins')").get();
 		Assertions.assertThat(nodes).hasSize(1);
 	}
 	
@@ -106,6 +122,12 @@ public class PresistentFileSystemTest {
 		Assertions.assertThat(nodes).hasSize(0);
 		
 		nodes = fileSystem.query((node, i) -> node).where("number2", "lte", 5).get();
+		Assertions.assertThat(nodes).hasSize(1);
+		
+		nodes = fileSystem.query((node, i) -> node).expression("number2 < 5").get();
+		Assertions.assertThat(nodes).hasSize(0);
+		
+		nodes = fileSystem.query((node, i) -> node).expression("number2 <= 5").get();
 		Assertions.assertThat(nodes).hasSize(1);
 	}
 

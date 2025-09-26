@@ -103,13 +103,13 @@ public class ContentServiceTest {
 	public void publised_content_is_returned() {
 		var content = contentService.resolve("", request);
 		
-		Assertions.assertThat(content.isPresent());
+		Assertions.assertThat(content).isPresent();
 	}
 	
 	@Test
 	public void unpublised_content_is_not_returned() {
 		var content = contentService.resolve("sub", request);
 		
-		Assertions.assertThat(content.isEmpty());
+		Assertions.assertThat(content).isEmpty();
 	}
 }

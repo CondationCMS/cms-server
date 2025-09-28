@@ -1,0 +1,7 @@
+/* Optional: damit der Input beim Editieren nicht das Layout sprengt */
+#object-list input.form-control-sm {
+  max-width: 100%;
+}
+.cms-form-field {
+    max-width: 400px;
+}

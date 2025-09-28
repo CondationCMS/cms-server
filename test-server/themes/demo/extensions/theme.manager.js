@@ -64,6 +64,11 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 							{label: "Export", value: "export"}
 						]
 					}
+				},
+				{
+					name: "object.values",
+					title: "Objekt-Liste",
+					type: "list"
 				}
 			]
 		}

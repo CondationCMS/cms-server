@@ -20,6 +20,11 @@ checked:
 selected: form
 radioed: form
 media_url: compass-7592444_1920.jpg
+object:
+  values:
+  - name: Test 1
+  - name: Test 2
+  - name: New Item
 ---
 
 # Demo Project

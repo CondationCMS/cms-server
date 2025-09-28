@@ -35,6 +35,7 @@ import { RadioField } from "./field.radio.js";
 import { CheckboxField } from "./field.checkbox.js";
 import { Divider } from "./field.divider.js";
 import { MediaField } from "./field.media.js";
+import { ListField } from "./field.list.js";
 const createForm = (options) => {
     const fields = options.fields || [];
     const values = options.values || {};
@@ -72,6 +73,8 @@ const createForm = (options) => {
                 return Divider.markup(field, val);
             case 'media':
                 return MediaField.markup(field, val);
+            case 'list':
+                return ListField.markup(field, val);
             default:
                 return '';
         }
@@ -106,6 +109,7 @@ const createForm = (options) => {
         MarkdownField.init();
         EasyMDEField.init();
         MediaField.init();
+        ListField.init();
     };
     const getData = () => {
         if (!formElement) {
@@ -127,6 +131,7 @@ const createForm = (options) => {
             ...RadioField.data(),
             ...CheckboxField.data(),
             ...MediaField.data(),
+            ...ListField.data()
         };
         return data;
     };

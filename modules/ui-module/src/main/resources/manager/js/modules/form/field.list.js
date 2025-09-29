@@ -110,6 +110,7 @@ const handleDoubleClick = (event) => {
                 var updateData = form.getRawData();
                 console.log("Updated data:", updateData);
                 el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
+                el.querySelector('.object-name').textContent = updateData.name;
             }
         });
     }

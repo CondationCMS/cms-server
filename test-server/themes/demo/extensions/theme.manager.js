@@ -70,6 +70,13 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					title: "Objekt-Liste",
 					type: "list"
 				}
+			],
+			'object.values': [
+				{
+					name: "name",
+					title: "Name",
+					type: "text"
+				}
 			]
 		}
 	});

@@ -24,6 +24,9 @@ import { i18n } from "../localization.js";
 import { createForm } from "./forms.js";
 import { openModal } from "../modal.js";
 import { getMetaValueByPath } from "../node.js";
+import { getPageTemplates } from "../rpc/rpc-manager.js";
+import { getContent, getContentNode } from "../rpc/rpc-content.js";
+import { getPreviewUrl } from "../preview.utils.js";
 const createListField = (options, value = []) => {
     const id = createID();
     const key = "field." + options.name;
@@ -83,20 +86,26 @@ const handleAddItem = (e, container) => {
         });
     }
 };
-const handleDoubleClick = (event) => {
+const handleDoubleClick = async (event) => {
     const el = event.currentTarget;
     const itemData = el.getAttribute('data-cms-form-field-item-data');
     if (itemData) {
         const data = JSON.parse(itemData);
         console.log("Edit item:", data);
+        var pageTemplates = (await getPageTemplates({})).result;
+        const contentNode = await getContentNode({
+            url: getPreviewUrl()
+        });
+        const getContentResponse = await getContent({
+            uri: contentNode.result.uri
+        });
+        var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template);
+        var pageSettingsForm = [];
+        if (selected.length === 1) {
+            pageSettingsForm = selected[0].data?.forms['object.values'] ? selected[0].data.forms['object.values'] : [];
+        }
         const form = createForm({
-            fields: [
-                {
-                    type: "text",
-                    name: 'name',
-                    title: 'Name'
-                }
-            ],
+            fields: pageSettingsForm,
             values: {
                 "name": getMetaValueByPath(data, "name")
             }
@@ -110,6 +119,7 @@ const handleDoubleClick = (event) => {
                 var updateData = form.getRawData();
                 console.log("Updated data:", updateData);
                 el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
+                el.querySelector('.object-name').textContent = updateData.name;
             }
         });
     }

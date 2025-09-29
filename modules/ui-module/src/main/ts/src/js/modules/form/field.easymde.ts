@@ -41,7 +41,7 @@ const createMarkdownField = (options : EasyMDEFieldOptions, value : string = '')
 	`;
 };
 
-const getData = () => {
+const getData = (container?: Element) => {
 	const data = {};
 	markdownEditors.forEach(({ input, editor }) => {
 		data[input.name] = {

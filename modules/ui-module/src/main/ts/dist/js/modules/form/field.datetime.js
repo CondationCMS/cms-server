@@ -40,9 +40,10 @@ const createDateTimeField = (options, value = '') => {
 		</div>
 	`;
 };
-const getDateTimeData = () => {
+const getDateTimeData = (container) => {
     const data = {};
-    document.querySelectorAll("[data-cms-form-field-type='datetime'] input").forEach((el) => {
+    const scope = container || document;
+    scope.querySelectorAll("[data-cms-form-field-type='datetime'] input").forEach((el) => {
         const value = getUTCDateTimeFromInput(el); // "2025-05-31T15:30"
         data[el.name] = {
             type: 'datetime',

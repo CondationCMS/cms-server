@@ -21,6 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js";
+import { createForm } from "./forms.js";
+import { openModal } from "../modal.js";
+import { getMetaValueByPath } from "../node.js";
 const createListField = (options, value = []) => {
     const id = createID();
     const key = "field." + options.name;
@@ -52,7 +55,8 @@ const createListField = (options, value = []) => {
 		</div>
 	`;
 };
-const handleAddItem = (container) => {
+const handleAddItem = (e, container) => {
+    e.preventDefault();
     const listGroup = container.querySelector(".list-group");
     if (!listGroup)
         return;
@@ -85,11 +89,35 @@ const handleDoubleClick = (event) => {
     if (itemData) {
         const data = JSON.parse(itemData);
         console.log("Edit item:", data);
+        const form = createForm({
+            fields: [
+                {
+                    type: "text",
+                    name: 'name',
+                    title: 'Name'
+                }
+            ],
+            values: {
+                "name": getMetaValueByPath(data, "name")
+            }
+        });
+        openModal({
+            title: 'Edit Item',
+            fullscreen: true,
+            form: form,
+            onCancel: (event) => { },
+            onOk: async (event) => {
+                var updateData = form.getRawData();
+                console.log("Updated data:", updateData);
+                el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
+            }
+        });
     }
 };
-const getData = () => {
+const getData = (container) => {
     var data = {};
-    document.querySelectorAll("[data-cms-form-field-type='list']").forEach((el) => {
+    const scope = container || document;
+    scope.querySelectorAll("[data-cms-form-field-type='list']").forEach((el) => {
         let value = [];
         el.querySelectorAll("[data-cms-form-field-item]").forEach(itemEl => {
             const itemData = itemEl.getAttribute('data-cms-form-field-item-data');
@@ -108,19 +136,21 @@ const getData = () => {
     console.log("send: " + data);
     return data;
 };
+const init = (container) => {
+    let scope = document;
+    scope.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
+        listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
+            field.addEventListener('dblclick', handleDoubleClick);
+        });
+        // Event-Listener für den "Add"-Button hinzufügen
+        const addButton = listContainer.querySelector("[data-cms-form-field-item-add-btn]");
+        if (addButton) {
+            addButton.addEventListener("click", (e) => handleAddItem(e, listContainer));
+        }
+    });
+};
 export const ListField = {
     markup: createListField,
-    init: () => {
-        document.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
-            listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
-                field.addEventListener('dblclick', handleDoubleClick);
-            });
-            // Event-Listener für den "Add"-Button hinzufügen
-            const addButton = listContainer.querySelector("[data-cms-form-field-item-add-btn]");
-            if (addButton) {
-                addButton.addEventListener("click", () => handleAddItem(listContainer));
-            }
-        });
-    },
+    init: init,
     data: getData
 };

@@ -59,9 +59,10 @@ const createMediaField = (options: MediaFieldOptions, value : string = '') => {
 	`;
 };
 
-const getData = () => {
+const getData = (container?: Element) => {
 	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+	const scope = container || document;
+	scope.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
 		const input = wrapper.querySelector(".cms-media-input-value") as HTMLInputElement;
 		if (input) {
 			data[input.name] = {
@@ -73,12 +74,21 @@ const getData = () => {
 	return data;
 };
 
-const init = () => {
-	document.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+const init = (container?: Element | string) => {
+       let scope: Element | Document = document;
+       if (container) {
+	       if (typeof container === 'string') {
+		       const el = document.querySelector(container);
+		       if (el) scope = el;
+	       } else {
+		       scope = container;
+	       }
+       }
+       scope.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
 		const dropZone = wrapper.querySelector(".cms-drop-zone");
 		const input = wrapper.querySelector(".cms-media-input") as HTMLInputElement;
 		const preview = wrapper.querySelector(".cms-media-image") as HTMLImageElement;
-		const openMediaManager = wrapper.querySelector(".cms-media-button");
+		const openMediaManager = wrapper.querySelector(".cms-media-button") as HTMLButtonElement;
 
 		if (!input || !dropZone || !preview || !openMediaManager) return;
 
@@ -118,34 +128,35 @@ const init = () => {
 			}
 		});
 
-		// Handle MediaManager button
-		openMediaManager.addEventListener("click", () => {
-			openFileBrowser({
-				type: "assets",
-				filter : (file) => {
-					return file.media || file.directory;
-				},
-				onSelect: (file : any) => {
-					const preview = wrapper.querySelector(".cms-media-image") as HTMLImageElement;
-					const inputValue = wrapper.querySelector(".cms-media-input-value") as HTMLInputElement;
-					if (file && file.uri) {
-						var value = file.uri; // Use the file's URI
-						if (file.uri.startsWith("/")) {
-							value = file.uri.substring(1); // Remove leading slash if present
-						}
-						inputValue.value = value; // Set the input value to the selected file's name
+			// Handle MediaManager button robust: remove old handler, use onclick
+			openMediaManager.onclick = null;
+			openMediaManager.onclick = () => {
+				openFileBrowser({
+					type: "assets",
+					filter : (file) => {
+						return file.media || file.directory;
+					},
+					onSelect: (file : any) => {
+						const preview = wrapper.querySelector(".cms-media-image") as HTMLImageElement;
+						const inputValue = wrapper.querySelector(".cms-media-input-value") as HTMLInputElement;
+						if (file && file.uri) {
+							var value = file.uri; // Use the file's URI
+							if (file.uri.startsWith("/")) {
+								value = file.uri.substring(1); // Remove leading slash if present
+							}
+							inputValue.value = value; // Set the input value to the selected file's name
 
-						var previewUrl = value;
-						if (value && value != '') {
-							previewUrl = patchPathWithContext("/assets/" + value)
-						} else {
-							previewUrl = "https://placehold.co/100x100"
+							var previewUrl = value;
+							if (value && value != '') {
+								previewUrl = patchPathWithContext("/assets/" + value)
+							} else {
+								previewUrl = "https://placehold.co/100x100"
+							}
+							preview.src = previewUrl; // Update the preview image
 						}
-						preview.src = previewUrl; // Update the preview image
 					}
-				}
-			})
-		});
+				});
+			};
 	});
 };
 

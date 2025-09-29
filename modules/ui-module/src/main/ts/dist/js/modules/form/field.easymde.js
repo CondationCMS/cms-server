@@ -33,7 +33,7 @@ const createMarkdownField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = () => {
+const getData = (container) => {
     const data = {};
     markdownEditors.forEach(({ input, editor }) => {
         data[input.name] = {

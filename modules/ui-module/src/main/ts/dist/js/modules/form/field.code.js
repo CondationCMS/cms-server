@@ -34,7 +34,7 @@ const createCodeField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = () => {
+const getData = (container) => {
     var data = {};
     monacoEditors.forEach(({ input, editor }) => {
         data[input.name] = {

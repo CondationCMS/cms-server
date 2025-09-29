@@ -62,9 +62,10 @@ const createCheckboxField = (options : CheckboxOptions, value = []) => {
 	`;
 };
 
-const getData = () => {
+const getData = (container?: Element) => {
 	const data = {};
-	document.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
+	const scope = container || document;
+  	scope.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
 		const name = (container.querySelector("input[type='checkbox']") as HTMLInputElement).name;
 		const checkedBoxes = container.querySelectorAll("input[type='checkbox']:checked");
 		const values = Array.from(checkedBoxes).map((el : HTMLInputElement) => el.value);

@@ -37,9 +37,15 @@ const createMarkdownField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = () => {
+const getData = (container) => {
     const data = {};
-    cherryEditors.forEach(({ input, editor }) => {
+    const scope = container || document;
+    let editors = cherryEditors;
+    if (container) {
+        // Filtere nur die Inputs/Editoren, die im Container liegen
+        editors = cherryEditors.filter(({ input }) => scope.contains(input));
+    }
+    editors.forEach(({ input, editor }) => {
         data[input.name] = {
             type: "markdown",
             value: editor.getMarkdown()

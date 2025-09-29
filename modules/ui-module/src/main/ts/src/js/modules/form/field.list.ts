@@ -21,6 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { createForm } from "./forms.js";
+import { openModal } from "../modal.js";
+import { getMetaValueByPath } from "../node.js";
 
 export interface ListFieldOptions {
 	name?: string;
@@ -33,7 +36,7 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
 	const nameField = options.nameField || "name";
-	
+
 	var items = value.map((item, index) => {
 		const itemId = createID();
 		return `
@@ -47,7 +50,7 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 			</div>
 		`;
 	}).join('\n');
-	
+
 
 	return `
 		<div class="mb-3 d-flex flex-column cms-form-field" data-cms-form-field-type="list" name="${options.name}">
@@ -63,16 +66,17 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 	`;
 };
 
-const handleAddItem = (container: HTMLElement) => {
+const handleAddItem = (e : Event, container: HTMLElement) => {
+	e.preventDefault();
 	const listGroup = container.querySelector(".list-group");
-    if (!listGroup) return;
+	if (!listGroup) return;
 
-    const itemId = createID();
-    const newItem = {
-        name: "New Item" // Standardwert für ein neues Element
-    };
+	const itemId = createID();
+	const newItem = {
+		name: "New Item" // Standardwert für ein neues Element
+	};
 
-    const itemMarkup = `
+	const itemMarkup = `
         <div class="list-group-item d-flex justify-content-between align-items-center"
             data-cms-form-field-item="${itemId}"
             data-cms-form-field-item-data="${JSON.stringify(newItem).replace(/"/g, '&quot;')}">
@@ -83,29 +87,57 @@ const handleAddItem = (container: HTMLElement) => {
         </div>
     `;
 
-    listGroup.insertAdjacentHTML("beforeend", itemMarkup);
+	listGroup.insertAdjacentHTML("beforeend", itemMarkup);
 
-    // Optional: Event-Listener für den neuen "Entfernen"-Button hinzufügen
-    const removeBtn = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"] .remove-btn`);
-    if (removeBtn) {
-        removeBtn.addEventListener("click", () => {
-            removeBtn.parentElement?.remove();
-        });
-    }
-}
-
-const handleDoubleClick = (event : Event) => {
-	const el = event.currentTarget as HTMLElement;
-	const itemData = el.getAttribute('data-cms-form-field-item-data');
-	if (itemData) {
-		const data = JSON.parse(itemData);
-		console.log("Edit item:", data);
+	// Optional: Event-Listener für den neuen "Entfernen"-Button hinzufügen
+	const removeBtn = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"] .remove-btn`);
+	if (removeBtn) {
+		removeBtn.addEventListener("click", () => {
+			removeBtn.parentElement?.remove();
+		});
 	}
 }
 
-const getData = () => {
+declare const bootstrap: any;
+
+const handleDoubleClick = (event: Event) => {
+	const el = event.currentTarget as HTMLElement;
+	const itemData = el.getAttribute('data-cms-form-field-item-data') as any;
+	if (itemData) {
+		const data = JSON.parse(itemData);
+		console.log("Edit item:", data);
+
+		const form = createForm({
+			fields: [
+				{
+					type: "text",
+					name: 'name',
+					title: 'Name'
+				}
+			],
+			values: {
+				"name": getMetaValueByPath(data, "name")
+			}
+		});
+
+		openModal({
+			title: 'Edit Item',
+			fullscreen: true,
+			form: form,
+			onCancel: (event) => { },
+			onOk: async (event) => {
+				var updateData = form.getRawData()
+				console.log("Updated data:", updateData);
+				el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
+			}
+		});
+	}
+}
+
+const getData = (container?: Element) => {
 	var data = {}
-	document.querySelectorAll("[data-cms-form-field-type='list']").forEach((el: HTMLInputElement) => {
+	const scope = container || document;
+  	scope.querySelectorAll("[data-cms-form-field-type='list']").forEach((el: HTMLInputElement) => {
 		let value = []
 		el.querySelectorAll("[data-cms-form-field-item]").forEach(itemEl => {
 			const itemData = itemEl.getAttribute('data-cms-form-field-item-data');
@@ -114,32 +146,35 @@ const getData = () => {
 			}
 		})
 		const fieldName = el.getAttribute('name');
-        if (fieldName) {
-            data[fieldName] = {
-                type: 'list',
-                value: value
-            };
-        }
+		if (fieldName) {
+			data[fieldName] = {
+				type: 'list',
+				value: value
+			};
+		}
 	})
 	console.log("send: " + data)
 	return data
 }
 
+const init = (container?: Element | string) => {
+	let scope: Element | Document = document;
+	scope.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
+
+		listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
+			field.addEventListener('dblclick', handleDoubleClick)
+		})
+
+		// Event-Listener für den "Add"-Button hinzufügen
+		const addButton = listContainer.querySelector("[data-cms-form-field-item-add-btn]");
+		if (addButton) {
+			addButton.addEventListener("click", (e : Event) => handleAddItem(e, listContainer as HTMLElement));
+		}
+	})
+}
+
 export const ListField = {
 	markup: createListField,
-	init: () => {
-		document.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
-			
-			listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
-				field.addEventListener('dblclick', handleDoubleClick)
-			})
-		
-			// Event-Listener für den "Add"-Button hinzufügen
-			const addButton = listContainer.querySelector("[data-cms-form-field-item-add-btn]");
-			if (addButton) {
-				addButton.addEventListener("click", () => handleAddItem(listContainer as HTMLElement));
-			}
-		})
-	 },
+	init: init,
 	data: getData
 }

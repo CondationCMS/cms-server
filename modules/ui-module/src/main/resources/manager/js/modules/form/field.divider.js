@@ -31,7 +31,7 @@ const createDivider = (options) => {
 		</div>
 	`;
 };
-const getData = () => {
+const getData = (container) => {
     return {}; // Divider liefert keine Daten zurück
 };
 export const Divider = {

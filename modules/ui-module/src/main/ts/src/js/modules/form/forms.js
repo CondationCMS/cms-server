@@ -116,8 +116,8 @@ const createForm = (options) => {
 		CodeField.init()
 		MarkdownField.init()
 		EasyMDEField.init()
-		MediaField.init()
-		ListField.init()
+		MediaField.init(formElement)
+		ListField.init(formElement)
 	};
 
 	const getData = () => {
@@ -126,29 +126,52 @@ const createForm = (options) => {
 			return {};
 		}
 		const data = {
-			...TextField.data(),
-			...SelectField.data(),
-			...MailField.data(),
-			...CodeField.data(),
-			...MarkdownField.data(),
-			...EasyMDEField.data(),
-			...NumberField.data(),
-			...DateField.data(),
-			...DateTimeField.data(),
-			...ColorField.data(),
-			...RangeField.data(),
-			...RadioField.data(),
-			...CheckboxField.data(),
-			...MediaField.data(),
-			...ListField.data()
+			...TextField.data(formElement),
+			...SelectField.data(formElement),
+			...MailField.data(formElement),
+			...CodeField.data(formElement),
+			...MarkdownField.data(formElement),
+			...EasyMDEField.data(formElement),
+			...NumberField.data(formElement),
+			...DateField.data(formElement),
+			...DateTimeField.data(formElement),
+			...ColorField.data(formElement),
+			...RangeField.data(formElement),
+			...RadioField.data(formElement),
+			...CheckboxField.data(formElement),
+			...MediaField.data(formElement),
+			...ListField.data(formElement)
 		};
 		return data
 	};
 
 	return {
 		init,
-		getData
+		getData,
+		getRawData: () => {
+			let data = getData()
+			return flattenFormData(data)
+		}
 	};
 };
+
+const flattenFormData = (input) => {
+    const result = {};
+    for (const key in input) {
+        const value = input[key].value;
+        const parts = key.split(".");
+        let current = result;
+        for (let i = 0; i < parts.length; i++) {
+            const part = parts[i];
+            if (i === parts.length - 1) {
+                current[part] = value;
+            } else {
+                if (!(part in current)) current[part] = {};
+                current = current[part];
+            }
+        }
+    }
+    return result;
+}
 
 export { createForm };

@@ -40,7 +40,7 @@ const createDivider = (options : DividerOptions) => {
 	`;
 };
 
-const getData = () => {
+const getData = (container?: Element) => {
 	return {}; // Divider liefert keine Daten zurück
 };
 

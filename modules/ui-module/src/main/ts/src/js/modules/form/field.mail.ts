@@ -42,9 +42,10 @@ const createEmailField = (options: MailFieldOptions, value : string = '') => {
 	`;
 };
 
-const getData = () => {
+const getData = (container?: Element) => {
 	var data = {}
-	document.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el : HTMLInputElement) => {
+	const scope = container || document;
+  	scope.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el : HTMLInputElement) => {
 		let value = el.value
 		data[el.name] = {
 			type: 'mail',

@@ -38,9 +38,7 @@ const openModal = (optionsParam) => {
 	if (options.fullscreen) {
 		fullscreen = "modal-fullscreen";
 	}
-	/*
-	 * sm, lg, xl
-	 */
+	
 	let size = ""
 	if (options.size) {
 		size = "modal-" + options.size
@@ -55,7 +53,7 @@ const openModal = (optionsParam) => {
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			  </div>
 			  <div class="modal-body" id="${modalId}_bodyContainer">
-				${options.body || '<p>Modal body content</p>'}
+				${options.body || ''}
 			  </div>
 			  <div class="modal-footer">
 				<button type="button" class="btn btn-secondary" id="${modalId}_cancelBtn">${i18n.t("buttons.cancel", "Cancel")}</button>
@@ -65,13 +63,10 @@ const openModal = (optionsParam) => {
 		  </div>
 		</div>`;
 
-	// Modal einfügen
 	const container = document.getElementById('modalContainer');
-
 	const modalDiv = document.createElement('div');
 	modalDiv.innerHTML = modalHtml.trim();
 	const modalNode = modalDiv.firstChild;
-
 	container.appendChild(modalNode);
 
 	if (options.form) {
@@ -79,13 +74,23 @@ const openModal = (optionsParam) => {
 	}
 
 	const modalElement = document.getElementById(modalId);
+	
+	// Z-Index setzen BEVOR Modal initialisiert wird
+	modalElement.style.zIndex = '1060';
+	
 	const modalInstance = new bootstrap.Modal(modalElement, {
-		backdrop: 'static',
-		keyboard: false,
-		focus: false
+		backdrop: 'static', // Wichtig: static statt false
+		keyboard: true,
+		focus: true
 	});
 
 	modalElement.addEventListener('shown.bs.modal', function (event) {
+		// Backdrop z-index anpassen
+		const backdrops = document.querySelectorAll('.modal-backdrop');
+		backdrops.forEach(backdrop => {
+			backdrop.style.zIndex = '1055';
+		});
+		
 		if (options.onShow) {
 			options.onShow()
 		}
@@ -115,7 +120,6 @@ const openModal = (optionsParam) => {
 			options.onClose()
 		}
 	});
-
 
 	return modalInstance
 };

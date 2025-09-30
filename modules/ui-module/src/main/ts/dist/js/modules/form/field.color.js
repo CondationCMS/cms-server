@@ -32,10 +32,9 @@ const createColorField = (options, value = '#000000') => {
 		</div>
 	`;
 };
-const getColorData = (container) => {
+const getColorData = (context) => {
     const data = {};
-    const scope = container || document;
-    scope.querySelectorAll("[data-cms-form-field-type='color'] input").forEach((el) => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='color'] input").forEach((el) => {
         data[el.name] = {
             type: 'color',
             value: el.value
@@ -45,6 +44,6 @@ const getColorData = (container) => {
 };
 export const ColorField = {
     markup: createColorField,
-    init: () => { },
+    init: (context) => { },
     data: getColorData
 };

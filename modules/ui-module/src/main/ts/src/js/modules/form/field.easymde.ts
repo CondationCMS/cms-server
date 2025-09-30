@@ -21,12 +21,11 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
 let markdownEditors = [];
 
-export interface EasyMDEFieldOptions {
-	name: string;
-	title?: string;
+export interface EasyMDEFieldOptions extends FieldOptions {
 }
 
 const createMarkdownField = (options : EasyMDEFieldOptions, value : string = '') => {
@@ -41,7 +40,7 @@ const createMarkdownField = (options : EasyMDEFieldOptions, value : string = '')
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
 	markdownEditors.forEach(({ input, editor }) => {
 		data[input.name] = {
@@ -52,7 +51,7 @@ const getData = (container?: Element) => {
 	return data;
 };
 
-const init = () => {
+const init = (context : FormContext) => {
 	markdownEditors = [];
 
 	const editorInputs = document.querySelectorAll('[data-cms-form-field-type="easymde"] textarea');
@@ -80,4 +79,4 @@ export const EasyMDEField = {
 	markup: createMarkdownField,
 	init: init,
 	data: getData
-};
+} as FormField;

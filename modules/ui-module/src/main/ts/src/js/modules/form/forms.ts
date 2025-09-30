@@ -38,10 +38,15 @@ import { MediaField } from "./field.media.js";
 import { ListField } from "./field.list.js";
 
 
-const createForm = (options) => {
+const createForm = (options) : Form => {
 	const fields = options.fields || [];
 	const values = options.values || {};
 	const formId = createID();
+
+	const context : FormContext = {
+		formElement : null,
+		fields: fields
+	}
 
 	const fieldHtml = fields.map(field => {
 		const val = values[field.name] || '';
@@ -89,8 +94,6 @@ const createForm = (options) => {
 		</form>
 	`;
 
-	let formElement = null;
-
 	const init = (container) => {
 		if (typeof container === 'string') {
 			container = document.querySelector(container);
@@ -100,47 +103,47 @@ const createForm = (options) => {
 			return;
 		}
 		container.innerHTML = html;
-		formElement = container.querySelector('form');
+		context.formElement = container.querySelector('form');
 
-		formElement.addEventListener('keydown', (e) => {
-			if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
+		context.formElement.addEventListener('keydown', (e : KeyboardEvent) => {
+			if (e.key === 'Enter' && (e.target as HTMLElement).tagName.toLowerCase() !== 'textarea') {
 				e.preventDefault();
 			}
 		});
 
-		formElement.addEventListener('submit', (e) => {
+		context.formElement.addEventListener('submit', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			formElement.classList.add('was-validated');
+			context.formElement.classList.add('was-validated');
 		});
-		CodeField.init()
-		MarkdownField.init()
-		EasyMDEField.init()
-		MediaField.init(formElement)
-		ListField.init(formElement)
+		CodeField.init(context)
+		MarkdownField.init(context)
+		EasyMDEField.init(context)
+		MediaField.init(context)
+		ListField.init(context)
 	};
 
 	const getData = () => {
-		if (!formElement) {
+		if (!context.formElement) {
 			console.warn("Form not initialised.");
 			return {};
 		}
 		const data = {
-			...TextField.data(formElement),
-			...SelectField.data(formElement),
-			...MailField.data(formElement),
-			...CodeField.data(formElement),
-			...MarkdownField.data(formElement),
-			...EasyMDEField.data(formElement),
-			...NumberField.data(formElement),
-			...DateField.data(formElement),
-			...DateTimeField.data(formElement),
-			...ColorField.data(formElement),
-			...RangeField.data(formElement),
-			...RadioField.data(formElement),
-			...CheckboxField.data(formElement),
-			...MediaField.data(formElement),
-			...ListField.data(formElement)
+			...TextField.data(context),
+			...SelectField.data(context),
+			...MailField.data(context),
+			...CodeField.data(context),
+			...MarkdownField.data(context),
+			...EasyMDEField.data(context),
+			...NumberField.data(context),
+			...DateField.data(context),
+			...DateTimeField.data(context),
+			...ColorField.data(context),
+			...RangeField.data(context),
+			...RadioField.data(context),
+			...CheckboxField.data(context),
+			...MediaField.data(context),
+			...ListField.data(context)
 		};
 		return data
 	};
@@ -175,3 +178,25 @@ const flattenFormData = (input) => {
 }
 
 export { createForm };
+
+export interface FormContext {
+	formElement: HTMLFormElement | null;
+	fields: any[];
+}
+
+export interface Form {
+	init: (container: Element | string) => void;
+	getData: () => any;
+	getRawData: () => any;
+}
+
+export interface FormField {
+	markup: (options: FieldOptions, value?: any) => string;
+	init: (context: FormContext) => void,
+	data: (context: FormContext) => any,
+};
+
+export interface FieldOptions {
+    name?: string;
+    title?: string;
+}

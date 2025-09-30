@@ -21,11 +21,10 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface MailFieldOptions {
-	name: string;
+export interface MailFieldOptions extends FieldOptions {
 	placeholder?: string;
-	title?: string;
 }
 
 const createEmailField = (options: MailFieldOptions, value : string = '') => {
@@ -42,10 +41,9 @@ const createEmailField = (options: MailFieldOptions, value : string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	var data = {}
-	const scope = container || document;
-  	scope.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el : HTMLInputElement) => {
+	context.formElement.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el : HTMLInputElement) => {
 		let value = el.value
 		data[el.name] = {
 			type: 'mail',
@@ -57,6 +55,6 @@ const getData = (container?: Element) => {
 
 export const MailField = {
 	markup: createEmailField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data : getData
-}
+} as FormField

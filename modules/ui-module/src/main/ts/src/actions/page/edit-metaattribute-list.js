@@ -22,7 +22,7 @@
 import {createForm} from '../../js/modules/form/forms.js'
 import {showToast} from '../../js/modules/toast.js'
 import {getPreviewUrl, reloadPreview} from '../../js/modules/preview.utils.js'
-import { getMetaValueByPath } from '../../js/modules/node.js'
+import { getValueByPath } from '../../js/modules/node.js'
 import {getContentNode, getContent, setMeta} from '../../js/modules/rpc/rpc-content.js'
 import { i18n } from '../../js/modules/localization.js'
 import { openSidebar } from '../../js/modules/sidebar.js'
@@ -50,7 +50,7 @@ export async function runAction(params) {
 	}
 	
 	params.attributes.forEach(attr => {
-		formDefinition.values[attr.name] = getMetaValueByPath(getContentResponse?.result?.meta, attr.name)
+		formDefinition.values[attr.name] = getValueByPath(getContentResponse?.result?.meta, attr.name)
 		formDefinition.fields.push(
 			{
 				type: attr.editor, 

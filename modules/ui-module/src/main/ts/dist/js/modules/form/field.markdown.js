@@ -37,14 +37,10 @@ const createMarkdownField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     const data = {};
-    const scope = container || document;
     let editors = cherryEditors;
-    if (container) {
-        // Filtere nur die Inputs/Editoren, die im Container liegen
-        editors = cherryEditors.filter(({ input }) => scope.contains(input));
-    }
+    editors = cherryEditors.filter(({ input }) => context.formElement.contains(input));
     editors.forEach(({ input, editor }) => {
         data[input.name] = {
             type: "markdown",
@@ -53,7 +49,7 @@ const getData = (container) => {
     });
     return data;
 };
-const init = async () => {
+const init = async (context) => {
     cherryEditors = [];
     const cmsTagsMenu = await buildCmsTagsMenu();
     const editorInputs = document.querySelectorAll('[data-cms-form-field-type="markdown"] input');

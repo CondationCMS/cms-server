@@ -23,8 +23,8 @@ media_url: compass-7592444_1920.jpg
 object:
   values:
   - name: Test 1 and more
-  - name: Test 2
-  - name: New Item
+    description: desc 1 - 2
+  - name: Test 2 update
 ---
 
 # Demo Project

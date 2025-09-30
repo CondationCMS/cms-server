@@ -37,7 +37,7 @@ frameMessenger.on('load', (payload) => {
 document.addEventListener("DOMContentLoaded", function () {
 
 	//PreviewHistory.init("/");
-	updateStateButton();
+	//updateStateButton();
 
 	const iframe = document.getElementById('contentPreview');
 

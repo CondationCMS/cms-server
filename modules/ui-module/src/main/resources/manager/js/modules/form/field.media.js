@@ -52,10 +52,9 @@ const createMediaField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     const data = {};
-    const scope = container || document;
-    scope.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
         const input = wrapper.querySelector(".cms-media-input-value");
         if (input) {
             data[input.name] = {
@@ -66,19 +65,8 @@ const getData = (container) => {
     });
     return data;
 };
-const init = (container) => {
-    let scope = document;
-    if (container) {
-        if (typeof container === 'string') {
-            const el = document.querySelector(container);
-            if (el)
-                scope = el;
-        }
-        else {
-            scope = container;
-        }
-    }
-    scope.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+const init = (context) => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
         const dropZone = wrapper.querySelector(".cms-drop-zone");
         const input = wrapper.querySelector(".cms-media-input");
         const preview = wrapper.querySelector(".cms-media-image");

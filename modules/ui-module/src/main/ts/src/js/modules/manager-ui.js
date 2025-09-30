@@ -31,8 +31,9 @@ export function updateStateButton() {
     return;
 
   }
+  var previewUrl = getPreviewUrl();
   getContentNode({
-    url: getPreviewUrl()
+    url: previewUrl
   }).then((contentNode) => {
     getContent({
       uri: contentNode.result.uri

@@ -24,13 +24,12 @@ import { i18n } from "../localization.js"
 import { getMediaFormats, getTagNames } from "../rpc/rpc-manager.js";
 import { openFileBrowser } from "../filebrowser.js";
 import { alertSelect } from "../alerts.js";
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
 let cherryEditors = [];
 
-export interface MarkdownFieldOptions {
-	name: string;
+export interface MarkdownFieldOptions extends FieldOptions {
 	placeholder?: string;
-	title?: string;
 	height?: string;
 }
 
@@ -47,16 +46,13 @@ const createMarkdownField = (options: MarkdownFieldOptions, value: string = '') 
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
 
-	const scope = container || document;
-  	
+	
     let editors = cherryEditors;
-    if (container) {
-        // Filtere nur die Inputs/Editoren, die im Container liegen
-        editors = cherryEditors.filter(({ input }) => scope.contains(input));
-    }
+    editors = cherryEditors.filter(({ input }) => context.formElement.contains(input));
+    
     editors.forEach(({ input, editor }) => {
         data[input.name] = {
             type: "markdown",
@@ -67,7 +63,7 @@ const getData = (container?: Element) => {
 
 };
 
-const init = async () => {
+const init = async (context : FormContext) => {
 	cherryEditors = [];
 
 	const cmsTagsMenu = await buildCmsTagsMenu();
@@ -117,7 +113,7 @@ export const MarkdownField = {
 	markup: createMarkdownField,
 	init: init,
 	data: getData
-};
+} as FormField;
 
 const buildCmsTagsMenu = async () => {
 	const response = await getTagNames({});

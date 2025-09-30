@@ -8,12 +8,12 @@
  * it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -46,10 +46,9 @@ const createCheckboxField = (options, value = []) => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     const data = {};
-    const scope = container || document;
-    scope.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
         const name = container.querySelector("input[type='checkbox']").name;
         const checkedBoxes = container.querySelectorAll("input[type='checkbox']:checked");
         const values = Array.from(checkedBoxes).map((el) => el.value);
@@ -62,6 +61,6 @@ const getData = (container) => {
 };
 export const CheckboxField = {
     markup: createCheckboxField,
-    init: () => { },
+    init: (context) => { },
     data: getData
 };

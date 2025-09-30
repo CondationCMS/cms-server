@@ -21,16 +21,15 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface NumberFieldOptions {
-	name: string;
+export interface NumberFieldOptions extends FieldOptions{
 	options: {
 		min?: number;
 		max?: number;
 		step?: number;
 	};
 	placeholder?: string;
-	title?: string;	
 }
 
 const createNumberField = (options: NumberFieldOptions, value: string = '') => {
@@ -51,10 +50,9 @@ const createNumberField = (options: NumberFieldOptions, value: string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-	scope.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el : HTMLInputElement) => {
+	context.formElement.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el : HTMLInputElement) => {
 		const value = el.value;
 		data[el.name] = {
 			type: 'number',
@@ -66,6 +64,6 @@ const getData = (container?: Element) => {
 
 export const NumberField = {
 	markup: createNumberField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data: getData
-};
+} as FormField;

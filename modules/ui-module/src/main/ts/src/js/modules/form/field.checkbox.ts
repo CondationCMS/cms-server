@@ -19,12 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 import { createID } from "./utils.js";
 
-export interface CheckboxOptions {
+export interface CheckboxOptions extends FieldOptions{
 	key?: string;
-	name?: string;
-	title?: string;
 	options?: {
 		choices: Array<{
 			label: string;
@@ -62,10 +61,9 @@ const createCheckboxField = (options : CheckboxOptions, value = []) => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-  	scope.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
+	context.formElement.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
 		const name = (container.querySelector("input[type='checkbox']") as HTMLInputElement).name;
 		const checkedBoxes = container.querySelectorAll("input[type='checkbox']:checked");
 		const values = Array.from(checkedBoxes).map((el : HTMLInputElement) => el.value);
@@ -79,6 +77,6 @@ const getData = (container?: Element) => {
 
 export const CheckboxField = {
 	markup: createCheckboxField,
-	init: () => {},
+	init: (context: FormContext) => {},
 	data: getData
-};
+} as FormField;

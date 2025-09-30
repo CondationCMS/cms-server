@@ -21,10 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface ColorFieldOptions {
-	name: string;
-	title: string;
+export interface ColorFieldOptions extends FieldOptions {
 }
 
 const createColorField = (options: ColorFieldOptions, value = '#000000') => {
@@ -40,10 +39,9 @@ const createColorField = (options: ColorFieldOptions, value = '#000000') => {
 	`;
 };
 
-const getColorData = (container?: Element) => {
+const getColorData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-  	scope.querySelectorAll("[data-cms-form-field-type='color'] input").forEach((el: HTMLInputElement )  => {
+	context.formElement.querySelectorAll("[data-cms-form-field-type='color'] input").forEach((el: HTMLInputElement )  => {
 		data[el.name] = {
 			type: 'color',
 			value: el.value
@@ -54,6 +52,6 @@ const getColorData = (container?: Element) => {
 
 export const ColorField = {
 	markup: createColorField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data: getColorData
-};
+} as FormField;

@@ -21,10 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface SelectFieldOptions {
-	name?: string;
-	title?: string;
+export interface SelectFieldOptions extends FieldOptions {
 	options?: {
 		choices?: Array<string | { label: string; value: string }>;
 	};
@@ -51,10 +50,10 @@ const createSelectField = (options: SelectFieldOptions, value: string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	var data = {}
-	const scope = container || document;
-	scope.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el : HTMLInputElement) => {
+	
+	context.formElement.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el : HTMLInputElement) => {
 		let value;
 
 		if (el.value === 'true') {
@@ -73,6 +72,6 @@ const getData = (container?: Element) => {
 
 export const SelectField = {
 	markup: createSelectField,
-	init: () => { },
+	init: (context : FormContext) => { },
 	data: getData
-}
+} as FormField

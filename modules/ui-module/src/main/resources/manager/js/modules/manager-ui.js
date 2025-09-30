@@ -23,15 +23,21 @@ import { getContentNode, setMeta, getContent } from './rpc/rpc-content.js';
 import { getPreviewUrl } from './preview.utils.js';
 export function updateStateButton() {
     var previewUrl = getPreviewUrl();
-    ;
-    if (!previewUrl) {
+    if (!previewUrl || previewUrl === 'about:blank') {
         document.querySelector('#cms-btn-status').classList.add('disabled');
         document.querySelector('#cms-btn-status').setAttribute('title', 'No preview URL available');
         return;
     }
+    console.log("previewUrl", previewUrl);
     getContentNode({
-        url: getPreviewUrl()
+        url: previewUrl
     }).then((contentNode) => {
+        console.log("contentNode", contentNode);
+        if (!contentNode?.result?.uri) {
+            document.querySelector('#cms-btn-status').classList.add('disabled');
+            document.querySelector('#cms-btn-status').setAttribute('title', 'No content node found');
+            return;
+        }
         getContent({
             uri: contentNode.result.uri
         }).then((getContentResponse) => {

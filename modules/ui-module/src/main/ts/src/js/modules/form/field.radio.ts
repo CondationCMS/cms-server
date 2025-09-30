@@ -21,10 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface RadioFieldOptions {
-	name?: string;
-	title?: string;
+export interface RadioFieldOptions  extends FieldOptions{
 	options?: {	
 		choices: Array<{
 			label: string;
@@ -61,10 +60,10 @@ const createRadioField = (options: RadioFieldOptions, value: string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-	scope.querySelectorAll("[data-cms-form-field-type='radio']").forEach(container => {
+	
+	context.formElement.querySelectorAll("[data-cms-form-field-type='radio']").forEach(container => {
 		const name = (container.querySelector("input[type='radio']") as HTMLInputElement).name;
 		const checked = container.querySelector("input[type='radio']:checked") as HTMLInputElement;
 		if (checked) {
@@ -79,6 +78,6 @@ const getData = (container?: Element) => {
 
 export const RadioField = {
 	markup: createRadioField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data: getData
-};
+} as FormField;

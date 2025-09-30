@@ -20,7 +20,7 @@
  * #L%
  */
 import { i18n } from "../localization.js";
-const createDivider = (options) => {
+const createDivider = (options, value) => {
     const key = "field." + options.name;
     const title = i18n.t(key, options.title || "");
     const showTitle = title && title.trim().length > 0;
@@ -31,11 +31,11 @@ const createDivider = (options) => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     return {}; // Divider liefert keine Daten zurück
 };
 export const Divider = {
     markup: createDivider,
-    init: () => { },
+    init: (context) => { },
     data: getData
 };

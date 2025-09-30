@@ -33,7 +33,7 @@ const createMarkdownField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     const data = {};
     markdownEditors.forEach(({ input, editor }) => {
         data[input.name] = {
@@ -43,7 +43,7 @@ const getData = (container) => {
     });
     return data;
 };
-const init = () => {
+const init = (context) => {
     markdownEditors = [];
     const editorInputs = document.querySelectorAll('[data-cms-form-field-type="easymde"] textarea');
     editorInputs.forEach((input) => {

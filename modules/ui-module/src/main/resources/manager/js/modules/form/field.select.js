@@ -40,10 +40,9 @@ const createSelectField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     var data = {};
-    const scope = container || document;
-    scope.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el) => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el) => {
         let value;
         if (el.value === 'true') {
             value = true;
@@ -60,6 +59,6 @@ const getData = (container) => {
 };
 export const SelectField = {
     markup: createSelectField,
-    init: () => { },
+    init: (context) => { },
     data: getData
 };

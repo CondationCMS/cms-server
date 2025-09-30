@@ -37,10 +37,9 @@ const createRangeField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     const data = {};
-    const scope = container || document;
-    scope.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el) => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el) => {
         data[el.name] = {
             type: 'range',
             value: parseFloat(el.value)
@@ -50,6 +49,6 @@ const getData = (container) => {
 };
 export const RangeField = {
     markup: createRangeField,
-    init: () => { },
+    init: (context) => { },
     data: getData
 };

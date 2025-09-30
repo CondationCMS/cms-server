@@ -21,10 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, Form, FormContext, FormField } from "./forms.js";
 
-export interface TextFieldOptions {
-	name?: string;
-	title?: string;
+export interface TextFieldOptions extends FieldOptions {
 	placeholder?: string;
 }
 
@@ -41,10 +40,9 @@ const createTextField = (options: TextFieldOptions, value : string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	var data = {}
-	const scope = container || document;
-	scope.querySelectorAll("[data-cms-form-field-type='text'] input").forEach((el : HTMLInputElement) => {
+	context.formElement.querySelectorAll("[data-cms-form-field-type='text'] input").forEach((el : HTMLInputElement) => {
 		let value = el.value
 		data[el.name] = {
 			type: 'text',
@@ -56,6 +54,6 @@ const getData = (container?: Element) => {
 
 export const TextField = {
 	markup: createTextField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data : getData
-}
+} as FormField

@@ -21,16 +21,14 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
-import { createForm } from "./forms.js";
+import { createForm, FieldOptions, FormContext, FormField } from "./forms.js";
 import { openModal } from "../modal.js";
-import { getMetaValueByPath } from "../node.js";
+import { buildValuesFromFields } from "../node.js";
 import { getPageTemplates } from "../rpc/rpc-manager.js";
 import { getContent, getContentNode } from "../rpc/rpc-content.js";
 import { getPreviewUrl } from "../preview.utils.js";
 
-export interface ListFieldOptions {
-	name?: string;
-	title?: string;
+export interface ListFieldOptions extends FieldOptions {
 	nameField?: string;
 }
 
@@ -56,7 +54,7 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 
 
 	return `
-		<div class="mb-3 d-flex flex-column cms-form-field" data-cms-form-field-type="list" name="${options.name}">
+		<div class="mb-3 d-flex flex-column cms-form-field" data-cms-form-field-type="list" name="${options.name}" data-name-field="${nameField}">
 			<label class="form-label" for="${id}" cms-i18n-key="${key}">${title}</label>
 			<div class="list-group overflow-auto" id="object-list" style="max-height: 200px;">
 				${items}
@@ -69,22 +67,22 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 	`;
 };
 
-const handleAddItem = (e : Event, container: HTMLElement) => {
+const handleAddItem = (e : Event, container: HTMLElement, context: FormContext) => {
 	e.preventDefault();
 	const listGroup = container.querySelector(".list-group");
 	if (!listGroup) return;
 
 	const itemId = createID();
-	const newItem = {
-		name: "New Item" // Standardwert für ein neues Element
-	};
+	
+	const nameField = container.getAttribute('data-name-field') || 'name';
+	const newItem = { [nameField]: "New Item" };
 
 	const itemMarkup = `
         <div class="list-group-item d-flex justify-content-between align-items-center"
             data-cms-form-field-item="${itemId}"
-            data-cms-form-field-item-data="${JSON.stringify(newItem).replace(/"/g, '&quot;')}">
-            <span class="object-name flex-grow-1">${newItem.name}</span>
-            <button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Entfernen">
+            data-cms-form-field-item-data="${JSON.stringify(newItem)}">
+            <span class="object-name flex-grow-1">${newItem[nameField]}</span>
+            <button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Remove">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
@@ -92,23 +90,27 @@ const handleAddItem = (e : Event, container: HTMLElement) => {
 
 	listGroup.insertAdjacentHTML("beforeend", itemMarkup);
 
-	// Optional: Event-Listener für den neuen "Entfernen"-Button hinzufügen
-	const removeBtn = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"] .remove-btn`);
-	if (removeBtn) {
-		removeBtn.addEventListener("click", () => {
-			removeBtn.parentElement?.remove();
-		});
+	
+	var itemElement : HTMLElement = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"]`)
+	if (itemElement) {
+		itemElement.addEventListener('dblclick', (e) => handleDoubleClick(e, context));
+		
+		const removeBtn = itemElement.querySelector('.remove-btn');
+		if (removeBtn) {
+			removeBtn.addEventListener('click', () => {
+				itemElement.remove();
+			});
+		}
 	}
 }
 
 declare const bootstrap: any;
 
-const handleDoubleClick = async (event: Event) => {
+const handleDoubleClick = async (event: Event, context : FormContext) => {
 	const el = event.currentTarget as HTMLElement;
-	const itemData = el.getAttribute('data-cms-form-field-item-data') as any;
-	if (itemData) {
-		const data = JSON.parse(itemData);
-		console.log("Edit item:", data);
+	const itemDataString = el.getAttribute('data-cms-form-field-item-data') as any;
+	if (itemDataString) {
+		const itemData = JSON.parse(itemDataString);
 
 		var pageTemplates = (await getPageTemplates({})).result
 		
@@ -122,15 +124,17 @@ const handleDoubleClick = async (event: Event) => {
 
 		var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
 	
-		var pageSettingsForm = []
+		var itemForm = []
 		if (selected.length === 1) {
-			pageSettingsForm = selected[0].data?.forms['object.values'] ? selected[0].data.forms['object.values'] : []
+			const listContainer = el.closest("[data-cms-form-field-type='list']");
+			const fieldName = listContainer?.getAttribute('name');
+			itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName] : [];
 		}
 
 		const form = createForm({
-			fields: pageSettingsForm,
+			fields: itemForm,
 			values: {
-				"name": getMetaValueByPath(data, "name")
+				...buildValuesFromFields(itemForm, itemData)
 			}
 		});
 
@@ -141,19 +145,20 @@ const handleDoubleClick = async (event: Event) => {
 			onCancel: (event) => { },
 			onOk: async (event) => {
 				var updateData = form.getRawData()
-				console.log("Updated data:", updateData);
 				el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
 
-				el.querySelector('.object-name').textContent = updateData.name;
+				const listContainer = el.closest("[data-cms-form-field-type='list']");
+				const nameField = listContainer?.getAttribute('data-name-field') || 'name';
+
+				el.querySelector('.object-name').textContent = updateData[nameField];
 			}
 		});
 	}
 }
 
-const getData = (container?: Element) => {
+const getData = (context: FormContext) => {
 	var data = {}
-	const scope = container || document;
-  	scope.querySelectorAll("[data-cms-form-field-type='list']").forEach((el: HTMLInputElement) => {
+	context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach((el: HTMLInputElement) => {
 		let value = []
 		el.querySelectorAll("[data-cms-form-field-item]").forEach(itemEl => {
 			const itemData = itemEl.getAttribute('data-cms-form-field-item-data');
@@ -173,24 +178,29 @@ const getData = (container?: Element) => {
 	return data
 }
 
-const init = (container?: Element | string) => {
-	let scope: Element | Document = document;
-	scope.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
+const init = (context: FormContext) => {
+       context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
+	       listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
+		       field.addEventListener('dblclick', (e) => handleDoubleClick(e, context));
+		       // Remove-Button-Listener setzen
+		       const removeBtn = field.querySelector('.remove-btn');
+		       if (removeBtn) {
+			       removeBtn.addEventListener('click', () => {
+				       field.remove();
+			       });
+		       }
+	       });
 
-		listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
-			field.addEventListener('dblclick', handleDoubleClick)
-		})
-
-		// Event-Listener für den "Add"-Button hinzufügen
-		const addButton = listContainer.querySelector("[data-cms-form-field-item-add-btn]");
-		if (addButton) {
-			addButton.addEventListener("click", (e : Event) => handleAddItem(e, listContainer as HTMLElement));
-		}
-	})
+	       // Event-Listener für den "Add"-Button hinzufügen
+	       const addButton = listContainer.querySelector("[data-cms-form-field-item-add-btn]");
+	       if (addButton) {
+		       addButton.addEventListener("click", (e : Event) => handleAddItem(e, listContainer as HTMLElement, context));
+	       }
+       });
 }
 
 export const ListField = {
 	markup: createListField,
 	init: init,
 	data: getData
-}
+} as FormField

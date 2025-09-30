@@ -34,7 +34,7 @@ const createCodeField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     var data = {};
     monacoEditors.forEach(({ input, editor }) => {
         data[input.name] = {
@@ -44,7 +44,7 @@ const getData = (container) => {
     });
     return data;
 };
-const init = () => {
+const init = (context) => {
     monacoEditors = [];
     require.config({ paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.2/min/vs' } });
     require(['vs/editor/editor.main'], function () {

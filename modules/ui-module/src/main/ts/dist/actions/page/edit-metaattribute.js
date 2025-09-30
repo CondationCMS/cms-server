@@ -22,7 +22,7 @@
 import { createForm } from '../../js/modules/form/forms.js';
 import { showToast } from '../../js/modules/toast.js';
 import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js';
-import { getMetaValueByPath } from '../../js/modules/node.js';
+import { getValueByPath } from '../../js/modules/node.js';
 import { getContentNode, setMeta, getContent } from '../../js/modules/rpc/rpc-content.js';
 import { i18n } from '../../js/modules/localization.js';
 import { openSidebar } from '../../js/modules/sidebar.js';
@@ -52,7 +52,7 @@ export async function runAction(params) {
         ],
         values: {}
     };
-    formDefinition.values[params.attribute] = getMetaValueByPath(getContentResponse?.result?.meta, params.attribute);
+    formDefinition.values[params.attribute] = getValueByPath(getContentResponse?.result?.meta, params.attribute);
     const form = createForm(formDefinition);
     openSidebar({
         title: 'Edit meta attribute',

@@ -21,10 +21,9 @@
  */
 import { createID, getUTCDateTimeFromInput, utcToLocalDateTimeInputValue } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface DateTimeFieldOptions {
-	name: string;
-	title: string;
+export interface DateTimeFieldOptions extends FieldOptions {
 	placeholder?: string;
 }
 
@@ -52,10 +51,10 @@ const createDateTimeField = (options: DateTimeFieldOptions, value : any = '') =>
 };
 
 
-const getDateTimeData = (container?: Element) => {
+const getDateTimeData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-  	scope.querySelectorAll("[data-cms-form-field-type='datetime'] input").forEach((el: HTMLInputElement) => {
+	
+  	context.formElement.querySelectorAll("[data-cms-form-field-type='datetime'] input").forEach((el: HTMLInputElement) => {
 		const value = getUTCDateTimeFromInput(el); // "2025-05-31T15:30"
 		data[el.name] = {
 			type: 'datetime',
@@ -67,6 +66,6 @@ const getDateTimeData = (container?: Element) => {
 
 export const DateTimeField = {
 	markup: createDateTimeField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data: getDateTimeData
-};
+} as FormField;

@@ -76,10 +76,16 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					name: "name",
 					title: "Name",
 					type: "text"
+				},
+				{
+					name: "description",
+					title: "Description",
+					type: "text"
 				}
 			]
 		}
 	});
+
 	contentTypes.registerPageTemplate({
 		name: "Default",
 		template: "default.html"

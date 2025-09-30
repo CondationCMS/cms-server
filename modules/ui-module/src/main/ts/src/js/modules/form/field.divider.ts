@@ -21,13 +21,12 @@
  */
 
 import { i18n } from "../localization.js";
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface DividerOptions {
-	name: string;
-	title?: string;
+export interface DividerOptions extends FieldOptions {
 }
 
-const createDivider = (options : DividerOptions) => {
+const createDivider = (options : DividerOptions, value: any) => {
 	const key = "field." + options.name;
 	const title = i18n.t(key, options.title || "");
 	const showTitle = title && title.trim().length > 0;
@@ -40,12 +39,12 @@ const createDivider = (options : DividerOptions) => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	return {}; // Divider liefert keine Daten zurück
 };
 
 export const Divider = {
 	markup: createDivider,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data: getData
-};
+} as FormField;

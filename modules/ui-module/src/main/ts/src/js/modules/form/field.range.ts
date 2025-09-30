@@ -21,10 +21,9 @@
  */
 import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface RangeFieldOptions {
-	name?: string;
-	title?: string;
+export interface RangeFieldOptions extends FieldOptions {
 	options?: {
 		min?: number;
 		max?: number;
@@ -50,10 +49,10 @@ const createRangeField = (options: RangeFieldOptions, value : string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-	scope.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el : HTMLInputElement) => {
+	
+	context.formElement.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el : HTMLInputElement) => {
 		data[el.name] = {
 			type: 'range',
 			value: parseFloat(el.value)
@@ -64,6 +63,6 @@ const getData = (container?: Element) => {
 
 export const RangeField = {
 	markup: createRangeField,
-	init: () => {},
+	init: (context : FormContext) => {},
 	data: getData
-};
+} as FormField;

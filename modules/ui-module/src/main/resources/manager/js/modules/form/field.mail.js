@@ -33,10 +33,9 @@ const createEmailField = (options, value = '') => {
 		</div>
 	`;
 };
-const getData = (container) => {
+const getData = (context) => {
     var data = {};
-    const scope = container || document;
-    scope.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el) => {
+    context.formElement.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el) => {
         let value = el.value;
         data[el.name] = {
             type: 'mail',
@@ -47,6 +46,6 @@ const getData = (container) => {
 };
 export const MailField = {
     markup: createEmailField,
-    init: () => { },
+    init: (context) => { },
     data: getData
 };

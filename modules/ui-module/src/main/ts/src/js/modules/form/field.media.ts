@@ -23,10 +23,9 @@ import { createID } from "./utils.js";
 import { i18n } from "../localization.js"
 import { uploadFileWithProgress } from "../upload.js";
 import { openFileBrowser } from "../filebrowser.js";
+import { FieldOptions, FormContext, FormField } from "./forms.js";
 
-export interface MediaFieldOptions {
-	name: string;
-	title?: string;
+export interface MediaFieldOptions extends FieldOptions {
 }
 
 const createMediaField = (options: MediaFieldOptions, value : string = '') => {
@@ -59,10 +58,10 @@ const createMediaField = (options: MediaFieldOptions, value : string = '') => {
 	`;
 };
 
-const getData = (container?: Element) => {
+const getData = (context : FormContext) => {
 	const data = {};
-	const scope = container || document;
-	scope.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+	
+	context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
 		const input = wrapper.querySelector(".cms-media-input-value") as HTMLInputElement;
 		if (input) {
 			data[input.name] = {
@@ -74,17 +73,8 @@ const getData = (container?: Element) => {
 	return data;
 };
 
-const init = (container?: Element | string) => {
-       let scope: Element | Document = document;
-       if (container) {
-	       if (typeof container === 'string') {
-		       const el = document.querySelector(container);
-		       if (el) scope = el;
-	       } else {
-		       scope = container;
-	       }
-       }
-       scope.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+const init = (context : FormContext) => {
+       context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
 		const dropZone = wrapper.querySelector(".cms-drop-zone");
 		const input = wrapper.querySelector(".cms-media-input") as HTMLInputElement;
 		const preview = wrapper.querySelector(".cms-media-image") as HTMLImageElement;
@@ -184,4 +174,4 @@ export const MediaField = {
 	markup: createMediaField,
 	init: init,
 	data: getData
-};
+} as FormField;

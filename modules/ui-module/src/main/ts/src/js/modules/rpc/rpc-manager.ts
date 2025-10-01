@@ -38,6 +38,14 @@ const getPageTemplates = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
+const getListItemTypes = async (options : any) => {
+	var data = {
+		method: "manager.contentTypes.listItemTypes",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
 const getMediaForm = async (options : any) => {
 	var data = {
 		method: "manager.media.form",
@@ -80,4 +88,11 @@ const getTagNames = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
-export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats };
+export { 
+	getSectionTemplates, 
+	getPageTemplates, 
+	getMediaForm, 
+	getTagNames, 
+	getMediaFormats,
+	getListItemTypes
+};

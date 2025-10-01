@@ -24,7 +24,7 @@ import { i18n } from "../localization.js";
 import { createForm } from "./forms.js";
 import { openModal } from "../modal.js";
 import { buildValuesFromFields } from "../node.js";
-import { getPageTemplates } from "../rpc/rpc-manager.js";
+import { getListItemTypes, getPageTemplates } from "../rpc/rpc-manager.js";
 import { getContent, getContentNode } from "../rpc/rpc-content.js";
 import { getPreviewUrl } from "../preview.utils.js";
 const createListField = (options, value = []) => {
@@ -88,6 +88,28 @@ const handleAddItem = (e, container, context) => {
         }
     }
 };
+const getItemForm = async (el) => {
+    var pageTemplates = (await getPageTemplates({})).result;
+    const contentNode = await getContentNode({
+        url: getPreviewUrl()
+    });
+    const getContentResponse = await getContent({
+        uri: contentNode.result.uri
+    });
+    var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template);
+    const listContainer = el.closest("[data-cms-form-field-type='list']");
+    const fieldName = listContainer?.getAttribute('name');
+    var itemForm = [];
+    if (selected.length === 1) {
+        itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName] : [];
+    }
+    if (!itemForm || itemForm.length === 0) {
+        let itemTypes = (await getListItemTypes({})).result;
+        var selectedItemType = itemTypes.filter(itemType => itemType.name === fieldName);
+        itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form : [];
+    }
+    return itemForm;
+};
 const handleDoubleClick = async (event, context) => {
     const el = event.currentTarget;
     const itemDataString = el.getAttribute('data-cms-form-field-item-data');
@@ -100,13 +122,7 @@ const handleDoubleClick = async (event, context) => {
         const getContentResponse = await getContent({
             uri: contentNode.result.uri
         });
-        var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template);
-        var itemForm = [];
-        if (selected.length === 1) {
-            const listContainer = el.closest("[data-cms-form-field-type='list']");
-            const fieldName = listContainer?.getAttribute('name');
-            itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName] : [];
-        }
+        var itemForm = await getItemForm(el);
         const form = createForm({
             fields: itemForm,
             values: {

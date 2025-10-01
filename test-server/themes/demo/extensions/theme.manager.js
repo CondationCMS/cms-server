@@ -47,9 +47,9 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					title: "Farbe wählen",
 					options: {
 						choices: [
-							{label: "Rot", value: "red"},
-							{label: "Grün", value: "green"},
-							{label: "Blau", value: "blue"}
+							{ label: "Rot", value: "red" },
+							{ label: "Grün", value: "green" },
+							{ label: "Blau", value: "blue" }
 						]
 					}
 				},
@@ -59,9 +59,9 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					type: "checkbox",
 					options: {
 						choices: [
-							{label: "Suche", value: "search"},
-							{label: "Filter", value: "filter"},
-							{label: "Export", value: "export"}
+							{ label: "Suche", value: "search" },
+							{ label: "Filter", value: "filter" },
+							{ label: "Export", value: "export" }
 						]
 					}
 				},
@@ -71,6 +71,7 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					type: "list"
 				}
 			],
+			// override global definition of ListItemTypes
 			'object.values': [
 				{
 					name: "name",
@@ -81,7 +82,7 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					name: "description",
 					title: "Description",
 					type: "text"
-				}
+				},
 			]
 		}
 	});
@@ -95,5 +96,25 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 		name: "SectionTemplate",
 		template: "section.html"
 	});
+
+	/*
+	global definition if ListItemTypes
+	*/
+	contentTypes.registerListItemType({
+		name: "object.values",
+		form: [
+			{
+				name: "name",
+				title: "Name",
+				type: "text"
+			},
+			{
+				name: "description",
+				title: "Description",
+				type: "text"
+			}
+		]
+	});
+
 	return contentTypes;
 })

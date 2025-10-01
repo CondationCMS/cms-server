@@ -84,4 +84,14 @@ public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 			throw new RPCException(0, e.getMessage());
 		}
 	}
+	
+	@RemoteMethod(name = "manager.contentTypes.listItemTypes", permissions = {Permissions.CONTENT_EDIT})
+	public Object getListItemTypes(Map<String, Object> parameters) throws RPCException {
+		try {
+			return uiHooks().contentTypes().getListItemTypes();
+		} catch (Exception e) {
+			log.error("", e);
+			throw new RPCException(0, e.getMessage());
+		}
+	}
 }

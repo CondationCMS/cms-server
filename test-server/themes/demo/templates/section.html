@@ -27,4 +27,11 @@
 			{{ ui.mediaToolbar(["select", "meta"], {"uri": node.uri, "element": "media_url" }) | raw }} />
 		{% endif %}
 	</div>
+	<div>
+		{% if node.meta.containsKey('object.values') %}
+			{% for item in node.meta.get("object.values") %}
+				{{ item.name }} - {{ item.description }} <br/>
+			{% endfor %}
+		{% endif %}
+	</div>
 </div>

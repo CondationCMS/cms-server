@@ -37,7 +37,17 @@ public class ContentTypes {
 	public Set<PageTemplate> pageTemplates = new HashSet();
 
 	public Set<SectionTemplate> sectionTemplates = new HashSet<>();
+	
+	public Set<ListItemType> listItemTypes = new HashSet<>();
 
+	public void registerListItemType(Map<String, Object> listItemType) {
+		listItemTypes.add(new ListItemType(listItemType));
+	}
+	
+	public Set<ListItemType> getListItemTypes () {
+		return new HashSet<>(listItemTypes);
+	}
+	
 	public Optional<PageTemplate> getPageTemplate (String name) {
 		return pageTemplates.stream().filter(pt -> pt.name.equals(name)).findFirst();
 	}
@@ -86,6 +96,19 @@ public class ContentTypes {
 
 		public String section() {
 			return (String) data.getOrDefault("section", "<no section>");
+		}
+	}
+	
+	public static record ListItemType(String name, Map<String, Object> data) {
+
+		public ListItemType (Map<String, Object> data) {
+			this(
+					(String) data.getOrDefault("name", "<no name>"),
+					data);
+		}
+
+		public Map<String, Object> getForm (String name) {
+			return (Map<String, Object>)data.getOrDefault("form", Collections.emptyMap());
 		}
 	}
 }

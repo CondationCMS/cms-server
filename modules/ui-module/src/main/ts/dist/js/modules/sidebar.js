@@ -46,7 +46,7 @@ const openSidebar = (options) => {
     }
     const sidebarElement = document.getElementById(sidebarId);
     const sidebarInstance = new bootstrap.Offcanvas(sidebarElement, {
-        backdrop: options.backdrop !== undefined ? options.backdrop : false,
+        backdrop: 'static',
         keyboard: options.keyboard ?? false
     });
     sidebarInstance.show();

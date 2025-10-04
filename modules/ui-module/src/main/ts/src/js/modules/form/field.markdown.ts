@@ -68,7 +68,7 @@ const init = async (context : FormContext) => {
 
 	const cmsTagsMenu = await buildCmsTagsMenu();
 
-	const editorInputs = document.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+	const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
 	editorInputs.forEach((input: HTMLInputElement) => {
 		const containerId = input.dataset.cherryId;
 		const initialValue = decodeURIComponent(input.dataset.initialValue || "");

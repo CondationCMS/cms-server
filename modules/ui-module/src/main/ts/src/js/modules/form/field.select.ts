@@ -51,23 +51,27 @@ const createSelectField = (options: SelectFieldOptions, value: string = '') => {
 };
 
 const getData = (context : FormContext) => {
-	var data = {}
-	
-	context.formElement.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el : HTMLInputElement) => {
-		let value;
+	const data: Record<string, any> = {};
 
-		if (el.value === 'true') {
-			value = true;
-		} else if (el.value === 'false') {
-			value = false;
-		}
+	context.formElement
+		.querySelectorAll("[data-cms-form-field-type='select'] select")
+		.forEach((el: HTMLSelectElement) => {
+			let value: any = el.value;
 
-		data[el.name] = {
-			type: 'select',
-			value: value
-		}
-	})
-	return data
+			// optional: type-konvertierung, aber fallback ist immer der echte Wert
+			if (value === 'true') {
+				value = true;
+			} else if (value === 'false') {
+				value = false;
+			}
+
+			data[el.name] = {
+				type: 'select',
+				value: value
+			};
+		});
+
+	return data;
 }
 
 export const SelectField = {

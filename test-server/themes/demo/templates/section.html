@@ -8,6 +8,7 @@
 	<div style="display: none;" {{ ui.editMeta("text", "title" , node.uri, node.uri) | raw }}></div>
 	<div style="display: none;" {{ ui.editMeta("datetime", "publish_date" , node.uri, node.uri) | raw }}></div>
 	<div style="display: none;" {{ ui.editMeta("datetime", "unpublish_date" , node.uri, node.uri) | raw }}></div>
+	<div style="display: none;" {{ ui.editMeta("list", "object.values" , node.uri, node.uri, {"nameField": "title"}) | raw }}></div>
 
 	<div>
 		<div class="container" {{ ui.editMeta("text", "description" , node.uri, node.uri) | raw }}>
@@ -30,7 +31,7 @@
 	<div>
 		{% if node.meta.containsKey('object.values') %}
 			{% for item in node.meta.get("object.values") %}
-				{{ item.name }} - {{ item.description }} <br/>
+				{{ item.title }} - {{ item.description }} <br/>
 			{% endfor %}
 		{% endif %}
 	</div>

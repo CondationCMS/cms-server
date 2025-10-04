@@ -29,14 +29,16 @@ import { getContent, getContentNode } from "../rpc/rpc-content.js";
 import { getPreviewUrl } from "../preview.utils.js";
 
 export interface ListFieldOptions extends FieldOptions {
-	nameField?: string;
+	options: {
+		nameField?: string; // Feldname, der als Bezeichnung für das Listenelement verwendet wird
+	};
 }
 
 const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 	const id = createID();
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
-	const nameField = options.nameField || "name";
+	const nameField = options.options.nameField || "name";
 
 	var items = value.map((item, index) => {
 		const itemId = createID();
@@ -138,22 +140,12 @@ const getItemForm = async (el: HTMLElement) => {
 }
 
 const handleDoubleClick = async (event: Event, context: FormContext) => {
+	event.preventDefault();
 	const el = event.currentTarget as HTMLElement;
 	const itemDataString = el.getAttribute('data-cms-form-field-item-data') as any;
 	if (itemDataString) {
 		const itemData = JSON.parse(itemDataString);
 
-		var pageTemplates = (await getPageTemplates({})).result
-
-		const contentNode = await getContentNode({
-			url: getPreviewUrl()
-		})
-
-		const getContentResponse = await getContent({
-			uri: contentNode.result.uri
-		})
-
-		
 		var itemForm = await getItemForm(el)
 
 		const form = createForm({

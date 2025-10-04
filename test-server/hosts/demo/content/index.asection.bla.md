@@ -12,8 +12,12 @@ media_url: compass-7592444_1920.jpg
 published: true
 object:
   values:
-    - name: section 1
-      description: in section 1
+  - title: section 1-1
+    description: in section 1
+    features: search
+about: ''
+unpublish_date: null
+publish_date: null
 ---
 
 # This is a section: bla

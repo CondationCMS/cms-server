@@ -74,14 +74,26 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 			// override global definition of ListItemTypes
 			'object.values': [
 				{
-					name: "name",
-					title: "Name",
+					name: "title",
+					title: "Title",
 					type: "text"
 				},
 				{
 					name: "description",
 					title: "Description",
 					type: "text"
+				},
+				{
+					name: "features",
+					title: "Funktionen auswählen",
+					type: "select",
+					options: {
+						choices: [
+							{ label: "Suche", value: "search" },
+							{ label: "Filter", value: "filter" },
+							{ label: "Export", value: "export" }
+						]
+					}
 				},
 			]
 		}

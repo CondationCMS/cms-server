@@ -31,7 +31,7 @@ const createListField = (options, value = []) => {
     const id = createID();
     const key = "field." + options.name;
     const title = i18n.t(key, options.title);
-    const nameField = options.nameField || "name";
+    const nameField = options.options.nameField || "name";
     var items = value.map((item, index) => {
         const itemId = createID();
         return `
@@ -111,17 +111,11 @@ const getItemForm = async (el) => {
     return itemForm;
 };
 const handleDoubleClick = async (event, context) => {
+    event.preventDefault();
     const el = event.currentTarget;
     const itemDataString = el.getAttribute('data-cms-form-field-item-data');
     if (itemDataString) {
         const itemData = JSON.parse(itemDataString);
-        var pageTemplates = (await getPageTemplates({})).result;
-        const contentNode = await getContentNode({
-            url: getPreviewUrl()
-        });
-        const getContentResponse = await getContent({
-            uri: contentNode.result.uri
-        });
         var itemForm = await getItemForm(el);
         const form = createForm({
             fields: itemForm,

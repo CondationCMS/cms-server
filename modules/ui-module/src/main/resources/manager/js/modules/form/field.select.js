@@ -41,13 +41,16 @@ const createSelectField = (options, value = '') => {
 	`;
 };
 const getData = (context) => {
-    var data = {};
-    context.formElement.querySelectorAll("[data-cms-form-field-type='select'] select").forEach((el) => {
-        let value;
-        if (el.value === 'true') {
+    const data = {};
+    context.formElement
+        .querySelectorAll("[data-cms-form-field-type='select'] select")
+        .forEach((el) => {
+        let value = el.value;
+        // optional: type-konvertierung, aber fallback ist immer der echte Wert
+        if (value === 'true') {
             value = true;
         }
-        else if (el.value === 'false') {
+        else if (value === 'false') {
             value = false;
         }
         data[el.name] = {

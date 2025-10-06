@@ -38,7 +38,7 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 	const id = createID();
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
-	const nameField = options.options.nameField || "name";
+	const nameField = options.options?.nameField || "name";
 
 	var items = value.map((item, index) => {
 		const itemId = createID();

@@ -60,14 +60,11 @@ const openModal = (optionsParam) => {
     modalDiv.innerHTML = modalHtml.trim();
     const modalNode = modalDiv.firstChild;
     container.appendChild(modalNode);
-    if (options.form) {
-        options.form.init(`#${modalId}_bodyContainer`);
-    }
     const modalElement = document.getElementById(modalId);
     // Z-Index setzen BEVOR Modal initialisiert wird
     modalElement.style.zIndex = '1060';
     const modalInstance = new bootstrap.Modal(modalElement, {
-        backdrop: 'static', // Wichtig: static statt false
+        backdrop: 'static',
         keyboard: true,
         focus: false
     });
@@ -77,6 +74,10 @@ const openModal = (optionsParam) => {
         backdrops.forEach(backdrop => {
             backdrop.style.zIndex = '1055';
         });
+        // Form ERST initialisieren wenn Modal sichtbar ist
+        if (options.form) {
+            options.form.init(`#${modalId}_bodyContainer`);
+        }
         if (options.onShow) {
             options.onShow();
         }

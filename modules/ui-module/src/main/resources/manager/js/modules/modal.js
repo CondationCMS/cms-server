@@ -69,7 +69,7 @@ const openModal = (optionsParam) => {
     const modalInstance = new bootstrap.Modal(modalElement, {
         backdrop: 'static', // Wichtig: static statt false
         keyboard: true,
-        focus: true
+        focus: false
     });
     modalElement.addEventListener('shown.bs.modal', function (event) {
         // Backdrop z-index anpassen

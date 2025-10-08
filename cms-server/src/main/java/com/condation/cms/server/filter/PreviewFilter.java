@@ -73,7 +73,7 @@ public class PreviewFilter extends Handler.Abstract {
 		return false;
 	}
 
-	private boolean handleTokenCookie(Request request, String cookieName) throws Exception {
+	private boolean handleTokenCookie(Request request, String cookieName) {
 		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> cookieName.equals(cookie.getName())).findFirst();
 		if (tokenCookie.isEmpty()) {
 			return false;
@@ -81,25 +81,25 @@ public class PreviewFilter extends Handler.Abstract {
 
 		var token = tokenCookie.get().getValue();
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
-		if (TokenUtils.validateToken(token, secret)) {
+
+		var payload = TokenUtils.getPayload(token, secret);
+
+		if (payload.isPresent()) {
 			var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
 
-			var username = TokenUtils.getPayLoad(token, secret);
-			username.ifPresent(payload -> {
-				requestContext.add(AuthFeature.class, new AuthFeature(payload.username()));
-			});
+			requestContext.add(AuthFeature.class, new AuthFeature(payload.get().username()));
 			return true;
 		}
 		return false;
 	}
 
-	private void handlePreviewParameter(Request request, Response response) throws Exception {
+	private void handlePreviewParameter(Request request, Response response) {
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		if (queryParameters.containsKey("preview-token")) {
 			var token = queryParameters.get("preview-token").getFirst();
-			if (TokenUtils.validateToken(token, secret)) {
+			if (TokenUtils.getPayload(token, secret).isPresent()) {
 				setCookie(request, "cms-preview-token", token, response);
 			}
 		}

@@ -36,7 +36,23 @@ public class TokenUtilsTest {
 	public void create_and_validate() throws Exception {
 		var token = TokenUtils.createToken("condation", "my secret");
 		
-		Assertions.assertThat(TokenUtils.validateToken(token, "my secret")).isTrue();
+		var payload = TokenUtils.getPayload(token, "my secret");
+		Assertions.assertThat(payload).isPresent();
+		Assertions.assertThat(payload.get().username()).isEqualTo("condation");
+	}
+
+	@Test
+	public void create_and_validate__wrong_secret() throws Exception {
+		var token = TokenUtils.createToken("condation", "my secret");
+
+		var payload = TokenUtils.getPayload(token, "another secret");
+		Assertions.assertThat(payload).isNotPresent();
+	}
+
+	@Test
+	public void create_and_validate__wrong_token() throws Exception {
+		var payload = TokenUtils.getPayload("bliblablub", "my secret");
+		Assertions.assertThat(payload).isNotPresent();
 	}
 	
 }

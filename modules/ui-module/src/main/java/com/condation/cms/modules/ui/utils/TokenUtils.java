@@ -35,39 +35,33 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class TokenUtils {
 
+	public static Optional<Payload> getPayload(String token, String secret) {
+		try {
+			String[] parts = token.split(":");
+			if (parts.length != 2) {
+				return Optional.empty();
+			}
 
-	public static Optional<Payload> getPayLoad(String token, String SECRET) throws Exception {
-		if (!validateToken(token, SECRET)) {
+			String base64Payload = parts[0];
+			String signature = parts[1];
+
+			String expectedSig = hmacSha256(base64Payload, secret);
+			if (!MessageDigest.isEqual(expectedSig.getBytes(StandardCharsets.UTF_8), signature.getBytes(StandardCharsets.UTF_8))) {
+				return Optional.empty();
+			}
+
+			String json = new String(Base64.getUrlDecoder().decode(base64Payload), StandardCharsets.UTF_8);
+			Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
+
+			long now = Instant.now().getEpochSecond();
+			if ((now - payload.timestamp()) >= 3600) {
+				return Optional.empty();
+			}
+
+			return Optional.of(payload);
+		} catch (Exception e) {
 			return Optional.empty();
 		}
-		String[] parts = token.split(":");
-		String json = new String(Base64.getUrlDecoder().decode(parts[0]), StandardCharsets.UTF_8);
-		Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
-		return Optional.of(payload);
-	}
-
-	public static boolean validateToken(String token, String SECRET) throws Exception {
-		String[] parts = token.split(":");
-		if (parts.length != 2) {
-			return false;
-		}
-
-		String base64Payload = parts[0];
-		String signature = parts[1];
-
-		
-		String expectedSig = hmacSha256(base64Payload, SECRET);
-		byte[] expectedBytes = expectedSig.getBytes(StandardCharsets.UTF_8);
-		byte[] providedBytes = signature.getBytes(StandardCharsets.UTF_8);
-		if (!MessageDigest.isEqual(expectedBytes, providedBytes)) {
-				return false;
-		}
-
-		String json = new String(Base64.getUrlDecoder().decode(base64Payload), StandardCharsets.UTF_8);
-		Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
-
-		long now = Instant.now().getEpochSecond();
-		return (now - payload.timestamp()) < 3600;
 	}
 
 	public static String createToken(String username, String SECRET, Map<String, Object> payloadData) throws Exception {

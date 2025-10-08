@@ -75,7 +75,7 @@ public abstract class JettyHandler implements HttpHandler {
 			}
 			var token = tokenCookie.get().getValue();
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-			var username = TokenUtils.getPayLoad(token, secret);
+			var username = TokenUtils.getPayload(token, secret);
 
 			if (username.isEmpty()) {
 				return Optional.empty();

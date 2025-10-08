@@ -47,7 +47,7 @@ public class UIAuthRedirectHandler extends JettyHandler {
 	private final SiteRequestContext requestContext;
 
 	@Override
-	public boolean handle(Request request, Response response, Callback callback) throws Exception {
+	public boolean handle(Request request, Response response, Callback callback) {
 		
 		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
 
@@ -58,18 +58,14 @@ public class UIAuthRedirectHandler extends JettyHandler {
 		}
 		var token = tokenCookie.get().getValue();
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-		if (!TokenUtils.validateToken(token, secret)) {
+		var payload = TokenUtils.getPayload(token, secret);
+
+		if (payload.isEmpty()) {
 			redirectToLogin(response, moduleContext);
 			callback.succeeded();
 			return true;
 		}
-		var username = TokenUtils.getPayLoad(token, secret);
-		if (username.isEmpty()) {
-			redirectToLogin(response, moduleContext);
-			callback.succeeded();
-			return true;
-		}
-		setAuthFeature(username.get().username(), requestContext);
+		setAuthFeature(payload.get().username(), requestContext);
 
 		return false;
 	}

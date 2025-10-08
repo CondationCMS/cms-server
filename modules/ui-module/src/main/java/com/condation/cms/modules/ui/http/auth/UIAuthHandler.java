@@ -58,19 +58,16 @@ public class UIAuthHandler extends JettyHandler {
 		}
 		var token = tokenCookie.get().getValue();
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-		if (!TokenUtils.validateToken(token, secret)) {
-			response.setStatus(403);
-			callback.succeeded();
-			return true;
-		}
 		
-		var username = TokenUtils.getPayLoad(token, secret);
-		if (username.isEmpty()) {
+		var payload = TokenUtils.getPayload(token, secret);
+
+		if (payload.isEmpty()) {
 			response.setStatus(403);
 			callback.succeeded();
 			return true;
 		}
-		setAuthFeature(username.get().username(), requestContext);
+
+		setAuthFeature(payload.get().username(), requestContext);
 		
 		requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
 

@@ -7,8 +7,8 @@
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>25</maven.compiler.source>
-		<maven.compiler.target>25</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.1.1</jetty.version>
@@ -392,6 +392,9 @@
 								<version>${modules-framework.version}</version>
 							</path>
 						</annotationProcessorPaths>
+						<compilerArgs>
+							<arg>--enable-preview</arg>
+						</compilerArgs>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -482,6 +485,7 @@
 				<version>3.12.0</version>
 				<configuration>
 					<failOnError>false</failOnError>
+					<additionalOptions>--enable-preview</additionalOptions>
 				</configuration>
 				<executions>
 					<execution>
@@ -547,6 +551,7 @@
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
+						--enable-preview
 						-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 						-Xshare:off
 					</argLine>

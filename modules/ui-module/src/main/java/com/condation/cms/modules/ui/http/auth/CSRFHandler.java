@@ -47,7 +47,7 @@ public class CSRFHandler extends JettyHandler {
 	private static final Set<String> METHODS_TO_CHECK = Set.of("POST", "PUT", "DELETE", "PATCH");
 
 	@Override
-	public boolean handle(Request request, Response response, Callback callback) throws Exception {
+	public boolean handle(Request request, Response response, Callback callback) {
 
 		String method = request.getMethod();
 		if (!METHODS_TO_CHECK.contains(method)) {
@@ -58,7 +58,7 @@ public class CSRFHandler extends JettyHandler {
 
 		// ⛔️ CSRF-Token header
 		String csrfToken = request.getHeaders().get("X-CSRF-Token");
-		if (csrfToken == null || !TokenUtils.validateToken(csrfToken, secret)) {
+		if (csrfToken == null || TokenUtils.getPayload(csrfToken, secret).isEmpty()) {
 			log.warn("Invalid or missing CSRF token from {} {}", request.getMethod(), request.getHttpURI().toString());
 			response.setStatus(403);
 			callback.succeeded();

@@ -61,19 +61,43 @@ const openModal = (optionsParam) => {
     const modalNode = modalDiv.firstChild;
     container.appendChild(modalNode);
     const modalElement = document.getElementById(modalId);
-    // Z-Index setzen BEVOR Modal initialisiert wird
-    modalElement.style.zIndex = '1060';
+    // Prüfe ob eine Offcanvas offen ist
+    const openOffcanvas = document.querySelector('.offcanvas.show');
+    const hasOpenOffcanvas = openOffcanvas !== null;
+    // Z-Index höher setzen wenn Offcanvas offen ist
+    const modalZIndex = hasOpenOffcanvas ? 1080 : 1060;
+    const backdropZIndex = hasOpenOffcanvas ? 1070 : 1055;
+    modalElement.style.zIndex = modalZIndex;
+    modalElement.style.pointerEvents = 'auto';
     const modalInstance = new bootstrap.Modal(modalElement, {
         backdrop: 'static',
         keyboard: true,
-        focus: false
+        focus: true
     });
     modalElement.addEventListener('shown.bs.modal', function (event) {
         // Backdrop z-index anpassen
         const backdrops = document.querySelectorAll('.modal-backdrop');
-        backdrops.forEach(backdrop => {
-            backdrop.style.zIndex = '1055';
-        });
+        const latestBackdrop = backdrops[backdrops.length - 1];
+        if (latestBackdrop) {
+            latestBackdrop.style.zIndex = backdropZIndex;
+            latestBackdrop.style.pointerEvents = 'none';
+        }
+        // Offcanvas temporär nach hinten schieben
+        if (hasOpenOffcanvas) {
+            openOffcanvas.style.zIndex = '1050';
+            openOffcanvas.style.pointerEvents = 'none';
+            const offcanvasBackdrop = document.querySelector('.offcanvas-backdrop');
+            if (offcanvasBackdrop) {
+                offcanvasBackdrop.style.zIndex = '1045';
+                offcanvasBackdrop.style.pointerEvents = 'none';
+            }
+        }
+        // Modal und Content explizit aktivieren
+        modalElement.style.pointerEvents = 'auto';
+        const modalContent = modalElement.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.pointerEvents = 'auto';
+        }
         // Form ERST initialisieren wenn Modal sichtbar ist
         if (options.form) {
             options.form.init(`#${modalId}_bodyContainer`);
@@ -98,6 +122,16 @@ const openModal = (optionsParam) => {
     });
     // Clean-up nach Schließen
     modalElement.addEventListener('hidden.bs.modal', () => {
+        // Offcanvas z-index und pointer-events wiederherstellen
+        if (hasOpenOffcanvas && openOffcanvas) {
+            openOffcanvas.style.zIndex = '';
+            openOffcanvas.style.pointerEvents = '';
+            const offcanvasBackdrop = document.querySelector('.offcanvas-backdrop');
+            if (offcanvasBackdrop) {
+                offcanvasBackdrop.style.zIndex = '';
+                offcanvasBackdrop.style.pointerEvents = '';
+            }
+        }
         modalNode.remove();
         if (options.onClose) {
             options.onClose();

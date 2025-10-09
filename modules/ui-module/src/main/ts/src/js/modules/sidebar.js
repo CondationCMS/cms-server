@@ -26,7 +26,7 @@ const openSidebar = (options) => {
 		? options.position
 		: 'end';
 
-	const isResizable = position === 'end' && (options.resizable ?? true);
+	const isResizable = position === 'end' && (options.resizable === true);
 
 	const sidebarHtml = `
 		<div class="offcanvas offcanvas-${position} ${isResizable ? 'resizable' : ''}" tabindex="-1" id="${sidebarId}" aria-labelledby="${sidebarId}_label">
@@ -54,7 +54,7 @@ const openSidebar = (options) => {
 
 	const sidebarElement = document.getElementById(sidebarId);
 	
-	// Setze initiale Breite für resizable sidebar
+	// Setze initiale Breite nur für resizable sidebar
 	if (isResizable) {
 		sidebarElement.style.width = (options.initialWidth || 400) + 'px';
 	}
@@ -64,6 +64,38 @@ const openSidebar = (options) => {
 		keyboard: options.keyboard ?? false
 	});
 	sidebarInstance.show();
+
+	// Fix für Modals über Offcanvas
+	const handleModalShow = (e) => {
+		const modal = e.target;
+		const modalBackdrop = document.querySelector('.modal-backdrop:last-of-type');
+		
+		// Setze höhere z-index Werte
+		modal.style.zIndex = '1080';
+		if (modalBackdrop) {
+			modalBackdrop.style.zIndex = '1070';
+		}
+		
+		// Reduziere Offcanvas z-index temporär
+		sidebarElement.style.zIndex = '1050';
+		const offcanvasBackdrop = document.querySelector('.offcanvas-backdrop');
+		if (offcanvasBackdrop) {
+			offcanvasBackdrop.style.zIndex = '1045';
+		}
+	};
+
+	const handleModalHide = () => {
+		// Stelle Offcanvas z-index wieder her
+		sidebarElement.style.zIndex = '';
+		const offcanvasBackdrop = document.querySelector('.offcanvas-backdrop');
+		if (offcanvasBackdrop) {
+			offcanvasBackdrop.style.zIndex = '';
+		}
+	};
+
+	// Event Listener für alle Modals
+	document.addEventListener('show.bs.modal', handleModalShow);
+	document.addEventListener('hidden.bs.modal', handleModalHide);
 
 	// Buttons
 	document.getElementById(`${sidebarId}_cancelBtn`).addEventListener('click', () => {
@@ -76,7 +108,7 @@ const openSidebar = (options) => {
 		if (typeof options.onOk === 'function') options.onOk();
 	});
 
-	// Resize-Funktion (nur bei "end"-Position)
+	// Resize-Funktion (nur bei "end"-Position UND resizable === true)
 	let mouseMoveHandler, mouseUpHandler;
 	
 	if (isResizable) {
@@ -111,11 +143,15 @@ const openSidebar = (options) => {
 
 	// Cleanup
 	sidebarElement.addEventListener('hidden.bs.offcanvas', () => {
-		// Entferne Event-Listener
+		// Entferne Modal Event-Listener
+		document.removeEventListener('show.bs.modal', handleModalShow);
+		document.removeEventListener('hidden.bs.modal', handleModalHide);
+		
+		// Entferne Resize Event-Listener
 		if (mouseMoveHandler) document.removeEventListener('mousemove', mouseMoveHandler);
 		if (mouseUpHandler) document.removeEventListener('mouseup', mouseUpHandler);
 		
-		// Cleanup body classes (falls Sidebar während Resize geschlossen wird)
+		// Cleanup body classes
 		document.body.classList.remove('resizing-sidebar');
 		
 		// Cleanup DOM

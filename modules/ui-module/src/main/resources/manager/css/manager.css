@@ -177,7 +177,7 @@ tr[data-cms-file-directory] {
 	transition: box-shadow 0.2s ease;
 }
 
-/* Resize Handle */
+/* Resize Handle - standardmäßig unsichtbar */
 .cms-resize-handle {
 	position: absolute;
 	left: -5px;
@@ -188,6 +188,12 @@ tr[data-cms-file-directory] {
 	z-index: 10;
 	background: transparent;
 	transition: all 0.2s ease;
+	opacity: 0;
+}
+
+/* Handle wird sichtbar beim Hover über Sidebar */
+.offcanvas-end.resizable:hover .cms-resize-handle {
+	opacity: 1;
 }
 
 /* Handle Hover State */
@@ -201,8 +207,10 @@ tr[data-cms-file-directory] {
 	);
 }
 
-/* Handle Active State */
-.cms-resize-handle:active {
+/* Handle Active State - bleibt sichtbar während Resize */
+.cms-resize-handle:active,
+.offcanvas-end.resizable.is-resizing .cms-resize-handle {
+	opacity: 1;
 	background: linear-gradient(to right, 
 		transparent, 
 		rgba(13, 110, 253, 0.2) 30%, 
@@ -221,14 +229,9 @@ tr[data-cms-file-directory] {
 	transform: translate(-50%, -50%);
 	width: 3px;
 	height: 40px;
-	background: rgba(108, 117, 125, 0.3);
+	background: rgba(108, 117, 125, 0.5);
 	border-radius: 2px;
-	opacity: 0;
 	transition: opacity 0.2s ease;
-}
-
-.cms-resize-handle:hover::after {
-	opacity: 1;
 }
 
 /* Body während Resize */
@@ -277,3 +280,33 @@ body.resizing-sidebar {
 	}
 }
 /* end sidebar */
+
+/* Fix für Modal über Offcanvas */
+/* Stelle sicher dass Modal Inputs fokussierbar sind */
+/* Modal über Offcanvas - pointer-events fix */
+.modal.show {
+	pointer-events: auto !important;
+}
+
+.modal-dialog {
+	pointer-events: auto !important;
+}
+
+.modal-content {
+	pointer-events: auto !important;
+}
+
+.modal-body {
+	pointer-events: auto !important;
+}
+
+.modal-body input,
+.modal-body textarea,
+.modal-body select {
+	pointer-events: auto !important;
+}
+
+/* Backdrop darf nicht blockieren */
+.modal-backdrop.show {
+	pointer-events: none !important;
+}

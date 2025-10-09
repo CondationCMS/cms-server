@@ -82,7 +82,7 @@ const handleAddItem = (e: Event, container: HTMLElement, context: FormContext) =
 	const itemMarkup = `
         <div class="list-group-item d-flex justify-content-between align-items-center"
             data-cms-form-field-item="${itemId}"
-            data-cms-form-field-item-data="${JSON.stringify(newItem)}">
+            data-cms-form-field-item-data='${JSON.stringify(newItem)}'>
             <span class="object-name flex-grow-1">${newItem[nameField]}</span>
             <button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Remove">
                 <i class="bi bi-x-lg"></i>

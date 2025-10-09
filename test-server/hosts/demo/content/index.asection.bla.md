@@ -15,6 +15,9 @@ object:
   - title: section 1-1
     description: in section 1
     features: search
+  - title: New Item
+    description: asdads
+    features: export
 about: ''
 unpublish_date: null
 publish_date: null

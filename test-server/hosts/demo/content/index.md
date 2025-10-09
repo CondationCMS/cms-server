@@ -25,6 +25,8 @@ object:
   - name: Test 1 and more
     description: desc 1 - 2
   - name: Test 2 update
+seo:
+  description: hier kommt die beschreibung
 ---
 
 # Demo Project

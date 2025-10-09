@@ -36,6 +36,7 @@ import { CheckboxField } from "./field.checkbox.js";
 import { Divider } from "./field.divider.js";
 import { MediaField } from "./field.media.js";
 import { ListField } from "./field.list.js";
+import { TextAreaField } from "./field.textarea.js";
 const createForm = (options) => {
     const fields = options.fields || [];
     const values = options.values || {};
@@ -79,6 +80,8 @@ const createForm = (options) => {
                 return MediaField.markup(field, val);
             case 'list':
                 return ListField.markup(field, val);
+            case 'textarea':
+                return TextAreaField.markup(field, val);
             default:
                 return '';
         }
@@ -134,7 +137,8 @@ const createForm = (options) => {
             ...RadioField.data(context),
             ...CheckboxField.data(context),
             ...MediaField.data(context),
-            ...ListField.data(context)
+            ...ListField.data(context),
+            ...TextAreaField.data(context)
         };
         return data;
     };

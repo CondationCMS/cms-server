@@ -24,10 +24,13 @@ const openSidebar = (options) => {
 	const sidebarId = 'offcanvasSidebar_' + Date.now();
 	const position = ['start', 'end', 'top', 'bottom'].includes(options.position)
 		? options.position
-		: 'end'; // default = right
+		: 'end';
+
+	const isResizable = position === 'end' && (options.resizable ?? true);
 
 	const sidebarHtml = `
-		<div class="offcanvas offcanvas-${position}" tabindex="-1" id="${sidebarId}" aria-labelledby="${sidebarId}_label">
+		<div class="offcanvas offcanvas-${position} ${isResizable ? 'resizable' : ''}" tabindex="-1" id="${sidebarId}" aria-labelledby="${sidebarId}_label">
+			${isResizable ? '<div class="cms-resize-handle"></div>' : ''}
 			<div class="offcanvas-header">
 				<h5 class="offcanvas-title" id="${sidebarId}_label">${options.title || 'Sidebar Title'}</h5>
 				<button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -35,7 +38,7 @@ const openSidebar = (options) => {
 			<div class="offcanvas-body" id="sidebarBodyContainer">
 				${options.body || '<p>Sidebar content</p>'}
 			</div>
-			<div class="offcanvas-footer d-flex justify-content-center gap-2 mt-3 mb-3">
+			<div class="offcanvas-footer d-flex justify-content-center gap-2 p-2">
 				<button type="button" class="btn btn-secondary" id="${sidebarId}_cancelBtn">Cancel</button>
 				<button type="button" class="btn btn-primary" id="${sidebarId}_okBtn">OK</button>
 			</div>
@@ -44,33 +47,78 @@ const openSidebar = (options) => {
 
 	const container = document.getElementById('sidebarContainer');
 	container.innerHTML = sidebarHtml;
-	
+
 	if (options.form) {
-		options.form.init("#sidebarBodyContainer")
+		options.form.init("#sidebarBodyContainer");
 	}
 
 	const sidebarElement = document.getElementById(sidebarId);
-       const sidebarInstance = new bootstrap.Offcanvas(sidebarElement, {
-	       backdrop: 'static',
-	       keyboard: options.keyboard ?? false
-       });
+	
+	// Setze initiale Breite für resizable sidebar
+	if (isResizable) {
+		sidebarElement.style.width = (options.initialWidth || 400) + 'px';
+	}
+	
+	const sidebarInstance = new bootstrap.Offcanvas(sidebarElement, {
+		backdrop: 'static',
+		keyboard: options.keyboard ?? false
+	});
 	sidebarInstance.show();
 
+	// Buttons
 	document.getElementById(`${sidebarId}_cancelBtn`).addEventListener('click', () => {
 		sidebarInstance.hide();
-		if (typeof options.onCancel === 'function') {
-			options.onCancel();
-		}
+		if (typeof options.onCancel === 'function') options.onCancel();
 	});
 
 	document.getElementById(`${sidebarId}_okBtn`).addEventListener('click', () => {
 		sidebarInstance.hide();
-		if (typeof options.onOk === 'function') {
-			options.onOk();
-		}
+		if (typeof options.onOk === 'function') options.onOk();
 	});
 
+	// Resize-Funktion (nur bei "end"-Position)
+	let mouseMoveHandler, mouseUpHandler;
+	
+	if (isResizable) {
+		const handle = sidebarElement.querySelector('.cms-resize-handle');
+		let isResizing = false;
+
+		const mouseDownHandler = (e) => {
+			isResizing = true;
+			sidebarElement.classList.add('is-resizing');
+			document.body.classList.add('resizing-sidebar');
+		};
+
+		mouseMoveHandler = (e) => {
+			if (!isResizing) return;
+			const newWidth = window.innerWidth - e.clientX;
+			const clampedWidth = Math.min(Math.max(newWidth, 250), window.innerWidth * 0.9);
+			sidebarElement.style.width = clampedWidth + 'px';
+		};
+
+		mouseUpHandler = () => {
+			if (isResizing) {
+				isResizing = false;
+				sidebarElement.classList.remove('is-resizing');
+				document.body.classList.remove('resizing-sidebar');
+			}
+		};
+
+		handle.addEventListener('mousedown', mouseDownHandler);
+		document.addEventListener('mousemove', mouseMoveHandler);
+		document.addEventListener('mouseup', mouseUpHandler);
+	}
+
+	// Cleanup
 	sidebarElement.addEventListener('hidden.bs.offcanvas', () => {
+		// Entferne Event-Listener
+		if (mouseMoveHandler) document.removeEventListener('mousemove', mouseMoveHandler);
+		if (mouseUpHandler) document.removeEventListener('mouseup', mouseUpHandler);
+		
+		// Cleanup body classes (falls Sidebar während Resize geschlossen wird)
+		document.body.classList.remove('resizing-sidebar');
+		
+		// Cleanup DOM
 		container.innerHTML = '';
 	});
 };

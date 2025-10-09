@@ -100,6 +100,7 @@ export async function runAction(params) {
 		title: 'Page settings',
 		body: 'modal body',
 		form: form,
+		resizable: true,
 		onCancel: (event) => {},
 		onOk: async (event) => {
 			var updateData = form.getData()

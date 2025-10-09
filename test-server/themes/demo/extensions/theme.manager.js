@@ -27,6 +27,11 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					title: 'Custom attributes',
 				},
 				{
+					type: "textarea",
+					name: "seo.description",
+					title: "Seo Beschreibung"
+				},
+				{
 					type: "media",
 					name: "media_url",
 					title: "Media"

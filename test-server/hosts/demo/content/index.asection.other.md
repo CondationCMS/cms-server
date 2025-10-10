@@ -1,7 +1,7 @@
 ---
 template: section.html
 layout:
-  order: 0
+  order: 3
 parent:
   text: another parent text
 description: another description

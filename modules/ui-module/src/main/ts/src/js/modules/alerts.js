@@ -19,62 +19,71 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import { openModal } from './modal.js';
+import { i18n } from './localization.js';
 
-import Swal from '../libs/sweetalert2.min.js'
-import { i18n } from './localization.js'
+const alertSelect = (options) => {
+    return new Promise((resolve) => {
+        const modalBody = `
+            <select id="modalSelect" class="form-select">
+                <option value="">${options.placeholder || i18n.t("alerts.select.placeholder", "Select a element")}</option>
+                ${Object.entries(options.values || {}).map(([key, value]) => `<option value="${key}">${value}</option>`).join('')}
+            </select>`;
 
-const sweetalert2 = Swal.mixin({
-  customClass: {
-    confirmButton: "btn btn-success",
-    cancelButton: "btn btn-danger"
-  },
-  buttonsStyling: false
-});
-
-const alertSelect = async (options) => {
-	const { value: selectedValue } = await sweetalert2.fire({
-		title: options.title || i18n.t("alerts.select.title", "Select element"),
-		input: "select",
-		inputOptions: options.values || {},
-		inputPlaceholder: options.placeholder || i18n.t("alerts.select.placeholder", "Select a element"),
-		showCancelButton: true
-	});
-
-	return selectedValue
+        openModal({
+            title: options.title || i18n.t("alerts.select.title", "Select element"),
+            body: modalBody,
+            onOk: () => {
+                const selectedValue = document.getElementById('modalSelect').value;
+                resolve(selectedValue);
+            },
+            onCancel: () => resolve(null)
+        });
+    });
 };
 
-const alertError = async () => {
-	sweetalert2.fire({
-  		icon: "error",
-  		title: options.title || i18n.t("alerts.error.title", "Error"),
-  		text: options.message || i18n.t("alerts.error.message", "Some error occured"),
-	});
-}
-
-const alertConfirm = async (options) => {
-	const { isConfirmed } = await sweetalert2.fire({
-		title: options.title || i18n.t("alerts.confirm.title", "Are you sure?"),
-		text: options.message || i18n.t("alerts.confirm.message", "You won't be able to revert this!"),
-		icon: "warning",
-		showCancelButton: true,
-		confirmButtonText: options.confirmText || i18n.t("alerts.confirm.button.ok", "Yes, delete it!"),
-		cancelButtonText: options.cancelText || i18n.t("alerts.confirm.button.cancel", "No, cancel!"),
-	});
-
-	return isConfirmed
+const alertError = (options) => {
+    openModal({
+        title: options.title || i18n.t("alerts.error.title", "Error"),
+        body: `<p>${options.message || i18n.t("alerts.error.message", "Some error occured")}</p>`,
+    });
 };
 
-const alertPrompt = async (options) => {
-	const { value } = await sweetalert2.fire({
-		title: options.title || i18n.t("alerts.prompt.title", "Enter value?"),
-		input: 'text',
-		inputLabel: options.label || i18n.t("alerts.prompt.label", "Input"),
-		inputPlaceholder: options.placeholder || i18n.t("alerts.prompt.placeholder", "Enter your input"),
-		showCancelButton: true,
-		inputValidator: options.validator || null
-	});
-
-	return value
+const alertConfirm = (options) => {
+    return new Promise((resolve) => {
+        openModal({
+            title: options.title || i18n.t("alerts.confirm.title", "Are you sure?"),
+            body: `<p>${options.message || i18n.t("alerts.confirm.message", "You won't be able to revert this!")}</p>`,
+            onOk: () => resolve(true),
+            onCancel: () => resolve(false)
+        });
+    });
 };
 
-export { alertSelect, alertError, alertConfirm, alertPrompt }
+const alertPrompt = (options) => {
+    return new Promise((resolve) => {
+        const modalBody = `
+            <label for="modalInput" class="form-label">${options.label || i18n.t("alerts.prompt.label", "Input")}</label>
+            <input type="text" id="modalInput" class="form-control" placeholder="${options.placeholder || i18n.t("alerts.prompt.placeholder", "Enter your input")}">`;
+
+        openModal({
+            title: options.title || i18n.t("alerts.prompt.title", "Enter value?"),
+            body: modalBody,
+            validate: () => {
+                const value = document.getElementById('modalInput').value;
+                if (options.validator) {
+                    const validationResult = options.validator(value);
+                    return validationResult === null || validationResult === undefined;
+                }
+                return true;
+            },
+            onOk: () => {
+                const value = document.getElementById('modalInput').value;
+                resolve(value);
+            },
+            onCancel: () => resolve(null)
+        });
+    });
+};
+
+export { alertSelect, alertError, alertConfirm, alertPrompt };

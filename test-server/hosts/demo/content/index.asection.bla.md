@@ -7,7 +7,7 @@ description: my new descritpion for that awesome section
 parent:
   text: text for a section
 layout:
-  order: 3
+  order: 0
 media_url: compass-7592444_1920.jpg
 published: true
 object:

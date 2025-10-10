@@ -19,7 +19,7 @@ checked:
 - farbe
 selected: form
 radioed: form
-media_url: compass-7592444_1920.jpg
+media_url: images/fff.png
 object:
   values:
   - name: Test 1 and more

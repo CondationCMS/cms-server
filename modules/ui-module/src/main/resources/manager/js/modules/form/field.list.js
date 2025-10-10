@@ -32,19 +32,22 @@ const createListField = (options, value = []) => {
     const key = "field." + options.name;
     const title = i18n.t(key, options.title);
     const nameField = options.options?.nameField || "name";
-    var items = value.map((item, index) => {
-        const itemId = createID();
-        return `
-			<div class="list-group-item d-flex justify-content-between align-items-center"
-				data-cms-form-field-item="${itemId}"
-				data-cms-form-field-item-data='${JSON.stringify(item)}'>
-				<span class="object-name flex-grow-1">${item[nameField]}</span>
-				<button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Entfernen">
-					<i class="bi bi-x-lg"></i>
-				</button>
-			</div>
-		`;
-    }).join('\n');
+    var items = "";
+    if (value) {
+        items = value.map((item, index) => {
+            const itemId = createID();
+            return `
+				<div class="list-group-item d-flex justify-content-between align-items-center"
+					data-cms-form-field-item="${itemId}"
+					data-cms-form-field-item-data='${JSON.stringify(item)}'>
+					<span class="object-name flex-grow-1">${item[nameField]}</span>
+					<button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Entfernen">
+						<i class="bi bi-x-lg"></i>
+					</button>
+				</div>
+			`;
+        }).join('\n');
+    }
     return `
 		<div class="mb-3 d-flex flex-column cms-form-field" data-cms-form-field-type="list" name="${options.name}" data-name-field="${nameField}">
 			<label class="form-label" for="${id}" cms-i18n-key="${key}">${title}</label>

@@ -40,19 +40,22 @@ const createListField = (options: ListFieldOptions, value: Array<any> = []) => {
 	const title = i18n.t(key, options.title)
 	const nameField = options.options?.nameField || "name";
 
-	var items = value.map((item, index) => {
-		const itemId = createID();
-		return `
-			<div class="list-group-item d-flex justify-content-between align-items-center"
-				data-cms-form-field-item="${itemId}"
-				data-cms-form-field-item-data='${JSON.stringify(item)}'>
-				<span class="object-name flex-grow-1">${item[nameField]}</span>
-				<button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Entfernen">
-					<i class="bi bi-x-lg"></i>
-				</button>
-			</div>
-		`;
-	}).join('\n');
+	var items = "";
+	if (value) {
+		items = value.map((item, index) => {
+			const itemId = createID();
+			return `
+				<div class="list-group-item d-flex justify-content-between align-items-center"
+					data-cms-form-field-item="${itemId}"
+					data-cms-form-field-item-data='${JSON.stringify(item)}'>
+					<span class="object-name flex-grow-1">${item[nameField]}</span>
+					<button class="btn btn-sm btn-outline-danger ms-2 remove-btn" title="Entfernen">
+						<i class="bi bi-x-lg"></i>
+					</button>
+				</div>
+			`;
+		}).join('\n');
+	}
 
 
 	return `

@@ -44,6 +44,7 @@ import java.util.stream.Stream;
  * @author t.marx
  * @param <T>
  */
+@Deprecated(since = "2025.10")
 public class MemoryQuery<T> extends ExtendableQuery<T> {
 
 	private QueryContext<T> context;

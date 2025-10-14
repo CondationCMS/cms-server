@@ -53,8 +53,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -289,10 +287,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void init(MetaData.Type metaDataType) throws IOException {
 		log.debug("init filesystem");
 		
-		if (MetaData.Type.PERSISTENT.equals(metaDataType)) {
-			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
-		} else {
+		if (MetaData.Type.MEMORY.equals(metaDataType)) {
 			this.metaData = new MemoryMetaData();
+		} else {
+			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
 		}
 		this.metaData.open();
 

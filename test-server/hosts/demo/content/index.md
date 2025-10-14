@@ -4,10 +4,10 @@ template: start.html
 search:
   index: false
 published: true
-description: Thats awesome 123
+description: Thats awesome 1234
 parent:
   text: another text for the meta attribute , seems to work
-count: 17
+count: 18
 background_color: '#c2e0c6'
 range_test: 42
 choose_color: green

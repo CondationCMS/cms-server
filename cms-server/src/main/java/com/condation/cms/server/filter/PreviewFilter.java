@@ -34,6 +34,7 @@ import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.google.inject.Inject;
 import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.server.Handler;
@@ -58,9 +59,13 @@ public class PreviewFilter extends Handler.Abstract {
 	@Override
 	public boolean handle(final Request request, final Response rspns, final Callback clbck) throws Exception {
 
-		handlePreviewParameter(request, rspns);
+		var token = handlePreviewParameter(request, rspns);
+		
+		if (token.isEmpty()) {
+			token = getTokenFromCookie(request, "cms-preview-token");
+		}
 
-		if (!handleTokenCookie(request, "cms-preview-token")) {
+		if (token.isPresent() && handleToken(request, token.get())) {
 			if (ServerContext.IS_DEV) {
 				var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 				var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
@@ -73,13 +78,15 @@ public class PreviewFilter extends Handler.Abstract {
 		return false;
 	}
 
-	private boolean handleTokenCookie(Request request, String cookieName) {
+	private Optional<String> getTokenFromCookie (Request request, String cookieName) {
 		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> cookieName.equals(cookie.getName())).findFirst();
 		if (tokenCookie.isEmpty()) {
-			return false;
+			return Optional.empty();
 		}
-
-		var token = tokenCookie.get().getValue();
+		return Optional.of(tokenCookie.get().getValue());
+	}
+	
+	private boolean handleToken(Request request, String token) {
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 
 		var payload = TokenUtils.getPayload(token, secret);
@@ -94,15 +101,17 @@ public class PreviewFilter extends Handler.Abstract {
 		return false;
 	}
 
-	private void handlePreviewParameter(Request request, Response response) {
+	private Optional<String> handlePreviewParameter(Request request, Response response) {
 		var secret = configuration.get(ServerConfiguration.class).serverProperties().secret();
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
 		if (queryParameters.containsKey("preview-token")) {
 			var token = queryParameters.get("preview-token").getFirst();
 			if (TokenUtils.getPayload(token, secret).isPresent()) {
 				setCookie(request, "cms-preview-token", token, response);
+				return Optional.of(token);
 			}
 		}
+		return Optional.empty();
 	}
 
 	private void setCookie(Request request, String name, String token, Response response) {

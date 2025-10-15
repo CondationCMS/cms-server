@@ -38,6 +38,7 @@ import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.content.RenderContentFunction;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
@@ -73,6 +74,7 @@ import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.media.FileMediaService;
 import com.condation.cms.media.SiteMediaManager;
+import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
@@ -268,6 +270,12 @@ public class SiteModule extends AbstractModule {
 		return new RequestContextFactory(
 				injector
 		);
+	}
+	
+	@Provides
+	@Singleton
+	public RenderContentFunction renderContentFunction (ContentResolver contentResolver, RequestContextFactory requestContextFatory) {
+		return new DefaultRenderContentFunction(contentResolver, requestContextFatory);
 	}
 
 	@Provides

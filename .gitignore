@@ -45,6 +45,8 @@ test-server/hosts/marx-software
 test-server/hosts/demo/modules_data/search-module/index
 test-server/hosts/demo/modules_data/ui-module
 test-server/hosts/demo/temp/
+test-server/hosts/demo/data/
+test-server/hosts/demo_spa/data/
 test-server/hosts/features/modules_data/
 test-server/hosts/features/temp
 test-server/hosts/features_de/modules_data/

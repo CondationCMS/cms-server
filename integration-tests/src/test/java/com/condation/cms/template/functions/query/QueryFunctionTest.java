@@ -23,6 +23,7 @@ package com.condation.cms.template.functions.query;
  */
 
 
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.Configuration;
@@ -34,11 +35,13 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.template.functions.query.QueryFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -52,17 +55,20 @@ public class QueryFunctionTest {
 
 	@BeforeAll
 	static void init() throws IOException {
-		var hostBase = Path.of("hosts/test/");
+		var hostBase =  Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
+		
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+		var injector = Mockito.mock(Injector.class);
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return contentParser.parseMeta(cmsFile);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config);
+		}, config, injector);
 		db.init();
 		defaultContentParser = new DefaultContentParser();
 		query = new QueryFunction(db, 

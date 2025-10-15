@@ -23,6 +23,7 @@ package com.condation.cms.content;
  */
 
 
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
@@ -38,6 +39,7 @@ import static com.condation.cms.content.ContentRendererNGTest.moduleManager;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.test.TestSiteProperties;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -45,6 +47,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -59,16 +62,18 @@ public class ContentResolverTest {
 	@BeforeAll
 	public static void setup() throws IOException {
 		var contentParser = new DefaultContentParser();
-		var hostBase = Path.of("hosts/test/");
+		var hostBase = Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		var injector = Mockito.mock(Injector.class);
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return contentParser.parseMeta(cmsFile);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config);
+		}, config, injector);
 		db.init();
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(db);

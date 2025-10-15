@@ -33,6 +33,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.google.inject.Injector;
 import java.nio.file.Path;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
@@ -59,6 +60,9 @@ public class ContentServiceTest {
 	@Mock
 	private Request request;
 	
+	@Mock
+	private static Injector injector;
+	
 	@BeforeAll
 	public static void setup() throws Exception {
 
@@ -72,7 +76,7 @@ public class ContentServiceTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config);
+		}, config, injector);
 		db.init();
 		
 		contentService = new ContentService(db, Set.of("title"));

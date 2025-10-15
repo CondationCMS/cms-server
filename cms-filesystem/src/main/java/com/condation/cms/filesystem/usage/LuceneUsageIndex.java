@@ -21,7 +21,6 @@ package com.condation.cms.filesystem.usage;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,7 +73,7 @@ public class LuceneUsageIndex implements UsageIndex {
 	public LuceneUsageIndex(final Path parent) throws IOException {
 		Path path = parent.resolve("usage_index");
 		if (!Files.exists(path)) {
-			Files.createDirectory(path);
+			Files.createDirectories(path);
 		}
 
 		directory = FSDirectory.open(path);
@@ -83,7 +82,7 @@ public class LuceneUsageIndex implements UsageIndex {
 		PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(new KeywordAnalyzer());
 		IndexWriterConfig config = new IndexWriterConfig(analyzer);
 		// CREATE_OR_APPEND
-		config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 		writer = new IndexWriter(nrtCacheDirectory, config);
 
 		searchManager = new SearcherManager(writer, true, true, null);
@@ -164,7 +163,6 @@ public class LuceneUsageIndex implements UsageIndex {
 		return query_usage(query);
 	}
 
-	
 	@Override
 	public boolean isUsing(String source, String sourceType, String referenceType, String target, String targetType) throws IOException {
 		BooleanQuery.Builder builder = new BooleanQuery.Builder();
@@ -173,7 +171,7 @@ public class LuceneUsageIndex implements UsageIndex {
 		builder.add(new TermQuery(new Term(Fields.TARGET_ID, target)), BooleanClause.Occur.MUST);
 		builder.add(new TermQuery(new Term(Fields.TARGET_TYPE, targetType)), BooleanClause.Occur.MUST);
 		builder.add(new TermQuery(new Term(Fields.REFERENCE_TYPE, referenceType)), BooleanClause.Occur.MUST);
-		
+
 		IndexSearcher searcher = searchManager.acquire();
 		try {
 			TopDocs topDocs = searcher.search(builder.build(), 1);
@@ -293,7 +291,7 @@ public class LuceneUsageIndex implements UsageIndex {
 
 		searchManager.maybeRefresh();
 	}
-	
+
 	@Override
 	public void removeTargets(String source, String sourceType, String referenceType) throws IOException {
 		BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
@@ -308,10 +306,14 @@ public class LuceneUsageIndex implements UsageIndex {
 
 	@Override
 	public void close() throws IOException {
-		this.writer.commit();
-		this.writer.close();
-		this.directory.close();
-		this.searchManager.close();
+		try {
+			searchManager.close();   // zuerst Reader-Manager schließen
+		} finally {
+			writer.commit();
+			writer.close();
+			nrtCacheDirectory.close(); // auch diesen schließen
+			directory.close();
+		}
 	}
 
 }

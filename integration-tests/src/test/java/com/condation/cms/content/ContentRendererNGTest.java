@@ -25,6 +25,7 @@ package com.condation.cms.content;
 
 
 import com.condation.cms.MockModuleManager;
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
@@ -39,6 +40,7 @@ import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.template.TemplateEngineTest;
 import com.condation.cms.test.TestSiteProperties;
 import com.condation.modules.api.ModuleManager;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -47,6 +49,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -61,20 +64,25 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 	
 	static ModuleManager moduleManager = new MockModuleManager();
 	static FileDB db;
-	static Path hostBase = Path.of("hosts/test/");
+	static Path hostBase;
 	
 	@BeforeAll
 	public static void beforeClass () throws IOException {
+		
+		hostBase = Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
+		
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		var injector = Mockito.mock(Injector.class);
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return contentParser.parseMeta(cmsFile);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config);
+		}, config, injector);
 		db.init();
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(db);

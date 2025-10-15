@@ -43,6 +43,7 @@ import com.condation.cms.content.markdown.module.CMSMarkdownRenderer;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.google.inject.Injector;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
@@ -67,6 +68,9 @@ public class NavigationFunctionITest {
 
 	@Mock
 	private Request request;
+	
+	@Mock
+	private static Injector injector;
 
 	private RequestContext requestContext;
 
@@ -84,7 +88,7 @@ public class NavigationFunctionITest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config);
+		}, config, injector);
 		db.init();
 	}
 

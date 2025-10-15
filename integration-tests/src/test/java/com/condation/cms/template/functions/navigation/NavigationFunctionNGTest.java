@@ -36,6 +36,7 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -43,6 +44,7 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -59,6 +61,7 @@ public class NavigationFunctionNGTest {
 	static void init() throws IOException {
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
+		var injector = Mockito.mock(Injector.class);
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
@@ -66,7 +69,7 @@ public class NavigationFunctionNGTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config);
+		}, config,injector);
 		db.init();
 		defaultContentParser = new DefaultContentParser();
 		navigationFunction = new NavigationFunction(db, 

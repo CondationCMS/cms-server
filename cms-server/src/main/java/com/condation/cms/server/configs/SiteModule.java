@@ -220,7 +220,7 @@ public class SiteModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public DB fileDb(SiteProperties site, DefaultContentParser contentParser, Configuration configuration, EventBus eventBus) throws IOException {
+	public DB fileDb(SiteProperties site, DefaultContentParser contentParser, Configuration configuration, EventBus eventBus, Injector injector) throws IOException {
 		var db = new FileDB(hostBase, eventBus, (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
@@ -229,11 +229,11 @@ public class SiteModule extends AbstractModule {
 				log.error(null, ioe);
 				throw new RuntimeException(ioe);
 			}
-		}, configuration);
-		if ("PERSISTENT".equals(site.queryIndexMode())) {
-			db.init(MetaData.Type.PERSISTENT);
+		}, configuration, injector);
+		if ("MEMORY".equals(site.queryIndexMode())) {
+			db.init(MetaData.Type.MEMORY);
 		} else {
-			db.init();
+			db.init(MetaData.Type.PERSISTENT);
 		}
 		return db;
 	}

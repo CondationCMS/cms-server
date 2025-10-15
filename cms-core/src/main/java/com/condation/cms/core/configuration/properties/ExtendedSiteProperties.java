@@ -80,7 +80,7 @@ public class ExtendedSiteProperties implements SiteProperties {
 
 	@Override
 	public String queryIndexMode() {
-		return configuration.getString("index.query.mode", "MEMORY");
+		return configuration.getString("index.query.mode", "PERSISTENT");
 	}
 
 	@Override

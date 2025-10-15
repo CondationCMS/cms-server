@@ -35,13 +35,12 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.template.functions.query.QueryFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 /**
  *
@@ -53,14 +52,17 @@ public class QueryFunctionTest {
 	private static FileDB db;
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 
+	@AfterAll
+	static void close () throws Exception {
+		db.close();
+	}
 	@BeforeAll
 	static void init() throws IOException {
-		var hostBase =  Path.of("target/test-" + System.currentTimeMillis());
+		var hostBase =  Path.of("target/test-" + System.nanoTime());
 		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
 		
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
-		var injector = Mockito.mock(Injector.class);
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
@@ -68,7 +70,7 @@ public class QueryFunctionTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config, injector);
+		}, config);
 		db.init();
 		defaultContentParser = new DefaultContentParser();
 		query = new QueryFunction(db, 

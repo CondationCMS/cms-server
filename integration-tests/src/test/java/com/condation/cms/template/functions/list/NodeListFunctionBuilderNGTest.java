@@ -38,7 +38,6 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
@@ -46,7 +45,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 /**
  *
@@ -69,7 +67,6 @@ public class NodeListFunctionBuilderNGTest {
 		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
 		
 		var config = new Configuration();
-		var injector = Mockito.mock(Injector.class);
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
@@ -77,7 +74,7 @@ public class NodeListFunctionBuilderNGTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config, injector);
+		}, config);
 		db.init();
 		
 		nodeList = new NodeListFunctionBuilder(db, 

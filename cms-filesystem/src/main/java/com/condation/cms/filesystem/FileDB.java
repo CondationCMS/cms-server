@@ -34,10 +34,6 @@ import com.condation.cms.api.db.taxonomy.Taxonomies;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ContentChangedEvent;
 import com.condation.cms.filesystem.taxonomy.FileTaxonomies;
-import com.condation.cms.filesystem.usage.LuceneUsageIndex;
-import com.condation.cms.filesystem.usage.UsageIndex;
-import com.condation.cms.filesystem.usage.UsageIndexContentUpdater;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Map;
@@ -55,7 +51,6 @@ public class FileDB implements DB {
 	private final EventBus eventBus;
 	final Function<Path, Map<String, Object>> contentParser;
 	final Configuration configuration;
-	private final Injector injector;
 	
 	private FileSystem fileSystem;
 	private FileContent content;
@@ -63,18 +58,11 @@ public class FileDB implements DB {
 	
 	private FileTaxonomies taxonomies;
 	
-	private UsageIndex usageIndex;
-	private UsageIndexContentUpdater indexContentUpdater;
-	
 	public void init () throws IOException {
 		init(MetaData.Type.PERSISTENT);
 	}
 	
 	public void init (MetaData.Type metaDataType) throws IOException {
-		usageIndex = new LuceneUsageIndex(hostBaseDirectory.resolve("data/"));
-		indexContentUpdater = new UsageIndexContentUpdater(usageIndex, injector, hostBaseDirectory.resolve(Constants.Folders.CONTENT));
-		eventBus.register(ContentChangedEvent.class, indexContentUpdater);
-		
 		fileSystem = new FileSystem(hostBaseDirectory, eventBus, contentParser);
 		fileSystem.init(metaDataType);
 		readOnlyFileSystem = new WrappedReadOnlyFileSystem(fileSystem);
@@ -97,9 +85,6 @@ public class FileDB implements DB {
 	@Override
 	public void close() throws Exception {
 		fileSystem.shutdown();
-		if (usageIndex != null) {
-			usageIndex.close();
-		}
 	}
 
 	@Override

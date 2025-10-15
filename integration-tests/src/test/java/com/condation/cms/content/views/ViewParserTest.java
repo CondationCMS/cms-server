@@ -79,8 +79,6 @@ public class ViewParserTest {
 		
 		var config = new Configuration();
 		
-		var injector = Mockito.mock(Injector.class);
-		
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
@@ -88,7 +86,7 @@ public class ViewParserTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config, injector);
+		}, config);
 		db.init();
 	}
 	@AfterAll

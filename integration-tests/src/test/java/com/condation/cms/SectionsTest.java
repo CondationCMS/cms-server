@@ -24,8 +24,6 @@ package com.condation.cms;
 
 
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.SiteProperties;
-import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
@@ -35,12 +33,10 @@ import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.Section;
-import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.template.TemplateEngineTest;
 import com.condation.cms.test.TestSiteProperties;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -49,7 +45,6 @@ import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 /**
  *
@@ -69,7 +64,6 @@ public class SectionsTest extends TemplateEngineTest {
 		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
 		
 		var config = new Configuration();
-		var injector = Mockito.mock(Injector.class);
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
@@ -77,7 +71,7 @@ public class SectionsTest extends TemplateEngineTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config, injector);
+		}, config);
 		db.init();
 		markdownRenderer = TestHelper.getRenderer();
 		TemplateEngine templates = new TestTemplateEngine(db);

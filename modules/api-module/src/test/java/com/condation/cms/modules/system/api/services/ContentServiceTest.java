@@ -60,9 +60,6 @@ public class ContentServiceTest {
 	@Mock
 	private Request request;
 	
-	@Mock
-	private static Injector injector;
-	
 	@BeforeAll
 	public static void setup() throws Exception {
 
@@ -76,7 +73,7 @@ public class ContentServiceTest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config, injector);
+		}, config);
 		db.init();
 		
 		contentService = new ContentService(db, Set.of("title"));

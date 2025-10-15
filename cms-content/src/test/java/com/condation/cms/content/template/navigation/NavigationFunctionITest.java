@@ -68,9 +68,6 @@ public class NavigationFunctionITest {
 
 	@Mock
 	private Request request;
-	
-	@Mock
-	private static Injector injector;
 
 	private RequestContext requestContext;
 
@@ -88,7 +85,7 @@ public class NavigationFunctionITest {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
-		}, config, injector);
+		}, config);
 		db.init();
 	}
 

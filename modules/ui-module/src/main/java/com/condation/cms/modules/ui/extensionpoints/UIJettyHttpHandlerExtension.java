@@ -70,27 +70,42 @@ import org.eclipse.jetty.http.pathmap.PathSpec;
 @Slf4j
 public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
-	public static FileSystem createFileSystem(String base) {
-		try {
-			URL resource = UIJettyHttpHandlerExtension.class.getResource(base);
-			if (resource == null) {
-				throw new IllegalStateException("Resource '/manager' not found");
-			}
+	private static FileSystem managerFileSystem = null;
 
-			String[] array = resource.toURI().toString().split("!");
-			URI uri = URI.create(array[0]);
+	public static FileSystem createFileSystem(String base) {
+		// Schneller Pfad: bereits initialisiert
+		if (managerFileSystem != null && managerFileSystem.isOpen()) {
+			return managerFileSystem;
+		}
+
+		synchronized (UIJettyHttpHandlerExtension.class) {
+			// Doppelte Prüfung, falls zwei Threads gleichzeitig reinlaufen
+			if (managerFileSystem != null && managerFileSystem.isOpen()) {
+				return managerFileSystem;
+			}
 
 			try {
-				return FileSystems.getFileSystem(uri);
-			} catch (FileSystemNotFoundException e) {
-				// Falls noch nicht vorhanden, neu erstellen
-				final Map<String, String> env = new HashMap<>();
-				return FileSystems.newFileSystem(uri, env);
+				URL resource = UIJettyHttpHandlerExtension.class.getResource(base);
+				if (resource == null) {
+					throw new IllegalStateException("Resource '" + base + "' not found");
+				}
+
+				String[] array = resource.toURI().toString().split("!");
+				URI uri = URI.create(array[0]);
+
+				try {
+					managerFileSystem = FileSystems.getFileSystem(uri);
+				} catch (FileSystemNotFoundException e) {
+					final Map<String, String> env = new HashMap<>();
+					managerFileSystem = FileSystems.newFileSystem(uri, env);
+				}
+
+			} catch (URISyntaxException | IOException ex) {
+				log.error("Fehler beim Erstellen des FileSystems", ex);
+				throw new RuntimeException(ex);
 			}
 
-		} catch (URISyntaxException | IOException ex) {
-			log.error("Fehler beim Erstellen des FileSystems", ex);
-			throw new RuntimeException(ex);
+			return managerFileSystem;
 		}
 	}
 
@@ -115,7 +130,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 		ICache<String, AjaxLoginHandler.Login> logins = getContext().get(CacheManagerFeature.class).cacheManager().get("logins",
 				new CacheManager.CacheConfig(10_000l, Duration.ofMinutes(5))
 		);
-		
+
 		RemoteMethodService remoteCallService = new RemoteMethodService();
 		remoteCallService.init(moduleManager);
 

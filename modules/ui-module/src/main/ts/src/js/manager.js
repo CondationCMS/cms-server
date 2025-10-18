@@ -72,36 +72,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 // DOMContentLoaded  end
-/**
- * Prüft, ob eine gegebene URL oder ein Pfad in einem bestimmten contextPath liegt.
- *
- * @param {string} urlOrPath - Die zu prüfende URL oder der Pfad (z. B. "/de/blog/artikel" oder "https://example.com/de").
- * @param {string} contextPath - Der Kontextpfad, z. B. "/" oder "/de".
- * @returns {boolean} true, wenn die URL im Kontext liegt, sonst false.
- */
-function isInContext(urlOrPath, contextPath) {
-  if (typeof urlOrPath !== "string" || typeof contextPath !== "string") {
-	throw new Error("Both urlOrPath and contextPath must be strings");
-  }
-
-  // Wenn volle URL: Pfad extrahieren
-  let path;
-  try {
-	path = new URL(urlOrPath, "http://dummy").pathname;
-  } catch {
-	// Falls es kein valider URL-String ist, direkt übernehmen
-	path = urlOrPath;
-  }
-
-  // Normalize contextPath (immer mit führendem /, ohne abschließenden / – außer "/")
-  contextPath = contextPath === "/" ? "/" : "/" + contextPath.replace(/^\/+|\/+$/g, "");
-
-  // Normalize path (mindestens ein / am Anfang)
-  path = "/" + path.replace(/^\/+/, "");
-
-  if (contextPath === "/") {
-	return true;
-  }
-
-  return path === contextPath || path.startsWith(contextPath + "/");
-}

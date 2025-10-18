@@ -32,6 +32,7 @@ import com.condation.cms.api.ui.annotations.MenuEntry;
 import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.modules.api.annotation.Extension;
 import com.condation.modules.api.annotation.Extensions;
 import java.util.ArrayList;
@@ -127,12 +128,15 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 		var siteService = getContext().get(InjectorFeature.class).injector().getInstance(SiteService.class);
 
 		var counter = new AtomicInteger(1);
-		return new ArrayList<>(siteService.sites().map(site -> {
-			var url = site.baseurl().endsWith("/") ? site.baseurl() : site.baseurl() + "/";
+		return new ArrayList<>(siteService.sites()
+				.filter(site -> site.manager())
+				.map(site -> {
 			return com.condation.cms.api.ui.elements.MenuEntry.builder()
 					.id("site-" + site.id())
 					.name(site.id())
-					.action(new UIScriptAction("/manager/actions/site-change", Map.of("href", url + "manager/index.html")))
+					.action(new UIScriptAction(
+							HTTPUtil.modifyUrl("/manager/actions/site-change", getContext())
+							, Map.of("href", site.realUrl() + "manager/index.html")))
 					.position(counter.getAndIncrement())
 					.build();
 		}).toList());

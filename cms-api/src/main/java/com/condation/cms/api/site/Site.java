@@ -21,7 +21,6 @@ package com.condation.cms.api.site;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.SiteProperties;
 import com.google.inject.Injector;
 import java.util.List;
@@ -31,19 +30,39 @@ import java.util.List;
  * @author thmar
  */
 public record Site(Injector injector) {
-	public String id () {
+
+	public String id() {
 		return injector.getInstance(SiteProperties.class).id();
 	}
-	
-	public List<String> modules () {
+
+	public List<String> modules() {
 		return injector.getInstance(SiteProperties.class).activeModules();
 	}
-	
-	public String baseurl () {
-		return (String)injector.getInstance(SiteProperties.class).get("baseurl");
+
+	public String baseurl() {
+		return (String) injector.getInstance(SiteProperties.class).get("baseurl");
 	}
-	
-	public boolean manager () {
+
+	public boolean manager() {
 		return injector.getInstance(SiteProperties.class).ui().managerEnabled();
 	}
+
+	public String realUrl() {
+		var baseUrl = baseurl();
+		var contextPath = injector.getInstance(SiteProperties.class).contextPath();
+
+		// Normalize baseUrl: remove trailing slashes
+		String normalizedBase = baseUrl.replaceAll("/+$", "");
+
+		// Normalize contextPath: ensure it starts with a slash (except if it's just "/")
+		String normalizedContext = contextPath.equals("/") ? "" : contextPath.replaceAll("^/+", "");
+
+		// Combine
+		if (normalizedContext.isEmpty()) {
+			return normalizedBase + "/";
+		} else {
+			return normalizedBase + "/" + normalizedContext + "/";
+		}
+	}
+
 }

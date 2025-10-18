@@ -9,7 +9,8 @@ declare global {
     manager : {
 			csrfToken: string
 			baseUrl: string,
-			contextPath: string
+			contextPath: string,
+      siteId: string,
 		},
     EasyMDE : any,
     Cherry: any

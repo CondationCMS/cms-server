@@ -37,6 +37,7 @@ import { Divider } from "./field.divider.js";
 import { MediaField } from "./field.media.js";
 import { ListField } from "./field.list.js";
 import { TextAreaField } from "./field.textarea.js";
+import { ReferenceField } from "./field.reference.js";
 
 
 const createForm = (options) : Form => {
@@ -86,6 +87,8 @@ const createForm = (options) : Form => {
 				return ListField.markup(field, val)		
 			case 'textarea':
 				return TextAreaField.markup(field, val)	
+			case 'reference':
+				return ReferenceField.markup(field, val)
 			default:
 				return '';
 		}
@@ -124,6 +127,7 @@ const createForm = (options) : Form => {
 		EasyMDEField.init(context)
 		MediaField.init(context)
 		ListField.init(context)
+		ReferenceField.init(context)
 	};
 
 	const getData = () => {
@@ -147,7 +151,8 @@ const createForm = (options) : Form => {
 			...CheckboxField.data(context),
 			...MediaField.data(context),
 			...ListField.data(context),
-			...TextAreaField.data(context)
+			...TextAreaField.data(context), 
+			...ReferenceField.data(context)
 		};
 		return data
 	};

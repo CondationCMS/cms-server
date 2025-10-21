@@ -35,19 +35,21 @@ const createMediaField = (options, value = '') => {
         previewUrl = "https://placehold.co/100x100";
     }
     return `
-		<div class="d-flex align-items-start cms-form-field" data-cms-form-field-type="media" data-field-id="${id}">
-			<div class="cms-media-preview flex-shrink-0-11 me-3">
-				<img src="${previewUrl}" alt="Image preview" class="cms-media-image">
-			</div>
-			<div class="d-flex flex-column">
-				<label class="cms-drop-zone">
-					<div><i class="bi bi-upload me-2"></i><span cms-i18n-key="${key}">${title}</span></div>
-					<input type="file" name=${options.name} accept="image/*" class="d-none cms-media-input">
-					<input type="text" name=${options.name} class="d-none cms-media-input-value" value="${value}">
-				</label>
-				<button type="button" class="btn btn-outline-primary mt-2 cms-media-button">
-					<i class="bi bi-images me-1"></i> MediaManager
-				</button>
+		<div class=" cms-form-field" data-cms-form-field-type="media" data-field-id="${id}">
+			<div class="d-flex align-items-start">
+				<div class="cms-media-preview flex-shrink-0-11 me-3">
+					<img src="${previewUrl}" alt="Image preview" class="cms-media-image">
+				</div>
+				<div class="d-flex flex-column" style="flex-grow:1;">
+					<label class="cms-drop-zone">
+						<div><i class="bi bi-upload me-2"></i><span cms-i18n-key="${key}">${title}</span></div>
+						<input type="file" name=${options.name} accept="image/*" class="d-none cms-media-input">
+						<input type="text" name=${options.name} class="d-none cms-media-input-value" value="${value}">
+					</label>
+					<button type="button" class="btn btn-outline-primary mt-2 cms-media-button">
+						<i class="bi bi-images me-1"></i> MediaManager
+					</button>
+				</div>
 			</div>
 		</div>
 	`;

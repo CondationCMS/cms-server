@@ -27,6 +27,11 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 					title: 'Custom attributes',
 				},
 				{
+					type: "reference",
+					name: "linked_page",
+					title: "Verlinkte Seite"
+				},
+				{
 					type: "textarea",
 					name: "seo.description",
 					title: "Seo Beschreibung"

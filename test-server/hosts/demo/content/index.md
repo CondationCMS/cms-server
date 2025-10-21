@@ -27,6 +27,7 @@ object:
   - name: Test 2 update
 seo:
   description: hier kommt die beschreibung
+linked_page: about
 ---
 
 # Demo Project

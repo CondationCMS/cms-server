@@ -53,25 +53,4 @@
 			<version>4.4.0</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.13.2</version>
-				<configuration>
-					<sourceDirectory>src/main/resources</sourceDirectory>
-					<outputDirectory>target/generated-sources/antlr4</outputDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>antlr4</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

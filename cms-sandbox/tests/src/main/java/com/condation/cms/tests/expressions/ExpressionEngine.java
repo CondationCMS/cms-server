@@ -21,16 +21,20 @@ package com.condation.cms.tests.expressions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.*;
 
 /**
  * Erweiterbare Enterprise Expression Engine mit Parser für komplexe Ausdrücke.
- * Unterstützt: - Objektzugriff über : - Map-Keys, Listen, Methodenaufrufe -
- * Vergleichs- und logische Operatoren (eq, lt, lte, gt, gte, and, or, not) -
- * Erweiterbare globale Funktionen - Parser für komplexe, verschachtelte
- * Ausdrücke mit Klammern
+ * Unterstützt:
+ *  - Objektzugriff über :
+ *  - Map-Keys, Listen, Methodenaufrufe
+ *  - Vergleichs- und logische Operatoren (eq, lt, lte, gt, gte, and, or, not)
+ *  - Erweiterbare globale Funktionen
+ *  - Parser für komplexe, verschachtelte Ausdrücke mit Klammern
+ *  - Boolean-, Null- und Collection-Literale
  */
 public class ExpressionEngine {
 
@@ -52,15 +56,9 @@ public class ExpressionEngine {
 	}
 
 	private static boolean toBool(Object o) {
-		if (o instanceof Boolean b) {
-			return b;
-		}
-		if (o instanceof Number n) {
-			return n.doubleValue() != 0.0;
-		}
-		if (o instanceof String s) {
-			return Boolean.parseBoolean(s);
-		}
+		if (o instanceof Boolean b) return b;
+		if (o instanceof Number n) return n.doubleValue() != 0.0;
+		if (o instanceof String s) return Boolean.parseBoolean(s);
 		return o != null;
 	}
 
@@ -79,48 +77,66 @@ public class ExpressionEngine {
 		globalMethods.put(name, func);
 	}
 
-	/**
-	 * Führt einen komplexen Ausdruck aus, inkl. verschachtelter Operatoren und
-	 * Klammern.
-	 */
 	public Object evaluate(String expression, Map<String, Object> context) {
 		ExpressionParser parser = new ExpressionParser(this, context);
 		return parser.parse(expression);
 	}
 
 	Object resolve(String expr, Map<String, Object> context) {
-		if (expr == null || expr.isEmpty()) {
-			return null;
-		}
+		if (expr == null || expr.isEmpty()) return null;
 
-		// String Literals
+		expr = expr.trim();
+
+		// === Boolean und Null Literale ===
+		if (expr.equals("true")) return true;
+		if (expr.equals("false")) return false;
+		if (expr.equals("null")) return null;
+
+		// === String Literals ===
 		if (expr.startsWith("\"") && expr.endsWith("\"")) {
 			return expr.substring(1, expr.length() - 1);
 		}
 
-		// Numbers
-		if (expr.matches("[0-9]+")) {
-			return Integer.parseInt(expr);
-		}
-		if (expr.matches("[0-9]+\\.[0-9]+")) {
-			return Double.parseDouble(expr);
+		// === Zahlen ===
+		if (expr.matches("-?\\d+")) return Integer.parseInt(expr);
+		if (expr.matches("-?\\d+\\.\\d+")) return Double.parseDouble(expr);
+
+		// === Listen-Literal === [1,2,3]
+		if (expr.startsWith("[") && expr.endsWith("]")) {
+			String inside = expr.substring(1, expr.length() - 1).trim();
+			if (inside.isEmpty()) return new ArrayList<>();
+			List<Object> list = new ArrayList<>();
+			for (String part : splitArgs(inside)) {
+				list.add(resolve(part.trim(), context));
+			}
+			return list;
 		}
 
-		// Boolean
-		if (expr.equals("true")) {
-			return true;
-		}
-		if (expr.equals("false")) {
-			return false;
+		// === Map-Literal === {x: 1, y: 2}
+		if (expr.startsWith("{") && expr.endsWith("}")) {
+			String inside = expr.substring(1, expr.length() - 1).trim();
+			if (inside.isEmpty()) return new LinkedHashMap<>();
+			Map<String, Object> map = new LinkedHashMap<>();
+			for (String entry : splitArgs(inside)) {
+				int sep = entry.indexOf(':');
+				if (sep < 0) continue;
+				String key = entry.substring(0, sep).trim();
+				String val = entry.substring(sep + 1).trim();
+				if (key.startsWith("\"") && key.endsWith("\"")) {
+					key = key.substring(1, key.length() - 1);
+				}
+				map.put(key, resolve(val, context));
+			}
+			return map;
 		}
 
-		// NOT-Operator
+		// === NOT-Operator ===
 		if (expr.startsWith("not ")) {
 			Object val = resolve(expr.substring(4).trim(), context);
 			return !toBool(val);
 		}
 
-		// Function call
+		// === Funktionsaufruf ===
 		if (expr.contains("(") && expr.endsWith(")")) {
 			String name = expr.substring(0, expr.indexOf('('));
 			String inside = expr.substring(expr.indexOf('(') + 1, expr.length() - 1);
@@ -135,7 +151,7 @@ public class ExpressionEngine {
 			}
 		}
 
-		// Object/Map resolution with :
+		// === Objektauflösung mit ":" ===
 		String[] parts = expr.split(":");
 		Object current = context.get(parts[0]);
 		for (int i = 1; i < parts.length; i++) {
@@ -153,77 +169,54 @@ public class ExpressionEngine {
 				args.add(current.toString());
 				current.setLength(0);
 			} else {
-				if (c == '(') {
-					depth++;
-				}
-				if (c == ')') {
-					depth--;
-				}
+				if (c == '(' || c == '[' || c == '{') depth++;
+				if (c == ')' || c == ']' || c == '}') depth--;
 				current.append(c);
 			}
 		}
-		if (current.length() > 0) {
-			args.add(current.toString());
-		}
+		if (current.length() > 0) args.add(current.toString());
 		return args;
 	}
 
 	private Object resolvePart(Object base, String part) {
-		if (base == null) {
-			return null;
-		}
+		if (base == null) return null;
 
-		// Liste: e.g. users[0]
+		// Liste: z. B. users[0]
 		if (part.matches(".+\\[\\d+\\]")) {
 			String name = part.substring(0, part.indexOf('['));
 			int idx = Integer.parseInt(part.replaceAll(".*\\[(\\d+)\\].*", "$1"));
 			base = resolvePart(base, name);
-			if (base instanceof List<?> list) {
-				return list.get(idx);
-			}
+			if (base instanceof List<?> list) return list.get(idx);
 		}
 
 		// Map
-		if (base instanceof Map<?, ?> map && map.containsKey(part)) {
-			return map.get(part);
-		}
+		if (base instanceof Map<?, ?> map && map.containsKey(part)) return map.get(part);
 
 		// Try getter/method/field
 		try {
-			// Direct method
 			try {
 				Method m = base.getClass().getMethod(part);
 				return m.invoke(base);
-			} catch (NoSuchMethodException ignored) {
-			}
+			} catch (NoSuchMethodException ignored) {}
 
-			// getXxx()
 			String getter = "get" + Character.toUpperCase(part.charAt(0)) + part.substring(1);
 			try {
 				Method m = base.getClass().getMethod(getter);
 				return m.invoke(base);
-			} catch (NoSuchMethodException ignored) {
-			}
+			} catch (NoSuchMethodException ignored) {}
 
-			// Field
 			try {
 				Field f = base.getClass().getDeclaredField(part);
 				f.setAccessible(true);
 				return f.get(base);
-			} catch (NoSuchFieldException ignored) {
-			}
+			} catch (NoSuchFieldException ignored) {}
 		} catch (Exception e) {
 			throw new RuntimeException("Error resolving part: " + part, e);
 		}
 		return null;
 	}
 
-	/**
-	 * Parser für komplexe logische Ausdrücke mit Klammern und logischen
-	 * Operatoren.
-	 */
 	private static class ExpressionParser {
-
 		private final ExpressionEngine engine;
 		private final Map<String, Object> context;
 
@@ -234,12 +227,10 @@ public class ExpressionEngine {
 
 		public Object parse(String expr) {
 			expr = expr.trim();
-			// Entferne äußere Klammern, falls vollständig umschließend
 			if (expr.startsWith("(") && expr.endsWith(")") && isBalanced(expr.substring(1, expr.length() - 1))) {
 				expr = expr.substring(1, expr.length() - 1).trim();
 			}
 
-			// Suche Operator auf oberster Ebene
 			for (String op : engine.operators.keySet()) {
 				int idx = findTopLevelOperator(expr, op);
 				if (idx > 0) {
@@ -257,18 +248,13 @@ public class ExpressionEngine {
 			int depth = 0;
 			for (int i = 0; i < expr.length() - op.length() + 1; i++) {
 				char c = expr.charAt(i);
-				if (c == '(') {
-					depth++;
-				}
-				if (c == ')') {
-					depth--;
-				}
+				if (c == '(' || c == '[' || c == '{') depth++;
+				if (c == ')' || c == ']' || c == '}') depth--;
 				if (depth == 0 && expr.startsWith(op, i)) {
 					boolean leftSpace = i == 0 || Character.isWhitespace(expr.charAt(i - 1));
-					boolean rightSpace = (i + op.length() >= expr.length()) || Character.isWhitespace(expr.charAt(i + op.length()));
-					if (leftSpace && rightSpace) {
-						return i;
-					}
+					boolean rightSpace = (i + op.length() >= expr.length())
+							|| Character.isWhitespace(expr.charAt(i + op.length()));
+					if (leftSpace && rightSpace) return i;
 				}
 			}
 			return -1;
@@ -277,15 +263,9 @@ public class ExpressionEngine {
 		private boolean isBalanced(String s) {
 			int depth = 0;
 			for (char c : s.toCharArray()) {
-				if (c == '(') {
-					depth++;
-				}
-				if (c == ')') {
-					depth--;
-				}
-				if (depth < 0) {
-					return false;
-				}
+				if (c == '(') depth++;
+				if (c == ')') depth--;
+				if (depth < 0) return false;
 			}
 			return depth == 0;
 		}
@@ -294,54 +274,15 @@ public class ExpressionEngine {
 	// Beispielmain
 	public static void main(String[] args) {
 		ExpressionEngine engine = new ExpressionEngine();
-		engine.registerMethod("len", argsList -> {
-			Object val = argsList.get(0);
-			if (val instanceof Collection<?> col) {
-				return col.size();
-			}
-			if (val instanceof Map<?, ?> map) {
-				return map.size();
-			}
-			return val != null ? val.toString().length() : 0;
-		});
-		// Ergänzung im Konstruktor oder in main():
-		engine.registerMethod("contains", argsList -> {
-			if (argsList.size() < 2) {
-				return false;
-			}
-			Object val = argsList.get(0);
-			Object part = argsList.get(1);
-			return val != null && val.toString().contains(String.valueOf(part));
-		});
-
-		engine.registerMethod("startsWith", argsList -> {
-			if (argsList.size() < 2) {
-				return false;
-			}
-			Object val = argsList.get(0);
-			Object prefix = argsList.get(1);
-			return val != null && val.toString().startsWith(String.valueOf(prefix));
-		});
-
-		engine.registerMethod("endsWith", argsList -> {
-			if (argsList.size() < 2) {
-				return false;
-			}
-			Object val = argsList.get(0);
-			Object suffix = argsList.get(1);
-			return val != null && val.toString().endsWith(String.valueOf(suffix));
-		});
+		engine.registerMethod("contains", argsList -> argsList.get(0).toString().contains(argsList.get(1).toString()));
 
 		Map<String, Object> ctx = new HashMap<>();
 		ctx.put("user", Map.of("name", "Thorsten", "age", 42));
 
-		System.out.println(engine.evaluate("(user:age gt 30) and (user:name eq \"Thorsten\")", ctx)); // true
-		System.out.println(engine.evaluate("not (user:age lt 20)", ctx)); // true
-		System.out.println(engine.evaluate("(len(\"Hallo\") eq 5) or (user:age lt 10)", ctx)); // true
-		
-		System.out.println(engine.evaluate("contains(user:name, \"ors\")", ctx)); // true
-		System.out.println(engine.evaluate("startsWith(user:name, \"Tho\")", ctx)); // true
-		System.out.println(engine.evaluate("endsWith(user:name, \"ten\")", ctx)); // true
-
+		System.out.println(engine.evaluate("true", ctx)); // true
+		System.out.println(engine.evaluate("false", ctx)); // false
+		System.out.println(engine.evaluate("null", ctx)); // null
+		System.out.println(engine.evaluate("[1, 2, 3]", ctx)); // [1, 2, 3]
+		System.out.println(engine.evaluate("{x: 1, y: 2}", ctx)); // {x=1, y=2}
 	}
 }

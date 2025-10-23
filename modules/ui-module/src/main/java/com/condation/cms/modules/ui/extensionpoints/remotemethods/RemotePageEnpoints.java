@@ -52,7 +52,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 
 	@RemoteMethod(name = "page.delete", permissions = {Permissions.CONTENT_EDIT})
 	public Object deletePage(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db = getDB(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -88,7 +88,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 
 	@RemoteMethod(name = "page.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object createPage(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db = getDB(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 

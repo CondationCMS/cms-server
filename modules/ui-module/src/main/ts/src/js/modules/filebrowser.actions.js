@@ -34,12 +34,17 @@ export async function renameFileAction({ state, getTargetFolder, filename }) {
 		label: i18n.t("filebrowser.rename.label", "New name"),
 		placeholder: filename
 	});
+	var extraOptions = {}
+	if (state.options.siteid) {
+		options.siteid = state.options.siteid;
+	}
 	if (newName) {
 		var response = await renameFile({
 			uri: getTargetFolder(),
 			name: filename,
 			newName: newName,
-			type: state.options.type
+			type: state.options.type,
+			...extraOptions
 		});
 		if (response.error) {
 			showToast({
@@ -71,10 +76,16 @@ export async function deleteElementAction({ elementName, state, deleteFN, getTar
 		return;
 	}
 
+	var extraOptions = {}
+	if (state.options.siteid) {
+		options.siteid = state.options.siteid;
+	}
+
 	var response = await deleteFN({
 		uri: getTargetFolder(),
 		name: elementName,
-		type: state.options.type
+		type: state.options.type,
+		...extraOptions
 	})
 	if (response.error) {
 		showToast({
@@ -100,10 +111,17 @@ export async function createFolderAction({ state, getTargetFolder }) {
 		placeholder: i18n.t("filebrowser.createFolder.placeholder", "New Folder")
 	});
 	if (folderName) {
+
+		var extraOptions = {}
+		if (state.options.siteid) {
+			options.siteid = state.options.siteid;
+		}
+
 		var response = await createFolder({
 			uri: getTargetFolder(),
 			name: folderName,
-			type: state.options.type
+			type: state.options.type,
+			...extraOptions
 		});
 		if (response.error) {
 			showToast({
@@ -130,10 +148,15 @@ export async function createFileAction({ state, getTargetFolder }) {
 		placeholder: i18n.t("filebrowser.createFile.placeholder", "New File")
 	});
 	if (fileName) {
+		var extraOptions = {}
+		if (state.options.siteid) {
+			options.siteid = state.options.siteid;
+		}
 		var response = await createFile({
 			uri: getTargetFolder(),
 			name: fileName,
-			type: state.options.type
+			type: state.options.type,
+			...extraOptions
 		});
 		if (response.error) {
 			showToast({
@@ -162,10 +185,15 @@ export async function createPageActionOfContentType({ getTargetFolder, contentTy
 	
 	if (pageName) {
 		if (contentType) {
+			var extraOptions = {}
+			if (state.options.siteid) {
+				options.siteid = state.options.siteid;
+			}
 			let response = await createPage({
 				uri: getTargetFolder(),
 				name: pageName,
 				contentType: contentType,
+				...extraOptions
 			});
 			if (response.error) {
 				showToast({

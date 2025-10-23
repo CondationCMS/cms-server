@@ -181,6 +181,13 @@
 										data-cms-i18n-key="menu.page.settings"
 										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings')}}","parameters":{},"type":"script"}'>Page settings</a>
 								</li>
+								{% if translation.enabled %}
+									<li>
+										<a class="dropdown-item" href="#" data-cms-i18n-lang="en"
+											data-cms-i18n-key="menu.page.translation"
+											data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/translation')}}","parameters":{},"type":"script"}'>Translation</a>
+									</li>
+								{% endif %}
 							</ul>
 						</li>
 					</ul>

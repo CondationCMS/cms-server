@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
@@ -75,6 +76,8 @@ public class ResourceHandler extends JettyHandler {
 		if (resource.endsWith(".html")) {
 			try {
 				var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
+				final SiteProperties siteProperties = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
+				var translation = siteProperties.translation();
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource,
 						Map.of(
 								"actionFactory", actionFactory,
@@ -82,8 +85,9 @@ public class ResourceHandler extends JettyHandler {
 								"links", new UILinkFunction(requestContext),
 								"managerBaseURL", managerBaseURL(requestContext),
 								"previewToken", TokenUtils.createToken(getUsername(request, context), secret),
-								"contextPath", context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().contextPath(),
-								"siteId", context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().id()
+								"contextPath", siteProperties.contextPath(),
+								"siteId", siteProperties.id(),
+								"translation", translation
 						));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {

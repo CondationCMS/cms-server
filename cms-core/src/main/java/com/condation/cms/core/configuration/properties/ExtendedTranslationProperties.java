@@ -1,8 +1,8 @@
-package com.condation.cms.api;
+package com.condation.cms.core.configuration.properties;
 
 /*-
  * #%L
- * cms-api
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2024 CondationCMS
  * %%
@@ -22,53 +22,34 @@ package com.condation.cms.api;
  * #L%
  */
 
-
+import com.condation.cms.api.TranslationProperties;
 import java.util.List;
-import java.util.Locale;
 
 /**
  *
  * @author t.marx
  */
-public interface SiteProperties {
-	
-	public List<String> hostnames ();
-	
-	public String markdownEngine ();
-	
-	public String contextPath ();
-	
-	public String id ();
-	
-	public Object get (String field);
-	
-	public <T> T getOrDefault (String field, T defaultValue);
-	
-	public String theme ();
+public class ExtendedTranslationProperties implements TranslationProperties {
 
-	public String queryIndexMode ();
 	
-	public Locale locale ();
+	private boolean enabled = false;
 	
-	public String language();
-	
-	public String defaultContentType ();
-	
-	public List<String> contentPipeline ();
-	
-	public String cacheEngine();
-	
-	public boolean cacheContent();
-	
-	public String templateEngine();
+	private List<Mapping> mapping;
 
-	public List<String> activeModules();
-	
-	public default boolean spaEnabled () {
-		return false;
+	private List<String> languages;
+
+	@Override
+	public List<String> getLanguages() {
+		return languages;
 	}
 	
-	public UIProperties ui();
-	
-	public TranslationProperties translation ();
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	@Override
+	public List<Mapping> getMapping() {
+		return mapping;
+	}
 }

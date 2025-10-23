@@ -29,10 +29,12 @@ content = true
 
 [translation]
 enabled = true
-language = ["de", "en"]
+languages = ["de", "en"]
 
-[translation.mapping.de]
-site = demo-de-site
+[[translation.mapping]]
+language = "de"
+site = "demo-de-site"
 
-[translation.mapping.en]
-site = demo-site
+[[translation.mapping]]
+site = "demo-site"
+language = "en"

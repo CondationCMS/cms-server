@@ -24,15 +24,12 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 				{
 					type: 'divider',
 					name: 'divider',
-					title: 'Custom attributes',
+					title: 'Custom attributes'
 				},
 				{
 					type: "reference",
 					name: "linked_page",
-					title: "Verlinkte Seite",
-					options: {
-						siteid: "demo-de-site"
-					}
+					title: "Verlinkte Seite"
 				},
 				{
 					type: "textarea",

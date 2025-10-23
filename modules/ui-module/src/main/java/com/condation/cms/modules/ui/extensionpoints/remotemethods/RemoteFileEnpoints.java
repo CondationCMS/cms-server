@@ -27,7 +27,6 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadyOnlyFileSystem;
-import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.api.utils.SectionUtil;
@@ -42,8 +41,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
-import com.condation.cms.core.serivce.ServiceRegistry;
-import com.condation.cms.core.serivce.impl.SiteDBService;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Path;
 
@@ -53,7 +50,7 @@ import java.nio.file.Path;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
+public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 
 	private static ReadOnlyFile getBase(ReadyOnlyFileSystem fileSystem, String type) {
 		return switch (type) {
@@ -79,14 +76,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "files.list", permissions = {Permissions.CONTENT_EDIT})
 	public Object list(Map<String, Object> parameters) {
-		final DB db;
-		if (parameters.containsKey("siteid")) {
-			db = ServiceRegistry.getInstance().get(
-					(String)parameters.get("siteid"), 
-					SiteDBService.class).get().db();
-		} else {
-			db = getContext().get(DBFeature.class).db();
-		}
+		final DB db = getDB(parameters);
 		
 		var uri = (String) parameters.getOrDefault("uri", "");
 		if (uri == null) {
@@ -135,7 +125,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "files.delete", permissions = {Permissions.CONTENT_EDIT})
 	public Object delete(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db = getDB(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -176,7 +166,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "files.rename", permissions = {Permissions.CONTENT_EDIT})
 	public Object renameFile(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db = getDB(parameters);
 		Map<String, Object> result = new HashMap<>();
 
 		try {
@@ -238,7 +228,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "folders.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object createFolder(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db = getDB(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -269,7 +259,7 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "files.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object createFile(Map<String, Object> parameters) throws RPCException {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db = getDB(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 

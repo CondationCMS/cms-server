@@ -22,12 +22,14 @@
 import { EventBus } from './modules/event-bus.js';
 import { i18n, localizeUi } from './modules/localization.js';
 window.addEventListener("DOMContentLoaded", async () => {
-    await i18n.init();
+    /*
+    await i18n.init()
     await localizeUi();
-    var langSelect = document.querySelector(`[data-cms-i18n-lang='${i18n.getLocale()}']`);
+    var langSelect = document.querySelector(`[data-cms-i18n-lang='${i18n.getLocale()}']`)
     if (langSelect) {
         langSelect.classList.add("active");
     }
+    */
     document.querySelectorAll(".cms-lang-selector").forEach($elem => {
         $elem.addEventListener("click", async () => {
             i18n.setLocale($elem.getAttribute("data-cms-i18n-lang"));

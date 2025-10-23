@@ -22,10 +22,15 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 
+import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.AuthFeature;
+import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
+import com.condation.cms.core.serivce.ServiceRegistry;
+import com.condation.cms.core.serivce.impl.SiteDBService;
 import com.condation.cms.modules.ui.utils.UIHooks;
+import java.util.Map;
 
 /**
  *
@@ -41,5 +46,15 @@ public abstract class AbstractRemoteMethodeExtension extends UIRemoteMethodExten
 	
 	protected UIHooks uiHooks() {
 		return new UIHooks(getRequestContext().get(HookSystemFeature.class).hookSystem());
+	}
+	
+	protected DB getDB (Map<String, Object> parameters) {
+		if (parameters.containsKey("siteid")) {
+			return ServiceRegistry.getInstance().get(
+					(String)parameters.get("siteid"), 
+					SiteDBService.class).get().db();
+		} else {
+			return getContext().get(DBFeature.class).db();
+		}
 	}
 }

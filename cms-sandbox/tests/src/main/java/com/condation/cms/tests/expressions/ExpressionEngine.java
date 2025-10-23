@@ -40,6 +40,12 @@ public class ExpressionEngine {
 
 	private final Map<String, BiFunction<Object, Object, Object>> operators = new LinkedHashMap<>();
 	private final Map<String, Function<List<Object>, Object>> globalMethods = new HashMap<>();
+	private final Map<String, ParsedExpression> cache = new HashMap<>();
+
+	// Interface for a compiled/parsed expression
+	private interface ParsedExpression {
+		Object evaluate(Map<String, Object> context);
+	}
 
 	public ExpressionEngine() {
 		registerDefaultOperators();
@@ -66,7 +72,7 @@ public class ExpressionEngine {
 		if (a instanceof Comparable && b != null && a.getClass().isAssignableFrom(b.getClass())) {
 			return ((Comparable) a).compareTo(b);
 		}
-		throw new IllegalArgumentException("Cannot compare " + a + " and " + b);
+		throw new EvaluationException("Cannot compare " + a + " and " + b);
 	}
 
 	public void registerOperator(String name, BiFunction<Object, Object, Object> op) {
@@ -78,7 +84,12 @@ public class ExpressionEngine {
 	}
 
 	public Object evaluate(String expression, Map<String, Object> context) {
-		ExpressionParser parser = new ExpressionParser(this, context);
+		ParsedExpression parsed = cache.computeIfAbsent(expression, this::parse);
+		return parsed.evaluate(context);
+	}
+
+	private ParsedExpression parse(String expression) {
+		ExpressionParser parser = new ExpressionParser(this);
 		return parser.parse(expression);
 	}
 
@@ -132,7 +143,7 @@ public class ExpressionEngine {
 
 		// === NOT-Operator ===
 		if (expr.startsWith("not ")) {
-			Object val = resolve(expr.substring(4).trim(), context);
+			Object val = evaluate(expr.substring(4).trim(), context);
 			return !toBool(val);
 		}
 
@@ -151,11 +162,11 @@ public class ExpressionEngine {
 			}
 		}
 
-		// === Objektauflösung mit ":" ===
-		String[] parts = expr.split(":");
-		Object current = context.get(parts[0]);
+		// === Objektauflösung mit "." ===
+		String[] parts = expr.split("\\.");
+		Object current = resolvePart(context, parts[0], context);
 		for (int i = 1; i < parts.length; i++) {
-			current = resolvePart(current, parts[i]);
+			current = resolvePart(current, parts[i], context);
 		}
 		return current;
 	}
@@ -178,19 +189,38 @@ public class ExpressionEngine {
 		return args;
 	}
 
-	private Object resolvePart(Object base, String part) {
-		if (base == null) return null;
+	private Object resolvePart(Object base, String part, Map<String, Object> context) {
+		if (base == null) {
+			throw new EvaluationException("Cannot resolve part '" + part + "' on null object");
+		}
 
 		// Liste: z. B. users[0]
 		if (part.matches(".+\\[\\d+\\]")) {
 			String name = part.substring(0, part.indexOf('['));
 			int idx = Integer.parseInt(part.replaceAll(".*\\[(\\d+)\\].*", "$1"));
-			base = resolvePart(base, name);
-			if (base instanceof List<?> list) return list.get(idx);
+			Object listObj = resolvePart(base, name, context);
+
+			if (listObj instanceof List<?> list) {
+				if (idx >= 0 && idx < list.size()) {
+					return list.get(idx);
+				} else {
+					throw new EvaluationException("Index " + idx + " out of bounds for list " + name);
+				}
+			} else {
+				throw new EvaluationException("Cannot access by index on non-list object: " + name);
+			}
 		}
 
 		// Map
-		if (base instanceof Map<?, ?> map && map.containsKey(part)) return map.get(part);
+		if (base instanceof Map<?, ?> map) {
+			if (map.containsKey(part)) {
+				return map.get(part);
+			}
+			if (base == context) {
+				return null;
+			}
+			throw new EvaluationException("Could not resolve part '" + part + "' on object " + base);
+		}
 
 		// Try getter/method/field
 		try {
@@ -211,21 +241,19 @@ public class ExpressionEngine {
 				return f.get(base);
 			} catch (NoSuchFieldException ignored) {}
 		} catch (Exception e) {
-			throw new RuntimeException("Error resolving part: " + part, e);
+			throw new EvaluationException("Error resolving part: " + part, e);
 		}
-		return null;
+		throw new EvaluationException("Could not resolve part '" + part + "' on object " + base);
 	}
 
 	private static class ExpressionParser {
 		private final ExpressionEngine engine;
-		private final Map<String, Object> context;
 
-		ExpressionParser(ExpressionEngine engine, Map<String, Object> context) {
+		ExpressionParser(ExpressionEngine engine) {
 			this.engine = engine;
-			this.context = context;
 		}
 
-		public Object parse(String expr) {
+		public ParsedExpression parse(String expr) {
 			expr = expr.trim();
 			if (expr.startsWith("(") && expr.endsWith(")") && isBalanced(expr.substring(1, expr.length() - 1))) {
 				expr = expr.substring(1, expr.length() - 1).trim();
@@ -233,15 +261,19 @@ public class ExpressionEngine {
 
 			for (String op : engine.operators.keySet()) {
 				int idx = findTopLevelOperator(expr, op);
-				if (idx > 0) {
+				if (idx >= 0) {
 					String left = expr.substring(0, idx).trim();
 					String right = expr.substring(idx + op.length()).trim();
-					Object lVal = parse(left);
-					Object rVal = parse(right);
-					return engine.operators.get(op).apply(lVal, rVal);
+					if (right.isEmpty()) {
+						throw new ExpressionParseException("Missing right operand for operator: " + op);
+					}
+					ParsedExpression lVal = parse(left);
+					ParsedExpression rVal = parse(right);
+					return context -> engine.operators.get(op).apply(lVal.evaluate(context), rVal.evaluate(context));
 				}
 			}
-			return engine.resolve(expr, context);
+			final String finalExpr = expr;
+			return context -> engine.resolve(finalExpr, context);
 		}
 
 		private int findTopLevelOperator(String expr, String op) {

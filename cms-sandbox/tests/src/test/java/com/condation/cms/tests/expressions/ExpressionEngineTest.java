@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ExpressionEngineTest {
 
@@ -98,9 +99,11 @@ class ExpressionEngineTest {
 
     @Test
     void testObjectAndMapAccess() {
-        assertThat(engine.evaluate("user:name", ctx)).isEqualTo("Thorsten");
-        assertThat(engine.evaluate("user:age", ctx)).isEqualTo(42);
-        assertThat(engine.evaluate("nested:inner:key", ctx)).isEqualTo("value");
+        assertThat(engine.evaluate("user.name", ctx)).isEqualTo("Thorsten");
+        assertThat(engine.evaluate("user.age", ctx)).isEqualTo(42);
+        assertThat(engine.evaluate("nested.inner.key", ctx)).isEqualTo("value");
+        ctx.put("data", Map.of("users", Arrays.asList(Map.of("name", "John"), Map.of("name", "Jane"))));
+        assertThat(engine.evaluate("data.users[1].name", ctx)).isEqualTo("Jane");
     }
 
     @Test
@@ -111,13 +114,36 @@ class ExpressionEngineTest {
 
     @Test
     void testGlobalMethods() {
-        assertThat(engine.evaluate("contains(user:name, \"ors\")", ctx)).isEqualTo(true);
-        assertThat(engine.evaluate("contains(user:name, \"xyz\")", ctx)).isEqualTo(false);
+        assertThat(engine.evaluate("contains(user.name, \"ors\")", ctx)).isEqualTo(true);
+        assertThat(engine.evaluate("contains(user.name, \"xyz\")", ctx)).isEqualTo(false);
     }
 
     @Test
     void testComplexExpression() {
-        assertThat(engine.evaluate("(user:age gt 30) and contains(user:name, \"Thor\")", ctx)).isEqualTo(true);
-        assertThat(engine.evaluate("not (user:age lt 20) or contains(user:name, \"xyz\")", ctx)).isEqualTo(true);
+        assertThat(engine.evaluate("(user.age gt 30) and contains(user.name, \"Thor\")", ctx)).isEqualTo(true);
+        assertThat(engine.evaluate("not (user.age lt 20) or contains(user.name, \"xyz\")", ctx)).isEqualTo(true);
+    }
+
+    @Test
+    void testExceptionHandling() {
+        assertThatThrownBy(() -> engine.evaluate("user.nonexistent", ctx))
+            .isInstanceOf(EvaluationException.class)
+            .hasMessageContaining("Could not resolve part 'nonexistent'");
+
+        assertThatThrownBy(() -> engine.evaluate("numbers[99]", ctx))
+            .isInstanceOf(EvaluationException.class)
+            .hasMessageContaining("Index 99 out of bounds");
+
+        assertThatThrownBy(() -> engine.evaluate("user.name[0]", ctx))
+            .isInstanceOf(EvaluationException.class)
+            .hasMessageContaining("Cannot access by index on non-list object");
+
+        assertThatThrownBy(() -> engine.evaluate("10 eq ", ctx))
+            .isInstanceOf(ExpressionParseException.class)
+            .hasMessageContaining("Missing right operand for operator: eq");
+
+        assertThatThrownBy(() -> engine.evaluate("nonexistent.value", ctx))
+            .isInstanceOf(EvaluationException.class)
+            .hasMessageContaining("Cannot resolve part 'value' on null object");
     }
 }

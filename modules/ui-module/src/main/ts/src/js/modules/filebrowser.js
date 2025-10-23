@@ -80,10 +80,15 @@ const openFileBrowser = async (optionsParam) => {
 const initFileBrowser = async (uri) => {
 	state.currentFolder = uri ? uri : "";
 
-	const contentFiles = await listFiles({
+	var options = {
 		type: state.options.type,
 		uri: state.currentFolder
-	});
+	}
+	if (state.options.siteid) {
+		options.siteid = state.options.siteid;
+	}
+
+	const contentFiles = await listFiles(options);
 
 	var files = contentFiles.result.files;
 	if (state.options.filter) {

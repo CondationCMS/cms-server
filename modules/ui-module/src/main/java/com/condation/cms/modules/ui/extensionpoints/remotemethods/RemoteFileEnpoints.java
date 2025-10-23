@@ -42,6 +42,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.core.serivce.ServiceRegistry;
+import com.condation.cms.core.serivce.impl.SiteDBService;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Path;
 
@@ -77,7 +79,15 @@ public class RemoteFileEnpoints extends UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "files.list", permissions = {Permissions.CONTENT_EDIT})
 	public Object list(Map<String, Object> parameters) {
-		final DB db = getContext().get(DBFeature.class).db();
+		final DB db;
+		if (parameters.containsKey("siteid")) {
+			db = ServiceRegistry.getInstance().get(
+					(String)parameters.get("siteid"), 
+					SiteDBService.class).get().db();
+		} else {
+			db = getContext().get(DBFeature.class).db();
+		}
+		
 		var uri = (String) parameters.getOrDefault("uri", "");
 		if (uri == null) {
 			uri = "";

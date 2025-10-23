@@ -29,7 +29,10 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 				{
 					type: "reference",
 					name: "linked_page",
-					title: "Verlinkte Seite"
+					title: "Verlinkte Seite",
+					options: {
+						siteid: "demo-de-site"
+					}
 				},
 				{
 					type: "textarea",

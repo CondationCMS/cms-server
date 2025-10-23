@@ -1,8 +1,8 @@
-package com.condation.cms.server.host;
+package com.condation.cms.core.serivce.impl;
 
 /*-
  * #%L
- * cms-server
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -23,24 +23,12 @@ package com.condation.cms.server.host;
  */
 
 import com.condation.cms.api.db.DB;
-import com.condation.cms.core.serivce.ServiceRegistry;
-import com.condation.cms.core.serivce.impl.SiteDBService;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.core.serivce.Service;
 
 /**
  *
- * @author thorstenmarx
+ * @author thmar
  */
-@Slf4j
-@RequiredArgsConstructor
-public class Initializer {
-
-	private final VHost host;
-
-	void initServices () {
-		var db = host.injector.getInstance(DB.class);
-		ServiceRegistry.getInstance().register(host.id(), SiteDBService.class, new SiteDBService(db));
-		
-	}
+public record SiteDBService (DB db) implements Service {
+	
 }

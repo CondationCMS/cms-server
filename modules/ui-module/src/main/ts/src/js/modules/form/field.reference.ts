@@ -25,6 +25,9 @@ import { openFileBrowser } from "../filebrowser.js";
 import { FieldOptions, FormContext, FormField } from "./forms.js";
 
 export interface ReferenceFieldOptions extends FieldOptions {
+	options?: {
+		siteid? : string;
+	};
 }
 
 const createReferenceField = (options: ReferenceFieldOptions, value: string = '') => {
@@ -33,7 +36,7 @@ const createReferenceField = (options: ReferenceFieldOptions, value: string = ''
 	const title = i18n.t(key, options.title);
 
 	return `
-		<div class="mb-3 cms-form-field" data-cms-form-field-type="reference">
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="reference" data-cms-field-options='${JSON.stringify(options || {})}'>
 			<div class="d-flex flex-column">
 				<div>
 					<label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
@@ -62,16 +65,23 @@ const getData = (context: FormContext) => {
 
 const init = (context: FormContext) => {
 	context.formElement.querySelectorAll("[data-cms-form-field-type='reference']").forEach(wrapper => {
-		const openMediaManager = wrapper.querySelector(".cms-reference-button") as HTMLButtonElement;
+		const fileManager = wrapper.querySelector(".cms-reference-button") as HTMLButtonElement;
 
-		if (!openMediaManager) return;
+		if (!fileManager) return;
 
+		let parsedField: ReferenceFieldOptions | null = null;
+        const raw = (wrapper as HTMLElement).dataset.cmsFieldOptions;
+        if (raw) {
+            try { parsedField = JSON.parse(raw) as ReferenceFieldOptions; } catch (e) { console.warn("Invalid field options JSON", e); }
+        }
+		const siteid = parsedField?.options?.siteid ?? undefined;
 
 		// Handle MediaManager button robust: remove old handler, use onclick
-		openMediaManager.onclick = null;
-		openMediaManager.onclick = () => {
+		fileManager.onclick = null;
+		fileManager.onclick = () => {
 			openFileBrowser({
 				type: "content",
+				siteid: siteid,
 				filter: (file) => {
 					return file.content || file.directory;
 				},

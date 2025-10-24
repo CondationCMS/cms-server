@@ -2,6 +2,7 @@ package com.condation.cms.cli.commands.server;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.auth.services.Realm;
 
 /*-
  * #%L
@@ -27,7 +28,9 @@ import com.condation.cms.api.utils.ServerUtil;
 
 
 import com.condation.cms.auth.services.UserService;
-import java.nio.file.Path;
+import com.google.common.base.Strings;
+import java.util.HashMap;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
 import picocli.CommandLine.Parameters;
@@ -36,18 +39,20 @@ import picocli.CommandLine.Parameters;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "add_user")
+@CommandLine.Command(
+		name = "add_user",
+		description = {
+			"adds a user to a realm"
+		}
+)
 @Slf4j
 public class AddUser implements Runnable {
 
 	@CommandLine.Option(names = {"-r", "--realm"}, description = "The realm")
 	String realm = "users";
-
-	@CommandLine.Option(names = {"-h", "--host"}, description = "The host", required = true)
-	String host = null;
 	
-	@CommandLine.Option(names = {"-g", "--groups"}, description = "The groups", split = ",")
-	String[] groups = null;
+	@CommandLine.Option(names = {"-ro", "--roles"}, description = "The roles", split = ",")
+	String[] roles = null;
 	
 	@Parameters(
 			paramLabel = "<username>",
@@ -63,12 +68,23 @@ public class AddUser implements Runnable {
 	)
 	private String password = "";
 
+	@Parameters(
+			paramLabel = "<mail>",
+			index = "2",
+			description = "The users mail address."
+	)
+	private String mail = "";
+	
 	@Override
 	public void run() {
 		try {
-			UserService userService = new UserService(ServerUtil.getPath(Constants.Folders.HOSTS).resolve(host));
+			UserService userService = new UserService(ServerUtil.getHome());
 			
-			userService.addUser(UserService.Realm.of(realm), username, password, groups);
+			Map<String, Object> data = new HashMap<>();
+			if (!Strings.isNullOrEmpty(mail)) {
+				data.put("mail", mail);
+			}
+			userService.addUser(Realm.of(realm), username, password, roles, data);
 			log.info("user added successfuly");
 		} catch (Exception e) {
 			throw new RuntimeException(e);

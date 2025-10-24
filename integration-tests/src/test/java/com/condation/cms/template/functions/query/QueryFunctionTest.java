@@ -23,6 +23,7 @@ package com.condation.cms.template.functions.query;
  */
 
 
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.Configuration;
@@ -37,6 +38,7 @@ import com.condation.cms.filesystem.FileDB;
 import java.io.IOException;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -50,12 +52,18 @@ public class QueryFunctionTest {
 	private static FileDB db;
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 
+	@AfterAll
+	static void close () throws Exception {
+		db.close();
+	}
 	@BeforeAll
 	static void init() throws IOException {
-		var hostBase = Path.of("hosts/test/");
+		var hostBase =  Path.of("target/test-" + System.nanoTime());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
+		
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return contentParser.parseMeta(cmsFile);

@@ -21,6 +21,7 @@ package com.condation.cms.server.filter;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.request.RequestContextFactory;
@@ -40,8 +41,6 @@ public class InitRequestContextFilter extends Handler.Abstract {
 
 	private final RequestContextFactory requestContextFactory;
 
-	public static final String REQUEST_CONTEXT = "_requestContext";
-
 	@Inject
 	public InitRequestContextFilter(final RequestContextFactory requestContextFactory) {
 		super();
@@ -50,7 +49,7 @@ public class InitRequestContextFilter extends Handler.Abstract {
 
 	@Override
 	public boolean handle(final Request httpRequest, final Response rspns, final Callback clbck) throws Exception {
-		var requestContext = (RequestContext) httpRequest.getAttribute(REQUEST_CONTEXT);
+		var requestContext = (RequestContext) httpRequest.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 
 		if (requestContext.has(AlreadyInitialized.class)) {
 			return false;

@@ -67,4 +67,8 @@ public interface SiteProperties {
 	public default boolean spaEnabled () {
 		return false;
 	}
+	
+	public UIProperties ui();
+	
+	public TranslationProperties translation ();
 }

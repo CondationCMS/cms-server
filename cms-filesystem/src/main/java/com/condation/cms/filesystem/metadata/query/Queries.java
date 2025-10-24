@@ -104,29 +104,17 @@ public class Queries {
 			return Operator.EQ;
 		}
 		return switch (operator) {
-			case "=" ->
+			case "=", "eq" ->
 				Operator.EQ;
-			case "eq" ->
-				Operator.EQ;
-			case "!=" ->
+			case "!=", "not eq" ->
 				Operator.NOT_EQ;
-			case "not eq" ->
-				Operator.NOT_EQ;
-			case ">" ->
+			case ">", "gt" ->
 				Operator.GT;
-			case "gt" ->
-				Operator.GT;
-			case ">=" ->
+			case ">=", "gte" ->
 				Operator.GTE;
-			case "gte" ->
-				Operator.GTE;
-			case "<" ->
+			case "<", "lt" ->
 				Operator.LT;
-			case "lt" ->
-				Operator.LT;
-			case "<=" ->
-				Operator.LTE;
-			case "lte" ->
+			case "<=", "lte" ->
 				Operator.LTE;
 			case "in" ->
 				Operator.IN;

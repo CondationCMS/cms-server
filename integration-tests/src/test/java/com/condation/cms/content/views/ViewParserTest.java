@@ -23,6 +23,7 @@ package com.condation.cms.content.views;
  */
 
 
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.Configuration;
@@ -36,6 +37,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.google.inject.Injector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -50,6 +52,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -70,9 +73,13 @@ public class ViewParserTest {
 	@BeforeAll
 	static void setup () throws IOException {
 		
-		var hostBase = Path.of("hosts/test/");
+		
+		var hostBase = Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
+		
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return parser.parseMeta(cmsFile);

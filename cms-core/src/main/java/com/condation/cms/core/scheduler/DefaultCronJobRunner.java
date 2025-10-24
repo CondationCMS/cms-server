@@ -25,8 +25,6 @@ package com.condation.cms.core.scheduler;
 
 
 import com.condation.cms.api.scheduler.CronJob;
-import com.condation.cms.api.scheduler.CronJobContext;
-import static com.condation.cms.core.scheduler.SingleCronJobRunner.DATA_CONTEXT;
 import static com.condation.cms.core.scheduler.SingleCronJobRunner.DATA_CRONJOB;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -41,8 +39,7 @@ public class DefaultCronJobRunner implements Job {
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		if (context.getJobDetail().getJobDataMap().get(DATA_CRONJOB) != null) {
-			CronJobContext jobContext = (CronJobContext) context.getJobDetail().getJobDataMap().get(DATA_CONTEXT);
-			((CronJob)context.getJobDetail().getJobDataMap().get(DATA_CRONJOB)).accept(jobContext);
+			((CronJob)context.getJobDetail().getJobDataMap().get(DATA_CRONJOB)).accept(null);
 		}
 	}
 	

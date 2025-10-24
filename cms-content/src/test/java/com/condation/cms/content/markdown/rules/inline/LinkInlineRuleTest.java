@@ -21,11 +21,11 @@ package com.condation.cms.content.markdown.rules.inline;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
+import com.condation.cms.content.markdown.InlineBlock;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,7 +44,7 @@ public class LinkInlineRuleTest {
 
 	@Mock
 	SiteProperties siteProperties;
-	
+
 	@Test
 	public void test_link() {
 
@@ -75,20 +75,23 @@ public class LinkInlineRuleTest {
 	@Test
 	public void test_relativ_linking_with_context() {
 
-		try {
-			
-			Mockito.when(siteProperties.contextPath()).thenReturn("/de");
-			
-			RequestContext requestContext = new RequestContext();
-			requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
-			ThreadLocalRequestContext.REQUEST_CONTEXT.set(requestContext);
-			
-			var result = SUT.next("[relative link](../sibling/test)");
+		Mockito.when(siteProperties.contextPath()).thenReturn("/de");
 
-			Assertions.assertThat(result.render())
-					.isEqualTo("<a href=\"../sibling/test\" id=\"relative-link\">relative link</a>");
-		} finally {
-			ThreadLocalRequestContext.REQUEST_CONTEXT.remove();
+		RequestContext requestContext = new RequestContext();
+		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));
+
+		InlineBlock result = null;
+		try {
+			result = ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).call(() -> {
+				return SUT.next("[relative link](../sibling/test)");
+			});
+		} catch (Exception ex) {
+			System.getLogger(LinkInlineRuleTest.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
 		}
+
+		Assertions.assertThat(result).isNotNull();
+		Assertions.assertThat(result.render())
+				.isEqualTo("<a href=\"../sibling/test\" id=\"relative-link\">relative link</a>");
+
 	}
 }

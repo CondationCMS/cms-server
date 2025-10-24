@@ -34,7 +34,12 @@ import picocli.CommandLine;
  * @author t.marx
  */
 @Slf4j
-@CommandLine.Command(name = "remove")
+@CommandLine.Command(
+		name = "remove",
+		description = {
+			"removes a theme if it is not in use anymore"
+		}
+)
 public class RemoveCommand extends AbstractThemeCommand implements Runnable {
 
 	@CommandLine.Parameters(

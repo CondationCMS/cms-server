@@ -53,8 +53,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -227,16 +225,16 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		List<ContentNode> nodes = new ArrayList<>();
 
 		final Pattern isSectionOf = Constants.SECTION_OF_PATTERN.apply(filename);
-		final Pattern isOrderedSectionOf = Constants.SECTION_ORDERED_OF_PATTERN.apply(filename);
-
+		final Pattern isNamedSectionOf = Constants.SECTION_NAMED_OF_PATTERN.apply(filename);
+		
 		if ("".equals(folder)) {
 			metaData.getTree().values()
 					.stream()
 					.filter(node -> !node.isHidden())
-					.filter(node -> node.isPublished())
+					.filter(node -> node.isVisible())
 					.filter(node -> node.isSection())
 					.filter(node -> {
-						return isSectionOf.matcher(node.name()).matches() || isOrderedSectionOf.matcher(node.name()).matches();
+						return isSectionOf.matcher(node.name()).matches() || isNamedSectionOf.matcher(node.name()).matches();
 					})
 					.forEach((node) -> {
 						nodes.add(node);
@@ -247,11 +245,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 				findFolder.get().children().values()
 						.stream()
 						.filter(node -> !node.isHidden())
-						.filter(node -> node.isPublished())
+						.filter(node -> node.isVisible())
 						.filter(node -> node.isSection())
 						.filter(node
-								-> isSectionOf.matcher(node.name()).matches()
-						|| isOrderedSectionOf.matcher(node.name()).matches()
+								-> isSectionOf.matcher(node.name()).matches() || isNamedSectionOf.matcher(node.name()).matches()
 						)
 						.forEach((node) -> {
 							nodes.add(node);
@@ -290,10 +287,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void init(MetaData.Type metaDataType) throws IOException {
 		log.debug("init filesystem");
 		
-		if (MetaData.Type.PERSISTENT.equals(metaDataType)) {
-			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
-		} else {
+		if (MetaData.Type.MEMORY.equals(metaDataType)) {
 			this.metaData = new MemoryMetaData();
+		} else {
+			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
 		}
 		this.metaData.open();
 
@@ -337,7 +334,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		
 		eventBus.register(ReIndexContentMetaDataEvent.class, (event) -> {
 			try {
-				swapMetaData();
+				if (event.uri() == null) {
+					swapMetaData();
+				} else {
+					var contentFile = contentBase.resolve(event.uri());
+					addOrUpdateMetaData(contentFile);
+				}
 			} catch (IOException ex) {
 				log.error("error while reindex meta data", ex);
 			}

@@ -45,6 +45,9 @@ test-server/hosts/marx-software
 test-server/hosts/demo/modules_data/search-module/index
 test-server/hosts/demo/modules_data/ui-module
 test-server/hosts/demo/temp/
+test-server/hosts/demo/data/
+test-server/hosts/demo_spa/data/
+test-server/hosts/demo_de/data/
 test-server/hosts/features/modules_data/
 test-server/hosts/features/temp
 test-server/hosts/features_de/modules_data/
@@ -65,3 +68,7 @@ test-server/modules/markedj-module
 test-server/cms.pid
 test-server/hosts/features/data/
 .DS_Store
+test-server/mail-server/fake-smtp-server-2.4.2.jar
+modules/api-module/src/test/resources/site/data
+cms-content/src/test/resources/site/data
+integration-tests/hosts/test/data

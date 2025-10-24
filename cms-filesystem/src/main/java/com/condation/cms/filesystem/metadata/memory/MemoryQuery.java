@@ -44,6 +44,7 @@ import java.util.stream.Stream;
  * @author t.marx
  * @param <T>
  */
+@Deprecated(since = "2025.10")
 public class MemoryQuery<T> extends ExtendableQuery<T> {
 
 	private QueryContext<T> context;
@@ -195,6 +196,11 @@ public class MemoryQuery<T> extends ExtendableQuery<T> {
 	@Override
 	public Map<Object, List<ContentNode>> groupby(final String field) {
 		return QueryUtil.groupby(context.getNodes(), field);
+	}
+
+	@Override
+	public ContentQuery<T> expression(String expressions) {
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 
 	public static record Sort<T>(String field, QueryContext context) implements ContentQuery.Sort<T> {

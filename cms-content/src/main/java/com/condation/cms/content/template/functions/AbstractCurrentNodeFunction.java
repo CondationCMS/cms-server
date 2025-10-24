@@ -28,7 +28,7 @@ import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.HTTPUtil;
 import java.io.IOException;
 import java.util.Optional;
@@ -78,8 +78,8 @@ public abstract class AbstractCurrentNodeFunction {
 	}
 
 	protected boolean isPreview() {
-		if (ThreadLocalRequestContext.REQUEST_CONTEXT.get() != null
-				&& ThreadLocalRequestContext.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
+		if (RequestContextScope.REQUEST_CONTEXT.isBound()
+				&& RequestContextScope.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
 			return true;
 		}
 

@@ -33,6 +33,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.google.inject.Injector;
 import java.nio.file.Path;
 import java.util.Set;
 import org.assertj.core.api.Assertions;
@@ -103,13 +104,13 @@ public class ContentServiceTest {
 	public void publised_content_is_returned() {
 		var content = contentService.resolve("", request);
 		
-		Assertions.assertThat(content.isPresent());
+		Assertions.assertThat(content).isPresent();
 	}
 	
 	@Test
 	public void unpublised_content_is_not_returned() {
 		var content = contentService.resolve("sub", request);
 		
-		Assertions.assertThat(content.isEmpty());
+		Assertions.assertThat(content).isEmpty();
 	}
 }

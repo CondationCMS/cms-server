@@ -22,6 +22,7 @@ package com.condation.cms.core.content;
  * #L%
  */
 
+import com.condation.cms.api.content.MapAccess;
 import java.util.Map;
 
 import org.assertj.core.api.Assertions;

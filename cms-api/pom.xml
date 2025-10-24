@@ -4,11 +4,24 @@
 	<parent>
 		<groupId>com.condation.cms</groupId>
 		<artifactId>cms-parent</artifactId>
-		<version>7.8.0</version>
+		<version>8.0.0</version>
 	</parent>
 	<artifactId>cms-api</artifactId>
 	<packaging>jar</packaging>
-	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.14.0</version>
+				<configuration>
+					<compilerArgs>
+						<arg>--enable-preview</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -28,6 +41,10 @@
 			<artifactId>snakeyaml</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-http</artifactId>
 			<version>${jetty.version}</version>
@@ -40,9 +57,19 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
+		<!-- guice-classes and asm are only added to provide jdk compatiblity -->
 		<dependency>
 			<groupId>com.google.inject</groupId>
 			<artifactId>guice</artifactId>
+			<classifier>classes</classifier>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>9.8</version>
 		</dependency>
 	</dependencies>
+    <properties>
+        <maven.compiler.release>25</maven.compiler.release>
+    </properties>
 </project>

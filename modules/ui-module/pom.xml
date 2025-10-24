@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.condation.cms.modules</groupId>
+		<artifactId>cms-modules</artifactId>
+		<version>8.0.0</version>
+	</parent>
+	<artifactId>ui-module</artifactId>
+	<packaging>jar</packaging>
+    
+	<dependencies>
+		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-auth</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.tika</groupId>
+			<artifactId>tika-core</artifactId>
+			<version>3.2.3</version>
+		</dependency>
+		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-filesystem</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-templates</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.simplejavamail</groupId>
+			<artifactId>simple-java-mail</artifactId>
+			<version>8.12.6</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+</project>

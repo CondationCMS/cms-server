@@ -23,6 +23,7 @@ package com.condation.cms.filesystem;
  */
 
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.DB;
@@ -31,6 +32,7 @@ import com.condation.cms.api.db.cms.ReadyOnlyFileSystem;
 import com.condation.cms.api.db.cms.WrappedReadOnlyFileSystem;
 import com.condation.cms.api.db.taxonomy.Taxonomies;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.ContentChangedEvent;
 import com.condation.cms.filesystem.taxonomy.FileTaxonomies;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -57,7 +59,7 @@ public class FileDB implements DB {
 	private FileTaxonomies taxonomies;
 	
 	public void init () throws IOException {
-		init(MetaData.Type.MEMORY);
+		init(MetaData.Type.PERSISTENT);
 	}
 	
 	public void init (MetaData.Type metaDataType) throws IOException {
@@ -67,8 +69,7 @@ public class FileDB implements DB {
 		
 		content = new FileContent(fileSystem, readOnlyFileSystem);
 		
-		taxonomies = new FileTaxonomies(configuration, fileSystem);
-		
+		taxonomies = new FileTaxonomies(configuration, fileSystem);	
 	}
 
 	@Override

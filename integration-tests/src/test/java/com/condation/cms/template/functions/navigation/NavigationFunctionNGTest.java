@@ -41,6 +41,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +56,10 @@ public class NavigationFunctionNGTest {
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 	static Path hostBase = Path.of("hosts/test/");
 
+	@AfterAll
+	static void close () throws Exception {
+		db.close();
+	}
 	@BeforeAll
 	static void init() throws IOException {
 		var contentParser = new DefaultContentParser();

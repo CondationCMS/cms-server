@@ -23,6 +23,7 @@ package com.condation.cms.content;
  */
 
 
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
@@ -59,9 +60,10 @@ public class ContentResolverTest {
 	@BeforeAll
 	public static void setup() throws IOException {
 		var contentParser = new DefaultContentParser();
-		var hostBase = Path.of("hosts/test/");
+		var hostBase = Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return contentParser.parseMeta(cmsFile);

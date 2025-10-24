@@ -26,18 +26,20 @@ package com.condation.cms.server.handler.media;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.media.MediaUtils;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.media.MediaManager;
+import com.condation.cms.server.handler.AbstractHandler;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.io.Content;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -48,7 +50,7 @@ import org.eclipse.jetty.util.Callback;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class JettyMediaHandler extends Handler.Abstract {
+public class JettyMediaHandler extends AbstractHandler {
 
 	@Getter
 	private final MediaManager mediaManager;
@@ -63,12 +65,12 @@ public class JettyMediaHandler extends Handler.Abstract {
 
 			if ("##original##".equalsIgnoreCase(formatValue)) {
 				var mediaPath = getRelativeMediaPath(request);
-				Path assetPath = mediaManager.resolve(mediaPath);
-				if (assetPath != null) {
-					var bytes = Files.readAllBytes(assetPath);
-					var mimetype = Files.probeContentType(assetPath);
+				Optional<Path> assetPath = mediaManager.resolve(mediaPath);
+				if (assetPath.isPresent()) {
+					var bytes = Files.readAllBytes(assetPath.get());
+					var mimetype = Files.probeContentType(assetPath.get());
 
-					deliver(bytes, mimetype, response);
+					deliver(bytes, mimetype, request, response);
 					
 					callback.succeeded();
 					return true;
@@ -87,7 +89,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 				var result = mediaManager.getScaledContent(mediaPath, format);
 				if (result.isPresent()) {
 
-					deliver(result.get(), MediaUtils.mime4Format(format.format()), response);
+					deliver(result.get(), MediaUtils.mime4Format(format.format()), request, response);
 					
 					callback.succeeded();
 					return true;
@@ -103,10 +105,12 @@ public class JettyMediaHandler extends Handler.Abstract {
 		return true;
 	}
 
-	private void deliver(final byte[] bytes, final String mimetype, Response response) throws IOException {
+
+	
+	private void deliver(final byte[] bytes, final String mimetype, Request request, Response response) throws IOException {
 		response.getHeaders().add("Content-Type", mimetype);
 		response.getHeaders().add("Content-Length", bytes.length);
-		if (!ServerContext.IS_DEV) {
+		if (!ServerContext.IS_DEV && !isPreview(request)) {
 			response.getHeaders().add("Access-Control-Max-Age", Duration.ofDays(10).toSeconds());
 			response.getHeaders().add("Cache-Control", "max-age=" + Duration.ofDays(10).toSeconds());
 		}		
@@ -117,7 +121,7 @@ public class JettyMediaHandler extends Handler.Abstract {
 
 	private String getRelativeMediaPath(Request request) {
 		var path = request.getHttpURI().getPath();
-		var contextPath = request.getContext().getContextPath();
+		var contextPath = RequestUtil.getContextPath(request);
 		if (!contextPath.endsWith("/")) {
 			contextPath += "/";
 		}

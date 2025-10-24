@@ -56,6 +56,7 @@ public class QueryPerfTest {
 			var node = new ContentNode("/test" + i, "test2.md", Map.of(
 					"article", Map.of("featured", (i % 2 == 0 ? true : false)),
 					"index", i,
+					Constants.MetaFields.PUBLISHED, true,
 					Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
 					"tags", List.of("one", "two"))
 			);

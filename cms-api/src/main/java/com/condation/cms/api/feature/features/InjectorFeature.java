@@ -31,7 +31,7 @@ import com.google.inject.Injector;
  *
  * @author t.marx
  */
-@FeatureScope({FeatureScope.Scope.REQUEST})
+@FeatureScope({FeatureScope.Scope.REQUEST, FeatureScope.Scope.MODULE, FeatureScope.Scope.SERVER})
 public record InjectorFeature(Injector injector) implements Feature {
 
 }

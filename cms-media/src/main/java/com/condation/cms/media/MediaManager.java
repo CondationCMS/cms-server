@@ -21,17 +21,20 @@ package com.condation.cms.media;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
+import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
 import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.api.media.MediaUtils;
+import com.condation.cms.api.media.meta.Meta;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.FileUtils;
+import com.condation.cms.api.utils.PathUtil;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -40,8 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
-import net.coobird.thumbnailator.geometry.Position;
-import net.coobird.thumbnailator.geometry.Positions;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
@@ -57,34 +59,34 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 
 	protected Map<String, MediaFormat> mediaFormats;
 	protected Path tempDirectory;
-	
-	protected MediaManager (List<Path> assetPath, Path tempFolder, Theme theme, Configuration configuration) {
+
+	protected MediaManager(List<Path> assetPath, Path tempFolder, Theme theme, Configuration configuration) {
 		this.assetBase = assetPath;
 		this.tempFolder = tempFolder;
 		this.theme = theme;
 		this.configuration = configuration;
 	}
-	
-	public abstract void reloadTheme (Theme updateTheme);
-	
-	
-	public Path resolve (String uri) {
+
+	public abstract void reloadTheme(Theme updateTheme);
+
+	public Optional<Path> resolve(String uri) {
 		for (Path assets : assetBase) {
 			var resolved = assets.resolve(uri);
 			if (Files.exists(resolved)) {
-				return resolved;
+				return Optional.of(resolved);
 			}
 		}
-		return null;
+		return Optional.empty();
 	}
-	
-	public boolean hasMediaFormat (String format) {
+
+	public boolean hasMediaFormat(String format) {
 		return getMediaFormats().containsKey(format);
 	}
-	public MediaFormat getMediaFormat (String format) {
+
+	public MediaFormat getMediaFormat(String format) {
 		return getMediaFormats().get(format);
 	}
-	
+
 	private Path getTempDirectory() throws IOException {
 		if (tempDirectory == null) {
 			tempDirectory = tempFolder.resolve("media");
@@ -95,25 +97,52 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 		return tempDirectory;
 	}
 
+	public void clearTempDirectory () {
+		try {
+			FileUtils.deleteDirectoryContents(getTempDirectory());
+		} catch (IOException e) {
+			log.error("error clearing media tempfolder", e);
+		}
+	}
+	
+	public void deleteTempFile(final Path mediaPath) {
+		var baseDir = assetBase.stream().filter((base) -> PathUtil.isChild(base, mediaPath)).findFirst();
+
+		if (baseDir.isEmpty()) {
+			log.warn("could not find asset base director for {}", mediaPath);
+			return;
+		}
+
+		mediaFormats.values().forEach(mediaFormat -> {
+			try {
+				var mediaUri = PathUtil.toRelativeFile(mediaPath, baseDir.get());
+				var tempFilename = getTempFilename(mediaUri, mediaFormat);
+				var tempFile = getTempDirectory().resolve(tempFilename);
+				Files.deleteIfExists(tempFile);
+			} catch (IOException ex) {
+				log.error("error deleting file {} for format {}", mediaPath, mediaFormat, ex);
+			}
+		});
+	}
+
 	public Optional<byte[]> getScaledContent(final String mediaPath, final MediaFormat mediaFormat) throws IOException {
 
-		Path resolve = resolve(mediaPath);
+		Optional<Path> resolve = resolve(mediaPath);
 
-		if (resolve != null) {
+		if (resolve.isPresent()) {
 			Optional<byte[]> tempContent = getTempContent(mediaPath, mediaFormat);
 			if (tempContent.isPresent()) {
 				return tempContent;
 			}
 
 			Thumbnails.Builder<File> scaleBuilder = Thumbnails
-					.of(resolve.toFile())
-					.size(mediaFormat.width(), mediaFormat.height())
-					;
-			
+					.of(resolve.get().toFile())
+					.size(mediaFormat.width(), mediaFormat.height());
+
 			if (mediaFormat.cropped()) {
-				scaleBuilder.crop(getCropCenter(resolve));
+				setupImageBuilder(scaleBuilder, resolve.get(), mediaFormat);
 			}
-			
+
 			byte[] data = Scale.toFormat(scaleBuilder.asBufferedImage(), mediaFormat);
 
 			writeTempContent(mediaPath, mediaFormat, data);
@@ -122,25 +151,27 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 		}
 		return Optional.empty();
 	}
-	
-	public Position getCropCenter (Path media) {
-//		var metaFileName = media.getFileName().toString() + ".meta.yaml";
-//		var metaFile = media.getParent().resolve(metaFileName);
-//		if (Files.exists(metaFile)){
-//			try {
-//				final Meta meta = new Yaml().loadAs(Files.readString(metaFile, StandardCharsets.UTF_8), Meta.class);
-//				return new Position() {
-//					@Override
-//					public Point calculate(int enclosingWidth, int enclosingHeight, int width, int height, int insetLeft, int insetRight, int insetTop, int insetBottom) {
-//						return new Point(meta.getCrop().getCenter_x(), meta.getCrop().getCenter_y());
-//					}
-//				};
-//			} catch (IOException ex) {
-//				log.error(null, ex);
-//			}
-//		}
-		
-		return Positions.CENTER;
+
+	private void setupImageBuilder(Thumbnails.Builder<File> builder, Path media, MediaFormat format) {
+		var metaFileName = media.getFileName().toString() + ".meta.yaml";
+		var metaFile = media.getParent().resolve(metaFileName);
+		var size = ImageSize.getSize(media);
+		double focal_x = 0.5;
+		double focal_y = 0.5;
+		if (Files.exists(metaFile)) {
+			try {
+				final Meta meta = new Yaml().loadAs(Files.readString(metaFile, StandardCharsets.UTF_8), Meta.class);
+				focal_x = meta.getFocalPoint_x();
+				focal_y = meta.getFocalPoint_y();
+			} catch (IOException ex) {
+				log.warn("Could not read meta file: {}", metaFile, ex);
+			}
+		}
+		CropCalculator.CropArea crop = CropCalculator.calculateCrop(
+				size.width(), size.height(),
+				focal_x, focal_y,
+				format.width(), format.height());
+		builder.sourceRegion(crop.toRectangle());
 	}
 
 	public String getTempFilename(final String mediaPath, final MediaFormat mediaFormat) {
@@ -156,7 +187,7 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 		var tempFile = getTempDirectory().resolve(tempFilename);
 		Files.deleteIfExists(tempFile);
 		Files.write(tempFile, content);
-		
+
 		return tempFile;
 	}
 
@@ -170,7 +201,7 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 
 		return Optional.empty();
 	}
-	
+
 	private Map<String, MediaFormat> getMediaFormats() {
 
 		if (mediaFormats == null) {

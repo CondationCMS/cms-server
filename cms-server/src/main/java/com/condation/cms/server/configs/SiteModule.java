@@ -3,8 +3,6 @@ package com.condation.cms.server.configs;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 import org.apache.commons.jexl3.JexlBuilder;
 import org.graalvm.polyglot.Engine;
@@ -40,18 +38,12 @@ import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.content.ContentParser;
+import com.condation.cms.api.content.RenderContentFunction;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
-import com.condation.cms.api.feature.features.ConfigurationFeature;
-import com.condation.cms.api.feature.features.DBFeature;
-import com.condation.cms.api.feature.features.EventBusFeature;
-import com.condation.cms.api.feature.features.MessagingFeature;
-import com.condation.cms.api.feature.features.ServerPropertiesFeature;
-import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.messages.MessageSource;
@@ -67,7 +59,7 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
 import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
-import com.condation.cms.content.shortcodes.TagParser;
+import com.condation.cms.content.tags.TagParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
@@ -82,6 +74,7 @@ import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.media.FileMediaService;
 import com.condation.cms.media.SiteMediaManager;
+import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.AbstractModule;
@@ -181,13 +174,7 @@ public class SiteModule extends AbstractModule {
 			return DefaultTheme.load(themeFolder, siteProperties, messageSource, serverProperties, cacheManager);
 		}
 
-		return DefaultTheme.EMPTY;
-	}
-
-	@Provides
-	@Singleton
-	public UserService userService(DB db) {
-		return new UserService(db.getFileSystem().hostBase());
+		return DefaultTheme.NO_THEME;
 	}
 	
 	@Provides
@@ -243,10 +230,10 @@ public class SiteModule extends AbstractModule {
 				throw new RuntimeException(ioe);
 			}
 		}, configuration);
-		if ("PERSISTENT".equals(site.queryIndexMode())) {
-			db.init(MetaData.Type.PERSISTENT);
+		if ("MEMORY".equals(site.queryIndexMode())) {
+			db.init(MetaData.Type.MEMORY);
 		} else {
-			db.init();
+			db.init(MetaData.Type.PERSISTENT);
 		}
 		return db;
 	}
@@ -283,6 +270,12 @@ public class SiteModule extends AbstractModule {
 		return new RequestContextFactory(
 				injector
 		);
+	}
+	
+	@Provides
+	@Singleton
+	public RenderContentFunction renderContentFunction (ContentResolver contentResolver, RequestContextFactory requestContextFatory) {
+		return new DefaultRenderContentFunction(contentResolver, requestContextFatory);
 	}
 
 	@Provides

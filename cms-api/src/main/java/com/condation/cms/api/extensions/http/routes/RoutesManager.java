@@ -21,14 +21,13 @@ package com.condation.cms.api.extensions.http.routes;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.annotations.Route;
 import com.condation.cms.api.extensions.http.HttpHandler;
 import com.condation.cms.api.extensions.http.PathMapping;
+import com.condation.cms.api.utils.AnnotationsUtil;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Request;
@@ -38,45 +37,31 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class RoutesManager {
 
-    private final PathMapping pathMapping = new PathMapping();
+	private final PathMapping pathMapping = new PathMapping();
 
-	public Optional<HttpHandler> findFirst (String path, String method) {
+	public Optional<HttpHandler> findFirst(String path, String method) {
 		return pathMapping.getMatchingHandler(path, method);
 	}
-	
-    public void register(Object controller) {
-        Class<?> clazz = controller.getClass();
 
-        for (Method method : clazz.getDeclaredMethods()) {
-            Route route = method.getAnnotation(Route.class);
-            if (route != null && isValidHandlerMethod(method)) {
-                method.setAccessible(true);
+	public void register(Object controller) {
 
-                PathSpec pathSpec = PathSpec.from(route.value());
+		AnnotationsUtil.process(
+				controller,
+				Route.class,
+				List.of(Request.class, Response.class, Callback.class), boolean.class)
+				.forEach(cmsAnnotation -> {
+					PathSpec pathSpec = PathSpec.from(cmsAnnotation.annotation().value());
 
-                HttpHandler handler = (request, response, callback) -> {
-                    try {
-						return (Boolean) method.invoke(controller, request, response, callback);
-                    } catch (Exception e) {
-                        log.error("", e);
-                        response.setStatus(500);
-						return true;
-                    }
-                };
-				pathMapping.add(pathSpec, route.method(), handler);
-            }
-        }
-    }
-
-    private boolean isValidHandlerMethod(Method method) {
-        // Muss "boolean handle(Request, Response, Callback)" sein
-        if (!Modifier.isPublic(method.getModifiers())) return false;
-        if (!method.getReturnType().equals(boolean.class)) return false;
-
-        Class<?>[] params = method.getParameterTypes();
-        return params.length == 3 &&
-               Request.class.isAssignableFrom(params[0]) &&
-               Response.class.isAssignableFrom(params[1]) &&
-               Callback.class.isAssignableFrom(params[2]);
-    }
+					HttpHandler handler = (request, response, callback) -> {
+						try {
+							return cmsAnnotation.invoke(request, response, callback);
+						} catch (Exception e) {
+							log.error("", e);
+							response.setStatus(500);
+							return true;
+						}
+					};
+					pathMapping.add(pathSpec, cmsAnnotation.annotation().method(), handler);
+				});
+	}
 }

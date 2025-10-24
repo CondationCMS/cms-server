@@ -24,6 +24,7 @@ package com.condation.cms.test;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.TranslationProperties;
 import com.condation.cms.api.UIProperties;
 import java.util.List;
 import java.util.Locale;
@@ -124,6 +125,11 @@ public class TestSiteProperties implements SiteProperties {
 	@Override
 	public UIProperties ui() {
 		return new TestUiProperties();
+	}
+
+	@Override
+	public TranslationProperties translation() {
+		return new TestTranslationProperties(true, List.of(), List.of());
 	}
 
 	

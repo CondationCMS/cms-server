@@ -67,7 +67,6 @@ public class RemoteCallHandler extends JettyHandler {
 			} else {
 				rpcResult = new RPCResult();
 			}
-			
 		} catch (Exception e) {
 			log.error("error executing endpoint", remoteCall.method(), e);
 			rpcResult = new RPCResult(new RPCError(e.getMessage()));

@@ -35,8 +35,8 @@ export async function renameFileAction({ state, getTargetFolder, filename }) {
 		placeholder: filename
 	});
 	var extraOptions = {}
-	if (state.options.siteid) {
-		options.siteid = state.options.siteid;
+	if (state.options.siteId) {
+		options.siteId = state.options.siteId;
 	}
 	if (newName) {
 		var response = await renameFile({
@@ -77,8 +77,8 @@ export async function deleteElementAction({ elementName, state, deleteFN, getTar
 	}
 
 	var extraOptions = {}
-	if (state.options.siteid) {
-		options.siteid = state.options.siteid;
+	if (state.options.siteId) {
+		options.siteId = state.options.siteId;
 	}
 
 	var response = await deleteFN({
@@ -113,8 +113,8 @@ export async function createFolderAction({ state, getTargetFolder }) {
 	if (folderName) {
 
 		var extraOptions = {}
-		if (state.options.siteid) {
-			options.siteid = state.options.siteid;
+		if (state.options.siteId) {
+			options.siteId = state.options.siteId;
 		}
 
 		var response = await createFolder({
@@ -149,8 +149,8 @@ export async function createFileAction({ state, getTargetFolder }) {
 	});
 	if (fileName) {
 		var extraOptions = {}
-		if (state.options.siteid) {
-			options.siteid = state.options.siteid;
+		if (state.options.siteId) {
+			options.siteId = state.options.siteId;
 		}
 		var response = await createFile({
 			uri: getTargetFolder(),
@@ -186,8 +186,8 @@ export async function createPageActionOfContentType({ getTargetFolder, contentTy
 	if (pageName) {
 		if (contentType) {
 			var extraOptions = {}
-			if (state.options.siteid) {
-				options.siteid = state.options.siteid;
+			if (state.options.siteId) {
+				options.siteId = state.options.siteId;
 			}
 			let response = await createPage({
 				uri: getTargetFolder(),

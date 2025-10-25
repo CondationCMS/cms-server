@@ -64,7 +64,7 @@ public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoin
 	public Object getContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
-
+		
 		var uri = (String) parameters.get("uri");
 
 		var contentFile = contentBase.resolve(uri);

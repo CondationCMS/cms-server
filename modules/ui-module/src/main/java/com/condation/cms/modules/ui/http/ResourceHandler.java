@@ -32,6 +32,7 @@ import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import com.condation.cms.modules.ui.utils.TokenUtils;
+import com.condation.cms.modules.ui.utils.TranslationHelper;
 import com.condation.cms.modules.ui.utils.template.UILinkFunction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
@@ -77,7 +78,6 @@ public class ResourceHandler extends JettyHandler {
 			try {
 				var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 				final SiteProperties siteProperties = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
-				var translation = siteProperties.translation();
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource,
 						Map.of(
 								"actionFactory", actionFactory,
@@ -87,7 +87,7 @@ public class ResourceHandler extends JettyHandler {
 								"previewToken", TokenUtils.createToken(getUsername(request, context), secret),
 								"contextPath", siteProperties.contextPath(),
 								"siteId", siteProperties.id(),
-								"translation", translation
+								"translation", new TranslationHelper(siteProperties)
 						));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {

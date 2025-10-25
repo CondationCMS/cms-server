@@ -158,13 +158,13 @@ public class Parser {
     private Value parseValue(String token) {
         String lower = token.toLowerCase();
         if (lower.equals("true") || lower.equals("false")) {
-            return new BooleanValue(Boolean.parseBoolean(lower));
+            return new BooleanValue(Boolean.valueOf(lower));
         }
         try {
             if (token.contains(".")) {
-                return new NumberValue(Double.parseDouble(token));
+                return new NumberValue(Double.valueOf(token));
             } else {
-                return new NumberValue(Integer.parseInt(token));
+                return new NumberValue(Integer.valueOf(token));
             }
         } catch (NumberFormatException e) {
             return new StringValue(token);

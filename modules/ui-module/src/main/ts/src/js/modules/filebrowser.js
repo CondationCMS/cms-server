@@ -84,8 +84,8 @@ const initFileBrowser = async (uri) => {
 		type: state.options.type,
 		uri: state.currentFolder
 	}
-	if (state.options.siteid) {
-		options.siteid = state.options.siteid;
+	if (state.options.siteId) {
+		options.siteId = state.options.siteId;
 	}
 
 	const contentFiles = await listFiles(options);

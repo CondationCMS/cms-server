@@ -121,7 +121,7 @@ const openModal = (optionsParam) => {
 		}
 		
 		if (options.onShow) {
-			options.onShow();
+			options.onShow(modalElement);
 		}
 	});
 

@@ -103,7 +103,7 @@ const openModal = (optionsParam) => {
             options.form.init(`#${modalId}_bodyContainer`);
         }
         if (options.onShow) {
-            options.onShow();
+            options.onShow(modalElement);
         }
     });
     modalInstance.show();

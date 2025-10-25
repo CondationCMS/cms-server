@@ -49,9 +49,9 @@ public abstract class AbstractRemoteMethodeExtension extends UIRemoteMethodExten
 	}
 	
 	protected DB getDB (Map<String, Object> parameters) {
-		if (parameters.containsKey("siteid")) {
+		if (parameters.containsKey("siteId")) {
 			return ServiceRegistry.getInstance().get(
-					(String)parameters.get("siteid"), 
+					(String)parameters.get("siteId"), 
 					SiteDBService.class).get().db();
 		} else {
 			return getContext().get(DBFeature.class).db();

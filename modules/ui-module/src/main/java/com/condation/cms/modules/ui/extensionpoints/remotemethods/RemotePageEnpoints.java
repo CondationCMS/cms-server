@@ -24,7 +24,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.modules.api.annotation.Extension;
@@ -145,6 +144,4 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 
 		return result;
 	}
-
-	
 }

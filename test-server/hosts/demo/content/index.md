@@ -28,6 +28,8 @@ object:
 seo:
   description: hier kommt die beschreibung
 linked_page: about
+translations:
+  de: /
 ---
 
 # Demo Project

@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
-import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
+import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import com.google.common.base.Strings;
 import java.nio.file.Path;
 import java.time.Instant;

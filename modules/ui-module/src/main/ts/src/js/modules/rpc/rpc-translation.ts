@@ -22,7 +22,7 @@
 
 import { executeRemoteCall } from './rpc.js'
 
-export interface PageTranslationsOptions {
+export interface GetTranslationsOptions {
 	uri: string; // The URI of the folder where the page should be created
 }
 export interface TranslationDto {
@@ -30,7 +30,7 @@ export interface TranslationDto {
 	lang: string,
 	url?: string
 }
-const getTranslations = async (options: PageTranslationsOptions) => {
+const getTranslations = async (options: GetTranslationsOptions) => {
 	var data = {
 		method: "translations.get",
 		parameters: options
@@ -38,4 +38,37 @@ const getTranslations = async (options: PageTranslationsOptions) => {
 	return (await executeRemoteCall(data)).result as { translations: TranslationDto[]};
 };
 
-export { getTranslations };
+export interface AddTranslationOptions {
+	uri: string
+	language: string
+	translationUri: string
+}
+export interface AddTranslationResult {
+	uri: string
+	error? : boolean
+}
+const addTranslation = async (options: AddTranslationOptions) => {
+	var data = {
+		method: "translations.add",
+		parameters: options
+	}
+	return (await executeRemoteCall(data)).result as AddTranslationResult;
+};
+
+export interface RemoveTranslationOptions {
+	uri: string
+	lang: string
+}
+export interface RemoveTranslationResult {
+	uri: string
+	error? : boolean
+}
+const removeTranslation = async (options: RemoveTranslationOptions) => {
+	var data = {
+		method: "translations.add",
+		parameters: options
+	}
+	return (await executeRemoteCall(data)).result as RemoveTranslationResult;
+};
+
+export { getTranslations, addTranslation, removeTranslation };

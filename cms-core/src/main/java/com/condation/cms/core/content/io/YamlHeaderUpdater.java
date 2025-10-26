@@ -1,4 +1,4 @@
-package com.condation.cms.modules.ui.utils;
+package com.condation.cms.core.content.io;
 
 /*-
  * #%L

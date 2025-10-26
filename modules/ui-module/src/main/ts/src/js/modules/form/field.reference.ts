@@ -89,9 +89,6 @@ const init = (context: FormContext) => {
 					const inputValue = wrapper.querySelector(".cms-reference-input-value") as HTMLInputElement;
 					if (file && file.uri) {
 						var value = file.uri; // Use the file's URI
-						if (file.uri.startsWith("/")) {
-							value = file.uri.substring(1); // Remove leading slash if present
-						}
 						inputValue.value = value; // Set the input value to the selected file's name
 					}
 				}

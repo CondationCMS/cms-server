@@ -22,7 +22,7 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 
-import com.condation.cms.modules.ui.utils.ContentFileParser;
+import com.condation.cms.core.content.io.ContentFileParser;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;

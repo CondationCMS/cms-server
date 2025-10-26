@@ -20,10 +20,12 @@
  * #L%
  */
 import { openFileBrowser } from '../../js/modules/filebrowser.js';
+import { i18n } from '../../js/modules/localization.js';
 import { openModal } from '../../js/modules/modal.js';
 import { getPreviewUrl } from '../../js/modules/preview.utils.js';
 import { getContentNode } from '../../js/modules/rpc/rpc-content.js';
-import { getTranslations } from '../../js/modules/rpc/rpc-translation.js';
+import { addTranslation, getTranslations } from '../../js/modules/rpc/rpc-translation.js';
+import { showToast } from '../../js/modules/toast.js';
 // hook.js
 export async function runAction(params) {
     const contentNode = await getContentNode({
@@ -44,6 +46,7 @@ export async function runAction(params) {
                 button.addEventListener('click', async (e) => {
                     const action = e.currentTarget.getAttribute('data-action');
                     const siteId = e.currentTarget.getAttribute('data-id');
+                    const lang = e.currentTarget.getAttribute('data-lang');
                     if (action === 'select') {
                         // Open file browser to select existing translation
                         openFileBrowser({
@@ -51,6 +54,20 @@ export async function runAction(params) {
                             type: 'content',
                             onSelect: async (file) => {
                                 console.log('Selected translation file:', file);
+                                if (file && file.uri) {
+                                    var selectedFile = file.uri; // Use the file's URI
+                                    await addTranslation({
+                                        uri: uri,
+                                        language: lang || '',
+                                        translationUri: selectedFile
+                                    });
+                                    showToast({
+                                        title: i18n.t('manager.translation.added.title', "Translation Added"),
+                                        message: i18n.t('manager.translation.added.message', "Translation successfuly added."),
+                                        type: 'success', // optional: info | success | warning | error
+                                        timeout: 3000
+                                    });
+                                }
                             }
                         });
                     }
@@ -92,10 +109,9 @@ function createTranslationRow(translation) {
 }
 function getActionButtons(translation) {
     let buttons = '';
-    buttons += `<button class="btn btn-sm btn-primary" data-action="select" data-id="${translation.site}">Select</button>`;
-    buttons += `<button class="btn btn-sm btn-success" data-action="create" data-id="${translation.site}">Create</button>`;
+    buttons += `<button class="btn btn-sm btn-primary" data-action="select" data-lang="${translation.lang}" data-id="${translation.site}">Select</button>`;
     if (translation.url) {
-        buttons += `<button class="btn btn-sm btn-danger" data-action="remove" data-id="${translation.site}">Remove</button>`;
+        buttons += `<button class="btn btn-sm btn-danger" data-action="remove" data-lang="${translation.lang}" data-id="${translation.site}">Remove</button>`;
     }
     return buttons;
 }

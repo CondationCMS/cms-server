@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.DB;
@@ -37,10 +38,12 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.modules.ui.extensionpoints.remotemethods.dto.TranslationDto;
-import com.condation.cms.modules.ui.utils.ContentFileParser;
+import com.condation.cms.core.content.io.ContentFileParser;
 import com.condation.cms.modules.ui.utils.MetaConverter;
 import com.condation.cms.modules.ui.utils.TranslationHelper;
-import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
+import com.condation.cms.core.content.io.YamlHeaderUpdater;
+import com.condation.cms.core.serivce.ServiceRegistry;
+import com.condation.cms.core.serivce.impl.NodeTranslationService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,7 +68,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 
 		var contentNodeOpt = db.getContent().byUri(uri);
 		var contentNode = contentNodeOpt.orElseThrow(() -> new RPCException("content node for uri %s not found".formatted(uri)));
-		
+
 		var siteProperties = getContext().get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
 
 		var translationHelper = new TranslationHelper(siteProperties);
@@ -76,8 +79,8 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 
 		return result;
 	}
-	
-	@RemoteMethod(name = "translation.remove", permissions = {Permissions.CONTENT_EDIT})
+
+	@RemoteMethod(name = "translations.remove", permissions = {Permissions.CONTENT_EDIT})
 	public Object remove(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
@@ -95,17 +98,33 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 
 				Map<String, Object> meta = parser.getHeader();
 				if (meta.containsKey("translations")) {
-					var translations = (Map<String, Object>)meta.get("translations");
+					var translations = (Map<String, Object>) meta.get("translations");
 					if (!translations.containsKey(language)) {
 						return result;
 					}
-					translations.remove(language);
+					var oldTranslationUri = (String)translations.remove(language);
 					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 
 					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
 					log.debug("file {} saved", uri);
 
 					getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
+
+					final SiteProperties siteProperties = getContext().get(ConfigurationFeature.class)
+							.configuration().get(SiteConfiguration.class)
+							.siteProperties();
+					// update target site
+					var translationSite = siteProperties
+							.translation()
+							.getMapping().stream()
+							.filter(mapping -> mapping.language().equals(language)).findFirst();
+					if (translationSite.isPresent()) {
+						var nodeTranslationService = ServiceRegistry.getInstance().get(translationSite.get().site(), NodeTranslationService.class);
+
+						if (nodeTranslationService.isPresent()) {
+							nodeTranslationService.get().removeTranslation(oldTranslationUri, siteProperties.language());
+						}
+					}
 				}
 			} catch (IOException ex) {
 				log.error("", ex);
@@ -114,15 +133,15 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 
 		return result;
 	}
-	
-	@RemoteMethod(name = "translation.set", permissions = {Permissions.CONTENT_EDIT})
-	public Object set(Map<String, Object> parameters) {
+
+	@RemoteMethod(name = "translations.add", permissions = {Permissions.CONTENT_EDIT})
+	public Object add(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 
 		var uri = (String) parameters.get("uri");
 		var language = (String) parameters.get("language");
-		var translation_url = (String) parameters.get("translation_url");
+		var translation_url = (String) parameters.get("translationUri");
 
 		var contentFile = contentBase.resolve(uri);
 
@@ -133,18 +152,34 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 				ContentFileParser parser = new ContentFileParser(contentFile);
 
 				Map<String, Object> meta = parser.getHeader();
-				var translations = (Map<String, Object>)meta.getOrDefault("translations", new HashMap<>());
+				var translations = (Map<String, Object>) meta.getOrDefault("translations", new HashMap<>());
 				translations.put(language, translation_url);
 				meta.put("translations", translations);
-				
+
 				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 
 				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
 				log.debug("file {} saved", uri);
 
 				getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
+				final SiteProperties siteProperties = getContext().get(ConfigurationFeature.class)
+						.configuration().get(SiteConfiguration.class)
+						.siteProperties();
+				// update target site
+				var translationSite = siteProperties
+						.translation()
+						.getMapping().stream()
+						.filter(mapping -> mapping.language().equals(language)).findFirst();
+				if (translationSite.isPresent()) {
+					var nodeTranslationService = ServiceRegistry.getInstance().get(translationSite.get().site(), NodeTranslationService.class);
+
+					if (nodeTranslationService.isPresent()) {
+						nodeTranslationService.get().addTranslation(translation_url, siteProperties.id(), uri, siteProperties.language());
+					}
+				}
 			} catch (IOException ex) {
 				log.error("", ex);
+				result.put("error", true);
 			}
 		}
 

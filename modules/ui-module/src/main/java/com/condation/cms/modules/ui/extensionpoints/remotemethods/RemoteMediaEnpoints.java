@@ -36,7 +36,7 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.modules.ui.utils.MetaConverter;
-import com.condation.cms.modules.ui.utils.YamlHeaderUpdater;
+import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import java.net.URI;
 import java.util.HashMap;
 

@@ -27,4 +27,18 @@ const getTranslations = async (options) => {
     };
     return (await executeRemoteCall(data)).result;
 };
-export { getTranslations };
+const addTranslation = async (options) => {
+    var data = {
+        method: "translations.add",
+        parameters: options
+    };
+    return (await executeRemoteCall(data)).result;
+};
+const removeTranslation = async (options) => {
+    var data = {
+        method: "translations.add",
+        parameters: options
+    };
+    return (await executeRemoteCall(data)).result;
+};
+export { getTranslations, addTranslation, removeTranslation };

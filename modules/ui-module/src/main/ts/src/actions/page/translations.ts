@@ -20,10 +20,12 @@
  * #L%
  */
 import { openFileBrowser } from '../../js/modules/filebrowser.js'
+import { i18n } from '../../js/modules/localization.js'
 import { openModal } from '../../js/modules/modal.js'
 import { getPreviewUrl } from '../../js/modules/preview.utils.js'
 import { getContentNode } from '../../js/modules/rpc/rpc-content.js'
-import { getTranslations, TranslationDto } from '../../js/modules/rpc/rpc-translation.js'
+import { addTranslation, getTranslations, TranslationDto } from '../../js/modules/rpc/rpc-translation.js'
+import { showToast } from '../../js/modules/toast.js'
 // hook.js
 export async function runAction(params: any) {
 
@@ -44,11 +46,12 @@ export async function runAction(params: any) {
 		onOk: async (event) => {
 		},
 		onShow: async (modalElement) => {
-			
+
 			modalElement.querySelectorAll('button[data-action]').forEach(button => {
 				button.addEventListener('click', async (e) => {
 					const action = (e.currentTarget as HTMLElement).getAttribute('data-action');
 					const siteId = (e.currentTarget as HTMLElement).getAttribute('data-id');
+					const lang = (e.currentTarget as HTMLElement).getAttribute('data-lang');
 					if (action === 'select') {
 						// Open file browser to select existing translation
 						openFileBrowser({
@@ -56,7 +59,22 @@ export async function runAction(params: any) {
 							type: 'content',
 							onSelect: async (file) => {
 								console.log('Selected translation file:', file);
-							}	
+								if (file && file.uri) {
+									var selectedFile = file.uri; // Use the file's URI
+									
+									await addTranslation({
+										uri: uri,
+										language: lang || '',
+										translationUri: selectedFile
+									});
+									showToast({
+										title: i18n.t('manager.translation.added.title', "Translation Added"),
+										message: i18n.t('manager.translation.added.message', "Translation successfuly added."),
+										type: 'success', // optional: info | success | warning | error
+										timeout: 3000
+									});
+								}
+							}
 						})
 					}
 				})
@@ -65,7 +83,7 @@ export async function runAction(params: any) {
 	})
 }
 
-function createTranslationsTable(translations: TranslationDto[]) : string{
+function createTranslationsTable(translations: TranslationDto[]): string {
 	const table = document.createElement('table');
 	table.className = 'table table-striped table-bordered';
 	table.innerHTML = `
@@ -84,7 +102,7 @@ function createTranslationsTable(translations: TranslationDto[]) : string{
 	return table.outerHTML;
 }
 
-function createTranslationRow(translation : TranslationDto) : string{
+function createTranslationRow(translation: TranslationDto): string {
 	const status = translation.url ? `<a href="${translation.url}" target="_blank">Linked</a>` : 'Not linked';
 	return `
         <tr>
@@ -98,12 +116,11 @@ function createTranslationRow(translation : TranslationDto) : string{
     `;
 }
 
-function getActionButtons (translation: TranslationDto): string {
+function getActionButtons(translation: TranslationDto): string {
 	let buttons = '';
-	buttons += `<button class="btn btn-sm btn-primary" data-action="select" data-id="${translation.site}">Select</button>`;
-	buttons += `<button class="btn btn-sm btn-success" data-action="create" data-id="${translation.site}">Create</button>`;
+	buttons += `<button class="btn btn-sm btn-primary" data-action="select" data-lang="${translation.lang}" data-id="${translation.site}">Select</button>`;
 	if (translation.url) {
-		buttons += `<button class="btn btn-sm btn-danger" data-action="remove" data-id="${translation.site}">Remove</button>`;
+		buttons += `<button class="btn btn-sm btn-danger" data-action="remove" data-lang="${translation.lang}" data-id="${translation.site}">Remove</button>`;
 	}
 	return buttons;
 }

@@ -22,9 +22,13 @@ package com.condation.cms.server.host;
  * #L%
  */
 
+import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.core.serivce.ServiceRegistry;
+import com.condation.cms.core.serivce.impl.NodeTranslationService;
 import com.condation.cms.core.serivce.impl.SiteDBService;
+import com.condation.cms.core.serivce.impl.SiteLinkService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,5 +46,9 @@ public class Initializer {
 		var db = host.injector.getInstance(DB.class);
 		ServiceRegistry.getInstance().register(host.id(), SiteDBService.class, new SiteDBService(db));
 		
+		var config = host.injector.getInstance(Configuration.class);
+		ServiceRegistry.getInstance().register(host.id(), SiteLinkService.class, new SiteLinkService(config));
+		
+		ServiceRegistry.getInstance().register(host.id(), NodeTranslationService.class, new NodeTranslationService(db, host.injector.getInstance(EventBus.class)));
 	}
 }

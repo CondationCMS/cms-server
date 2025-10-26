@@ -49,6 +49,7 @@ const alertError = (options) => {
     });
 };
 
+
 const alertConfirm = (options) => {
     return new Promise((resolve) => {
         openModal({

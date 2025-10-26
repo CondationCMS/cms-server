@@ -73,7 +73,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 
 		var translationHelper = new TranslationHelper(siteProperties);
 		translationHelper.getFilteredMapping().forEach(mapping -> {
-			var translationUri = contentNode.getMetaValue("translation.%s".formatted(mapping.language()), "");
+			var translationUri = contentNode.getMetaValue("translations.%s".formatted(mapping.language()), "");
 			translations.add(new TranslationDto(mapping.site(), mapping.language(), translationUri));
 		});
 

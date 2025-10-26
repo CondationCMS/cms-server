@@ -86,9 +86,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			section = "Page",
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/edit-page-settings")
 	)
-	public void page_settings() {
-
-	}
+	public void page_settings() {}
 	/*
 	@com.condation.cms.api.ui.annotations.MenuEntry(
 			parent = "pageMenu",
@@ -109,6 +107,16 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 	public void manage_media() {
 
 	}
+	
+	@ShortCut(
+			id = "page-edit-translations",
+			title = "Edit page translations",
+			permissions = {Permissions.CONTENT_EDIT},
+			hotkey = "ctrl-5",
+			section = "Page",
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/translations")
+	)
+	public void manage_translations() {}
 	
 
 	@Override

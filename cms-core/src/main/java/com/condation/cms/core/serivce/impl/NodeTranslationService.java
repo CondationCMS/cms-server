@@ -30,6 +30,8 @@ import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.core.content.ContentResolvingStrategy;
 import com.condation.cms.core.content.io.ContentFileParser;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import com.condation.cms.core.serivce.Service;
@@ -54,9 +56,7 @@ public class NodeTranslationService implements Service {
 	}
 	
 	public boolean removeTranslation (String uri, String language) {
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
-		
-		var contentFile = contentBase.resolve(uri);
+		var contentFile = ContentResolvingStrategy.resolve(uri, db).orElse(null);
 		
 		if (contentFile != null) {
 			try {
@@ -67,12 +67,13 @@ public class NodeTranslationService implements Service {
 				translations.remove(language);
 				meta.put("translations", translations);
 				
-				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+				var path = contentFile.relativePath();
+				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(path);
 
 				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
-				log.debug("file {} saved", uri);
+				log.debug("file {} saved", path);
 
-				eventBus.publish(new ReIndexContentMetaDataEvent(uri));
+				eventBus.publish(new ReIndexContentMetaDataEvent(path));
 				
 				return true;
 			} catch (IOException ex) {
@@ -86,10 +87,7 @@ public class NodeTranslationService implements Service {
 	
 	public boolean addTranslation (String uri, String site, String translationUri, String language) {
 
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
-		
-		// TODO: die uri ist evtl nicht complett und muss noch angepasst werden. also index.md anhängen oder .md
-		var contentFile = contentBase.resolve(uri);
+		var contentFile = ContentResolvingStrategy.resolve(uri, db).orElse(null);
 		
 		if (contentFile != null) {
 			try {
@@ -97,15 +95,17 @@ public class NodeTranslationService implements Service {
 
 				Map<String, Object> meta = parser.getHeader();
 				var translations = (Map<String, Object>)meta.getOrDefault("translations", new HashMap<>());
-				translations.put(language, translationUri);
+				translations.put(language, PathUtil.toURL(translationUri));
 				meta.put("translations", translations);
 				
-				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+				var path = contentFile.relativePath();
+				
+				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(path);
 
 				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
-				log.debug("file {} saved", uri);
+				log.debug("file {} saved", path);
 
-				eventBus.publish(new ReIndexContentMetaDataEvent(uri));
+				eventBus.publish(new ReIndexContentMetaDataEvent(path));
 				
 				return true;
 			} catch (IOException ex) {

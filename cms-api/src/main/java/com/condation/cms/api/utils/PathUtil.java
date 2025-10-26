@@ -100,7 +100,7 @@ public class PathUtil {
 		return toURL(relFile);
 	}
 	
-	private static String toURL (String relFile) {
+	public static String toURL (String relFile) {
 		if (relFile.endsWith("index.md")) {
 			relFile = relFile.replace("index.md", "");
 		}

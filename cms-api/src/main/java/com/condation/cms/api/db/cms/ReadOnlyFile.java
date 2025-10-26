@@ -36,6 +36,8 @@ public interface ReadOnlyFile {
 	
 	String uri ();
 	
+	String relativePath();
+	
 	ReadOnlyFile resolve (String uri);
 	
 	String getContent () throws IOException;

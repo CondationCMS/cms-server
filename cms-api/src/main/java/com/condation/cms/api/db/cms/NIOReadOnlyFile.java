@@ -52,6 +52,11 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	}
 	
 	@Override
+	public String relativePath() {
+		return PathUtil.toRelativeFile(file, basePath);
+	}
+	
+	@Override
 	public boolean exists() {
 		return Files.exists(file);
 	}

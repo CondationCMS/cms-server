@@ -33,6 +33,7 @@ import com.condation.cms.ipc.IPCServer;
 import com.condation.cms.server.configs.ServerGlobalModule;
 import com.condation.cms.server.JettyServer;
 import com.google.inject.Guice;
+import com.google.inject.Stage;
 import java.io.IOException;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;

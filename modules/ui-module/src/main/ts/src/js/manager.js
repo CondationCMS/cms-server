@@ -41,10 +41,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const iframe = document.getElementById('contentPreview');
 
-	const preview = UIStateManager.getTabState("preview", null)
-	if (preview) {
-		if (preview.siteId === window.manager.siteId) {
-			loadPreview(preview.url);
+	const urlParams = new URLSearchParams(window.location.search);
+	const pageUrl = urlParams.get('page');
+
+	if (pageUrl) {
+		loadPreview(pageUrl);
+		// Clean the URL
+		const newUrl = window.location.pathname;
+		window.history.replaceState({}, document.title, newUrl);
+	} else {
+		const preview = UIStateManager.getTabState("preview", null);
+		if (preview) {
+			if (preview.siteId === window.manager.siteId) {
+				loadPreview(preview.url);
+			}
 		}
 	}
 

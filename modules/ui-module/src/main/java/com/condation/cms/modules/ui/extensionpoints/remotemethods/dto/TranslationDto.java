@@ -26,6 +26,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods.dto;
  *
  * @author thmar
  */
-public record TranslationDto (String site, String lang, String url) {
+public record TranslationDto (String site, String lang, String url, String managerDeepLink) {
 	
 }

@@ -24,9 +24,10 @@ package com.condation.cms.core.serivce.impl;
 
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
-import com.condation.cms.api.db.DB;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.core.serivce.Service;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  *
@@ -41,7 +42,10 @@ public class SiteLinkService implements Service {
 	}
 	
 	public String managerDeepLink (String url) {
-		return "";
+		var siteProperties = configuration.get(SiteConfiguration.class).siteProperties();
+		url = HTTPUtil.modifyUrl(url, siteProperties);
+		String encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8);
+		return HTTPUtil.modifyUrl("/manager/index.html?page=%s".formatted(encodedUrl), siteProperties);
 	}
 	
 	public String link (String url) {

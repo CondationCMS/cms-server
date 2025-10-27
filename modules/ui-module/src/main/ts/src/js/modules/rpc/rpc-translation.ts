@@ -28,7 +28,8 @@ export interface GetTranslationsOptions {
 export interface TranslationDto {
 	site: string,
 	lang: string,
-	url?: string
+	url?: string,
+	managerDeepLink?: string
 }
 const getTranslations = async (options: GetTranslationsOptions) => {
 	var data = {

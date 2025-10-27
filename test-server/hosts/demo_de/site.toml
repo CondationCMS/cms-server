@@ -26,3 +26,15 @@ target = "/Users/thorstenmarx/entwicklung/backups"
 
 [cache]
 content = true
+
+[translation]
+enabled = true
+languages = ["de", "gb"]
+
+[[translation.mapping]]
+language = "de"
+site = "demo-de-site"
+
+[[translation.mapping]]
+site = "demo-site"
+language = "gb"

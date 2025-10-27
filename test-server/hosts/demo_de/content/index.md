@@ -1,5 +1,5 @@
 ---
-title: Startpage
+title: Startseite
 template: start.html
 search:
   index: false
@@ -28,7 +28,7 @@ object:
 seo:
   description: hier kommt die beschreibung
 translations:
-  en: index.md
+  gb: index.md
 ---
 
 # Demo de Projekt
@@ -44,7 +44,7 @@ Here some content!
 Hello: [[cms:username]][[/cms:username]]
 Theme: [[theme_name]][[/theme_name]]
 
-[about](/about)
+[ueber](/ueber)
 
 [das ist eine neue seite](/das-ist-eine-neue-seite)
 

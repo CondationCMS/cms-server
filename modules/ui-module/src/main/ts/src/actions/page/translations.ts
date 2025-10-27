@@ -103,7 +103,7 @@ function createTranslationsTable(translations: TranslationDto[]): string {
 }
 
 function createTranslationRow(translation: TranslationDto): string {
-	const status = translation.url ? `<a href="${translation.url}" target="_blank">Linked</a>` : 'Not linked';
+	const status = translation.managerDeepLink ? `<a href="${translation.managerDeepLink}" target="_blank">Linked</a>` : 'Not linked';
 	return `
         <tr>
             <td><span class="fi fi-${translation.lang}"></span></td>

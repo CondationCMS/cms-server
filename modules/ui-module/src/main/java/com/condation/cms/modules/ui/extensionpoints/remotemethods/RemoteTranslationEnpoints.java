@@ -44,6 +44,7 @@ import com.condation.cms.modules.ui.utils.TranslationHelper;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import com.condation.cms.core.serivce.ServiceRegistry;
 import com.condation.cms.core.serivce.impl.NodeTranslationService;
+import com.condation.cms.core.serivce.impl.SiteLinkService;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -73,8 +74,15 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 
 		var translationHelper = new TranslationHelper(siteProperties);
 		translationHelper.getFilteredMapping().forEach(mapping -> {
+			if (mapping.language().equals(siteProperties.language())) {
+				return;
+			}
 			var translationUri = contentNode.getMetaValue("translations.%s".formatted(mapping.language()), "");
-			translations.add(new TranslationDto(mapping.site(), mapping.language(), translationUri));
+			var deepLink = "";
+			if (!translationUri.equals("")) {
+				deepLink = ServiceRegistry.getInstance().get(mapping.site(), SiteLinkService.class).get().managerDeepLink(translationUri);
+			}
+			translations.add(new TranslationDto(mapping.site(), mapping.language(), translationUri, deepLink));
 		});
 
 		return result;

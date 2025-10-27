@@ -68,6 +68,11 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public String contextPath() {
 		return configuration.getString("context_path", "/");
 	}
+	
+	@Override
+	public String baseUrl() {
+		return configuration.getString("baseurl", "");
+	}
 
 	@Override
 	public String id() {

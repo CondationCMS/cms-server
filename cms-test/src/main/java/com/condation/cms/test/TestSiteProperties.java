@@ -56,6 +56,11 @@ public class TestSiteProperties implements SiteProperties {
 	public String contextPath() {
 		return (String) values.getOrDefault("context_path", "/");
 	}
+	
+	@Override
+	public String baseUrl() {
+		return (String) values.getOrDefault("baseurl", "");
+	}
 
 	@Override
 	public String id() {

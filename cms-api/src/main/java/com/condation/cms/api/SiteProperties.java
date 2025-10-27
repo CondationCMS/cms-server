@@ -38,6 +38,8 @@ public interface SiteProperties {
 	
 	public String contextPath ();
 	
+	public String baseUrl ();
+	
 	public String id ();
 	
 	public Object get (String field);

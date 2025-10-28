@@ -35,14 +35,14 @@ translations:
 
 ![TestBild!](/de/media/images/test.jpg?format=small)
 
-That's a demo page with some extra features to show the manager application!
+Das ist eine Demoseite mit einigen zusätzlichen Funktionen, um die Manager-Anwendung zu zeigen!
 
-Hello world!
+Hallo Welt!
 
-Here some content!
+Hier sind einige Inhalte!
 
-Hello: [[cms:username]][[/cms:username]]
-Theme: [[theme_name]][[/theme_name]]
+Hallo: [[cms:username]][[/cms:username]]
+Thema: [[theme_name]][[/theme_name]]
 
 [ueber](/ueber)
 
@@ -50,5 +50,5 @@ Theme: [[theme_name]][[/theme_name]]
 
 
 ```java
-System.out.println("Hello world!");
+System.out.println("Hallo Welt!");
 ```

@@ -36,5 +36,5 @@ language = "de"
 site = "demo-de-site"
 
 [[translation.mapping]]
-site = "demo-site"
 language = "en"
+site = "demo-site"

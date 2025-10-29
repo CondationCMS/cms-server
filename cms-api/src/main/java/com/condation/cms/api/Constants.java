@@ -126,6 +126,7 @@ public abstract class Constants {
 		public static final String DEFAULT_MODULE_NAMESPACE = "mod";
 		public static final String CMS = "cms";
 		public static final String NODE = "node";
+		public static final String SITE = "site";
 	}
 	
 	public static class Taxonomy {

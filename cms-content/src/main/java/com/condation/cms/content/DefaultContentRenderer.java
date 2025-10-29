@@ -58,6 +58,8 @@ import com.condation.cms.content.template.functions.navigation.NavigationFunctio
 import com.condation.cms.content.template.functions.query.QueryFunction;
 import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
+import com.condation.cms.content.template.functions.translation.NodeTranslations;
+import com.condation.cms.content.template.functions.translation.SiteTranslations;
 import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -149,6 +151,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.NODE, "meta", new MapAccess(meta));
 		namespace.add(Constants.TemplateNamespaces.NODE, "sections", sections);
 		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
+		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.isPresent() ? contentNode.get() : null, siteProperties));
 
 		TagTemplateFunction tagFunction = createTagFunction(context);
 		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
@@ -167,10 +170,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
-		model.values.put("site", siteProperties);
 		namespace.add(Constants.TemplateNamespaces.CMS, "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
 		namespace.add(Constants.TemplateNamespaces.CMS, "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
+		namespace.add(Constants.TemplateNamespaces.SITE, "properties", siteProperties);
+		namespace.add(Constants.TemplateNamespaces.SITE, "translation", new SiteTranslations(siteProperties));
+		
 		var theme = context.get(RenderContext.class).theme();
 		if (theme.empty()) {
 			model.values.put("messages", context.get(InjectorFeature.class).injector().getInstance(MessageSource.class));

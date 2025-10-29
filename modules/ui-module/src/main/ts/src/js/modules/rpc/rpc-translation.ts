@@ -28,6 +28,7 @@ export interface GetTranslationsOptions {
 export interface TranslationDto {
 	site: string,
 	lang: string,
+	country: string,
 	url?: string,
 	managerDeepLink?: string
 }

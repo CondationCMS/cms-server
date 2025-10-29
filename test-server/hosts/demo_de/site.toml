@@ -1,7 +1,7 @@
 id = "demo-de-site"
 hostname = [ "localhost" ]
 baseurl = "http://localhost:2020"
-language = "de"
+locale = "de_DE"
 theme = "demo"
 context_path = "/de"
 
@@ -29,7 +29,7 @@ content = true
 
 [translation]
 enabled = true
-languages = ["de", "gb"]
+languages = ["de", "en"]
 
 [[translation.mapping]]
 language = "de"
@@ -37,4 +37,4 @@ site = "demo-de-site"
 
 [[translation.mapping]]
 site = "demo-site"
-language = "gb"
+language = "en"

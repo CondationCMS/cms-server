@@ -13,7 +13,7 @@ unpublish_date: null
 published: true
 publish_date: null
 translations:
-  gb: /about
+  en: /about
 ---
 
 # Über

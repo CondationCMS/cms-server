@@ -106,7 +106,7 @@ function createTranslationRow(translation: TranslationDto): string {
 	const status = translation.managerDeepLink ? `<a href="${translation.managerDeepLink}" target="_blank">Linked</a>` : 'Not linked';
 	return `
         <tr>
-            <td><span class="fi fi-${translation.lang}"></span></td>
+            <td><span class="fi fi-${translation.country}"></span></td>
             <td>${translation.site}</td>
             <td>${status}</td>
             <td>

@@ -1,8 +1,8 @@
-package com.condation.cms.modules.ui.extensionpoints.remotemethods.dto;
+package com.condation.cms.core.serivce.impl;
 
 /*-
  * #%L
- * ui-module
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -22,10 +22,25 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods.dto;
  * #L%
  */
 
+import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
+import com.condation.cms.core.serivce.Service;
+
 /**
  *
  * @author thmar
  */
-public record TranslationDto (String site, String lang, String country, String url, String managerDeepLink) {
+public class SitePropertiesService implements Service {
 	
+	private final Configuration configuration;
+	
+	public SitePropertiesService (final Configuration configuration) {
+		this.configuration = configuration;
+	}
+	
+	public SiteProperties siteProperties () {
+		return configuration.get(SiteConfiguration.class).siteProperties();
+	}
+
 }

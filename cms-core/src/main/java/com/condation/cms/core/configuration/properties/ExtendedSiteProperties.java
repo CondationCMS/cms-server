@@ -21,7 +21,6 @@ package com.condation.cms.core.configuration.properties;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.TranslationProperties;
@@ -29,15 +28,16 @@ import com.condation.cms.api.UIProperties;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.util.List;
 import java.util.Locale;
+import org.eclipse.jetty.util.AtomicBiInteger;
 
 /**
  *
  * @author t.marx
  */
 public class ExtendedSiteProperties implements SiteProperties {
-	
+
 	private final SimpleConfiguration configuration;
-	
+
 	public ExtendedSiteProperties(SimpleConfiguration configuration) {
 		this.configuration = configuration;
 	}
@@ -46,16 +46,16 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public List<String> hostnames() {
 		// "localhost"
 		var hostname = configuration.getValue("hostname", String.class);
-		
-		if (hostname !=null ) {
+
+		if (hostname != null) {
 			return List.of(hostname);
 		}
-		
+
 		var hostnames = configuration.getList("hostname", String.class);
 		if (hostnames != null && !hostnames.isEmpty()) {
 			return hostnames;
 		}
-		
+
 		return List.of("localhost");
 	}
 
@@ -68,7 +68,7 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public String contextPath() {
 		return configuration.getString("context_path", "/");
 	}
-	
+
 	@Override
 	public String baseUrl() {
 		return configuration.getString("baseurl", "");
@@ -91,15 +91,26 @@ public class ExtendedSiteProperties implements SiteProperties {
 
 	@Override
 	public Locale locale() {
-		if (configuration.get("language") != null) {
-			Locale.forLanguageTag((String)configuration.getString("language"));
+		if (configuration.get("locale") != null) {
+			var value = configuration.get("locale");
+			if (value instanceof Locale locale) {
+				return locale;
+			} else if (value instanceof String s) {
+				// Erlaubt z.B. "de_DE" oder "en-US"
+				String[] parts = s.split("[-_]");
+				if (parts.length == 1) {
+					return Locale.of(parts[0]);
+				} else if (parts.length == 2) {
+					return  Locale.of(parts[0], parts[1]);
+				}
+			}
 		}
 		return Locale.getDefault();
 	}
-	
+
 	@Override
 	public String language() {
-		return configuration.getString("language");
+		return locale().getLanguage();
 	}
 
 	@Override
@@ -125,12 +136,12 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public boolean cacheContent() {
 		return configuration.getBoolean("cache.content", Constants.DEFAULT_CONTENT_CACHE_ENABLED);
 	}
-	
+
 	@Override
 	public boolean spaEnabled() {
 		return configuration.getBoolean("spa.enabled", false);
 	}
-	
+
 	@Override
 	public String templateEngine() {
 		return configuration.getString("template.engine");
@@ -140,9 +151,9 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public List<String> activeModules() {
 		return configuration.getList("modules.active", String.class);
 	}
-	
+
 	@Override
-	public Object get (String field) {
+	public Object get(String field) {
 		return configuration.get(field);
 	}
 
@@ -150,7 +161,7 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public <T> T getOrDefault(String field, T defaultValue) {
 		return (T) configuration.getOrDefault(field, defaultValue);
 	}
-	
+
 	@Override
 	public UIProperties ui() {
 		return configuration.get("ui", ExtendedUIProperties.class);
@@ -160,6 +171,5 @@ public class ExtendedSiteProperties implements SiteProperties {
 	public TranslationProperties translation() {
 		return configuration.get("translation", ExtendedTranslationProperties.class);
 	}
-	
-	
+
 }

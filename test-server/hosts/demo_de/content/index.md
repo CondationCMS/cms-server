@@ -28,7 +28,7 @@ object:
 seo:
   description: hier kommt die beschreibung
 translations:
-  gb: index.md
+  en: /
 ---
 
 # Demo de Projekt

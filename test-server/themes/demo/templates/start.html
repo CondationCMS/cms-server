@@ -8,10 +8,13 @@
 		
 		{% include "libs/fragments.html" %}
 		
+		{% include "libs/language_header.html" %}
 		
 	</head>
 
 	<body class="centered">
+
+		{% include "libs/language_switcher.html" %}
 
 		<div id="content" 
 			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}

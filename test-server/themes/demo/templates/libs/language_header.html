@@ -1,0 +1,3 @@
+{% for translation in node.translation.translations() %}
+  <link rel="alternate" hreflang="{{ translation.lang()}}" href="{{ translation.url() }}" />
+{% endfor %}

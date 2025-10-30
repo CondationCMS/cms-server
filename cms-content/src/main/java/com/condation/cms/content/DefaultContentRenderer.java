@@ -49,6 +49,7 @@ import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.pipeline.ContentPipelineFactory;
 import com.condation.cms.content.views.model.View;
 import com.condation.cms.api.content.MapAccess;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
@@ -141,7 +142,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		TemplateEngine.Model model = new TemplateEngine.Model(
 				contentFile, 
-				contentNode.isPresent() ? contentNode.get() : null,
+				contentNode.orElse(null),
 				context);
 
 		modelExtending.accept(model);
@@ -151,7 +152,14 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.NODE, "meta", new MapAccess(meta));
 		namespace.add(Constants.TemplateNamespaces.NODE, "sections", sections);
 		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
-		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.isPresent() ? contentNode.get() : null, siteProperties));
+		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.orElse(null), siteProperties));
+		
+		var canonicalUrl = "";
+		if (contentNode.isPresent()) {
+			canonicalUrl = PathUtil.toURL(contentNode.get().uri());
+			canonicalUrl = HTTPUtil.modifyUrl(canonicalUrl, siteProperties);
+		}
+		namespace.add(Constants.TemplateNamespaces.NODE, "canonicalUrl", canonicalUrl);
 
 		TagTemplateFunction tagFunction = createTagFunction(context);
 		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
@@ -188,6 +196,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.CMS, "links", new LinkFunction(context));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
+		model.values.put("MANAGER", isManager(context));
 		model.values.put("DEV_MODE", isDevMode(context));
 		model.values.put("ENV", context.get(ServerPropertiesFeature.class).serverProperties().env());
 
@@ -249,6 +258,13 @@ public class DefaultContentRenderer implements ContentRenderer {
 		return context.has(IsPreviewFeature.class);
 	}
 
+	private boolean isManager(final RequestContext context) {
+		if (context.has(IsPreviewFeature.class))  {
+			return context.get(IsPreviewFeature.class).type().equals(IsPreviewFeature.Type.MANAGER);
+		}
+		return false;
+	}
+	
 	private boolean isDevMode(final RequestContext context) {
 		return context.has(IsDevModeFeature.class);
 	}

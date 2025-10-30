@@ -23,3 +23,36 @@ body {
   background: #f0f0f0;
   padding: 1rem;
 }
+
+.language-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.language-buttons .lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #333;
+  background: white;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.language-buttons .lang:hover {
+  background: #eee;
+}
+
+.language-buttons .active {
+  border-color: #0077ff;
+  color: #0077ff;
+  font-weight: bold;
+}
+
+.language-buttons img {
+  display: inline-block;
+  border-radius: 2px;
+}

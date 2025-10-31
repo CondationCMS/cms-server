@@ -24,7 +24,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
-import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
 import java.util.Map;
@@ -32,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.content.RenderContext;
-import com.condation.cms.modules.ui.utils.UIHooks;
 
 /**
  *

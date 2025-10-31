@@ -34,6 +34,10 @@ import java.util.List;
 public interface ReadOnlyFile {
 	boolean exists ();
 	
+	String uri ();
+	
+	String relativePath();
+	
 	ReadOnlyFile resolve (String uri);
 	
 	String getContent () throws IOException;

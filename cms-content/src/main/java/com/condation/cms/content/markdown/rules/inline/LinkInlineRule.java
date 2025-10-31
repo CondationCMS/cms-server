@@ -25,7 +25,7 @@ package com.condation.cms.content.markdown.rules.inline;
 import com.github.slugify.Slugify;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.request.ThreadLocalRequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
 import java.util.regex.Pattern;
@@ -51,11 +51,12 @@ public class LinkInlineRule implements InlineElementRule {
 
 			var id = SLUG.slugify(text);
 
-			var requestContext = ThreadLocalRequestContext.REQUEST_CONTEXT.get();
-
-			if (requestContext != null
+			
+			if (RequestContextScope.REQUEST_CONTEXT.isBound()
 					&& isInternalUrl(href)) {
 
+				var requestContext = RequestContextScope.REQUEST_CONTEXT.get();
+				
 				if (requestContext.has(SitePropertiesFeature.class)) {
 					var contextPath = requestContext.get(SitePropertiesFeature.class).siteProperties().contextPath();
 					if (!"/".equals(contextPath) && !href.startsWith(contextPath) && href.startsWith("/")) {
@@ -63,10 +64,11 @@ public class LinkInlineRule implements InlineElementRule {
 					}
 				}
 				if (requestContext.has(IsPreviewFeature.class)) {
+					var previewContext = requestContext.get(IsPreviewFeature.class);
 					if (href.contains("?")) {
-						href += "&preview";
+						href += "&preview=" + previewContext.mode().getValue();
 					} else {
-						href += "?preview";
+						href += "?preview=" + previewContext.mode().getValue();
 					}
 				}
 			}

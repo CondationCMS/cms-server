@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.condation.cms</groupId>
 	<artifactId>cms-parent</artifactId>
-	<version>7.8.0</version>
+	<version>8.0.0</version>
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
+		<maven.compiler.source>25</maven.compiler.source>
+		<maven.compiler.target>25</maven.compiler.target>
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.1.3</jetty.version>
@@ -22,7 +22,6 @@
 		<module>modules</module>
 		<module>cms-filesystem</module>
 		<module>cms-media</module>
-		<module>cms-git</module>
 		<module>cms-content</module>
 		<module>cms-templates</module>
 		<module>cms-extensions</module>
@@ -105,11 +104,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.condation.cms</groupId>
-				<artifactId>cms-git</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.condation.cms</groupId>
 				<artifactId>cms-test</artifactId>
 				<version>${project.version}</version>
 			</dependency>
@@ -135,6 +129,12 @@
 			</dependency>
 			
 			<dependency>
+				<groupId>com.condation.cms.modules</groupId>
+				<artifactId>ui-module</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			
+			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-jexl3</artifactId>
 				<version>3.5.0</version>
@@ -149,11 +149,6 @@
 				<groupId>org.quartz-scheduler</groupId>
 				<artifactId>quartz</artifactId>
 				<version>2.5.1</version>
-			</dependency>
-			<dependency>
-				<groupId>org.eclipse.jgit</groupId>
-				<artifactId>org.eclipse.jgit</artifactId>
-				<version>7.4.0.202509020913-r</version>
 			</dependency>
 			<dependency>
 				<groupId>net.coobird</groupId>
@@ -200,6 +195,7 @@
 				<groupId>com.google.inject</groupId>
 				<artifactId>guice</artifactId>
 				<version>7.0.0</version>
+				<classifier>classes</classifier>
 			</dependency>
 
 			<dependency>
@@ -396,6 +392,9 @@
 								<version>${modules-framework.version}</version>
 							</path>
 						</annotationProcessorPaths>
+						<compilerArgs>
+							<arg>--enable-preview</arg>
+						</compilerArgs>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -450,6 +449,12 @@
 							</roots>
 							<excludes>
 								<exclude>**/*.json</exclude>
+								<exclude>**/manager/bootstrap/*.js</exclude>
+								<exclude>**/manager/bootstrap/*.css</exclude>
+								<exclude>**/manager/bootstrap/*.map</exclude>
+								<exclude>**/manager/js/libs/*.js</exclude>
+								<exclude>**/manager/js/libs/*.css</exclude>
+								<exclude>**/manager/js/libs/*.map</exclude>
 							</excludes>
 						</configuration>
 					</execution>
@@ -480,6 +485,7 @@
 				<version>3.12.0</version>
 				<configuration>
 					<failOnError>false</failOnError>
+					<additionalOptions>--enable-preview</additionalOptions>
 				</configuration>
 				<executions>
 					<execution>
@@ -522,9 +528,9 @@
 							<version>1.1.1</version>
 						</path>
 						<path>
-							<groupId>com.condation.cms.module.framework</groupId>
+							<groupId>com.condation.modules.framework</groupId>
 							<artifactId>modules-api</artifactId>
-							<version>7.4.2</version>
+							<version>1.2.0</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>
@@ -543,15 +549,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<!--configuration>
-						<argLine>@{argLine} -javaagent:${org.mockito:mockito-core:jar}</argLine>
-				</configuration-->
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
 					<argLine>
+						--enable-preview
 						-javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
 						-Xshare:off
 					</argLine>

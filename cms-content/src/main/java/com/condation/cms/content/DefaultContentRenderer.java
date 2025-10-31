@@ -36,6 +36,7 @@ import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.MarkdownRendererFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
@@ -47,15 +48,19 @@ import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.pipeline.ContentPipelineFactory;
 import com.condation.cms.content.views.model.View;
-import com.condation.cms.core.content.MapAccess;
+import com.condation.cms.api.content.MapAccess;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.extensions.hooks.DBHooks;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
+import com.condation.cms.content.template.functions.MarkdownFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
-import com.condation.cms.content.template.functions.shortcode.ShortCodeTemplateFunction;
+import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
+import com.condation.cms.content.template.functions.translation.NodeTranslations;
+import com.condation.cms.content.template.functions.translation.SiteTranslations;
 import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -137,44 +142,48 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		TemplateEngine.Model model = new TemplateEngine.Model(
 				contentFile, 
-				contentNode.isPresent() ? contentNode.get() : null,
+				contentNode.orElse(null),
 				context);
 
 		modelExtending.accept(model);
 
 		Namespace namespace = new Namespace();
 
-		model.values.put("meta", new MapAccess(meta));
-		model.values.put("sections", sections);
+		namespace.add(Constants.TemplateNamespaces.NODE, "meta", new MapAccess(meta));
+		namespace.add(Constants.TemplateNamespaces.NODE, "sections", sections);
+		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
+		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.orElse(null), siteProperties));
+		
+		var canonicalUrl = "";
+		if (contentNode.isPresent()) {
+			canonicalUrl = PathUtil.toURL(contentNode.get().uri());
+			canonicalUrl = HTTPUtil.modifyUrl(canonicalUrl, siteProperties);
+		}
+		namespace.add(Constants.TemplateNamespaces.NODE, "canonicalUrl", canonicalUrl);
 
-		namespace.add("node", "meta", new MapAccess(meta));
-		namespace.add("node", "sections", sections);
-
-		ShortCodeTemplateFunction shortCodeFunction = createShortCodeFunction(context);
-		model.values.put(ShortCodeTemplateFunction.KEY, shortCodeFunction);
-		namespace.add("cms", ShortCodeTemplateFunction.KEY, shortCodeFunction);
+		TagTemplateFunction tagFunction = createTagFunction(context);
+		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
-		model.values.put("navigation", navigationFunction);
-		namespace.add("cms", "navigation", shortCodeFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "navigation", navigationFunction);
 		
 		NodeListFunctionBuilder nodeListFunction = createNodeListFunction(contentFile, context);
-		model.values.put("nodeList", nodeListFunction);
-		namespace.add("cms", "nodeList", nodeListFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "nodeList", nodeListFunction);
 		
 		QueryFunction queryFunction = createQueryFunction(contentFile, context);
-		model.values.put("query", queryFunction);
-		namespace.add("cms", "query", queryFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "query", queryFunction);
 		
+		MarkdownFunction markdownFunction = createMarkdownFunction(context);
+		namespace.add(Constants.TemplateNamespaces.CMS, "markdown", markdownFunction);
+
 		model.values.put("requestContext", context.get(RequestFeature.class));
 		model.values.put("theme", context.get(RenderContext.class).theme());
-		model.values.put("site", siteProperties);
-		model.values.put("mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
-		namespace.add("cms", "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
+		namespace.add(Constants.TemplateNamespaces.CMS, "mediaService", context.get(SiteMediaServiceFeature.class).mediaService());
+		namespace.add(Constants.TemplateNamespaces.CMS, "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
-		model.values.put("taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
-		namespace.add("cms", "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
-
+		namespace.add(Constants.TemplateNamespaces.SITE, "properties", siteProperties);
+		namespace.add(Constants.TemplateNamespaces.SITE, "translation", new SiteTranslations(siteProperties));
+		
 		var theme = context.get(RenderContext.class).theme();
 		if (theme.empty()) {
 			model.values.put("messages", context.get(InjectorFeature.class).injector().getInstance(MessageSource.class));
@@ -182,13 +191,12 @@ public class DefaultContentRenderer implements ContentRenderer {
 			model.values.put("messages", theme.getMessages());
 		}
 		
-		model.values.put("hooks", context.get(HookSystemFeature.class).hookSystem());
-		namespace.add("cms", "hooks", context.get(HookSystemFeature.class).hookSystem());
+		namespace.add(Constants.TemplateNamespaces.CMS, "hooks", context.get(HookSystemFeature.class).hookSystem());
 
-		model.values.put("links", new LinkFunction(context));
-		namespace.add("cms", "links", new LinkFunction(context));
+		namespace.add(Constants.TemplateNamespaces.CMS, "links", new LinkFunction(context));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));
+		model.values.put("MANAGER", isManager(context));
 		model.values.put("DEV_MODE", isDevMode(context));
 		model.values.put("ENV", context.get(ServerPropertiesFeature.class).serverProperties().env());
 
@@ -198,11 +206,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		context.get(TemplateHooks.class).getTemplateSupplier().getRegisterTemplateSupplier().forEach(service -> {
 			model.values.put(service.name(), service.supplier());
-			namespace.add(Constants.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
-		});
-		context.get(TemplateHooks.class).getTemplateFunctions().getRegisterTemplateFunctions().forEach(service -> {
-			model.values.put(service.name(), service.function());
-			namespace.add(Constants.DEFAULT_MODULE_NAMESPACE, service.name(), service.function());
+			namespace.add(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, service.name(), service.supplier());
 		});
 
 		extendModel(model, namespace);
@@ -212,11 +216,15 @@ public class DefaultContentRenderer implements ContentRenderer {
 		
 		String content = renderContent(rawContent, context, modelCopy);
 		model.values.put("content", content);
-		namespace.add("node", "content", content);
+		namespace.add(Constants.TemplateNamespaces.NODE, "content", content);
 		
 		model.values.putAll(namespace.getNamespaces());
 
 		return templates.get().render((String) meta.get("template"), model);
+	}
+
+	protected MarkdownFunction createMarkdownFunction(final RequestContext context) {
+		return new MarkdownFunction(context.get(MarkdownRendererFeature.class).markdownRenderer());
 	}
 
 	protected QueryFunction createQueryFunction(final ReadOnlyFile contentFile, final RequestContext context) {
@@ -250,6 +258,13 @@ public class DefaultContentRenderer implements ContentRenderer {
 		return context.has(IsPreviewFeature.class);
 	}
 
+	private boolean isManager(final RequestContext context) {
+		if (context.has(IsPreviewFeature.class))  {
+			return context.get(IsPreviewFeature.class).mode().equals(IsPreviewFeature.Mode.MANAGER);
+		}
+		return false;
+	}
+	
 	private boolean isDevMode(final RequestContext context) {
 		return context.has(IsDevModeFeature.class);
 	}
@@ -282,13 +297,13 @@ public class DefaultContentRenderer implements ContentRenderer {
 				var sectionPath = contentBase.resolve(node.uri());
 				var content = render(sectionPath, context);
 				var name = SectionUtil.getSectionName(node.name());
-				var index = SectionUtil.getSectionIndex(node.name());
+				var index = node.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_LAYOUT_ORDER);
 
 				if (!sections.containsKey(name)) {
 					sections.put(name, new ArrayList<>());
 				}
 
-				sections.get(name).add(new Section(name, index, content));
+				sections.get(name).add(new Section(name, index, content, node.data()));
 			} catch (Exception ex) {
 				log.error("error render section", ex);
 			}
@@ -300,8 +315,8 @@ public class DefaultContentRenderer implements ContentRenderer {
 		return sections;
 	}
 
-	private ShortCodeTemplateFunction createShortCodeFunction(RequestContext context) {
-		return new ShortCodeTemplateFunction(context, context.get(RenderContext.class).shortCodes());
+	private TagTemplateFunction createTagFunction(RequestContext context) {
+		return new TagTemplateFunction(context, context.get(RenderContext.class).tags());
 	}
 
 }

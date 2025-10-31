@@ -47,6 +47,16 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	private final Path basePath;
 	
 	@Override
+	public String uri () {
+		return PathUtil.toURL(file, basePath);
+	}
+	
+	@Override
+	public String relativePath() {
+		return PathUtil.toRelativeFile(file, basePath);
+	}
+	
+	@Override
 	public boolean exists() {
 		return Files.exists(file);
 	}
@@ -116,7 +126,9 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 
 	@Override
 	public List<ReadOnlyFile> children() throws IOException {
-		return Files.list(file).map(child -> new NIOReadOnlyFile(child, basePath)).map(ReadOnlyFile.class::cast).toList();
+		try (var childrenStream = Files.list(file)) {
+			return childrenStream.map(child -> new NIOReadOnlyFile(child, basePath)).map(ReadOnlyFile.class::cast).toList();
+		}
 	}
 
 	@Override

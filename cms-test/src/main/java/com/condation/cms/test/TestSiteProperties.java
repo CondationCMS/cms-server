@@ -24,6 +24,8 @@ package com.condation.cms.test;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.TranslationProperties;
+import com.condation.cms.api.UIProperties;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -53,6 +55,11 @@ public class TestSiteProperties implements SiteProperties {
 	@Override
 	public String contextPath() {
 		return (String) values.getOrDefault("context_path", "/");
+	}
+	
+	@Override
+	public String baseUrl() {
+		return (String) values.getOrDefault("baseurl", "");
 	}
 
 	@Override
@@ -119,5 +126,17 @@ public class TestSiteProperties implements SiteProperties {
 	public List<String> activeModules() {
 		return (List<String>)values.getOrDefault("active.modules", List.of());
 	}
+
+	@Override
+	public UIProperties ui() {
+		return new TestUiProperties();
+	}
+
+	@Override
+	public TranslationProperties translation() {
+		return new TestTranslationProperties(true, List.of(), List.of());
+	}
+
+	
 
 }

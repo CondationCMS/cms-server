@@ -25,6 +25,9 @@ package com.condation.cms.core.configuration.source;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.core.configuration.ConfigSource;
 import com.condation.cms.core.configuration.GSONProvider;
+import com.google.gson.JsonObject;
+import io.github.wasabithumb.jtoml.JToml;
+import io.github.wasabithumb.jtoml.document.TomlDocument;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,9 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
-import org.tomlj.Toml;
-import org.tomlj.TomlPosition;
-import org.tomlj.TomlTable;
 
 /**
  *
@@ -45,15 +45,18 @@ import org.tomlj.TomlTable;
 @Slf4j
 public class TomlConfigSource implements ConfigSource {
 	
+	private static JToml JTOML = JToml.jToml();
+	
 	public static ConfigSource build(Path tomlfile) throws IOException {
-		TomlTable result = null;
+		
+		TomlDocument document = null;
 		if (Files.exists(tomlfile)) {
-			result = Toml.parse(tomlfile);
+			document = JTOML.read(tomlfile);
 		} else {
-			result = EmptyTomlTable.EMPTY_TABLE;
+			document = JTOML.readFromString("");
 		}
-
-		return new TomlConfigSource(tomlfile, result);
+		
+		return new TomlConfigSource(tomlfile, document);
 	}
 
 	private Map<String, Object> result;
@@ -62,11 +65,14 @@ public class TomlConfigSource implements ConfigSource {
 
 	private long lastModified = 0;
 
-	private TomlConfigSource(Path tomlFile, TomlTable result) {
+	private TomlConfigSource(Path tomlFile, TomlDocument document) {
 		this.tomlFile = tomlFile;
 		try {
 			
-			this.result = GSONProvider.GSON.fromJson(result.toJson(), HashMap.class);
+			var json = JTOML.fromToml(JsonObject.class, document);
+			this.result = GSONProvider.GSON.fromJson(
+					GSONProvider.GSON.toJson(json), 
+					HashMap.class);
 			
 			if (Files.exists(tomlFile)) {
 				this.lastModified = Files.getLastModifiedTime(tomlFile).toMillis();
@@ -88,9 +94,12 @@ public class TomlConfigSource implements ConfigSource {
 				return false;
 			}
 			lastModified = modified;
-			var toml = Toml.parse(tomlFile);
+			var document = JTOML.read(tomlFile);
 			
-			this.result = GSONProvider.GSON.fromJson(toml.toJson(), HashMap.class);
+			var json = JTOML.fromToml(JsonObject.class, document);
+			this.result = GSONProvider.GSON.fromJson(
+					GSONProvider.GSON.toJson(json), 
+					HashMap.class);
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
@@ -119,58 +128,4 @@ public class TomlConfigSource implements ConfigSource {
 	public boolean exists() {
 		return Files.exists(tomlFile);
 	}
-
-	private static class EmptyTomlTable implements TomlTable {
-
-		static final TomlTable EMPTY_TABLE = new EmptyTomlTable();
-
-		private EmptyTomlTable() {
-		}
-
-		@Override
-		public int size() {
-			return 0;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
-		}
-
-		@Override
-		public Set<String> keySet() {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public Set<List<String>> keyPathSet(boolean includeTables) {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public Set<Map.Entry<String, Object>> entrySet() {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public Set<Map.Entry<List<String>, Object>> entryPathSet(boolean includeTables) {
-			return Collections.emptySet();
-		}
-
-		@Override
-		public Object get(List<String> path) {
-			return null;
-		}
-
-		@Override
-		public TomlPosition inputPositionOf(List<String> path) {
-			return null;
-		}
-
-		@Override
-		public Map<String, Object> toMap() {
-			return Collections.emptyMap();
-		}
-	}
-
 }

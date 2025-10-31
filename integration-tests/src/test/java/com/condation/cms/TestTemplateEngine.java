@@ -25,6 +25,7 @@ package com.condation.cms;
 
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.FileDB;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -54,7 +55,12 @@ public class TestTemplateEngine implements TemplateEngine {
 		
 		Map<String, Object> values = new HashMap<>();
 		values.putAll(model.values);
-		values.put("meta.title", ((Map<String, Object>)model.values.getOrDefault("meta", Map.of())).getOrDefault("title", "<no title>"));
+		values.put("node.meta.title", 
+				MapUtil.getValue(model.values, "node.meta.title", "<no title>")
+		);
+		values.put("node.content", 
+				MapUtil.getValue(model.values, "node.content", "<no content>")
+		);
 		
 		String templateContent = db.getFileSystem().loadContent(db.getFileSystem().resolve("templates").resolve(template), StandardCharsets.UTF_8);
 		

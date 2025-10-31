@@ -21,8 +21,6 @@ package com.condation.cms.extensions;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.theme.Theme;
 import java.io.IOException;
 import java.io.InputStream;
@@ -64,7 +62,7 @@ public class ExtensionFileSystem implements FileSystem {
 			return Path.of(path);
 		}
 		var resolved = siteExtensionPath.resolve(path);
-		if (!Files.exists(resolved) && !theme.empty() ) {
+		if (!Files.exists(resolved) && !theme.empty()) {
 			resolved = theme.resolveExtension(path);
 		}
 		return resolved;
@@ -76,25 +74,25 @@ public class ExtensionFileSystem implements FileSystem {
 
 	@Override
 	public void createDirectory(Path dir, FileAttribute<?>... attrs) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public void delete(Path path) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 	@Override
 	public SeekableByteChannel newByteChannel(Path path, Set<? extends OpenOption> options, FileAttribute<?>... attrs) throws IOException {
 		if (path.startsWith("system/") || path.startsWith("system\\")) {
 			var localPath = path.toString().replaceAll("\\\\", "/");
-			InputStream resourceAsStream = ExtensionFileSystem.class.getResourceAsStream(localPath);
-			
-			byte[] content = new byte[0];
-			if (resourceAsStream != null) {
-				content = resourceAsStream.readAllBytes();
+			try (InputStream resourceAsStream = ExtensionFileSystem.class.getResourceAsStream(localPath);) {
+				byte[] content = new byte[0];
+				if (resourceAsStream != null) {
+					content = resourceAsStream.readAllBytes();
+				}
+				return new SeekableInMemoryByteChannel(content);
 			}
-			return new SeekableInMemoryByteChannel(content);
 		}
 		return Files.newByteChannel(path, options, attrs);
 	}
@@ -116,7 +114,7 @@ public class ExtensionFileSystem implements FileSystem {
 
 	@Override
 	public Map<String, Object> readAttributes(Path path, String attributes, LinkOption... options) throws IOException {
-		throw new UnsupportedOperationException("Not supported yet."); 
+		throw new UnsupportedOperationException("Not supported yet.");
 	}
 
 }

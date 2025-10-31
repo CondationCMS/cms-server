@@ -25,10 +25,10 @@ package com.condation.cms.content;
 
 
 import com.condation.cms.MockModuleManager;
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
@@ -61,13 +61,17 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 	
 	static ModuleManager moduleManager = new MockModuleManager();
 	static FileDB db;
-	static Path hostBase = Path.of("hosts/test/");
+	static Path hostBase;
 	
 	@BeforeAll
 	public static void beforeClass () throws IOException {
+		
+		hostBase = Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
+		
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test/"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return contentParser.parseMeta(cmsFile);

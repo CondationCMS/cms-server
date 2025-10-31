@@ -1,0 +1,13 @@
+{% if MANAGER %}
+  <h2>running in manager</h2>
+{% endif %}
+{% if PREVIEW_MODE %}
+  <h2>running in preview</h2>
+{% endif %}
+<div class="language-buttons">
+  {% for translation in node.translation.translations() %}
+  <a href="{{ translation.url() }}" class="lang {% if translation.current() %}active{% endif %}">
+    <img src="https://flagcdn.com/w20/{{ translation.locale() }}.png" width="20" height="15">
+  </a>
+  {% endfor %}
+</div>

@@ -1,19 +1,77 @@
 <!DOCTYPE html SYSTEM>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-	{% include "libs/fragments.html" %}
-</head>
+	<head>
+		
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		{% include "libs/fragments.html" %}
+		
+		{% include "libs/language_header.html" %}
+		
+	</head>
 
-<body class="centered">
+	<body class="centered">
 
-	<div id="content">
-		<div class="container">
-			{{ node.content | raw}}
+		{% include "libs/language_switcher.html" %}
+
+		<div id="content" 
+			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+		>
+			<div class="container">
+				{{ node.content | raw }}
+			</div>
+			<div>
+				<div class="container" {{ ui.editMeta("text", "description") }}>
+					{{ node.meta.get('description') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+					{{ node.meta.get('parent.text') | raw}}
+				</div>
+				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+					{{ node.meta.get('count') }}
+				</div>
+				<div>
+					<h2>simple compontent</h2>
+					{[ component color="red" message="its a component" ]}
+					{[ endcomponent ]}
+				</div>
+				<div>
+					<h2>Template component</h2>
+					{[ tempcomp name="CondationCMS" message="a compontent rendered by a template" ]}
+					{[ endtempcomp ]}
+				</div>
+				<div>
+					<h4>template function test</h4>
+					{{ fn_message({'message': "Hello", 'color': "red"}) | raw }}
+					<br/>
+					user: {{ username() }} 
+				</div>
+			</div>
+			<hr />
 		</div>
-	</div>
 
-</body>
+		<div>
+			{% if node.meta.containsKey('media_url') %}
+				{% assign media = cms.mediaService.get(node.meta.media_url) %}
+				<img src="/media/{{ media.uri }}?format=cropped" alt="{{ media.meta.alt }}" 
+					{{ ui.mediaToolbar(["select", "meta", "focalPoint"], {"uri": node.uri, "element": "media_url" }) | raw }} />
+			{% endif %}
+		</div>
+
+		<div class="container sections" 
+			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
+			>
+			{% if node.sections.containsKey('asection') %}
+				{% for section in node.sections.get('asection') %}
+					{{ section.content() | raw }}
+				{% endfor %}
+			{% endif %}
+
+		</div>
+
+	</body>
 
 
 </html>

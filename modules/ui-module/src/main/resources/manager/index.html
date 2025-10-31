@@ -1,0 +1,252 @@
+<!--
+  #%L
+  ui-module
+  %%
+  Copyright (C) 2023 - 2025 CondationCMS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+-->
+{% macro menuEntry(entry) %}
+{% if entry != null && entry.hasChildren() %}
+<li class="nav-item dropdown">
+	<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+		data-cms-i18n-key="{{ entry.id }}">
+		{{ entry.name }}
+	</a>
+	<ul class="dropdown-menu">
+		{% for child in entry.getChildren() %}
+		{% if child.isDivider() %}
+		<li>
+			<hr class="dropdown-divider">
+		</li>
+		{% elseif child.hasChildren() %}
+		{{ menuEntry(child) | raw }}
+		{% else %}
+		<li><a class="dropdown-item" href="#" data-cms-action-definition='{{ child.getActionDefinition() }}'
+				data-cms-i18n-key="{{ child.id }}">{{ child.name }}</a></li>
+		{% endif %}
+		{% endfor %}
+	</ul>
+</li>
+{% else %}
+<li class="nav-item">
+	<a class="nav-link" aria-current="page" href="#" data-cms-action-definition='{{ entry.getActionDefinition() }}'
+		data-cms-i18n-key="{{ child.id }}">{{ entry.name }}</a>
+</li>
+{% endif %}
+{% endmacro %}
+<!doctype html>
+<html lang="en" class="h-100">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Manager</title>
+	<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-superhero.min.css') }}" rel="stylesheet" />
+
+	<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
+
+	<script type="module" src="https://unpkg.com/ninja-keys?module"></script>
+
+	<script src="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.css" />
+
+	<script src="https://cdn.jsdelivr.net/npm/cherry-markdown@0.10.0/dist/cherry-markdown.core.min.js"></script>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cherry-markdown@0.10.0/dist/cherry-markdown.min.css">
+	
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
+
+	<link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager.css') }}" />
+	<script src="{{ links.createUrl('/manager/js/manager-globals.js') }}"></script>
+	<script src="{{ links.createUrl('/manager/js/manager.js') }}" type="module"></script>
+	<style>
+		html,
+		body,
+		#content {
+			height: 100%;
+		}
+	</style>
+	<script>
+
+		window.manager = {
+			csrfToken: '{{ csrfToken }}',
+			baseUrl: '{{ managerBaseURL }}',
+			contextPath: '{{ contextPath }}',
+			siteId: '{{ siteId }}',
+		}
+	</script>
+</head>
+
+<body class="d-flex flex-column h-100 m-0">
+
+	<div id="menu">
+		<nav class="navbar navbar-expand-lg navbar-expand-md bg-dark" data-bs-theme="dark">
+			<div class="container-fluid">
+				<span class="navbar-brand mb-0 h1">CondationCMS</span>
+				<button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+					data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+					aria-expanded="false" aria-label="Toggle navigation">
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarSupportedContent">
+					<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button" title="Reload"
+								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/reload-preview') }}","parameters":{},"type":"script"}'>
+								<i class="bi bi-arrow-clockwise"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button" title="New page"
+								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
+								<i class="bi bi-folder2-open"></i>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button" title="Manage media"
+								data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
+								<i class="bi bi-images"></i>
+							</a>
+						</li>
+						{% for entry in actionFactory.createMenu().entries() %}
+							{{ menuEntry(entry) | raw }}
+						{% endfor %}
+						<!--
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false"
+								title="Create new contentw">
+								<i class="bi bi-plus-circle"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item cms-ct-create" href="#">Create Page</a>
+								</li>
+								<li>
+									<a class="dropdown-item cms-ct-create" href="#">Create Blogpost</a>
+								</li>
+							</ul>
+						</li>
+						-->
+					</ul>
+					<ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+						<li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false" data-cms-i18n-key11="menu.settings">
+								<i class="bi bi-sliders2-vertical"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item" id="cms-action-logout"
+										href="{{ links.createUrl('/manager/logout') }}"
+										data-cms-i18n-key="menu.settings.logout">Logout</a>
+								</li>
+							</ul>
+						</li>
+						<!--li class="nav-item dropdown">
+							<a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
+								data-bs-toggle="dropdown" aria-expanded="false" data-cms-i18n-key11="language"
+								title="Language">
+								<i class="bi bi-globe2"></i>
+							</a>
+							<ul class="dropdown-menu">
+								<li>
+									<a class="dropdown-item cms-lang-selector" href="#" data-cms-i18n-lang="en"
+										data-cms-i18n-key="language.en">English</a>
+								</li>
+								<li>
+									<a class="dropdown-item cms-lang-selector" href="#" data-cms-i18n-lang="de"
+										data-cms-i18n-key="language.de">German</a>
+								</li>
+							</ul>
+						</li-->
+						<li class="nav-item dropdown">
+							<a class="btn dropdown-toggle dropdown-nocaret" href="#" data-bs-toggle="dropdown"
+								aria-expanded="false" id="cms-btn-status" data-cms-i18n-key="menu.status">Status
+							</a>
+							<ul class="dropdown-menu dropdown-menu-end">
+								<li>
+									<a class="dropdown-item" href="#" data-cms-i18n-lang="en"
+										data-cms-i18n-key="menu.page.settings"
+										data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings')}}","parameters":{},"type":"script"}'>Page settings</a>
+								</li>
+								{% if translation.enabled %}
+									<li>
+										<a class="dropdown-item" href="#" data-cms-i18n-lang="en"
+											data-cms-i18n-key="menu.page.translation"
+											data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/translations')}}","parameters":{},"type":"script"}'>Translation</a>
+									</li>
+								{% endif %}
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="content" class="flex-grow-1 d-flex flex-column overflow-hidden">
+		<div id="previewWrapper" class="flex-grow-1 position-relative">
+			<iframe id="contentPreview" class="position-absolute top-0 start-0 w-100 h-100 border-0"
+				src="{{ links.createUrl('/?preview=manager&preview-token=' + previewToken) | raw }}"></iframe>
+
+			<!-- Overlay -->
+			<div id="previewOverlay"
+				class="position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 align-items-center justify-content-center"
+				style="z-index: 10; display: none;">
+				<div class="spinner-border text-primary" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script src="{{ links.createUrl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
+	<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.53.0/min/vs/loader.js"></script>
+
+	<script src="{{ links.createUrl('/manager/js/ui-actions.js') }}" type="module"></script>
+
+	<div id="modalContainer"></div>
+	<div id="sidebarContainer"></div>
+	<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+	<ninja-keys> </ninja-keys>
+
+	<script>
+
+		var shortCuts = [
+			{% for entry in actionFactory.createShortCuts() %}
+		{
+			id: '{{ entry.id }}',
+			title: '{{ entry.title }}',
+			icon: '{{ entry.icon }}',
+			section: '{{ entry.section }}',
+			handler: () => {
+				var action = {{ entry.getActionDefinition() | raw }}
+				if (action.type === "hook") {
+					executeHookAction(action)
+				} else if (action.type === "script") {
+					executeScriptAction(action)
+				}
+			}
+		},
+		{% endfor %}
+		];
+		const ninja = document.querySelector('ninja-keys');
+		ninja.data = shortCuts;
+	</script>
+</body>
+
+</html>

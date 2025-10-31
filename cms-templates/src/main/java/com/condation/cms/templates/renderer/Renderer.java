@@ -21,7 +21,6 @@ package com.condation.cms.templates.renderer;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.templates.DefaultTemplate;
 import com.condation.cms.templates.RenderFunction;
 import com.condation.cms.templates.TemplateConfiguration;

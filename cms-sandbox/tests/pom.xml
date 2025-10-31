@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>com.condation.cms</groupId>
 		<artifactId>cms-sandbox</artifactId>
-		<version>7.3.0</version>
+		<version>8.0.0</version>
 	</parent>
 	<artifactId>tests</artifactId>
 	<packaging>jar</packaging>
@@ -53,25 +53,4 @@
 			<version>4.4.0</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.antlr</groupId>
-				<artifactId>antlr4-maven-plugin</artifactId>
-				<version>4.13.2</version>
-				<configuration>
-					<sourceDirectory>src/main/resources</sourceDirectory>
-					<outputDirectory>target/generated-sources/antlr4</outputDirectory>
-				</configuration>
-				<executions>
-					<execution>
-						<goals>
-							<goal>antlr4</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>

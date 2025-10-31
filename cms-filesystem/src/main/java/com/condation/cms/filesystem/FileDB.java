@@ -57,7 +57,7 @@ public class FileDB implements DB {
 	private FileTaxonomies taxonomies;
 	
 	public void init () throws IOException {
-		init(MetaData.Type.MEMORY);
+		init(MetaData.Type.PERSISTENT);
 	}
 	
 	public void init (MetaData.Type metaDataType) throws IOException {
@@ -67,8 +67,7 @@ public class FileDB implements DB {
 		
 		content = new FileContent(fileSystem, readOnlyFileSystem);
 		
-		taxonomies = new FileTaxonomies(configuration, fileSystem);
-		
+		taxonomies = new FileTaxonomies(configuration, fileSystem);	
 	}
 
 	@Override

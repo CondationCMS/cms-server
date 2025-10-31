@@ -26,25 +26,13 @@ import com.condation.cms.api.Constants;
  * #L%
  */
 
-import com.condation.cms.api.template.TemplateEngine;
 
 public abstract class TemplateModelExtendingExtensionPoint extends AbstractExtensionPoint{
 
-	/**
-	 * deprecated: use @TemplateModelExtendingExtensionPoint.getModel instead
-	 * @param model
-	 */
-	@Deprecated(since = "7.3.0", forRemoval = true)
-	public abstract void extendModel (TemplateEngine.Model model);
-
-	public Map<String, Object> getModel () {
-		TemplateEngine.Model model = new TemplateEngine.Model(null, null, null);
-		extendModel(model);
-		return model.values;
-	}
+	public abstract Map<String, Object> getModel ();
 
 	public String getNamespace () {
-		return Constants.DEFAULT_MODULE_NAMESPACE;
+		return Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
 	}
 
 }

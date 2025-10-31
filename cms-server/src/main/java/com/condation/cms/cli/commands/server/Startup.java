@@ -24,19 +24,17 @@ package com.condation.cms.cli.commands.server;
 
 
 
-import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.ServerProperties;
-import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.cli.tools.CLIServerUtils;
 import com.condation.cms.cli.tools.ModulesUtil;
 import com.condation.cms.cli.tools.ThemesUtil;
-import com.condation.cms.git.RepositoryManager;
 import com.condation.cms.ipc.IPCServer;
 import com.condation.cms.server.configs.ServerGlobalModule;
 import com.condation.cms.server.JettyServer;
 import com.google.inject.Guice;
+import com.google.inject.Stage;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
 import picocli.CommandLine;
@@ -45,13 +43,21 @@ import picocli.CommandLine;
  *
  * @author t.marx
  */
-@CommandLine.Command(name = "start")
+@CommandLine.Command(
+		name = "start", 
+		description = "starts the server")
 @Slf4j
 public class Startup implements Runnable {
 
 	@Override
 	public void run() {
 		try {
+			
+			var cmsProcess = CLIServerUtils.getCMSProcess();
+			if (cmsProcess.isPresent()) {
+				System.err.println("cms server is running, please stop it firste");
+				System.exit(10);
+			}
 			
 			System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
 			System.setProperty("polyglotimpl.DisableClassPathIsolation", "true");
@@ -66,8 +72,6 @@ public class Startup implements Runnable {
 			printStartup(properties);
 
 			ServerContext.IS_DEV = properties.dev();
-
-			globalInjector.getInstance(RepositoryManager.class);
 			
 			var server = new JettyServer(globalInjector);
 			
@@ -75,7 +79,7 @@ public class Startup implements Runnable {
 			ipcServer.start();
 
 			server.startup();
-			writePidFile();
+			CLIServerUtils.writePidFile();
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -107,12 +111,6 @@ public class Startup implements Runnable {
 		} else {
 			log.trace("all required modules are intalled");
 		}
-	}
-	
-	
-	private static void writePidFile () throws IOException {
-		Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
-		Files.writeString(ServerUtil.getPath(Constants.PID_FILE), String.valueOf(ProcessHandle.current().pid()));
 	}
 
 

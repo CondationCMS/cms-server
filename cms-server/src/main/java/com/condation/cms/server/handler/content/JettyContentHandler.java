@@ -21,8 +21,8 @@ package com.condation.cms.server.handler.content;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
+import com.condation.cms.api.Constants;
+import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentResponse;
 import com.condation.cms.api.content.DefaultContentResponse;
@@ -33,11 +33,14 @@ import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
-import com.condation.cms.server.filter.CreateRequestContextFilter;
 import com.google.inject.Inject;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
@@ -62,7 +65,7 @@ public class JettyContentHandler extends Handler.Abstract {
 //		var uri = request.getHttpURI().getPath();
 		var uri = RequestUtil.getContentPath(request);
 		var queryParameters = HTTPUtil.queryParameters(request.getHttpURI().getQuery());
-		var requestContext = (RequestContext) request.getAttribute(CreateRequestContextFilter.REQUEST_CONTEXT);
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
 
 		// handle enabled spa mode
 		var spaEnabled = requestContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties().spaEnabled();
@@ -71,7 +74,7 @@ public class JettyContentHandler extends Handler.Abstract {
 			uri = "";
 			notFoundContent = "/";
 		}
-		
+
 		try {
 			Optional<ContentResponse> content = contentResolver.getContent(requestContext);
 			response.setStatus(200);
@@ -109,7 +112,11 @@ public class JettyContentHandler extends Handler.Abstract {
 			log.error("error handling content", e);
 			response.setStatus(500);
 			response.getHeaders().add(HttpHeader.CONTENT_TYPE, "text/html; charset=utf-8");
-			callback.succeeded();
+
+			if (ServerContext.IS_DEV) {
+				var stacktrace = ExceptionUtils.getStackTrace(e);
+				Content.Sink.write(response, true, "<pre>%s</pre>".formatted(stacktrace), callback);
+			}
 		}
 		return true;
 	}

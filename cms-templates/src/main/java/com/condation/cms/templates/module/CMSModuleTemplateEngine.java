@@ -146,7 +146,7 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 		
 		return templateComponents;
 	}
-
+	
 	@Override
 	public String renderFromString(String templateString, Model model) throws IOException {
 		var template = templateEngine.getTemplateFromString(templateString);

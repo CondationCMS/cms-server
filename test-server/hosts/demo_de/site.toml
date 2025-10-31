@@ -1,0 +1,40 @@
+id = "demo-de-site"
+hostname = [ "localhost" ]
+baseurl = "http://localhost:2020"
+locale = "de_DE"
+theme = "demo"
+context_path = "/de"
+
+[ui]
+force2fa = false
+managerEnabled = true
+
+[ui.2fa]
+mail_from = "noreply@localhost.de"
+mail_sender = "CondationCMS"
+mail_title = "CondationCMS: your login code"
+mail_message = '''
+Hello <username>,
+
+your login code: <code>
+'''
+
+[backup]
+enabled = true
+cron = "0 0 2 * * ?"
+target = "/Users/thorstenmarx/entwicklung/backups"
+
+[cache]
+content = true
+
+[translation]
+enabled = true
+languages = ["de", "en"]
+
+[[translation.mapping]]
+language = "de"
+site = "demo-de-site"
+
+[[translation.mapping]]
+language = "en"
+site = "demo-site"

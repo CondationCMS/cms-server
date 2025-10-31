@@ -24,6 +24,7 @@ package com.condation.cms.template.functions.list;
 
 
 
+import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.configuration.Configuration;
@@ -57,13 +58,16 @@ public class NodeListFunctionBuilderNGTest {
 	static DefaultContentParser parser = new DefaultContentParser();
 	static MarkdownRenderer markdownRenderer = TestHelper.getRenderer();
 	
-	static Path hostBase = Path.of("hosts/test/");
+	static Path hostBase;
 	
 	@BeforeAll
 	static void setup () throws IOException {
 		
+		hostBase =  Path.of("target/test-" + System.currentTimeMillis());
+		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
+		
 		var config = new Configuration();
-		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
+		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));
 				return parser.parseMeta(cmsFile);

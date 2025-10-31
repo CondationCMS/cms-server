@@ -56,6 +56,8 @@ public abstract class Constants {
 		public static final String MENU_POSITION = "position";
 		public static final String MENU_TITLE = "title";
 		
+		public static final String LAYOUT_ORDER = "layout.order";
+		
 		public static final String REDIRECT_STATUS = "redirect.status";
 		public static final String REDIRECT_LOCATION = "redirect.location";
 		
@@ -65,6 +67,8 @@ public abstract class Constants {
 		
 		public static final String ALIASES = "aliases";
 		public static final String ALIASES_REDIRECT = "aliases_redirect";
+		
+		public static final String TRANSLATIONS = "translations";
 	}
 	
 	public static class Folders {
@@ -97,13 +101,13 @@ public abstract class Constants {
 		return Pattern.compile("%s\\.(?<section>[a-zA-Z0-9-]+)\\.md".formatted(Pattern.quote(fileName)));
 	};
 	
-	public static final Pattern SECTION_ORDERED_PATTERN = Pattern.compile("[\\w-]+\\.(?<section>[a-zA-Z0-9-]+)\\.(?<index>\\d+)\\.md");
+	public static final Pattern SECTION_NAMED_PATTERN = Pattern.compile("[\\w-]+\\.(?<section>[a-zA-Z0-9-]+)\\.(?<id>[\\w-]+)\\.md");
 	
-	public static final Function<String, Pattern> SECTION_ORDERED_OF_PATTERN = (fileName) -> {
-		return Pattern.compile("%s\\.[a-zA-Z0-9-]+\\.[0-9]+\\.md".formatted(Pattern.quote(fileName)));
+	public static final Function<String, Pattern> SECTION_NAMED_OF_PATTERN = (fileName) -> {
+		return Pattern.compile("%s\\.[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.md".formatted(Pattern.quote(fileName)));
 	};
 	
-	public static final int DEFAULT_SECTION_ORDERED_INDEX = 0;
+	public static final int DEFAULT_SECTION_LAYOUT_ORDER = 0;
 	public static final double DEFAULT_MENU_POSITION = 1000f;
 	public static final boolean DEFAULT_MENU_VISIBILITY = true;
 	public static final int DEFAULT_EXCERPT_LENGTH = 200;
@@ -111,18 +115,24 @@ public abstract class Constants {
 	public static final int DEFAULT_PAGE_SIZE = 5;
 	
 	public static final String DEFAULT_CONTENT_TYPE = ContentTypes.HTML;
-	public static final List<String> DEFAULT_CONTENT_PIPELINE = List.of("markdown", "shortcode");
+	public static final List<String> DEFAULT_CONTENT_PIPELINE = List.of("markdown", "tags");
 	
 	public static final int DEFAULT_REDIRECT_STATUS = 301;
 	
 	public static final String DEFAULT_CACHE_ENGINE = "local";
 	public static final boolean DEFAULT_CONTENT_CACHE_ENABLED = false;
 
-	public static final String DEFAULT_MODULE_NAMESPACE = "mod";
+	public static class TemplateNamespaces {
+		public static final String DEFAULT_MODULE_NAMESPACE = "mod";
+		public static final String CMS = "cms";
+		public static final String NODE = "node";
+		public static final String SITE = "site";
+	}
 	
 	public static class Taxonomy {
 		public static final String DEFAULT_TEMPLATE = "taxonomy.html";
 		public static final String DEFAULT_SINGLE_TEMPLATE = "taxonomy.single.html";
 	}
 	
+	public static final String REQUEST_CONTEXT_ATTRIBUTE_NAME = "_requestContext";
 }

@@ -34,6 +34,7 @@ import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.core.content.ContentResolvingStrategy;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.List;
@@ -86,6 +87,7 @@ public class ContentResolver {
 	}
 	
 	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
+		/*
 		String path;
 		if (Strings.isNullOrEmpty(context.get(RequestFeature.class).uri())) {
 			path = "";
@@ -111,7 +113,12 @@ public class ContentResolver {
 				contentFile = temp;
 			}
 		}
+		*/
 		
+		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var path = ContentResolvingStrategy.uriToPath(context.get(RequestFeature.class).uri());
+		Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(context.get(RequestFeature.class).uri(), db);
+		ReadOnlyFile contentFile = contentFileOpt.orElse(null);
 		// handle alias
 		ContentNode contentNode = null;
 		boolean aliasRedirect = false;
@@ -125,7 +132,10 @@ public class ContentResolver {
 			}
 		} else {
 			var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-			contentNode = db.getContent().byUri(uri).get();
+			final Optional<ContentNode> nodeByUri = db.getContent().byUri(uri);
+			if (nodeByUri.isPresent()) {
+				contentNode = nodeByUri.get();
+			}
 		}
 		
 		if (contentNode == null) {

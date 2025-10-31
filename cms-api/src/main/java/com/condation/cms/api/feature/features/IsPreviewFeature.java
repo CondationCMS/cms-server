@@ -31,6 +31,33 @@ import com.condation.cms.api.feature.Feature;
  * @author t.marx
  */
 @FeatureScope({FeatureScope.Scope.REQUEST})
-public record IsPreviewFeature() implements Feature {
+public record IsPreviewFeature(Mode mode) implements Feature {
 
+	public IsPreviewFeature() {
+		this(Mode.PREVIEW);
+	}
+	
+	public static enum Mode {
+		MANAGER("manager"),
+		PREVIEW("preview");
+		
+		private final String value;
+		
+		private Mode (String value) {
+			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
+		}
+
+		public static Mode forValue (String value) {
+			for (var mode : values()) {
+				if (mode.value.equals(value)) {
+					return mode;
+				}
+			}
+			return PREVIEW;
+		}
+	}
 }

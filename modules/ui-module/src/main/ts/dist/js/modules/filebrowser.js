@@ -239,6 +239,7 @@ const fileActions = () => {
             const contentType = element.getAttribute("data-cms-contenttype");
             if (contentType) {
                 createPageActionOfContentType({
+                    state: state,
                     getTargetFolder: getTargetFolder,
                     contentType: contentType
                 }).then(async () => {

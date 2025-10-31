@@ -33,7 +33,7 @@ export async function renameFileAction({ state, getTargetFolder, filename }) {
     });
     var extraOptions = {};
     if (state.options.siteId) {
-        options.siteId = state.options.siteId;
+        extraOptions.siteId = state.options.siteId;
     }
     if (newName) {
         var response = await renameFile({
@@ -73,7 +73,7 @@ export async function deleteElementAction({ elementName, state, deleteFN, getTar
     }
     var extraOptions = {};
     if (state.options.siteId) {
-        options.siteId = state.options.siteId;
+        extraOptions.siteId = state.options.siteId;
     }
     var response = await deleteFN({
         uri: getTargetFolder(),
@@ -107,7 +107,7 @@ export async function createFolderAction({ state, getTargetFolder }) {
     if (folderName) {
         var extraOptions = {};
         if (state.options.siteId) {
-            options.siteId = state.options.siteId;
+            extraOptions.siteId = state.options.siteId;
         }
         var response = await createFolder({
             uri: getTargetFolder(),
@@ -142,7 +142,7 @@ export async function createFileAction({ state, getTargetFolder }) {
     if (fileName) {
         var extraOptions = {};
         if (state.options.siteId) {
-            options.siteId = state.options.siteId;
+            extraOptions.siteId = state.options.siteId;
         }
         var response = await createFile({
             uri: getTargetFolder(),
@@ -168,7 +168,7 @@ export async function createFileAction({ state, getTargetFolder }) {
         }
     }
 }
-export async function createPageActionOfContentType({ getTargetFolder, contentType }) {
+export async function createPageActionOfContentType({ state, getTargetFolder, contentType }) {
     const pageName = await alertPrompt({
         title: i18n.t("filebrowser.createPage.title", "Create new page"),
         label: i18n.t("filebrowser.createPage.label", "Page name"),
@@ -178,7 +178,7 @@ export async function createPageActionOfContentType({ getTargetFolder, contentTy
         if (contentType) {
             var extraOptions = {};
             if (state.options.siteId) {
-                options.siteId = state.options.siteId;
+                extraOptions.siteId = state.options.siteId;
             }
             let response = await createPage({
                 uri: getTargetFolder(),

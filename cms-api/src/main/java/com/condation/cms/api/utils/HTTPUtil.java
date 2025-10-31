@@ -26,6 +26,7 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.request.RequestContextScope;
 import com.google.common.base.Strings;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -60,10 +61,11 @@ public class HTTPUtil {
 		url = modifyUrl(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
 		
 		if (featureContainer.has(IsPreviewFeature.class)) {
+			var feature = featureContainer.get(IsPreviewFeature.class);
 			if (url.contains("?")) {
-				url += "&preview=true";
+				url += "&preview=" + feature.mode().getValue();
 			} else {
-				url += "?preview=true";
+				url += "?preview=" + feature.mode().getValue();
 			}
 		}
 

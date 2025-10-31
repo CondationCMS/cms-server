@@ -116,6 +116,6 @@ public class QueryFunction extends AbstractCurrentNodeFunction {
 			uri = uri.substring(0, uri.length() - 1);
 		}
 
-		return uri + (isPreview() ? "?preview" : "");
+		return uri + (isPreview() ? "?preview=" + getPreviewMode() : "");
 	}
 }

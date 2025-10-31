@@ -63,6 +63,15 @@ public class PreviewFilter extends Handler.Abstract {
 		if (!queryParameters.containsKey("preview")) {
 			return false;
 		}
+		var mode = IsPreviewFeature.Mode.forValue(queryParameters.get("preview").getFirst());
+		var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
+		
+		if (IsPreviewFeature.Mode.PREVIEW.equals(mode)) {
+			if (ServerContext.IS_DEV) {
+				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(mode));
+				return false;
+			}
+		}
 		
 		var token = handlePreviewParameter(request, rspns);
 
@@ -72,10 +81,6 @@ public class PreviewFilter extends Handler.Abstract {
 
 		if (token.isPresent() && handleToken(request, token.get())) {
 			return false;
-		}
-		if (ServerContext.IS_DEV) {
-			var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
-			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
 		}
 
 		return false;
@@ -96,7 +101,7 @@ public class PreviewFilter extends Handler.Abstract {
 
 		if (payload.isPresent()) {
 			var requestContext = (RequestContext) request.getAttribute(Constants.REQUEST_CONTEXT_ATTRIBUTE_NAME);
-			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
+			requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Mode.MANAGER));
 
 			requestContext.add(AuthFeature.class, new AuthFeature(payload.get().username()));
 			return true;

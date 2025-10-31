@@ -61,7 +61,7 @@ const loadPreview = (url) => {
         const parsedUrl = new URL(url, dummyBase);
         // Wenn "preview" bereits gesetzt ist, nicht erneut hinzufügen
         if (!parsedUrl.searchParams.has("preview")) {
-            parsedUrl.searchParams.append("preview", "true");
+            parsedUrl.searchParams.append("preview", "manager");
         }
         parsedUrl.searchParams.delete("nocache");
         parsedUrl.searchParams.append("nocache", Date.now());

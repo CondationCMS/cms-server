@@ -85,6 +85,14 @@ public abstract class AbstractCurrentNodeFunction {
 
 		return false;
 	}
+	protected String getPreviewMode() {
+		if (RequestContextScope.REQUEST_CONTEXT.isBound()
+				&& RequestContextScope.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)) {
+			return RequestContextScope.REQUEST_CONTEXT.get().get(IsPreviewFeature.class).mode().getValue();
+		}
+
+		return IsPreviewFeature.Mode.PREVIEW.getValue();
+	}
 
 	protected Optional<ContentParser.Content> parse(ReadOnlyFile node) {
 		try {

@@ -70,10 +70,11 @@ public final class NodeHelper {
 		}
 		
 		if (requestContext.has(IsPreviewFeature.class)) {
+			var feature = requestContext.get(IsPreviewFeature.class);
 			if (nodeUri.contains("?")) {
-				nodeUri += "&preview=true";
+				nodeUri += "&preview=" + feature.mode().getValue();
 			} else {
-				nodeUri += "?preview=true";
+				nodeUri += "?preview=" + feature.mode().getValue();
 			}
 		}
 

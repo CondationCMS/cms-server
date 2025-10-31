@@ -66,10 +66,11 @@ public class ImageLinkInlineRule implements InlineElementRule {
 					}
 				}
 				if (requestContext.has(IsPreviewFeature.class)) {
+					var previewContext = requestContext.get(IsPreviewFeature.class);
 					if (href.contains("?")) {
-						href += "&preview";
+						href += "&preview=" + previewContext.mode().getValue();
 					} else {
-						href += "?preview";
+						href += "?preview=" + previewContext.mode().getValue();
 					}
 				}
 			}

@@ -69,7 +69,7 @@ public class UIAuthHandler extends JettyHandler {
 
 		setAuthFeature(payload.get().username(), requestContext);
 		
-		requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Type.MANAGER));
+		requestContext.add(IsPreviewFeature.class, new IsPreviewFeature(IsPreviewFeature.Mode.MANAGER));
 
 		return false;
 	}

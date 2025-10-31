@@ -22,7 +22,6 @@ package com.condation.cms.server.filter;
  * #L%
  */
 import com.condation.cms.api.PerformanceProperties;
-import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.annotations.Experimental;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
@@ -84,9 +83,6 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 			var contextPath = httpRequest.getContext().getContextPath();
 
 			requestContext.add(RequestFeature.class, new RequestFeature(contextPath, uri, queryParameters, httpRequest));
-			if (ServerContext.IS_DEV && queryParameters.containsKey("preview")) {
-				requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
-			}
 
 			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
 

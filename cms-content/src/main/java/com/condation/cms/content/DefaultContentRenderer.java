@@ -260,7 +260,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 	private boolean isManager(final RequestContext context) {
 		if (context.has(IsPreviewFeature.class))  {
-			return context.get(IsPreviewFeature.class).type().equals(IsPreviewFeature.Type.MANAGER);
+			return context.get(IsPreviewFeature.class).mode().equals(IsPreviewFeature.Mode.MANAGER);
 		}
 		return false;
 	}

@@ -11,7 +11,7 @@ export const $links = {
 		}
 
 		// Context Path holen (z. B. aus globaler Variable oder Config)
-		const contextPath = siteProperties.contextPath ?? "/";
+		const contextPath = siteProperties.contextPath();
 
 		// Wenn ContextPath nicht "/", dann davor setzen
 		if (contextPath !== "/") {

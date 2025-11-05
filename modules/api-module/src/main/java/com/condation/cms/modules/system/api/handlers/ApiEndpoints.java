@@ -31,6 +31,7 @@ import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.modules.system.api.services.ContentService;
 import com.condation.cms.modules.system.api.handlers.v1.NavigationHandler;
+import com.condation.cms.modules.system.api.handlers.v1.QueryHandler;
 import com.condation.modules.api.annotation.Extension;
 import java.util.HashSet;
 import java.util.List;
@@ -64,6 +65,11 @@ public class ApiEndpoints extends APIHandlerExtensionPoint {
 				new NavigationHandler(getContext().get(DBFeature.class).db(), getRequestContext())
 		);
 		
+		mapping.add(PathSpec.from("/v1/query"),
+				"POST",
+				new QueryHandler(getContext().get(DBFeature.class).db())
+		);
+
 		return mapping;
 	}
 	

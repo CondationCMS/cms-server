@@ -154,13 +154,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
 		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.orElse(null), siteProperties));
 		
-		var canonicalUrl = "";
-		if (contentNode.isPresent()) {
-			canonicalUrl = PathUtil.toURL(contentNode.get().uri());
-			canonicalUrl = HTTPUtil.modifyUrl(canonicalUrl, siteProperties);
-		}
-		namespace.add(Constants.TemplateNamespaces.NODE, "canonicalUrl", canonicalUrl);
-
+		namespace.add(Constants.TemplateNamespaces.NODE, "properties", new MapAccess((NodeProperties.createNodeProperties(contentNode.orElse(null), siteProperties))));
 		TagTemplateFunction tagFunction = createTagFunction(context);
 		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
 		

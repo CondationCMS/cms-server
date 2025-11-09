@@ -25,6 +25,7 @@ package com.condation.cms.server.handler.module;
 
 import com.condation.cms.api.extensions.HttpHandlerExtensionPoint;
 import com.condation.cms.api.extensions.Mapping;
+import com.condation.cms.api.utils.RequestUtil;
 import com.condation.modules.api.ModuleManager;
 import java.util.List;
 import java.util.Optional;
@@ -88,28 +89,25 @@ public class JettyModuleHandler extends Handler.Abstract {
 		
 		var moduleID = getModuleID(request);
 		
-		return modulePath.replace(PATH + "/" + moduleID, "");
+		return modulePath.replace(moduleID, "");
 	}
 
 	private String getModuleID(Request request) {
 		var modulePath = getModulePath(request);
 		if (modulePath.contains("/")) {
-			return modulePath.split("/")[1];
+			return modulePath.split("/")[0];
 		}
 		return modulePath;
 	}
 
 	private String getModulePath(Request request) {
 		var path = request.getHttpURI().getPath();
-		var contextPath = request.getContext().getContextPath();
-		if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
-			path = path.replaceFirst(contextPath, "");
+		var contextPath = RequestUtil.getContextPath(request);
+		if (!contextPath.endsWith("/")) {
+			contextPath += "/";
 		}
-
-		if (path.startsWith("/")) {
-			path = path.substring(1);
-		}
-
+		var replacePath = contextPath + PATH + "/";
+		path = path.replace(replacePath, "");
 		return path;
 	}
 }

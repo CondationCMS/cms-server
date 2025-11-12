@@ -17,19 +17,19 @@
 		{% include "libs/language_switcher.html" %}
 
 		<div id="content" 
-			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+			{{ ext.ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
 		>
 			<div class="container">
 				{{ node.content | raw }}
 			</div>
 			<div>
-				<div class="container" {{ ui.editMeta("text", "description") }}>
+				<div class="container" {{ ext.ui.editMeta("text", "description") }}>
 					{{ node.meta.get('description') | raw}}
 				</div>
-				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+				<div class="container" {{ ext.ui.editMeta("text", "parent.text") }}>
 					{{ node.meta.get('parent.text') | raw}}
 				</div>
-				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+				<div class="container" {{ ext.ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
 					{{ node.meta.get('count') }}
 				</div>
 				<div>
@@ -56,12 +56,12 @@
 			{% if node.meta.containsKey('media_url') %}
 				{% assign media = cms.mediaService.get(node.meta.media_url) %}
 				<img src="/media/{{ media.uri }}?format=cropped" alt="{{ media.meta.alt }}" 
-					{{ ui.mediaToolbar(["select", "meta", "focalPoint"], {"uri": node.uri, "element": "media_url" }) | raw }} />
+					{{ ext.ui.mediaToolbar(["select", "meta", "focalPoint"], {"uri": node.uri, "element": "media_url" }) | raw }} />
 			{% endif %}
 		</div>
 
 		<div class="container sections" 
-			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
+			{{ ext.ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
 			>
 			{% if node.sections.containsKey('asection') %}
 				{% for section in node.sections.get('asection') %}

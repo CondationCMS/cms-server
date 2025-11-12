@@ -266,8 +266,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 	private void extendModel(final TemplateEngine.Model model, Namespace namespace) {
 		moduleManager.extensions(TemplateModelExtendingExtensionPoint.class).forEach(extensionPoint -> {
 			var modModel = extensionPoint.getModel();
-			// deprecated: module extensions on root will be remove in 8.0.0
-			model.values.putAll(modModel);
 			modModel.entrySet().forEach(entry -> namespace.add(
 				extensionPoint.getNamespace(), 
 				entry.getKey(), 

@@ -14,19 +14,19 @@
 	<body class="centered">
 
 		<div id="content" 
-			{{ ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+			{{ ext.ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
 		>
 			<div class="container">
 				{{ node.content | raw }}
 			</div>
 			<div>
-				<div class="container" {{ ui.editMeta("text", "description") }}>
+				<div class="container" {{ ext.ui.editMeta("text", "description") }}>
 					{{ node.meta.get('description') | raw}}
 				</div>
-				<div class="container" {{ ui.editMeta("text", "parent.text") }}>
+				<div class="container" {{ ext.ui.editMeta("text", "parent.text") }}>
 					{{ node.meta.get('parent.text') | raw}}
 				</div>
-				<div class="container" {{ ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
+				<div class="container" {{ ext.ui.editMeta("number", "count", {'min': 10, 'max': 50, 'step': 1}) }}>
 					{{ node.meta.get('count') }}
 				</div>
 				<div>
@@ -37,7 +37,7 @@
 			<hr />
 		</div>
 		<div class="container sections" 
-			{{ ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
+			{{ ext.ui.toolbar("asection", "sections", ["addSection", "orderSections"], { "sectionName": "asection"}) | raw }}
 			>
 			{% if sections.containsKey('asection') %}
 				{% for section in sections.get('asection') %}

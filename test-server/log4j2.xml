@@ -1,65 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
 	<Properties>
+		<Property name="CLI_PATTERN">%m%n</Property>
 		<Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %-5p %c{1} - %m%n</Property>
 		<Property name="LOG_LOC">${sys:cms-logs-folder}</Property>
 		<Property name="MAX">5</Property>
 	</Properties>
- 
+
 	<Appenders>
+		<Console name="cli" target="SYSTEM_OUT" follow="true">
+			<PatternLayout pattern="${CLI_PATTERN}"/>
+		</Console>
+
 		<Console name="console" target="SYSTEM_OUT" follow="true">
 			<PatternLayout pattern="${LOG_PATTERN}"/>
 		</Console>
+
 		<Routing name="Routing">
 			<Routes pattern="$${ctx:site}">
 				<Route key="$${ctx:site}">
-					<RollingFile name="FILE" 
-								 fileName="${LOG_LOC}/raw.log"
-								 filePattern="${LOG_LOC}/raw.%i.log">
-						<PatternLayout>
-							<Pattern>${LOG_PATTERN}</Pattern>
-						</PatternLayout>
-
+					<RollingFile name="FILE"
+						fileName="${LOG_LOC}/raw.log"
+						filePattern="${LOG_LOC}/raw.%i.log">
+						<PatternLayout pattern="${LOG_PATTERN}"/>
 						<Policies>
-							<OnStartupTriggeringPolicy />
+							<OnStartupTriggeringPolicy/>
 						</Policies>
-
-						<DefaultRolloverStrategy max="${MAX}" />
+						<DefaultRolloverStrategy max="${MAX}"/>
 					</RollingFile>
 				</Route>
 				<Route>
-					<RollingFile name="RAW"
-								 fileName="${LOG_LOC}/${ctx:site}.log"
-								 filePattern="${LOG_LOC}/${ctx:site}.%i.log">
-						<PatternLayout>
-							<Pattern>${LOG_PATTERN}</Pattern>
-						</PatternLayout>
-
+					<RollingFile name="SITE_LOG"
+						fileName="${LOG_LOC}/${ctx:site}.log"
+						filePattern="${LOG_LOC}/${ctx:site}.%i.log">
+						<PatternLayout pattern="${LOG_PATTERN}"/>
 						<Policies>
-							<OnStartupTriggeringPolicy />
+							<OnStartupTriggeringPolicy/>
 						</Policies>
-
-						<DefaultRolloverStrategy max="${MAX}" />
+						<DefaultRolloverStrategy max="${MAX}"/>
 					</RollingFile>
 				</Route>
 			</Routes>
 		</Routing>
 	</Appenders>
- 
+
 	<Loggers>
+		<!-- CLI: Nur Fehler -->
+		<Logger name="com.condation.cms.cli" level="error" additivity="false">
+			<AppenderRef ref="cli"/>
+		</Logger>
+
+		<!-- Hauptsystem -->
 		<Logger name="com.condation.cms" level="debug" additivity="false">
 			<AppenderRef ref="console"/>
+			<AppenderRef ref="Routing"/>
 		</Logger>
-		<Logger name="com.condation.cms" level="debug" additivity="false">
-			<appender-ref ref="Routing" />
-		</Logger>
+
+		<!-- Erweiterungen -->
 		<Logger name="extensions" level="debug" additivity="false">
 			<AppenderRef ref="console"/>
 		</Logger>
-		<!-- config jetty request logger -->
-		<!--Logger name="org.eclipse.jetty.server.RequestLog" level="info" additivity="false">
-			<AppenderRef ref="console"/>
-		</Logger-->
+
+		<!-- Root -->
 		<Root level="error">
 			<AppenderRef ref="console"/>
 		</Root>

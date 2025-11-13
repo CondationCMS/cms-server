@@ -92,7 +92,7 @@ public class Startup implements Runnable {
 			var toInstall = ThemesUtil.filterUnInstalled(requiredThemes);
 			log.error("following themes are missing");
 			toInstall.forEach(log::error);
-			log.error("install via: java cms-server.jar theme get <module_id>");
+			log.error("install via: server.<sh|bat> theme get <module_id>");
 			System.exit(1);
 		} else {
 			log.trace("all required themes are intalled");
@@ -106,7 +106,7 @@ public class Startup implements Runnable {
 			var toInstall = ModulesUtil.filterUnInstalled(modules);
 			log.error("following modules are missing");
 			toInstall.forEach(log::error);
-			log.error("install via: java cms-server.jar module get <module_id>");
+			log.error("install via: server.<sh|bat> module get <module_id>");
 			System.exit(1);
 		} else {
 			log.trace("all required modules are intalled");

@@ -112,39 +112,40 @@ public class Lexer {
 	}
 
 	public static String readVariableContent(CharacterStream stream) {
-        StringBuilder content = new StringBuilder();
-        boolean insideQuotes = false;
-        boolean escapeNext = false;
+		StringBuilder content = new StringBuilder();
+		boolean insideQuotes = false;
+		boolean escapeNext = false;
 
-        while (stream.hasMore()) {
-            char ch = stream.charAtCurrentPosition();
+		while (stream.hasMore()) {
+			char ch = stream.charAtCurrentPosition();
 
-            // Handle escaping within quoted strings
-            if (insideQuotes && ch == '\\' && !escapeNext) {
-                escapeNext = true;
-                stream.advance();
-                continue;
-            }
+			if (escapeNext) {
+				content.append(ch);
+				escapeNext = false;
+				stream.advance();
+				continue;
+			}
 
-            // Toggle quotes
-            if (ch == '"' && !escapeNext) {
-                insideQuotes = !insideQuotes;
-            } else if (ch == '}' && !insideQuotes) {
-                // Check if next char is also '}'
-                if (stream.peek(1) == '}') {
-                    //stream.skip(2); // Skip the closing }}
-                    break;
-                }
-            }
+			if (ch == '\\') {
+				escapeNext = true;
+				stream.advance();
+				continue;
+			}
 
-            // Append character
-            content.append(ch);
-            escapeNext = false;
-            stream.advance();
-        }
+			if (ch == '"') {
+				insideQuotes = !insideQuotes;
+			}
 
-        return content.toString().trim();
-    }
+			if (!insideQuotes && ch == '}' && stream.peek(1) == '}') {
+				break;
+			}
+
+			content.append(ch);
+			stream.advance();
+		}
+
+		return content.toString().trim();
+	}
 	
 	private void readContent(List<Token> tokens, CharacterStream charStream, final String END) {
 		charStream.skipWhitespace();

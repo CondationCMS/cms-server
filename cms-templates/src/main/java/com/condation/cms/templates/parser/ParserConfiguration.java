@@ -22,8 +22,6 @@ package com.condation.cms.templates.parser;
  * #L%
  */
 
-import com.condation.cms.templates.Component;
-import com.condation.cms.templates.DynamicConfiguration;
 import com.condation.cms.templates.Tag;
 import com.condation.cms.templates.TemplateConfiguration;
 import java.util.Optional;

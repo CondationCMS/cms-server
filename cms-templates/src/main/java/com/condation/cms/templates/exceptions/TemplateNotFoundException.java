@@ -32,6 +32,10 @@ public class TemplateNotFoundException extends RuntimeException {
 		super(message);
 	}
 	
+	public TemplateNotFoundException(String message, Exception e) {
+		super(message, e);
+	}
+	
 	@Override
 	public String getLocalizedMessage() {
 		return "Error: %s".formatted(super.getMessage());

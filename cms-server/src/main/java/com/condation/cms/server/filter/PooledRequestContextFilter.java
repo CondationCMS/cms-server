@@ -78,13 +78,14 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 		var requestContextPoolable = requestContextPool.claim(new Timeout(Duration.ofSeconds(1)));
 		var requestContext = requestContextPoolable.requestContext;
 		try {
+			
+			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
+			
 			var uri = RequestUtil.getContentPath(httpRequest);
 			var queryParameters = HTTPUtil.queryParameters(httpRequest.getHttpURI().getQuery());
 			var contextPath = httpRequest.getContext().getContextPath();
 
 			requestContext.add(RequestFeature.class, new RequestFeature(contextPath, uri, queryParameters, httpRequest));
-
-			httpRequest.setAttribute(REQUEST_CONTEXT, requestContext);
 
 			return ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).call(() -> {
 				return super.handle(httpRequest, rspns, clbck);

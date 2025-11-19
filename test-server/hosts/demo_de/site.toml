@@ -1,5 +1,5 @@
 id = "demo-de-site"
-hostname = [ "localhost" ]
+hostname = [ "localhost", "127.0.0.1" ]
 baseurl = "http://localhost:2020"
 locale = "de_DE"
 theme = "demo"

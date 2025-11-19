@@ -1,5 +1,7 @@
 package com.condation.cms.api.cache;
 
+import java.util.function.Function;
+
 /*-
  * #%L
  * cms-api
@@ -33,6 +35,8 @@ public interface ICache<K, V> {
 	void put (K key, V value);
 	
 	V get (K key);
+	
+	V get (K key, Function<K, V> loader);
 	
 	boolean contains (K key);
 	

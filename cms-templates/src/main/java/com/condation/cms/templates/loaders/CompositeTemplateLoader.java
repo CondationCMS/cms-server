@@ -49,5 +49,11 @@ public class CompositeTemplateLoader implements TemplateLoader {
 		}
 		throw new TemplateNotFoundException("template %s not found".formatted(template));
 	}
+
+	@Override
+	public void invalidate() {
+		this.templateLoaders.forEach(TemplateLoader::invalidate);
+	}
+	
 	
 }

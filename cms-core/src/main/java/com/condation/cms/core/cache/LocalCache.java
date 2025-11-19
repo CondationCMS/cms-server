@@ -46,14 +46,19 @@ public class LocalCache<K, V> implements ICache<K, V> {
 	}
 
 	@Override
-	public V get(K key) {
+	public V get(K key, Function<K, V> elementLoader) {
 		if (!contains(key)) {
-			var value = loader.apply(key);
+			var value = elementLoader.apply(key);
 			if (value != null) {
 				wrappedCache.put(key, value);
 			}
 		}
 		return wrappedCache.getIfPresent(key);
+	}
+	
+	@Override
+	public V get(K key) {
+		return get(key, loader);
 	}
 
 	@Override

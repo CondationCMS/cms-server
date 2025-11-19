@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,10 @@ import org.graalvm.polyglot.io.IOAccess;
 @Slf4j
 public class ExtensionManager {
 
+	private record CachedSource(Source source, long lastModified) {}
+	
+	private final ConcurrentHashMap<String, CachedSource> CACHE = new ConcurrentHashMap<>();
+	
 	private final DB db;
 	private final ServerProperties serverProperties;
 
@@ -86,22 +91,33 @@ public class ExtensionManager {
 		try (var extStream = Files.list(extPath)) {
 			extStream
 				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
-				.map(extFile -> {
+				.forEach(extFile -> {
 					try {
+						final long lastModified = Files.getLastModifiedTime(extFile).toMillis();
+						final String cacheKey = extFile.toAbsolutePath().toString();
+						
+						CachedSource cached = CACHE.get(cacheKey);
+						if (cached != null && cached.lastModified() == lastModified) {
+							loader.accept(cached.source());
+							return;
+						}
+						
 						log.trace("load extension {}", extFile.getFileName().toString());
-						return Source.newBuilder(
+						var source = Source.newBuilder(
 								"js",
 								Files.readString(extFile, StandardCharsets.UTF_8),
 								extFile.getFileName().toString() + ".mjs")
 								.encoding(StandardCharsets.UTF_8)
 								.cached(true)
 								.build();
+						
+						CACHE.put(cacheKey, new CachedSource(source, lastModified));
+						loader.accept(source);
+						
 					} catch (IOException ex) {
 						log.error("", ex);
 					}
-					return null;
-				}).filter(source -> source != null)
-				.forEach(loader);
+				});
 		}
 	}
 

@@ -22,6 +22,7 @@ package com.condation.cms.templates.module;
  * #L%
  */
 import com.condation.cms.api.cache.CacheManager;
+import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.extensions.RegisterTemplateComponentExtensionPoint;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -79,17 +80,25 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 		return engine;
 	}
 
+	private ICache<String, String> createTemplateCache (String name) {
+		if (devMode) {
+			return this.cacheManager.get(name, new CacheManager.CacheConfig(1000l, Duration.ofMinutes(1)));
+		} else {
+			return this.cacheManager.get(name, new CacheManager.CacheConfig(1000l, Duration.ofMinutes(10)));
+		}
+	}
+	
 	private void initTemplateEngine() {
 
 		var loaders = new ArrayList<TemplateLoader>();
-		loaders.add(new FileTemplateLoader(db.getFileSystem().resolve("templates/")));
+		loaders.add(new FileTemplateLoader(db.getFileSystem().resolve("templates/"), createTemplateCache("templates/site")));
 
 		if (!theme.empty()) {
-			var themeLoader = new FileTemplateLoader(theme.templatesPath());
+			var themeLoader = new FileTemplateLoader(theme.templatesPath(), createTemplateCache("templates/theme"));
 			loaders.add(themeLoader);
 
 			if (theme.getParentTheme() != null) {
-				var parentLoader = new FileTemplateLoader(theme.getParentTheme().templatesPath());
+				var parentLoader = new FileTemplateLoader(theme.getParentTheme().templatesPath(), createTemplateCache("templates/parent"));
 				loaders.add(parentLoader);
 			}
 		}

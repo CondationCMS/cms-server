@@ -5,4 +5,4 @@ enabled = true
 whitelist = ["meta.*", "title"]
 
 [cache]
-content = false
+content = true

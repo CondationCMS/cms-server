@@ -142,7 +142,7 @@ public class ExtensionManager {
 		
 		List<Path> extPaths = getExtensionPaths(theme);
 		for (var extPath : extPaths) {
-			log.debug("load extensions from " + extPath);
+			log.trace("load extensions from " + extPath);
 			loadExtensions(extPath, context::eval);
 		}
 		

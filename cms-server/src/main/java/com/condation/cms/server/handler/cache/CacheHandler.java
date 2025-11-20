@@ -4,7 +4,7 @@ package com.condation.cms.server.handler.cache;
  * #%L
  * cms-server
  * %%
- * Copyright (C) 2023 - 2025 CondationCMS
+ * Copyright (C) 2023 - 2024 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,8 +22,18 @@ package com.condation.cms.server.handler.cache;
  * #L%
  */
 
+
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
+import java.io.ByteArrayOutputStream;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Handler;
@@ -31,27 +41,23 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.time.Duration;
-import java.util.*;
-
+/**
+ *
+ * @author t.marx
+ */
 public class CacheHandler extends Handler.Wrapper {
 
 	private final List<String> cachedContentTypes = new ArrayList<>();
+
 	private final List<HttpHeader> cachedHeaders = new ArrayList<>();
+
 	private final ICache<CachedKey, CachedResponse> responseCache;
 
 	public CacheHandler(final Handler wrapped, final CacheManager cacheManager) {
 		super(wrapped);
-
 		this.responseCache = cacheManager.get(
 				"responseCache",
-				new CacheManager.CacheConfig(100L, Duration.ofSeconds(5))
-		);
-
-		// supported content types
+				new CacheManager.CacheConfig(100l, Duration.ofMinutes(1)));
 		cachedContentTypes.add("text/html");
 		cachedContentTypes.add("text/plain");
 		cachedContentTypes.add("text/css");
@@ -64,109 +70,87 @@ public class CacheHandler extends Handler.Wrapper {
 	}
 
 	private boolean matchesContentType(String contentType) {
-		if (contentType == null) return false;
-		return cachedContentTypes.stream().anyMatch(contentType::startsWith);
+		return cachedContentTypes.stream().anyMatch(ct -> contentType.startsWith(ct));
 	}
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 
-		// Only cache GET requests
 		if (!request.getMethod().equalsIgnoreCase("GET")) {
 			return super.handle(request, response, callback);
 		}
-
+		
 		CachedKey key = new CachedKey(request.getHttpURI().getPathQuery());
 
-		// check cache
 		CachedResponse cached = responseCache.get(key);
 		if (cached != null) {
 
-			// restore headers
 			cached.headers.forEach((name, value) -> {
-				response.getHeaders().add(name, value);
+				response.getHeaders().add(
+						name,
+						value);
 			});
+			Content.Sink.write(response, true, cached.body, callback);
 
-			// write cached body
-			ByteBuffer buf = ByteBuffer.wrap(cached.body);
-			Content.Sink.write(response, true, buf);
-
-			// complete callback
-			callback.succeeded();
 			return true;
 		}
 
-		// wrap response
-		CacheResponseWrapper wrapper = new CacheResponseWrapper(request, response);
-
-		return super.handle(request, wrapper, new Callback.Nested(callback) {
+		final CacheResponseWrapper cacheResponse = new CacheResponseWrapper(request, response);
+		return super.handle(request, cacheResponse, new Callback.Nested(callback) {
 			@Override
 			public void succeeded() {
-				try {
-					String contentType = wrapper.getHeaders().get(HttpHeader.CONTENT_TYPE);
-					int status = response.getStatus();
+				if (response.getStatus() == 200
+						&& matchesContentType(cacheResponse.getHeaders().get(HttpHeader.CONTENT_TYPE))) {
 
-					if (status == 200 && matchesContentType(contentType)) {
+					var body = cacheResponse.getContent();
 
-						byte[] body = wrapper.getContentBytes();
-						Map<String, String> headers = getHeaders(wrapper);
+					CachedResponse cachedResponse = new CachedResponse(body, getHeaders(cacheResponse));
+					responseCache.put(key, cachedResponse);
 
-						responseCache.put(key, new CachedResponse(body, headers));
-
-						ByteBuffer buf = ByteBuffer.wrap(body);
-						Content.Sink.write(response, true, buf);
-						callback.succeeded();
-						return;
-					}
-
-					// no caching → just complete original callback
-					callback.succeeded();
-
-				} catch (Exception ex) {
-					callback.failed(ex);
+					Content.Sink.write(response, true, body, callback);
 				}
-			}
 
-			@Override
-			public void failed(Throwable x) {
-				callback.failed(x);
+				super.succeeded();
 			}
 		});
 	}
 
 	private Map<String, String> getHeaders(Response response) {
-		Map<String, String> map = new HashMap<>();
-		for (HttpHeader h : cachedHeaders) {
-			if (response.getHeaders().contains(h)) {
-				map.put(h.asString(), response.getHeaders().get(h));
+		Map<String, String> headers = new HashMap<>();
+		cachedHeaders.forEach(header -> {
+			if (response.getHeaders().contains(header)) {
+				headers.put(header.asString(), response.getHeaders().get(header));
 			}
-		}
-		return map;
+		});
+		return headers;
 	}
 
-	private record CachedKey(String path) implements Serializable {}
-	private record CachedResponse(byte[] body, Map<String, String> headers) implements Serializable {}
+	private record CachedKey(String path) implements Serializable {
 
-	private static class CacheResponseWrapper extends Response.Wrapper {
+	}
+	
+	
+	private record CachedResponse(String body, Map<String, String> headers) implements Serializable {
 
-		private final ByteArrayOutputStream bout = new ByteArrayOutputStream();
+	}
+
+	private class CacheResponseWrapper extends Response.Wrapper {
+
+		final ByteArrayOutputStream bout = new ByteArrayOutputStream();
 
 		public CacheResponseWrapper(Request request, Response wrapped) {
 			super(request, wrapped);
 		}
 
+		public String getContent() {
+			return bout.toString(StandardCharsets.UTF_8);
+		}
+
 		@Override
 		public void write(boolean last, ByteBuffer byteBuffer, Callback callback) {
-			byte[] arr = new byte[byteBuffer.remaining()];
-			byteBuffer.get(arr);
-			bout.write(arr, 0, arr.length);
-
-			// forward to underlying response
-			super.write(last, ByteBuffer.wrap(arr), callback);
+			bout.writeBytes(byteBuffer.array());
+			super.write(last, byteBuffer, callback);
 		}
 
-		byte[] getContentBytes() {
-			return bout.toByteArray();
-		}
 	}
 }

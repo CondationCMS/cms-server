@@ -74,7 +74,7 @@ public class ExtensionManagerTest {
 	public static void shutdown() throws Exception {
 		engine.close(true);
 	}
-
+	
 	@BeforeEach
 	public void setup() throws Exception {
 

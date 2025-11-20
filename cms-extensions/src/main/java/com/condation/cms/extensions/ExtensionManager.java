@@ -93,7 +93,9 @@ public class ExtensionManager {
 					ClassLoader.getSystemClassLoader()
 			);
 
-			log.info("Loaded {} extension libraries.", urls.size());
+			if (log.isDebugEnabled()) {
+				log.debug("Loaded {} extension libraries.", urls.size());
+			}
 			return cachedLibClassLoader;
 		}
 	}
@@ -126,7 +128,9 @@ public class ExtensionManager {
 				return;
 			}
 
-			log.trace("Loading extension: {}", extFile.getFileName());
+			if (log.isTraceEnabled()) {
+				log.trace("Loading extension: {}", extFile.getFileName());
+			}
 
 			String code = Files.readString(extFile, StandardCharsets.UTF_8);
 
@@ -153,7 +157,7 @@ public class ExtensionManager {
 
 		Context context = Context.newBuilder("js")
 				// Moderne ECMAScript, keine Nashorn-Legacy
-				.option("js.ecmascript-version", "2024")
+				.option("js.ecmascript-version", "2025")
 				// Entfernen Sie Console/Eval wenn nicht nötig
 				.option("js.console", "false")
 				.option("js.allow-eval", "false")
@@ -174,7 +178,9 @@ public class ExtensionManager {
 		setUpBindings(context.getBindings("js"), requestExtensions, theme, requestContext);
 
 		for (Path p : resolveExtensionPaths(theme)) {
-			log.trace("Loading extensions from: {}", p);
+			if (log.isTraceEnabled()) {
+				log.trace("Loading extensions from: {}", p);
+			}
 			loadExtensions(p, context::eval);
 		}
 

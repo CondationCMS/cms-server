@@ -156,9 +156,7 @@ public class ExtensionManager {
 		ClassLoader libsClassLoader = getOrCreateLibClassLoader();
 
 		Context context = Context.newBuilder("js")
-				// Moderne ECMAScript, keine Nashorn-Legacy
 				.option("js.ecmascript-version", "2025")
-				// Entfernen Sie Console/Eval wenn nicht nötig
 				.option("js.console", "false")
 				.option("js.allow-eval", "false")
 				.allowAllAccess(true) // TODO: reduce later

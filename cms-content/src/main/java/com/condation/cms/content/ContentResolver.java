@@ -64,6 +64,9 @@ public class ContentResolver {
 		}
 		var contentBase = db.getReadOnlyFileSystem().contentBase();
 		ReadOnlyFile staticFile = contentBase.resolve(uri);
+		if (staticFile.isDirectory()) {
+			return Optional.empty();
+		}
 		try {
 			if (staticFile.exists()) {
 				return Optional.ofNullable(new DefaultContentResponse(

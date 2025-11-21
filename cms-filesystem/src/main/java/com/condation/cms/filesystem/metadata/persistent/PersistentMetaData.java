@@ -68,6 +68,9 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 
 		nodes = store.openMap("nodes");
 		tree = store.openMap("tree");
+		
+		nodes.clear();
+		tree.clear();
 	}
 
 	@Override

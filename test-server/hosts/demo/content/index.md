@@ -47,7 +47,7 @@ Theme: [[theme_name]][[/theme_name]]
 
 [about](/about)
 
-[das ist eine neue seite](/das-ist-eine-neue-seite)
+[this is a new page](/this-is-a-new-page)
 
 
 ```java

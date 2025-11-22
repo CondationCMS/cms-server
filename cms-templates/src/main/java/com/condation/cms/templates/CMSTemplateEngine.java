@@ -28,9 +28,11 @@ import com.condation.cms.templates.expression.RecordResolverStrategy;
 import com.condation.cms.templates.lexer.Lexer;
 import com.condation.cms.templates.parser.Parser;
 import com.condation.cms.templates.renderer.Renderer;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
 
+@Slf4j
 public class CMSTemplateEngine {
 
 	private final JexlEngine jexl;
@@ -88,7 +90,8 @@ public class CMSTemplateEngine {
 	}
 	
 	private boolean useCache () {
-		return !configuration.isDevMode() && templateCache != null;
+		final boolean useTemplateCache = !configuration.isDevMode() && templateCache != null;
+		return useTemplateCache;
 	}
 	
 	public Template getTemplate (String template) {

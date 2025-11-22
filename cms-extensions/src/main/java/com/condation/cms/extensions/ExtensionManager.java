@@ -4,7 +4,7 @@ package com.condation.cms.extensions;
  * #%L
  * cms-extensions
  * %%
- * Copyright (C) 2023 - 2024 CondationCMS
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -23,36 +23,35 @@ package com.condation.cms.extensions;
  */
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.extensions.request.RequestExtensions;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Consumer;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Engine;
-import org.graalvm.polyglot.HostAccess;
-import org.graalvm.polyglot.Source;
-import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.io.IOAccess;
 
-/**
- *
- * @author t.marx
- */
-@RequiredArgsConstructor
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+
 @Slf4j
+@RequiredArgsConstructor
 public class ExtensionManager {
+
+	private record CachedSource(Source source, long lastModified) {
+
+	}
+
+	private final ConcurrentHashMap<String, CachedSource> CACHE = new ConcurrentHashMap<>();
+	private volatile ClassLoader cachedLibClassLoader;
 
 	private final DB db;
 	private final ServerProperties serverProperties;
@@ -60,101 +59,172 @@ public class ExtensionManager {
 	@Getter
 	private final Engine engine;
 
-	private ClassLoader getClassLoader() throws IOException {
-		Path libs = db.getFileSystem().resolve("libs/");
-		List<URL> urls = new ArrayList<>();
-		if (Files.exists(libs)) {
-			try (var libsStream = Files.list(libs)) {
-				libsStream
-					.filter(path -> path.getFileName().toString().endsWith(".jar"))
-					.forEach(path -> {
-						try {
-							urls.add(path.toUri().toURL());
-						} catch (MalformedURLException ex) {
-							log.error("", ex);
-						}
-					});
-			}
+	/**
+	 * Build or reuse the classloader for extensions/libs.
+	 */
+	private ClassLoader getOrCreateLibClassLoader() throws IOException {
+		if (cachedLibClassLoader != null) {
+			return cachedLibClassLoader;
 		}
-		return new URLClassLoader(urls.toArray(URL[]::new), ClassLoader.getSystemClassLoader());
+
+		synchronized (this) {
+			if (cachedLibClassLoader != null) {
+				return cachedLibClassLoader;
+			}
+
+			Path libs = db.getFileSystem().resolve("libs/");
+			List<URL> urls = new ArrayList<>();
+
+			if (Files.exists(libs)) {
+				try (var libsStream = Files.list(libs)) {
+					libsStream.filter(f -> f.toString().endsWith(".jar"))
+							.forEach(f -> {
+								try {
+									urls.add(f.toUri().toURL());
+								} catch (Exception e) {
+									log.error("Invalid JAR URL in libs/: {}", f, e);
+								}
+							});
+				}
+			}
+
+			cachedLibClassLoader = new URLClassLoader(
+					urls.toArray(new URL[0]),
+					ClassLoader.getSystemClassLoader()
+			);
+
+			if (log.isDebugEnabled()) {
+				log.debug("Loaded {} extension libraries.", urls.size());
+			}
+			return cachedLibClassLoader;
+		}
 	}
 
-	protected void loadExtensions(final Path extPath, final Consumer<Source> loader) throws IOException {
+	/**
+	 * Load extension JS files from a directory and apply loader callback.
+	 */
+	protected void loadExtensions(Path extPath, Consumer<Source> loader) throws IOException {
 		if (!Files.exists(extPath)) {
 			return;
 		}
-		try (var extStream = Files.list(extPath)) {
-			extStream
-				.filter(path -> !Files.isDirectory(path) && path.getFileName().toString().endsWith(".js"))
-				.map(extFile -> {
-					try {
-						log.trace("load extension {}", extFile.getFileName().toString());
-						return Source.newBuilder(
-								"js",
-								Files.readString(extFile, StandardCharsets.UTF_8),
-								extFile.getFileName().toString() + ".mjs")
-								.encoding(StandardCharsets.UTF_8)
-								.cached(true)
-								.build();
-					} catch (IOException ex) {
-						log.error("", ex);
-					}
-					return null;
-				}).filter(source -> source != null)
-				.forEach(loader);
+
+		try (var stream = Files.list(extPath)) {
+			stream.filter(path -> !Files.isDirectory(path) && path.toString().endsWith(".js"))
+					.forEach(jsFile -> loadSingleExtension(jsFile, loader));
 		}
 	}
 
+	/**
+	 * Load a single .js file with caching.
+	 */
+	private void loadSingleExtension(Path extFile, Consumer<Source> loader) {
+		try {
+			long lastModified = Files.getLastModifiedTime(extFile).toMillis();
+			String key = extFile.toAbsolutePath().toString();
+
+			CachedSource cached = CACHE.get(key);
+			if (cached != null && cached.lastModified == lastModified) {
+				loader.accept(cached.source());
+				return;
+			}
+
+			if (log.isTraceEnabled()) {
+				log.trace("Loading extension: {}", extFile.getFileName());
+			}
+
+			String code = Files.readString(extFile, StandardCharsets.UTF_8);
+
+			Source src = Source.newBuilder("js", code, extFile.getFileName().toString())
+					.encoding(StandardCharsets.UTF_8)
+					.mimeType("application/javascript+module")
+					.cached(true)
+					.build();
+
+			CACHE.put(key, new CachedSource(src, lastModified));
+			loader.accept(src);
+
+		} catch (Exception e) {
+			log.error("Failed to load extension: {}", extFile, e);
+		}
+	}
+
+	/**
+	 * Create new execution context for request.
+	 */
 	public RequestExtensions newContext(Theme theme, RequestContext requestContext) throws IOException {
-		var libsClassLoader = getClassLoader();
-		var context = Context.newBuilder()
-				.allowAllAccess(true)
-				.allowHostClassLookup(className -> true)
+
+		ClassLoader libsClassLoader = getOrCreateLibClassLoader();
+
+		Context context = Context.newBuilder("js")
+				.option("js.ecmascript-version", "2025")
+				.option("js.console", "false")
+				.option("js.allow-eval", "false")
+				.allowAllAccess(true) // TODO: reduce later
+				.allowHostClassLookup(name -> true)
 				.allowHostAccess(HostAccess.ALL)
 				.allowValueSharing(true)
 				.hostClassLoader(libsClassLoader)
 				.allowIO(IOAccess.newBuilder()
-						.fileSystem(new ExtensionFileSystem(db.getFileSystem().resolve("extensions/"), theme))
+						.fileSystem(new ExtensionFileSystem(
+								db.getFileSystem().resolve("extensions/"), theme))
 						.build())
-				.engine(engine).build();
+				.engine(engine)
+				.build();
 
 		RequestExtensions requestExtensions = new RequestExtensions(context, libsClassLoader);
 
-		final Value bindings = context.getBindings("js");
-		setUpBinding(bindings, requestExtensions, theme, requestContext);
+		setUpBindings(context.getBindings("js"), requestExtensions, theme, requestContext);
 
-		
-		List<Path> extPaths = getExtensionPaths(theme);
-		for (var extPath : extPaths) {
-			log.debug("load extensions from " + extPath);
-			loadExtensions(extPath, context::eval);
+		for (Path p : resolveExtensionPaths(theme)) {
+			if (log.isTraceEnabled()) {
+				log.trace("Loading extensions from: {}", p);
+			}
+			loadExtensions(p, context::eval);
 		}
-		
+
 		return requestExtensions;
 	}
 
-	private void setUpBinding(Value bindings,
-			RequestExtensions requestExtensions, Theme theme, RequestContext requestContext) {
-		bindings.putMember("extensions", requestExtensions);
+	/**
+	 * Inject variables into JS bindings.
+	 */
+	private void setUpBindings(Value bindings, RequestExtensions reqExt,
+			Theme theme, RequestContext reqCtx) {
+
+		bindings.putMember("extensions", reqExt);
 		bindings.putMember("fileSystem", db.getFileSystem());
 		bindings.putMember("db", db);
 		bindings.putMember("theme", theme);
-		// for backword compability
-//		bindings.putMember("hooks", requestContext.get(HookSystemFeature.class).hookSystem());
-		bindings.putMember("requestContext", requestContext);
+		bindings.putMember("requestContext", reqCtx);
 		bindings.putMember("ENV", serverProperties.env());
+
+		// For backwards compatibility with old extensions & tests
+		var hookSysFeature = reqCtx.get(HookSystemFeature.class);
+		if (hookSysFeature != null) {
+			bindings.putMember("hooks", hookSysFeature.hookSystem());
+		}
+
 	}
 
-	private List<Path> getExtensionPaths(Theme theme) {
-		var extPaths = new ArrayList<Path>();
-		extPaths.add(db.getFileSystem().resolve("extensions/"));
-	
-		if (theme.getParentTheme() != null) {
-			extPaths.add(theme.getParentTheme().extensionsPath());
+	/**
+	 * Collect all extension paths for theme including parents.
+	 */
+	private List<Path> resolveExtensionPaths(Theme theme) {
+		List<Path> paths = new ArrayList<>();
+
+		// Global extensions
+		paths.add(db.getFileSystem().resolve("extensions/"));
+
+		// Theme hierarchy
+		Theme current = theme;
+		while (current != null && !current.empty()) {
+			Path extPath = current.extensionsPath();
+			if (extPath != null) {
+				paths.add(extPath);
+			}
+			current = current.getParentTheme();
 		}
-		if (!theme.empty() && theme.extensionsPath() != null) {
-			extPaths.add(theme.extensionsPath());
-		}
-		return extPaths;
+
+		return paths;
 	}
 }

@@ -46,6 +46,7 @@ import com.google.inject.name.Names;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.compression.server.CompressionConfig;
@@ -155,9 +156,10 @@ public class JettyServer implements AutoCloseable {
 		httpConfig.setSendXPoweredBy(false);
 		HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
 
-		QueuedThreadPool threadPool = new QueuedThreadPool(properties.performance().request_workers());
+		//QueuedThreadPool threadPool = new QueuedThreadPool(properties.performance().request_workers());
+		QueuedThreadPool threadPool = new QueuedThreadPool();
 		threadPool.setName("cms-request-worker");
-		//threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
+		threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
 
 		server = new Server(threadPool);
 		server.setRequestLog(new CustomRequestLog(new Slf4jRequestLogWriter(), CustomRequestLog.EXTENDED_NCSA_FORMAT));

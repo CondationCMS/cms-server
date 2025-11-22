@@ -1,0 +1,10 @@
+id = "performance-test"
+hostname = [ "localhost", "127.0.0.1" ]
+baseurl = "http://localhost:2020"
+locale = "de_DE"
+theme = "demo"
+context_path = "/perf"
+
+
+[cache]
+content = false

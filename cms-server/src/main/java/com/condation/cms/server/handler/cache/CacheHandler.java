@@ -21,10 +21,9 @@ package com.condation.cms.server.handler.cache;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
+import com.google.common.base.Strings;
 import java.io.ByteArrayOutputStream;
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -57,11 +56,11 @@ public class CacheHandler extends Handler.Wrapper {
 		super(wrapped);
 		this.responseCache = cacheManager.get(
 				"responseCache",
-				new CacheManager.CacheConfig(100l, Duration.ofSeconds(5)));
+				new CacheManager.CacheConfig(100l, Duration.ofMinutes(1)));
 		cachedContentTypes.add("text/html");
-		cachedContentTypes.add("test/plain");
-		cachedContentTypes.add("test/css");
-		cachedContentTypes.add("test/javascript");
+		cachedContentTypes.add("text/plain");
+		cachedContentTypes.add("text/css");
+		cachedContentTypes.add("text/javascript");
 		cachedContentTypes.add("application/javascript");
 		cachedContentTypes.add("application/json");
 
@@ -70,7 +69,7 @@ public class CacheHandler extends Handler.Wrapper {
 	}
 
 	private boolean matchesContentType(String contentType) {
-		return cachedContentTypes.stream().anyMatch(ct -> contentType.startsWith(ct));
+		return cachedContentTypes.stream().anyMatch(ct -> contentType.contains(ct));
 	}
 
 	@Override
@@ -79,7 +78,7 @@ public class CacheHandler extends Handler.Wrapper {
 		if (!request.getMethod().equalsIgnoreCase("GET")) {
 			return super.handle(request, response, callback);
 		}
-		
+
 		CachedKey key = new CachedKey(request.getHttpURI().getPathQuery());
 
 		CachedResponse cached = responseCache.get(key);
@@ -99,8 +98,9 @@ public class CacheHandler extends Handler.Wrapper {
 		return super.handle(request, cacheResponse, new Callback.Nested(callback) {
 			@Override
 			public void succeeded() {
+				String contentType = cacheResponse.getHeaders().get(HttpHeader.CONTENT_TYPE);
 				if (response.getStatus() == 200
-						&& matchesContentType(cacheResponse.getHeaders().get(HttpHeader.CONTENT_TYPE))) {
+						&& !Strings.isNullOrEmpty(contentType) && matchesContentType(contentType)) {
 
 					var body = cacheResponse.getContent();
 
@@ -108,9 +108,9 @@ public class CacheHandler extends Handler.Wrapper {
 					responseCache.put(key, cachedResponse);
 
 					Content.Sink.write(response, true, body, callback);
+				} else {
+					super.succeeded();
 				}
-
-				super.succeeded();
 			}
 		});
 	}
@@ -128,8 +128,7 @@ public class CacheHandler extends Handler.Wrapper {
 	private record CachedKey(String path) implements Serializable {
 
 	}
-	
-	
+
 	private record CachedResponse(String body, Map<String, String> headers) implements Serializable {
 
 	}
@@ -148,8 +147,12 @@ public class CacheHandler extends Handler.Wrapper {
 
 		@Override
 		public void write(boolean last, ByteBuffer byteBuffer, Callback callback) {
-			bout.writeBytes(byteBuffer.array());
-			super.write(last, byteBuffer, callback);
+			byte[] bytes = new byte[byteBuffer.remaining()];
+			byteBuffer.get(bytes);
+			bout.write(bytes, 0, bytes.length);
+			
+			ByteBuffer copy = ByteBuffer.wrap(bytes);
+			super.write(last, copy, callback);
 		}
 
 	}

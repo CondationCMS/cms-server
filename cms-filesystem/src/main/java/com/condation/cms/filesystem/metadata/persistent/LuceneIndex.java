@@ -137,7 +137,7 @@ public class LuceneIndex implements AutoCloseable {
 
 		this.directory = FSDirectory.open(path);
 		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(new KeywordAnalyzer());
-		indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+		indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 		indexWriterConfig.setCommitOnClose(true);
 		nrt_index = new NRTCachingDirectory(directory, 5.0, 60.0);
 		writer = new IndexWriter(nrt_index, indexWriterConfig);

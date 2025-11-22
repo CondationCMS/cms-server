@@ -1,0 +1,8 @@
+hostname = [ "localhost5" ]
+
+[api]
+enabled = false
+whitelist = ["meta.*", "title"]
+
+[cache]
+content = false

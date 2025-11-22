@@ -18,6 +18,8 @@ thread_limit = 10
 
 [performance]
 pool_enabled = false
+pool_size = 10
+pool_expire = 1000
 
 [list]
 test = ["eins", "zwei"]

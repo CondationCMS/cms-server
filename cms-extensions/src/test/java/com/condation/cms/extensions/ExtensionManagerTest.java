@@ -22,7 +22,6 @@ package com.condation.cms.extensions;
  * #L%
  */
 
-import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.AuthFeature;
@@ -74,7 +73,7 @@ public class ExtensionManagerTest {
 	public static void shutdown() throws Exception {
 		engine.close(true);
 	}
-
+	
 	@BeforeEach
 	public void setup() throws Exception {
 

@@ -22,29 +22,68 @@ package com.condation.cms.templates.loaders;
  * #L%
  */
 
+import com.condation.cms.api.cache.ICache;
 import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.exceptions.TemplateNotFoundException;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import lombok.RequiredArgsConstructor;
+import java.time.Duration;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
 public class FileTemplateLoader implements TemplateLoader {
 
 	private final Path basePath;
 	
+	private final ICache<String, String> templateCache;
+
+	public FileTemplateLoader(Path basePath, ICache<String, String> templateCache) {
+		this.basePath = basePath;
+		
+		this.templateCache = templateCache;
+	}
+	
 	@Override
 	public String load(String template)  {
 		try {
-			var path = basePath.resolve(template);
-			return Files.readString(path);
+			return templateCache.get(template, key -> {
+				return loadFromDisk(key);
+			});
 		} catch (Exception e) {
 			throw new TemplateNotFoundException(e.getMessage());
 		}
 	}
+	
+	private String loadFromDisk(String template) {
+		try {
+			var path = basePath.resolve(template);
+			
+			// Sicherheitscheck: Verhindert Path Traversal
+			if (!path.normalize().startsWith(basePath.normalize())) {
+				throw new SecurityException("Invalid template path: " + template);
+			}
+			
+			if (!Files.exists(path)) {
+				throw new TemplateNotFoundException("Template not found: " + template);
+			}
+			
+			String content = Files.readString(path);
+			return content;
+			
+		} catch (IOException e) {
+			throw new TemplateNotFoundException("Failed to load template: " + template, e);
+		}
+	}
+
+	@Override
+	public void invalidate() {
+		this.templateCache.invalidate();
+	}
+	
 	
 }

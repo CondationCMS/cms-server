@@ -53,6 +53,10 @@ public class TemplateConfiguration {
 	@Getter
 	private boolean devMode = false;
 	
+	public TemplateConfiguration (final boolean devMode) {
+		this.devMode = devMode;
+	}
+	
 	public boolean hasTags () {
 		return !registeredTags.isEmpty();
 	}

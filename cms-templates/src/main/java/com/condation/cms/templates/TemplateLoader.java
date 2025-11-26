@@ -29,6 +29,4 @@ package com.condation.cms.templates;
 public interface TemplateLoader {
 
 	String load (String template);
-	
-	default void invalidate () {}
 }

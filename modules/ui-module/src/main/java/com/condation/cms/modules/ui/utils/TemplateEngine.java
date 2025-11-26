@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.CacheProvider;
 import com.condation.cms.templates.CMSTemplateEngine;
@@ -41,7 +42,7 @@ public class TemplateEngine {
 	public TemplateEngine(CacheManager cacheManager) {
 
 		templateEngine = TemplateEngineFactory
-				.newInstance(new ClasspathTemplateLoader("manager"))
+				.newInstance(new ClasspathTemplateLoader("manager"), ServerContext.IS_DEV)
 				.cache(cacheManager.get("ui/templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))))
 				.defaultFilters()
 				.defaultTags()

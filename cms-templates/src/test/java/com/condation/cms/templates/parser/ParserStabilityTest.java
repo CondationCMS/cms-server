@@ -46,7 +46,7 @@ public class ParserStabilityTest {
 
     @BeforeAll
     public static void setup() {
-        var config = new TemplateConfiguration();
+        var config = new TemplateConfiguration(true);
         config.registerTag(new com.condation.cms.templates.tags.IfTag());
         config.registerTag(new com.condation.cms.templates.tags.EndIfTag());
         parser = new Parser(config, jexl);

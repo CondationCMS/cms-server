@@ -49,7 +49,7 @@ public abstract class AbstractTemplateEngineTest {
 	@BeforeAll
 	public void setup () {
 		SUT = TemplateEngineFactory
-				.newInstance(getLoader())
+				.newInstance(getLoader(), true)
 				.cache(cacheProvider.getCache("templates", new CacheManager.CacheConfig(100l, Duration.ofSeconds(60))))
 				.defaultFilters()
 				.defaultTags()

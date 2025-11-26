@@ -79,33 +79,25 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 
 		return engine;
 	}
-
-	private ICache<String, String> createTemplateCache (String name) {
-		if (devMode) {
-			return this.cacheManager.get(name, new CacheManager.CacheConfig(1000l, Duration.ofMinutes(1)));
-		} else {
-			return this.cacheManager.get(name, new CacheManager.CacheConfig(1000l, Duration.ofMinutes(10)));
-		}
-	}
 	
 	private void initTemplateEngine() {
 
 		var loaders = new ArrayList<TemplateLoader>();
-		loaders.add(new FileTemplateLoader(db.getFileSystem().resolve("templates/"), createTemplateCache("templates/site")));
+		loaders.add(new FileTemplateLoader(db.getFileSystem().resolve("templates/")));
 
 		if (!theme.empty()) {
-			var themeLoader = new FileTemplateLoader(theme.templatesPath(), createTemplateCache("templates/theme"));
+			var themeLoader = new FileTemplateLoader(theme.templatesPath());
 			loaders.add(themeLoader);
 
 			if (theme.getParentTheme() != null) {
-				var parentLoader = new FileTemplateLoader(theme.getParentTheme().templatesPath(), createTemplateCache("templates/parent"));
+				var parentLoader = new FileTemplateLoader(theme.getParentTheme().templatesPath());
 				loaders.add(parentLoader);
 			}
 		}
 
 		CompositeTemplateLoader templateLoader = new CompositeTemplateLoader(loaders);
 
-		templateEngine = TemplateEngineFactory.newInstance(templateLoader)
+		templateEngine = TemplateEngineFactory.newInstance(templateLoader, devMode)
 				.cache(cacheManager.get("templates", new CacheManager.CacheConfig(100l, Duration.ofMinutes(1))))
 				.defaultFilters()
 				.defaultTags()

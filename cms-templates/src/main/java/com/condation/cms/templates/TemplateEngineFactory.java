@@ -50,12 +50,12 @@ public class TemplateEngineFactory {
 
 	private TemplateConfiguration configuration;
 
-	private TemplateEngineFactory() {
-		configuration = new TemplateConfiguration();
+	private TemplateEngineFactory(boolean devMode) {
+		configuration = new TemplateConfiguration(devMode);
 	}
 
-	public static TemplateEngineFactory newInstance(TemplateLoader templateLoader) {
-		var factory = new TemplateEngineFactory();
+	public static TemplateEngineFactory newInstance(TemplateLoader templateLoader, boolean devMode) {
+		var factory = new TemplateEngineFactory(devMode);
 
 		factory.configuration.setTemplateLoader(templateLoader);
 

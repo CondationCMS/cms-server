@@ -40,26 +40,12 @@ public class FileTemplateLoader implements TemplateLoader {
 
 	private final Path basePath;
 	
-	private final ICache<String, String> templateCache;
-
-	public FileTemplateLoader(Path basePath, ICache<String, String> templateCache) {
+	public FileTemplateLoader(Path basePath) {
 		this.basePath = basePath;
-		
-		this.templateCache = templateCache;
 	}
 	
 	@Override
-	public String load(String template)  {
-		try {
-			return templateCache.get(template, key -> {
-				return loadFromDisk(key);
-			});
-		} catch (Exception e) {
-			throw new TemplateNotFoundException(e.getMessage());
-		}
-	}
-	
-	private String loadFromDisk(String template) {
+	public String load(String template) {
 		try {
 			var path = basePath.resolve(template);
 			
@@ -79,11 +65,4 @@ public class FileTemplateLoader implements TemplateLoader {
 			throw new TemplateNotFoundException("Failed to load template: " + template, e);
 		}
 	}
-
-	@Override
-	public void invalidate() {
-		this.templateCache.invalidate();
-	}
-	
-	
 }

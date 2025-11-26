@@ -79,7 +79,7 @@ public class TemplateEngineTest {
 		);
 
 		Assertions.assertThatCode(() -> {
-			templateEngine.render("index.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager, new User("test", "asdasdfasdf", new String[]{"manager"}))));
+			templateEngine.render("test.html", Map.of("actionFactory", new ActionFactory(hookSystem, moduleManager, new User("test", "asdasdfasdf", new String[]{"manager"}))));
 		}).doesNotThrowAnyException();
 	}
 

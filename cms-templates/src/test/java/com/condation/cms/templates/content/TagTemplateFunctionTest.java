@@ -50,7 +50,7 @@ public class TagTemplateFunctionTest extends ContentBaseTest {
 	public static void setup() {
 		templateLoader = new StringTemplateLoader();
 		engine = TemplateEngineFactory
-				.newInstance(templateLoader)
+				.newInstance(templateLoader, true)
 				.defaultFilters()
 				.defaultTags()
 				.devMode(true)

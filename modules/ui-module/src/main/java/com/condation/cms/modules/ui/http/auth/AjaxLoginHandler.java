@@ -27,6 +27,8 @@ import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.IsDevModeFeature;
+import com.condation.cms.api.mail.MailService;
+import com.condation.cms.api.mail.Message;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.RequestUtil;
@@ -34,7 +36,6 @@ import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
-import com.condation.cms.modules.ui.utils.MailerProvider;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.security.SecureRandom;
@@ -49,7 +50,6 @@ import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
-import org.simplejavamail.email.EmailBuilder;
 
 /**
  *
@@ -230,19 +230,20 @@ public class AjaxLoginHandler extends JettyHandler {
 
 		var siteProperties = moduleContext.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
 		
-		var mailer = MailerProvider.provide(siteProperties.id());
-		var mail = EmailBuilder.startingBlank()
-				.to(user.username(), (String) user.data().getOrDefault("mail", "test@localhost.de"))
-				.from(
-						(String)siteProperties.getOrDefault("ui.2fa.mail_sender", "CondationCMS"),
-						(String)siteProperties.get("ui.2fa.mail_from")
-				).withSubject(siteProperties.getOrDefault("ui.2fa.mail_title", "CondationCMS login code"))
-				.withPlainText(
-						siteProperties.getOrDefault("ui.2fa.mail_message", "your code: <code>")
+		var mailService = moduleContext.get(InjectorFeature.class).injector().getInstance(MailService.class);
+		
+		var message = new Message(
+				(String)siteProperties.getOrDefault("ui.2fa.mail_sender", "CondationCMS"),
+				new com.condation.cms.api.mail.Message.Recipient(
+						user.username(), 
+						(String) user.data().getOrDefault("mail", "test@localhost.de")), 
+				siteProperties.getOrDefault("ui.2fa.mail_title", "CondationCMS login code"), 
+				siteProperties.getOrDefault("ui.2fa.mail_message", "your code: <code>")
 								.replace("<code>", code)
 								.replace("<username>", user.username())
-				).buildEmail();
-		mailer.sendMail(mail);
+		);
+		
+		mailService.sendText(message);
 	}
 
 	private int getClientLoginAttempts(Request request) {

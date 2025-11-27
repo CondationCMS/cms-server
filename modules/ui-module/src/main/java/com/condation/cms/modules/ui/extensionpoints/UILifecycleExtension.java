@@ -22,15 +22,10 @@ package com.condation.cms.modules.ui.extensionpoints;
  * #L%
  */
 import com.condation.cms.api.feature.features.CacheManagerFeature;
-import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.modules.ui.services.LockService;
 import com.condation.cms.modules.ui.utils.TemplateEngine;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 import lombok.Getter;
-import org.simplejavamail.config.ConfigLoader;
 
 /**
  *

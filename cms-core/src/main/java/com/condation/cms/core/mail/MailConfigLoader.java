@@ -1,8 +1,8 @@
-package com.condation.cms.api.mail;
+package com.condation.cms.core.mail;
 
 /*-
  * #%L
- * cms-api
+ * cms-core
  * %%
  * Copyright (C) 2023 - 2025 CondationCMS
  * %%
@@ -21,18 +21,28 @@ package com.condation.cms.api.mail;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
-import java.util.List;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.yaml.snakeyaml.LoaderOptions;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  *
- * @author thmar
+ * @author thorstenmarx
  */
-public record Message(String from, List<Recipient> to, String subject, String message) {
+public class MailConfigLoader {
 
-	public Message (String from, Recipient to, String subject, String message) {
-		this(from, List.of(to), subject, message);
+	public static MailConfig load(Path configFile) {
+		try {
+			try (var configByteBuffer = Files.newBufferedReader(configFile, StandardCharsets.UTF_8)) {
+				Yaml yaml = new Yaml(new Constructor(MailConfig.class, new LoaderOptions()));
+				return yaml.load(configByteBuffer);
+			}
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
-	
-	public static record Recipient (String name, String mailAddress){}
 }

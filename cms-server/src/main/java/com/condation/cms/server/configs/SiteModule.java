@@ -44,6 +44,7 @@ import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
+import com.condation.cms.api.mail.MailService;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.messages.MessageSource;
@@ -65,6 +66,7 @@ import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.eventbus.MessagingEventBus;
+import com.condation.cms.core.mail.DefaultMailService;
 import com.condation.cms.core.messages.DefaultMessageSource;
 import com.condation.cms.core.messaging.DefaultMessaging;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
@@ -310,5 +312,12 @@ public class SiteModule extends AbstractModule {
 		final CronJobContext cronJobContext = new CronJobContext();
 		
 		return cronJobContext;
+	}
+	
+	
+	@Provides
+	@Singleton
+	public MailService mailServife (DB db) {
+		return new DefaultMailService(db);
 	}
 }

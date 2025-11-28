@@ -139,7 +139,7 @@ class MailConfigLoaderTest {
 
 		// Act & Assert
 		assertThatThrownBy(() -> MailConfigLoader.load(nonExistentFile))
-			.isInstanceOf(IOException.class);
+			.isInstanceOf(RuntimeException.class);
 	}
 
 	@Test

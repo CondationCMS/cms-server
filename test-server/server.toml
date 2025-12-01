@@ -4,8 +4,6 @@ env = "dev"
 port = 2020
 ip = "127.0.0.1"
 
-[ui]
-secret = "super-secret-token"
 
 [ipc]
 port = 6868

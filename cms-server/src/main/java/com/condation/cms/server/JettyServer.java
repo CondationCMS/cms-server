@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.ThreadContext;
 import org.eclipse.jetty.compression.server.CompressionConfig;
 import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.http.HttpHeader;
@@ -92,9 +93,12 @@ public class JettyServer implements AutoCloseable {
 				.filter(host -> host.id().equals(vhost))
 				.forEach(host -> {
 					try {
+						ThreadContext.put("site", host.id());
 						host.reload();
 					} catch (Exception e) {
 						log.error("", e);
+					} finally {
+						ThreadContext.clearAll();
 					}
 				});
 	}
@@ -104,21 +108,33 @@ public class JettyServer implements AutoCloseable {
 		var properties = globalInjector.getInstance(ServerProperties.class);
 
 		SiteUtil.sitesStream().forEach((site) -> {
-			try {
-				var host = new VHost(site.basePath());
-				host.init(ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
+			try {			
+				
+				ThreadContext.put("site", site.id());
+				
+				var host = new VHost(site.basePath(), ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
+				host.init();
 				vhosts.add(host);
-
 				globalInjector.getInstance(SiteService.class).add(new Site(host.getInjector()));
 			} catch (IOException ex) {
 				log.error(null, ex);
+			} finally {
+				ThreadContext.clearAll();
 			}
 		});
 
 		vhosts.forEach(host -> {
-			log.info("add virtual host : " + host.hostnames());
-			var httpHandler = host.buildHttpHandler();
-			handlerCollection.addHandler(httpHandler);
+			try {
+				ThreadContext.put("site", host.id());
+				log.info("add virtual host : " + host.hostnames());
+				var httpHandler = host.buildHttpHandler();
+				handlerCollection.addHandler(httpHandler);
+			} catch (Exception e) {
+				log.error("", e);
+			} finally {
+				ThreadContext.clearAll();
+			}
+
 		});
 
 		serverEventBus.register(ServerShutdownInitiated.class, (event) -> {
@@ -134,10 +150,18 @@ public class JettyServer implements AutoCloseable {
 
 			var moduleManager = globalInjector.getInstance(Key.get(ModuleManager.class, Names.named("server")));
 			moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::stopped);
-			
+
 			vhosts.forEach(host -> {
-				log.debug("shutting down vhost : " + host.hostnames());
-				host.shutdown();
+
+				try {
+					ThreadContext.put("site", host.id());
+					log.debug("shutting down vhost : " + host.hostnames());
+					host.shutdown();
+				} catch (Exception e) {
+					log.error("", e);
+				} finally {
+					ThreadContext.clearAll();
+				}
 			});
 //			scheduledExecutorService.shutdownNow();
 
@@ -202,7 +226,7 @@ public class JettyServer implements AutoCloseable {
 				host.getInjector().getInstance(EventBus.class).publish(new HostReadyEvent(host.id()));
 				host.getInjector().getInstance(EventBus.class).publish(new ServerReadyEvent());
 			});
-			
+
 			initServerModules();
 
 		} catch (Exception ex) {
@@ -226,13 +250,13 @@ public class JettyServer implements AutoCloseable {
 					}
 				});
 		var context = globalInjector.getInstance(ServerModuleContext.class);
-		
+
 		var hookSystem = globalInjector.getInstance(Key.get(HookSystem.class, Names.named("server")));
 		moduleManager.extensions(ServerHookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
 			extensionPoint.register(hookSystem);
 			hookSystem.register(extensionPoint);
 		});
-		
+
 		moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::started);
 	}
 

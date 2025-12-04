@@ -30,8 +30,12 @@ import java.util.List;
 
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.theme.Theme;
+import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  *
@@ -52,7 +56,15 @@ public class SiteUtil {
 		try (var siteStream = Files.list(ServerUtil.getPath(Constants.Folders.HOSTS))) {
 			sites = siteStream
 					.filter(SiteUtil::isSite)
-					.map(Site::new)
+					.map(path -> {
+						try (var configByteBuffer = Files.newBufferedReader(path.resolve("site.yaml"), StandardCharsets.UTF_8)) {
+							var result = (Map<String, Object>) new Yaml().load(configByteBuffer);
+							return new Site((String)result.get("id"), path);
+						} catch (IOException ioe) {
+							throw new RuntimeException(ioe);
+						}
+							
+					})
 					.collect(Collectors.toList());
 		}
 		return sites.stream();
@@ -75,8 +87,7 @@ public class SiteUtil {
 		return siteProperties.theme();
 	}
 
-	public record Site(Path basePath) {
-
+	public record Site(String id, Path basePath) {
+		
 	}
-;
 }

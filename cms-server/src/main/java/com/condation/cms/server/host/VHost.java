@@ -107,8 +107,14 @@ public class VHost {
 
 	private final Configuration configuration = new Configuration();
 
-	public VHost(final Path hostBase) {
+	public VHost(final Path hostBase, Path modulesPath, Injector globalInjector) {
 		this.hostBase = hostBase;
+		
+		this.injector = globalInjector.createChildInjector(new SiteGlobalModule(),
+				new SiteModule(hostBase, this.configuration),
+				new SiteModulesModule(modulesPath),
+				new SiteHandlerModule(),
+				new ThemeModule());
 	}
 
 	public String id() {
@@ -154,18 +160,14 @@ public class VHost {
 		return injector.getInstance(SiteProperties.class).hostnames();
 	}
 
-	public void init(Path modulesPath, Injector globalInjector) throws IOException {
-		this.injector = globalInjector.createChildInjector(new SiteGlobalModule(),
-				new SiteModule(hostBase, this.configuration),
-				new SiteModulesModule(modulesPath),
-				new SiteHandlerModule(),
-				new ThemeModule());
-
+	public void init() throws IOException {
+		
+		
 		// start configuration managment
 		injector.getInstance(ConfigManagement.class).initConfiguration(configuration);
 		// run site initializer
 		injector.getInstance(SiteConfigInitializer.class).init();
-
+		
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		moduleManager.initModules();
 		List<String> activeModules = getActiveModules();

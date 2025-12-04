@@ -87,6 +87,19 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		}
 	}
 
+	public void startBatch () {
+		index.setBatchMode(true);
+	}
+	
+	public void stopBatch () {
+		try {
+			index.setBatchMode(false);
+			index.commit();
+		} catch (IOException ex) {
+			log.error("error commiting index", ex);
+		}
+	}
+	
 	@Override
 	public void addFile(String uri, Map<String, Object> data, LocalDate lastModified) {
 

@@ -77,10 +77,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	private MetaData metaData;
 
 	@Override
-	public Path hostBase () {
+	public Path hostBase() {
 		return hostBaseDirectory;
 	}
-	
+
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
 		return metaData.query(nodeMapper);
 	}
@@ -157,7 +157,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		return listDirectories(folder);
 	}
-	
+
 	public List<ContentNode> listDirectories(final String folder) {
 		List<ContentNode> nodes = new ArrayList<>();
 
@@ -204,6 +204,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		return listContent(folder);
 	}
+
 	public List<ContentNode> listContent(final String folder) {
 		if ("".equals(folder)) {
 			return metaData.listChildren("");
@@ -220,13 +221,13 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		return listSections(filename, folder);
 	}
-	
+
 	public List<ContentNode> listSections(final String filename, String folder) {
 		List<ContentNode> nodes = new ArrayList<>();
 
 		final Pattern isSectionOf = Constants.SECTION_OF_PATTERN.apply(filename);
 		final Pattern isNamedSectionOf = Constants.SECTION_NAMED_OF_PATTERN.apply(filename);
-		
+
 		if ("".equals(folder)) {
 			metaData.getTree().values()
 					.stream()
@@ -260,6 +261,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	private void addOrUpdateMetaData(Path file) {
+		addOrUpdateMetaData(file, false);
+	}
+
+	private void addOrUpdateMetaData(Path file, boolean batch) {
 		try {
 			if (!Files.exists(file)) {
 				return;
@@ -283,10 +288,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void init() throws IOException {
 		init(MetaData.Type.MEMORY);
 	}
-	
+
 	public void init(MetaData.Type metaDataType) throws IOException {
 		log.debug("init filesystem");
-		
+
 		if (MetaData.Type.MEMORY.equals(metaDataType)) {
 			this.metaData = new MemoryMetaData();
 		} else {
@@ -331,7 +336,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		reInitFolder(contentBase);
 
 		fileWatcher.start();
-		
+
 		eventBus.register(ReIndexContentMetaDataEvent.class, (event) -> {
 			try {
 				if (event.uri() == null) {
@@ -356,37 +361,46 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 	private void reInitFolder(final Path folder) throws IOException {
 
-		long before = System.currentTimeMillis();
-		Files.walkFileTree(folder, new FileVisitor<Path>() {
-			@Override
-			public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-				var uri = PathUtil.toRelativePath(dir, contentBase);
+		if (metaData instanceof PersistentMetaData pMetaData) {
+			pMetaData.startBatch();
+		}
+		try {
+			long before = System.currentTimeMillis();
+			Files.walkFileTree(folder, new FileVisitor<Path>() {
+				@Override
+				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+					var uri = PathUtil.toRelativePath(dir, contentBase);
 
-				metaData.createDirectory(uri);
-				return FileVisitResult.CONTINUE;
+					metaData.createDirectory(uri);
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+
+					addOrUpdateMetaData(file);
+
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+			});
+
+			long after = System.currentTimeMillis();
+
+			log.debug("loading metadata took " + (after - before) + "ms");
+		} finally {
+			if (metaData instanceof PersistentMetaData pMetaData) {
+				pMetaData.stopBatch();
 			}
-
-			@Override
-			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-
-				addOrUpdateMetaData(file);
-
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-				return FileVisitResult.CONTINUE;
-			}
-
-			@Override
-			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-				return FileVisitResult.CONTINUE;
-			}
-		});
-
-		long after = System.currentTimeMillis();
-
-		log.debug("loading metadata took " + (after - before) + "ms");
+		}
 	}
 }

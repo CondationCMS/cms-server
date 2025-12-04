@@ -59,6 +59,12 @@ public class LuceneIndex implements AutoCloseable {
 	private SearcherManager nrt_manager;
 	private NRTCachingDirectory nrt_index;
 
+	private boolean batchMode = false;
+	
+	public void setBatchMode (boolean mode) {
+		batchMode = mode;
+	}
+	
 	@Override
 	public void close() throws Exception {
 		if (nrt_manager != null) {
@@ -78,17 +84,23 @@ public class LuceneIndex implements AutoCloseable {
 
 	void add(Document document) throws IOException {
 		writer.addDocument(document);
-		commit();
+		if (!batchMode) {
+			commit();
+		}
 	}
 
 	void update(Term term, Document document) throws IOException {
 		writer.updateDocument(term, document);
-		commit();
+		if (!batchMode) {
+			commit();
+		}
 	}
 
 	void delete(Query query) throws IOException {
 		writer.deleteDocuments(query);
-		commit();
+		if (!batchMode) {
+			commit();
+		}
 	}
 
 	List<Document> query(Query query, Sort sort) throws IOException {

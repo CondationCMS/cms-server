@@ -141,7 +141,7 @@ public class ConfigurationFactory {
 		return siteConfiguration(null, env, hostBase, new NoReload());
 	}
 	
-	private static SimpleConfiguration siteConfiguration(EventBus eventBus, String env, Path siteBase, ReloadStrategy reloadStrategy) throws IOException {
+	public static SimpleConfiguration siteConfiguration(EventBus eventBus, String env, Path siteBase, ReloadStrategy reloadStrategy) throws IOException {
 
 		List<ConfigSource> siteSources = new ArrayList<>();
 		siteSources.add(TomlConfigSource.build(siteBase.resolve("site.toml")));

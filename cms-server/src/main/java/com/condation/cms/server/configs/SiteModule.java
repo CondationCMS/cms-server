@@ -37,6 +37,7 @@ import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.content.RenderContentFunction;
 import com.condation.cms.api.db.DB;
@@ -102,11 +103,16 @@ public class SiteModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(Configuration.class).toInstance(configuration);
-		bind(Messaging.class).to(DefaultMessaging.class).in(Singleton.class);
 		bind(EventBus.class).to(MessagingEventBus.class).in(Singleton.class);
 		bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 		bind(TaxonomyFunction.class).in(Singleton.class);
 		bind(TaxonomyResolver.class).in(Singleton.class);
+	}
+	
+	@Provides
+	@Singleton
+	public Messaging messaging (Configuration configuration) {
+		return new DefaultMessaging(configuration.get(SiteConfiguration.class).siteProperties().id());
 	}
 	
 	@Provides

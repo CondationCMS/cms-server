@@ -24,6 +24,7 @@ package com.condation.cms.filesystem;
 
 
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
@@ -61,7 +62,9 @@ public class FileDB implements DB {
 	}
 	
 	public void init (MetaData.Type metaDataType) throws IOException {
-		fileSystem = new FileSystem(hostBaseDirectory, eventBus, contentParser);
+		fileSystem = new FileSystem(
+				configuration.get(SiteConfiguration.class).siteProperties().id(),
+				hostBaseDirectory, eventBus, contentParser);
 		fileSystem.init(metaDataType);
 		readOnlyFileSystem = new WrappedReadOnlyFileSystem(fileSystem);
 		

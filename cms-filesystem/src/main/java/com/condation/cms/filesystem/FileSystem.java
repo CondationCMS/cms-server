@@ -57,6 +57,7 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -66,6 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
+	private final String siteId;
 	private final Path hostBaseDirectory;
 	private final EventBus eventBus;
 	final Function<Path, Map<String, Object>> contentParser;
@@ -297,12 +299,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		this.contentBase = resolve("content/");
 		var templateBase = resolve("templates/");
 		log.debug("init filewatcher");
-		this.fileWatcher = new MultiRootRecursiveWatcher(List.of(contentBase, templateBase));
+		this.fileWatcher = new MultiRootRecursiveWatcher(siteId, List.of(contentBase, templateBase));
 		fileWatcher.getPublisher(contentBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
 			@Override
 			public void onNext(FileEvent item) {
 				try {
-
+					ThreadContext.put("site", siteId);
 					if (item.file().isDirectory() || FileEvent.Type.DELETED.equals(item.type())) {
 						swapMetaData();
 					} else {
@@ -310,6 +312,8 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 					}
 				} catch (IOException ex) {
 					log.error("", ex);
+				} finally {
+					ThreadContext.remove("site");
 				}
 
 				this.subscription.request(1);
@@ -319,10 +323,13 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			@Override
 			public void onNext(FileEvent item) {
 				try {
+					ThreadContext.put("site", siteId);
 					eventBus.publish(new TemplateChangedEvent(item.file().toPath()));
 					eventBus.publish(new InvalidateTemplateCacheEvent());
 				} catch (Exception e) {
 					log.error("", e);
+				} finally {
+					ThreadContext.remove("site");
 				}
 				this.subscription.request(1);
 			}

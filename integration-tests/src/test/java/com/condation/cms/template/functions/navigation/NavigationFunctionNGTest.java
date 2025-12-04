@@ -26,7 +26,9 @@ package com.condation.cms.template.functions.navigation;
 
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.mapper.ContentNodeMapper;
@@ -36,14 +38,17 @@ import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.condation.cms.test.TestSiteProperties;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 /**
  *
@@ -64,6 +69,11 @@ public class NavigationFunctionNGTest {
 	static void init() throws IOException {
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
+		var siteConfigMock = Mockito.mock(SiteConfiguration.class);
+		var sitePropsMock = Mockito.mock(SiteProperties.class);
+		Mockito.when(sitePropsMock.id()).thenReturn("test-site");
+		Mockito.when(siteConfigMock.siteProperties()).thenReturn(sitePropsMock);
+		config.add(SiteConfiguration.class, siteConfigMock);
 		db = new FileDB(Path.of("hosts/test"), new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

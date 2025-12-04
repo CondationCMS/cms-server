@@ -37,7 +37,7 @@ import com.condation.cms.api.module.ServerModuleContext;
 import com.condation.cms.api.site.Site;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
-import com.condation.cms.api.utils.SiteUtil;
+import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
@@ -98,7 +98,7 @@ public class JettyServer implements AutoCloseable {
 					} catch (Exception e) {
 						log.error("", e);
 					} finally {
-						ThreadContext.clearAll();
+						ThreadContext.remove("site");
 					}
 				});
 	}
@@ -119,7 +119,7 @@ public class JettyServer implements AutoCloseable {
 			} catch (IOException ex) {
 				log.error(null, ex);
 			} finally {
-				ThreadContext.clearAll();
+				ThreadContext.remove("site");
 			}
 		});
 
@@ -132,7 +132,7 @@ public class JettyServer implements AutoCloseable {
 			} catch (Exception e) {
 				log.error("", e);
 			} finally {
-				ThreadContext.clearAll();
+				ThreadContext.remove("site");
 			}
 
 		});
@@ -160,7 +160,7 @@ public class JettyServer implements AutoCloseable {
 				} catch (Exception e) {
 					log.error("", e);
 				} finally {
-					ThreadContext.clearAll();
+					ThreadContext.remove("site");
 				}
 			});
 //			scheduledExecutorService.shutdownNow();

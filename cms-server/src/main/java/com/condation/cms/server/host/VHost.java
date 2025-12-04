@@ -51,7 +51,7 @@ import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
-import com.condation.cms.api.utils.SiteUtil;
+import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.extensions.GlobalExtensions;
 import com.condation.cms.extensions.hooks.GlobalHooks;

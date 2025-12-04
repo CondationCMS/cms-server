@@ -52,7 +52,7 @@ class DefaultTopicClassLoaderTest {
         Class<?> topicClass = loader1.loadClass("com.condation.cms.core.messaging.DefaultTopic");
         Constructor<?> constructor = topicClass.getDeclaredConstructor(String.class);
         constructor.setAccessible(true);
-        topic = (DefaultTopic) constructor.newInstance("TestTopic");
+        topic = (DefaultTopic) constructor.newInstance("TestTopic", "test-site");
     }
 	
 	@AfterEach

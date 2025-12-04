@@ -26,7 +26,9 @@ package com.condation.cms.content.views;
 import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
@@ -78,7 +80,11 @@ public class ViewParserTest {
 		TestDirectoryUtils.copyDirectory(Path.of("hosts/test"), hostBase);
 		
 		var config = new Configuration();
-		
+		var siteConfigMock = Mockito.mock(SiteConfiguration.class);
+		var sitePropsMock = Mockito.mock(SiteProperties.class);
+		Mockito.when(sitePropsMock.id()).thenReturn("test-site");
+		Mockito.when(siteConfigMock.siteProperties()).thenReturn(sitePropsMock);
+		config.add(SiteConfiguration.class, siteConfigMock);
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

@@ -1,4 +1,4 @@
-package com.condation.cms.api.utils;
+package com.condation.cms.core.utils;
 
 /*-
  * #%L
@@ -30,7 +30,8 @@ import java.util.List;
 
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.theme.Theme;
-import java.io.FileReader;
+import com.condation.cms.api.utils.ServerUtil;
+import com.condation.cms.core.configuration.ConfigurationFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,9 +58,9 @@ public class SiteUtil {
 			sites = siteStream
 					.filter(SiteUtil::isSite)
 					.map(path -> {
-						try (var configByteBuffer = Files.newBufferedReader(path.resolve("site.yaml"), StandardCharsets.UTF_8)) {
-							var result = (Map<String, Object>) new Yaml().load(configByteBuffer);
-							return new Site((String)result.get("id"), path);
+						try {
+							var siteConfig = ConfigurationFactory.siteConfiguration("---", path);
+							return new Site(siteConfig.getString("id"), path);
 						} catch (IOException ioe) {
 							throw new RuntimeException(ioe);
 						}

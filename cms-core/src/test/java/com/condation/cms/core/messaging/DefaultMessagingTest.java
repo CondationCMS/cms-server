@@ -40,7 +40,7 @@ public class DefaultMessagingTest {
 	
 	@BeforeEach
 	void setup () {
-		messaging = new DefaultMessaging();
+		messaging = new DefaultMessaging("test-site");
 	}
 
 	@Test

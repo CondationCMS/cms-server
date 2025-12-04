@@ -66,6 +66,11 @@ public class ContentServiceTest {
 		var contentParser = new DefaultContentParser();
 		var hostBase = Path.of("src/test/resources/site");
 		var config = new Configuration();
+		var siteConfigMock = Mockito.mock(SiteConfiguration.class);
+		var sitePropsMock = Mockito.mock(SiteProperties.class);
+		Mockito.when(sitePropsMock.id()).thenReturn("test-site");
+		Mockito.when(siteConfigMock.siteProperties()).thenReturn(sitePropsMock);
+		config.add(SiteConfiguration.class, siteConfigMock);
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

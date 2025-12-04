@@ -29,7 +29,9 @@ import com.condation.cms.TestDirectoryUtils;
 import com.condation.cms.TestHelper;
 import com.condation.cms.TestTemplateEngine;
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.markdown.MarkdownRenderer;
@@ -47,6 +49,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -71,6 +74,11 @@ public class ContentRendererNGTest extends TemplateEngineTest {
 		
 		var contentParser = new DefaultContentParser();
 		var config = new Configuration();
+		var siteConfigMock = Mockito.mock(SiteConfiguration.class);
+		var sitePropsMock = Mockito.mock(SiteProperties.class);
+		Mockito.when(sitePropsMock.id()).thenReturn("test-site");
+		Mockito.when(siteConfigMock.siteProperties()).thenReturn(sitePropsMock);
+		config.add(SiteConfiguration.class, siteConfigMock);
 		db = new FileDB(hostBase, new DefaultEventBus(), (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

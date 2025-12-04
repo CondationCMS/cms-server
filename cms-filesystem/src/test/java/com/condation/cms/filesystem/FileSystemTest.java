@@ -47,7 +47,7 @@ public class FileSystemTest {
 		
 		var eventBus = Mockito.mock(EventBus.class);
 		
-		fileSystem = new FileSystem(Path.of("src/test/resources"), eventBus, (file) -> {
+		fileSystem = new FileSystem("test-site", Path.of("src/test/resources"), eventBus, (file) -> {
 			try {
 				return new Yaml().load(Files.readString(file));
 			} catch (Exception e) {

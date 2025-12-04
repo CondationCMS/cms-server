@@ -24,7 +24,7 @@ import com.condation.cms.api.utils.ServerUtil;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.api.utils.SiteUtil;
+import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.cli.commands.modules.AbstractModuleCommand;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;

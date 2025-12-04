@@ -96,7 +96,7 @@ public class ServerGlobalModule implements com.google.inject.Module {
 	@Singleton
 	@Named("server")
 	public Messaging serverMessaging () {
-		return new DefaultMessaging();
+		return new DefaultMessaging("server");
 	}
 	
 	@Provides

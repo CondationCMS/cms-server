@@ -47,7 +47,7 @@ public class MessagingEventBusTest {
 	
 	@BeforeEach
 	public void setup () {
-		messaging = new DefaultMessaging();
+		messaging = new DefaultMessaging("test-site");
 		eventBus = new MessagingEventBus(messaging);
 	}
 

@@ -36,7 +36,7 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.theme.Theme;
-import com.condation.cms.api.utils.SiteUtil;
+import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.media.SiteMediaManager;

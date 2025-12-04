@@ -54,14 +54,16 @@ public class DefaultMessaging implements Messaging {
 	
 	Map<String, DefaultTopic> topics;
 	
-	@Inject
-	public DefaultMessaging () {
+	private final String siteId;
+	
+	public DefaultMessaging (final String siteId) {
+		this.siteId = siteId;
 		listeners = ArrayListMultimap.create();
 		topics = new HashMap<>();
 	}
 
 	@Override
 	public Topic topic(String name) {
-		return topics.computeIfAbsent(name, (topic) -> new DefaultTopic(topic));
+		return topics.computeIfAbsent(name, (topic) -> new DefaultTopic(topic, siteId));
 	}
 }

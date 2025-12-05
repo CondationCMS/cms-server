@@ -23,10 +23,10 @@ package com.condation.cms.core.messaging;
  */
 import com.condation.cms.api.messaging.Topic;
 import com.condation.cms.api.messaging.Listener;
+import com.condation.cms.core.utils.MdcScope;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -46,7 +46,7 @@ public final class DefaultTopic implements Topic {
 
 	;
 	
-	protected DefaultTopic(String name, String siteId) {
+	public DefaultTopic(String name, String siteId) {
 		this.name = name;
 		this.siteId = siteId;
 		listeners = new ArrayList<>();
@@ -65,12 +65,9 @@ public final class DefaultTopic implements Topic {
 				sendMessage(data, listener);
 			} else {
 				Thread.startVirtualThread(() -> {
-					try {
-						ThreadContext.put("site", siteId);
+					MdcScope.forSite(siteId).run(() -> {
 						sendMessage(data, listener);
-					} finally {
-						ThreadContext.remove("site");
-					}
+					});
 				});
 			}
 		});

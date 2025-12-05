@@ -34,6 +34,7 @@ import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.eventbus.events.TemplateChangedEvent;
 import com.condation.cms.api.exceptions.AccessNotAllowedException;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.core.utils.MdcScope;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.condation.cms.filesystem.metadata.persistent.PersistentMetaData;
@@ -57,7 +58,6 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.ThreadContext;
 
 /**
  *
@@ -79,10 +79,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	private MetaData metaData;
 
 	@Override
-	public Path hostBase () {
+	public Path hostBase() {
 		return hostBaseDirectory;
 	}
-	
+
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
 		return metaData.query(nodeMapper);
 	}
@@ -159,7 +159,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		return listDirectories(folder);
 	}
-	
+
 	public List<ContentNode> listDirectories(final String folder) {
 		List<ContentNode> nodes = new ArrayList<>();
 
@@ -206,6 +206,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		return listContent(folder);
 	}
+
 	public List<ContentNode> listContent(final String folder) {
 		if ("".equals(folder)) {
 			return metaData.listChildren("");
@@ -222,13 +223,13 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 		return listSections(filename, folder);
 	}
-	
+
 	public List<ContentNode> listSections(final String filename, String folder) {
 		List<ContentNode> nodes = new ArrayList<>();
 
 		final Pattern isSectionOf = Constants.SECTION_OF_PATTERN.apply(filename);
 		final Pattern isNamedSectionOf = Constants.SECTION_NAMED_OF_PATTERN.apply(filename);
-		
+
 		if ("".equals(folder)) {
 			metaData.getTree().values()
 					.stream()
@@ -285,10 +286,10 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void init() throws IOException {
 		init(MetaData.Type.MEMORY);
 	}
-	
+
 	public void init(MetaData.Type metaDataType) throws IOException {
 		log.debug("init filesystem");
-		
+
 		if (MetaData.Type.MEMORY.equals(metaDataType)) {
 			this.metaData = new MemoryMetaData();
 		} else {
@@ -303,18 +304,17 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		fileWatcher.getPublisher(contentBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
 			@Override
 			public void onNext(FileEvent item) {
-				try {
-					ThreadContext.put("site", siteId);
-					if (item.file().isDirectory() || FileEvent.Type.DELETED.equals(item.type())) {
-						swapMetaData();
-					} else {
-						addOrUpdateMetaData(item.file().toPath());
+				MdcScope.forSite(siteId).run(() -> {
+					try {
+						if (item.file().isDirectory() || FileEvent.Type.DELETED.equals(item.type())) {
+							swapMetaData();
+						} else {
+							addOrUpdateMetaData(item.file().toPath());
+						}
+					} catch (IOException ex) {
+						log.error("", ex);
 					}
-				} catch (IOException ex) {
-					log.error("", ex);
-				} finally {
-					ThreadContext.remove("site");
-				}
+				});
 
 				this.subscription.request(1);
 			}
@@ -322,15 +322,15 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		fileWatcher.getPublisher(templateBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
 			@Override
 			public void onNext(FileEvent item) {
-				try {
-					ThreadContext.put("site", siteId);
-					eventBus.publish(new TemplateChangedEvent(item.file().toPath()));
-					eventBus.publish(new InvalidateTemplateCacheEvent());
-				} catch (Exception e) {
-					log.error("", e);
-				} finally {
-					ThreadContext.remove("site");
-				}
+				MdcScope.forSite(siteId).run(() -> {
+					try {
+						eventBus.publish(new TemplateChangedEvent(item.file().toPath()));
+						eventBus.publish(new InvalidateTemplateCacheEvent());
+					} catch (Exception e) {
+						log.error("", e);
+					}
+				});
+
 				this.subscription.request(1);
 			}
 		});
@@ -338,7 +338,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		reInitFolder(contentBase);
 
 		fileWatcher.start();
-		
+
 		eventBus.register(ReIndexContentMetaDataEvent.class, (event) -> {
 			try {
 				if (event.uri() == null) {

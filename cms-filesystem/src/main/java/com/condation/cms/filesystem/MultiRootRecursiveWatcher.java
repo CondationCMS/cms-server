@@ -22,6 +22,7 @@ package com.condation.cms.filesystem;
  * #L%
  */
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.core.utils.MdcScope;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.ClosedWatchServiceException;
@@ -52,7 +53,6 @@ import java.util.concurrent.SubmissionPublisher;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.ThreadContext;
 
 /**
  * The recursive file watcher monitors a folder (and its sub-folders).
@@ -116,8 +116,9 @@ public class MultiRootRecursiveWatcher {
 
 		watchThread = Thread.ofVirtual().name("Watcher").start(() -> {
 			running.set(true);
-			ThreadContext.put("site", siteId);
-			try {
+			
+			
+			MdcScope.forSite(siteId).run(() -> {
 				walkTreeAndSetWatches();
 
 				while (running.get()) {
@@ -162,9 +163,7 @@ public class MultiRootRecursiveWatcher {
 						log.error("an error occured", e);
 					}
 				}
-			} finally {
-				ThreadContext.remove("site");
-			}
+			});
 		});
 	}
 
@@ -191,15 +190,11 @@ public class MultiRootRecursiveWatcher {
 	}
 
 	private void updateWatches() {
-		try {
-			ThreadContext.put("site", siteId);
-
+		MdcScope.forSite(siteId).run(() -> {
 			log.debug("File system actions settled. Updating watches...");
 			walkTreeAndSetWatches();
 			unregisterStaleWatches();
-		} finally {
-			ThreadContext.remove("site");
-		}
+		});
 	}
 
 	private synchronized void walkTreeAndSetWatches() {

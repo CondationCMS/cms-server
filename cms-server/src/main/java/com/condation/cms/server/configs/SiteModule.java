@@ -97,6 +97,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SiteModule extends AbstractModule {
 
+	private final String siteId;
 	private final Path hostBase;
 	private final Configuration configuration;
 
@@ -111,8 +112,8 @@ public class SiteModule extends AbstractModule {
 	
 	@Provides
 	@Singleton
-	public Messaging messaging (Configuration configuration) {
-		return new DefaultMessaging(configuration.get(SiteConfiguration.class).siteProperties().id());
+	public Messaging messaging () {
+		return new DefaultMessaging(this.siteId);
 	}
 	
 	@Provides

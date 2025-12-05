@@ -39,6 +39,7 @@ import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
+import com.condation.cms.core.utils.MdcScope;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -49,7 +50,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.ThreadContext;
 import org.eclipse.jetty.compression.server.CompressionConfig;
 import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.http.HttpHeader;
@@ -92,14 +92,13 @@ public class JettyServer implements AutoCloseable {
 		vhosts.stream()
 				.filter(host -> host.id().equals(vhost))
 				.forEach(host -> {
-					try {
-						ThreadContext.put("site", host.id());
-						host.reload();
-					} catch (Exception e) {
-						log.error("", e);
-					} finally {
-						ThreadContext.remove("site");
-					}
+					MdcScope.forSite(host.id()).run(() -> {
+						try {
+							host.reload();
+						} catch (Exception e) {
+							log.error("", e);
+						}
+					});
 				});
 	}
 
@@ -108,33 +107,28 @@ public class JettyServer implements AutoCloseable {
 		var properties = globalInjector.getInstance(ServerProperties.class);
 
 		SiteUtil.sitesStream().forEach((site) -> {
-			try {			
-				
-				ThreadContext.put("site", site.id());
-				
-				var host = new VHost(site.basePath(), ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
-				host.init();
-				vhosts.add(host);
-				globalInjector.getInstance(SiteService.class).add(new Site(host.getInjector()));
-			} catch (IOException ex) {
-				log.error(null, ex);
-			} finally {
-				ThreadContext.remove("site");
-			}
+			MdcScope.forSite(site.id()).run(() -> {
+				try {
+					var host = new VHost(site.id(), site.basePath(), ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
+					host.init();
+					vhosts.add(host);
+					globalInjector.getInstance(SiteService.class).add(new Site(host.getInjector()));
+				} catch (IOException ex) {
+					log.error(null, ex);
+				}
+			});
 		});
 
 		vhosts.forEach(host -> {
-			try {
-				ThreadContext.put("site", host.id());
-				log.info("add virtual host : " + host.hostnames());
-				var httpHandler = host.buildHttpHandler();
-				handlerCollection.addHandler(httpHandler);
-			} catch (Exception e) {
-				log.error("", e);
-			} finally {
-				ThreadContext.remove("site");
-			}
-
+			MdcScope.forSite(host.id()).run(() -> {
+				try {
+					log.info("add virtual host : " + host.hostnames());
+					var httpHandler = host.buildHttpHandler();
+					handlerCollection.addHandler(httpHandler);
+				} catch (Exception e) {
+					log.error("", e);
+				}
+			});
 		});
 
 		serverEventBus.register(ServerShutdownInitiated.class, (event) -> {
@@ -152,16 +146,14 @@ public class JettyServer implements AutoCloseable {
 			moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::stopped);
 
 			vhosts.forEach(host -> {
-
-				try {
-					ThreadContext.put("site", host.id());
-					log.debug("shutting down vhost : " + host.hostnames());
-					host.shutdown();
-				} catch (Exception e) {
-					log.error("", e);
-				} finally {
-					ThreadContext.remove("site");
-				}
+				MdcScope.forSite(host.id()).run(() -> {
+					try {
+						log.debug("shutting down vhost : " + host.hostnames());
+						host.shutdown();
+					} catch (Exception e) {
+						log.error("", e);
+					}
+				});
 			});
 //			scheduledExecutorService.shutdownNow();
 

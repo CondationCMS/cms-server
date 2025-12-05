@@ -11,6 +11,10 @@
     
 	<dependencies>
 		<dependency>
+			<groupId>com.condation.cms</groupId>
+			<artifactId>cms-core</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
 		</dependency>

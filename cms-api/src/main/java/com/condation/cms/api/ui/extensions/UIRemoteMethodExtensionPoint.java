@@ -22,12 +22,10 @@ package com.condation.cms.api.ui.extensions;
  * #L%
  */
 
-import com.condation.cms.api.extensions.AbstractExtensionPoint;
-
 /**
  *
  * @author t.marx
  */
-public abstract class UIRemoteMethodExtensionPoint extends AbstractExtensionPoint {
+public interface UIRemoteMethodExtensionPoint extends UIExtensionPoint{
 	
 }

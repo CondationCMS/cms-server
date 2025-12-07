@@ -24,6 +24,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
@@ -46,7 +47,7 @@ import java.util.HashMap;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class RemoteMediaEnpoints extends UIRemoteMethodExtensionPoint {
+public class RemoteMediaEnpoints extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "media.meta.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getMediaMeta(Map<String, Object> parameters) throws RPCException {

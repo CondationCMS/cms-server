@@ -2,9 +2,9 @@ package com.condation.cms.api.ui.extensions;
 
 /*-
  * #%L
- * ui-api
+ * cms-api
  * %%
- * Copyright (C) 2024 Marx-Software
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,13 +22,14 @@ package com.condation.cms.api.ui.extensions;
  * #L%
  */
 
-import java.util.Map;
+import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.modules.api.ExtensionPoint;
 
 /**
  *
- * @author t.marx
+ * @author thmar
  */
-public interface UILocalizationExtensionPoint extends UIExtensionPoint {
+public interface UIExtensionPoint extends ExtensionPoint<SiteModuleContext, SiteRequestContext> {
 	
-	public Map<String, Map<String, String>> getLocalizations ();
 }

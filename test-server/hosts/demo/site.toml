@@ -27,6 +27,9 @@ target = "/Users/thorstenmarx/entwicklung/backups"
 [cache]
 content = true
 
+[modules]
+active = ["example-module"]
+
 [translation]
 enabled = true
 languages = ["de", "en"]

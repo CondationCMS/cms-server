@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 
 import com.condation.cms.api.auth.Permissions;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.ui.extensions.UILocalizationExtensionPoint;
@@ -41,7 +42,7 @@ import com.condation.cms.modules.ui.utils.UIHooks;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class LocalizationEnpoints extends UIRemoteMethodExtensionPoint {
+public class LocalizationEnpoints extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
 
 
 

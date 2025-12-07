@@ -27,6 +27,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
@@ -58,7 +59,7 @@ import java.nio.file.Path;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class RemoteContentEndpointsExtension extends UIRemoteMethodExtensionPoint {
+public class RemoteContentEndpointsExtension extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "content.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContent(Map<String, Object> parameters) {

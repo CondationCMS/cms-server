@@ -22,16 +22,13 @@ package com.condation.cms.api.ui.extensions;
  * #L%
  */
 
-import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.ui.elements.Menu;
-import com.condation.modules.api.ExtensionPoint;
 
 /**
  *
  * @author t.marx
  */
-public interface UIActionsExtensionPoint extends ExtensionPoint<SiteModuleContext, SiteRequestContext> {
+public interface UIActionsExtensionPoint extends UIExtensionPoint {
 	
 	public default void addMenuItems (Menu menu) {};
 }

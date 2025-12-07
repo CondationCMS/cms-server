@@ -51,7 +51,7 @@ public class AnnotationsUtil {
 
 		List<CMSAnnotation<A, R>> result = new ArrayList();
 		Class<?> clazz = target.getClass();
-		for (Method method : clazz.getDeclaredMethods()) {
+		for (Method method : clazz.getMethods()) {
 			if (!method.isAnnotationPresent(annotationClass)) {
 				continue;
 			}

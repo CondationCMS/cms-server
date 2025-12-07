@@ -102,7 +102,7 @@ public class ActionFactory {
 	private List<ShortCutHolder> scanShortCuts(Object moduleInstance) {
 		List<ShortCutHolder> shortCuts = new ArrayList<>();
 
-		for (Method method : moduleInstance.getClass().getDeclaredMethods()) {
+		for (Method method : moduleInstance.getClass().getMethods()) {
 			var shortcutAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.ShortCut.class);
 			if (shortcutAnnotation == null) {
 				continue;
@@ -156,7 +156,7 @@ public class ActionFactory {
 
 		List<EntryHolder> entries = new ArrayList<>();
 
-		for (Method method : moduleInstance.getClass().getDeclaredMethods()) {
+		for (Method method : moduleInstance.getClass().getMethods()) {
 			var menuAnn = method.getAnnotation(com.condation.cms.api.ui.annotations.MenuEntry.class);
 			if (menuAnn == null) {
 				continue;

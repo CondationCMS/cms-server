@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
@@ -36,7 +37,7 @@ import java.util.Map;
  *
  * @author thorstenmarx
  */
-public abstract class AbstractRemoteMethodeExtension extends UIRemoteMethodExtensionPoint {
+public abstract class AbstractRemoteMethodeExtension extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
 	protected String getUserName() {
 		if (getRequestContext().has(AuthFeature.class)) {
 			return getRequestContext().get(AuthFeature.class).username();

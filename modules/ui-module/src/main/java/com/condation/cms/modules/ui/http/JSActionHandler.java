@@ -21,11 +21,15 @@ package com.condation.cms.modules.ui.http;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.ui.extensions.UIScriptActionSourceExtension;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.google.common.base.Strings;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
@@ -48,24 +52,45 @@ public class JSActionHandler extends JettyHandler {
 	
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
-		var resource = request.getHttpURI().getPath().replace(
-				managerURL("/manager/actions/", context), "") + ".js";
-
-		var files = fileSystem.getPath(base);
-
-		if (resource.startsWith("/")) {
-			resource = resource.substring(1);
+		var resourceName = request.getHttpURI().getPath().replace(
+				managerURL("/manager/actions/", context), "");
+		
+		if (resourceName.startsWith("/")) {
+			resourceName = resourceName.substring(1);
 		}
-
-		var path = files.resolve(resource);
-		if (Files.exists(path)) {
-			response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
-			Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
+		
+		String scriptContent = "";
+		
+		var moduleContent = getScriptContentFromModules(resourceName);
+		if (moduleContent.isPresent()) {
+			scriptContent = moduleContent.get();
+		} else {
+			var resourceFile = resourceName + ".js";
+			var files = fileSystem.getPath(base);
+			var path = files.resolve(resourceFile);
+			if (Files.exists(path)) {
+				scriptContent = Files.readString(path);
+			}
+		}
+		
+		
+		if (!Strings.isNullOrEmpty(scriptContent)) {
+			response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/javascript; charset=UTF-8");
+				Content.Sink.write(response, true, scriptContent, callback);
 		} else {
 			callback.succeeded();
 		}
 
 		return true;
+	}
+	
+	private Optional<String> getScriptContentFromModules (String filename) {
+		return context.get(ModuleManagerFeature.class).moduleManager().extensions(UIScriptActionSourceExtension.class)
+				.stream()
+				.map(UIScriptActionSourceExtension::getActionSources)
+				.filter(source -> source.containsKey(filename))
+				.map(source -> source.get(filename))
+				.findFirst();
 	}
 
 }

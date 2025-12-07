@@ -2,9 +2,9 @@ package com.condation.cms.api.ui.extensions;
 
 /*-
  * #%L
- * ui-api
+ * cms-api
  * %%
- * Copyright (C) 2024 Marx-Software
+ * Copyright (C) 2023 - 2025 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,9 +26,9 @@ import java.util.Map;
 
 /**
  *
- * @author t.marx
+ * @author thmar
  */
-public interface UILocalizationExtensionPoint extends UIExtensionPoint {
+public interface UIScriptActionSourceExtension extends UIExtensionPoint {
 	
-	public Map<String, Map<String, String>> getLocalizations ();
+	public Map<String, String> getActionSources ();
 }

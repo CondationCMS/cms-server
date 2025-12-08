@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./utils.js";
-import { i18n } from "../localization.js";
-import { createForm } from "./forms.js";
-import { openModal } from "../modal.js";
-import { buildValuesFromFields } from "../node.js";
-import { getListItemTypes, getPageTemplates } from "../rpc/rpc-manager.js";
-import { getContent, getContentNode } from "../rpc/rpc-content.js";
-import { getPreviewUrl } from "../preview.utils.js";
+import { createID } from "@cms/modules/form/utils.js";
+import { i18n } from "@cms/modules/localization.js";
+import { createForm } from "@cms/modules/form/forms.js";
+import { openModal } from "@cms/modules/modal.js";
+import { buildValuesFromFields } from "@cms/modules/node.js";
+import { getListItemTypes, getPageTemplates } from "@cms/modules/rpc/rpc-manager.js";
+import { getContent, getContentNode } from "@cms/modules/rpc/rpc-content.js";
+import { getPreviewUrl } from "@cms/modules/preview.utils.js";
 const createListField = (options, value = []) => {
     const id = createID();
     const key = "field." + options.name;

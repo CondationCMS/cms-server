@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { ACTION_LOCALIZATIONS } from './localization-actions.js';
-import { MODULE_LOCALIZATIONS } from './localization-modules.js';
-import { loadLocalizations } from './rpc/rpc-i18n.js'
+import { ACTION_LOCALIZATIONS } from '@cms/modules/localization-actions.js';
+import { MODULE_LOCALIZATIONS } from '@cms/modules/localization-modules.js';
+import { loadLocalizations } from '@cms/modules/rpc/rpc-i18n.js'
 
 const DEFAULT_LOCALIZATIONS = {
 	en: {

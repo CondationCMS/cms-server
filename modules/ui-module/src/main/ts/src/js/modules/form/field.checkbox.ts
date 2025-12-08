@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { FieldOptions, FormContext, FormField } from "./forms.js";
-import { createID } from "./utils.js";
+import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
+import { createID } from "@cms/modules/form/utils.js";
 
 export interface CheckboxOptions extends FieldOptions{
 	key?: string;

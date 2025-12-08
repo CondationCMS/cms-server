@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { UIStateManager } from './ui-state.js'
+import { UIStateManager } from '@cms/modules/ui-state.js'
 
 const DEFAULT_LOCALE = 'en';
 

@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { i18n } from "../localization.js";
-import { FieldOptions, FormContext, FormField } from "./forms.js";
+import { i18n } from "@cms/modules/localization.js";
+import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
 
 export interface DividerOptions extends FieldOptions {
 }

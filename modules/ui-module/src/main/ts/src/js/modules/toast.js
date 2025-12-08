@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { i18n } from './localization.js';
+import { i18n } from '@cms/modules/localization.js';
 
 const showToast = (options) => {
 	const toastId = 'toast_' + Date.now();

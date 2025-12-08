@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./utils.js";
-import { i18n } from "../localization.js";
+import { createID } from "@cms/modules/form/utils.js";
+import { i18n } from "@cms/modules/localization.js";
 let markdownEditors = [];
 const createMarkdownField = (options, value = '') => {
     const id = createID();

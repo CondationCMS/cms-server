@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { EventBus } from "./event-bus.js";
+import { EventBus } from "@cms/modules/event-bus.js";
 //PreviewHistory.init();
 // close overlay on preview loaded
 EventBus.on("preview:loaded", (data) => {

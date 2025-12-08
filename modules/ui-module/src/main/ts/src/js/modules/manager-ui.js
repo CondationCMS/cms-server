@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { getContentNode, setMeta, getContent } from './rpc/rpc-content.js'
-import { getPreviewUrl } from './preview.utils.js'
+import { getContentNode, setMeta, getContent } from '@cms/modules/rpc/rpc-content.js'
+import { getPreviewUrl } from '@cms/modules/preview.utils.js'
 
 export function updateStateButton() {
   var previewUrl = getPreviewUrl();;

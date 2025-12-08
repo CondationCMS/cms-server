@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { EventBus } from "./event-bus.js";
+import { EventBus } from "@cms/modules/event-bus.js";
 
 //PreviewHistory.init();
 // close overlay on preview loaded

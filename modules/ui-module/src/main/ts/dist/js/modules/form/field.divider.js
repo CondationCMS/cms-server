@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { i18n } from "../localization.js";
+import { i18n } from "@cms/modules/localization.js";
 const createDivider = (options, value) => {
     const key = "field." + options.name;
     const title = i18n.t(key, options.title || "");

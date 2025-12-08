@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import frameMessenger from './modules/frameMessenger.js';
-import { loadPreview } from './modules/preview.utils.js';
-import { UIStateManager } from './modules/ui-state.js';
-import { updateStateButton } from './modules/manager-ui.js';
-import { EventBus } from './modules/event-bus.js';
-import { initMessageHandlers } from './modules/manager/manager.message.handlers.js';
+import frameMessenger from '@cms/modules/frameMessenger.js';
+import { loadPreview } from '@cms/modules/preview.utils.js';
+import { UIStateManager } from '@cms/modules/ui-state.js';
+import { updateStateButton } from '@cms/modules/manager-ui.js';
+import { EventBus } from '@cms/modules/event-bus.js';
+import { initMessageHandlers } from '@cms/modules/manager/manager.message.handlers.js';
 frameMessenger.on('load', (payload) => {
     EventBus.emit("preview:loaded", {});
 });

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import frameMessenger from "../frameMessenger";
-import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "./toolbar-icons";
+import frameMessenger from "@cms/modules/frameMessenger.js";
+import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "@cms/modules/manager/toolbar-icons";
 const addSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
     var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);

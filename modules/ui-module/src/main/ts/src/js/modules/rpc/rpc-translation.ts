@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { executeRemoteCall } from './rpc.js'
+import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 
 export interface GetTranslationsOptions {
 	uri: string; // The URI of the folder where the page should be created

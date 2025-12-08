@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { executeRemoteCall } from './rpc.js'
+import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 
 const getMediaMetaData = async (options : any) => {
 	var data = {

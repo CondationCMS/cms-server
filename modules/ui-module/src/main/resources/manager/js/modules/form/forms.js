@@ -19,25 +19,25 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./utils.js";
-import { TextField } from "./field.text.js";
-import { MailField } from "./field.mail.js";
-import { CodeField } from "./field.code.js";
-import { SelectField } from "./field.select.js";
-import { MarkdownField } from "./field.markdown.js";
-import { EasyMDEField } from "./field.easymde.js";
-import { NumberField } from "./field.number.js";
-import { DateField } from "./field.date.js";
-import { ColorField } from "./field.color.js";
-import { DateTimeField } from "./field.datetime.js";
-import { RangeField } from "./field.range.js";
-import { RadioField } from "./field.radio.js";
-import { CheckboxField } from "./field.checkbox.js";
-import { Divider } from "./field.divider.js";
-import { MediaField } from "./field.media.js";
-import { ListField } from "./field.list.js";
-import { TextAreaField } from "./field.textarea.js";
-import { ReferenceField } from "./field.reference.js";
+import { createID } from "@cms/modules/form/utils.js";
+import { TextField } from "@cms/modules/form/field.text.js";
+import { MailField } from "@cms/modules/form/field.mail.js";
+import { CodeField } from "@cms/modules/form/field.code.js";
+import { SelectField } from "@cms/modules/form/field.select.js";
+import { MarkdownField } from "@cms/modules/form/field.markdown.js";
+import { EasyMDEField } from "@cms/modules/form/field.easymde.js";
+import { NumberField } from "@cms/modules/form/field.number.js";
+import { DateField } from "@cms/modules/form/field.date.js";
+import { ColorField } from "@cms/modules/form/field.color.js";
+import { DateTimeField } from "@cms/modules/form/field.datetime.js";
+import { RangeField } from "@cms/modules/form/field.range.js";
+import { RadioField } from "@cms/modules/form/field.radio.js";
+import { CheckboxField } from "@cms/modules/form/field.checkbox.js";
+import { Divider } from "@cms/modules/form/field.divider.js";
+import { MediaField } from "@cms/modules/form/field.media.js";
+import { ListField } from "@cms/modules/form/field.list.js";
+import { TextAreaField } from "@cms/modules/form/field.textarea.js";
+import { ReferenceField } from "@cms/modules/form/field.reference.js";
 const createForm = (options) => {
     const fields = options.fields || [];
     const values = options.values || {};

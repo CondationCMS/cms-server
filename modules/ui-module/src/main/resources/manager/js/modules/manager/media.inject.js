@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { EDIT_ATTRIBUTES_ICON, IMAGE_ICON, MEDIA_CROP_ICON } from "./toolbar-icons";
-import frameMessenger from '../frameMessenger.js';
+import { EDIT_ATTRIBUTES_ICON, IMAGE_ICON, MEDIA_CROP_ICON } from "@cms/modules/manager/toolbar-icons";
+import frameMessenger from '@cms/modules/frameMessenger.js';
 const isSameDomainImage = (imgElement) => {
     if (!(imgElement instanceof HTMLImageElement)) {
         return false; // ist kein <img>

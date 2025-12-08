@@ -43,7 +43,11 @@ public class ExampleUiScriptActionSourceExtension extends AbstractExtensionPoint
 
 	@Override
 	public Map<String, String> getActionSources() {
-		return Map.of("example/source", "// this is an example script source");
+		return Map.of("example/source", """
+                                  export async function runAction(parameters) {
+                                  	console.log("This is an example action");
+                                  }
+                                  """);
 	}
 
 	@MenuEntry(

@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./utils.js";
-import { i18n } from "../localization.js";
-import { getMediaFormats, getTagNames } from "../rpc/rpc-manager.js";
-import { openFileBrowser } from "../filebrowser.js";
-import { alertSelect } from "../alerts.js";
+import { createID } from "@cms/modules/form/utils.js";
+import { i18n } from "@cms/modules/localization.js";
+import { getMediaFormats, getTagNames } from "@cms/modules/rpc/rpc-manager.js";
+import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { alertSelect } from "@cms/modules/alerts.js";
 let cherryEditors = [];
 const createMarkdownField = (options, value = '') => {
     const id = createID();

@@ -20,13 +20,13 @@
  * #L%
  */
 
-import { createFolder, createFile, renameFile } from './rpc/rpc-files.js'
-import { createPage } from './rpc/rpc-page.js'
+import { createFolder, createFile, renameFile } from '@cms/modules/rpc/rpc-files.js'
+import { createPage } from '@cms/modules/rpc/rpc-page.js'
 
-import { i18n } from './localization.js';
-import { alertSelect, alertConfirm, alertPrompt } from './alerts.js'
-import { showToast } from './toast.js'
-import { getPageTemplates } from './rpc/rpc-manager.js';
+import { i18n } from '@cms/modules/localization.js';
+import { alertSelect, alertConfirm, alertPrompt } from '@cms/modules/alerts.js'
+import { showToast } from '@cms/modules/toast.js'
+import { getPageTemplates } from '@cms/modules/rpc/rpc-manager.js';
 
 export async function renameFileAction({ state, getTargetFolder, filename }) {
 	const newName = await alertPrompt({

@@ -20,11 +20,11 @@
  * #L%
  */
 
-import { showToast } from './toast.js'
-import { i18n } from './localization.js';
-import { state } from './filebrowser.js';
-import { uploadFileWithProgress} from './upload.js'
-import { EventBus } from './event-bus.js';
+import { showToast } from '@cms/modules/toast.js'
+import { i18n } from '@cms/modules/localization.js';
+import { state } from '@cms/modules/filebrowser.js';
+import { uploadFileWithProgress} from '@cms/modules/upload.js'
+import { EventBus } from '@cms/modules/event-bus.js';
 
 const allowedMimeTypes = [
 	"image/png",

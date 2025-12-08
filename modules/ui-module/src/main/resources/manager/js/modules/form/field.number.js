@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID } from "./utils.js";
-import { i18n } from "../localization.js";
+import { i18n } from "@cms/modules/localization.js";
+import { createID } from "@cms/modules/form/utils.js";
 const createNumberField = (options, value = '') => {
     const placeholder = options.placeholder || "";
     const id = createID();

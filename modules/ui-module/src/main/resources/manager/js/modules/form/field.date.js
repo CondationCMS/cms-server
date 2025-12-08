@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID, getUTCDateFromInput, utcToLocalDateInputValue } from "./utils.js";
-import { i18n } from "../localization.js";
+import { createID, getUTCDateFromInput, utcToLocalDateInputValue } from "@cms/modules/form/utils.js";
+import { i18n } from "@cms/modules/localization.js";
 const createDateField = (options, value = '') => {
     const placeholder = options.placeholder || "";
     const id = createID();

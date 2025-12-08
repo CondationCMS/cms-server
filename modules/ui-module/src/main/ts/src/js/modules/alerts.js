@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openModal } from './modal.js';
-import { i18n } from './localization.js';
+import { openModal } from '@cms/modules/modal.js';
+import { i18n } from '@cms/modules/localization.js';
 
 const alertSelect = (options) => {
     return new Promise((resolve) => {

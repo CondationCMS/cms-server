@@ -19,9 +19,9 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { createID, getUTCDateFromInput, utcToLocalDateInputValue } from "./utils.js";
-import { i18n } from "../localization.js"
-import { FieldOptions, FormContext, FormField } from "./forms.js";
+import { createID, getUTCDateFromInput, utcToLocalDateInputValue } from "@cms/modules/form/utils.js";
+import { i18n } from "@cms/modules/localization.js"
+import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
 
 export interface DateFieldOptions extends FieldOptions {
 	placeholder?: string;

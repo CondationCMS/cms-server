@@ -1,4 +1,4 @@
-import { createID } from "./utils.js";
+import { createID } from "@cms/modules/form/utils.js";
 const createCheckboxField = (options, value = []) => {
     const id = createID();
     const key = options.key || "";

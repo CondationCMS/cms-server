@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { getLocale, setLocale } from './locale-utils.js';
-import { loadLocalizationsWithDefaults } from './localization-loader.js';
+import { getLocale, setLocale } from '@cms/modules/locale-utils.js';
+import { loadLocalizationsWithDefaults } from '@cms/modules/localization-loader.js';
 
 const DEFAULT_LOCALE = 'en';
 

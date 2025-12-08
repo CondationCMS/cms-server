@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { executeRemoteCall } from './rpc.js';
+import { executeRemoteCall } from '@cms/modules/rpc/rpc.js';
 const loadLocalizations = async (options) => {
     var data = {
         method: "i18n.load"

@@ -20,7 +20,7 @@
  * #L%
  */
 // state-manager.js
-import { EventBus } from "./event-bus.js";
+import { EventBus } from "@cms/modules/event-bus.js";
 const TAB_ID_KEY = "cms-tab-id";
 const AUTH_KEY = "cms-auth-token";
 export const UIStateManager = {

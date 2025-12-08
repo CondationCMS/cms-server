@@ -69,9 +69,6 @@
 	
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
 
-	<link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager.css') }}" />
-	<script src="{{ links.createUrl('/manager/js/manager-globals.js') }}"></script>
-	<script src="{{ links.createUrl('/manager/js/manager.js') }}" type="module"></script>
 	<style>
 		html,
 		body,
@@ -79,6 +76,16 @@
 			height: 100%;
 		}
 	</style>
+	<script type="importmap">
+		{
+		  "imports": {
+			"@cms/js/": "{{ managerBaseURL }}/js/",
+			"@cms/libs/": "{{ managerBaseURL }}/js/libs/",
+			"@cms/manager/": "{{ managerBaseURL }}/js/manager/",
+			"@cms/modules/": "{{ managerBaseURL }}/js/modules/"
+		  }
+		}
+	</script>
 	<script>
 
 		window.manager = {
@@ -88,6 +95,9 @@
 			siteId: '{{ siteId }}',
 		}
 	</script>
+	<link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager.css') }}" />
+	<script src="{{ links.createUrl('/manager/js/manager-globals.js') }}"></script>
+	<script src="{{ links.createUrl('/manager/js/manager.js') }}" type="module"></script>
 </head>
 
 <body class="d-flex flex-column h-100 m-0">

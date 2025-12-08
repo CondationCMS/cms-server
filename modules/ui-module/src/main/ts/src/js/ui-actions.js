@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { EventBus } from './modules/event-bus.js';
-import { i18n, localizeUi } from './modules/localization.js';
+import { EventBus } from '@cms/modules/event-bus.js';
+import { i18n, localizeUi } from '@cms/modules/localization.js';
 
 window.addEventListener("DOMContentLoaded", async () => {
 

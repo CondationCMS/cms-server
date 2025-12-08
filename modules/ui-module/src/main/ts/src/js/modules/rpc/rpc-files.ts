@@ -20,7 +20,7 @@
  * #L%
  */
 
-import { executeRemoteCall } from './rpc.js'
+import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 
 const listFiles = async (options : any) => {
 	var data = {

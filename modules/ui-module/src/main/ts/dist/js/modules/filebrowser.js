@@ -19,17 +19,17 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { listFiles, deleteFile, deleteFolder, } from './rpc/rpc-files.js';
-import { deletePage } from './rpc/rpc-page.js';
-import { openModal } from './modal.js';
-import { loadPreview } from './preview.utils.js';
-import { i18n } from './localization.js';
-import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageActionOfContentType } from './filebrowser.actions.js';
-import { initDragAndDropUpload, handleFileUpload } from './filebrowser.upload.js';
-import { EventBus } from './event-bus.js';
-import { filebrowserTemplate } from './filebrowser.template.js';
-import { getPageTemplates } from './rpc/rpc-manager.js';
-import { showToast } from './toast.js';
+import { listFiles, deleteFile, deleteFolder, } from '@cms/modules/rpc/rpc-files.js';
+import { deletePage } from '@cms/modules/rpc/rpc-page.js';
+import { openModal } from '@cms/modules/modal.js';
+import { loadPreview } from '@cms/modules/preview.utils.js';
+import { i18n } from '@cms/modules/localization.js';
+import { renameFileAction, deleteElementAction, createFolderAction, createFileAction, createPageActionOfContentType } from '@cms/modules/filebrowser.actions.js';
+import { initDragAndDropUpload, handleFileUpload } from '@cms/modules/filebrowser.upload.js';
+import { EventBus } from '@cms/modules/event-bus.js';
+import { filebrowserTemplate } from '@cms/modules/filebrowser.template.js';
+import { getPageTemplates } from '@cms/modules/rpc/rpc-manager.js';
+import { showToast } from '@cms/modules/toast.js';
 const defaultOptions = {
     validate: () => true,
     uri: "",

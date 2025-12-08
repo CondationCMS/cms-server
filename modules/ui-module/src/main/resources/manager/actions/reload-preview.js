@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { reloadPreview } from "../js/modules/preview.utils";
+import { reloadPreview } from "@cms/modules/preview.utils.js";
 export async function runAction(params) {
     reloadPreview();
 }

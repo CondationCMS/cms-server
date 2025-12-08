@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { getContentNode, setMeta, getContent } from './rpc/rpc-content.js';
-import { getPreviewUrl } from './preview.utils.js';
+import { getContentNode, setMeta, getContent } from '@cms/modules/rpc/rpc-content.js';
+import { getPreviewUrl } from '@cms/modules/preview.utils.js';
 export function updateStateButton() {
     var previewUrl = getPreviewUrl();
     ;

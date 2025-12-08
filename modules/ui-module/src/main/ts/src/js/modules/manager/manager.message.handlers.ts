@@ -1,6 +1,6 @@
-import frameMessenger from '../frameMessenger';
-import { getPreviewFrame, getPreviewUrl } from '../preview.utils';
-import { getContentNode } from '../rpc/rpc-content';
+import frameMessenger from '@cms/modules/frameMessenger.js';
+import { getPreviewFrame, getPreviewUrl } from '@cms/modules/preview.utils.js';
+import { getContentNode } from '@cms/modules/rpc/rpc-content.js';
 
 const executeImageForm = (payload: any) => {
     const cmd: any = {

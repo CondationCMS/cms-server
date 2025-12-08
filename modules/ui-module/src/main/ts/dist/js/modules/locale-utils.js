@@ -19,7 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { UIStateManager } from './ui-state.js';
+import { UIStateManager } from '@cms/modules/ui-state.js';
 const DEFAULT_LOCALE = 'en';
 export function getLocale() {
     return UIStateManager.getLocale(DEFAULT_LOCALE);

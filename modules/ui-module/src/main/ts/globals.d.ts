@@ -7,7 +7,8 @@ declare global {
       manager_url: string;
     };
     manager : {
-			csrfToken: string
+			csrfToken: string,
+      previewToken: string,
 			baseUrl: string,
 			contextPath: string,
       siteId: string,

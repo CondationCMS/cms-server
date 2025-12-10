@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openModal } from '../../js/modules/modal.js';
-import { showToast } from '../../js/modules/toast.js';
-import { addSection, getContentNode } from '../../js/modules/rpc/rpc-content.js';
-import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js';
-import Handlebars from '../../js/libs/handlebars.min.js';
-import { i18n } from '../../js/modules/localization.js';
-import { getSectionTemplates } from '../../js/modules/rpc/rpc-manager.js';
+import { openModal } from '@cms/modules/modal.js';
+import { showToast } from '@cms/modules/toast.js';
+import { addSection, getContentNode } from '@cms/modules/rpc/rpc-content.js';
+import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js';
+import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.8/+esm';
+import { i18n } from '@cms/modules/localization.js';
+import { getSectionTemplates } from '@cms/modules/rpc/rpc-manager.js';
 export async function runAction(params) {
     const contentNode = await getContentNode({
         url: getPreviewUrl()

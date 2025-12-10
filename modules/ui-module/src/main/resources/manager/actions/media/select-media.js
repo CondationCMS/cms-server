@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openFileBrowser } from "../../js/modules/filebrowser.js";
-import { i18n } from "../../js/modules/localization.js";
-import { getPreviewUrl, reloadPreview } from "../../js/modules/preview.utils.js";
-import { getContentNode, setMeta } from "../../js/modules/rpc/rpc-content.js";
-import { showToast } from "../../js/modules/toast.js";
+import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { i18n } from "@cms/modules/localization.js";
+import { getPreviewUrl, reloadPreview } from "@cms/modules/preview.utils.js";
+import { getContentNode, setMeta } from "@cms/modules/rpc/rpc-content.js";
+import { showToast } from "@cms/modules/toast.js";
 export async function runAction(params) {
     var uri = null;
     if (params.options.uri) {

@@ -19,8 +19,8 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {executeCommand} from '../../js/modules/system-commands.js'
-import {getPreviewUrl} from '../../js/modules/preview.utils.js'
+import {executeCommand} from '@cms/modules/system-commands.js'
+import {getPreviewUrl} from '@cms/modules/preview.utils.js'
 		// hook.js
 export async function runAction(params) {
 	

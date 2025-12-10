@@ -20,11 +20,11 @@
  * #L%
  */
 
-import { i18n } from "../../js/modules/localization.js";
-import { openModal } from "../../js/modules/modal.js";
-import { reloadPreview } from "../../js/modules/preview.utils.js";
-import { getMediaMetaData, setMediaMetaData } from "../../js/modules/rpc/rpc-media.js";
-import { showToast } from "../../js/modules/toast.js";
+import { i18n } from "@cms/modules/localization.js";
+import { openModal } from "@cms/modules/modal.js";
+import { reloadPreview } from "@cms/modules/preview.utils.js";
+import { getMediaMetaData, setMediaMetaData } from "@cms/modules/rpc/rpc-media.js";
+import { showToast } from "@cms/modules/toast.js";
 
 export async function runAction(params) {
 

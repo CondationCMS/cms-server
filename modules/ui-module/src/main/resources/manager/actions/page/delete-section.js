@@ -19,11 +19,11 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { i18n } from '../../js/modules/localization.js';
-import { alertConfirm } from '../../js/modules/alerts.js';
-import { deleteSection } from '../../js/modules/rpc/rpc-content.js';
-import { showToast } from '../../js/modules/toast.js';
-import { reloadPreview } from '../../js/modules/preview.utils.js';
+import { i18n } from '@cms/modules/localization.js';
+import { alertConfirm } from '@cms/modules/alerts.js';
+import { deleteSection } from '@cms/modules/rpc/rpc-content.js';
+import { showToast } from '@cms/modules/toast.js';
+import { reloadPreview } from '@cms/modules/preview.utils.js';
 export async function runAction(params) {
     var confimred = await alertConfirm({
         title: i18n.t("filebrowser.delete.confirm.title", "Are you sure?"),

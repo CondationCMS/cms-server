@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openModal } from '../../js/modules/modal.js';
-import { showToast } from '../../js/modules/toast.js';
-import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js';
-import { Sortable } from '../../js/libs/sortablejs.min.js';
-import Handlebars from '../../js/libs/handlebars.min.js';
-import { getContentNode, setMetaBatch } from '../../js/modules/rpc/rpc-content.js';
+import { openModal } from '@cms/modules/modal.js';
+import { showToast } from '@cms/modules/toast.js';
+import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js';
+import Sortable from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/+esm';
+import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.8/+esm';
+import { getContentNode, setMetaBatch } from '@cms/modules/rpc/rpc-content.js';
 // hook.js
 export async function runAction(params) {
     const contentNode = await getContentNode({

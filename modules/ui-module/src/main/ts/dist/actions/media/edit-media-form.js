@@ -19,14 +19,14 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openSidebar } from '../../js/modules/sidebar.js';
-import { createForm } from '../../js/modules/form/forms.js';
-import { showToast } from '../../js/modules/toast.js';
-import { setMeta } from '../../js/modules/rpc/rpc-content.js';
-import { reloadPreview } from '../../js/modules/preview.utils.js';
-import { i18n } from '../../js/modules/localization.js';
-import { getMediaForm } from '../../js/modules/rpc/rpc-manager.js';
-import { getMediaMetaData, setMediaMetaData } from '../../js/modules/rpc/rpc-media.js';
+import { openSidebar } from '@cms/modules/sidebar.js';
+import { createForm } from '@cms/modules/form/forms.js';
+import { showToast } from '@cms/modules/toast.js';
+import { setMeta } from '@cms/modules/rpc/rpc-content.js';
+import { reloadPreview } from '@cms/modules/preview.utils.js';
+import { i18n } from '@cms/modules/localization.js';
+import { getMediaForm } from '@cms/modules/rpc/rpc-manager.js';
+import { getMediaMetaData, setMediaMetaData } from '@cms/modules/rpc/rpc-media.js';
 export async function runAction(params) {
     var mediaForm = (await getMediaForm({
         form: params.options.form || 'meta'

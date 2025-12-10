@@ -19,12 +19,12 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openModal } from '../../js/modules/modal.js';
-import { createForm } from '../../js/modules/form/forms.js';
-import { getPreviewUrl, reloadPreview } from '../../js/modules/preview.utils.js';
-import { getContentNode, getContent, setContent } from '../../js/modules/rpc/rpc-content.js';
-import { i18n } from '../../js/modules/localization.js';
-import { showToast } from '../../js/modules/toast.js';
+import { openModal } from '@cms/modules/modal.js';
+import { createForm } from '@cms/modules/form/forms.js';
+import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js';
+import { getContentNode, getContent, setContent } from '@cms/modules/rpc/rpc-content.js';
+import { i18n } from '@cms/modules/localization.js';
+import { showToast } from '@cms/modules/toast.js';
 // hook.js
 export async function runAction(params) {
     var uri = null;

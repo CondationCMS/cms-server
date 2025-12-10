@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import { openFileBrowser } from '../../js/modules/filebrowser.js'
-import { i18n } from '../../js/modules/localization.js'
-import { openModal } from '../../js/modules/modal.js'
-import { getPreviewUrl } from '../../js/modules/preview.utils.js'
-import { getContentNode } from '../../js/modules/rpc/rpc-content.js'
-import { addTranslation, getTranslations, TranslationDto } from '../../js/modules/rpc/rpc-translation.js'
-import { showToast } from '../../js/modules/toast.js'
+import { openFileBrowser } from '@cms/modules/filebrowser.js'
+import { i18n } from '@cms/modules/localization.js'
+import { openModal } from '@cms/modules/modal.js'
+import { getPreviewUrl } from '@cms/modules/preview.utils.js'
+import { getContentNode } from '@cms/modules/rpc/rpc-content.js'
+import { addTranslation, getTranslations, TranslationDto } from '@cms/modules/rpc/rpc-translation.js'
+import { showToast } from '@cms/modules/toast.js'
 // hook.js
 export async function runAction(params: any) {
 

@@ -19,13 +19,13 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import {createForm} from '../../js/modules/form/forms.js'
-import {showToast} from '../../js/modules/toast.js'
-import {getPreviewUrl, reloadPreview} from '../../js/modules/preview.utils.js'
-import { getValueByPath } from '../../js/modules/node.js'
-import { getContentNode, setMeta, getContent} from '../../js/modules/rpc/rpc-content.js'
-import { i18n } from '../../js/modules/localization.js'
-import { openSidebar } from '../../js/modules/sidebar.js'
+import {createForm} from '@cms/modules/form/forms.js'
+import {showToast} from '@cms/modules/toast.js'
+import {getPreviewUrl, reloadPreview} from '@cms/modules/preview.utils.js'
+import { getValueByPath } from '@cms/modules/node.js'
+import { getContentNode, setMeta, getContent} from '@cms/modules/rpc/rpc-content.js'
+import { i18n } from '@cms/modules/localization.js'
+import { openSidebar } from '@cms/modules/sidebar.js'
 		// hook.js
 export async function runAction(params) {
 

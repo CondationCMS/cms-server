@@ -44,7 +44,7 @@ public class ExampleUiScriptActionSourceExtension extends AbstractExtensionPoint
 
 	@Override
 	public Map<String, String> getActionSources() {
-		return Map.of("example/source", ClasspathResourceLoader.loadRelative(ExampleUiScriptActionSourceExtension.class, "example.js"));
+		return Map.of("example/source", ClasspathResourceLoader.loadRelative(ExampleUiScriptActionSourceExtension.class, "example-action.js"));
 	}
 
 	@MenuEntry(

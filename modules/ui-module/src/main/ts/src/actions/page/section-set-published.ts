@@ -20,8 +20,8 @@
  * #L%
  */
 
-import { reloadPreview } from "../../js/modules/preview.utils";
-import { setMeta } from "../../js/modules/rpc/rpc-content";
+import { reloadPreview } from "@cms/modules/preview.utils";
+import { setMeta } from "@cms/modules/rpc/rpc-content";
 
 export async function runAction(params) {
 

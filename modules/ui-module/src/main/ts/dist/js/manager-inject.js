@@ -37,15 +37,12 @@
     script.type = 'importmap';
     script.textContent = JSON.stringify(importMap);
     script.onload = () => {
-        console.log('✅ Import Map ready!'); // Debug
         resolve();
     };
     document.head.appendChild(script);
     // 3. window.manager kopieren
     window.manager = parentManager;
     // 4. Plugins laden
-    console.log('🔥 Loading manager-inject-init...');
     const { initIframe } = await import('@cms/js/manager-inject-init.js');
-    console.log('✅ initModule loaded!', initIframe);
     initIframe();
 })();

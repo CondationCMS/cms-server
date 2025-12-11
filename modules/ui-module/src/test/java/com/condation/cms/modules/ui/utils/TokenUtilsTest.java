@@ -22,7 +22,9 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 
+import io.jsonwebtoken.Jwts;
 import java.time.Duration;
+import java.util.Base64;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -32,19 +34,29 @@ import org.junit.jupiter.api.Test;
  */
 public class TokenUtilsTest {
 	
-
+	private String key () {
+		return Base64.getEncoder()
+                .encodeToString(Jwts.SIG.HS256.key().build().getEncoded());
+	}
+	
 	@Test
 	public void create_and_validate() throws Exception {
-		var token = TokenUtils.createToken("condation", "my secret", Duration.ofHours(1), Duration.ofHours(1));
 		
-		var payload = TokenUtils.getPayload(token, "my secret");
+		var secret = key();
+		
+		var token = TokenUtils.createToken("condation", secret, Duration.ofHours(1), Duration.ofHours(1));
+		
+		var payload = TokenUtils.getPayload(token, secret);
 		Assertions.assertThat(payload).isPresent();
 		Assertions.assertThat(payload.get().username()).isEqualTo("condation");
 	}
 
 	@Test
 	public void create_and_validate__wrong_secret() throws Exception {
-		var token = TokenUtils.createToken("condation", "my secret", Duration.ofHours(1), Duration.ofHours(1));
+		
+		var secret = key();
+		
+		var token = TokenUtils.createToken("condation", secret, Duration.ofHours(1), Duration.ofHours(1));
 
 		var payload = TokenUtils.getPayload(token, "another secret");
 		Assertions.assertThat(payload).isNotPresent();
@@ -52,7 +64,10 @@ public class TokenUtilsTest {
 
 	@Test
 	public void create_and_validate__wrong_token() throws Exception {
-		var payload = TokenUtils.getPayload("bliblablub", "my secret");
+		
+		var secret = key();
+		
+		var payload = TokenUtils.getPayload("bliblablub", secret);
 		Assertions.assertThat(payload).isNotPresent();
 	}
 	

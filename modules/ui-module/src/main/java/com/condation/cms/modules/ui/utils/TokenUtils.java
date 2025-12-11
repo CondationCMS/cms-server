@@ -21,93 +21,157 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Base64;
-import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TokenUtils {
 
-	public static Optional<Payload> getPayload(String token, String secret) {
-		try {
-			String[] parts = token.split(":");
-			if (parts.length != 2) {
-				return Optional.empty();
-			}
-
-			String base64Payload = parts[0];
-			String signature = parts[1];
-
-			String expectedSig = hmacSha256(base64Payload, secret);
-			if (!MessageDigest.isEqual(expectedSig.getBytes(StandardCharsets.UTF_8), signature.getBytes(StandardCharsets.UTF_8))) {
-				return Optional.empty();
-			}
-
-			String json = new String(Base64.getUrlDecoder().decode(base64Payload), StandardCharsets.UTF_8);
-			Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
-
-			long now = Instant.now().getEpochSecond();
-
-			// BEIDE Grenzen prüfen!
-			if (now >= payload.expiresAt()) {
-				return Optional.empty();  // Idle timeout
-			}
-			if (now >= payload.maxLifetime()) {
-				return Optional.empty();  // Absolute grenze
-			}
-
-			return Optional.of(payload);
-		} catch (Exception e) {
-			return Optional.empty();
-		}
-	}
-
-	public static String createToken(String username, String SECRET, Map<String, Object> payloadData, Duration idleTimeout, Duration maxLifetime) throws Exception {
+	/**
+	 * Erstelle ein neues JWT Token
+	 * @param username Benutzername
+	 * @param secret Geheimer Schlüssel für die Signatur
+	 * @param payloadData Zusätzliche Claims
+	 * @param idleTimeout Idle Timeout (Inaktivität)
+	 * @param maxLifetime Absolutes Maximum
+	 * @return JWT Token String
+	 */
+	public static String createToken(String username, String secret, 
+			Map<String, Object> payloadData, Duration idleTimeout, Duration maxLifetime) throws Exception {
+		
 		Instant now = Instant.now();
 		Instant expiresAt = now.plus(idleTimeout);
 		Instant maxAt = now.plus(maxLifetime);
 		
-		payloadData.put("uuid", UUID.randomUUID().toString());
+		// Erstelle Secret Key aus String
+		SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
 		
-		Payload payload = new Payload(username,
-				now.getEpochSecond(),
-				expiresAt.getEpochSecond(),
-				maxAt.getEpochSecond(),
-				payloadData);
-
-		String json = UIGsonProvider.INSTANCE.toJson(payload);
-		String base64Payload = Base64.getUrlEncoder().withoutPadding().encodeToString(json.getBytes(StandardCharsets.UTF_8));
-		String signature = hmacSha256(base64Payload, SECRET);
-		return base64Payload + ":" + signature;
+		// Baue das JWT
+		String token = Jwts.builder()
+				// Standard Claims
+				.subject(username)
+				.issuedAt(Date.from(now))
+				.expiration(Date.from(expiresAt))
+				
+				// Custom Claims
+				.claim("username", username)
+				.claim("expiresAt", expiresAt.getEpochSecond())
+				.claim("maxLifetime", maxAt.getEpochSecond())
+				.claim("tokenId", UUID.randomUUID().toString())
+				
+				// Zusätzliche Payload-Daten
+				.claims(payloadData)
+				
+				// Signiere mit HMAC-SHA256
+				.signWith(key)
+				.compact();
+		
+		return token;
 	}
 
-	public static String createToken(String username, String SECRET, Duration idleTimeout, Duration maxLifetime) throws Exception {
-		return createToken(username, SECRET, new HashMap<>(), idleTimeout, maxLifetime);
+	/**
+	 * Erstelle Token mit Standard Payload
+	 * @param username
+	 * @param secret
+	 * @return 
+	 */
+	public static String createToken(String username, String secret, 
+			Duration idleTimeout, Duration maxLifetime) throws Exception {
+		return createToken(username, secret, new HashMap<>(), idleTimeout, maxLifetime);
 	}
 
-	private static String hmacSha256(String data, String key) throws Exception {
-		Mac mac = Mac.getInstance("HmacSHA256");
-		SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
-		mac.init(secretKeySpec);
-		byte[] hash = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-		return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
+	/**
+	 * Validiere und dekodiere das Token
+	 * @param token JWT Token String
+	 * @param secret Geheimer Schlüssel
+	 * @return Optional<Payload> mit Token-Daten oder leer wenn ungültig
+	 */
+	public static Optional<Payload> getPayload(String token, String secret) {
+		try {
+			// Erstelle Secret Key
+			SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+			
+			// Parse und validiere Token
+			Jws<Claims> jws = Jwts.parser()
+					.verifyWith(key)
+					.build()
+					.parseSignedClaims(token);
+			
+			Claims claims = jws.getBody();
+			
+			// Hole Custom Claims
+			String username = claims.get("username", String.class);
+			Long expiresAt = claims.get("expiresAt", Long.class);
+			Long maxLifetime = claims.get("maxLifetime", Long.class);
+			
+			long now = Instant.now().getEpochSecond();
+			
+			// Prüfe Idle Timeout
+			if (now >= expiresAt) {
+				log.debug("Token idle timeout exceeded");
+				return Optional.empty();
+			}
+			
+			// Prüfe absolutes Maximum
+			if (now >= maxLifetime) {
+				log.debug("Token max lifetime exceeded");
+				return Optional.empty();
+			}
+			
+			// Extrahiere alle Claims als Map
+			Map<String, Object> data = new HashMap<>(claims);
+			
+			return Optional.of(new Payload(
+					username,
+					claims.getIssuedAt().getTime() / 1000,
+					expiresAt,
+					maxLifetime,
+					data
+			));
+			
+		} catch (ExpiredJwtException e) {
+			log.debug("Token has expired");
+			return Optional.empty();
+		} catch (JwtException e) {
+			log.debug("Invalid JWT token: {}", e.getMessage());
+			return Optional.empty();
+		} catch (Exception e) {
+			log.debug("Error parsing token", e);
+			return Optional.empty();
+		}
 	}
 
+	/**
+	 * Payload Record für Token-Daten
+	 */
 	public record Payload(
 			String username,
 			long issuedAt,
 			long expiresAt,
 			long maxLifetime,
 			Map<String, Object> data) {
-
+		
+		/**
+		 * Prüfe ob Token noch gültig ist (Idle + Max Lifetime)
+		 */
+		public boolean isValid() {
+			long now = Instant.now().getEpochSecond();
+			return now < expiresAt && now < maxLifetime;
+		}
 	}
 }

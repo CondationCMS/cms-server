@@ -19,6 +19,9 @@ pool_enabled = false
 pool_size = 10
 pool_expire = 1000
 
+[ui]
+secret = "xnK82mcK7I9s_K3j-L8vK9L2m_N3o_P4q_R5s_T6u_V7w_X8y_Z9a_B0c_D1e"
+
 [list]
 test = ["eins", "zwei"]
 

@@ -37,6 +37,7 @@ import com.condation.cms.modules.ui.utils.template.UILinkFunction;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.time.Duration;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,7 +66,7 @@ public class ResourceHandler extends JettyHandler {
 		var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
 		var moduleManager = context.get(ModuleManagerFeature.class).moduleManager();
 
-		var actionFactory = new ActionFactory(hookSystem, moduleManager, getUser(request, context).get());
+		var actionFactory = new ActionFactory(hookSystem, moduleManager, getUser(request, context, requestContext).get());
 
 		var resource = request.getHttpURI().getPath().replaceFirst(
 				managerURL("/manager/", requestContext), "");
@@ -81,10 +82,10 @@ public class ResourceHandler extends JettyHandler {
 				String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render(resource,
 						Map.of(
 								"actionFactory", actionFactory,
-								"csrfToken", TokenUtils.createToken("csrf", secret),
+								"csrfToken", TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1)),
 								"links", new UILinkFunction(requestContext),
 								"managerBaseURL", managerBaseURL(requestContext),
-								"previewToken", TokenUtils.createToken(getUsername(request, context), secret),
+								"previewToken", TokenUtils.createToken(getUsername(request, context, requestContext), secret, Duration.ofHours(1), Duration.ofDays(7)),
 								"contextPath", siteProperties.contextPath(),
 								"siteId", siteProperties.id(),
 								"translation", new TranslationHelper(siteProperties)

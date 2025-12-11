@@ -22,15 +22,19 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
-import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
+import com.condation.cms.modules.ui.utils.AuthUtil;
+import com.condation.cms.modules.ui.utils.CookieUtil;
 import com.condation.cms.modules.ui.utils.TokenUtils;
+import com.condation.cms.modules.ui.utils.UIConstants;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
@@ -49,13 +53,17 @@ public class UIAuthHandler extends JettyHandler {
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
 		
-		var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
-
+		Optional<HttpCookie> tokenCookie = Optional.empty();
+		if (AuthUtil.checkAuthTokens(request, response, moduleContext, requestContext)) {
+			tokenCookie = CookieUtil.getCookie(request, UIConstants.COOKIE_CMS_REFRESH_TOKEN);
+		}
+		
 		if (tokenCookie.isEmpty()) {
 			response.setStatus(403);
 			callback.succeeded();
 			return true;
 		}
+		
 		var token = tokenCookie.get().getValue();
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 		

@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 
+import java.time.Duration;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +35,7 @@ public class TokenUtilsTest {
 
 	@Test
 	public void create_and_validate() throws Exception {
-		var token = TokenUtils.createToken("condation", "my secret");
+		var token = TokenUtils.createToken("condation", "my secret", Duration.ofHours(1), Duration.ofHours(1));
 		
 		var payload = TokenUtils.getPayload(token, "my secret");
 		Assertions.assertThat(payload).isPresent();
@@ -43,7 +44,7 @@ public class TokenUtilsTest {
 
 	@Test
 	public void create_and_validate__wrong_secret() throws Exception {
-		var token = TokenUtils.createToken("condation", "my secret");
+		var token = TokenUtils.createToken("condation", "my secret", Duration.ofHours(1), Duration.ofHours(1));
 
 		var payload = TokenUtils.getPayload(token, "another secret");
 		Assertions.assertThat(payload).isNotPresent();

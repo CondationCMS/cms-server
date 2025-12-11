@@ -22,11 +22,9 @@ package com.condation.cms.modules.ui.http.auth;
  * #L%
  */
 import com.condation.cms.api.cache.ICache;
-import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
-import com.condation.cms.api.feature.features.IsDevModeFeature;
 import com.condation.cms.api.mail.MailService;
 import com.condation.cms.api.mail.Message;
 import com.condation.cms.api.module.SiteModuleContext;
@@ -36,16 +34,14 @@ import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.http.JettyHandler;
-import com.condation.cms.modules.ui.utils.TokenUtils;
+import com.condation.cms.modules.ui.utils.AuthUtil;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.security.SecureRandom;
-import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.eclipse.jetty.http.HttpCookie;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -116,21 +112,8 @@ public class AjaxLoginHandler extends JettyHandler {
 		Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-			var token = TokenUtils.createToken(user.username(), secret);
-
-			boolean isDev = requestContext.has(IsDevModeFeature.class);
-
-			HttpCookie cookie = HttpCookie.from("cms-token", token,
-					Map.of(
-							HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
-							HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
-							HttpCookie.PATH_ATTRIBUTE, "/"
-					));
-			if (!isDev) {
-				cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
-			}
-			Response.addCookie(response, cookie);
+		
+			AuthUtil.updateCookies(user, response, requestContext, moduleContext);
 
 			Content.Sink.write(
 					response, 
@@ -189,22 +172,8 @@ public class AjaxLoginHandler extends JettyHandler {
 
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-			var token = TokenUtils.createToken(user.username(), secret);
-
-			boolean isDev = requestContext.has(IsDevModeFeature.class);
-
-			HttpCookie cookie = HttpCookie.from("cms-token", token,
-					Map.of(
-							HttpCookie.SAME_SITE_ATTRIBUTE, "Strict",
-							HttpCookie.HTTP_ONLY_ATTRIBUTE, "true",
-							HttpCookie.MAX_AGE_ATTRIBUTE, String.valueOf(Duration.ofHours(1).toSeconds()),
-							HttpCookie.PATH_ATTRIBUTE, "/"
-					));
-			if (!isDev) {
-				cookie = HttpCookie.from(cookie, HttpCookie.SECURE_ATTRIBUTE, "true");
-			}
-			Response.addCookie(response, cookie);
+			
+			AuthUtil.updateCookies(user, response, requestContext, moduleContext);
 
 			Map<String, Object> responseData = Map.of(
 					"status", "ok"

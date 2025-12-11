@@ -22,6 +22,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCResult;
 import com.condation.cms.modules.ui.model.RemoteCall;
@@ -47,6 +48,7 @@ public class RemoteCallHandler extends JettyHandler {
 
 	private final RemoteMethodService remoteCallService;
 	private final SiteModuleContext moduleContext;
+	private final SiteRequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {
@@ -61,7 +63,7 @@ public class RemoteCallHandler extends JettyHandler {
 
 		RPCResult rpcResult;
 		try {
-			Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters(), getUser(request, moduleContext).get());
+			Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters(), getUser(request, moduleContext, requestContext).get());
 			if (result.isPresent()) {
 				rpcResult = new RPCResult(result.get());
 			} else {

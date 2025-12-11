@@ -65,31 +65,21 @@ public abstract class JettyHandler implements HttpHandler {
 		requestContext.add(AuthFeature.class, new AuthFeature(username));
 	}
 	
-	public Optional<User> getUser(Request request, SiteModuleContext moduleContext) {
+	public Optional<User> getUser(Request request, SiteModuleContext moduleContext, SiteRequestContext requestContext) {
 
 		try {
-			var tokenCookie = Request.getCookies(request).stream().filter(cookie -> "cms-token".equals(cookie.getName())).findFirst();
+			
+			var username = requestContext.get(AuthFeature.class).username();
 
-			if (tokenCookie.isEmpty()) {
-				Optional.empty();
-			}
-			var token = tokenCookie.get().getValue();
-			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-			var username = TokenUtils.getPayload(token, secret);
-
-			if (username.isEmpty()) {
-				return Optional.empty();
-			}
-
-			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(Realm.of("manager-users"), username.get().username());
+			return moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(Realm.of("manager-users"), username);
 		} catch (Exception e) {
 			log.error("error getting user", e);
 		}
 		return Optional.empty();
 	}
 	
-	protected String getUsername (Request request, SiteModuleContext moduleContext) {
-		var user = getUser(request, moduleContext);
+	protected String getUsername (Request request, SiteModuleContext moduleContext, SiteRequestContext requestContext) {
+		var user = getUser(request, moduleContext, requestContext);
 		if (user.isPresent()) {
 			return user.get().username();
 		}

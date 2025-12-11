@@ -64,7 +64,7 @@ const loadPreview = (url) => {
             parsedUrl.searchParams.append("preview", "manager");
         }
         parsedUrl.searchParams.delete("preview-token");
-        parsedUrl.searchParams.append("preview-token", window.manager.previewToken);
+        //parsedUrl.searchParams.append("preview-token", window.manager.previewToken);
         parsedUrl.searchParams.delete("nocache");
         parsedUrl.searchParams.append("nocache", Date.now());
         // Setze zusammengesetzten Pfad + Query zurück in das iframe

@@ -30,6 +30,7 @@ import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.TokenUtils;
+import java.time.Duration;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,7 +62,7 @@ public class LoginResourceHandler extends JettyHandler {
 			var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 			var force2fa = siteProperties.ui().force2fa();
 			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of(
-					"csrfToken", TokenUtils.createToken("csrf", secret),
+					"csrfToken", TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1)),
 					"links", new LinkFunction(requestContext),
 					"managerBaseURL", managerBaseURL(requestContext),
 					"force2fa", force2fa

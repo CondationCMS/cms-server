@@ -21,15 +21,17 @@ package com.condation.cms.modules.ui.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -54,8 +56,13 @@ public class TokenUtils {
 			Payload payload = UIGsonProvider.INSTANCE.fromJson(json, Payload.class);
 
 			long now = Instant.now().getEpochSecond();
-			if ((now - payload.timestamp()) >= 3600) {
-				return Optional.empty();
+
+			// BEIDE Grenzen prüfen!
+			if (now >= payload.expiresAt()) {
+				return Optional.empty();  // Idle timeout
+			}
+			if (now >= payload.maxLifetime()) {
+				return Optional.empty();  // Absolute grenze
 			}
 
 			return Optional.of(payload);
@@ -64,16 +71,27 @@ public class TokenUtils {
 		}
 	}
 
-	public static String createToken(String username, String SECRET, Map<String, Object> payloadData) throws Exception {
-		Payload payload = new Payload(username, Instant.now().getEpochSecond(), payloadData);
+	public static String createToken(String username, String SECRET, Map<String, Object> payloadData, Duration idleTimeout, Duration maxLifetime) throws Exception {
+		Instant now = Instant.now();
+		Instant expiresAt = now.plus(idleTimeout);
+		Instant maxAt = now.plus(maxLifetime);
+		
+		payloadData.put("uuid", UUID.randomUUID().toString());
+		
+		Payload payload = new Payload(username,
+				now.getEpochSecond(),
+				expiresAt.getEpochSecond(),
+				maxAt.getEpochSecond(),
+				payloadData);
+
 		String json = UIGsonProvider.INSTANCE.toJson(payload);
 		String base64Payload = Base64.getUrlEncoder().withoutPadding().encodeToString(json.getBytes(StandardCharsets.UTF_8));
 		String signature = hmacSha256(base64Payload, SECRET);
 		return base64Payload + ":" + signature;
 	}
-	
-	public static String createToken(String username, String SECRET) throws Exception {
-		return createToken(username, SECRET, Collections.emptyMap());
+
+	public static String createToken(String username, String SECRET, Duration idleTimeout, Duration maxLifetime) throws Exception {
+		return createToken(username, SECRET, new HashMap<>(), idleTimeout, maxLifetime);
 	}
 
 	private static String hmacSha256(String data, String key) throws Exception {
@@ -84,6 +102,12 @@ public class TokenUtils {
 		return Base64.getUrlEncoder().withoutPadding().encodeToString(hash);
 	}
 
-	public record Payload(String username, long timestamp, Map<String, Object> data) {
+	public record Payload(
+			String username,
+			long issuedAt,
+			long expiresAt,
+			long maxLifetime,
+			Map<String, Object> data) {
+
 	}
 }

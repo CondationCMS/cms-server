@@ -139,7 +139,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext(), getRequestContext()));
 			//mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
 			mapping.add(PathSpec.from("/manager/login.action"), new AjaxLoginHandler(getContext(), getRequestContext(), failedLoginsCounter, logins));
-			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler(getRequestContext()));
+			mapping.add(PathSpec.from("/manager/logout"), new LogoutHandler(getContext(), getRequestContext()));
 
 			mapping.add(PathSpec.from("/manager/upload"),
 					new CompositeHttpHandler(List.of(
@@ -163,7 +163,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 					new CompositeHttpHandler(List.of(
 							new UIAuthHandler(getContext(), getRequestContext()),
 							new CSRFHandler(getContext()),
-							new RemoteCallHandler(remoteCallService, getContext())
+							new RemoteCallHandler(remoteCallService, getContext(), getRequestContext())
 					)));
 
 			mapping.add(PathSpec.from("/manager/hooks"),

@@ -35,7 +35,6 @@ export async function runAction(params: any) {
 	const uri = contentNode.result.uri
 
 	var translations = await getTranslations({ uri: uri })
-	console.log('Translations:', translations);
 
 	var modelContent = createTranslationsTable(translations.translations);
 

@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const intervalId = window.setInterval(() => {
         var token = createCSRFToken({});
         token.then((token) => {
-            console.log("new csrf token: ", token);
             setCSRFToken(token.result);
         });
     }, 5 * 60 * 1000);

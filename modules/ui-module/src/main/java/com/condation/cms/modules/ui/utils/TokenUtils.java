@@ -173,5 +173,9 @@ public class TokenUtils {
 			long now = Instant.now().getEpochSecond();
 			return now < expiresAt && now < maxLifetime;
 		}
+		
+		public boolean isAuthToken () {
+			return data.getOrDefault("type", "none").equals("auth");
+		}
 	}
 }

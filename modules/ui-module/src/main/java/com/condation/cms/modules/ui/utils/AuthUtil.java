@@ -33,6 +33,8 @@ import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Request;
@@ -99,7 +101,7 @@ public final class AuthUtil {
 					return true;
 				}
 			} else {
-				return true;
+				return payload.get().isAuthToken();
 			}
 		}
 
@@ -113,6 +115,7 @@ public final class AuthUtil {
 			var authToken = TokenUtils.createToken(
 					user.username(),
 					secret,
+					new HashMap<>(Map.of("type", "auth")),
 					Duration.ofMinutes(15), // Idle
 					Duration.ofHours(8) // Max absolut
 			);

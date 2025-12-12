@@ -1,3 +1,4 @@
+import { executeScriptAction } from '@cms/js/manager-globals.js';
 import frameMessenger from '@cms/modules/frameMessenger.js';
 import { getPreviewFrame, getPreviewUrl } from '@cms/modules/preview.utils.js';
 import { getContentNode } from '@cms/modules/rpc/rpc-content.js';

@@ -21,6 +21,7 @@
  */
 import { EventBus } from '@cms/modules/event-bus.js';
 import { i18n, localizeUi } from '@cms/modules/localization.js';
+import { executeHookAction, executeScriptAction } from '@cms/js/manager-globals';
 window.addEventListener("DOMContentLoaded", async () => {
     /*
     await i18n.init()

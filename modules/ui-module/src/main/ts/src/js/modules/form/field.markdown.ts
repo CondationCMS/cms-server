@@ -25,6 +25,7 @@ import { getMediaFormats, getTagNames } from "@cms/modules/rpc/rpc-manager.js";
 import { openFileBrowser } from "@cms/modules/filebrowser.js";
 import { alertSelect } from "@cms/modules/alerts.js";
 import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
+import { patchPathWithContext } from "@cms/js/manager-globals";
 
 let cherryEditors = [];
 

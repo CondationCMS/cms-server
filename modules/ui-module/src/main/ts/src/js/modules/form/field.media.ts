@@ -24,6 +24,7 @@ import { i18n } from "@cms/modules/localization.js"
 import { uploadFileWithProgress } from "@cms/modules/upload.js";
 import { openFileBrowser } from "@cms/modules/filebrowser.js";
 import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
+import { patchPathWithContext } from "@cms/js/manager-globals";
 
 export interface MediaFieldOptions extends FieldOptions {
 }

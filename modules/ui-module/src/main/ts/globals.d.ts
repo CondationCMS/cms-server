@@ -8,7 +8,6 @@ declare global {
     };
     manager : {
 			csrfToken: string,
-      previewToken: string,
 			baseUrl: string,
 			contextPath: string,
       siteId: string,
@@ -19,9 +18,3 @@ declare global {
 }
 
 declare var require: any;
-
-// manager-globals
-declare function executeScriptAction(action: any): Promise<any>;
-declare function executeHookAction(action: any): Promise<any>;
-declare function patchManagerPath (relativePath: string, managerBasePath: string): string;
-declare function patchPathWithContext(path: string): string;

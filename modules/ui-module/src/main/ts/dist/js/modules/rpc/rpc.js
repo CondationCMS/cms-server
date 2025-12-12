@@ -20,6 +20,7 @@
  * #L%
  */
 import { i18n } from "@cms/modules/localization.js";
+import { getCSRFToken } from "../utils";
 const executeRemoteCall = async (options) => {
     return executeRemoteMethodCall(options.method, options.parameters);
 };
@@ -32,7 +33,7 @@ const executeRemoteMethodCall = async (method, parameters) => {
         method: "POST",
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': window.manager.csrfToken
+            'X-CSRF-Token': getCSRFToken()
         },
         body: JSON.stringify(data)
     });

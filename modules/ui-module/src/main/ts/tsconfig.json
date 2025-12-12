@@ -14,7 +14,7 @@
     "paths": {
       "@cms/modules/*": ["js/modules/*"],
       "@cms/libs/*": ["js/libs/*"],
-      "@cms/*": ["js/*"],
+      "@cms/js/*": ["js/*"],
     }
   },
   "include": [

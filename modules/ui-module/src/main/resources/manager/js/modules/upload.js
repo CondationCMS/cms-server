@@ -19,6 +19,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import { getCSRFToken } from "./utils";
 // uploadFileWithProgress.js
 export function uploadFileWithProgress({ uploadEndpoint, file, uri, onProgress, onSuccess, onError }) {
     if (!file) {
@@ -35,7 +36,7 @@ export function uploadFileWithProgress({ uploadEndpoint, file, uri, onProgress, 
     formData.append("uri", uri);
     const xhr = new XMLHttpRequest();
     xhr.open("POST", uploadEndpoint ?? "/manager/upload", true);
-    xhr.setRequestHeader("X-CSRF-Token", window.manager.csrfToken);
+    xhr.setRequestHeader("X-CSRF-Token", getCSRFToken());
     xhr.upload.onprogress = (event) => {
         if (event.lengthComputable && typeof onProgress === "function") {
             const percent = Math.round((event.loaded / event.total) * 100);

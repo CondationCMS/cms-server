@@ -23,6 +23,7 @@ import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js";
 import { uploadFileWithProgress } from "@cms/modules/upload.js";
 import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { patchPathWithContext } from "@cms/js/manager-globals";
 const createMediaField = (options, value = '') => {
     const id = createID();
     const key = "field." + options.name;

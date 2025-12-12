@@ -87,10 +87,10 @@
 		  }
 		}
 	</script>
+	<meta name="csrf-token" content="{{ csrfToken }}">
 	<script>
 
 		window.manager = {
-			csrfToken: '{{ csrfToken }}',
 			previewToken: '{{ previewToken }}',
 			baseUrl: '{{ managerBaseURL }}',
 			contextPath: '{{ contextPath }}',
@@ -98,7 +98,6 @@
 		}
 	</script>
 	<link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager.css') }}" />
-	<script src="{{ links.createUrl('/manager/js/manager-globals.js') }}"></script>
 	<script src="{{ links.createUrl('/manager/js/manager.js') }}" type="module"></script>
 </head>
 
@@ -212,7 +211,7 @@
 	<div id="content" class="flex-grow-1 d-flex flex-column overflow-hidden">
 		<div id="previewWrapper" class="flex-grow-1 position-relative">
 			<iframe id="contentPreview" class="position-absolute top-0 start-0 w-100 h-100 border-0"
-				src="{{ links.createUrl('/?preview=manager&preview-token=' + previewToken) | raw }}"></iframe>
+				src="{{ links.createUrl('/?preview=manager&preview-token22=' + previewToken) | raw }}"></iframe>
 
 			<!-- Overlay -->
 			<div id="previewOverlay"

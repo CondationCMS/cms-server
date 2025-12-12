@@ -1,3 +1,4 @@
+import { getCSRFToken } from "./modules/utils";
 /*-
  * #%L
  * ui-module
@@ -19,7 +20,7 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-const executeScriptAction = async (action) => {
+export async function executeScriptAction(action) {
     if (action.module && action.function === "runAction") {
         var modulePath = patchManagerPath(action.module, window.manager.baseUrl);
         import(modulePath)
@@ -41,8 +42,8 @@ const executeScriptAction = async (action) => {
             }
         });
     }
-};
-const executeHookAction = async (action) => {
+}
+export async function executeHookAction(action) {
     var data = {
         hook: action.hook
     };
@@ -52,12 +53,12 @@ const executeHookAction = async (action) => {
     const response = await fetch(window.manager.baseUrl + "/hooks", {
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-Token': window.manager.csrfToken
+            'X-CSRF-Token': getCSRFToken()
         },
         method: "POST",
         body: JSON.stringify(data)
     });
-};
+}
 /**
  * Patches a relative path so that it's correctly prefixed with the given manager base path.
  *
@@ -65,7 +66,7 @@ const executeHookAction = async (action) => {
  * @param {string} managerBasePath e.g. "/manager" or "/de/manager"
  * @returns {string} e.g. "/de/manager/module"
  */
-const patchManagerPath = (relativePath, managerBasePath) => {
+export function patchManagerPath(relativePath, managerBasePath) {
     if (!relativePath || !managerBasePath) {
         throw new Error("Both paths must be provided.");
     }
@@ -78,14 +79,14 @@ const patchManagerPath = (relativePath, managerBasePath) => {
         return rel;
     }
     return base + rel;
-};
+}
 /**
  * Patches a path with the context path, if not already present.
  *
  * @param {string} path - The original path (e.g. "/assets/images/test.jpg").
  * @returns {string} - The patched path with context prefix if needed.
  */
-const patchPathWithContext = (path) => {
+export function patchPathWithContext(path) {
     const contextPath = window.manager.contextPath || "/";
     // Normalize context path (remove trailing slash if not just "/")
     const normalizedContext = contextPath !== "/" ? contextPath.replace(/\/+$/, "") : "";
@@ -95,4 +96,4 @@ const patchPathWithContext = (path) => {
     }
     // Patch path (avoid double slashes)
     return normalizedContext + (path.startsWith("/") ? path : "/" + path);
-};
+}

@@ -54,6 +54,14 @@ const getMediaForm = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
+const createCSRFToken = async (options : any) => {
+	var data = {
+		method: "manager.token.createCSRF",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
 export enum Format {
   WEBP,
   JPEG,
@@ -94,5 +102,6 @@ export {
 	getMediaForm, 
 	getTagNames, 
 	getMediaFormats,
-	getListItemTypes
+	getListItemTypes,
+	createCSRFToken
 };

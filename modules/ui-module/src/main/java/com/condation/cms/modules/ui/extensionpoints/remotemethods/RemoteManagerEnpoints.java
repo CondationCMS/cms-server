@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.configuration.configs.MediaConfiguration;
+import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
@@ -31,6 +32,8 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.content.RenderContext;
+import com.condation.cms.modules.ui.utils.TokenUtils;
+import java.time.Duration;
 
 /**
  *
@@ -87,6 +90,17 @@ public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 	public Object getListItemTypes(Map<String, Object> parameters) throws RPCException {
 		try {
 			return uiHooks().contentTypes().getListItemTypes();
+		} catch (Exception e) {
+			log.error("", e);
+			throw new RPCException(0, e.getMessage());
+		}
+	}
+	
+	@RemoteMethod(name = "manager.token.createCSRF", permissions = {Permissions.CONTENT_EDIT})
+	public Object createCSRFToken(Map<String, Object> parameters) throws RPCException {
+		try {
+			var secret = getContext().get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
+			return TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1));
 		} catch (Exception e) {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());

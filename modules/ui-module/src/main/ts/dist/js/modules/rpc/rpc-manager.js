@@ -48,6 +48,13 @@ const getMediaForm = async (options) => {
     };
     return await executeRemoteCall(data);
 };
+const createCSRFToken = async (options) => {
+    var data = {
+        method: "manager.token.createCSRF",
+        parameters: options
+    };
+    return await executeRemoteCall(data);
+};
 export var Format;
 (function (Format) {
     Format[Format["WEBP"] = 0] = "WEBP";
@@ -68,4 +75,4 @@ const getTagNames = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes };
+export { getSectionTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };

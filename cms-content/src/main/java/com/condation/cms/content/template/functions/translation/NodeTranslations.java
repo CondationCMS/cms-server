@@ -60,7 +60,7 @@ public class NodeTranslations {
 				
 				locale = ServiceRegistry.getInstance().get(mapping.site(), SitePropertiesService.class).get().siteProperties().locale().getCountry().toLowerCase();
 			} else if (mapping.language().equals(siteProperties.language())) {
-				url = HTTPUtil.modifyUrl(
+				url = HTTPUtil.prependContext(
 						PathUtil.toURL(node.uri()), 
 						siteProperties);
 				locale = siteProperties.locale().getCountry().toLowerCase();

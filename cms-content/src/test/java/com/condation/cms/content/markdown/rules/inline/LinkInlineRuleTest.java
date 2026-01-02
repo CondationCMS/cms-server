@@ -75,7 +75,7 @@ public class LinkInlineRuleTest {
 	@Test
 	public void test_relativ_linking_with_context() {
 
-		Mockito.when(siteProperties.contextPath()).thenReturn("/de");
+		Mockito.lenient().when(siteProperties.contextPath()).thenReturn("/de");
 
 		RequestContext requestContext = new RequestContext();
 		requestContext.add(SitePropertiesFeature.class, new SitePropertiesFeature(siteProperties));

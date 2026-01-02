@@ -26,6 +26,7 @@ import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import java.util.Collections;
 import java.util.Map;
@@ -69,14 +70,7 @@ public final class NodeHelper {
 			nodeUri = "";
 		}
 		
-		if (requestContext.has(IsPreviewFeature.class)) {
-			var feature = requestContext.get(IsPreviewFeature.class);
-			if (nodeUri.contains("?")) {
-				nodeUri += "&preview=" + feature.mode().getValue();
-			} else {
-				nodeUri += "?preview=" + feature.mode().getValue();
-			}
-		}
+		HTTPUtil.appendPreviewParameter(nodeUri, requestContext);
 
 		return Map.of(
 				"_self", "%sapi/v1/navigation/%s".formatted(contextPath, nodeUri),

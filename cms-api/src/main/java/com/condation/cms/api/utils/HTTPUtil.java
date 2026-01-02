@@ -21,7 +21,6 @@ package com.condation.cms.api.utils;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.feature.FeatureContainer;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
@@ -43,22 +42,20 @@ import java.util.stream.Collectors;
  */
 public class HTTPUtil {
 
-	/**
-	 * Adds the context according to the siteproperties and the preview to an url
-	 * 
-	 * @param url
-	 * @param featureContainer
-	 * @return 
-	 */
-	public static String modifyUrl(String url, final FeatureContainer featureContainer) {
+	public static String appendPreviewParameter(String url, final FeatureContainer featureContainer) {
 
 		// is external url
 		if (url.startsWith("http") || url.startsWith("https")) {
 			return url;
 		}
 
-		url = modifyUrl(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
-		
+		String fragment = "";
+		int fragmentIndex = url.indexOf('#');
+		if (fragmentIndex >= 0) {
+			fragment = url.substring(fragmentIndex);
+			url = url.substring(0, fragmentIndex);
+		}
+
 		if (featureContainer.has(IsPreviewFeature.class)) {
 			var feature = featureContainer.get(IsPreviewFeature.class);
 			if (url.contains("?")) {
@@ -68,20 +65,60 @@ public class HTTPUtil {
 			}
 		}
 
-		return url;
+		return url + fragment;
+	}
+	
+	/**
+	 * Adds the context according to the siteproperties and the preview to an
+	 * url
+	 *
+	 * @param url
+	 * @param featureContainer
+	 * @return
+	 */
+	public static String modifyUrl(String url, final FeatureContainer featureContainer) {
+
+		// is external url
+		if (url.startsWith("http") || url.startsWith("https")) {
+			return url;
+		}
+
+		// Fragment (#...) abtrennen, falls vorhanden
+		String fragment = "";
+		int fragmentIndex = url.indexOf('#');
+		if (fragmentIndex >= 0) {
+			fragment = url.substring(fragmentIndex);   // inkl. #
+			url = url.substring(0, fragmentIndex);
+		}
+
+		url = prependContext(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
+
+		if (featureContainer.has(IsPreviewFeature.class)) {
+			var feature = featureContainer.get(IsPreviewFeature.class);
+			if (url.contains("?")) {
+				url += "&preview=" + feature.mode().getValue();
+			} else {
+				url += "?preview=" + feature.mode().getValue();
+			}
+		}
+
+		return url + fragment;
 	}
 
 	/**
 	 * Adds the context according to the siteproperties to an url
-	 * 
+	 *
 	 * @param url
 	 * @param siteProperties
-	 * @return 
+	 * @return
 	 */
-	public static String modifyUrl(String url, final SiteProperties siteProperties) {
+	public static String prependContext(String url, final SiteProperties siteProperties) {
 
 		// is external url
 		if (url.startsWith("http") || url.startsWith("https")) {
+			return url;
+		}
+		if (url.startsWith("../")) {
 			return url;
 		}
 

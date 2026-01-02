@@ -26,6 +26,7 @@ import com.github.slugify.Slugify;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContextScope;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
 import java.util.regex.Pattern;
@@ -57,20 +58,7 @@ public class LinkInlineRule implements InlineElementRule {
 
 				var requestContext = RequestContextScope.REQUEST_CONTEXT.get();
 				
-				if (requestContext.has(SitePropertiesFeature.class)) {
-					var contextPath = requestContext.get(SitePropertiesFeature.class).siteProperties().contextPath();
-					if (!"/".equals(contextPath) && !href.startsWith(contextPath) && href.startsWith("/")) {
-						href = contextPath + href;
-					}
-				}
-				if (requestContext.has(IsPreviewFeature.class)) {
-					var previewContext = requestContext.get(IsPreviewFeature.class);
-					if (href.contains("?")) {
-						href += "&preview=" + previewContext.mode().getValue();
-					} else {
-						href += "?preview=" + previewContext.mode().getValue();
-					}
-				}
+				href = HTTPUtil.modifyUrl(href, requestContext);
 			}
 
 			return new LinkBlock(matcher.start(), matcher.end(), href, id, text, title);

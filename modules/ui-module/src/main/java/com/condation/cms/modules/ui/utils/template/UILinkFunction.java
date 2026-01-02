@@ -36,6 +36,6 @@ public class UILinkFunction {
 	private final RequestContext requestContext;
 	
 	public String createUrl (String url) {
-		return HTTPUtil.modifyUrl(url, requestContext.get(SitePropertiesFeature.class).siteProperties());
+		return HTTPUtil.prependContext(url, requestContext.get(SitePropertiesFeature.class).siteProperties());
 	}
 }

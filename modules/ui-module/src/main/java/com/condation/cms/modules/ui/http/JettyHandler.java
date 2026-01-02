@@ -91,6 +91,6 @@ public abstract class JettyHandler implements HttpHandler {
 	}
 	
 	protected String managerURL(String url, FeatureContainer featureContainer) {
-		return HTTPUtil.modifyUrl(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
+		return HTTPUtil.prependContext(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
 	}
 }

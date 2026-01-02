@@ -43,9 +43,9 @@ public class SiteLinkService implements Service {
 	
 	public String managerDeepLink (String url) {
 		var siteProperties = configuration.get(SiteConfiguration.class).siteProperties();
-		url = HTTPUtil.modifyUrl(url, siteProperties);
+		url = HTTPUtil.prependContext(url, siteProperties);
 		String encodedUrl = URLEncoder.encode(url, StandardCharsets.UTF_8);
-		var deepLink = HTTPUtil.modifyUrl("/manager/index.html?page=%s".formatted(encodedUrl), siteProperties);
+		var deepLink = HTTPUtil.prependContext("/manager/index.html?page=%s".formatted(encodedUrl), siteProperties);
 	
 		var baseUrl = siteProperties.baseUrl();
 		if (baseUrl.endsWith("/")) {
@@ -57,6 +57,6 @@ public class SiteLinkService implements Service {
 	
 	public String link (String url) {
 		var siteProperties = configuration.get(SiteConfiguration.class).siteProperties();
-		return HTTPUtil.modifyUrl(url, siteProperties);
+		return HTTPUtil.prependContext(url, siteProperties);
 	}
 }

@@ -45,7 +45,7 @@ public class NodeProperties {
 		Map<String, Object> properties = new HashMap<>();
 		
 		var canonicalUrl = PathUtil.toURL(node .uri());
-		canonicalUrl = HTTPUtil.modifyUrl(canonicalUrl, siteProperties);
+		canonicalUrl = HTTPUtil.prependContext(canonicalUrl, siteProperties);
 		
 		properties.put("url", canonicalUrl);
 		

@@ -20,6 +20,9 @@
 		<div class="container" {{ ext.ui.editMeta("markdown", "about" , node.uri, node.uri) | raw }}>
 			{{ cms.markdown.render(node.meta.getOrDefault('about', '--about--')) | raw}}
 		</div>
+		<div class="container" {{ ext.ui.editMeta("markdown", "about1" , node.uri, node.uri) | raw }}>
+			{{ cms.markdown.render(node.meta.getOrDefault('about1', '--about1--')) | raw}}
+		</div>
 	</div>
 	<div>
 		{% if node.meta.containsKey('media_url') %}

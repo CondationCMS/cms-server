@@ -27,7 +27,12 @@ import { alertSelect } from "@cms/modules/alerts.js";
 import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
 import { patchPathWithContext } from "@cms/js/manager-globals";
 
-let cherryEditors = [];
+// Am Anfang der Datei
+declare global {
+    interface HTMLInputElement {
+        cherryEditor?: any;
+    }
+}
 
 export interface MarkdownFieldOptions extends FieldOptions {
 	placeholder?: string;
@@ -39,7 +44,7 @@ const createMarkdownField = (options: MarkdownFieldOptions, value: string = '') 
 	const key = "field." + options.name
 	const title = i18n.t(key, options.title)
 	return `
-		<div class="mb-3 h-100 cms-form-field" data-cms-form-field-type="markdown" >
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="markdown" >
 			<label class="form-label" cms-i18n-key="${key}">${title}</label>
 			<div id="${id}" class="cherry-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
 			<input type="hidden" name="${options.name}" data-cherry-id="${id}" data-initial-value="${encodeURIComponent(value)}">
@@ -48,24 +53,32 @@ const createMarkdownField = (options: MarkdownFieldOptions, value: string = '') 
 };
 
 const getData = (context : FormContext) => {
-	const data = {};
+    const data = {};
 
-	
-    let editors = cherryEditors;
-    editors = cherryEditors.filter(({ input }) => context.formElement.contains(input));
+    const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
     
-    editors.forEach(({ input, editor }) => {
-        data[input.name] = {
-            type: "markdown",
-            value: editor.getMarkdown()
+    editorInputs.forEach((input: HTMLInputElement) => {
+        const editor = (input as any).cherryEditor;
+        
+        if (editor && editor.getMarkdown) {
+            data[input.name] = {
+                type: "markdown",
+                value: editor.getMarkdown()
+            }
+        } else {
+            // Fallback: leerer Wert, falls Editor nicht initialisiert
+            data[input.name] = {
+                type: "markdown",
+                value: ""
+            }
         }
     });
+    
     return data;
-
 };
 
+
 const init = async (context : FormContext) => {
-	cherryEditors = [];
 
 	const cmsTagsMenu = await buildCmsTagsMenu();
 
@@ -106,7 +119,7 @@ const init = async (context : FormContext) => {
 			}
 		});
 
-		cherryEditors.push({ input, editor });
+		(input as any).cherryEditor = editor;
 	});
 };
 
@@ -115,6 +128,18 @@ export const MarkdownField = {
 	init: init,
 	data: getData
 } as FormField;
+
+// Helper-Funktion
+const getEditorFromEvent = (event: any): any => {
+    const editorContainer = event.target.closest('.cherry-editor-container');
+    if (!editorContainer) return null;
+
+    const input = document.querySelector(
+        `input[data-cherry-id="${editorContainer.id}"]`
+    ) as HTMLInputElement;
+    
+    return input ? (input as any).cherryEditor : null;
+};
 
 const buildCmsTagsMenu = async () => {
 	const response = await getTagNames({});
@@ -125,8 +150,7 @@ const buildCmsTagsMenu = async () => {
 		value: tag,
 		noIcon: true,
 		onclick: (event: any) => {
-			const editorId = event.target.closest('.cherry-editor-container')?.id;
-			const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+			const editor = getEditorFromEvent(event);
 			if (editor) {
 				editor.toolbar.menus.hooks["cmsTagsMenu"].fire(null, tag);
 			}
@@ -185,8 +209,7 @@ const cmsImageSelection = window.Cherry.createMenuHook("Image", {
 						imageUrl += "?format=" + selectedFormat
 					}
 
-					const editorId = event.target.closest('.cherry-editor-container')?.id;
-					const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+					const editor = getEditorFromEvent(event);
 
 					const cm = editor.editor?.editor;
 					if (cm) {

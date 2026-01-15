@@ -2,7 +2,7 @@
  * #%L
  * ui-module
  * %%
- * Copyright (C) 2023 - 2025 CondationCMS
+ * Copyright (C) 2023 - 2026 CondationCMS
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -20,6 +20,11 @@
  * #L%
  */
 import { FieldOptions, FormField } from "@cms/modules/form/forms.js";
+declare global {
+    interface HTMLInputElement {
+        cherryEditor?: any;
+    }
+}
 export interface MarkdownFieldOptions extends FieldOptions {
     placeholder?: string;
     height?: string;

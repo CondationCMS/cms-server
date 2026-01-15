@@ -25,13 +25,12 @@ import { getMediaFormats, getTagNames } from "@cms/modules/rpc/rpc-manager.js";
 import { openFileBrowser } from "@cms/modules/filebrowser.js";
 import { alertSelect } from "@cms/modules/alerts.js";
 import { patchPathWithContext } from "@cms/js/manager-globals";
-let cherryEditors = [];
 const createMarkdownField = (options, value = '') => {
     const id = createID();
     const key = "field." + options.name;
     const title = i18n.t(key, options.title);
     return `
-		<div class="mb-3 h-100 cms-form-field" data-cms-form-field-type="markdown" >
+		<div class="mb-3 cms-form-field" data-cms-form-field-type="markdown" >
 			<label class="form-label" cms-i18n-key="${key}">${title}</label>
 			<div id="${id}" class="cherry-editor-container" style="height: ${options.height || '300px'}; border: 1px solid #ccc;"></div>
 			<input type="hidden" name="${options.name}" data-cherry-id="${id}" data-initial-value="${encodeURIComponent(value)}">
@@ -40,18 +39,26 @@ const createMarkdownField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
-    let editors = cherryEditors;
-    editors = cherryEditors.filter(({ input }) => context.formElement.contains(input));
-    editors.forEach(({ input, editor }) => {
-        data[input.name] = {
-            type: "markdown",
-            value: editor.getMarkdown()
-        };
+    const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+    editorInputs.forEach((input) => {
+        const editor = input.cherryEditor;
+        if (editor && editor.getMarkdown) {
+            data[input.name] = {
+                type: "markdown",
+                value: editor.getMarkdown()
+            };
+        }
+        else {
+            // Fallback: leerer Wert, falls Editor nicht initialisiert
+            data[input.name] = {
+                type: "markdown",
+                value: ""
+            };
+        }
     });
     return data;
 };
 const init = async (context) => {
-    cherryEditors = [];
     const cmsTagsMenu = await buildCmsTagsMenu();
     const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
     editorInputs.forEach((input) => {
@@ -88,13 +95,21 @@ const init = async (context) => {
                 },
             }
         });
-        cherryEditors.push({ input, editor });
+        input.cherryEditor = editor;
     });
 };
 export const MarkdownField = {
     markup: createMarkdownField,
     init: init,
     data: getData
+};
+// Helper-Funktion
+const getEditorFromEvent = (event) => {
+    const editorContainer = event.target.closest('.cherry-editor-container');
+    if (!editorContainer)
+        return null;
+    const input = document.querySelector(`input[data-cherry-id="${editorContainer.id}"]`);
+    return input ? input.cherryEditor : null;
 };
 const buildCmsTagsMenu = async () => {
     const response = await getTagNames({});
@@ -104,8 +119,7 @@ const buildCmsTagsMenu = async () => {
         value: tag,
         noIcon: true,
         onclick: (event) => {
-            const editorId = event.target.closest('.cherry-editor-container')?.id;
-            const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+            const editor = getEditorFromEvent(event);
             if (editor) {
                 editor.toolbar.menus.hooks["cmsTagsMenu"].fire(null, tag);
             }
@@ -155,8 +169,7 @@ const cmsImageSelection = window.Cherry.createMenuHook("Image", {
                     if (selectedFormat && selectedFormat !== "original") {
                         imageUrl += "?format=" + selectedFormat;
                     }
-                    const editorId = event.target.closest('.cherry-editor-container')?.id;
-                    const editor = cherryEditors.find(e => e.input.dataset.cherryId === editorId)?.editor;
+                    const editor = getEditorFromEvent(event);
                     const cm = editor.editor?.editor;
                     if (cm) {
                         const markdown = `![${altText}](${imageUrl})`;

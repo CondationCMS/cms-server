@@ -58,7 +58,7 @@
 	<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-superhero.min.css') }}" rel="stylesheet" />
 
 	<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
-
+	
 	<script type="module" src="https://unpkg.com/ninja-keys?module"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js"></script>
@@ -235,7 +235,9 @@
 
 	<ninja-keys> </ninja-keys>
 
-	<script>
+	<script type="module">
+
+		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
 
 		var shortCuts = [
 			{% for entry in actionFactory.createShortCuts() %}

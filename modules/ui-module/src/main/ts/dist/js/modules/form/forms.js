@@ -90,7 +90,7 @@ const createForm = (options) => {
         }
     }).join('\n');
     const html = `
-		<form id="${formId}" class="needs-validation h-100 cms-form" novalidate>
+		<form id="${formId}" class="needs-validation cms-form d-flex flex-column h-100" novalidate>
 			${fieldHtml}
 		</form>
 	`;

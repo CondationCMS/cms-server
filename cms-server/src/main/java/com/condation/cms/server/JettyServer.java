@@ -53,6 +53,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.compression.server.CompressionConfig;
 import org.eclipse.jetty.compression.server.CompressionHandler;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -171,6 +172,7 @@ public class JettyServer implements AutoCloseable {
 		httpConfig.setSendServerVersion(false);
 		httpConfig.setSendXPoweredBy(false);
 		HttpConnectionFactory http11 = new HttpConnectionFactory(httpConfig);
+		HTTP2CServerConnectionFactory h2c = new HTTP2CServerConnectionFactory(httpConfig);
 
 		//QueuedThreadPool threadPool = new QueuedThreadPool(properties.performance().request_workers());
 		QueuedThreadPool threadPool = new QueuedThreadPool();
@@ -180,7 +182,7 @@ public class JettyServer implements AutoCloseable {
 		server = new Server(threadPool);
 		server.setRequestLog(new CustomRequestLog(new Slf4jRequestLogWriter(), CustomRequestLog.EXTENDED_NCSA_FORMAT));
 
-		ServerConnector connector = new ServerConnector(server, http11);
+		ServerConnector connector = new ServerConnector(server, http11, h2c);
 		connector.setPort(properties.serverPort());
 		connector.setHost(properties.serverIp());
 

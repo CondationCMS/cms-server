@@ -25,6 +25,7 @@ import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCResult;
+import com.condation.cms.auth.services.User;
 import com.condation.cms.modules.ui.model.RemoteCall;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
@@ -63,12 +64,18 @@ public class RemoteCallHandler extends JettyHandler {
 
 		RPCResult rpcResult;
 		try {
-			Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters(), getUser(request, moduleContext, requestContext).get());
-			if (result.isPresent()) {
-				rpcResult = new RPCResult(result.get());
+			final Optional<User> userOpt = getUser(request, moduleContext, requestContext);
+			if (userOpt.isEmpty()) {
+				rpcResult = new RPCResult(new RPCError("no user present"));
 			} else {
-				rpcResult = new RPCResult();
+				Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters(), userOpt.get());
+				if (result.isPresent()) {
+					rpcResult = new RPCResult(result.get());
+				} else {
+					rpcResult = new RPCResult();
+				}
 			}
+			
 		} catch (Exception e) {
 			log.error("error executing endpoint", remoteCall.method(), e);
 			rpcResult = new RPCResult(new RPCError(e.getMessage()));

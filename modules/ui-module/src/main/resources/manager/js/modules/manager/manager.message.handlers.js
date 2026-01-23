@@ -68,12 +68,13 @@ const initMessageHandlers = () => {
         }
         else if (payload.element === "meta" && payload.editor === "form") {
             var cmd = {
-                "module": window.manager.baseUrl + "/actions/page/edit-metaattribute-list",
+                "module": window.manager.baseUrl + "/actions/page/edit-metaattribute-form",
                 "function": "runAction",
                 "parameters": {
                     "editor": payload.editor,
                     "attributes": payload.metaElements,
-                    "options": payload.options ? payload.options : {}
+                    "options": payload.options ? payload.options : {},
+                    "form": payload.form
                 }
             };
             if (payload.uri) {

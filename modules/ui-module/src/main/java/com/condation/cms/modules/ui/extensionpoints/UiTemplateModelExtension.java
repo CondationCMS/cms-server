@@ -80,18 +80,9 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			);
 		}
 		
+		
 		public String toolbar (String id, String type, String[] actions) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			Map<String, Object> toolbar = Map.of(
-					"id", id,
-					"type", type,
-					"actions", actions
-			);
-			return " data-cms-toolbar='%s'  ".formatted(
-					JSONUtil.toJson(toolbar)
-			);
+			return toolbar(id, type, actions, Map.of());
 		}
 		public String toolbar (String id, String type, String[] actions, Map<String, Object> additional) {
 			if (!requestContext.has(IsPreviewFeature.class)) {
@@ -109,16 +100,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			);
 		}
 		public String toolbar (String id, String uri) {
-			if (!requestContext.has(IsPreviewFeature.class)) {
-				return "";
-			}
-			Map<String, Object> toolbar = Map.of(
-					"id", id,
-					"uri", uri
-			);
-			return " data-cms-toolbar='%s'  ".formatted(
-					JSONUtil.toJson(toolbar)
-			);
+			return toolbar(id, uri, new String[0]);
 		}
 		
 		public String mediaToolbar (String [] actions, Map<String, Object> options) {

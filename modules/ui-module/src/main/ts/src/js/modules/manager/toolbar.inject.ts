@@ -83,7 +83,8 @@ const editAttributes = (event: Event) => {
 		type: 'edit',
 		payload: {
 			editor: "form",
-			element: "meta"
+			element: "meta",
+			form: toolbarDefinition.form ? toolbarDefinition.form : "attributes"
 		}
 	}
 	if (toolbarDefinition.uri) {

@@ -17,7 +17,7 @@
 		{% include "libs/language_switcher.html" %}
 
 		<div id="content" 
-			{{ ext.ui.toolbar("main", "main", ["editContent", "editAttributes"]) | raw }}
+			{{ ext.ui.toolbar("main", "main", ["editContent", "editAttributes"], {"form": "top"}) | raw }}
 		>
 			<div class="container">
 				{{ node.content | raw }}

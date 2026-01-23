@@ -105,6 +105,35 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 						]
 					}
 				},
+			],
+			'attributes' : [
+				{
+					name: "parent.text",
+					title: "Parent Text",
+					type: "text"
+				}
+			],
+			'top' : [
+				{
+					name: "parent.text",
+					title: "Parent Text",
+					type: "text"
+				},
+				{
+					name: "description",
+					title: "Description",
+					type: "text"
+				},
+				{
+					name: "count",
+					type: "number",
+					title: "Anzahl",
+					options: {
+						min: 10,
+						max: 50,
+						step: 1
+					}
+				}
 			]
 		}
 	});

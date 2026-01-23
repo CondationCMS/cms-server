@@ -53,7 +53,8 @@ const initMessageHandlers = () => {
                     "editor": payload.editor,
                     "attributes": payload.metaElements,
                     "options": payload.options ? payload.options : {},
-                    "form": payload.form
+                    "form": payload.form,
+                    "type": payload.type
                 }
             };
             if (payload.uri) {

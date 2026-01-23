@@ -23,35 +23,35 @@ import { executeRemoteCall } from '@cms/modules/rpc/rpc.js';
 const getSectionTemplates = async (options) => {
     var data = {
         method: "manager.contentTypes.sections",
-        parameters: options
+        parameters: options || {}
     };
     return await executeRemoteCall(data);
 };
 const getPageTemplates = async (options) => {
     var data = {
         method: "manager.contentTypes.pages",
-        parameters: options
+        parameters: options || {}
     };
     return await executeRemoteCall(data);
 };
 const getListItemTypes = async (options) => {
     var data = {
         method: "manager.contentTypes.listItemTypes",
-        parameters: options
+        parameters: options || {}
     };
     return await executeRemoteCall(data);
 };
 const getMediaForm = async (options) => {
     var data = {
         method: "manager.media.form",
-        parameters: options
+        parameters: options || {}
     };
     return await executeRemoteCall(data);
 };
 const createCSRFToken = async (options) => {
     var data = {
         method: "manager.token.createCSRF",
-        parameters: options
+        parameters: options || {}
     };
     return await executeRemoteCall(data);
 };

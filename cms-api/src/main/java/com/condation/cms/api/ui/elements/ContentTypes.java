@@ -69,6 +69,9 @@ public class ContentTypes {
 				.filter(template -> template.section().equals(section))
 				.collect(Collectors.toSet());
 	}
+	public Set<SectionTemplate> getSectionTemplates () {
+		return new HashSet<>(sectionTemplates);
+	}
 
 	public static record PageTemplate(String name, String template, Map<String, Object> data) {
 

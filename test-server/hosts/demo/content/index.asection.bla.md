@@ -3,7 +3,7 @@ title: Startseite
 template: section.html
 search:
   index: false
-description: my new descritpion for that awesome section
+description: my new descritpion for that awesome section-lol
 parent:
   text: text for a section
 layout:
@@ -18,9 +18,10 @@ object:
   - title: New Item
     description: asdads
     features: export
-about: ''
+about: its all about content
 unpublish_date: null
 publish_date: null
+about1: more content more better
 ---
 
 # This is a section: bla

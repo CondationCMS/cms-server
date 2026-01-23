@@ -1,26 +1,21 @@
 <div class="section" {{ ext.ui.toolbar(node.uri, "section" , ["editContent", "editAttributes" , "deleteSection" ], {"uri":
-	node.uri}) | raw }}>
+	node.uri, "form": "attributes"}) | raw }}>
 	<div class="container">
 		{{ node.content | default('your content here') | raw}}
 	</div>
 	
 
-	<div style="display: none;" {{ ext.ui.editMeta("text", "title" , node.uri, node.uri) | raw }}></div>
-	<div style="display: none;" {{ ext.ui.editMeta("datetime", "publish_date" , node.uri, node.uri) | raw }}></div>
-	<div style="display: none;" {{ ext.ui.editMeta("datetime", "unpublish_date" , node.uri, node.uri) | raw }}></div>
-	<div style="display: none;" {{ ext.ui.editMeta("list", "object.values" , node.uri, node.uri, {"nameField": "title"}) | raw }}></div>
-
 	<div>
-		<div class="container" {{ ext.ui.editMeta("text", "description" , node.uri, node.uri) | raw }}>
+		<div class="container">
 			{{ node.meta.getOrDefault('description', 'description here')}}
 		</div>
-		<div class="container" {{ ext.ui.editMeta("text", "parent.text" , node.uri, node.uri) | raw }}>
+		<div class="container">
 			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here')}}
 		</div>
-		<div class="container" {{ ext.ui.editMeta("markdown", "about" , node.uri, node.uri) | raw }}>
+		<div class="container">
 			{{ cms.markdown.render(node.meta.getOrDefault('about', '--about--')) | raw}}
 		</div>
-		<div class="container" {{ ext.ui.editMeta("markdown", "about1" , node.uri, node.uri) | raw }}>
+		<div class="container">
 			{{ cms.markdown.render(node.meta.getOrDefault('about1', '--about1--')) | raw}}
 		</div>
 	</div>

@@ -33,6 +33,7 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.content.RenderContext;
 import com.condation.cms.modules.ui.utils.TokenUtils;
+import com.google.common.base.Strings;
 import java.time.Duration;
 
 /**
@@ -69,7 +70,11 @@ public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 	public Object getSectionTemplates(Map<String, Object> parameters) throws RPCException {
 		try {
 			var section = (String) parameters.getOrDefault("section", "");
-			return uiHooks().contentTypes().getSectionTemplates(section);
+			if (!Strings.isNullOrEmpty(section)) {
+				return uiHooks().contentTypes().getSectionTemplates(section);
+			} else {
+				return uiHooks().contentTypes().getSectionTemplates();
+			}
 		} catch (Exception e) {
 			log.error("", e);
 			throw new RPCException(0, e.getMessage());

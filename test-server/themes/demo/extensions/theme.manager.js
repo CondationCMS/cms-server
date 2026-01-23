@@ -14,6 +14,28 @@ $hooks.registerFilter("manager/media/forms", (context) => {
 	return mediaForms;
 })
 
+const TitleField = {
+	type: "text",
+	name: "title",
+	title: "Title",
+};
+const DescriptionField = {
+	type: "text",
+	name: "description",
+	title: "Description",
+};
+const PublishDateField = {
+	type: "datetime",
+	name: "publish_date",
+	title: "Publish Date",
+};
+const UnPublishDateField = {
+	type: "datetime",
+	name: "unpublish_date",
+	title: "Unpublish Date",
+};
+
+
 $hooks.registerFilter("manager/contentTypes/register", (context) => {
 	var contentTypes = context.value();
 	contentTypes.registerPageTemplate({
@@ -83,16 +105,8 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 			],
 			// override global definition of ListItemTypes
 			'object.values': [
-				{
-					name: "title",
-					title: "Title",
-					type: "text"
-				},
-				{
-					name: "description",
-					title: "Description",
-					type: "text"
-				},
+				TitleField,
+				DescriptionField,
 				{
 					name: "features",
 					title: "Funktionen auswählen",
@@ -145,7 +159,42 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 	contentTypes.registerSectionTemplate({
 		section: "asection",
 		name: "SectionTemplate",
-		template: "section.html"
+		template: "section.html",
+		forms: {
+			attributes: [
+				TitleField,
+				DescriptionField,
+				PublishDateField,
+				UnPublishDateField,
+				{
+					type: "list",
+					name: "object.values",
+					title: "Object list",
+					options: {
+						nameField: "title"
+					}
+				},
+				{
+					type: "text",
+					name: "parent.text",
+					title: "Parent Text"
+				}, 
+				{
+					type: "markdown",
+					name: "about",
+					title: "About"
+				},
+				{
+					type: "divider",
+					title: "Additional Information"
+				}, 
+				{
+					type: "markdown",
+					name: "about1",
+					title: "About1"
+				}
+			]
+		}
 	});
 
 	/*

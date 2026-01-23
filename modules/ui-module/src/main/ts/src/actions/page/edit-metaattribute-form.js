@@ -26,7 +26,7 @@ import { buildValuesFromFields, getValueByPath } from '@cms/modules/node.js'
 import {getContentNode, getContent, setMeta} from '@cms/modules/rpc/rpc-content.js'
 import { i18n } from '@cms/modules/localization.js'
 import { openSidebar } from '@cms/modules/sidebar.js'
-import { getPageTemplates } from '@cms/modules/rpc/rpc-manager'
+import { getPageTemplates, getSectionTemplates } from '@cms/modules/rpc/rpc-manager'
 		// hook.js
 export async function runAction(params) {
 
@@ -45,9 +45,15 @@ export async function runAction(params) {
 		uri: uri
 	})
 
-	var pageTemplates = (await getPageTemplates()).result
+	var templates = null
+	
+	if (params.type === "section") {
+		templates = (await getSectionTemplates()).result
+	} else {
+		templates = (await getPageTemplates()).result
+	}
 
-	var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
+	var selected = templates.filter(item => item.template === getContentResponse?.result?.meta?.template)
 
 	var attrForm = []
 	if (selected.length === 1) {

@@ -25,7 +25,7 @@ import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 const getSectionTemplates = async (options : any) => {
 	var data = {
 		method: "manager.contentTypes.sections",
-		parameters: options
+		parameters: options || {}
 	}
 	return await executeRemoteCall(data);
 };
@@ -33,7 +33,7 @@ const getSectionTemplates = async (options : any) => {
 const getPageTemplates = async (options : any) => {
 	var data = {
 		method: "manager.contentTypes.pages",
-		parameters: options
+		parameters: options || {}
 	}
 	return await executeRemoteCall(data);
 };
@@ -41,7 +41,7 @@ const getPageTemplates = async (options : any) => {
 const getListItemTypes = async (options : any) => {
 	var data = {
 		method: "manager.contentTypes.listItemTypes",
-		parameters: options
+		parameters: options || {}
 	}
 	return await executeRemoteCall(data);
 };
@@ -49,7 +49,7 @@ const getListItemTypes = async (options : any) => {
 const getMediaForm = async (options : any) => {
 	var data = {
 		method: "manager.media.form",
-		parameters: options
+		parameters: options || {}
 	}
 	return await executeRemoteCall(data);
 };
@@ -57,7 +57,7 @@ const getMediaForm = async (options : any) => {
 const createCSRFToken = async (options : any) => {
 	var data = {
 		method: "manager.token.createCSRF",
-		parameters: options
+		parameters: options || {}
 	}
 	return await executeRemoteCall(data);
 };

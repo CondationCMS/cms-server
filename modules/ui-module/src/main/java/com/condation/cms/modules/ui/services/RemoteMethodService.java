@@ -32,6 +32,7 @@ import java.util.Optional;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
+import java.util.Collections;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 
@@ -76,7 +77,10 @@ public class RemoteMethodService {
 			if (!RemoteMethodService.authorizationService.hasAnyPermission(user, remoteMethodAnnotation.permissions())) {
 				throw new RemoteMethodException("access not allowed");
 			}
-			return function.apply(parameters);
+			if (parameters != null) {
+				return function.apply(parameters);
+			}
+			return function.apply(Collections.emptyMap());
 		};
 	}
 	

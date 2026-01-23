@@ -7,7 +7,7 @@ published: true
 description: Thats awesome 1234
 parent:
   text: another text for the meta attribute , seems to work
-count: 18
+count: 20
 background_color: '#c2e0c6'
 range_test: 42
 choose_color: green

@@ -76,19 +76,23 @@ const editAttributes = (event) => {
     if (toolbarDefinition.uri) {
         command.payload.uri = toolbarDefinition.uri;
     }
-    var elements = [];
-    toolbar.parentNode.querySelectorAll("[data-cms-editor]").forEach(($elem) => {
+    // legay old style to collect all meta elements for the form editor
+    /*
+    var elements = []
+    toolbar.parentNode.querySelectorAll("[data-cms-editor]").forEach(($elem : HTMLElement) => {
         var toolbar = $elem.dataset.cmsToolbar ? JSON.parse($elem.dataset.cmsToolbar) : {};
         if ($elem.dataset.cmsElement === "meta"
-            && (!toolbar.id || toolbar.id === toolbarDefinition.id)) {
+            && (!toolbar.id || toolbar.id === toolbarDefinition.id)
+        ) {
             elements.push({
                 name: $elem.dataset.cmsMetaElement,
                 editor: $elem.dataset.cmsEditor,
                 options: $elem.dataset.cmsEditorOptions ? JSON.parse($elem.dataset.cmsEditorOptions) : {}
-            });
+            })
         }
-    });
-    command.payload.metaElements = elements;
+    })
+    command.payload.metaElements = elements
+    */
     frameMessenger.send(window.parent, command);
 };
 export const initToolbar = (container) => {

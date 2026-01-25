@@ -105,12 +105,12 @@ const getItemForm = async (el) => {
     const fieldName = listContainer?.getAttribute('name');
     var itemForm = [];
     if (selected.length === 1) {
-        itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName] : [];
+        itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName].fields : [];
     }
     if (!itemForm || itemForm.length === 0) {
         let itemTypes = (await getListItemTypes({})).result;
         var selectedItemType = itemTypes.filter(itemType => itemType.name === fieldName);
-        itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form : [];
+        itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form.fields : [];
     }
     return itemForm;
 };

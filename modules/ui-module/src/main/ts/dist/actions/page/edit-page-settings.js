@@ -66,7 +66,7 @@ export async function runAction(params) {
     var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template);
     var pageSettingsForm = [];
     if (selected.length === 1) {
-        pageSettingsForm = selected[0].data?.forms?.settings ? selected[0].data.forms.settings : [];
+        pageSettingsForm = selected[0].data?.forms?.settings ? selected[0].data.forms.settings.fields : [];
     }
     //const previewMetaForm = getMetaForm()
     const fields = [

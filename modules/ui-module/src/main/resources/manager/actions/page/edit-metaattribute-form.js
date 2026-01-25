@@ -52,7 +52,7 @@ export async function runAction(params) {
     var selected = templates.filter(item => item.template === getContentResponse?.result?.meta?.template);
     var attrForm = [];
     if (selected.length === 1) {
-        attrForm = selected[0].data?.forms[params.form] ? selected[0].data.forms[params.form] : [];
+        attrForm = selected[0].data?.forms[params.form] ? selected[0].data.forms[params.form].fields : [];
     }
     //const previewMetaForm = getMetaForm()
     const fields = [

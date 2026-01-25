@@ -14,16 +14,19 @@ $hooks.registerFilter("manager/media/forms", (context) => {
 	return mediaForms;
 })
 
-const TitleField = {
+const TextField = (overrides = {}) => ({
 	type: "text",
+	...overrides
+});
+
+const TitleField = TextField({
 	name: "title",
 	title: "Title",
-};
-const DescriptionField = {
-	type: "text",
+});
+const DescriptionField = TextField({
 	name: "description",
 	title: "Description",
-};
+});
 const PublishDateField = {
 	type: "datetime",
 	name: "publish_date",
@@ -42,113 +45,123 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 		name: "StartPage",
 		template: "start.html",
 		forms: {
-			settings: [
-				{
-					type: 'divider',
-					name: 'divider',
-					title: 'Custom attributes'
-				},
-				{
-					type: "reference",
-					name: "linked_page",
-					title: "Verlinkte Seite"
-				},
-				{
-					type: "textarea",
-					name: "seo.description",
-					title: "Seo Beschreibung"
-				},
-				{
-					type: "media",
-					name: "media_url",
-					title: "Media"
-				},
-				{
-					type: 'color',
-					name: 'background_color',
-					title: 'Background Color'
-				},
-				{
-					type: "range",
-					name: "range_test",
-					title: "RangField"
-				},
-				{
-					type: "radio",
-					name: "choose_color",
-					title: "Farbe wählen",
-					options: {
-						choices: [
-							{ label: "Rot", value: "red" },
-							{ label: "Grün", value: "green" },
-							{ label: "Blau", value: "blue" }
-						]
-					}
-				},
-				{
-					name: "features",
-					title: "Funktionen auswählen",
-					type: "checkbox",
-					options: {
-						choices: [
-							{ label: "Suche", value: "search" },
-							{ label: "Filter", value: "filter" },
-							{ label: "Export", value: "export" }
-						]
-					}
-				},
-				{
-					name: "object.values",
-					title: "Objekt-Liste",
-					type: "list"
-				}
-			],
+			settings: {
+				fields:
+
+					[
+						{
+							type: 'divider',
+							name: 'divider',
+							title: 'Custom attributes'
+						},
+						{
+							type: "reference",
+							name: "linked_page",
+							title: "Verlinkte Seite"
+						},
+						{
+							type: "textarea",
+							name: "seo.description",
+							title: "Seo Beschreibung"
+						},
+						{
+							type: "media",
+							name: "media_url",
+							title: "Media"
+						},
+						{
+							type: 'color',
+							name: 'background_color',
+							title: 'Background Color'
+						},
+						{
+							type: "range",
+							name: "range_test",
+							title: "RangField"
+						},
+						{
+							type: "radio",
+							name: "choose_color",
+							title: "Farbe wählen",
+							options: {
+								choices: [
+									{ label: "Rot", value: "red" },
+									{ label: "Grün", value: "green" },
+									{ label: "Blau", value: "blue" }
+								]
+							}
+						},
+						{
+							name: "features",
+							title: "Funktionen auswählen",
+							type: "checkbox",
+							options: {
+								choices: [
+									{ label: "Suche", value: "search" },
+									{ label: "Filter", value: "filter" },
+									{ label: "Export", value: "export" }
+								]
+							}
+						},
+						{
+							name: "object.values",
+							title: "Objekt-Liste",
+							type: "list"
+						}
+					]
+			},
 			// override global definition of ListItemTypes
-			'object.values': [
-				TitleField,
-				DescriptionField,
-				{
-					name: "features",
-					title: "Funktionen auswählen",
-					type: "select",
-					options: {
-						choices: [
-							{ label: "Suche", value: "search" },
-							{ label: "Filter", value: "filter" },
-							{ label: "Export", value: "export" }
-						]
+			'object.values': {
+				fields: [
+					TitleField,
+					DescriptionField,
+					{
+						name: "features",
+						title: "Funktionen auswählen",
+						type: "select",
+						options: {
+							choices: [
+								{ label: "Suche", value: "search" },
+								{ label: "Filter", value: "filter" },
+								{ label: "Export", value: "export" }
+							]
+						}
+					},
+				]
+			},
+			'attributes': {
+				fields: [
+					{
+						name: "parent.text",
+						title: "Parent Text",
+						type: "text"
 					}
-				},
-			],
-			'attributes' : [
-				{
-					name: "parent.text",
-					title: "Parent Text",
-					type: "text"
-				}
-			],
-			'top' : [
-				{
-					name: "parent.text",
-					title: "Parent Text",
-					type: "text"
-				},
-				{
-					name: "description",
-					title: "Description",
-					type: "text"
-				},
-				{
-					name: "count",
-					type: "number",
-					title: "Anzahl",
-					options: {
-						min: 10,
-						max: 50,
-						step: 1
+				]
+			},
+			'top': {
+				fields: [
+					{
+						name: "parent.text",
+						title: "Parent Text",
+						type: "text"
+					},
+					{
+						name: "description",
+						title: "Description",
+						type: "text"
+					},
+					{
+						name: "count",
+						type: "number",
+						title: "Anzahl",
+						options: {
+							min: 10,
+							max: 50,
+							step: 1
+						}
 					}
-				}
-			]
+				]
+			}
 		}
 	});
 
@@ -161,39 +174,41 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 		name: "SectionTemplate",
 		template: "section.html",
 		forms: {
-			attributes: [
-				TitleField,
-				DescriptionField,
-				PublishDateField,
-				UnPublishDateField,
-				{
-					type: "list",
-					name: "object.values",
-					title: "Object list",
-					options: {
-						nameField: "title"
+			attributes: {
+				fields: [
+					TitleField,
+					DescriptionField,
+					PublishDateField,
+					UnPublishDateField,
+					{
+						type: "list",
+						name: "object.values",
+						title: "Object list",
+						options: {
+							nameField: "title"
+						}
+					},
+					{
+						type: "text",
+						name: "parent.text",
+						title: "Parent Text"
+					},
+					{
+						type: "markdown",
+						name: "about",
+						title: "About"
+					},
+					{
+						type: "divider",
+						title: "Additional Information"
+					},
+					{
+						type: "markdown",
+						name: "about1",
+						title: "About1"
 					}
-				},
-				{
-					type: "text",
-					name: "parent.text",
-					title: "Parent Text"
-				}, 
-				{
-					type: "markdown",
-					name: "about",
-					title: "About"
-				},
-				{
-					type: "divider",
-					title: "Additional Information"
-				}, 
-				{
-					type: "markdown",
-					name: "about1",
-					title: "About1"
-				}
-			]
+				]
+			}
 		}
 	});
 
@@ -202,18 +217,20 @@ $hooks.registerFilter("manager/contentTypes/register", (context) => {
 	*/
 	contentTypes.registerListItemType({
 		name: "object.values",
-		form: [
-			{
-				name: "name",
-				title: "Name",
-				type: "text"
-			},
-			{
-				name: "description",
-				title: "Description",
-				type: "text"
-			}
-		]
+		form: {
+			fields: [
+				{
+					name: "name",
+					title: "Name",
+					type: "text"
+				},
+				{
+					name: "description",
+					title: "Description",
+					type: "text"
+				}
+			]
+		}
 	});
 
 	return contentTypes;

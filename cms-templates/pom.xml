@@ -32,7 +32,6 @@
 		<dependency>
 			<groupId>com.condation.cms</groupId>
 			<artifactId>cms-core</artifactId>
-			<scope>test</scope>
 		</dependency>
 		
 		<dependency>

@@ -77,7 +77,7 @@ public class ScopeStack {
     public Optional<Object> getVariable(String name) {
         for (Map<String, Object> scope : scopes) {
             if (scope.containsKey(name)) {
-                return Optional.of(scope.get(name));
+                return Optional.ofNullable(scope.get(name));
             }
         }
 		if (parent != null) {

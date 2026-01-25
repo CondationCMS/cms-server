@@ -29,17 +29,23 @@ package com.condation.cms.api.hooks;
  */
 public enum Hooks {
 	
+	/* navigation */
 	NAVIGATION_PATH("system/navigation/%s/path"),
 	NAVIGATION_LIST("system/navigation/%s/list"),
+	/* content */
 	CONTENT_TAGS("system/content/tags"),
 	CONTENT_FILTER("system/content/filter"),
-	TEMPLATE_COMPONENT("system/template/component"),
+	/*query*/
 	DB_QUERY_OPERATIONS("system/db/query/operations"),
+	/* scheduler */
 	SCHEDULER_REGISTER("system/scheduler/register"),
 	SCHEDULER_REMOVE("system/scheduler/remove"),
+	/* http */
 	HTTP_EXTENSION("system/server/http/extension"),
 	HTTP_ROUTE("system/server/http/route"),
 	API_ROUTE("system/server/api/route"),
+	/* Template */
+	TEMPLATE_COMPONENT("system/template/component"),
 	TEMPLATE_SUPPLIER("system/template/supplier"),
 	TEMPLATE_FUNCTION("system/template/function")
 	;

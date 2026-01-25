@@ -31,6 +31,8 @@ import java.util.Date;
  */
 public class DateFunction implements TemplateFunction {
 
+	public static final String NAME = "date";
+	
 	@Override
 	public Object invoke(Object... params) {
 		return new Date();
@@ -38,7 +40,7 @@ public class DateFunction implements TemplateFunction {
 
 	@Override
 	public String name() {
-		return "date";
+		return NAME;
 	}
 	
 }

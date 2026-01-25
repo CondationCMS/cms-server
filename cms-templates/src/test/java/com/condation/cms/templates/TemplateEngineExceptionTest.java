@@ -26,6 +26,7 @@ import com.condation.cms.templates.exceptions.ParserException;
 import com.condation.cms.templates.exceptions.RenderException;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**

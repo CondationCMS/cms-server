@@ -71,6 +71,18 @@
 
 		</div>
 
+		<div>
+			<h3>Test Node references</h3>
+			<div>
+				{% assign globals = select_node("/.technical/globals") %}
+				{% if !empty(globals) %}
+					Version: {{ globals.meta.get('version') }} <br/>
+				{% else %}
+					Globals node not found! <br/>
+				{% endif %}
+			</div>
+		</div>
+
 	</body>
 
 

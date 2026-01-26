@@ -143,8 +143,7 @@ public class SiteModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public ConfigManagement configurationManagement(SiteCronJobScheduler scheduler, EventBus eventBus) throws IOException {
-		ConfigManagement cm = ConfigurationFactory.create(hostBase, eventBus, scheduler);
-		
+		ConfigManagement cm = ConfigurationFactory.create(hostBase, eventBus, scheduler);		
 		return cm;
 	}
 	/**

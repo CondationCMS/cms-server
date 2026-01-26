@@ -111,6 +111,9 @@ public class JettyServer implements AutoCloseable {
 			MdcScope.forSite(site.id()).run(() -> {
 				try {
 					var host = new VHost(site.id(), site.basePath(), ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
+					log.debug("warmup host {}", site.id());
+					host.warmup();
+					log.debug("init host {}", site.id());
 					host.init();
 					vhosts.add(host);
 					globalInjector.getInstance(SiteService.class).add(new Site(host.getInjector()));

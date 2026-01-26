@@ -130,6 +130,7 @@ public class SiteGlobalModule implements com.google.inject.Module {
 	@Provides
 	@Singleton
 	public SiteConfigInitializer siteConfigInitializer (Injector injector) {
-		return new SiteConfigInitializer(injector);
+		var configInitializer = new SiteConfigInitializer(injector);
+		return configInitializer;
 	}
 }

@@ -83,8 +83,10 @@ import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.modules.api.ModuleManager;
+import com.google.inject.Binding;
 import com.google.inject.Injector;
 import com.google.inject.Key;
+import com.google.inject.Provider;
 import com.google.inject.name.Names;
 
 import lombok.Getter;
@@ -165,6 +167,12 @@ public class VHost {
 
 	public List<String> hostnames() {
 		return injector.getInstance(SiteProperties.class).hostnames();
+	}
+	
+	public void warmup () {
+		injector.getAllBindings().values().stream()
+			.map(Binding::getProvider)
+			.forEach(Provider::get);  // Trigger eager Load
 	}
 
 	public void init() throws IOException {

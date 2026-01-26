@@ -25,6 +25,8 @@ package com.condation.cms.filesystem.metadata;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.filesystem.MetaData;
 import com.google.common.base.Strings;
 import java.util.Arrays;
@@ -72,6 +74,13 @@ public abstract class AbstractMetaData implements MetaData {
 	}
 	
 	public static boolean isVisible (ContentNode node) {
+	
+		if (RequestContextScope.REQUEST_CONTEXT.isBound()
+				&& RequestContextScope.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)
+				&& RequestContextScope.REQUEST_CONTEXT.get().get(IsPreviewFeature.class).mode().equals(com.condation.cms.api.feature.features.IsPreviewFeature.Mode.MANAGER)
+				) {
+			return true;
+		}
 		
 		if (node == null || node.isSection()) {
 			return false;

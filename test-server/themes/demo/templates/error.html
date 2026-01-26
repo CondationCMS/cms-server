@@ -13,7 +13,9 @@
 
 	<body class="centered">
 		<div id="content">
-			<div class="container">
+			<div class="container"
+			{{ ext.ui.toolbar("main", "main", ["editContent"]) | raw }}
+			>
 				{{ node.content | raw}}
 			</div>
 		</div>

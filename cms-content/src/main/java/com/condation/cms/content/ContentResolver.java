@@ -90,34 +90,6 @@ public class ContentResolver {
 	}
 	
 	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
-		/*
-		String path;
-		if (Strings.isNullOrEmpty(context.get(RequestFeature.class).uri())) {
-			path = "";
-		} else if (context.get(RequestFeature.class).uri().startsWith("/")) {
-			// remove leading slash
-			path = context.get(RequestFeature.class).uri().substring(1);
-		} else {
-			path = context.get(RequestFeature.class).uri();
-		}
-		
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
-		var contentPath = contentBase.resolve(path);
-		ReadOnlyFile contentFile = null;
-		if (contentPath.exists() && contentPath.isDirectory()) {
-			// use index.md
-			var tempFile = contentPath.resolve("index.md");
-			if (tempFile.exists()) {
-				contentFile = tempFile;
-			}
-		} else {
-			var temp = contentBase.resolve(path + ".md");
-			if (temp.exists()) {
-				contentFile = temp;
-			}
-		}
-		*/
-		
 		var contentBase = db.getReadOnlyFileSystem().contentBase();
 		var path = ContentResolvingStrategy.uriToPath(context.get(RequestFeature.class).uri());
 		Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(context.get(RequestFeature.class).uri(), db);

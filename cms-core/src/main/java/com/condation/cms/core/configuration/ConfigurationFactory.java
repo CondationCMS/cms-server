@@ -30,7 +30,6 @@ import com.condation.cms.core.configuration.configs.MediaConfiguration;
 import com.condation.cms.core.configuration.configs.TaxonomyConfiguration;
 import com.condation.cms.core.configuration.reload.CronReload;
 import com.condation.cms.core.configuration.reload.NoReload;
-import com.condation.cms.core.configuration.source.EnvConfigSource;
 import com.condation.cms.core.configuration.source.TomlConfigSource;
 import com.condation.cms.core.configuration.source.YamlConfigSource;
 import java.io.IOException;
@@ -111,7 +110,6 @@ public class ConfigurationFactory {
 		return SimpleConfiguration.builder(eventBus)
 				.id("server")
 				.reloadStrategy(new NoReload())
-				.addSource(new EnvConfigSource())
 				.addSource(TomlConfigSource.build(ServerUtil.getPath("server.toml")))
 				.addSource(YamlConfigSource.build(ServerUtil.getPath("server.yaml")))
 				.build();

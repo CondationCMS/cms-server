@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.AfterEach;
 import static org.assertj.core.api.Assertions.*;
+import org.junit.jupiter.api.io.TempDir;
 
 /**
  * JUnit 5 + AssertJ Tests for ConfigList
@@ -46,25 +47,24 @@ import static org.assertj.core.api.Assertions.*;
 class ConfigListTest {
 
     private ConfigList configList;
+	@TempDir
     private Path tempDir;
 
     @BeforeEach
     void setUp() throws Exception {
-        // Create temporary directory for test .env file
-        tempDir = Files.createTempDirectory("config-list-test");
         // Create .env file for tests
         Path envFile = tempDir.resolve(".env");
 		System.setProperty("cms.home", tempDir.toAbsolutePath().toString());
 		
-        Files.writeString(envFile,
-            "SERVER_1=server1.example.com\n" +
-            "SERVER_2=server2.example.com\n" +
-            "SERVER_3=server3.example.com\n" +
-            "PORT=8080\n" +
-            "API_URL=https://api.example.com\n" +
-            "DB_HOST=localhost\n" +
-            "DB_PORT=5432\n"
-        );
+        Files.writeString(envFile, """
+								   SERVER_1=server1.example.com
+								   SERVER_2=server2.example.com
+								   SERVER_3=server3.example.com
+								   PORT=8080
+								   API_URL=https://api.example.com
+								   DB_HOST=localhost
+								   DB_PORT=5432
+								   """);
     }
 
     @AfterEach

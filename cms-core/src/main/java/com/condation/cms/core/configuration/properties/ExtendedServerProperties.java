@@ -113,9 +113,7 @@ public class ExtendedServerProperties implements ServerProperties {
 	
 	@Override
 	public String secret() {
-		return Optional.ofNullable(System.getenv("CMS_UI_SECRET"))
-	               .filter(s -> !s.isEmpty())
-	               .orElse(configuration.getString("ui.secret"));
+		return configuration.getString("ui.secret");
 	}
 	
 	@Override

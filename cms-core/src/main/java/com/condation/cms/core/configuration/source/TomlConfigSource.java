@@ -119,6 +119,9 @@ public class TomlConfigSource implements ConfigSource {
 	@Override
 	public Object get(String field) {
 		var value = MapUtil.getValue(result, field);
+		if (value == null) {
+			return null;
+		}
 		
 		return switch (value) {
 			case String stringValue -> ENV.resolveEnvVars(stringValue);

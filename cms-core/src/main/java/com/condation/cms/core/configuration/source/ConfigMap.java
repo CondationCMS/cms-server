@@ -34,10 +34,11 @@ import java.util.Map;
  */
 class ConfigMap extends HashMap<String, Object> {
 
-	private static final EnvironmentVariables ENV = new EnvironmentVariables(ServerUtil.getHome());
+	private final EnvironmentVariables ENV;
 
 	ConfigMap(Map<String, Object> original) {
 		putAll(original);
+		ENV = new EnvironmentVariables(ServerUtil.getHome());
 	}
 	
 	@Override

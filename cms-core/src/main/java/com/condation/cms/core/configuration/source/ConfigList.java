@@ -49,8 +49,7 @@ import java.util.Map;
  */
 class ConfigList extends ArrayList<Object> {
     
-    private static final EnvironmentVariables ENV = 
-        new EnvironmentVariables(ServerUtil.getHome());
+    private final EnvironmentVariables ENV;
     
     /**
      * Creates a ConfigList from an existing collection.
@@ -60,6 +59,7 @@ class ConfigList extends ArrayList<Object> {
      */
     ConfigList(Collection<?> original) {
         super(original);
+		ENV = new EnvironmentVariables(ServerUtil.getHome());
     }
 
     @Override

@@ -61,7 +61,7 @@ class ConfigMapTest {
             "DB_HOST=localhost\n" +
             "DB_PORT=5432\n" +
             "DB_NAME=testdb\n" +
-            "USERNAME=admin\n" +
+            "DB_USER=admin\n" +
             "PASSWORD=secret123\n" +
             "API_KEY=test_key_123\n" +
             "PATH_VAR=/home/user/config\n"
@@ -290,7 +290,7 @@ class ConfigMapTest {
     void testGetDeeplyNestedMaps() {
         // Given
         Map<String, Object> level3 = new HashMap<>();
-        level3.put("user", "${env:USERNAME}");
+        level3.put("user", "${env:DB_USER}");
         
         Map<String, Object> level2 = new HashMap<>();
         level2.put("auth", level3);
@@ -316,7 +316,7 @@ class ConfigMapTest {
     void testGetNestedMapWithEnvVars() {
         // Given
         Map<String, Object> nested = new HashMap<>();
-        nested.put("connection_string", "Server=${env:DB_HOST};Database=${env:DB_NAME};User=${env:USERNAME}");
+        nested.put("connection_string", "Server=${env:DB_HOST};Database=${env:DB_NAME};User=${env:DB_USER}");
         
         Map<String, Object> original = new HashMap<>();
         original.put("database_config", nested);
@@ -343,7 +343,7 @@ class ConfigMapTest {
         // Given
         Map<String, Object> original = new HashMap<>();
         original.put("jdbc_url", 
-            "jdbc:postgresql://${env:DB_HOST}:${env:DB_PORT}/${env:DB_NAME}?user=${env:USERNAME}&password=${env:PASSWORD}");
+            "jdbc:postgresql://${env:DB_HOST}:${env:DB_PORT}/${env:DB_NAME}?user=${env:DB_USER}&password=${env:PASSWORD}");
         configMap = new ConfigMap(original);
         
         // When
@@ -415,7 +415,7 @@ class ConfigMapTest {
     void testMixedContent() {
         // Given
         Map<String, Object> original = new HashMap<>();
-        original.put("message", "Welcome ${env:USERNAME}, your database is ${env:DB_HOST}:${env:DB_PORT}");
+        original.put("message", "Welcome ${env:DB_USER}, your database is ${env:DB_HOST}:${env:DB_PORT}");
         configMap = new ConfigMap(original);
         
         // When

@@ -43,7 +43,7 @@ import org.yaml.snakeyaml.Yaml;
 @Slf4j
 public class YamlConfigSource implements ConfigSource {
 	
-	private static final EnvironmentVariables ENV = new EnvironmentVariables(ServerUtil.getHome());
+	private final EnvironmentVariables ENV;
 	
 	public static ConfigSource build (Path yamlFile) throws IOException {
 		Map<String, Object> result = null;
@@ -66,6 +66,7 @@ public class YamlConfigSource implements ConfigSource {
 	private YamlConfigSource (Path configFile, Map<String, Object> result) {
 		this.result = result;
 		this.configFile = configFile;
+		this.ENV = new EnvironmentVariables(ServerUtil.getHome());
 		
 		try {
 			if (Files.exists(configFile)) {

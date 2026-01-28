@@ -49,7 +49,7 @@ public class TomlConfigSource implements ConfigSource {
 	
 	private static JToml JTOML = JToml.jToml();
 	
-	private static final EnvironmentVariables ENV = new EnvironmentVariables(ServerUtil.getHome());
+	private final EnvironmentVariables ENV;
 	
 	public static ConfigSource build(Path tomlfile) throws IOException {
 		
@@ -71,6 +71,7 @@ public class TomlConfigSource implements ConfigSource {
 
 	private TomlConfigSource(Path tomlFile, TomlDocument document) {
 		this.tomlFile = tomlFile;
+		this.ENV = new EnvironmentVariables(ServerUtil.getHome());
 		try {
 			
 			var json = JTOML.fromToml(JsonObject.class, document);

@@ -44,6 +44,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -69,6 +70,7 @@ public class ConfigurationTest {
 	@Mock
 	EventBus eventBus;
 
+	@TempDir
 	private Path tempDir;
 
 	@BeforeEach
@@ -76,9 +78,6 @@ public class ConfigurationTest {
 		scheduler = StdSchedulerFactory.getDefaultScheduler();
 		scheduler.start();
 		cronScheduler = new SingleCronJobScheduler(scheduler, new CronJobContext(), siteProperties);
-
-		// Create temporary directory for test .env file
-		tempDir = Files.createTempDirectory("config-test");
 
 		System.setProperty("cms.home", tempDir.toAbsolutePath().toString());
 

@@ -22,6 +22,7 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
+import com.condation.cms.api.utils.ServerUtil;
 import io.github.cdimascio.dotenv.Dotenv;
 import java.nio.file.Path;
 import java.util.regex.Matcher;
@@ -43,6 +44,10 @@ public class EnvironmentVariables {
 				.directory(path.toAbsolutePath().toString())
 				.ignoreIfMissing()
 				.load();
+	}
+	
+	public EnvironmentVariables () {
+		this(ServerUtil.getHome());
 	}
 
 	public String resolveEnvVars(String input) {

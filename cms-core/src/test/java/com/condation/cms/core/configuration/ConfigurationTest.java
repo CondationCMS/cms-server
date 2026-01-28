@@ -21,7 +21,6 @@ package com.condation.cms.core.configuration;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.core.configuration.source.TomlConfigSource;
 import com.condation.cms.core.configuration.source.YamlConfigSource;
@@ -35,6 +34,7 @@ import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import lombok.Data;
@@ -44,6 +44,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,22 +60,34 @@ import org.quartz.impl.StdSchedulerFactory;
 public class ConfigurationTest {
 
 	SimpleConfiguration configuration;
-	
+
 	Scheduler scheduler;
 	CronJobScheduler cronScheduler;
 
 	@Mock
 	SiteProperties siteProperties;
-	
+
 	@Mock
 	EventBus eventBus;
-	
+
+	@TempDir
+	private Path tempDir;
+
 	@BeforeEach
 	public void setup() throws IOException, SchedulerException {
 		scheduler = StdSchedulerFactory.getDefaultScheduler();
 		scheduler.start();
 		cronScheduler = new SingleCronJobScheduler(scheduler, new CronJobContext(), siteProperties);
-		
+
+		System.setProperty("cms.home", tempDir.toAbsolutePath().toString());
+
+		// Create .env file for tests
+		Path envFile = tempDir.resolve(".env");
+		Files.writeString(envFile, """
+                                   VAR_ENV1=first env var
+								   VAR_ENV2=second env var
+								   """);
+
 		configuration = SimpleConfiguration.builder(eventBus)
 				.id("test-config")
 				.reloadStrategy(new CronReload("0/10 * * * * ?", cronScheduler))
@@ -82,64 +95,85 @@ public class ConfigurationTest {
 				.addSource(TomlConfigSource.build(Path.of("config/server.toml")))
 				.build();
 	}
-	
+
 	@AfterEach
-	public void shutdown () throws SchedulerException {
+	public void shutdown() throws SchedulerException, IOException {
 		scheduler.clear();
 		scheduler.shutdown();
+
+		// Clean up temporary directory
+		Files.walk(tempDir)
+				.sorted((a, b) -> b.compareTo(a))
+				.forEach(path -> {
+					try {
+						Files.delete(path);
+					} catch (Exception e) {
+						// Ignore
+					}
+				});
 	}
 
 	@Test
 	public void test_env() {
 		var env = configuration.getString("env");
-		
+
 		Assertions.assertThat(env).isEqualTo("prod");
 	}
-	
+
 	@Test
-	public void test_reload () throws InterruptedException, IOException {
-		
+	public void test_reload() throws InterruptedException, IOException {
+
 		FileUtils.touch(Path.of("config/server.toml"));
-		
+
 		Thread.sleep(Duration.ofSeconds(20));
-		
+
 		Mockito.verify(eventBus, Mockito.atLeast(1)).publish(new ConfigurationReloadEvent("test-config"));
 	}
-	
+
 	@Test
-	public void test_object () {
+	public void test_object() {
 		var server = configuration.get("server", Server.class);
-		
+
 		Assertions.assertThat(server).isNotNull();
 		Assertions.assertThat(server.ip).isEqualTo("127.0.0.1");
 		Assertions.assertThat(server.port).isEqualTo(1010);
 	}
-	
+
 	@Test
-	public void test_properties () {
+	public void test_properties() {
 		var serverProperties = new ExtendedServerProperties(configuration);
-		
+
 		Assertions.assertThat(serverProperties.serverIp()).isEqualTo("127.0.0.1");
 		Assertions.assertThat(serverProperties.serverPort()).isEqualTo(1010);
 	}
-	
+
 	@Test
-	public void test_urls () {
+	public void test_urls() {
 		var serverProperties = new ExtendedServerProperties(configuration);
-		
+
 		Assertions.assertThat(serverProperties.extensionRepositories())
 				.containsExactly("https://myextensions.com");
-		
+
 		Assertions.assertThat(serverProperties.moduleRepositories())
 				.containsExactly("https://mymodules.com");
-		
+
 		Assertions.assertThat(serverProperties.themeRepositories())
 				.containsExactly("https://mythemes.com");
 	}
-	
+
+	@Test
+	public void test_environment() {
+		var var1 = configuration.getString("envvars.var1");
+		var var2 = configuration.getString("envvars.var2");
+
+		Assertions.assertThat(var1).isEqualTo("first env var");
+		Assertions.assertThat(var2).isEqualTo("second env var");
+	}
+
 	@Data
 	@NoArgsConstructor
 	public static class Server {
+
 		private int port;
 		private String ip;
 	}

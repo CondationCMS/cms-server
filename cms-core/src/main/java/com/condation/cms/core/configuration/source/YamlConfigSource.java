@@ -23,7 +23,9 @@ package com.condation.cms.core.configuration.source;
  */
 
 import com.condation.cms.api.utils.MapUtil;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.ConfigSource;
+import com.condation.cms.core.configuration.EnvironmentVariables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,6 +42,8 @@ import org.yaml.snakeyaml.Yaml;
  */
 @Slf4j
 public class YamlConfigSource implements ConfigSource {
+	
+	private final EnvironmentVariables ENV;
 	
 	public static ConfigSource build (Path yamlFile) throws IOException {
 		Map<String, Object> result = null;
@@ -62,6 +66,7 @@ public class YamlConfigSource implements ConfigSource {
 	private YamlConfigSource (Path configFile, Map<String, Object> result) {
 		this.result = result;
 		this.configFile = configFile;
+		this.ENV = new EnvironmentVariables(ServerUtil.getHome());
 		
 		try {
 			if (Files.exists(configFile)) {
@@ -99,20 +104,35 @@ public class YamlConfigSource implements ConfigSource {
 
 	@Override
 	public String getString(String field) {
-		return (String)MapUtil.getValue(result, field);
+		var value = (String)MapUtil.getValue(result, field);
+		
+		return ENV.resolveEnvVars(value);
 	}
 	@Override
 	public Object get(String field) {
-		return MapUtil.getValue(result, field);
+		var value = MapUtil.getValue(result, field);
+		
+		if (value == null) {
+			return null;
+		}
+		
+		return switch (value) {
+			case String stringValue -> ENV.resolveEnvVars(stringValue);
+			case List<?> listValue -> new ConfigList(listValue);
+			case Map<?, ?> mapValue -> new ConfigMap((Map<String, Object>) mapValue);
+			default -> value;
+		};
 	}
 
 	@Override
 	public Map<String, Object> getMap(String field) {
-		return MapUtil.getValue(result, field, Collections.emptyMap());
+		Map<String, Object> value = MapUtil.getValue(result, field, Collections.emptyMap());
+		return new ConfigMap(value);
 	}
 	@Override
 	public List<Object> getList(String field) {
-		return MapUtil.getValue(result, field, Collections.emptyList());
+		var value = MapUtil.getValue(result, field, Collections.emptyList());
+		return new ConfigList(value);
 	}
 
 	@Override

@@ -36,7 +36,7 @@ public final class ServerUtil {
 			return Path.of(System.getProperties().getProperty("cms.home"));
 		}
         return Path.of(".");
-    }
+	}
 
     public static Path getPath (String path) {
         return getHome().resolve(path);

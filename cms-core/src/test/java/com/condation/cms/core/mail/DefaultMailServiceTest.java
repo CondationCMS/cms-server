@@ -21,7 +21,6 @@ package com.condation.cms.core.mail;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.mail.Message;
@@ -42,47 +41,44 @@ import org.mockito.Mockito;
  * @author thorstenmarx
  */
 public class DefaultMailServiceTest {
-	
+
 	@TempDir
 	Path tempDir;
-	
+
 	@RegisterExtension
 	static GreenMailExtension greenMail = new GreenMailExtension(ServerSetupTest.SMTP);
 
-
-	
 	@Test
 	public void test_mailer() throws IOException {
-		
+
 		greenMail.setUser("user1", "pass1");
-		
+
 		String yaml = """
             accounts:
-              - name: default
-                host: localhost
-                fromMail: from@example.com
-                port: %s
-                username: user1
-                password: pass1
+                default:
+                    host: localhost
+                    fromMail: from@example.com
+                    port: %s
+                    username: user1
+                    password: pass1
 			""".formatted(greenMail.getSmtp().getPort());
 		Path configFile = createTempFile(yaml);
-		
+
 		var db = Mockito.mock(DB.class);
 		var fileSystem = Mockito.mock(DBFileSystem.class);
-		
+
 		Mockito.when(db.getFileSystem()).thenReturn(fileSystem);
 		Mockito.when(fileSystem.resolve("config/mail.yaml")).thenReturn(configFile);
-		
+
 		var mailService = new DefaultMailService(db);
-		
+
 		var message = new Message("noreply", new com.condation.cms.api.mail.Message.Recipient("to", "to@example.com"), "Hello", "Hello World!");
-		
+
 		mailService.sendText(message);
-		
+
 		Assertions.assertThat(greenMail.getReceivedMessagesForDomain("to@example.com")).hasSize(1);
 	}
-	
-	
+
 	// Helper Methode
 	private Path createTempFile(String yamlContent) throws IOException {
 		Path file = tempDir.resolve("mail.yaml");

@@ -23,7 +23,9 @@ package com.condation.cms.core.configuration.source;
  */
 
 import com.condation.cms.api.utils.MapUtil;
+import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.ConfigSource;
+import com.condation.cms.core.configuration.EnvironmentVariables;
 import com.condation.cms.core.configuration.GSONProvider;
 import com.google.gson.JsonObject;
 import io.github.wasabithumb.jtoml.JToml;
@@ -47,6 +49,8 @@ public class TomlConfigSource implements ConfigSource {
 	
 	private static JToml JTOML = JToml.jToml();
 	
+	private final EnvironmentVariables ENV;
+	
 	public static ConfigSource build(Path tomlfile) throws IOException {
 		
 		TomlDocument document = null;
@@ -67,6 +71,7 @@ public class TomlConfigSource implements ConfigSource {
 
 	private TomlConfigSource(Path tomlFile, TomlDocument document) {
 		this.tomlFile = tomlFile;
+		this.ENV = new EnvironmentVariables(ServerUtil.getHome());
 		try {
 			
 			var json = JTOML.fromToml(JsonObject.class, document);
@@ -108,20 +113,34 @@ public class TomlConfigSource implements ConfigSource {
 
 	@Override
 	public String getString(String field) {
-		return (String)MapUtil.getValue(result, field);
+		var value = (String)MapUtil.getValue(result, field);
+		
+		return ENV.resolveEnvVars(value);
 	}
 	@Override
 	public Object get(String field) {
-		return MapUtil.getValue(result, field);
+		var value = MapUtil.getValue(result, field);
+		if (value == null) {
+			return null;
+		}
+		
+		return switch (value) {
+			case String stringValue -> ENV.resolveEnvVars(stringValue);
+			case List<?> listValue -> new ConfigList(listValue);
+			case Map<?, ?> mapValue -> new ConfigMap((Map<String, Object>) mapValue);
+			default -> value;
+		};
 	}
 
 	@Override
 	public Map<String, Object> getMap(String field) {
-		return MapUtil.getValue(result, field, Collections.emptyMap());
+		Map<String, Object> value = MapUtil.getValue(result, field, Collections.emptyMap());
+		return new ConfigMap(value);
 	}
 	@Override
 	public List<Object> getList(String field) {
-		return MapUtil.getValue(result, field, Collections.emptyList());
+		var value = MapUtil.getValue(result, field, Collections.emptyList());
+		return new ConfigList(value);
 	}
 
 	@Override

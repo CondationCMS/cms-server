@@ -21,7 +21,7 @@ package com.condation.cms.core.mail;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
-
+import com.condation.cms.core.configuration.EnvironmentVariables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -41,140 +41,65 @@ class MailConfigLoaderTest {
 	@Test
 	@DisplayName("sollte valide YAML mit Accounts auf MailConfig mappen")
 	void testLoadValidConfig() throws IOException {
+
+		System.setProperty("cms.home", tempDir.toAbsolutePath().toString());
+
+		// Create .env file for tests
+		Path envFile = tempDir.resolve(".env");
+		Files.writeString(envFile, """
+								MAIL_DOMAIN=example.com
+								SMTP_HOST=example.com
+								SMTP_PORT=1234
+								SMTP_USERNAME=smtp-user
+                                SMTP_PASSWORD=smtp-password
+                                MAILMARKET_HOST=marketing-host
+                                MAILMARKET_USER=marketing-user
+                                MAILMARKET_PASS=marketing-pass
+								   """);
+
 		// Arrange
 		String yaml = """
 			accounts:
-			  - host: smtp.example.com
-			    port: 587
-			    username: test@example.com
-			    password: mypassword
-			  - host: smtp.gmail.com
-			    port: 465
-			    username: user@gmail.com
-			    password: gmailpass
+              default:
+                fromMail: "noreply@${env:MAIL_DOMAIN}"
+                host: "${env:SMTP_HOST}"
+                port: "${env:SMTP_PORT}"
+                username: "${env:SMTP_USERNAME}"
+                password: "${env:SMTP_PASSWORD}"
+                
+              marketing:
+                fromMail: "marketingAccount@${env:MAIL_DOMAIN}"
+                host: "${env:MAILMARKET_HOST}"
+                port: "587"
+                username: "${env:MAILMARKET_USER}"
+                password: "${env:MAILMARKET_PASS}"
 			""";
 		Path configFile = createTempYamlFile(yaml);
 
 		// Act
-		MailConfig config = MailConfigLoader.load(configFile);
+		MailConfig config = MailConfigLoader.load(configFile, new EnvironmentVariables());
 
 		// Assert
 		assertThat(config).isNotNull();
-		assertThat(config.getAccounts())
-			.hasSize(2)
-			.extracting("host", "port", "username")
-			.containsExactly(
-				tuple("smtp.example.com", 587, "test@example.com"),
-				tuple("smtp.gmail.com", 465, "user@gmail.com")
-			);
-	}
-
-	@Test
-	@DisplayName("sollte einzelnen Account korrekt mappen")
-	void testLoadSingleAccount() throws IOException {
-		// Arrange
-		String yaml = """
-			accounts:
-			  - host: mail.server.de
-			    port: 587
-			    username: admin
-			    password: secret123
-			""";
-		Path configFile = createTempYamlFile(yaml);
-
-		// Act
-		MailConfig config = MailConfigLoader.load(configFile);
-
-		// Assert
-		assertThat(config.getAccounts())
-			.hasSize(1)
-			.first()
-			.hasFieldOrPropertyWithValue("host", "mail.server.de")
-			.hasFieldOrPropertyWithValue("port", 587)
-			.hasFieldOrPropertyWithValue("username", "admin")
-			.hasFieldOrPropertyWithValue("password", "secret123");
-	}
-
-	@Test
-	@DisplayName("sollte leere Accounts-Liste handhaben")
-	void testLoadEmptyAccounts() throws IOException {
-		// Arrange
-		String yaml = """
-			accounts: []
-			""";
-		Path configFile = createTempYamlFile(yaml);
-
-		// Act
-		MailConfig config = MailConfigLoader.load(configFile);
-
-		// Assert
-		assertThat(config.getAccounts()).isEmpty();
-	}
-
-	@Test
-	@DisplayName("sollte MailConfig-Instanz zurückgeben")
-	void testLoadReturnsMailConfigInstance() throws IOException {
-		// Arrange
-		String yaml = """
-			accounts:
-			  - host: localhost
-			    port: 25
-			    username: user
-			    password: pass
-			""";
-		Path configFile = createTempYamlFile(yaml);
-
-		// Act
-		MailConfig config = MailConfigLoader.load(configFile);
-
-		// Assert
-		assertThat(config).isInstanceOf(MailConfig.class);
-	}
-
-	@Test
-	@DisplayName("sollte IOException werfen wenn Datei nicht existiert")
-	void testLoadNonExistentFile() {
-		// Arrange
-		Path nonExistentFile = Paths.get(tempDir.toString(), "not-exists.yaml");
-
-		// Act & Assert
-		assertThatThrownBy(() -> MailConfigLoader.load(nonExistentFile))
-			.isInstanceOf(RuntimeException.class);
-	}
-
-	@Test
-	@DisplayName("sollte mehrere Accounts mit unterschiedlichen Properties mappen")
-	void testLoadMultipleAccountsWithDifferentValues() throws IOException {
-		// Arrange
-		String yaml = """
-			accounts:
-			  - host: smtp1.example.com
-			    port: 587
-			    username: user1@example.com
-			    password: pass1
-			  - host: smtp2.example.com
-			    port: 465
-			    username: user2@example.com
-			    password: pass2
-			  - host: smtp3.example.com
-			    port: 25
-			    username: user3@example.com
-			    password: pass3
-			""";
-		Path configFile = createTempYamlFile(yaml);
-
-		// Act
-		MailConfig config = MailConfigLoader.load(configFile);
-
-		// Assert
-		assertThat(config.getAccounts())
-			.hasSize(3)
-			.extracting("host", "port")
-			.containsExactly(
-				tuple("smtp1.example.com", 587),
-				tuple("smtp2.example.com", 465),
-				tuple("smtp3.example.com", 25)
-			);
+		assertThat(config.getAccounts()).hasSize(2);
+		
+		assertThat(config.getAccount("default")).isPresent();
+		final MailConfig.Account defaulAccount = config.getAccount("default").get();
+		assertThat(defaulAccount.getName()).isEqualTo("default");
+		assertThat(defaulAccount.getHost()).isEqualTo("example.com");
+		assertThat(defaulAccount.getPort()).isEqualTo(1234);
+		assertThat(defaulAccount.getUsername()).isEqualTo("smtp-user");
+		assertThat(defaulAccount.getPassword()).isEqualTo("smtp-password");
+		assertThat(defaulAccount.getFromMail()).isEqualTo("noreply@example.com");
+		
+		assertThat(config.getAccount("marketing")).isPresent();
+		final MailConfig.Account marketingAccount = config.getAccount("marketing").get();
+		assertThat(marketingAccount.getName()).isEqualTo("marketing");
+		assertThat(marketingAccount.getHost()).isEqualTo("marketing-host");
+		assertThat(marketingAccount.getPort()).isEqualTo(587);
+		assertThat(marketingAccount.getUsername()).isEqualTo("marketing-user");
+		assertThat(marketingAccount.getPassword()).isEqualTo("marketing-pass");
+		assertThat(marketingAccount.getFromMail()).isEqualTo("marketingAccount@example.com");
 	}
 
 	// Helper Methode

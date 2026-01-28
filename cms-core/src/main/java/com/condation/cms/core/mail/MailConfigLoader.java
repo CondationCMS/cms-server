@@ -21,13 +21,13 @@ package com.condation.cms.core.mail;
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  * #L%
  */
+import com.condation.cms.core.configuration.EnvironmentVariables;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.yaml.snakeyaml.LoaderOptions;
+import java.util.Map;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
  *
@@ -35,11 +35,11 @@ import org.yaml.snakeyaml.constructor.Constructor;
  */
 public class MailConfigLoader {
 
-	public static MailConfig load(Path configFile) {
+	public static MailConfig load(Path configPath, EnvironmentVariables env) {
 		try {
-			try (var configByteBuffer = Files.newBufferedReader(configFile, StandardCharsets.UTF_8)) {
-				Yaml yaml = new Yaml(new Constructor(MailConfig.class, new LoaderOptions()));
-				return yaml.load(configByteBuffer);
+			try (var configByteBuffer = Files.newBufferedReader(configPath, StandardCharsets.UTF_8)) {
+				Map<?, ?> rawConfig = new Yaml().loadAs(configByteBuffer.readAllAsString(), Map.class);
+				return MailConfig.fromMap(rawConfig, env);
 			}
 		} catch (IOException ex) {
 			throw new RuntimeException(ex);

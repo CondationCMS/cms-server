@@ -13,3 +13,5 @@ apm:
 # experimental settings
 performance:
   pool_enabled: false
+envvars:
+  var2: ${env:VAR_ENV2}

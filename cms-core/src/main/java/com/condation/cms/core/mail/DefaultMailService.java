@@ -25,6 +25,7 @@ package com.condation.cms.core.mail;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.mail.MailService;
 import com.condation.cms.api.mail.Message;
+import com.condation.cms.core.configuration.EnvironmentVariables;
 import java.nio.file.Files;
 import org.simplejavamail.api.email.Recipient;
 import org.simplejavamail.api.mailer.Mailer;
@@ -41,6 +42,8 @@ public class DefaultMailService implements MailService {
 
 	private MailConfig config;
 	
+	private final EnvironmentVariables ENV = new EnvironmentVariables();
+	
 	public DefaultMailService(DB db) {
 		this.db = db;
 		
@@ -50,7 +53,7 @@ public class DefaultMailService implements MailService {
 	private void init () {
 		var mailConfig = db.getFileSystem().resolve("config/mail.yaml");
 		if (Files.exists(mailConfig)) {
-			config = MailConfigLoader.load(mailConfig);
+			config = MailConfigLoader.load(mailConfig, ENV);
 		}
 	}
 	

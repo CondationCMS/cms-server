@@ -1,0 +1,14 @@
+accounts:
+  default:
+    fromMail: "noreply@${env:MAIL_DOMAIN}"
+    host: "${env:SMTP_HOST}"
+    port: "${env:SMTP_PORT}"
+    username: "${env:SMTP_USERNAME}"
+    password: "${env:SMTP_PASSWORD}"
+    
+  marketing:
+    fromMail: "marketing@${env:MAIL_DOMAIN}"
+    host: "${env:MAILMARKET_HOST}"
+    port: "587"
+    username: "${env:MAILMARKET_USER}"
+    password: "${env:MAILMARKET_PASS}"

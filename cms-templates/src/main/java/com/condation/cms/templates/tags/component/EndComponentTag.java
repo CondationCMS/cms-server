@@ -22,6 +22,7 @@ package com.condation.cms.templates.tags.component;
  */
 
 import com.condation.cms.templates.Component;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,6 +38,12 @@ public class EndComponentTag implements Component {
 	public String getName() {
 		return "end%s".formatted(shortCodeName);
 	}
+
+    @Override
+    public Optional<String> alternateTagName() {
+        return Optional.of("/%s".formatted(shortCodeName));
+    }
+    
 
 	@Override
 	public boolean isClosing() {

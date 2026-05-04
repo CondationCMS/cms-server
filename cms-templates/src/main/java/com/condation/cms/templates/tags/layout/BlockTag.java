@@ -27,9 +27,7 @@ import com.condation.cms.templates.renderer.Renderer;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Set;
 
 /**
  *
@@ -43,8 +41,11 @@ public class BlockTag implements Tag {
 	}
 
 	@Override
-	public Optional<String> getCloseTagName() {
-		return Optional.of("endblock");
+	public Set<String> getCloseTagNames() {
+		return Set.of(
+                "endblock",
+                "/block"
+        );
 	}
 
 	@Override

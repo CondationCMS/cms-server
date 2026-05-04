@@ -34,7 +34,7 @@ import com.condation.modules.api.annotation.Extension;
  *
  * @author t.marx
  */
-@Extension(TemplateEngineProviderExtensionPoint.class)
+@Extension(value = TemplateEngineProviderExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class CMSTemplateEngineProvider extends TemplateEngineProviderExtensionPoint {
 
 	private CMSModuleTemplateEngine templateEngine;

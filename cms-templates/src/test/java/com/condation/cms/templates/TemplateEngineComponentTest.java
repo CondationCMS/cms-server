@@ -50,6 +50,9 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 						},
 						"tag2", (param) -> {
 							return "Hello " + param.get("name") + "!";
+						},
+						"ns:alternate", (param) -> {
+							return "Hello " + param.get("name") + "!";
 						}));
 		components.register(new MyComponents());
 		dynamicConfiguration = new DynamicConfiguration(components, null);
@@ -58,6 +61,10 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 	public static class MyComponents {
 		@TemplateComponent("tag3")
 		public String tag3 (Parameter parameter) {
+			return "<div>%s</div>".formatted(parameter.get("_content"));
+		}
+        @TemplateComponent(value = "tag3", namespace = "ns")
+		public String custom_namespace (Parameter parameter) {
 			return "<div>%s</div>".formatted(parameter.get("_content"));
 		}
 	}
@@ -75,9 +82,14 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
                    {[ endtag2 ]}
                    """)
 				.add("tag3", """
-                   {[ tag3 ]}
+                   {[ ext:tag3 ]}
 						This is the content!
-                   {[ endtag3 ]}
+                   {[ endext:tag3 ]}
+                   """)
+                .add("ns:tag3", """
+                   {[ ns:tag3 ]}
+						Tag3 with namespace
+                   {[ endns:tag3 ]}
                    """)
 				.add("parser_exception", """
                           {[ tag3 ]}
@@ -88,6 +100,10 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
                           {[ tag4 ]}
                           	This is the content!
                           {[ endtag4 ]}
+                          """)
+				.add("alternate", """
+                          {[ ns:alternate name="CondationCMS" ]}
+                          {[ /ns:alternate ]}
                           """);
 	}
 
@@ -120,6 +136,16 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 				.assertThat(simpleTemplate.evaluate(Map.of(), dynamicConfiguration))
 				.isEqualToIgnoringWhitespace("<div>This is the content!</div>");
 	}
+    
+    	@Test
+        public void test_tag3_namespace() throws IOException {
+		Template simpleTemplate = SUT.getTemplate("ns:tag3");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+
+		Assertions
+				.assertThat(simpleTemplate.evaluate(Map.of(), dynamicConfiguration))
+				.isEqualToIgnoringWhitespace("<div>Tag3 with namespace</div>");
+	}
 
 	@Test
 	public void test_parser_exception() throws IOException {
@@ -132,5 +158,12 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 		var template = SUT.getTemplate("render_exception");
 		Assertions.assertThatThrownBy(() -> template.evaluate(Map.of(), dynamicConfiguration))
 				.isInstanceOf(RenderException.class);
+	}
+	
+	@Test
+	public void test_render_alternate() throws IOException {
+		var template = SUT.getTemplate("alternate");
+		Assertions.assertThat(template.evaluate(Map.of(), dynamicConfiguration))
+				.isEqualToIgnoringWhitespace("Hello CondationCMS!");
 	}
 }

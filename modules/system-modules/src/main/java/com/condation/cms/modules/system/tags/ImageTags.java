@@ -21,30 +21,23 @@ package	com.condation.cms.modules.system.tags;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Tag;
 import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.model.Parameter;
 import com.condation.modules.api.annotation.Extension;
 import com.google.common.base.Strings;
-import java.util.Map;
-import java.util.function.Function;
 import org.apache.commons.text.StringEscapeUtils;
 
 /**
  *
  * @author thmar
  */
-@Extension(RegisterTagsExtensionPoint.class)
+@Extension(value = RegisterTagsExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class ImageTags extends RegisterTagsExtensionPoint {
-
-	@Override
-	public Map<String, Function<Parameter, String>> tags() {
-		return Map.of(
-				"cms:image", this::getImage
-		);
-	}
 	
-	private String getImage (Parameter param) {
+    @Tag(value = "image", namespace = "cms")
+	public String getImage (Parameter param) {
 		var imageFile = (String)param.getOrDefault("image", "");
 		var format = (String)param.get("format");
 		var alt = param.getOrDefault("alt", "");
@@ -53,7 +46,7 @@ public class ImageTags extends RegisterTagsExtensionPoint {
 			imageFile = imageFile.substring(1);
 		}
 		
-		var mediaService = requestContext.get(SiteMediaServiceFeature.class).mediaService();
+		var mediaService = getRequestContext().get(SiteMediaServiceFeature.class).mediaService();
 		
 		var media = mediaService.get(imageFile);
 		

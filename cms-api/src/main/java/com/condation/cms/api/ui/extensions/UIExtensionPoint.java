@@ -22,13 +22,16 @@ package com.condation.cms.api.ui.extensions;
  */
 
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.modules.api.ExtensionPoint;
 
 /**
  *
  * @author thmar
  */
-public interface UIExtensionPoint extends ExtensionPoint<SiteModuleContext, SiteRequestContext> {
-	
+public interface UIExtensionPoint extends ExtensionPoint<SiteModuleContext> {
+    default RequestContext getRequestContext () {
+        return RequestContextScope.REQUEST_CONTEXT.get();
+    }
 }

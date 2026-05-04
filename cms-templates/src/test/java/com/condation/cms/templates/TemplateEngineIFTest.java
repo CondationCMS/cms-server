@@ -44,9 +44,22 @@ public class TemplateEngineIFTest  extends AbstractTemplateEngineTest {
                    {% else %}
                         Not even a CMS!
                    {% endif %}
-                   """);
+                   """)
+                .add("alternate", """
+                                  {% if name == 'CondationCMS' %}
+                                    Best CMS ever!
+                                  {% /if %}
+                                  """);
 	}
 	
+    @Test
+	public void test_alternative_endif() throws IOException {
+		Template simpleTemplate = SUT.getTemplate("alternate");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+		Map<String, Object> context = Map.of("name", "CondationCMS");
+		Assertions.assertThat(simpleTemplate.evaluate(context)).isEqualToIgnoringWhitespace("Best CMS ever!");
+	}
+    
 	@Test
 	public void test_if() throws IOException {
 		Template simpleTemplate = SUT.getTemplate("simple");

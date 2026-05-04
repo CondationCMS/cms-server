@@ -22,13 +22,10 @@ package com.condation.cms.content.tags;
  */
 
 
-import com.condation.cms.content.tags.Tags;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ContentBaseTest;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -238,7 +235,7 @@ public class TagsTest extends ContentBaseTest {
 	void test_handler () {
 		RequestContext requestContext = new RequestContext();
 		
-		var result = tags.replace("[[printHello name='CondationCMS' /]]", Map.of(), requestContext);
+		var result = tags.replace("[[ext:printHello name='CondationCMS' /]]", Map.of(), requestContext);
 		
 		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
 	}

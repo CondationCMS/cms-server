@@ -96,6 +96,6 @@ public class RemoteMediaEnpoints extends AbstractExtensionPoint implements UIRem
 		var baseUrl = getContext().get(SitePropertiesFeature.class).siteProperties().getOrDefault("baseurl", "-----");
 		URI uri = URI.create(image);
 		var path = uri.getPath();
-		return ImageUtil.getRawPath(path, requestContext);
+		return ImageUtil.getRawPath(path, getRequestContext());
 	}
 }

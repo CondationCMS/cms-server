@@ -25,6 +25,7 @@ import com.condation.cms.templates.exceptions.ParserException;
 import com.condation.cms.templates.lexer.Token;
 import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.parser.ParserContext;
+import com.google.common.base.Strings;
 
 /**
  * Handles COMPONENT_END tokens by validating and closing component blocks.
@@ -39,10 +40,14 @@ public class ComponentEndTokenHandler implements TokenHandler {
 		}
 
 		String componentName = currentComponent.getName();
-		boolean isClosingComponent = componentName != null && componentName.startsWith("end");
+        if (Strings.isNullOrEmpty(componentName)) {
+            // should only occure on template errors
+            return;
+        }
+		boolean isClosingComponent = componentName.startsWith("end") || componentName.startsWith("/");
 
 		if (isClosingComponent) {
-			String expectedOpeningName = componentName.replaceFirst("end", "");
+			String expectedOpeningName = componentName.replaceFirst("^(end|/)", "");
 			handleClosingComponent(token, context, expectedOpeningName);
 		}
 	}

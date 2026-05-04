@@ -21,9 +21,13 @@ package com.condation.cms.templates.components;
  * #L%
  */
 import com.condation.cms.api.model.Parameter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -35,25 +39,34 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FunctionMap {
 
-	private final Map<String, Function<Parameter, ?>> tags = new HashMap<>();
+    public record ExtFunction (String namespace, String name, Function<Parameter, ?> function){
+        public ExtFunction(String name, Function<Parameter, ?> fn) {
+            this(null, name, fn);
+        }
+    };
+    
+	private final Set<ExtFunction> functions = new HashSet<>();
 
-	public Set<String> names() {
-		return Collections.unmodifiableSet(tags.keySet());
+	public Set<ExtFunction> functions() {
+		return Collections.unmodifiableSet(functions);
 	}
 
-	public void put(String codeName, Function<Parameter, ?> function) {
-		tags.put(codeName, function);
+	public void put(String namespace, String codeName, Function<Parameter, ?> function) {
+		functions.add(new ExtFunction(namespace, codeName, function));
 	}
 
-	public void putAll(Map<String, Function<Parameter, ?>> tags) {
-		this.tags.putAll(tags);
+	public void putAll(String namespace, Map<String, Function<Parameter, ?>> functions) {
+        functions.forEach((name, fn) -> {
+            this.functions.add(new ExtFunction(namespace, name, fn));
+        });
+		
 	}
 
-	public boolean has(String codeName) {
-		return tags.containsKey(codeName);
+	public boolean has(String namespace, String name) {
+		return functions.stream().anyMatch(fn -> fn.namespace.equals(namespace) && fn.name.equals(name));
 	}
 
-	public Function<Parameter, ?> get(String name) {
-		return tags.getOrDefault(name, (params) -> "");
+	public Optional<ExtFunction> get(String namespace, String name) {
+		return functions.stream().filter(fn -> fn.namespace.equals(namespace) && fn.name.equals(name)).findFirst();
 	}
 }

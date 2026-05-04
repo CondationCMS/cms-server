@@ -38,7 +38,7 @@ import com.condation.modules.api.annotation.Extension;
  *
  * @author t.marx
  */
-@Extension(MarkdownRendererProviderExtensionPoint.class)
+@Extension(value = MarkdownRendererProviderExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class CMSMarkdownRendererProvider extends MarkdownRendererProviderExtensionPoint {
 
 	private static volatile MarkdownRenderer activeRenderer;

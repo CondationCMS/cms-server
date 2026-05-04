@@ -20,11 +20,12 @@ package com.condation.cms.templates.components;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.annotations.TemplateComponent;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.AnnotationsUtil;
-import java.lang.reflect.Method;
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,8 +68,18 @@ public class TemplateComponents {
 		var annotations = AnnotationsUtil.process(handler, TemplateComponent.class, List.of(Parameter.class), String.class);
 
 		for (var entry : annotations) {
-			String key = entry.annotation().value();
-
+			String name = entry.annotation().value();
+            String namespace = entry.annotation().namespace();
+            if (Strings.isNullOrEmpty(namespace)) {
+                namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
+            }
+            String key;
+            if (!Strings.isNullOrEmpty(namespace)) {
+                key = "%s:%s".formatted(namespace, name);
+            } else {
+                key = name;
+            }
+            
 			componentMap.put(key, param -> {
 				try {
 					return entry.invoke(param);

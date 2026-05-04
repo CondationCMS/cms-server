@@ -22,6 +22,7 @@ package com.condation.cms.templates.tags.macro;
  */
 
 import com.condation.cms.templates.Tag;
+import java.util.Optional;
 
 /**
  *
@@ -33,6 +34,11 @@ public class EndMacroTag implements Tag {
 	public String getTagName() {
 		return "endmacro";
 	}
+    
+    @Override
+    public Optional<String> alternateTagName() {
+        return Optional.of("/macro");
+    }
 
 	@Override
 	public boolean isClosingTag() {

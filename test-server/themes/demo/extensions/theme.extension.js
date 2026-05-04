@@ -29,7 +29,7 @@ $hooks.registerAction("system/template/component", (context) => {
 			(params) => {
 				var model = {
 					"name": params.get("name"),
-					"message": params.get("message")
+					"message_text": params.get("message")
 				}
 				return $templates.render("components/test.html", model);
 			}

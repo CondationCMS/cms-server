@@ -25,7 +25,7 @@ import com.condation.cms.api.annotations.TemplateFunction;
 import com.condation.cms.api.extensions.RegisterTemplateFunctionExtensionPoint;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.modules.api.annotation.Extension;
 import java.util.List;
 import java.util.function.Function;
@@ -34,7 +34,7 @@ import java.util.function.Function;
  *
  * @author thorstenmarx
  */
-@Extension(RegisterTemplateFunctionExtensionPoint.class)
+@Extension(value = RegisterTemplateFunctionExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class AuthTemplateFunctionExtensions extends RegisterTemplateFunctionExtensionPoint {
 
 	@Override
@@ -42,7 +42,7 @@ public class AuthTemplateFunctionExtensions extends RegisterTemplateFunctionExte
 		return List.of(this);
 	}
 
-	@TemplateFunction("username")
+	@TemplateFunction(value = "username", namespace = "cms")
 	public Object userName() {
 		return (String) getFeatureValueOrDefault(
 				getRequestContext(),
@@ -51,7 +51,7 @@ public class AuthTemplateFunctionExtensions extends RegisterTemplateFunctionExte
 				"");
 	}
 
-	private <F extends Feature> Object getFeatureValueOrDefault(SiteRequestContext context,
+	private <F extends Feature> Object getFeatureValueOrDefault(RequestContext context,
 			Class<F> feature, Function<F, Object> valueFunction, Object defaultValue) {
 		if (context.has(feature)) {
 			return valueFunction.apply(context.get(feature));

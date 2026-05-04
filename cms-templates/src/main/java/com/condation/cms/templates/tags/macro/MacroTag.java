@@ -31,6 +31,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -51,8 +52,11 @@ public class MacroTag implements Tag {
 	}
 
 	@Override
-	public Optional<String> getCloseTagName() {
-		return Optional.of("endmacro");
+	public Set<String> getCloseTagNames() {
+		return Set.of(
+                "endmacro",
+                "/macro"
+        );
 	}
 
 	@Override

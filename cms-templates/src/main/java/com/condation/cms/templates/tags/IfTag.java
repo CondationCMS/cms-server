@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import org.apache.commons.jexl3.JexlExpression;
 
 /**
@@ -44,8 +44,10 @@ public class IfTag extends AbstractTag implements Tag {
 	}
 
 	@Override
-	public Optional<String> getCloseTagName() {
-		return Optional.of("endif");
+	public Set<String> getCloseTagNames() {
+		return Set.of(
+                "endif",
+                "/if");
 	}
 
 	@Override
@@ -100,7 +102,7 @@ public class IfTag extends AbstractTag implements Tag {
 					conditions.add(new Condition(currentTag.getName(), currentTag.getExpression(), currentChildren));
 					currentTag = tagNode;
 					currentChildren = new ArrayList<>();
-				} else if ("endif".equals(tagNode.getName())) {
+				} else if ("endif".equals(tagNode.getName()) || "/if".equals(tagNode.getName()) ) {
 					conditions.add(new Condition(currentTag.getName(), currentTag.getExpression(), currentChildren));
 				} else {
 					currentChildren.add(child);

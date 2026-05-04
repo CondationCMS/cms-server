@@ -24,7 +24,6 @@ import com.condation.cms.api.extensions.RegisterTemplateFunctionExtensionPoint;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.extensions.TemplateFunctionExtension;
 import com.condation.cms.extensions.hooks.TemplateHooks;
 import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.components.TemplateFunctions;
@@ -60,6 +59,7 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 
 			components.put(openTag.getName(), openTag);
 			components.put(closeTag.getName(), closeTag);
+            components.put(closeTag.alternateTagName().get(), closeTag);
 		}
 	}
 
@@ -82,7 +82,7 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 		var templateFunctions = requestContext.get(TemplateHooks.class).getTemplateFunctions();
 		var tfs = new ArrayList<TemplateFunction>();
 		templateFunctions.getRegisterTemplateFunctions().stream()
-				.map(function -> new FunctionWrapper(function.name(), function.function(), requestContext))
+				.map(function -> new FunctionWrapper(function.namespace(), function.name(), function.function(), requestContext))
 				.forEach(tfs::add);
 		
 		var injector = requestContext.get(InjectorFeature.class).injector();
@@ -95,9 +95,9 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 					templateFunctionsModel.register(extension.functionDefinitions());
 				});
 		
-		templateFunctionsModel.getFunctionMap().names().forEach(name -> {
+		templateFunctionsModel.getFunctionMap().functions().forEach(extFn -> {
 			tfs.add(
-					new FunctionWrapper(name, templateFunctionsModel.getFunctionMap().get(name), requestContext)
+					new FunctionWrapper(extFn.namespace(), extFn.name(), extFn.function(), requestContext)
 			);
 		});
 		
@@ -107,6 +107,7 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 	@RequiredArgsConstructor
 	public static class FunctionWrapper implements TemplateFunction {
 
+        private final String namespace;
 		private final String name;
 		private final Function<Parameter, ?> function;
 		private final RequestContext requestContext;
@@ -128,6 +129,10 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 		public String name() {
 			return name;
 		}
-		
+
+        @Override
+        public String namespace() {
+            return this.namespace;
+        }
 	}
 }

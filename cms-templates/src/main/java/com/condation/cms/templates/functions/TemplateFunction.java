@@ -29,4 +29,8 @@ public interface TemplateFunction {
 	Object invoke (Object... params);
 	
 	String name();
+    
+    default String namespace() {
+        return null;
+    };
 }

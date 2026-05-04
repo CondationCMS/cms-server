@@ -23,7 +23,8 @@ package com.condation.cms.api.extensions;
 
 
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.modules.api.ExtensionPoint;
 import com.condation.modules.api.ModuleConfiguration;
 import lombok.Getter;
@@ -32,13 +33,11 @@ import lombok.Getter;
  *
  * @author t.marx
  */
-public abstract class AbstractExtensionPoint implements ExtensionPoint<SiteModuleContext, SiteRequestContext> {
+public abstract class AbstractExtensionPoint implements ExtensionPoint<SiteModuleContext> {
 	@Getter
 	protected ModuleConfiguration moduleConfiguration;
 	@Getter
 	protected SiteModuleContext context;
-	@Getter
-	protected SiteRequestContext requestContext;
 
 	@Override
 	public void setConfiguration(ModuleConfiguration configuration) {
@@ -49,10 +48,10 @@ public abstract class AbstractExtensionPoint implements ExtensionPoint<SiteModul
 	public void setContext(SiteModuleContext context) {
 		this.context = context;
 	}
-	@Override
-	public void setRequestContext(SiteRequestContext requestContext) {
-		this.requestContext = requestContext;
-	}
+	
+    public RequestContext getRequestContext () {
+        return RequestContextScope.REQUEST_CONTEXT.get();
+    }
 	
 	@Override
 	public void init() {

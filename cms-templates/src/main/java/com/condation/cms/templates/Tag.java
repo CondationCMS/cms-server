@@ -24,7 +24,9 @@ package com.condation.cms.templates;
 import com.condation.cms.templates.parser.TagNode;
 import com.condation.cms.templates.renderer.Renderer;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -33,13 +35,17 @@ import java.util.Optional;
 public interface Tag {
 
 	String getTagName();
+    
+    default Optional<String> alternateTagName () {
+        return Optional.empty();
+    } 
 	
 	default boolean parseExpressions () {
 		return false;
 	}
 	
-	default Optional<String> getCloseTagName () {
-		return Optional.empty();
+	default Set<String> getCloseTagNames () {
+		return Collections.emptySet();
 	}
 	
 	default boolean isClosingTag () {

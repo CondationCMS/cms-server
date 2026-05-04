@@ -21,29 +21,33 @@ package	com.condation.cms.modules.system.tags;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Tag;
 import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.model.Parameter;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.modules.api.annotation.Extension;
-import java.util.Map;
+import java.util.List;
 import java.util.function.Function;
 
 /**
  *
  * @author thmar
  */
-@Extension(RegisterTagsExtensionPoint.class)
+@Extension(value = RegisterTagsExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class AuthTags extends RegisterTagsExtensionPoint {
 
-	@Override
-	public Map<String, Function<Parameter, String>> tags() {
-		return Map.of(
-				"username", this::getUserName,
-				"cms:username", this::getUserName
-		);
-	}
+    @Override
+    public List<Object> tagDefinitions() {
+        return List.of(this);
+    }
+    
+    @Tag(value = "username", namespace = "cms")
+    public String username (Parameter params) {
+        return getUserName(params);
+    }
+    
 	
 	private String getUserName (Parameter param) {
 		return (String)getFeatureValueOrDefault(
@@ -53,7 +57,7 @@ public class AuthTags extends RegisterTagsExtensionPoint {
 				"");
 	}
 	
-	private <F extends Feature> Object getFeatureValueOrDefault(SiteRequestContext context,
+	private <F extends Feature> Object getFeatureValueOrDefault(RequestContext context,
 			Class<F> feature, Function<F, Object> valueFunction, Object defaultValue) {
 		if (context.has(feature)) {
 			return valueFunction.apply(context.get(feature));

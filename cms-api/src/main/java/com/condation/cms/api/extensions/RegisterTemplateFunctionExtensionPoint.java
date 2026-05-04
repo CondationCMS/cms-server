@@ -34,6 +34,7 @@ import java.util.function.Function;
  */
 public abstract class RegisterTemplateFunctionExtensionPoint extends AbstractExtensionPoint {
 	
+    @Deprecated(since = "8.1.0", forRemoval = true)
 	public Map<String, Function<Parameter, ?>> functions () {
 		return Collections.emptyMap();
 	}

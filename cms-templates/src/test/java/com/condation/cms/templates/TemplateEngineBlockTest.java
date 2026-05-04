@@ -46,7 +46,7 @@ public class TemplateEngineBlockTest extends AbstractTemplateEngineTest {
                    {% extends "parent" %}
                    {% block title %}
                       Custom title
-                   {% endblock %}
+                   {% /block %}
                    """);
 	}
 

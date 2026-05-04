@@ -22,7 +22,9 @@ package com.condation.cms.extensions.hooks;
  */
 
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.model.Parameter;
+import com.google.common.base.Strings;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
@@ -39,14 +41,13 @@ public class TemplateComponentsWrapper {
 	private final Map<String, Function<Parameter, String>> components;
 
 	public void put(final String name, final Function<Parameter, String> function) {
-		components.put(name, function);
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, name, function);
 	}
 
-	public boolean contains(final String name) {
-		return components.containsKey(name);
+    public void put(final String namespace, final String name, final Function<Parameter, String> function) {
+        var ns = !Strings.isNullOrEmpty(namespace) ? namespace : "ext";
+		var key = "%s:%s".formatted(ns, name);
+        components.put(key, function);
 	}
-
-	public void remove(final String name) {
-		components.remove(name);
-	}
+    
 }

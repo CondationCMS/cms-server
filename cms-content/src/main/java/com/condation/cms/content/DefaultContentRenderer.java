@@ -56,7 +56,6 @@ import com.condation.cms.content.template.functions.MarkdownFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
-import com.condation.cms.content.template.functions.tag.TagTemplateFunction;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.content.template.functions.translation.NodeTranslations;
 import com.condation.cms.content.template.functions.translation.SiteTranslations;
@@ -160,8 +159,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.orElse(null), siteProperties));
 		
 		namespace.add(Constants.TemplateNamespaces.NODE, "properties", new MapAccess((NodeProperties.createNodeProperties(contentNode.orElse(null), siteProperties))));
-		TagTemplateFunction tagFunction = createTagFunction(context);
-		namespace.add(Constants.TemplateNamespaces.CMS, TagTemplateFunction.KEY, tagFunction);
 		
 		NavigationFunction navigationFunction = createNavigationFunction(contentFile, context);
 		namespace.add(Constants.TemplateNamespaces.CMS, "navigation", navigationFunction);
@@ -310,10 +307,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 		sections.values().forEach(list -> list.sort((s1, s2) -> Integer.compare(s1.index(), s2.index())));
 
 		return sections;
-	}
-
-	private TagTemplateFunction createTagFunction(RequestContext context) {
-		return new TagTemplateFunction(context, context.get(RenderContext.class).tags());
 	}
 
 }

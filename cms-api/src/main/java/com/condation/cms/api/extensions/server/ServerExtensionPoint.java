@@ -22,7 +22,6 @@ package com.condation.cms.api.extensions.server;
  */
 
 import com.condation.cms.api.module.ServerModuleContext;
-import com.condation.cms.api.module.ServerRequestContext;
 import com.condation.modules.api.ExtensionPoint;
 import com.condation.modules.api.ModuleConfiguration;
 import lombok.Getter;
@@ -31,13 +30,11 @@ import lombok.Getter;
  *
  * @author thmar
  */
-public abstract class ServerExtensionPoint implements ExtensionPoint<ServerModuleContext, ServerRequestContext> {
+public abstract class ServerExtensionPoint implements ExtensionPoint<ServerModuleContext> {
 	@Getter
 	protected ModuleConfiguration moduleConfiguration;
 	@Getter
 	protected ServerModuleContext context;
-	@Getter
-	protected ServerRequestContext requestContext;
 
 	@Override
 	public void setConfiguration(ModuleConfiguration configuration) {
@@ -47,11 +44,6 @@ public abstract class ServerExtensionPoint implements ExtensionPoint<ServerModul
 	@Override
 	public void setContext(ServerModuleContext context) {
 		this.context = context;
-	}
-
-	@Override
-	public void setRequestContext(ServerRequestContext requestContext) {
-		this.requestContext = requestContext;
 	}
 
 	@Override

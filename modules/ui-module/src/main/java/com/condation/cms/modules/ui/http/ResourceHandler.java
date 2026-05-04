@@ -27,7 +27,7 @@ import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import com.condation.cms.modules.ui.utils.TokenUtils;
@@ -57,7 +57,7 @@ public class ResourceHandler extends JettyHandler {
 	private final FileSystem fileSystem;
 	private final String base;
 	private final SiteModuleContext context;
-	private final SiteRequestContext requestContext;
+	private final RequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

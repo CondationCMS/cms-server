@@ -44,7 +44,7 @@ public class TemplateEngineMacroTest extends AbstractTemplateEngineTest {
 				.add("param", """
                    {% macro hello(name) %}
 						Hello {{ name }}!
-                   {% endmacro %}
+                   {% /macro %}
                    {{ hello(name) }}
                    """)
 				.add("import", """

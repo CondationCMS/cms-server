@@ -21,6 +21,7 @@ package com.condation.cms.api.annotations;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -34,4 +35,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 public @interface TemplateFunction {
 	String value ();
+    String namespace () default Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
 }

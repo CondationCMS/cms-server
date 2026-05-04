@@ -61,7 +61,7 @@ public class DefaultMessageSource implements MessageSource {
 			var messageFormat = new MessageFormat(messages.get(label), siteProperties.locale());
 			return messageFormat.format(data.toArray());
 		} catch (Exception e) {
-			log.error("bundle not found", bundle);
+			log.warn("bundle not found", bundle);
 		}
 		return "[" + label + "]";
 	}

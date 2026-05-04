@@ -1,7 +1,7 @@
 ---
 title: Templates
 published: true
-template: content/content.html
+template: templatelanguage/content.html
 ---
 
 ```condation

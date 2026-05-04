@@ -47,7 +47,7 @@ public class TagEndTokenHandler implements TokenHandler {
 
 		if (tag.isClosingTag()) {
 			handleClosingTag(token, context, currentTagNode, tag);
-		} else if (tag.getCloseTagName().isEmpty()) {
+		} else if (tag.getCloseTagNames() == null || tag.getCloseTagNames().isEmpty()) {
 			// Self-closing tag or tag without close counterpart
 			context.popNode();
 		}
@@ -63,8 +63,8 @@ public class TagEndTokenHandler implements TokenHandler {
 
 		Tag openingTag = context.getConfiguration().getTag(openingTagNode.getName()).get();
 
-		if (openingTag.getCloseTagName().isPresent()
-				&& openingTag.getCloseTagName().get().equals(closingTag.getTagName())) {
+		if (openingTag.getCloseTagNames() != null
+				&& openingTag.getCloseTagNames().contains(closingTag.getTagName())) {
 			context.popNode(); // Pop the opening tag
 		} else {
 			throw new ParserException("Invalid closing tag", token.line, token.column);

@@ -24,7 +24,7 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.AuthUtil;
 import com.condation.cms.modules.ui.utils.CookieUtil;
@@ -47,7 +47,7 @@ import org.eclipse.jetty.util.Callback;
 public class UIAuthHandler extends JettyHandler {
 
 	private final SiteModuleContext moduleContext;
-	private final SiteRequestContext requestContext;
+	private final RequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

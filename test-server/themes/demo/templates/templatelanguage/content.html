@@ -1,0 +1,39 @@
+<!DOCTYPE html SYSTEM>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		
+		{% include "libs/fragments.html" %}
+		
+		{% include "libs/language_header.html" %}
+		
+	</head>
+
+	<body class="centered">
+
+		{% include "libs/navigation.html" %}
+
+		<div id="content" 
+			{{ ext.ui.toolbar("main", "main", ["editContent", "editAttributes"], {"form": "top"}) | raw }}
+		>
+			<div class="container">
+				{{ node.content | raw }}
+			</div>
+		</div>
+
+		<div>
+			<h3>Messages</h3>
+			<div>
+				{{ cms.message("labels", "test.label1") }}
+			</div>
+		</div>
+
+		{% include "libs/footer.html" %}
+
+	</body>
+
+
+</html>

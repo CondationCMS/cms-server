@@ -26,7 +26,6 @@ import com.condation.cms.api.feature.features.CacheManagerFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.User;
@@ -49,7 +48,7 @@ public final class AuthUtil {
 	private AuthUtil() {
 	}
 
-	private static boolean tryRefresh(Request request, Response response, SiteModuleContext moduleContext, SiteRequestContext requestContext) {
+	private static boolean tryRefresh(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 
 		var refreshTokenCache = moduleContext.get(CacheManagerFeature.class).cacheManager().get(
@@ -79,7 +78,7 @@ public final class AuthUtil {
 		return false;
 	}
 
-	public static boolean checkAuthTokens(Request request, Response response, SiteModuleContext moduleContext, SiteRequestContext requestContext) {
+	public static boolean checkAuthTokens(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
 		var authCookie = CookieUtil.getCookie(request, UIConstants.COOKIE_CMS_TOKEN);
 
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();

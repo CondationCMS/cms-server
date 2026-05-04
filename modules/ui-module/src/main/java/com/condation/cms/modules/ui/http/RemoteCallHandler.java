@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
+import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCResult;
 import com.condation.cms.auth.services.User;
@@ -48,7 +48,7 @@ public class RemoteCallHandler extends JettyHandler {
 
 	private final RemoteMethodService remoteCallService;
 	private final SiteModuleContext moduleContext;
-	private final SiteRequestContext requestContext;
+	private final RequestContext requestContext;
 
 	@Override
 	public boolean handle(Request request, Response response, Callback callback) throws Exception {

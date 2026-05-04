@@ -22,6 +22,7 @@ package com.condation.cms.templates.tags;
  */
 
 import com.condation.cms.templates.Tag;
+import java.util.Optional;
 
 /**
  *
@@ -33,6 +34,11 @@ public class EndIfTag implements Tag {
 	public String getTagName() {
 		return "endif";
 	}
+    
+    @Override
+    public Optional<String> alternateTagName() {
+        return Optional.of("/if");
+    }
 
 	@Override
 	public boolean isClosingTag() {

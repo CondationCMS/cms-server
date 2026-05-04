@@ -276,7 +276,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 
 			var path = URI.create(url).getPath();
 
-			var contextPath = requestContext.get(RequestFeature.class).context();
+			var contextPath = getRequestContext().get(RequestFeature.class).context();
 			if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
 				path = path.replaceFirst(contextPath, "");
 			}

@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -45,8 +46,11 @@ public class ForTag implements Tag {
 	}
 
 	@Override
-	public Optional<String> getCloseTagName() {
-		return Optional.of("endfor");
+	public Set<String> getCloseTagNames() {
+		return Set.of(
+                "endfor",
+                "/for"
+        );
 	}
 
 	@Override

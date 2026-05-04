@@ -149,7 +149,7 @@ public class Lexer {
 	private void readContent(List<Token> tokens, CharacterStream charStream, final String END) {
 		charStream.skipWhitespace();
 
-		String keyword = charStream.readWhile(Character::isLetterOrDigit);
+		String keyword = charStream.readWhile(c -> !Character.isWhitespace(c));
 		tokens.add(new Token(Token.Type.IDENTIFIER, keyword, charStream.getLine(), charStream.getColumn()));
 
 		String condition = charStream.readUntil(END);

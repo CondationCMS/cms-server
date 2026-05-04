@@ -31,7 +31,7 @@ import com.google.common.base.Strings;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -52,8 +52,11 @@ public class ComponentTag implements Component {
 	
 
 	@Override
-	public Optional<String> getCloseingName() {
-		return Optional.of("end%s".formatted(componentName));
+	public Set<String> getCloseingNames() {
+		return Set.of(
+                "end%s".formatted(componentName),
+                "/%s".formatted(componentName)
+        );
 	}
 
 	@Override

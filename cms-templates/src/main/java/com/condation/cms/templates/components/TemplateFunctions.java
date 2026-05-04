@@ -20,11 +20,12 @@ package com.condation.cms.templates.components;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.api.annotations.TemplateComponent;
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.annotations.TemplateFunction;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.AnnotationsUtil;
+import com.google.common.base.Strings;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,12 +48,19 @@ public class TemplateFunctions {
 	}
 
 	public void register(String name, Function<Parameter, ?> templateFunction) {
-		functionMap.put(name, templateFunction);
-	}
+        register(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, name, templateFunction);
+    }
 
-	public void register(Map<String, Function<Parameter, ?>> tempaleFunctions) {
-		this.functionMap.putAll(tempaleFunctions);
+    public void register(String namespace, String name, Function<Parameter, ?> templateFunction) {
+		functionMap.put(namespace, name, templateFunction);
 	}
+    
+    public void register(Map<String, Function<Parameter, ?>> templateFunctions) {
+        register(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, templateFunctions);
+    }
+    public void register(String namespace, Map<String, Function<Parameter, ?>> templateFunctions) {
+        this.functionMap.putAll(namespace, templateFunctions);
+    }
 
 	public void register(List<Object> handlers) {
 		if (handlers == null || handlers.isEmpty()) {
@@ -69,13 +77,16 @@ public class TemplateFunctions {
 		var annotations = AnnotationsUtil.process(handler, TemplateFunction.class, List.of(Parameter.class), Object.class);
 
 		for (var entry : annotations) {
-			String key = entry.annotation().value();
-
-			functionMap.put(key, param -> {
+			String name = entry.annotation().value();
+            String namespace = entry.annotation().namespace();
+            if (Strings.isNullOrEmpty(namespace)) {
+                namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
+            }
+			functionMap.put(namespace, name, param -> {
 				try {
 					return entry.invoke(param);
 				} catch (Exception e) {
-					throw new RuntimeException("Error calling component: " + key, e);
+					throw new RuntimeException("Error calling component: " + name, e);
 				}
 			});
 		}
@@ -83,37 +94,38 @@ public class TemplateFunctions {
 		annotations = AnnotationsUtil.process(handler, TemplateFunction.class, List.of(), Object.class);
 
 		for (var entry : annotations) {
-			String key = entry.annotation().value();
-
-			functionMap.put(key, param -> {
+			String name = entry.annotation().value();
+            String namespace = entry.annotation().value();
+              
+			functionMap.put(namespace, name, param -> {
 				try {
 					return entry.invoke(null);
 				} catch (Exception e) {
-					throw new RuntimeException("Error calling component: " + key, e);
+					throw new RuntimeException("Error calling component: " + name, e);
 				}
 			});
 		}
 	}
 
-	public Set<String> getFunctionNames() {
-		return functionMap.names();
+	public Set<FunctionMap.ExtFunction> getFunctions() {
+		return functionMap.functions();
 	}
 
-	public Object execute(String name, Map<String, Object> parameters, RequestContext requestContext) {
-		if (!functionMap.has(name)) {
-			return "";
-		}
-		try {
-			Parameter params;
-			if (parameters != null) {
-				params = new Parameter(parameters);
-			} else {
-				params = new Parameter();
-			}
-			return functionMap.get(name).apply(params);
-		} catch (Exception e) {
-			log.error("", e);
-		}
-		return "";
-	}
+    /*	public Object execute(String name, Map<String, Object> parameters, RequestContext requestContext) {
+    if (!functionMap.has(name)) {
+    return "";
+    }
+    try {
+    Parameter params;
+    if (parameters != null) {
+    params = new Parameter(parameters);
+    } else {
+    params = new Parameter();
+    }
+    return functionMap.get(name).apply(params);
+    } catch (Exception e) {
+    log.error("", e);
+    }
+    return "";
+    }*/
 }

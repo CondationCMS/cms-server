@@ -46,7 +46,7 @@ public class TemplateEngineFORTest extends AbstractTemplateEngineTest {
 				.add("index", """
                    {% for name in names %}
 						<li>{{ loop.getIndex() }}</li>
-                   {% endfor %}
+                   {% /for %}
                    """);
 	}
 	

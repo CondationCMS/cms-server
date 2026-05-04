@@ -22,6 +22,7 @@ package com.condation.cms.templates.tags;
  */
 
 import com.condation.cms.templates.Tag;
+import java.util.Optional;
 
 /**
  *
@@ -33,6 +34,11 @@ public class EndForTag implements Tag {
 	public String getTagName() {
 		return "endfor";
 	}
+    
+    @Override
+    public Optional<String> alternateTagName() {
+        return Optional.of("/for");
+    }
 
 	@Override
 	public boolean isClosingTag() {

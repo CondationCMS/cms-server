@@ -22,8 +22,10 @@ package com.condation.cms.extensions.hooks;
  */
 
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.extensions.TemplateFunctionExtension;
+import com.google.common.base.Strings;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -39,6 +41,11 @@ public class TemplateFunctionWrapper {
 	private final List<TemplateFunctionExtension> registerTemplateFunctions = new ArrayList<>();
 
 	public void put(final String path, final Function<Parameter, ?> function) {
-		registerTemplateFunctions.add(new TemplateFunctionExtension(path, function));
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, path, function);
+	}
+    
+    public void put(final String namespace, final String path, final Function<Parameter, ?> function) {
+        var ns = !Strings.isNullOrEmpty(namespace) ? namespace : "ext";
+		registerTemplateFunctions.add(new TemplateFunctionExtension(ns, path, function));
 	}
 }

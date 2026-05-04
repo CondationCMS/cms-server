@@ -149,6 +149,10 @@ public class TemplateConfiguration {
 	public TemplateConfiguration registerTag (Tag tag) {
 		registeredTags.put(tag.getTagName(), tag);
 		
+        if (tag.alternateTagName().isPresent()) {
+            registeredTags.put(tag.alternateTagName().get(), tag);
+        }
+        
 		return this;
 	}
 	

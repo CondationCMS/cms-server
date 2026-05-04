@@ -29,4 +29,4 @@ import java.util.function.Function;
  *
  * @author t.marx
  */
-public record TemplateFunctionExtension (String name, Function<Parameter,?> function) {}
+public record TemplateFunctionExtension (String namespace, String name, Function<Parameter,?> function) {}

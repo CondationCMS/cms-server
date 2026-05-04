@@ -21,20 +21,16 @@ package com.condation.cms.server.configs;
  * #L%
  */
 import com.condation.cms.api.SiteProperties;
-import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
 import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.module.SiteModuleContext;
-import com.condation.cms.api.module.SiteRequestContext;
-import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.modules.api.ModuleManager;
-import com.condation.modules.api.ModuleRequestContextFactory;
 import com.condation.modules.manager.ModuleAPIClassLoader;
 import com.condation.modules.manager.ModuleManagerImpl;
 import com.google.inject.AbstractModule;
@@ -64,7 +60,7 @@ public class SiteModulesModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public ModuleManager moduleManager(Injector injector, SiteModuleContext context, ModuleRequestContextFactory requestContextFactory) {
+	public ModuleManager moduleManager(Injector injector, SiteModuleContext context) {
 		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
 				List.of(
 						"org.slf4j",
@@ -84,25 +80,11 @@ public class SiteModulesModule extends AbstractModule {
 				.setModulesDataPath(injector.getInstance(FileDB.class).getFileSystem().resolve("modules_data").toFile())
 				.setModulesPath(modulesPath.toFile())
 				.setContext(context)
-				.requestContextFactory(requestContextFactory)
 				.build();
 
 		context.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManager));
 
 		return moduleManager;
-	}
-
-	@Provides
-	@Singleton
-	public ModuleRequestContextFactory requestContextFactory() {
-		return () -> {
-			if (RequestContextScope.REQUEST_CONTEXT.isBound()) {
-				return new SiteRequestContext(RequestContextScope.REQUEST_CONTEXT.get());
-			} else {
-				return new SiteRequestContext(null);
-			}
-			
-		};
 	}
 
 	@Provides

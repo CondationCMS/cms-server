@@ -34,17 +34,17 @@
 				</div>
 				<div>
 					<h2>simple compontent</h2>
-					{[ component color="red" message="its a component" ]}
-					{[ endcomponent ]}
+					{[ ext:component color="red" message="its a component" ]}
+					{[ /ext:component ]}
 				</div>
 				<div>
 					<h2>Template component</h2>
-					{[ tempcomp name="CondationCMS" message="a compontent rendered by a template" ]}
-					{[ endtempcomp ]}
+					{[ ext:tempcomp name="CondationCMS" message="a compontent rendered by a template" ]}
+					{[ /ext:tempcomp ]}
 				</div>
 				<div>
 					<h4>template function test</h4>
-					{{ fn_message({'message': "Hello", 'color': "red"}) | raw }}
+					{{ ext.fn_message({'message': "Hello", 'color': "red"}) | raw }}
 					<br/>
 					user: {{ username() }} 
 				</div>

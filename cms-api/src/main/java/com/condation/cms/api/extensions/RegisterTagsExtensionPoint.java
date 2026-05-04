@@ -33,8 +33,9 @@ import java.util.function.Function;
  * @author t.marx
  */
 public abstract class RegisterTagsExtensionPoint extends AbstractExtensionPoint {
-	
-	public Map<String, Function<Parameter, String>> tags () {
+
+    @Deprecated(since = "8.1.0", forRemoval = true)
+    public Map<String, Function<Parameter, String>> tags () {
 		return Collections.emptyMap();
 	}
 	

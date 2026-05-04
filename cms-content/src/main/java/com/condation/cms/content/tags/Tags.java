@@ -20,6 +20,7 @@ package com.condation.cms.content.tags;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.AnnotationsUtil;
@@ -32,6 +33,7 @@ import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.annotations.Tag;
+import com.google.common.base.Strings;
 
 /**
  *
@@ -127,7 +129,17 @@ public class Tags {
 			var annotations = AnnotationsUtil.process(handler, Tag.class, List.of(Parameter.class), String.class);
 
 			for (var entry : annotations) {
-				String key = entry.annotation().value();
+				String name = entry.annotation().value();
+                String namespace = entry.annotation().namespace();
+                if (Strings.isNullOrEmpty(namespace)) {
+                    namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
+                }
+                String key;
+                if (!Strings.isNullOrEmpty(namespace)) {
+                    key = "%s:%s".formatted(namespace, name);
+                } else {
+                    key = name;
+                }
 				tags.put(key, param -> {
 					try {
 						return entry.invoke(param);

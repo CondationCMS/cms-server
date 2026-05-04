@@ -24,7 +24,9 @@ package com.condation.cms.templates;
 import com.condation.cms.templates.parser.ComponentNode;
 import com.condation.cms.templates.renderer.Renderer;
 import java.io.Writer;
+import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -34,9 +36,13 @@ public interface Component {
 
 	String getName();
 	
-	default Optional<String> getCloseingName () {
-		return Optional.empty();
+	default Set<String> getCloseingNames () {
+		return Collections.emptySet();
 	}
+    
+    default Optional<String> alternateTagName () {
+        return Optional.empty();
+    }
 	
 	default boolean isClosing () {
 		return false;

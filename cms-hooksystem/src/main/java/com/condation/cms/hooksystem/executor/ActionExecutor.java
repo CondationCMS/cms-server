@@ -41,12 +41,13 @@ public class ActionExecutor {
 
     private final ActionRegistry registry;
 
+    @SuppressWarnings("unchecked")
     public <T> List<T> execute(String name, Map<String, Object> arguments) {
         var context = new ActionContext<T>(new HashMap<>(arguments), new ArrayList<>());
 
         registry.get(name).forEach(hook -> {
             try {
-				T result = (T)hook.function().apply(context);
+                T result = (T) hook.function().apply(context);
                 if (result != null) {
                     context.results().add(result);
                 }

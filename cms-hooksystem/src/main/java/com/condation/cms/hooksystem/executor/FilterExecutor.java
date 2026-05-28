@@ -39,7 +39,7 @@ public class FilterExecutor {
     private final FilterRegistry registry;
 
     @SuppressWarnings("unchecked")
-    public <T> FilterContext<T> execute(String name, T value) {
+    public <T> T execute(String name, T value) {
         final FilterContext<T> result = new FilterContext<>(value);
 
         registry.get(name).forEach(hook -> {
@@ -52,6 +52,6 @@ public class FilterExecutor {
             }
         });
 
-        return result;
+        return result.value();
     }
 }

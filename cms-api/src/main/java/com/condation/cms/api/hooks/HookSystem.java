@@ -20,8 +20,8 @@ package com.condation.cms.api.hooks;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import java.util.List;
 import java.util.Map;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  *
@@ -41,18 +41,14 @@ public interface HookSystem {
 
 	public <T> void registerFilter(final String name, final FilterFunction<T> hookFunction, int priority);
 
-	public ActionContext<Object> doAction(final String name);
+	public <T> List<T> doAction(final String name);
 
-	public ActionContext<Object> doAction(final String name, final Map<String, Object> arguments);
+	public <T> List<T> doAction(final String name, final Map<String, Object> arguments);
 
 	/**
-	 * calls all filters with the given parameters, if no filter is executed,
-	 * the original parameters are returned
-	 *
-	 * @param <T>
-	 * @param name
-	 * @param parameters
-	 * @return
+	 * Calls all filters with the given value in priority order and returns the
+	 * final transformed value. If no filter is registered, the original value
+	 * is returned unchanged.
 	 */
-	public <T> FilterContext<T> doFilter(final String name, final T parameters);
+	public <T> T doFilter(final String name, final T value);
 }

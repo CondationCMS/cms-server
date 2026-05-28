@@ -30,6 +30,7 @@ import com.condation.cms.api.hooks.ActionContext;
 import com.condation.modules.api.annotation.Extension;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Request;
@@ -50,9 +51,9 @@ public class ExampleJettyHttpHandlerExtension extends HttpHandlerExtensionPoint 
 		mapping.add(PathSpec.from("/people"), new ExampleHandler("Hello people!"));
 		mapping.add(PathSpec.from("/hook"), (request, response, callback) -> {
 			
-			ActionContext hookContext = getRequestContext().get(HookSystemFeature.class).hookSystem().doAction("example/test");
+			List<String> results = getRequestContext().get(HookSystemFeature.class).hookSystem().<String>doAction("example/test");
 			
-			var content = (String)hookContext.results().get(0);
+			var content = results.get(0);
 			
 			response.write(true, ByteBuffer.wrap(content.getBytes(StandardCharsets.UTF_8)), callback);
 			

@@ -20,8 +20,8 @@ package com.condation.cms.modules.ui.http;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.HookSystem;
+import java.util.List;
 import com.condation.cms.modules.ui.model.HookCall;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.util.HashMap;
@@ -55,12 +55,12 @@ public class HookHandler extends JettyHandler {
 
 		String body = getBody(request);
 		var command = UIGsonProvider.INSTANCE.fromJson(body, HookCall.class);
-		ActionContext<?> actionContext  = hookSystem.doAction(command.hook(), command.parameters());
-		
+		List<?> results = hookSystem.doAction(command.hook(), command.parameters());
+
 		Map<String, Object> commandResponse = new HashMap<>();
 		commandResponse.put("hook", command.hook());
-		if (!actionContext.results().isEmpty()) {
-			commandResponse.put("result", actionContext.results());
+		if (!results.isEmpty()) {
+			commandResponse.put("result", results);
 		}
 		
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");

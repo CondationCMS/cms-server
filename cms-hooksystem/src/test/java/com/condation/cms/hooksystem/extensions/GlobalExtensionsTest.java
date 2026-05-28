@@ -71,9 +71,7 @@ public class GlobalExtensionsTest {
 	public void test_hook () {
 		globalExtensions.evaluate("$hooks.registerAction('test/hook1', (context) => {return 'Hello';})");
 		
-		var context = hookSystem.doAction("test/hook1");
-		
-		Assertions.assertThat(context.results())
+		Assertions.assertThat(hookSystem.doAction("test/hook1"))
 				.hasSize(1)
 				.containsExactly("Hello");
 	}

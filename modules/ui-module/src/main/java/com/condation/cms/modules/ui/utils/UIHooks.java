@@ -47,19 +47,19 @@ public class UIHooks {
 	public ContentTypes contentTypes () {
 		var contentTypes = new ContentTypes();
 		
-		return hookSystem.doFilter(HOOK_REGISTER_CONTENT_TYPES, contentTypes).value();
+		return hookSystem.doFilter(HOOK_REGISTER_CONTENT_TYPES, contentTypes);
 	}
 	
 	public MediaForms mediaForms () {
 		var mediaForms = new MediaForms();
 		
-		return hookSystem.doFilter(HOOK_REGISTER_MEDIA_FORMS, mediaForms).value();
+		return hookSystem.doFilter(HOOK_REGISTER_MEDIA_FORMS, mediaForms);
 	}
 	
 	public Menu menu() {
 		var menu = new Menu();
 
-		menu = hookSystem.doFilter(HOOK_MENU, menu).value();
+		menu = hookSystem.doFilter(HOOK_MENU, menu);
 		
 		return menu;
 	}
@@ -69,6 +69,6 @@ public class UIHooks {
 				"de", new HashMap<>(),
 				"en", new HashMap<>()
 		));
-		return hookSystem.doFilter(HOOK_TRANSLATIONS, translations).value();
+		return hookSystem.doFilter(HOOK_TRANSLATIONS, translations);
 	}
 }

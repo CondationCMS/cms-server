@@ -10,20 +10,18 @@ package com.condation.cms.modules.ui.extensionpoints;
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
-import com.condation.cms.api.hooks.ActionContext;
-import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.ui.action.UIHookAction;
 import com.condation.cms.api.ui.action.UIScriptAction;
 import com.condation.cms.api.ui.elements.Menu;
@@ -41,8 +39,7 @@ public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 
 	@Override
 	public void register(HookSystem hookSystem) {
-		hookSystem.registerFilter("module/ui/menu", (FilterContext<Menu> context)
-				-> {
+		hookSystem.<Menu>registerFilter("module/ui/menu", (context) -> {
 			var menu = context.value();
 			menu.addMenuEntry(MenuEntry.builder()
 					.children(new ArrayList<>(
@@ -56,20 +53,16 @@ public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 											.action(new UIHookAction("module/ui/demo/menu/action", Map.of("name", "CondationCMS")))
 											.build()
 							)))
-					.name("ExampleMenu")
-					.id("example-menu")
-					.build());
-
+				.name("ExampleMenu")
+				.id("example-menu")
+				.build());
 			return menu;
-		}
-		);
+		});
 
-		hookSystem.registerAction("module/ui/demo/menu/action", (ActionContext<String> context) -> {
+		hookSystem.registerAction("module/ui/demo/menu/action", context -> {
 			System.out.println("hook action executed");
 			System.out.println("hello " + context.arguments().get("name"));
 			return "";
 		});
-
 	}
-
 }

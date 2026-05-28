@@ -25,6 +25,7 @@ import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.hooksystem.registry.ActionRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,12 +41,12 @@ public class ActionExecutor {
 
     private final ActionRegistry registry;
 
-    public ActionContext<Object> execute(String name, Map<String, Object> arguments) {
-        var context = new ActionContext<>(new HashMap<>(arguments), new ArrayList<>());
+    public <T> List<T> execute(String name, Map<String, Object> arguments) {
+        var context = new ActionContext<T>(new HashMap<>(arguments), new ArrayList<>());
 
         registry.get(name).forEach(hook -> {
             try {
-                Object result = hook.function().apply(context);
+				T result = (T)hook.function().apply(context);
                 if (result != null) {
                     context.results().add(result);
                 }
@@ -54,6 +55,6 @@ public class ActionExecutor {
             }
         });
 
-        return context;
+        return context.results();
     }
 }

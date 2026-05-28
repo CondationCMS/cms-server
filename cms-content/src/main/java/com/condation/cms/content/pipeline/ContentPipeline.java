@@ -23,7 +23,6 @@ package com.condation.cms.content.pipeline;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.TemplateEngineFeature;
-import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.hooks.Hooks;
 import com.condation.cms.api.request.RequestContext;
@@ -56,33 +55,33 @@ public class ContentPipeline {
 		AtomicInteger prio = new AtomicInteger(10);
 		pipeline.forEach(processor -> {
 			switch (processor) {
-				case "markdown" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processMarkdown, prio.getAndAdd(10));
-				case "tags" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processTags, prio.getAndAdd(10));
-				case "template" -> hookSystem.registerFilter(Hooks.CONTENT_FILTER.hook(), this::processTemplate, prio.getAndAdd(10));
+				case "markdown" -> hookSystem.<String>registerFilter(Hooks.CONTENT_FILTER.hook(), ctx -> processMarkdown(ctx.value()), prio.getAndAdd(10));
+				case "tags" -> hookSystem.<String>registerFilter(Hooks.CONTENT_FILTER.hook(), ctx -> processTags(ctx.value()), prio.getAndAdd(10));
+				case "template" -> hookSystem.<String>registerFilter(Hooks.CONTENT_FILTER.hook(), ctx -> processTemplate(ctx.value()), prio.getAndAdd(10));
 			}
 		});
 
 	}
 	
 	public String process(String rawContent) {
-		return hookSystem.doFilter(Hooks.CONTENT_FILTER.hook(), rawContent).value();
+		return hookSystem.doFilter(Hooks.CONTENT_FILTER.hook(), rawContent);
 	}
 
-	private String processMarkdown(FilterContext<String> context) {
-		return requestContext.get(RenderContext.class).markdownRenderer().render(context.value());
+	private String processMarkdown(String content) {
+		return requestContext.get(RenderContext.class).markdownRenderer().render(content);
 	}
 
-	private String processTags(FilterContext<String> context) {
-		return requestContext.get(RenderContext.class).tags().replace(context.value(), model.values, requestContext);
+	private String processTags(String content) {
+		return requestContext.get(RenderContext.class).tags().replace(content, model.values, requestContext);
 	}
 
-	private String processTemplate(FilterContext<String> context) {
+	private String processTemplate(String content) {
 		try {
 			return requestContext.get(TemplateEngineFeature.class).templateEngine()
-					.renderFromString(context.value(), model);
+					.renderFromString(content, model);
 		} catch (IOException ex) {
 			log.error("", ex);
-			return context.value();
+			return content;
 		}
 	}
 }

@@ -21,11 +21,10 @@ package com.condation.cms.hooksystem;
  * #L%
  */
 
-import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.ActionFunction;
-import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.FilterFunction;
 import com.condation.cms.api.hooks.HookSystem;
+import java.util.List;
 import com.condation.cms.hooksystem.annotation.AnnotationHookRegistrar;
 import com.condation.cms.hooksystem.executor.ActionExecutor;
 import com.condation.cms.hooksystem.executor.FilterExecutor;
@@ -87,17 +86,17 @@ public class CMSHookSystem implements HookSystem {
     }
 
     @Override
-    public ActionContext<Object> doAction(String name) {
+    public <T> List<T> doAction(String name) {
         return doAction(name, Map.of());
     }
 
     @Override
-    public ActionContext<Object> doAction(String name, Map<String, Object> arguments) {
+    public <T> List<T> doAction(String name, Map<String, Object> arguments) {
         return actionExecutor.execute(name, arguments);
     }
 
     @Override
-    public <T> FilterContext<T> doFilter(String name, T value) {
+    public <T> T doFilter(String name, T value) {
         return filterExecutor.execute(name, value);
     }
 }

@@ -108,7 +108,7 @@ public class ExtensionManagerTest {
 		requestContext.add(AuthFeature.class, new AuthFeature("thorsten"));
 		var hookSystem = setupHookSystem(requestContext);
 
-		Assertions.assertThat(hookSystem.doAction("test").results())
+		Assertions.assertThat(hookSystem.doAction("test"))
 				.hasSize(1)
 				.containsExactly("Hallo thorsten");
 	}
@@ -117,7 +117,7 @@ public class ExtensionManagerTest {
 	public void test_action_no_args_without_auth() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("test").results())
+		Assertions.assertThat(hookSystem.doAction("test"))
 				.hasSize(1)
 				.containsExactly("Guten Tag");
 	}
@@ -128,7 +128,7 @@ public class ExtensionManagerTest {
 	public void test_action_single_named_arg() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("print_name", Map.of("name", "CondationCMS")).results())
+		Assertions.assertThat(hookSystem.doAction("print_name", Map.of("name", "CondationCMS")))
 				.hasSize(1)
 				.containsExactly("Hallo CondationCMS");
 	}
@@ -137,18 +137,18 @@ public class ExtensionManagerTest {
 	public void test_action_single_named_args() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("print_name_args", Map.of("name", "CondationCMS")).results())
+		Assertions.assertThat(hookSystem.doAction("print_name_args", Map.of("name", "CondationCMS")))
 				.hasSize(1)
 				.containsExactly("Hallo CondationCMS");
 	}
-	
+
 	// --- action: multiple named arguments ---
 
 	@Test
 	public void test_action_multiple_named_args() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("greet", Map.of("firstName", "Max", "lastName", "Mustermann")).results())
+		Assertions.assertThat(hookSystem.doAction("greet", Map.of("firstName", "Max", "lastName", "Mustermann")))
 				.hasSize(1)
 				.containsExactly("Max Mustermann");
 	}
@@ -159,7 +159,7 @@ public class ExtensionManagerTest {
 	public void test_action_multiple_handlers_collect_all_results() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("multi/action").results())
+		Assertions.assertThat(hookSystem.doAction("multi/action"))
 				.hasSize(2)
 				.containsExactlyInAnyOrder("result1", "result2");
 	}
@@ -170,7 +170,7 @@ public class ExtensionManagerTest {
 	public void test_action_priority_ordering() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("priority/action").results())
+		Assertions.assertThat(hookSystem.doAction("priority/action"))
 				.hasSize(2)
 				.containsExactly("low", "high");
 	}
@@ -181,7 +181,7 @@ public class ExtensionManagerTest {
 	public void test_action_void_return_not_in_results() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("action/void").results())
+		Assertions.assertThat(hookSystem.doAction("action/void"))
 				.isEmpty();
 	}
 
@@ -191,7 +191,7 @@ public class ExtensionManagerTest {
 	public void test_filter_string_to_uppercase() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doFilter("filter/upper", "hello").value())
+		Assertions.assertThat(hookSystem.doFilter("filter/upper", "hello"))
 				.isEqualTo("HELLO");
 	}
 
@@ -202,7 +202,7 @@ public class ExtensionManagerTest {
 		var hookSystem = setupHookSystem(new RequestContext());
 
 		// priority 100 runs first: "base-A", then priority 200: "base-A-B"
-		Assertions.assertThat(hookSystem.doFilter("filter/chain", "base").value())
+		Assertions.assertThat(hookSystem.doFilter("filter/chain", "base"))
 				.isEqualTo("base-A-B");
 	}
 
@@ -212,7 +212,7 @@ public class ExtensionManagerTest {
 	public void test_filter_trim() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doFilter("filter/trim", "  hello world  ").value())
+		Assertions.assertThat(hookSystem.doFilter("filter/trim", "  hello world  "))
 				.isEqualTo("hello world");
 	}
 
@@ -222,7 +222,7 @@ public class ExtensionManagerTest {
 	public void test_filter_no_handler_returns_original_value() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doFilter("filter/unregistered", "original").value())
+		Assertions.assertThat(hookSystem.doFilter("filter/unregistered", "original"))
 				.isEqualTo("original");
 	}
 
@@ -232,7 +232,7 @@ public class ExtensionManagerTest {
 	public void test_action_no_handler_returns_empty_results() throws IOException {
 		var hookSystem = setupHookSystem(new RequestContext());
 
-		Assertions.assertThat(hookSystem.doAction("action/unregistered").results())
+		Assertions.assertThat(hookSystem.doAction("action/unregistered"))
 				.isEmpty();
 	}
 

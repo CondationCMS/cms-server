@@ -48,9 +48,7 @@ public class HTMLPipeline {
 			return rawContent;
 		}
 		
-		var result = hookSystem.doAction(hook.hook());
-		
-		var hookValues = result.results().stream()
+		var hookValues = hookSystem.doAction(hook.hook()).stream()
 				.filter(Objects::nonNull)
 				.filter(String.class::isInstance)
 				.map(String.class::cast)

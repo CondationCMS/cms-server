@@ -104,8 +104,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		navNodes = navNodes.reversed();
 
 		if (name != null) {
-			var hookContext = hookSystem.doFilter(Hooks.NAVIGATION_PATH.hook(name), navNodes);
-			navNodes = hookContext.value();
+			navNodes = hookSystem.doFilter(Hooks.NAVIGATION_PATH.hook(name), navNodes);
 		}
 
 		return navNodes;
@@ -153,8 +152,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 			
 		}
 		if (name != null) {
-			var hookContext = hookSystem.doFilter(Hooks.NAVIGATION_LIST.hook(name), navNodes);
-			navNodes = hookContext.value();
+			navNodes = hookSystem.doFilter(Hooks.NAVIGATION_LIST.hook(name), navNodes);
 		}
 		return navNodes;
 	}

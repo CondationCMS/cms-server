@@ -20,6 +20,7 @@ package com.condation.cms.templates;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.TemplateComponent;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.templates.components.TemplateComponents;
@@ -60,18 +61,28 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 	
 	public static class MyComponents {
 		@TemplateComponent("tag3")
-		public String tag3 (Parameter parameter) {
+		public String tag3(Parameter parameter) {
 			return "<div>%s</div>".formatted(parameter.get("_content"));
 		}
-        @TemplateComponent(value = "tag3", namespace = "ns")
-		public String custom_namespace (Parameter parameter) {
+
+		@TemplateComponent(value = "tag3", namespace = "ns")
+		public String custom_namespace(Parameter parameter) {
 			return "<div>%s</div>".formatted(parameter.get("_content"));
+		}
+
+		@TemplateComponent("tag4_param")
+		public String tag4_param(@Param("name") String name) {
+			return "<span>%s</span>".formatted(name);
 		}
 	}
 
 	@Override
 	public TemplateLoader getLoader() {
 		return new StringTemplateLoader()
+				.add("tag4_param", """
+                   {[ ext:tag4_param name="CondationCMS" ]}
+                   {[ endext:tag4_param ]}
+                   """)
 				.add("tag1", """
                    {[ tag1 ]}
 						
@@ -165,5 +176,14 @@ public class TemplateEngineComponentTest extends AbstractTemplateEngineTest {
 		var template = SUT.getTemplate("alternate");
 		Assertions.assertThat(template.evaluate(Map.of(), dynamicConfiguration))
 				.isEqualToIgnoringWhitespace("Hello CondationCMS!");
+	}
+
+	@Test
+	public void test_tag4_param() throws IOException {
+		Template simpleTemplate = SUT.getTemplate("tag4_param");
+		Assertions.assertThat(simpleTemplate).isNotNull();
+
+		Assertions.assertThat(simpleTemplate.evaluate(Map.of(), dynamicConfiguration))
+				.isEqualToIgnoringWhitespace("<span>CondationCMS</span>");
 	}
 }

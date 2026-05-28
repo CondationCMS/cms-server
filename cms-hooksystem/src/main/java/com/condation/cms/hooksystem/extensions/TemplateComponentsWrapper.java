@@ -25,10 +25,13 @@ package com.condation.cms.hooksystem.extensions;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.model.Parameter;
 import com.google.common.base.Strings;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyObject;
 
 /**
  *
@@ -44,10 +47,22 @@ public class TemplateComponentsWrapper {
 		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, name, function);
 	}
 
-    public void put(final String namespace, final String name, final Function<Parameter, String> function) {
-        var ns = !Strings.isNullOrEmpty(namespace) ? namespace : "ext";
-		var key = "%s:%s".formatted(ns, name);
-        components.put(key, function);
+	public void put(final String namespace, final String name, final Function<Parameter, String> function) {
+		var ns = !Strings.isNullOrEmpty(namespace) ? namespace : Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
+		components.put("%s:%s".formatted(ns, name), function);
 	}
-    
+
+	// called from JS: components.put("name", ({param}) => ...)
+	public void put(final String name, final Value jsFunction) {
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, name, jsFunction);
+	}
+
+	// called from JS: components.put("namespace", "name", ({param}) => ...)
+	public void put(final String namespace, final String name, final Value jsFunction) {
+		put(namespace, name, (Parameter param) -> {
+			Map<String, Object> jsArgs = new HashMap<>(param);
+			Value result = jsFunction.execute(ProxyObject.fromMap(jsArgs));
+			return result.isNull() ? "" : result.asString();
+		});
+	}
 }

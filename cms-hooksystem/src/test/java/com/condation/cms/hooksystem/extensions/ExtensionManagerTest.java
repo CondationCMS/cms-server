@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Engine;
 import org.junit.jupiter.api.AfterAll;
@@ -233,6 +234,131 @@ public class ExtensionManagerTest {
 
 		Assertions.assertThat(hookSystem.doAction("action/unregistered").results())
 				.isEmpty();
+	}
+
+	// --- template functions registered via $hooks ---
+
+	private TemplateFunctionWrapper setupTemplateFunctions(RequestContext requestContext) throws IOException {
+		setupHookSystem(requestContext);
+		return new TemplateHooks(requestContext).getTemplateFunctions();
+	}
+
+	@Test
+	public void test_template_function_default_namespace_registered() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		Assertions.assertThat(wrapper.getRegisterTemplateFunctions())
+				.anyMatch(f -> f.namespace().equals("ext") && f.name().equals("hello"));
+	}
+
+	@Test
+	public void test_template_function_no_params_returns_correct_value() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		var fn = wrapper.getRegisterTemplateFunctions().stream()
+				.filter(f -> f.name().equals("hello")).findFirst().orElseThrow();
+		Assertions.assertThat(fn.function().apply(new Parameter())).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void test_template_function_destructured_param() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		var fn = wrapper.getRegisterTemplateFunctions().stream()
+				.filter(f -> f.name().equals("greet")).findFirst().orElseThrow();
+		Assertions.assertThat(fn.function().apply(new Parameter(Map.of("name", "CondationCMS"))))
+				.isEqualTo("Hello CondationCMS");
+	}
+
+	@Test
+	public void test_template_function_destructured_param_js_default() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		var fn = wrapper.getRegisterTemplateFunctions().stream()
+				.filter(f -> f.name().equals("greet")).findFirst().orElseThrow();
+		Assertions.assertThat(fn.function().apply(new Parameter())).isEqualTo("Hello stranger");
+	}
+
+	@Test
+	public void test_template_function_multiple_params() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		var fn = wrapper.getRegisterTemplateFunctions().stream()
+				.filter(f -> f.name().equals("full_name")).findFirst().orElseThrow();
+		Assertions.assertThat(fn.function().apply(new Parameter(Map.of("firstName", "Max", "lastName", "Mustermann"))))
+				.isEqualTo("Max Mustermann");
+	}
+
+	@Test
+	public void test_template_function_explicit_namespace_registered() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		Assertions.assertThat(wrapper.getRegisterTemplateFunctions())
+				.anyMatch(f -> f.namespace().equals("theme") && f.name().equals("version"));
+	}
+
+	@Test
+	public void test_template_function_explicit_namespace_returns_correct_value() throws IOException {
+		var wrapper = setupTemplateFunctions(new RequestContext());
+
+		var fn = wrapper.getRegisterTemplateFunctions().stream()
+				.filter(f -> f.name().equals("version")).findFirst().orElseThrow();
+		Assertions.assertThat(fn.function().apply(new Parameter())).isEqualTo("1.0.0");
+	}
+
+	// --- template components registered via $hooks ---
+
+	private TemplateComponentsWrapper setupComponents(RequestContext requestContext) throws IOException {
+		setupHookSystem(requestContext);
+		return new TemplateHooks(requestContext).getComponents(new HashMap<>());
+	}
+
+	@Test
+	public void test_template_component_default_namespace_registered() throws IOException {
+		var wrapper = setupComponents(new RequestContext());
+
+		Assertions.assertThat(wrapper.getComponents()).containsKey("ext:badge");
+	}
+
+	@Test
+	public void test_template_component_no_params_returns_correct_value() throws IOException {
+		var wrapper = setupComponents(new RequestContext());
+
+		String result = wrapper.getComponents().get("ext:badge").apply(new Parameter());
+		Assertions.assertThat(result).isEqualTo("<span class='badge'>badge</span>");
+	}
+
+	@Test
+	public void test_template_component_destructured_param() throws IOException {
+		var wrapper = setupComponents(new RequestContext());
+
+		String result = wrapper.getComponents().get("ext:alert")
+				.apply(new Parameter(Map.of("message", "Watch out!")));
+		Assertions.assertThat(result).isEqualTo("<div class='alert'>Watch out!</div>");
+	}
+
+	@Test
+	public void test_template_component_destructured_param_js_default() throws IOException {
+		var wrapper = setupComponents(new RequestContext());
+
+		String result = wrapper.getComponents().get("ext:alert").apply(new Parameter());
+		Assertions.assertThat(result).isEqualTo("<div class='alert'>default</div>");
+	}
+
+	@Test
+	public void test_template_component_explicit_namespace_registered() throws IOException {
+		var wrapper = setupComponents(new RequestContext());
+
+		Assertions.assertThat(wrapper.getComponents()).containsKey("theme:card");
+	}
+
+	@Test
+	public void test_template_component_explicit_namespace_returns_correct_value() throws IOException {
+		var wrapper = setupComponents(new RequestContext());
+
+		String result = wrapper.getComponents().get("theme:card")
+				.apply(new Parameter(Map.of("title", "My Card")));
+		Assertions.assertThat(result).isEqualTo("<div class='card'>My Card</div>");
 	}
 
 	// --- tags registered via $tags.register ---

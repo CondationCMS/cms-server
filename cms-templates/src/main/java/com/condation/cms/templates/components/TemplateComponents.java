@@ -21,11 +21,14 @@ package com.condation.cms.templates.components;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.TemplateComponent;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.utils.AnnotationsUtil;
 import com.google.common.base.Strings;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,29 +67,76 @@ public class TemplateComponents {
 		if (handler == null) {
 			return;
 		}
+		for (Method method : handler.getClass().getMethods()) {
+			if (!Modifier.isPublic(method.getModifiers())) {
+				continue;
+			}
+			if (!method.isAnnotationPresent(TemplateComponent.class)) {
+				continue;
+			}
+			TemplateComponent annotation = method.getAnnotation(TemplateComponent.class);
+			String key = buildKey(annotation);
+			Function<Parameter, String> fn = buildFunction(handler, method, key);
+			if (fn != null) {
+				componentMap.put(key, fn);
+			}
+		}
+	}
 
-		var annotations = AnnotationsUtil.process(handler, TemplateComponent.class, List.of(Parameter.class), String.class);
+	private Function<Parameter, String> buildFunction(Object target, Method method, String key) {
+		java.lang.reflect.Parameter[] params = method.getParameters();
 
-		for (var entry : annotations) {
-			String name = entry.annotation().value();
-            String namespace = entry.annotation().namespace();
-            if (Strings.isNullOrEmpty(namespace)) {
-                namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
-            }
-            String key;
-            if (!Strings.isNullOrEmpty(namespace)) {
-                key = "%s:%s".formatted(namespace, name);
-            } else {
-                key = name;
-            }
-            
-			componentMap.put(key, param -> {
-				try {
-					return entry.invoke(param);
-				} catch (Exception e) {
-					throw new RuntimeException("Error calling component: " + key, e);
-				}
-			});
+		if (params.length == 1 && Parameter.class.isAssignableFrom(params[0].getType())) {
+			return param -> invoke(target, method, key, param);
+		}
+
+		String[] names = extractParamNames(params);
+		if (names != null) {
+			return param -> invoke(target, method, key, resolveArgs(param, params, names));
+		}
+
+		log.warn("@TemplateComponent method '{}' in '{}' has unsupported signature — skipped",
+				method.getName(), target.getClass().getSimpleName());
+		return null;
+	}
+
+	private String buildKey(TemplateComponent annotation) {
+		String namespace = annotation.namespace();
+		if (Strings.isNullOrEmpty(namespace)) {
+			namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
+		}
+		return "%s:%s".formatted(namespace, annotation.value());
+	}
+
+	private String[] extractParamNames(java.lang.reflect.Parameter[] params) {
+		if (params.length == 0) {
+			return new String[0];
+		}
+		String[] names = new String[params.length];
+		for (int i = 0; i < params.length; i++) {
+			Param p = params[i].getAnnotation(Param.class);
+			if (p == null) {
+				return null;
+			}
+			names[i] = p.value();
+		}
+		return names;
+	}
+
+	private Object[] resolveArgs(Parameter param, java.lang.reflect.Parameter[] params, String[] names) {
+		Object[] args = new Object[params.length];
+		for (int i = 0; i < params.length; i++) {
+			args[i] = param.getOrDefault(names[i], null);
+		}
+		return args;
+	}
+
+	private String invoke(Object target, Method method, String key, Object... args) {
+		try {
+			return (String) method.invoke(target, args);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			log.error("error calling component '{}'", key, e);
+			throw new RuntimeException("Error calling component: " + key, e);
 		}
 	}
 

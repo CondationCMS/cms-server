@@ -21,12 +21,12 @@ package com.condation.cms.templates;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.TemplateFunction;
 import com.condation.cms.api.extensions.RegisterTemplateFunctionExtensionPoint;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.hooksystem.CMSHookSystem;
@@ -90,7 +90,7 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 		
 		var tfs = dc.templateFunctions();
 		
-		Assertions.assertThat(tfs).isNotNull().hasSize(3);
+		Assertions.assertThat(tfs).isNotNull().hasSize(4);
 	}
 	
 	public static class TestFunctions extends RegisterTemplateFunctionExtensionPoint {
@@ -116,5 +116,40 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 		public Object testfn3 () {
 			return "hi I'm testfn3";
 		}
+
+		@TemplateFunction("testfn4")
+		public Object testfn4 (@Param("name") String name) {
+			return "hi " + name;
+		}
+	}
+
+	@Test
+	void getFunctionsFromDynamicConfig_includes_param_style () {
+		var requestContext = new RequestContext();
+		requestContext.add(HookSystemFeature.class, new HookSystemFeature(new CMSHookSystem()));
+		requestContext.add(TemplateHooks.class, new TemplateHooks(requestContext));
+
+		var injectorMock = Mockito.mock(Injector.class);
+		requestContext.add(InjectorFeature.class, new InjectorFeature(injectorMock));
+
+		var moduleManagerMock = Mockito.mock(ModuleManager.class);
+		requestContext.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManagerMock));
+
+		Mockito.when(injectorMock.getInstance(ModuleManager.class)).thenReturn(moduleManagerMock);
+		Mockito.when(moduleManagerMock.extensions(RegisterTemplateFunctionExtensionPoint.class)).thenReturn(
+				List.of(new TestFunctions())
+		);
+
+		DynamicConfiguration dc = new DynamicConfiguration(new TemplateComponents(), requestContext);
+
+		var tfs = dc.templateFunctions();
+
+		// testfn1 (map), testfn2 (Parameter), testfn3 (no-arg), testfn4 (@Param)
+		Assertions.assertThat(tfs).isNotNull().hasSize(4);
+
+		var fn4 = tfs.stream().filter(f -> f.name().equals("testfn4")).findFirst();
+		Assertions.assertThat(fn4).isPresent();
+		Assertions.assertThat(fn4.get().invoke(new Parameter(Map.of("name", "World"))))
+				.isEqualTo("hi World");
 	}
 }

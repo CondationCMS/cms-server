@@ -44,7 +44,7 @@ public class HTMLPipeline {
 	public String updateSlot (Hooks hook, String elementName, String rawContent) {
 		
 		if (!rawContent.contains(elementName)) {
-			log.warn("No {} found, skipping header slot injection", elementName);
+			log.debug("No {} found, skipping header slot injection", elementName);
 			return rawContent;
 		}
 		

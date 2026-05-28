@@ -21,7 +21,7 @@ $hooks.registerAction("system/content/tags", ({tags}) => {
 $hooks.registerAction("system/template/function", ({functions}) => {
 	functions.put(
 			"fn_message",
-			(params) => `<div style="color: ${params.color}">${params.message}</div>`
+			({color, message}) => `<div style="color: ${color}">MESSAGE: ${message}</div>`
 	)
 	return null;
 })
@@ -29,17 +29,17 @@ $hooks.registerAction("system/template/function", ({functions}) => {
 $hooks.registerAction("system/template/component", ({components}) => {
 	components.put(
 			"component",
-			(params) => `<div style="color: ${params.color}">${params.message}</div>`
+			({color, message}) => `<div style="color: ${color}">COMPONENT: ${message}</div>`
 	)
 	
 	components.put(
 			"tempcomp",
 			(params) => {
 				var model = {
-					"name": params.get("name"),
-					"message_text": params.get("message")
+					"name": params.name,
+					"message_text": params.message
 				}
-				return $templates.render("components/test.html", model);
+				return "rendered: " + $templates.render("components/test.html", model);
 			}
 	)
 	

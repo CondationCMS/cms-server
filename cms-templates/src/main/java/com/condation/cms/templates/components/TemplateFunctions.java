@@ -21,11 +21,13 @@ package com.condation.cms.templates.components;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.TemplateFunction;
 import com.condation.cms.api.model.Parameter;
-import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.utils.AnnotationsUtil;
 import com.google.common.base.Strings;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -73,37 +75,75 @@ public class TemplateFunctions {
 		if (handler == null) {
 			return;
 		}
-
-		var annotations = AnnotationsUtil.process(handler, TemplateFunction.class, List.of(Parameter.class), Object.class);
-
-		for (var entry : annotations) {
-			String name = entry.annotation().value();
-            String namespace = entry.annotation().namespace();
-            if (Strings.isNullOrEmpty(namespace)) {
-                namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
-            }
-			functionMap.put(namespace, name, param -> {
-				try {
-					return entry.invoke(param);
-				} catch (Exception e) {
-					throw new RuntimeException("Error calling component: " + name, e);
-				}
-			});
+		for (Method method : handler.getClass().getMethods()) {
+			if (!Modifier.isPublic(method.getModifiers())) {
+				continue;
+			}
+			if (!method.isAnnotationPresent(TemplateFunction.class)) {
+				continue;
+			}
+			TemplateFunction annotation = method.getAnnotation(TemplateFunction.class);
+			String namespace = Strings.isNullOrEmpty(annotation.namespace())
+					? Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE
+					: annotation.namespace();
+			String name = annotation.value();
+			Function<Parameter, ?> fn = buildFunction(handler, method, name);
+			if (fn != null) {
+				functionMap.put(namespace, name, fn);
+			}
 		}
-		
-		annotations = AnnotationsUtil.process(handler, TemplateFunction.class, List.of(), Object.class);
+	}
 
-		for (var entry : annotations) {
-			String name = entry.annotation().value();
-            String namespace = entry.annotation().namespace();
-              
-			functionMap.put(namespace, name, param -> {
-				try {
-					return entry.invoke((Object[]) null);
-				} catch (Exception e) {
-					throw new RuntimeException("Error calling component: " + name, e);
-				}
-			});
+	private Function<Parameter, ?> buildFunction(Object target, Method method, String name) {
+		java.lang.reflect.Parameter[] params = method.getParameters();
+
+		// no-arg style
+		if (params.length == 0) {
+			return param -> invoke(target, method, name);
+		}
+
+		// context style: single Parameter argument
+		if (params.length == 1 && Parameter.class.isAssignableFrom(params[0].getType())) {
+			return param -> invoke(target, method, name, param);
+		}
+
+		// named-params style: all parameters carry @Param
+		String[] names = extractParamNames(params);
+		if (names != null) {
+			return param -> invoke(target, method, name, resolveArgs(param, params, names));
+		}
+
+		log.warn("@TemplateFunction method '{}' in '{}' has unsupported signature — skipped",
+				method.getName(), target.getClass().getSimpleName());
+		return null;
+	}
+
+	private String[] extractParamNames(java.lang.reflect.Parameter[] params) {
+		String[] names = new String[params.length];
+		for (int i = 0; i < params.length; i++) {
+			Param p = params[i].getAnnotation(Param.class);
+			if (p == null) {
+				return null;
+			}
+			names[i] = p.value();
+		}
+		return names;
+	}
+
+	private Object[] resolveArgs(Parameter param, java.lang.reflect.Parameter[] params, String[] names) {
+		Object[] args = new Object[params.length];
+		for (int i = 0; i < params.length; i++) {
+			args[i] = param.getOrDefault(names[i], null);
+		}
+		return args;
+	}
+
+	private Object invoke(Object target, Method method, String name, Object... args) {
+		try {
+			return method.invoke(target, args);
+		} catch (IllegalAccessException | InvocationTargetException e) {
+			log.error("error calling template function '{}'", name, e);
+			throw new RuntimeException("Error calling template function: " + name, e);
 		}
 	}
 

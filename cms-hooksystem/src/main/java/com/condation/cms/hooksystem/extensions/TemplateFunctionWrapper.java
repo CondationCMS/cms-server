@@ -27,9 +27,13 @@ import com.condation.cms.api.model.Parameter;
 import com.condation.cms.extensions.TemplateFunctionExtension;
 import com.google.common.base.Strings;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import lombok.Getter;
+import org.graalvm.polyglot.Value;
+import org.graalvm.polyglot.proxy.ProxyObject;
 
 /**
  *
@@ -40,12 +44,26 @@ public class TemplateFunctionWrapper {
 	@Getter
 	private final List<TemplateFunctionExtension> registerTemplateFunctions = new ArrayList<>();
 
-	public void put(final String path, final Function<Parameter, ?> function) {
-		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, path, function);
+	public void put(final String name, final Function<Parameter, ?> function) {
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, name, function);
 	}
-    
-    public void put(final String namespace, final String path, final Function<Parameter, ?> function) {
-        var ns = !Strings.isNullOrEmpty(namespace) ? namespace : "ext";
-		registerTemplateFunctions.add(new TemplateFunctionExtension(ns, path, function));
+
+	public void put(final String namespace, final String name, final Function<Parameter, ?> function) {
+		var ns = !Strings.isNullOrEmpty(namespace) ? namespace : Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
+		registerTemplateFunctions.add(new TemplateFunctionExtension(ns, name, function));
+	}
+
+	// called from JS: functions.put("name", ({param}) => ...)
+	public void put(final String name, final Value jsFunction) {
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, name, jsFunction);
+	}
+
+	// called from JS: functions.put("namespace", "name", ({param}) => ...)
+	public void put(final String namespace, final String name, final Value jsFunction) {
+		put(namespace, name, (Parameter param) -> {
+			Map<String, Object> jsArgs = new HashMap<>(param);
+			Value result = jsFunction.execute(ProxyObject.fromMap(jsArgs));
+			return result.isNull() ? null : result.as(Object.class);
+		});
 	}
 }

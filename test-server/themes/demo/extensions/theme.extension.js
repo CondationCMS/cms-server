@@ -10,6 +10,14 @@ $hooks.registerAction("system/content/tags", ({tags}) => {
 	return null;
 })
 
+$hooks.registerAction("system/content/tags", ({tags}) => {
+	tags.put(
+			"say_hello",
+			({name}) => `Hello, ${name}`
+	)
+	return null;
+})
+
 $hooks.registerAction("system/template/function", ({functions}) => {
 	functions.put(
 			"fn_message",

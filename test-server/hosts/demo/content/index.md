@@ -53,3 +53,6 @@ Theme: [[ext:theme_name]][[/ext:theme_name]]
 ```java
 System.out.println("Hello world!");
 ```
+
+### say hello
+[[ext:say_hello name="CondationCMS" /]]

@@ -20,10 +20,9 @@ package com.condation.cms.content.tags;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.api.Constants;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.utils.AnnotationsUtil;
+import com.condation.cms.content.tags.annotation.AnnotationTagRegistrar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +31,6 @@ import java.util.Set;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.condation.cms.api.annotations.Tag;
-import com.google.common.base.Strings;
 
 /**
  *
@@ -93,8 +90,8 @@ public class Tags {
 	public static class Builder {
 
 		private final TagParser tagParser;
-
 		private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
+		private final AnnotationTagRegistrar annotationRegistrar = new AnnotationTagRegistrar();
 
 		private Builder(TagParser tagParser) {
 			this.tagParser = tagParser;
@@ -106,7 +103,7 @@ public class Tags {
 		}
 
 		public Builder register(Map<String, Function<Parameter, String>> codes) {
-			this.tags.putAll(codes);
+			tags.putAll(codes);
 			return this;
 		}
 
@@ -114,41 +111,12 @@ public class Tags {
 			if (handlers == null || handlers.isEmpty()) {
 				return this;
 			}
-
 			handlers.forEach(this::register);
-
 			return this;
 		}
 
 		public Builder register(Object handler) {
-			if (handler == null) {
-				return this;
-			}
-
-			// Wir erwarten Methoden mit @Tag(Parameter) -> String
-			var annotations = AnnotationsUtil.process(handler, Tag.class, List.of(Parameter.class), String.class);
-
-			for (var entry : annotations) {
-				String name = entry.annotation().value();
-                String namespace = entry.annotation().namespace();
-                if (Strings.isNullOrEmpty(namespace)) {
-                    namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
-                }
-                String key;
-                if (!Strings.isNullOrEmpty(namespace)) {
-                    key = "%s:%s".formatted(namespace, name);
-                } else {
-                    key = name;
-                }
-				tags.put(key, param -> {
-					try {
-						return entry.invoke(param);
-					} catch (Exception e) {
-						throw new RuntimeException("Error calling tag: " + key, e);
-					}
-				});
-			}
-
+			annotationRegistrar.register(handler, tags);
 			return this;
 		}
 

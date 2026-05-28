@@ -22,6 +22,7 @@ package com.condation.cms.content.tags;
  */
 
 
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.ContentBaseTest;
@@ -241,6 +242,15 @@ public class TagsTest extends ContentBaseTest {
 	}
 	
 	@Test
+	void test_handler_var () {
+		RequestContext requestContext = new RequestContext();
+		
+		var result = tags.replace("[[ext:printHello2 name='CondationCMS' /]]", Map.of(), requestContext);
+		
+		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
+	}
+	
+	@Test
 	void test_multiline () {
 		var template = """
                  [[hello_from 
@@ -264,6 +274,11 @@ public class TagsTest extends ContentBaseTest {
 		@Tag("printHello")
 		public String printHello (Parameter parameter) {
 			return "hello " + parameter.getOrDefault("name", "");
+		}
+		
+		@Tag("printHello2")
+		public String printHello2 (@Param("name") String name) {
+			return "hello " + name;
 		}
 	}
 }

@@ -22,14 +22,11 @@ package com.condation.cms.content.tags.annotation;
  */
 
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.Tag;
 import com.condation.cms.api.model.Parameter;
-import com.google.common.base.Strings;
-import java.lang.reflect.InvocationTargetException;
+import com.condation.cms.api.utils.ParamAnnotationUtil;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
@@ -72,18 +69,14 @@ public class AnnotationTagRegistrar {
     private Function<Parameter, String> buildFunction(Object target, Method method, String key) {
         java.lang.reflect.Parameter[] params = method.getParameters();
 
-        // context style: single Parameter argument
-        if (params.length == 1 && Parameter.class.isAssignableFrom(params[0].getType())) {
-            return param -> invoke(target, method, key, param);
+        if (ParamAnnotationUtil.isContextStyle(params, Parameter.class)) {
+            return param -> (String) ParamAnnotationUtil.invokeOrThrow(target, method, key, param);
         }
 
-        // named-params style: all parameters carry @Param
-        String[] names = extractParamNames(params);
+        String[] names = ParamAnnotationUtil.extractParamNames(params);
         if (names != null) {
-            return param -> {
-                Object[] args = resolveArgs(param, params, names);
-                return invoke(target, method, key, args);
-            };
+            return param -> (String) ParamAnnotationUtil.invokeOrThrow(target, method, key,
+                    ParamAnnotationUtil.resolveArgs(param, names));
         }
 
         log.warn("@Tag method '{}' in '{}' has unsupported signature — skipped",
@@ -91,43 +84,9 @@ public class AnnotationTagRegistrar {
         return null;
     }
 
-    private String[] extractParamNames(java.lang.reflect.Parameter[] params) {
-        if (params.length == 0) {
-            return new String[0];
-        }
-        String[] names = new String[params.length];
-        for (int i = 0; i < params.length; i++) {
-            Param p = params[i].getAnnotation(Param.class);
-            if (p == null) {
-                return null;
-            }
-            names[i] = p.value();
-        }
-        return names;
-    }
-
-    private Object[] resolveArgs(Parameter param, java.lang.reflect.Parameter[] params, String[] names) {
-        Object[] args = new Object[params.length];
-        for (int i = 0; i < params.length; i++) {
-            args[i] = param.getOrDefault(names[i], null);
-        }
-        return args;
-    }
-
-    private String invoke(Object target, Method method, String key, Object... args) {
-        try {
-            return (String) method.invoke(target, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error("error calling tag '{}'", key, e);
-            throw new RuntimeException("Error calling tag: " + key, e);
-        }
-    }
-
     private String buildKey(Tag annotation) {
-        String namespace = annotation.namespace();
-        if (Strings.isNullOrEmpty(namespace)) {
-            namespace = Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
-        }
-        return "%s:%s".formatted(namespace, annotation.value());
+        return ParamAnnotationUtil.buildNamespaceKey(
+                annotation.namespace(), annotation.value(),
+                Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE);
     }
 }

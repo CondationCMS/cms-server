@@ -21,11 +21,10 @@ package com.condation.cms.templates.components;
  * #L%
  */
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.TemplateFunction;
 import com.condation.cms.api.model.Parameter;
+import com.condation.cms.api.utils.ParamAnnotationUtil;
 import com.google.common.base.Strings;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
@@ -99,52 +98,24 @@ public class TemplateFunctions {
 
 		// no-arg style
 		if (params.length == 0) {
-			return param -> invoke(target, method, name);
+			return param -> ParamAnnotationUtil.invokeOrThrow(target, method, name);
 		}
 
 		// context style: single Parameter argument
-		if (params.length == 1 && Parameter.class.isAssignableFrom(params[0].getType())) {
-			return param -> invoke(target, method, name, param);
+		if (ParamAnnotationUtil.isContextStyle(params, Parameter.class)) {
+			return param -> ParamAnnotationUtil.invokeOrThrow(target, method, name, param);
 		}
 
 		// named-params style: all parameters carry @Param
-		String[] names = extractParamNames(params);
+		String[] names = ParamAnnotationUtil.extractParamNames(params);
 		if (names != null) {
-			return param -> invoke(target, method, name, resolveArgs(param, params, names));
+			return param -> ParamAnnotationUtil.invokeOrThrow(target, method, name,
+					ParamAnnotationUtil.resolveArgs(param, names));
 		}
 
 		log.warn("@TemplateFunction method '{}' in '{}' has unsupported signature — skipped",
 				method.getName(), target.getClass().getSimpleName());
 		return null;
-	}
-
-	private String[] extractParamNames(java.lang.reflect.Parameter[] params) {
-		String[] names = new String[params.length];
-		for (int i = 0; i < params.length; i++) {
-			Param p = params[i].getAnnotation(Param.class);
-			if (p == null) {
-				return null;
-			}
-			names[i] = p.value();
-		}
-		return names;
-	}
-
-	private Object[] resolveArgs(Parameter param, java.lang.reflect.Parameter[] params, String[] names) {
-		Object[] args = new Object[params.length];
-		for (int i = 0; i < params.length; i++) {
-			args[i] = param.getOrDefault(names[i], null);
-		}
-		return args;
-	}
-
-	private Object invoke(Object target, Method method, String name, Object... args) {
-		try {
-			return method.invoke(target, args);
-		} catch (IllegalAccessException | InvocationTargetException e) {
-			log.error("error calling template function '{}'", name, e);
-			throw new RuntimeException("Error calling template function: " + name, e);
-		}
 	}
 
 	public Set<FunctionMap.ExtFunction> getFunctions() {

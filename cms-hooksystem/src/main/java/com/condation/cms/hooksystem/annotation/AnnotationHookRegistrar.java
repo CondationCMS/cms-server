@@ -23,18 +23,16 @@ package com.condation.cms.hooksystem.annotation;
 
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.annotations.Filter;
-import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.hooks.ActionFunction;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.FilterFunction;
+import com.condation.cms.api.utils.ParamAnnotationUtil;
 import com.condation.cms.hooksystem.registry.ActionRegistry;
 import com.condation.cms.hooksystem.registry.FilterRegistry;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -93,13 +91,14 @@ public class AnnotationHookRegistrar {
     private ActionFunction<?> buildActionFunction(Object target, Method method) {
         Parameter[] params = method.getParameters();
 
-        if (isContextStyle(params, ActionContext.class)) {
-            return context -> invoke(target, method, context);
+        if (ParamAnnotationUtil.isContextStyle(params, ActionContext.class)) {
+            return context -> ParamAnnotationUtil.invokeOrNull(target, method, context);
         }
 
-        String[] names = extractParamNames(params);
+        String[] names = ParamAnnotationUtil.extractParamNames(params);
         if (names != null) {
-            return context -> invoke(target, method, resolveArgs(context.arguments(), params, names));
+            return context -> ParamAnnotationUtil.invokeOrNull(target, method,
+                    ParamAnnotationUtil.resolveArgs(context.arguments(), names));
         }
 
         log.warn("@Action method '{}' in '{}' has unsupported signature — skipped",
@@ -110,53 +109,16 @@ public class AnnotationHookRegistrar {
     private FilterFunction<?> buildFilterFunction(Object target, Method method) {
         Parameter[] params = method.getParameters();
 
-        if (isContextStyle(params, FilterContext.class)) {
-            return context -> invoke(target, method, context);
+        if (ParamAnnotationUtil.isContextStyle(params, FilterContext.class)) {
+            return context -> ParamAnnotationUtil.invokeOrNull(target, method, context);
         }
 
         if (params.length == 1) {
-            return context -> invoke(target, method, context.value());
+            return context -> ParamAnnotationUtil.invokeOrNull(target, method, context.value());
         }
 
         log.warn("@Filter method '{}' in '{}' has unsupported signature — skipped",
                 method.getName(), target.getClass().getSimpleName());
         return null;
-    }
-
-    private boolean isContextStyle(Parameter[] params, Class<?> contextType) {
-        return params.length == 1 && contextType.isAssignableFrom(params[0].getType());
-    }
-
-    private String[] extractParamNames(Parameter[] params) {
-        if (params.length == 0) {
-            return new String[0];
-        }
-        String[] names = new String[params.length];
-        for (int i = 0; i < params.length; i++) {
-            Param p = params[i].getAnnotation(Param.class);
-            if (p == null) {
-                return null;
-            }
-            names[i] = p.value();
-        }
-        return names;
-    }
-
-    private Object[] resolveArgs(Map<String, Object> arguments, Parameter[] params, String[] names) {
-        Object[] args = new Object[params.length];
-        for (int i = 0; i < params.length; i++) {
-            args[i] = arguments.get(names[i]);
-        }
-        return args;
-    }
-
-    private Object invoke(Object target, Method method, Object... args) {
-        try {
-            return method.invoke(target, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
-            log.error("error invoking hook method '{}' on '{}'",
-                    method.getName(), target.getClass().getSimpleName(), e);
-            return null;
-        }
     }
 }

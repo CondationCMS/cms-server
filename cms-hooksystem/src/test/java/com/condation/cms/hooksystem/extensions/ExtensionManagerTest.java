@@ -26,6 +26,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.extensions.ExtensionManager;
@@ -33,6 +34,7 @@ import com.condation.cms.filesystem.FileSystem;
 import com.condation.cms.hooksystem.CMSHookSystem;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Engine;
@@ -231,5 +233,77 @@ public class ExtensionManagerTest {
 
 		Assertions.assertThat(hookSystem.doAction("action/unregistered").results())
 				.isEmpty();
+	}
+
+	// --- tags registered via $tags.register ---
+
+	private TagsWrapper setupTags(RequestContext requestContext) throws IOException {
+		var hookSystem = setupHookSystem(requestContext);
+		var codes = new HashMap<String, java.util.function.Function<Parameter, String>>();
+		return new ContentHooks(requestContext).getTags(codes);
+	}
+
+	@Test
+	public void test_tag_default_namespace_registered() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		Assertions.assertThat(wrapper.getTags()).containsKey("ext:hello");
+	}
+
+	@Test
+	public void test_tag_default_namespace_no_params_returns_correct_value() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		String result = wrapper.getTags().get("ext:hello").apply(new Parameter());
+		Assertions.assertThat(result).isEqualTo("Hello World");
+	}
+
+	@Test
+	public void test_tag_default_namespace_with_named_param() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		String result = wrapper.getTags().get("ext:greet").apply(new Parameter(Map.of("name", "CondationCMS")));
+		Assertions.assertThat(result).isEqualTo("Hello CondationCMS");
+	}
+
+	@Test
+	public void test_tag_default_namespace_with_missing_param_uses_default() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		String result = wrapper.getTags().get("ext:greet").apply(new Parameter());
+		Assertions.assertThat(result).isEqualTo("Hello stranger");
+	}
+
+	@Test
+	public void test_tag_explicit_namespace_registered() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		Assertions.assertThat(wrapper.getTags()).containsKey("theme:info");
+	}
+
+	@Test
+	public void test_tag_explicit_namespace_returns_correct_value() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		String result = wrapper.getTags().get("theme:info").apply(new Parameter());
+		Assertions.assertThat(result).isEqualTo("theme-info");
+	}
+
+	@Test
+	public void test_tag_multiple_destructured_params() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		String result = wrapper.getTags().get("ext:full_name")
+				.apply(new Parameter(Map.of("firstName", "Max", "lastName", "Mustermann")));
+		Assertions.assertThat(result).isEqualTo("Max Mustermann");
+	}
+
+	@Test
+	public void test_tag_destructured_param_with_js_default() throws IOException {
+		var wrapper = setupTags(new RequestContext());
+
+		// no "name" attribute → JS default value kicks in
+		String result = wrapper.getTags().get("ext:greet").apply(new Parameter());
+		Assertions.assertThat(result).isEqualTo("Hello stranger");
 	}
 }

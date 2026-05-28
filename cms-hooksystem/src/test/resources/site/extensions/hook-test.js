@@ -40,6 +40,12 @@ $hooks.registerAction(
 	({name}) => `Hallo ${name}`
 )
 
+// --- action: single named argument ---
+$hooks.registerAction(
+	"print_name_args",
+	(args) => `Hallo ${args.name}`
+)
+
 // --- action: multiple named arguments ---
 $hooks.registerAction(
 	"greet",

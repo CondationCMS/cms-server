@@ -130,6 +130,15 @@ public class ExtensionManagerTest {
 				.containsExactly("Hallo CondationCMS");
 	}
 
+	@Test
+	public void test_action_single_named_args() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("print_name_args", Map.of("name", "CondationCMS")).results())
+				.hasSize(1)
+				.containsExactly("Hallo CondationCMS");
+	}
+	
 	// --- action: multiple named arguments ---
 
 	@Test

@@ -22,7 +22,6 @@ package com.condation.cms.content.pipeline;
  */
 
 import com.condation.cms.api.feature.features.HookSystemFeature;
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.hooksystem.CMSHookSystem;

@@ -23,14 +23,46 @@ import { $hooks } from 'system/hooks.mjs';
 
 import { AuthFeature, $features } from 'system/features.mjs';
 
+// --- action: no arguments, uses feature context ---
 $hooks.registerAction(
 	"test",
-	(context) => {
-		
+	(args) => {
 		if ($features.has(AuthFeature)) {
 			return `Hallo ${$features.get(AuthFeature).username()}`
 		}
-		
 		return 'Guten Tag'
 	}
 )
+
+// --- action: single named argument ---
+$hooks.registerAction(
+	"print_name",
+	({name}) => `Hallo ${name}`
+)
+
+// --- action: multiple named arguments ---
+$hooks.registerAction(
+	"greet",
+	({firstName, lastName}) => `${firstName} ${lastName}`
+)
+
+// --- action: multiple handlers on same hook (both results collected) ---
+$hooks.registerAction("multi/action", (args) => "result1")
+$hooks.registerAction("multi/action", (args) => "result2")
+
+// --- action: priority ordering (lower number = earlier execution) ---
+$hooks.registerAction("priority/action", (args) => "high", 200)
+$hooks.registerAction("priority/action", (args) => "low",  100)
+
+// --- action: no return value → must not appear in results ---
+$hooks.registerAction("action/void", (args) => { /* intentionally no return */ })
+
+// --- filter: transform string to uppercase ---
+$hooks.registerFilter("filter/upper", (s) => s.toUpperCase())
+
+// --- filter: two chained transforms, priority controls order ---
+$hooks.registerFilter("filter/chain", (s) => s + "-A", 100)
+$hooks.registerFilter("filter/chain", (s) => s + "-B", 200)
+
+// --- filter: trim whitespace ---
+$hooks.registerFilter("filter/trim", (s) => s.trim())

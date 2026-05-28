@@ -33,6 +33,7 @@ import com.condation.cms.filesystem.FileSystem;
 import com.condation.cms.hooksystem.CMSHookSystem;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.graalvm.polyglot.Engine;
 import org.junit.jupiter.api.AfterAll;
@@ -89,14 +90,20 @@ public class ExtensionManagerTest {
 		extensionManager = new ExtensionManager(db, properties, engine);
 	}
 
-	@Test
-	public void test_with_auth() throws IOException {
-
-		var requestContext = new RequestContext();
+	private HookSystem setupHookSystem(RequestContext requestContext) throws IOException {
 		final HookSystem hookSystem = new CMSHookSystem();
 		requestContext.add(HookSystemFeature.class, new HookSystemFeature(hookSystem));
-		requestContext.add(AuthFeature.class, new AuthFeature("thorsten"));
 		extensionManager.newContext(theme, requestContext);
+		return hookSystem;
+	}
+
+	// --- action: no arguments, reads feature context ---
+
+	@Test
+	public void test_action_no_args_with_auth() throws IOException {
+		var requestContext = new RequestContext();
+		requestContext.add(AuthFeature.class, new AuthFeature("thorsten"));
+		var hookSystem = setupHookSystem(requestContext);
 
 		Assertions.assertThat(hookSystem.doAction("test").results())
 				.hasSize(1)
@@ -104,15 +111,116 @@ public class ExtensionManagerTest {
 	}
 
 	@Test
-	public void test_without_auth() throws IOException {
-
-		var requestContext = new RequestContext();
-		final HookSystem hookSystem = new CMSHookSystem();
-		requestContext.add(HookSystemFeature.class, new HookSystemFeature(hookSystem));
-		extensionManager.newContext(theme, requestContext);
+	public void test_action_no_args_without_auth() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
 
 		Assertions.assertThat(hookSystem.doAction("test").results())
 				.hasSize(1)
 				.containsExactly("Guten Tag");
+	}
+
+	// --- action: single named argument ---
+
+	@Test
+	public void test_action_single_named_arg() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("print_name", Map.of("name", "CondationCMS")).results())
+				.hasSize(1)
+				.containsExactly("Hallo CondationCMS");
+	}
+
+	// --- action: multiple named arguments ---
+
+	@Test
+	public void test_action_multiple_named_args() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("greet", Map.of("firstName", "Max", "lastName", "Mustermann")).results())
+				.hasSize(1)
+				.containsExactly("Max Mustermann");
+	}
+
+	// --- action: multiple handlers on same hook name ---
+
+	@Test
+	public void test_action_multiple_handlers_collect_all_results() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("multi/action").results())
+				.hasSize(2)
+				.containsExactlyInAnyOrder("result1", "result2");
+	}
+
+	// --- action: priority ordering ---
+
+	@Test
+	public void test_action_priority_ordering() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("priority/action").results())
+				.hasSize(2)
+				.containsExactly("low", "high");
+	}
+
+	// --- action: void return is not added to results ---
+
+	@Test
+	public void test_action_void_return_not_in_results() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("action/void").results())
+				.isEmpty();
+	}
+
+	// --- filter: string transform ---
+
+	@Test
+	public void test_filter_string_to_uppercase() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doFilter("filter/upper", "hello").value())
+				.isEqualTo("HELLO");
+	}
+
+	// --- filter: chained transforms in priority order ---
+
+	@Test
+	public void test_filter_chained_transforms_in_priority_order() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		// priority 100 runs first: "base-A", then priority 200: "base-A-B"
+		Assertions.assertThat(hookSystem.doFilter("filter/chain", "base").value())
+				.isEqualTo("base-A-B");
+	}
+
+	// --- filter: trim whitespace ---
+
+	@Test
+	public void test_filter_trim() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doFilter("filter/trim", "  hello world  ").value())
+				.isEqualTo("hello world");
+	}
+
+	// --- filter: no handler registered → original value returned unchanged ---
+
+	@Test
+	public void test_filter_no_handler_returns_original_value() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doFilter("filter/unregistered", "original").value())
+				.isEqualTo("original");
+	}
+
+	// --- action: no handler registered → empty results ---
+
+	@Test
+	public void test_action_no_handler_returns_empty_results() throws IOException {
+		var hookSystem = setupHookSystem(new RequestContext());
+
+		Assertions.assertThat(hookSystem.doAction("action/unregistered").results())
+				.isEmpty();
 	}
 }

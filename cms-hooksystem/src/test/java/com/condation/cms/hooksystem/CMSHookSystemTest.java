@@ -24,10 +24,12 @@ package com.condation.cms.hooksystem;
 
 import com.condation.cms.api.annotations.Filter;
 import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.FilterContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -117,24 +119,44 @@ public class CMSHookSystemTest {
 	@Test
 	void test_action_annotation () {
 		var actionObject = new MyActions();
-		
+
 		hookSystem.register(actionObject);
-		
+
 		hookSystem.doAction("test/annotation/action1");
-		
+
 		Assertions.assertThat(actionObject.counter).hasValue(2);
 	}
-	
+
 	@Test
 	void test_filter_annotations () {
 		var myFilters = new MyFilters();
-		
+
 		hookSystem.register(myFilters);
-		
+
 		var context = hookSystem.doFilter("test/annotation/filter1", new ArrayList<>(List.of("1", "2", "3")));
 		Assertions.assertThat(context.value()).containsExactly("1", "3");
 	}
-	
+
+	@Test
+	void test_action_named_params () {
+		var handler = new MyNamedParamActions();
+
+		hookSystem.register(handler);
+
+		var context = hookSystem.doAction("test/named/action1", Map.of("name", "World", "count", 3));
+		Assertions.assertThat(context.results()).hasSize(1).containsExactly("Hello World 3");
+	}
+
+	@Test
+	void test_filter_direct_value () {
+		var handler = new MyDirectValueFilters();
+
+		hookSystem.register(handler);
+
+		var context = hookSystem.doFilter("test/direct/filter1", new ArrayList<>(List.of("1", "2", "3")));
+		Assertions.assertThat(context.value()).containsExactly("1", "3");
+	}
+
 	public class MyFilters {
 		@Filter("test/annotation/filter1")
 		public List<String> filter (FilterContext<List<String>> context) {
@@ -142,11 +164,11 @@ public class CMSHookSystemTest {
 			return context.value();
 		}
 	}
-	
+
 	public class MyActions {
-		
+
 		private AtomicInteger counter = new AtomicInteger(0);
-		
+
 		@Action("test/annotation/action1")
 		public void action1 (ActionContext<?> context) {
 			counter.incrementAndGet();
@@ -154,6 +176,21 @@ public class CMSHookSystemTest {
 		@Action("test/annotation/action1")
 		public void action2 (ActionContext<?> context) {
 			counter.incrementAndGet();
+		}
+	}
+
+	public class MyNamedParamActions {
+		@Action("test/named/action1")
+		public String greet (@Param("name") String name, @Param("count") Integer count) {
+			return "Hello " + name + " " + count;
+		}
+	}
+
+	public class MyDirectValueFilters {
+		@Filter("test/direct/filter1")
+		public List<String> filter (List<String> values) {
+			values.remove("2");
+			return values;
 		}
 	}
 }

@@ -22,14 +22,18 @@ package com.condation.cms.hooksystem;
  */
 import com.condation.cms.api.annotations.Filter;
 import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.ActionFunction;
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.api.hooks.FilterFunction;
 import com.condation.cms.api.hooks.HookSystem;
-import com.condation.cms.api.utils.AnnotationsUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -58,23 +62,107 @@ public class CMSHookSystem implements HookSystem {
 	}
 
 	public void register(Object sourceObject) {
-		// Action-Methoden registrieren
-		List<AnnotationsUtil.CMSAnnotation<Action, Void>> actionMethods
-				= AnnotationsUtil.process(sourceObject, Action.class, List.of(ActionContext.class), Void.class);
-
-		for (AnnotationsUtil.CMSAnnotation<Action, Void> ann : actionMethods) {
-			Action annotation = ann.annotation();
-			registerAction(annotation.value(), context -> ann.invoke(context), annotation.priority());
+		Class<?> clazz = sourceObject.getClass();
+		for (Method method : clazz.getMethods()) {
+			if (!Modifier.isPublic(method.getModifiers())) {
+				continue;
+			}
+			if (method.isAnnotationPresent(Action.class)) {
+				Action annotation = method.getAnnotation(Action.class);
+				ActionFunction<?> fn = buildActionFunction(sourceObject, method);
+				if (fn != null) {
+					registerAction(annotation.value(), fn, annotation.priority());
+				}
+			}
+			if (method.isAnnotationPresent(Filter.class)) {
+				Filter annotation = method.getAnnotation(Filter.class);
+				FilterFunction<?> fn = buildFilterFunction(sourceObject, method);
+				if (fn != null) {
+					registerFilter(annotation.value(), fn, annotation.priority());
+				}
+			}
 		}
+	}
 
-		// Filter-Methoden registrieren
-		List<AnnotationsUtil.CMSAnnotation<Filter, Object>> filterMethods
-				= AnnotationsUtil.process(sourceObject, Filter.class, List.of(FilterContext.class), Object.class);
-
-		for (AnnotationsUtil.CMSAnnotation<Filter, Object> ann : filterMethods) {
-			Filter annotation = ann.annotation();
-			registerFilter(annotation.value(), context -> ann.invoke(context), annotation.priority());
+	private ActionFunction<?> buildActionFunction(Object target, Method method) {
+		Parameter[] params = method.getParameters();
+		// context style: single ActionContext parameter
+		if (params.length == 1 && ActionContext.class.isAssignableFrom(params[0].getType())) {
+			return context -> {
+				try {
+					return method.invoke(target, context);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					log.error("error invoking action hook", e);
+					return null;
+				}
+			};
 		}
+		// named-params style: all parameters must carry @Param
+		String[] names = paramNames(params);
+		if (names != null) {
+			return context -> {
+				Object[] args = resolveArgs(context.arguments(), params, names);
+				try {
+					return method.invoke(target, args);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					log.error("error invoking action hook", e);
+					return null;
+				}
+			};
+		}
+		log.warn("Method {} annotated with @Action has unsupported signature — skipped", method);
+		return null;
+	}
+
+	private FilterFunction<?> buildFilterFunction(Object target, Method method) {
+		Parameter[] params = method.getParameters();
+		// context style: single FilterContext parameter
+		if (params.length == 1 && FilterContext.class.isAssignableFrom(params[0].getType())) {
+			return context -> {
+				try {
+					return method.invoke(target, context);
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					log.error("error invoking filter hook", e);
+					return null;
+				}
+			};
+		}
+		// direct-value style: single non-FilterContext parameter (the value itself)
+		if (params.length == 1) {
+			return context -> {
+				try {
+					return method.invoke(target, context.value());
+				} catch (IllegalAccessException | InvocationTargetException e) {
+					log.error("error invoking filter hook", e);
+					return null;
+				}
+			};
+		}
+		log.warn("Method {} annotated with @Filter has unsupported signature — skipped", method);
+		return null;
+	}
+
+	private String[] paramNames(Parameter[] params) {
+		if (params.length == 0) {
+			return new String[0];
+		}
+		String[] names = new String[params.length];
+		for (int i = 0; i < params.length; i++) {
+			Param p = params[i].getAnnotation(Param.class);
+			if (p == null) {
+				return null;
+			}
+			names[i] = p.value();
+		}
+		return names;
+	}
+
+	private Object[] resolveArgs(Map<String, Object> arguments, Parameter[] params, String[] names) {
+		Object[] args = new Object[params.length];
+		for (int i = 0; i < params.length; i++) {
+			args[i] = arguments.get(names[i]);
+		}
+		return args;
 	}
 
 	public <T> void registerAction(final String name, final ActionFunction<T> hookFunction) {
@@ -124,7 +212,7 @@ public class CMSHookSystem implements HookSystem {
 	 * @param parameters
 	 * @return
 	 */
-	public <T> FilterContext<T> doFilter(final String name, final T parameters) {
+	 public <T> FilterContext<T> doFilter(final String name, final T parameters) {
 		final FilterContext<T> returnContext = new FilterContext(
 				parameters
 		);

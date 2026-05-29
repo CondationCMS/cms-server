@@ -1,4 +1,4 @@
-<div class="section" {{ ext.ui.toolbar(node.uri, "slotItem" , ["editContent", "editAttributes" , "deleteSlotItem" ], {"uri":
+<div class="section" {{ ext.ui.toolbar(node.uri, "sectionEntry" , ["editContent", "editAttributes" , "deleteSectionEntry" ], {"uri":
 	node.uri, "form": "attributes"}) | raw }}>
 	<div class="container">
 		{{ node.content | default('your content here') | raw}}

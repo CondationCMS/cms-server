@@ -28,7 +28,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.DateRange;
 import com.condation.cms.api.utils.MapUtil;
-import com.condation.cms.api.utils.SlotUtil;
+import com.condation.cms.api.utils.SectionUtil;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -124,8 +124,8 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
 		return DateRange.isNowWithin(publish_date, unpublish_date);
 	}
 
-	public boolean isSlotItem() {
-		return SlotUtil.isSlotItem(name);
+	public boolean isSectionEntry() {
+		return SectionUtil.isSectionEntry(name);
 	}
 
 	public boolean isRedirect() {

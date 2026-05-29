@@ -60,10 +60,10 @@
 		</div>
 
 		<div class="container sections" 
-			{{ ext.ui.toolbar("asection", "slot", ["addSlotItem", "orderSlotItems"], { "sectionName": "asection"}) | raw }}
+			{{ ext.ui.toolbar("asection", "section", ["addSectionEntry", "orderSectionEntries"], { "section": "asection"}) | raw }}
 			>
-			{% if node.slots.containsKey('asection') %}
-				{% for item in node.slots.get('asection') %}
+			{% if node.sections.containsKey('asection') %}
+				{% for item in node.sections.get('asection') %}
 					{{ item.content() | raw }}
 				{% endfor %}
 			{% endif %}

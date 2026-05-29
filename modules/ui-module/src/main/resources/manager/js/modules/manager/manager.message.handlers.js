@@ -122,7 +122,7 @@ const initMessageHandlers = () => {
             "module": window.manager.baseUrl + "/actions/page/edit-sections",
             "function": "runAction",
             "parameters": {
-                "slot": payload.slot
+                "section": payload.section
             }
         };
         if (payload.uri) {
@@ -130,17 +130,17 @@ const initMessageHandlers = () => {
         }
         executeScriptAction(cmd);
     });
-    frameMessenger.on('add-slotItem', (payload) => {
+    frameMessenger.on('add-sectionEntry', (payload) => {
         var cmd = {
             "module": window.manager.baseUrl + "/actions/page/add-section",
             "function": "runAction",
             "parameters": {
-                "slot": payload.slot
+                "section": payload.section
             }
         };
         executeScriptAction(cmd);
     });
-    frameMessenger.on('delete-slotItem', (payload) => {
+    frameMessenger.on('delete-sectionEntry', (payload) => {
         var cmd = {
             "module": window.manager.baseUrl + "/actions/page/delete-section",
             "function": "runAction",

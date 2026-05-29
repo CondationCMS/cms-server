@@ -39,12 +39,12 @@
 			<hr />
 		</div>
 
-		{% if !empty(node.slots) %}
+		{% if !empty(node.sections) %}
 			<div class="container sections" 
-				{{ ext.ui.toolbar("asection", "slot", ["addSlotItem", "orderSlotItems"], { "sectionName": "asection"}) | raw }}
+				{{ ext.ui.toolbar("asection", "section", ["addSectionEntry", "orderSectionEntries"], { "section": "asection"}) | raw }}
 				>
-				{% if node.slots.containsKey('asection') %}
-					{% for item in node.slots.get('asection') %}
+				{% if node.section.containsKey('asection') %}
+					{% for item in node.section.get('asection') %}
 						{{ item.content() | raw }}
 					{% endfor %}
 				{% endif %}

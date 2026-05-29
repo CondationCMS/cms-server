@@ -37,14 +37,14 @@ public class HTMLPipeline {
 	private final HookSystem hookSystem;
 	
 	public String process(String rawContent) {
-		rawContent = updateSlot(Hooks.LAYOUT_HEADER, "</head>", rawContent);
-		return updateSlot(Hooks.LAYOUT_FOOTER, "</body>", rawContent);
+		rawContent = updateLayoutPosition(Hooks.LAYOUT_HEADER, "</head>", rawContent);
+		return updateLayoutPosition(Hooks.LAYOUT_FOOTER, "</body>", rawContent);
 	}
 
-	public String updateSlot (Hooks hook, String elementName, String rawContent) {
+	public String updateLayoutPosition (Hooks hook, String elementName, String rawContent) {
 		
 		if (!rawContent.contains(elementName)) {
-			log.debug("No {} found, skipping header slot injection", elementName);
+			log.debug("No {} found, skipping layout position injection", elementName);
 			return rawContent;
 		}
 		

@@ -95,19 +95,19 @@ public abstract class Constants {
 	
 	public static final Pattern TAXONOMY_VALUE = Pattern.compile("taxonomy\\.([a-zA-Z0-9-]+)\\.yaml");
 	
-	public static final Pattern SLOT_ITEM_PATTERN = Pattern.compile("\\w+\\.(?<slot>[a-zA-Z0-9-]+)\\.md");
+	public static final Pattern SECTION_ENTRY_PATTERN = Pattern.compile("\\w+\\.(?<section>[a-zA-Z0-9-]+)\\.md");
 	
-	public static final Function<String, Pattern> SLOT_ITEM_OF_PATTERN = (fileName) -> {
-		return Pattern.compile("%s\\.(?<slot>[a-zA-Z0-9-]+)\\.md".formatted(Pattern.quote(fileName)));
+	public static final Function<String, Pattern> SECTION_ENTRY_OF_PATTERN = (fileName) -> {
+		return Pattern.compile("%s\\.(?<section>[a-zA-Z0-9-]+)\\.md".formatted(Pattern.quote(fileName)));
 	};
 	
-	public static final Pattern SLOT_ITEM_NAMED_PATTERN = Pattern.compile("[\\w-]+\\.(?<slot>[a-zA-Z0-9-]+)\\.(?<id>[\\w-]+)\\.md");
+	public static final Pattern SECTION_ENTRY_NAMED_PATTERN = Pattern.compile("[\\w-]+\\.(?<section>[a-zA-Z0-9-]+)\\.(?<id>[\\w-]+)\\.md");
 	
-	public static final Function<String, Pattern> SLOT_ITEM_NAMED_OF_PATTERN = (fileName) -> {
+	public static final Function<String, Pattern> SECTION_ENTRY_NAMED_OF_PATTERN = (fileName) -> {
 		return Pattern.compile("%s\\.[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+\\.md".formatted(Pattern.quote(fileName)));
 	};
 	
-	public static final int DEFAULT_SLOT_ITEM_LAYOUT_ORDER = 0;
+	public static final int DEFAULT_SECTION_ENTRY_LAYOUT_ORDER = 0;
 	public static final double DEFAULT_MENU_POSITION = 1000f;
 	public static final boolean DEFAULT_MENU_VISIBILITY = true;
 	public static final int DEFAULT_EXCERPT_LENGTH = 200;

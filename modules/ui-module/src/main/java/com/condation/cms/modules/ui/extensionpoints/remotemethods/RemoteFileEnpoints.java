@@ -27,7 +27,7 @@ import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
-import com.condation.cms.api.utils.SlotUtil;
+import com.condation.cms.api.utils.SectionUtil;
 import com.condation.modules.api.annotation.Extension;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -100,7 +100,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 					files.add(new Directory("..", parent.uri()));
 				}
 				contentFile.children().stream()
-						.filter(child -> !SlotUtil.isSlotItem(child.getFileName()))
+						.filter(child -> !SectionUtil.isSectionEntry(child.getFileName()))
 						.map(this::map)
 						.forEach(files::add);
 			} catch (IOException ex) {
@@ -144,7 +144,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 			} else if ("assets".equals(type)) {
 				Files.deleteIfExists(writableBase.resolve(uri).resolve(name));
 			} else {
-				var sections = db.getContent().listSlotItems(contentFile);
+				var sections = db.getContent().listSectionEntries(contentFile);
 				Files.deleteIfExists(writableBase.resolve(uri).resolve(name));
 				sections.forEach(node -> {
 					try {
@@ -202,7 +202,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 
 			if (!"assets".equals(type) && !Files.isDirectory(targetPath)) {
 				var contentFile = contentBase.resolve(uri).resolve(name);
-				var sections = db.getContent().listSlotItems(contentFile);
+				var sections = db.getContent().listSectionEntries(contentFile);
 
 				for (var node : sections) {
 					var sourceSectionPath = writableBase.resolve(node.uri());

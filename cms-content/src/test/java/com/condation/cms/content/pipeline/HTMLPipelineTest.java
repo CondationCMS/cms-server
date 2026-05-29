@@ -40,7 +40,7 @@ class HTMLPipelineTest {
 	}
 
 	@Test
-	void shouldInjectHeaderSlot() {
+	void shouldInjectHeader() {
 		// given
 		String html = """
             <html>
@@ -64,7 +64,7 @@ class HTMLPipelineTest {
 	}
 
 	@Test
-	void shouldInjectFooterSlot() {
+	void shouldInjectFooter() {
 		// given
 		String html = """
             <html>
@@ -89,7 +89,7 @@ class HTMLPipelineTest {
 	}
 
 	@Test
-	void shouldInjectBothSlots() {
+	void shouldInjectBoth() {
 		// given
 		String html = """
             <html>

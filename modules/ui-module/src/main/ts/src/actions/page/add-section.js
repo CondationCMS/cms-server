@@ -24,7 +24,7 @@ import { addSection, getContentNode } from '@cms/modules/rpc/rpc-content.js'
 import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.8/+esm'
 import { i18n } from '@cms/modules/localization.js'
-import { getSlotItemTemplates } from '@cms/modules/rpc/rpc-manager.js';
+import { getSectionEntryTemplates } from '@cms/modules/rpc/rpc-manager.js';
 
 export async function runAction(params) {
 
@@ -45,25 +45,25 @@ export async function runAction(params) {
 		</select>
 		`);
 
-		var sectionsResponse = await getSlotItemTemplates({
-			slot: params.slot
+		var sectionsResponse = await getSectionEntryTemplates({
+			section: params.section
 		});
 
 	openModal({
-		title: i18n.t("addsection.titles.modal", 'Add item'),
+		title: i18n.t("addsection.titles.modal", 'Add entry'),
 		body: template({ 
 			templates: sectionsResponse.result,
 			
 		}),
 		fullscreen: false,
 		onCancel: (event) => {},
-		validate: () => validate(contentNode, params.slot),
+		validate: () => validate(contentNode, params.section),
 		onOk: async (event) => {
-			var result = await createSection(contentNode.result.uri, params.slot);
+			var result = await createSection(contentNode.result.uri, params.section);
 			if (result) {
 				showToast({
-					title: i18n.t("manager.actions.addsection.titles.alert", "Create Item"),
-					message: i18n.t("manager.actions.addsection.alerts.success.message", "Item successfuly created."),
+					title: i18n.t("manager.actions.addsection.titles.alert", "Create Entry"),
+					message: i18n.t("manager.actions.addsection.alerts.success.message", "Entry successfuly created."),
 					type: 'success', // optional: info | success | warning | error
 					timeout: 3000
 				});
@@ -71,8 +71,8 @@ export async function runAction(params) {
 				reloadPreview()
 			} else {
 				showToast({
-					title: i18n.t("manager.actions.addsection.titles.alert", 'Create Item'),
-					message: i18n.t("manager.actions.addsection.alerts.error.message", "Item not created."),
+					title: i18n.t("manager.actions.addsection.titles.alert", 'Create Entry'),
+					message: i18n.t("manager.actions.addsection.alerts.error.message", "Entry not created."),
 					type: 'warning', // optional: info | success | warning | error
 					timeout: 3000
 				});
@@ -82,15 +82,15 @@ export async function runAction(params) {
 	});
 }
 
-const getSlotItemName = () => {
+const getSectionEntryName = () => {
 	return document.getElementById("cms-section-name").value
 }
 
-const validate = (contentNode, targetSlot) => {
+const validate = (contentNode, targetSection) => {
 	const template = document.getElementById("cms-section-template-selection").value
 	if (template === "000") {
 		showToast({
-			title: i18n.t("manager.actions.addsection.titles.alert", 'Create Item'),
+			title: i18n.t("manager.actions.addsection.titles.alert", 'Create Entry'),
 			message: i18n.t("manager.actions.addsection.alerts.notemplate.message", "No template selected."),
 			type: 'error', // optional: info | success | warning | error
 			timeout: 3000
@@ -98,11 +98,11 @@ const validate = (contentNode, targetSlot) => {
 		return false
 	}
 
-	const slotItemName = getSlotItemName()
-	if (slotItemName === "" || slotItemName === null) {
+	const sectionEntryName = getSectionEntryName()
+	if (sectionEntryName === "" || sectionEntryName === null) {
 		showToast({
-			title: i18n.t("manager.actions.addsection.titles.alert", 'Create Item'),
-			message: i18n.t("manager.actions.addsection.alerts.noname.message", "No Item name provided."),
+			title: i18n.t("manager.actions.addsection.titles.alert", 'Create Entry'),
+			message: i18n.t("manager.actions.addsection.alerts.noname.message", "No Entry name provided."),
 			type: 'error',
 			timeout: 3000
 		});
@@ -113,17 +113,17 @@ const validate = (contentNode, targetSlot) => {
 }
 
 
-function isUriInSection(data, slotItemKey, targetUri) {
+function isUriInSection(data, sectionEntryKey, targetUri) {
 	if (
 		!data ||
 		!data.result ||
-		!data.result.slots ||
-		typeof data.result.slots !== 'object'
+		!data.result.sections ||
+		typeof data.result.sections !== 'object'
 	) {
 		return false;
 	}
 
-	const sectionArray = data.result.slots[slotItemKey];
+	const sectionArray = data.result.sections[sectionEntryKey];
 
 	if (!Array.isArray(sectionArray)) {
 		return false;
@@ -140,8 +140,8 @@ const createSection = async (parentUri, parentSectionName) => {
 	}
 	await addSection({
 		parentUri: parentUri,
-		slotItemName: getSlotItemName(),
-		slot: parentSectionName,
+		sectionEntryName: getSectionEntryName(),
+		section: parentSectionName,
 		template: template
 	})
 	return true

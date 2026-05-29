@@ -27,26 +27,26 @@ import com.condation.cms.api.Constants;
  *
  * @author t.marx
  */
-public class SlotUtil {
+public class SectionUtil {
 
-	public static boolean isNamedSlotItem(final String name) {
-		return Constants.SLOT_ITEM_NAMED_PATTERN.matcher(name).matches();
+	public static boolean isNamedSectionEntry(final String name) {
+		return Constants.SECTION_ENTRY_NAMED_PATTERN.matcher(name).matches();
 	}
 
-	public static String getSlotItemName(final String name) {
-		if (isNamedSlotItem(name)) {
-			var matcher = Constants.SLOT_ITEM_NAMED_PATTERN.matcher(name);
+	public static String getSectionName(final String name) {
+		if (isNamedSectionEntry(name)) {
+			var matcher = Constants.SECTION_ENTRY_NAMED_PATTERN.matcher(name);
 			matcher.matches();
-			return matcher.group("slot");
+			return matcher.group("section");
 		} else {
-			var matcher = Constants.SLOT_ITEM_PATTERN.matcher(name);
+			var matcher = Constants.SECTION_ENTRY_PATTERN.matcher(name);
 			matcher.matches();
-			return matcher.group("slot");
+			return matcher.group("section");
 		}
 	}
 
-	public static boolean isSlotItem(final String name) {
-		return Constants.SLOT_ITEM_PATTERN.matcher(name).matches()
-				|| Constants.SLOT_ITEM_NAMED_PATTERN.matcher(name).matches();
+	public static boolean isSectionEntry(final String name) {
+		return Constants.SECTION_ENTRY_PATTERN.matcher(name).matches()
+				|| Constants.SECTION_ENTRY_NAMED_PATTERN.matcher(name).matches();
 	}
 }

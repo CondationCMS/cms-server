@@ -33,7 +33,7 @@ export async function runAction(params) {
 
 	var template = Handlebars.compile(`
 			<ul class="list-group cms-sortable">
-				{{#each slotItems}}
+				{{#each sectionEntries}}
     				<li class="list-group-item" data-cms-section-uri="{{uri}}" data-cms-section-index="{{index}}"><i class="bi bi-grip-vertical" data-cms-section-handle=''></i> 
 					{{#if data.title}}
           				{{data.title}}
@@ -44,23 +44,23 @@ export async function runAction(params) {
   				{{/each}}
 			</ul>
 		`);
-	var slotItems = []
-	if (contentNode.result.slots[params.slot]) {
-		var slotItems = contentNode.result.slots[params.slot]
+	var sectionEntries = []
+	if (contentNode.result.sections[params.section]) {
+		var sectionEntries = contentNode.result.sections[params.section]
 	}
-	slotItems = slotItems.sort((a, b) => a.index - b.index)
+	sectionEntries = sectionEntries.sort((a, b) => a.index - b.index)
 
 
 	openModal({
 		title: 'Edit items',
-		body: template({ slotItems: slotItems }),
+		body: template({ sectionEntries: sectionEntries }),
 		fullscreen: false,
 		onCancel: (event) => {},
 		onOk: async (event) => {
 			await saveSections();
 			showToast({
-				title: 'Items saved',
-				message: 'Items successfuly saved.',
+				title: 'Entry saved',
+				message: 'Entry successfuly saved.',
 				type: 'success', // optional: info | success | warning | error
 				timeout: 3000
 			});

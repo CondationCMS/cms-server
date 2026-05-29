@@ -51,7 +51,7 @@ export function initIframe() {
         }
     });
     frameMessenger.on('getContentNodeResponse', async (payload) => {
-        for (const [slotName, items] of Object.entries(payload.contentNode.slots)) {
+        for (const [sectionName, items] of Object.entries(payload.contentNode.sections)) {
             for (const item of items) {
                 const sectionContainer = document.querySelector(`[data-cms-section-uri="${item.uri}"]`);
                 if (!sectionContainer) {

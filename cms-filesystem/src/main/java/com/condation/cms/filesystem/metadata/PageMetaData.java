@@ -32,7 +32,7 @@ import com.condation.cms.api.request.RequestContextScope;
 public abstract class PageMetaData {
 	
 	public static boolean isPage (ContentNode node) {
-		return !node.isSlotItem();
+		return !node.isSectionEntry();
 	}
 	
 	public static boolean isVisible (ContentNode node) {

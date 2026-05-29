@@ -115,11 +115,11 @@ public class ContentResolver {
 		
 		try {
 			
-			List<ContentNode> slotItems = db.getContent().listSlotItems(contentFile);
+			List<ContentNode> sectionEntries = db.getContent().listSectionEntries(contentFile);
 			
-			Map<String, List<SlotItem>> renderedSlotItems = contentRenderer.renderSlotItems(slotItems, context);
+			Map<String, List<SectionEntry>> renderedSectionEntries = contentRenderer.renderSectionEntries(sectionEntries, context);
 			
-			var content = contentRenderer.render(contentFile, context, renderedSlotItems);
+			var content = contentRenderer.render(contentFile, context, renderedSectionEntries);
 			
 			var contentType = contentNode.contentType();
 			

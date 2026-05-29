@@ -119,7 +119,7 @@ public class TaxonomyResolver {
 			
 			Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(context.get(RequestFeature.class).uri(), db);
 			
-			Map<String, List<SlotItem>> slotItems = Collections.emptyMap();
+			Map<String, List<SectionEntry>> sectionEntries = Collections.emptyMap();
 			if (contentFileOpt.isPresent()) {
 				var contentFile = contentFileOpt.get();
 				
@@ -128,12 +128,12 @@ public class TaxonomyResolver {
 				
 				meta.putAll(content.meta());
 				
-				List<ContentNode> slotItemList = db.getContent().listSlotItems(contentFile);
+				List<ContentNode> sectionEntryList = db.getContent().listSectionEntries(contentFile);
 			
-				slotItems = contentRenderer.renderSlotItems(slotItemList, context);
+				sectionEntries = contentRenderer.renderSectionEntries(sectionEntryList, context);
 			}
 			
-			String content = contentRenderer.renderTaxonomy(contentFileOpt, taxonomy, value, context, meta, resultPage, slotItems);
+			String content = contentRenderer.renderTaxonomy(contentFileOpt, taxonomy, value, context, meta, resultPage, sectionEntries);
 
 			return Optional.of(new TaxonomyResponse(content, taxonomy));
 		} catch (Exception ex) {

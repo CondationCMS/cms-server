@@ -35,7 +35,7 @@ public class ContentTypes {
 
 	public Set<PageTemplate> pageTemplates = new HashSet();
 
-	public Set<SlotItemTemplate> slotItemTemplates = new HashSet<>();
+	public Set<SectionEntryTemplate> sectionEntryTemplates = new HashSet<>();
 	
 	public Set<ListItemType> listItemTypes = new HashSet<>();
 
@@ -55,21 +55,21 @@ public class ContentTypes {
 		pageTemplates.add(new PageTemplate(pageTemplate));
 	}
 
-	public void registerSlotItemTemplate(Map<String, Object> slotItemTemplate) {
-		slotItemTemplates.add(new SlotItemTemplate(slotItemTemplate));
+	public void registerSectionEntryTemplate(Map<String, Object> sectionEntryTemplate) {
+		sectionEntryTemplates.add(new SectionEntryTemplate(sectionEntryTemplate));
 	}
 	
 	public Set<PageTemplate> getPageTemplates () {
 		return new HashSet<>(pageTemplates);
 	}
 	
-	public Set<SlotItemTemplate> getSlotItemTemplates (String slot) {
-		return slotItemTemplates.stream()
-				.filter(template -> template.slot().equals(slot))
+	public Set<SectionEntryTemplate> getSectionEntryTemplates (String section) {
+		return sectionEntryTemplates.stream()
+				.filter(template -> template.section().equals(section))
 				.collect(Collectors.toSet());
 	}
-	public Set<SlotItemTemplate> getSlotItemTemplates () {
-		return new HashSet<>(slotItemTemplates);
+	public Set<SectionEntryTemplate> getSectionEntryTemplates () {
+		return new HashSet<>(sectionEntryTemplates);
 	}
 
 	public static record PageTemplate(String name, String template, Map<String, Object> data) {
@@ -94,17 +94,17 @@ public class ContentTypes {
         }
 	}
 
-	public static record SlotItemTemplate(String name, String template, Map<String, Object> data) {
+	public static record SectionEntryTemplate(String name, String template, Map<String, Object> data) {
 
-		public SlotItemTemplate (Map<String, Object> data) {
+		public SectionEntryTemplate (Map<String, Object> data) {
 			this(
 					(String) data.getOrDefault("name", "<no name>"),
 					(String) data.getOrDefault("template", "<no template>"),
 					data);
 		}
 
-		public String slot() {
-			return (String) data.getOrDefault("slot", "<no slot>");
+		public String section() {
+			return (String) data.getOrDefault("section", "<no section>");
 		}
 	}
 	

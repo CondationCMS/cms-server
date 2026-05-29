@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-declare const getSlotItemTemplates: (options: any) => Promise<any>;
+declare const getSectionEntryTemplates: (options: any) => Promise<any>;
 declare const getPageTemplates: (options: any) => Promise<any>;
 declare const getListItemTypes: (options: any) => Promise<any>;
 declare const getMediaForm: (options: any) => Promise<any>;
@@ -41,4 +41,4 @@ export interface MediaFormatsResponse {
 }
 declare const getMediaFormats: (options: any) => Promise<MediaFormatsResponse>;
 declare const getTagNames: (options: any) => Promise<any>;
-export { getSlotItemTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };
+export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };

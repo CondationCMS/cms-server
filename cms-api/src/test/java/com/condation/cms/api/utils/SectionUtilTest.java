@@ -1,8 +1,8 @@
-package com.condation.cms.content;
+package com.condation.cms.api.utils;
 
 /*-
  * #%L
- * CMS Content
+ * CMS Api
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,22 +21,23 @@ package com.condation.cms.content;
  * #L%
  */
 
-
-import com.condation.cms.api.Constants;
-import java.util.Map;
-
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 /**
  *
- * @author t.marx
+ * @author thorstenmarx
  */
-public record SlotItem(String name, int index, String content, Map<String, Object> data, String uri) {
+public class SectionUtilTest {
 
-	public SlotItem(String name, int index, String content, Map<String, Object> data) {
-		this(name, index, content, data, null);
-	}
-	
-	public SlotItem(String name, String content, Map<String, Object> data) {
-		this(name, Constants.DEFAULT_SLOT_ITEM_LAYOUT_ORDER, content, data, null);
+	@ParameterizedTest
+	@CsvSource({
+		"index.asection.md, asection",
+		"index.asection.1.md, asection",
+		"index.asection.blabla.md, asection"
+	})
+	public void test_getSectionName(String filename, String sectionName) {
+		Assertions.assertThat(SectionUtil.getSectionName(filename)).isEqualTo(sectionName);
 	}
 }

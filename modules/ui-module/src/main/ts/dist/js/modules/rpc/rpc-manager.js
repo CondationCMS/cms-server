@@ -19,9 +19,9 @@
  * #L%
  */
 import { executeRemoteCall } from '@cms/modules/rpc/rpc.js';
-const getSlotItemTemplates = async (options) => {
+const getSectionEntryTemplates = async (options) => {
     var data = {
-        method: "manager.contentTypes.slotItems",
+        method: "manager.contentTypes.sectionEntries",
         parameters: options || {}
     };
     return await executeRemoteCall(data);
@@ -74,4 +74,4 @@ const getTagNames = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-export { getSlotItemTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };
+export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };

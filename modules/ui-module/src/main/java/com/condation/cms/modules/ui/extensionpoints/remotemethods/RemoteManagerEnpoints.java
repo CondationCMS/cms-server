@@ -65,14 +65,14 @@ public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 		return configuration.get(MediaConfiguration.class).getFormats();
 	}
 	
-	@RemoteMethod(name = "manager.contentTypes.slotItems", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "manager.contentTypes.sectionEntries", permissions = {Permissions.CONTENT_EDIT})
 	public Object getSectionTemplates(Map<String, Object> parameters) throws RPCException {
 		try {
-			var slot = (String) parameters.getOrDefault("slot", "");
-			if (!Strings.isNullOrEmpty(slot)) {
-				return uiHooks().contentTypes().getSlotItemTemplates(slot);
+			var section = (String) parameters.getOrDefault("section", "");
+			if (!Strings.isNullOrEmpty(section)) {
+				return uiHooks().contentTypes().getSectionEntryTemplates(section);
 			} else {
-				return uiHooks().contentTypes().getSlotItemTemplates();
+				return uiHooks().contentTypes().getSectionEntryTemplates();
 			}
 		} catch (Exception e) {
 			log.error("", e);

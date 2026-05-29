@@ -33,7 +33,7 @@ import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
-import com.condation.cms.content.SlotItem;
+import com.condation.cms.content.SectionEntry;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.template.TemplateEngineTest;
@@ -52,7 +52,7 @@ import org.mockito.Mockito;
  *
  * @author t.marx
  */
-public class SlotItemsTest extends TemplateEngineTest {
+public class SectionEntriesTest extends TemplateEngineTest {
 
 	static DefaultContentRenderer contentRenderer;
 	static MarkdownRenderer markdownRenderer;
@@ -93,20 +93,20 @@ public class SlotItemsTest extends TemplateEngineTest {
 	}
 
 	@Test
-	public void test_slot_items() throws IOException {
-		List<ContentNode> listSlotItems = db.getContent().listSlotItems(db.getReadOnlyFileSystem().contentBase().resolve("page.md"));
-		Assertions.assertThat(listSlotItems).hasSize(4);
+	public void test_section_entries() throws IOException {
+		List<ContentNode> listSectionEntries = db.getContent().listSectionEntries(db.getReadOnlyFileSystem().contentBase().resolve("page.md"));
+		Assertions.assertThat(listSectionEntries).hasSize(4);
 
-		Map<String, List<SlotItem>> renderedSlotItems = contentRenderer.renderSlotItems(listSlotItems, TestHelper.requestContext());
+		Map<String, List<SectionEntry>> renderedSectionEntries = contentRenderer.renderSectionEntries(listSectionEntries, TestHelper.requestContext());
 
-		Assertions.assertThat(renderedSlotItems)
+		Assertions.assertThat(renderedSectionEntries)
 				.hasSize(1)
 				.containsKey("left");
 
-		Assertions.assertThat(renderedSlotItems.get("left"))
+		Assertions.assertThat(renderedSectionEntries.get("left"))
 				.hasSize(4);
 
-		var slotItemIndexes = renderedSlotItems.get("left").stream().map(item -> item.index()).collect(Collectors.toList());
-		Assertions.assertThat(slotItemIndexes).containsExactly(0, 1, 2, 10);
+		var sectionEntryIndexes = renderedSectionEntries.get("left").stream().map(item -> item.index()).collect(Collectors.toList());
+		Assertions.assertThat(sectionEntryIndexes).containsExactly(0, 1, 2, 10);
 	}
 }

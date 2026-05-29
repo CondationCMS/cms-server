@@ -33,23 +33,23 @@ public class UIFilenameUtilTest {
  @Test
     void testCreateSectionFileName() {
         // einfache Datei
-        assertThat(UIFileNameUtil.createSlotItemFileName("index.md", "section", "item"))
+        assertThat(UIFileNameUtil.createSectionEntryFileName("index.md", "section", "item"))
                 .isEqualTo("index.section.item.md");
 
         // andere Datei
-        assertThat(UIFileNameUtil.createSlotItemFileName("about.md", "sec", "bla"))
+        assertThat(UIFileNameUtil.createSectionEntryFileName("about.md", "sec", "bla"))
                 .isEqualTo("about.sec.bla.md");
 
         // Datei in Unterordner
-        assertThat(UIFileNameUtil.createSlotItemFileName("ordner/file.md", "new", "one"))
+        assertThat(UIFileNameUtil.createSectionEntryFileName("ordner/file.md", "new", "one"))
                 .isEqualTo("ordner/file.new.one.md");
 
         // Datei ohne Endung
-        assertThat(UIFileNameUtil.createSlotItemFileName("ordner/sub/file", "new", "two"))
+        assertThat(UIFileNameUtil.createSectionEntryFileName("ordner/sub/file", "new", "two"))
                 .isEqualTo("ordner/sub/file.new.two");
 
         // nur Dateiname
-        assertThat(UIFileNameUtil.createSlotItemFileName("file.txt", "v2", "2025"))
+        assertThat(UIFileNameUtil.createSectionEntryFileName("file.txt", "v2", "2025"))
                 .isEqualTo("file.v2.2025.txt");
     }
 	

@@ -44,8 +44,8 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
-import com.condation.cms.api.utils.SlotUtil;
-import com.condation.cms.content.SlotItem;
+import com.condation.cms.api.utils.SectionUtil;
+import com.condation.cms.content.SectionEntry;
 import com.condation.cms.modules.ui.utils.FormHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
 import com.condation.cms.modules.ui.utils.UIFileNameUtil;
@@ -194,8 +194,8 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		return result;
 	}
 
-	@RemoteMethod(name = "content.slotItem.delete", permissions = {Permissions.CONTENT_EDIT})
-	public Object deleteSlotItem(Map<String, Object> parameters) {
+	@RemoteMethod(name = "content.sectionEntry.delete", permissions = {Permissions.CONTENT_EDIT})
+	public Object deleteSectionEntry(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var uri = (String) parameters.get("uri");
 		final Path contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
@@ -221,21 +221,21 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		return result;
 	}
 	
-	@RemoteMethod(name = "content.slotItem.add", permissions = {Permissions.CONTENT_EDIT})
-	public Object addSlotItem(Map<String, Object> parameters) {
+	@RemoteMethod(name = "content.sectionEntry.add", permissions = {Permissions.CONTENT_EDIT})
+	public Object addSectionEntry(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
 
 		var content = (String) parameters.getOrDefault("content", "");
 		var parentUri = (String) parameters.get("parentUri");
-		var slot = (String) parameters.get("slot");
-		var sectionItemName = (String) parameters.get("slotItemName");
+		var section = (String) parameters.get("section");
+		var sectionEntryName = (String) parameters.get("sectionEntryName");
 		var template = (String) parameters.get("template");
 
-		var title = sectionItemName;
-		sectionItemName = UIPathUtil.slugify(sectionItemName);
+		var title = sectionEntryName;
+		sectionEntryName = UIPathUtil.slugify(sectionEntryName);
 		
-		var uri = UIFileNameUtil.createSlotItemFileName(parentUri, slot, sectionItemName);
+		var uri = UIFileNameUtil.createSectionEntryFileName(parentUri, section, sectionEntryName);
 		
 		var contentFile = contentBase.resolve(uri);
 		
@@ -305,17 +305,17 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 			if (contentFile != null) {
 				result.put("uri", PathUtil.toRelativeFile(contentFile, contentBase));
 				
-				var slotItems = db.getContent().listSlotItems(contentFile);
-				Map<String, List<SlotItem>> sectionMap = new HashMap<>();
-				slotItems.forEach(slotItem -> {
-					String uri = slotItem.uri();
-					String name = SlotUtil.getSlotItemName(slotItem.name());
-					var index = slotItem.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SLOT_ITEM_LAYOUT_ORDER);
+				var sectionEntries = db.getContent().listSectionEntries(contentFile);
+				Map<String, List<SectionEntry>> sectionMap = new HashMap<>();
+				sectionEntries.forEach(sectionEntry -> {
+					String uri = sectionEntry.uri();
+					String name = SectionUtil.getSectionName(sectionEntry.name());
+					var index = sectionEntry.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_ENTRY_LAYOUT_ORDER);
 					
 					sectionMap.computeIfAbsent(name, k -> new ArrayList<>())
-						.add(new SlotItem(slotItem.name(), index, "", slotItem.data(), uri));
+						.add(new SectionEntry(sectionEntry.name(), index, "", sectionEntry.data(), uri));
 				});
-				result.put("slots", sectionMap);
+				result.put("sections", sectionMap);
 			}
 
 			return result;

@@ -43,13 +43,13 @@ public interface ContentRenderer {
 
 	String render(final ReadOnlyFile contentFile, final RequestContext context) throws IOException;
 
-	String render(final ReadOnlyFile contentFile, final RequestContext context, final Map<String, List<SlotItem>> slotItems) throws IOException;
+	String render(final ReadOnlyFile contentFile, final RequestContext context, final Map<String, List<SectionEntry>> sectionEntries) throws IOException;
 
-	String render(final ReadOnlyFile contentFile, final RequestContext context, final Map<String, List<SlotItem>> slotItems, final Map<String, Object> meta, final String markdownContent, final Consumer<TemplateEngine.Model> modelExtending) throws IOException;
+	String render(final ReadOnlyFile contentFile, final RequestContext context, final Map<String, List<SectionEntry>> sectionEntries, final Map<String, Object> meta, final String markdownContent, final Consumer<TemplateEngine.Model> modelExtending) throws IOException;
 
-	Map<String, List<SlotItem>> renderSlotItems(final List<ContentNode> slotItemNodes, final RequestContext context) throws IOException;
+	Map<String, List<SectionEntry>> renderSectionEntries(final List<ContentNode> sectionEntryNodes, final RequestContext context) throws IOException;
 
-	String renderTaxonomy(final Optional<ReadOnlyFile> contentFileOpt, final Taxonomy taxonomy, Optional<String> taxonomyValue, final RequestContext context, final Map<String, Object> meta, final Page<ListNode> page, Map<String, List<SlotItem>> slotItems) throws IOException;
+	String renderTaxonomy(final Optional<ReadOnlyFile> contentFileOpt, final Taxonomy taxonomy, Optional<String> taxonomyValue, final RequestContext context, final Map<String, Object> meta, final Page<ListNode> page, Map<String, List<SectionEntry>> sectionEntries) throws IOException;
 
 	String renderView(final ReadOnlyFile viewFile, final View view, final ContentNode contentNode, final RequestContext requestContext, final Page<ListNode> page) throws IOException;
 	

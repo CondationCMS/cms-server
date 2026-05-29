@@ -52,7 +52,7 @@ class HTMLPipelineTest {
             </html>
         """;
 
-		hookSystem.registerAction(Hooks.CONTENT_SLOT_HEADER.hook(),
+		hookSystem.registerAction(Hooks.LAYOUT_HEADER.hook(),
 				(context) -> "<script src='a.js'></script>");
 		// when
 		String result = pipeline.process(html);
@@ -76,7 +76,7 @@ class HTMLPipelineTest {
             </html>
         """;
 
-		hookSystem.registerAction(Hooks.CONTENT_SLOT_FOOTER.hook(),
+		hookSystem.registerAction(Hooks.LAYOUT_FOOTER.hook(),
 				(context) -> "<script>footer()</script>");
 
 		// when
@@ -101,9 +101,9 @@ class HTMLPipelineTest {
             </html>
         """;
 
-		hookSystem.registerAction(Hooks.CONTENT_SLOT_HEADER.hook(),
+		hookSystem.registerAction(Hooks.LAYOUT_HEADER.hook(),
 				(context) -> "<script>head()</script>");
-		hookSystem.registerAction(Hooks.CONTENT_SLOT_FOOTER.hook(),
+		hookSystem.registerAction(Hooks.LAYOUT_FOOTER.hook(),
 				(context) -> "<script>footer()</script>");
 
 		// when
@@ -145,9 +145,9 @@ class HTMLPipelineTest {
 		// given
 		String html = "<div>no layout tags</div>";
 
-		hookSystem.registerAction(Hooks.CONTENT_SLOT_HEADER.hook(),
+		hookSystem.registerAction(Hooks.LAYOUT_HEADER.hook(),
 				(context) -> "<script>head()</script>");
-		hookSystem.registerAction(Hooks.CONTENT_SLOT_FOOTER.hook(),
+		hookSystem.registerAction(Hooks.LAYOUT_FOOTER.hook(),
 				(context) -> "<script>footer()</script>");
 
 		// when

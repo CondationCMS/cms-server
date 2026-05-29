@@ -60,9 +60,9 @@ $hooks.registerFilter("module/ui/translations", ({translations}) => {
 	return translations;
 })
 
-$hooks.registerAction("system/content/slot/header", (args) => {
+$hooks.registerAction("system/content/html/header", (args) => {
 	return "<!-- this comes into the header slot -->";
 })
-$hooks.registerAction("system/content/slot/footer", (args) => {
+$hooks.registerAction("system/content/html/footer", (args) => {
 	return "<!-- this comes into the footer slot -->";
 })

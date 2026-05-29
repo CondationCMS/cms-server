@@ -37,8 +37,8 @@ public class HTMLPipeline {
 	private final HookSystem hookSystem;
 	
 	public String process(String rawContent) {
-		rawContent = updateSlot(Hooks.CONTENT_SLOT_HEADER, "</head>", rawContent);
-		return updateSlot(Hooks.CONTENT_SLOT_FOOTER, "</body>", rawContent);
+		rawContent = updateSlot(Hooks.LAYOUT_HEADER, "</head>", rawContent);
+		return updateSlot(Hooks.LAYOUT_FOOTER, "</body>", rawContent);
 	}
 
 	public String updateSlot (Hooks hook, String elementName, String rawContent) {

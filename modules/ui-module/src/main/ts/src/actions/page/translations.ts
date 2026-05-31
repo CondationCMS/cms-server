@@ -40,13 +40,13 @@ export async function runAction(params: any) {
 	openModal({
 		title: 'Manage Translations',
 		body: modelContent,
-		onCancel: (event) => { },
-		onOk: async (event) => {
+		onCancel: (event : any) => { },
+		onOk: async (event : any) => {
 		},
-		onShow: async (modalElement) => {
+		onShow: async (modalElement : any) => {
 
-			modalElement.querySelectorAll('button[data-action]').forEach(button => {
-				button.addEventListener('click', async (e) => {
+			modalElement.querySelectorAll('button[data-action]').forEach((button : HTMLElement) => {
+				button.addEventListener('click', async (e : any) => {
 					const action = (e.currentTarget as HTMLElement).getAttribute('data-action');
 					const siteId = (e.currentTarget as HTMLElement).getAttribute('data-id');
 					const lang = (e.currentTarget as HTMLElement).getAttribute('data-lang');
@@ -55,7 +55,7 @@ export async function runAction(params: any) {
 						openFileBrowser({
 							siteId: siteId || '',
 							type: 'content',
-							onSelect: async (file) => {
+							onSelect: async (file : any) => {
 								console.log('Selected translation file:', file);
 								if (file && file.uri) {
 									var selectedFile = file.uri; // Use the file's URI

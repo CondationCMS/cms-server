@@ -45,7 +45,7 @@ const createForm = (options) => {
         formElement: null,
         fields: fields
     };
-    const fieldHtml = fields.map(field => {
+    const fieldHtml = fields.map((field) => {
         const val = values[field.name] || '';
         switch (field.type) {
             case 'email':
@@ -103,6 +103,10 @@ const createForm = (options) => {
         }
         container.innerHTML = html;
         context.formElement = container.querySelector('form');
+        if (!context.formElement) {
+            console.error('Form element not found.');
+            return;
+        }
         context.formElement.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && e.target.tagName.toLowerCase() !== 'textarea') {
                 e.preventDefault();
@@ -111,7 +115,7 @@ const createForm = (options) => {
         context.formElement.addEventListener('submit', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            context.formElement.classList.add('was-validated');
+            context.formElement?.classList.add('was-validated');
         });
         CodeField.init(context);
         MarkdownField.init(context);

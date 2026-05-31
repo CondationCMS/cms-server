@@ -33,6 +33,9 @@ const createColorField = (options, value = '#000000') => {
 };
 const getColorData = (context) => {
     const data = {};
+    if (!context.formElement) {
+        return data;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='color'] input").forEach((el) => {
         data[el.name] = {
             type: 'color',

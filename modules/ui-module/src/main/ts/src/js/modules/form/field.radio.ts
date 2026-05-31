@@ -60,9 +60,13 @@ const createRadioField = (options: RadioFieldOptions, value: string = '') => {
 };
 
 const getData = (context : FormContext) => {
-	const data = {};
-	
-	context.formElement.querySelectorAll("[data-cms-form-field-type='radio']").forEach(container => {
+	const data : any = {};
+	const formElement = context.formElement;
+	if (!formElement) {
+		return data;
+	}
+
+	formElement.querySelectorAll("[data-cms-form-field-type='radio']").forEach(container => {
 		const name = (container.querySelector("input[type='radio']") as HTMLInputElement).name;
 		const checked = container.querySelector("input[type='radio']:checked") as HTMLInputElement;
 		if (checked) {

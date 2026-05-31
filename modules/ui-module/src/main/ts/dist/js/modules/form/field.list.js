@@ -80,7 +80,7 @@ const handleAddItem = (e, container, context) => {
         </div>
     `;
     listGroup.insertAdjacentHTML("beforeend", itemMarkup);
-    var itemElement = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"]`);
+    const itemElement = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"]`);
     if (itemElement) {
         itemElement.addEventListener('dblclick', (e) => handleDoubleClick(e, context));
         const removeBtn = itemElement.querySelector('.remove-btn');
@@ -99,7 +99,7 @@ const getItemForm = async (el) => {
     const getContentResponse = await getContent({
         uri: contentNode.result.uri
     });
-    var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template);
+    var selected = pageTemplates.filter((pageTemplate) => pageTemplate.template === getContentResponse?.result?.meta?.template);
     const listContainer = el.closest("[data-cms-form-field-type='list']");
     const fieldName = listContainer?.getAttribute('name');
     var itemForm = [];
@@ -108,7 +108,7 @@ const getItemForm = async (el) => {
     }
     if (!itemForm || itemForm.length === 0) {
         let itemTypes = (await getListItemTypes({})).result;
-        var selectedItemType = itemTypes.filter(itemType => itemType.name === fieldName);
+        var selectedItemType = itemTypes.filter((itemType) => itemType.name === fieldName);
         itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form.fields : [];
     }
     return itemForm;
@@ -136,16 +136,22 @@ const handleDoubleClick = async (event, context) => {
                 el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
                 const listContainer = el.closest("[data-cms-form-field-type='list']");
                 const nameField = listContainer?.getAttribute('data-name-field') || 'name';
-                el.querySelector('.object-name').textContent = updateData[nameField];
+                const objectNameEl = el.querySelector('.object-name');
+                if (!objectNameEl)
+                    return;
+                objectNameEl.textContent = updateData[nameField] || "";
             }
         });
     }
 };
 const getData = (context) => {
     var data = {};
+    if (!context.formElement) {
+        return data;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach((el) => {
         let value = [];
-        el.querySelectorAll("[data-cms-form-field-item]").forEach(itemEl => {
+        el.querySelectorAll("[data-cms-form-field-item]").forEach((itemEl) => {
             const itemData = itemEl.getAttribute('data-cms-form-field-item-data');
             if (itemData) {
                 value.push(JSON.parse(itemData));
@@ -162,7 +168,7 @@ const getData = (context) => {
     return data;
 };
 const init = (context) => {
-    context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
+    context.formElement?.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
         listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
             field.addEventListener('dblclick', (e) => handleDoubleClick(e, context));
             // Remove-Button-Listener setzen

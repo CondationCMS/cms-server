@@ -4,7 +4,7 @@ const createCheckboxField = (options, value = []) => {
     const key = options.key || "";
     const name = options.name || id;
     const title = options.title || "";
-    const choices = options.options.choices || [];
+    const choices = options.options?.choices || [];
     const selectedValues = new Set(value);
     const checkboxes = choices.map((choice, idx) => {
         const inputId = `${id}-${idx}`;
@@ -26,7 +26,10 @@ const createCheckboxField = (options, value = []) => {
 	`;
 };
 const getData = (context) => {
-    const data = {};
+    var data = {};
+    if (!context.formElement) {
+        return data;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
         const name = container.querySelector("input[type='checkbox']").name;
         const checkedBoxes = container.querySelectorAll("input[type='checkbox']:checked");

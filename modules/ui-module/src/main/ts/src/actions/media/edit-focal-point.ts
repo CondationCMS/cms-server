@@ -25,7 +25,7 @@ import { reloadPreview } from "@cms/modules/preview.utils.js";
 import { getMediaMetaData, setMediaMetaData } from "@cms/modules/rpc/rpc-media.js";
 import { showToast } from "@cms/modules/toast.js";
 
-export async function runAction(params) {
+export async function runAction(params : any) {
 
 	var uri = params.options.uri || null;
 	var mediaUrl = removeFormatParamFromUrl(uri);
@@ -46,8 +46,8 @@ export async function runAction(params) {
 	openModal({
 		title: i18n.t("media.focal.title", "Edit focal point"),
 		body: template,
-		onCancel: (event) => { },
-		onOk: async (event) => {
+		onCancel: (event : any) => { },
+		onOk: async (event : any) => {
 			var setMetaResponse = await setMediaMetaData({
 				image: mediaUrl,
 				meta: {
@@ -70,10 +70,15 @@ export async function runAction(params) {
 			reloadPreview();
 		},
 		onShow: () => {
-			const wrapper: HTMLElement = document.getElementById("cmsFocalWrapper");
-			const image: HTMLImageElement = document.getElementById("cms-image") as HTMLImageElement;
-			const point: HTMLElement = document.getElementById("cmsFocalPoint");
+			const wrapper: HTMLElement | null = document.getElementById("cmsFocalWrapper");
+			const image: HTMLImageElement | null = document.getElementById("cms-image") as HTMLImageElement;
+			const point: HTMLElement | null = document.getElementById("cmsFocalPoint");
 
+			if (wrapper === null || image === null || point === null) {
+				console.error("One or more required elements not found");
+				return;
+			}
+			
 			if (image.complete) {
 				setFocalPoint(image, point, focalX, focalY);
 			} else {

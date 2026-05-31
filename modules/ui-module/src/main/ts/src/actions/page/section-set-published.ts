@@ -22,7 +22,7 @@
 import { reloadPreview } from "@cms/modules/preview.utils";
 import { setMeta } from "@cms/modules/rpc/rpc-content";
 
-export async function runAction(params) {
+export async function runAction(params : any) {
 
     var request = {
         uri : params.sectionUri,

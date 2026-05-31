@@ -34,6 +34,9 @@ const createMarkdownField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
+    if (!context.formElement) {
+        return data;
+    }
     markdownEditors.forEach(({ input, editor }) => {
         data[input.name] = {
             type: "easymde",

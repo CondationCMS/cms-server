@@ -66,6 +66,10 @@ export async function runAction(params) {
             const wrapper = document.getElementById("cmsFocalWrapper");
             const image = document.getElementById("cms-image");
             const point = document.getElementById("cmsFocalPoint");
+            if (wrapper === null || image === null || point === null) {
+                console.error("One or more required elements not found");
+                return;
+            }
             if (image.complete) {
                 setFocalPoint(image, point, focalX, focalY);
             }

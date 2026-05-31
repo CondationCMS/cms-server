@@ -39,7 +39,7 @@ import { TextAreaField } from "@cms/modules/form/field.textarea.js";
 import { ReferenceField } from "@cms/modules/form/field.reference.js";
 
 
-const createForm = (options) : Form => {
+const createForm = (options : any) : Form => {
 	const fields = options.fields || [];
 	const values = options.values || {};
 	const formId = createID();
@@ -49,7 +49,7 @@ const createForm = (options) : Form => {
 		fields: fields
 	}
 
-	const fieldHtml = fields.map(field => {
+	const fieldHtml = fields.map((field : any) => {
 		const val = values[field.name] || '';
 		switch (field.type) {
 			case 'email':
@@ -99,7 +99,7 @@ const createForm = (options) : Form => {
 		</form>
 	`;
 
-	const init = (container) => {
+	const init = (container : any) => {
 		if (typeof container === 'string') {
 			container = document.querySelector(container);
 		}
@@ -110,6 +110,11 @@ const createForm = (options) : Form => {
 		container.innerHTML = html;
 		context.formElement = container.querySelector('form');
 
+		if (!context.formElement) {
+			console.error('Form element not found.');
+			return;
+		}
+
 		context.formElement.addEventListener('keydown', (e : KeyboardEvent) => {
 			if (e.key === 'Enter' && (e.target as HTMLElement).tagName.toLowerCase() !== 'textarea') {
 				e.preventDefault();
@@ -119,7 +124,7 @@ const createForm = (options) : Form => {
 		context.formElement.addEventListener('submit', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			context.formElement.classList.add('was-validated');
+			context.formElement?.classList.add('was-validated');
 		});
 		CodeField.init(context)
 		MarkdownField.init(context)
@@ -166,12 +171,12 @@ const createForm = (options) : Form => {
 	};
 };
 
-const flattenFormData = (input) => {
+const flattenFormData = (input : any) => {
     const result = {};
     for (const key in input) {
         const value = input[key].value;
         const parts = key.split(".");
-        let current = result;
+        let current : any = result;
         for (let i = 0; i < parts.length; i++) {
             const part = parts[i];
             if (i === parts.length - 1) {

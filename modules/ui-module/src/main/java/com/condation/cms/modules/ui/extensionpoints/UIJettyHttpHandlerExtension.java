@@ -43,6 +43,7 @@ import com.condation.cms.modules.ui.http.auth.AjaxLoginHandler;
 import com.condation.cms.modules.ui.http.auth.CSRFHandler;
 import com.condation.cms.modules.ui.http.auth.LoginResourceHandler;
 import com.condation.cms.modules.ui.http.auth.LogoutHandler;
+import com.condation.cms.modules.ui.http.auth.RefreshTokenHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthHandler;
 import com.condation.cms.modules.ui.http.auth.UIAuthRedirectHandler;
 import com.condation.cms.modules.ui.services.RemoteMethodService;
@@ -135,6 +136,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 
 		try {
 
+            mapping.add(PathSpec.from("/manager/refresh"), new RefreshTokenHandler(getContext(), getRequestContext()));
 			mapping.add(PathSpec.from("/manager/login"), new LoginResourceHandler(getContext(), getRequestContext()));
 			//mapping.add(PathSpec.from("/manager/login.action"), new LoginHandler(getContext(), getRequestContext(), failedLoginsCounter));
 			mapping.add(PathSpec.from("/manager/login.action"), new AjaxLoginHandler(getContext(), getRequestContext(), failedLoginsCounter, logins));

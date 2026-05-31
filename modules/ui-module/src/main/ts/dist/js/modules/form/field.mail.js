@@ -34,6 +34,9 @@ const createEmailField = (options, value = '') => {
 };
 const getData = (context) => {
     var data = {};
+    if (!context.formElement) {
+        return data;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='mail'] input").forEach((el) => {
         let value = el.value;
         data[el.name] = {

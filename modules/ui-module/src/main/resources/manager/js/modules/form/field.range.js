@@ -38,7 +38,11 @@ const createRangeField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
-    context.formElement.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el) => {
+    const formElement = context.formElement;
+    if (!formElement) {
+        return data;
+    }
+    formElement.querySelectorAll("[data-cms-form-field-type='range'] input").forEach((el) => {
         data[el.name] = {
             type: 'range',
             value: parseFloat(el.value)

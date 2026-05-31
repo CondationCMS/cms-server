@@ -50,8 +50,12 @@ const createNumberField = (options: NumberFieldOptions, value: string = '') => {
 };
 
 const getData = (context : FormContext) => {
-	const data = {};
-	context.formElement.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el : HTMLInputElement) => {
+	const data : any = {};
+	const formElement = context.formElement;
+	if (!formElement) {
+		return data;
+	}
+	formElement.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el : any) => {
 		const value = el.value;
 		data[el.name] = {
 			type: 'number',

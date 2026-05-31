@@ -23,7 +23,7 @@ import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_
 
 const addSection = (event : Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
-	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar ||'{}')
 
 	var command : any = {
 		type: 'add-sectionEntry',
@@ -36,7 +36,7 @@ const addSection = (event : Event) => {
 
 const deleteSection = (event: Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
-	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar ||'{}')
 
 	var command = {
 		type: 'delete-sectionEntry',
@@ -49,7 +49,7 @@ const deleteSection = (event: Event) => {
 
 const setPublishForSection = (event: Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
-	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}')
 
 	var action = (event.currentTarget as HTMLElement).getAttribute('data-cms-action');
 
@@ -65,7 +65,7 @@ const setPublishForSection = (event: Event) => {
 
 const orderSections = (event : Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
-	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}')
 
 	var command = {
 		type: 'edit-sections',
@@ -79,7 +79,7 @@ const orderSections = (event : Event) => {
 
 const editContent = (event: Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
-	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}')
 
 	var command : any = {
 		type: 'edit',
@@ -97,7 +97,7 @@ const editContent = (event: Event) => {
 
 const editAttributes = (event: Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
-	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
 
 	var command : any = {
 		type: 'edit',
@@ -135,7 +135,7 @@ const editAttributes = (event: Event) => {
 
 export const initToolbar = (container: HTMLElement) => {
 
-	var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar)
+	var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar || '{}');
 	if (!toolbarDefinition.actions) {
 		return
 	}
@@ -164,7 +164,7 @@ export const initToolbar = (container: HTMLElement) => {
 		}
 	});
 
-	toolbarDefinition.actions.forEach(action => {
+	toolbarDefinition.actions.forEach((action : any) => {
 		if (action === "editContent") {
 			const button = document.createElement('button');
 			button.setAttribute('data-cms-action', 'edit');

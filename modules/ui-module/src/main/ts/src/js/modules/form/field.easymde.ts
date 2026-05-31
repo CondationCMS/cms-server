@@ -22,7 +22,12 @@ import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js"
 import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
 
-let markdownEditors = [];
+interface MarkdownEditorEntry {
+	input: HTMLTextAreaElement;
+	editor: any;
+}
+
+let markdownEditors: MarkdownEditorEntry[] = [];
 
 export interface EasyMDEFieldOptions extends FieldOptions {
 }
@@ -40,8 +45,11 @@ const createMarkdownField = (options : EasyMDEFieldOptions, value : string = '')
 };
 
 const getData = (context : FormContext) => {
-	const data = {};
-	markdownEditors.forEach(({ input, editor }) => {
+	const data : any = {};
+	if (!context.formElement) {
+		return data;
+	}
+	markdownEditors.forEach(({ input , editor }) => {
 		data[input.name] = {
 			type: "easymde",
 			value: editor.value()
@@ -54,7 +62,7 @@ const init = (context : FormContext) => {
 	markdownEditors = [];
 
 	const editorInputs = document.querySelectorAll('[data-cms-form-field-type="easymde"] textarea');
-	editorInputs.forEach((input: HTMLTextAreaElement) => {
+	editorInputs.forEach((input: any) => {
 		const initialValue = decodeURIComponent(input.dataset.initialValue || "");
 
 		input.value = initialValue; // Set initial value for EasyMDE

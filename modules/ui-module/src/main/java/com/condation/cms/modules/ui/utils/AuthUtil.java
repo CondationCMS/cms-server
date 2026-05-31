@@ -65,17 +65,19 @@ public final class AuthUtil {
 
 		var payload = TokenUtils.getPayload(token, secret);
 		if (payload.isPresent()) {
-			if (refreshTokenCache.contains(token)) {
-				refreshTokenCache.invalidate(token);
+			refreshTokenCache.invalidate(token); // best-effort invalidation; refresh should still work after restart if token is valid
 
-				Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(Realm.of("manager-users"), payload.get().username());
-				if (userOpt.isPresent()) {
-					updateCookies(userOpt.get(), response, requestContext, moduleContext);
-					return true;
-				}
+			Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(Realm.of("manager-users"), payload.get().username());
+			if (userOpt.isPresent()) {
+				updateCookies(userOpt.get(), response, requestContext, moduleContext);
+				return true;
 			}
 		}
 		return false;
+	}
+
+	public static boolean refreshTokens(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
+		return tryRefresh(request, response, moduleContext, requestContext);
 	}
 
 	public static boolean checkAuthTokens(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {

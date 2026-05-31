@@ -56,6 +56,9 @@ const createMediaField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
+    if (!context.formElement) {
+        return data;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
         const input = wrapper.querySelector(".cms-media-input-value");
         if (input) {
@@ -68,6 +71,9 @@ const getData = (context) => {
     return data;
 };
 const init = (context) => {
+    if (!context.formElement) {
+        return;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
         const dropZone = wrapper.querySelector(".cms-drop-zone");
         const input = wrapper.querySelector(".cms-media-input");
@@ -101,7 +107,14 @@ const init = (context) => {
         //dropZone.addEventListener("click", () => input.click());
         // Handle file selection
         input.addEventListener("change", (e) => {
-            const file = e.target.files[0];
+            if (e.target === null) {
+                return;
+            }
+            var inputElement = e.target;
+            if (inputElement.files == null) {
+                return;
+            }
+            const file = inputElement.files[0];
             if (file) {
                 preview.src = URL.createObjectURL(file);
                 handleUpload(wrapper, file);

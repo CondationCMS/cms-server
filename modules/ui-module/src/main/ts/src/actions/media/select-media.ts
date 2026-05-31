@@ -25,10 +25,10 @@ import { getPreviewUrl, reloadPreview } from "@cms/modules/preview.utils.js";
 import { getContentNode, setMeta } from "@cms/modules/rpc/rpc-content.js";
 import { showToast } from "@cms/modules/toast.js";
 
-export async function runAction(params) {
+export async function runAction(params : any) {
 
 
-	var uri = null
+	var uri : any = null
 	if (params.options.uri) {
 		uri = params.options.uri
 	} else {
@@ -40,7 +40,7 @@ export async function runAction(params) {
 
 	openFileBrowser({
 		type: "assets",
-		filter : (file) => {
+		filter : (file: any) => {
 			return file.media || file.directory;
 		},
 		onSelect: async (file: any) => {
@@ -52,7 +52,7 @@ export async function runAction(params) {
 					selectedFile = file.uri.substring(1); // Remove leading slash if present
 				}
 
-				var updateData = {}
+				var updateData : any = {}
 				updateData[params.options.metaElement] = {
 					type: 'media',
 					value: selectedFile

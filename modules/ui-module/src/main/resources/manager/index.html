@@ -94,7 +94,8 @@
 			baseUrl: '{{ managerBaseURL }}',
 			contextPath: '{{ contextPath }}',
 			siteId: '{{ siteId }}',
-			previewUrl: "{{ links.createUrl('/?preview=manager') | raw }}"
+			previewUrl: "{{ links.createUrl('/?preview=manager') | raw }}",
+            refreshUrl: "{{ links.createUrl('/manager/refresh') | raw }}"
 		}
 	</script>
 	<link rel="stylesheet" href="{{ links.createUrl('/manager/css/manager.css') }}" />

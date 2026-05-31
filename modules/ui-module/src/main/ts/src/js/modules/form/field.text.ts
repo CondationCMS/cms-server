@@ -40,8 +40,11 @@ const createTextField = (options: TextFieldOptions, value : string = '') => {
 };
 
 const getData = (context : FormContext) => {
-	var data = {}
-	context.formElement.querySelectorAll("[data-cms-form-field-type='text'] input").forEach((el : HTMLInputElement) => {
+	var data : any = {}
+	if (!context.formElement) {
+		return data
+	}
+	context.formElement.querySelectorAll("[data-cms-form-field-type='text'] input").forEach((el : any) => {
 		let value = el.value
 		data[el.name] = {
 			type: 'text',

@@ -37,7 +37,11 @@ const createNumberField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
-    context.formElement.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el) => {
+    const formElement = context.formElement;
+    if (!formElement) {
+        return data;
+    }
+    formElement.querySelectorAll("[data-cms-form-field-type='number'] input").forEach((el) => {
         const value = el.value;
         data[el.name] = {
             type: 'number',

@@ -41,7 +41,11 @@ const createReferenceField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
-    context.formElement.querySelectorAll("[data-cms-form-field-type='reference'] input").forEach((el) => {
+    const formElement = context.formElement;
+    if (!formElement) {
+        return data;
+    }
+    formElement.querySelectorAll("[data-cms-form-field-type='reference'] input").forEach((el) => {
         let value = el.value;
         data[el.name] = {
             type: 'reference',
@@ -51,7 +55,11 @@ const getData = (context) => {
     return data;
 };
 const init = (context) => {
-    context.formElement.querySelectorAll("[data-cms-form-field-type='reference']").forEach(wrapper => {
+    const formElement = context.formElement;
+    if (!formElement) {
+        return;
+    }
+    formElement.querySelectorAll("[data-cms-form-field-type='reference']").forEach(wrapper => {
         const fileManager = wrapper.querySelector(".cms-reference-button");
         if (!fileManager)
             return;

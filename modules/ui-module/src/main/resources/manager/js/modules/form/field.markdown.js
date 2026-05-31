@@ -38,7 +38,11 @@ const createMarkdownField = (options, value = '') => {
 };
 const getData = (context) => {
     const data = {};
-    const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+    const formElement = context.formElement;
+    if (!formElement) {
+        return data;
+    }
+    const editorInputs = formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
     editorInputs.forEach((input) => {
         const editor = input.cherryEditor;
         if (editor && editor.getMarkdown) {
@@ -58,8 +62,12 @@ const getData = (context) => {
     return data;
 };
 const init = async (context) => {
+    const formElement = context.formElement;
+    if (!formElement) {
+        return;
+    }
     const cmsTagsMenu = await buildCmsTagsMenu();
-    const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+    const editorInputs = formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
     editorInputs.forEach((input) => {
         const containerId = input.dataset.cherryId;
         const initialValue = decodeURIComponent(input.dataset.initialValue || "");
@@ -113,7 +121,7 @@ const getEditorFromEvent = (event) => {
 const buildCmsTagsMenu = async () => {
     const response = await getTagNames({});
     const tagNames = response.result || [];
-    const submenuConfig = tagNames.map(tag => ({
+    const submenuConfig = tagNames.map((tag) => ({
         name: tag.charAt(0).toUpperCase() + tag.slice(1),
         value: tag,
         noIcon: true,

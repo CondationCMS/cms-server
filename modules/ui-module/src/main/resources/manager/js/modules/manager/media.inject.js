@@ -84,7 +84,7 @@ export const initContentMediaToolbar = (img) => {
         return;
     }
     var toolbar = img.closest('[data-cms-toolbar]');
-    var parentToolbarDef = JSON.parse(toolbar.dataset.cmsToolbar);
+    var parentToolbarDef = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     if (!parentToolbarDef) {
         return;
     }
@@ -103,7 +103,7 @@ export const initMediaToolbar = (img) => {
     if (!isSameDomainImage(img)) {
         return;
     }
-    var toolbarDefinition = JSON.parse(img.dataset.cmsMediaToolbar);
+    var toolbarDefinition = JSON.parse(img.dataset.cmsMediaToolbar || '{}');
     initToolbar(img, toolbarDefinition);
 };
 export const initToolbar = (img, toolbarDefinition) => {

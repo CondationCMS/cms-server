@@ -50,9 +50,14 @@ const createReferenceField = (options: ReferenceFieldOptions, value: string = ''
 };
 
 const getData = (context: FormContext) => {
-	const data = {};
+	const data : any = {};
 
-	context.formElement.querySelectorAll("[data-cms-form-field-type='reference'] input").forEach((el: HTMLInputElement) => {
+	const formElement = context.formElement;
+	if (!formElement) {
+		return data;
+	}
+
+	formElement.querySelectorAll("[data-cms-form-field-type='reference'] input").forEach((el: any) => {
 		let value = el.value
 		data[el.name] = {
 			type: 'reference',
@@ -63,7 +68,12 @@ const getData = (context: FormContext) => {
 };
 
 const init = (context: FormContext) => {
-	context.formElement.querySelectorAll("[data-cms-form-field-type='reference']").forEach(wrapper => {
+	const formElement = context.formElement;
+	if (!formElement) {
+		return;
+	}
+
+	formElement.querySelectorAll("[data-cms-form-field-type='reference']").forEach(wrapper => {
 		const fileManager = wrapper.querySelector(".cms-reference-button") as HTMLButtonElement;
 
 		if (!fileManager) return;
@@ -81,7 +91,7 @@ const init = (context: FormContext) => {
 			openFileBrowser({
 				type: "content",
 				siteid: siteid,
-				filter: (file) => {
+				filter: (file : any) => {
 					return file.content || file.directory;
 				},
 				onSelect: (file: any) => {

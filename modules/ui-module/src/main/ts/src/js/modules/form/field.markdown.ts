@@ -52,11 +52,15 @@ const createMarkdownField = (options: MarkdownFieldOptions, value: string = '') 
 };
 
 const getData = (context : FormContext) => {
-    const data = {};
+    const data : any = {};
+    const formElement = context.formElement;
+    if (!formElement) {
+        return data;
+    }
 
-    const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+    const editorInputs = formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
     
-    editorInputs.forEach((input: HTMLInputElement) => {
+    editorInputs.forEach((input: any) => {
         const editor = (input as any).cherryEditor;
         
         if (editor && editor.getMarkdown) {
@@ -78,11 +82,15 @@ const getData = (context : FormContext) => {
 
 
 const init = async (context : FormContext) => {
+    const formElement = context.formElement;
+    if (!formElement) {
+        return;
+    }
 
 	const cmsTagsMenu = await buildCmsTagsMenu();
 
-	const editorInputs = context.formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
-	editorInputs.forEach((input: HTMLInputElement) => {
+	const editorInputs = formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
+	editorInputs.forEach((input: any) => {
 		const containerId = input.dataset.cherryId;
 		const initialValue = decodeURIComponent(input.dataset.initialValue || "");
 
@@ -144,7 +152,7 @@ const buildCmsTagsMenu = async () => {
 	const response = await getTagNames({});
 	const tagNames = response.result || [];
 
-	const submenuConfig = tagNames.map(tag => ({
+	const submenuConfig = tagNames.map((tag: string) => ({
 		name: tag.charAt(0).toUpperCase() + tag.slice(1),
 		value: tag,
 		noIcon: true,
@@ -158,7 +166,7 @@ const buildCmsTagsMenu = async () => {
 
 	return window.Cherry.createMenuHook("CMS-Tags", {
 		title: "CMS Tags",
-		onClick: (selection, tag) => {
+		onClick: (selection: string, tag : string) => {
 			return `[[${tag}]]${selection || ""}[[/${tag}]]`;
 		},
 		subMenuConfig: submenuConfig
@@ -176,7 +184,7 @@ const cmsImageSelection = window.Cherry.createMenuHook("Image", {
 		openFileBrowser({
 			type: "assets",
 			fullscreen: false,
-			filter: (file) => {
+			filter: (file: any) => {
 				return file.media || file.directory;
 			},
 			onSelect: async (file: any) => {
@@ -194,7 +202,7 @@ const cmsImageSelection = window.Cherry.createMenuHook("Image", {
 
 					// select media format
 					var mediaFormats  = (await getMediaFormats({})).result || [];
-					var formatOptions = {};
+					var formatOptions : any = {};
 					formatOptions["original"] = "Original";
 					mediaFormats.forEach((format : any) => {
 						formatOptions[format.name] = format.name;

@@ -117,7 +117,7 @@ const initMessageHandlers = () => {
             executeScriptAction(cmd)
         }
     });
-    frameMessenger.on('edit-sections', (payload) => {
+    frameMessenger.on('edit-sections', (payload : any) => {
         var cmd : any= {
             "module": window.manager.baseUrl + "/actions/page/edit-sections",
             "function": "runAction",

@@ -29,7 +29,20 @@ import { setCSRFToken } from '@cms/modules/utils.js';
 frameMessenger.on('load', (payload) => {
     EventBus.emit("preview:loaded", {});
 });
+function heartbeat() {
+    fetch(window.manager.refreshUrl, {
+        method: "POST",
+        credentials: "include"
+    })
+        .then(res => res.json())
+        .then(data => {
+        window.manager.previewToken = data.previewToken;
+    });
+}
 document.addEventListener("DOMContentLoaded", function () {
+    setInterval(() => {
+        heartbeat();
+    }, 10 * 1000);
     //PreviewHistory.init("/");
     //updateStateButton();
     activatePreviewOverlay();

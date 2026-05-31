@@ -96,7 +96,7 @@ const handleAddItem = (e: Event, container: HTMLElement, context: FormContext) =
 	listGroup.insertAdjacentHTML("beforeend", itemMarkup);
 
 
-	var itemElement: HTMLElement = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"]`)
+	const itemElement: HTMLElement | null = listGroup.querySelector(`[data-cms-form-field-item="${itemId}"]`)
 	if (itemElement) {
 		itemElement.addEventListener('dblclick', (e) => handleDoubleClick(e, context));
 
@@ -122,7 +122,7 @@ const getItemForm = async (el: HTMLElement) => {
 		uri: contentNode.result.uri
 	})
 
-	var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
+	var selected = pageTemplates.filter((pageTemplate : any) => pageTemplate.template === getContentResponse?.result?.meta?.template)
 
 	const listContainer = el.closest("[data-cms-form-field-type='list']");
 	const fieldName = listContainer?.getAttribute('name');
@@ -134,7 +134,7 @@ const getItemForm = async (el: HTMLElement) => {
 
 	if (!itemForm || itemForm.length === 0) {
 		let itemTypes = (await getListItemTypes({})).result
-		var selectedItemType = itemTypes.filter(itemType => itemType.name === fieldName)
+		var selectedItemType = itemTypes.filter((itemType : any) => itemType.name === fieldName)
 
 		itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form.fields : []
 	}
@@ -162,25 +162,29 @@ const handleDoubleClick = async (event: Event, context: FormContext) => {
 			title: 'Edit Item',
 			fullscreen: true,
 			form: form,
-			onCancel: (event) => { },
-			onOk: async (event) => {
+			onCancel: (event: Event) => { },
+			onOk: async (event: Event) => {
 				var updateData = form.getRawData()
 				el.setAttribute('data-cms-form-field-item-data', JSON.stringify(updateData));
 
 				const listContainer = el.closest("[data-cms-form-field-type='list']");
 				const nameField = listContainer?.getAttribute('data-name-field') || 'name';
-
-				el.querySelector('.object-name').textContent = updateData[nameField];
+				const objectNameEl = el.querySelector('.object-name');
+				if (!objectNameEl) return;
+				objectNameEl.textContent = updateData[nameField] || "";
 			}
 		});
 	}
 }
 
 const getData = (context: FormContext) => {
-	var data = {}
-	context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach((el: HTMLInputElement) => {
-		let value = []
-		el.querySelectorAll("[data-cms-form-field-item]").forEach(itemEl => {
+	var data : any = {};
+	if (!context.formElement) {
+		return data;
+	}
+	context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach((el: any) => {
+		let value : any = []
+		el.querySelectorAll("[data-cms-form-field-item]").forEach((itemEl: any) => {
 			const itemData = itemEl.getAttribute('data-cms-form-field-item-data');
 			if (itemData) {
 				value.push(JSON.parse(itemData));
@@ -198,7 +202,7 @@ const getData = (context: FormContext) => {
 }
 
 const init = (context: FormContext) => {
-	context.formElement.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
+	context.formElement?.querySelectorAll("[data-cms-form-field-type='list']").forEach(listContainer => {
 		listContainer.querySelectorAll("[data-cms-form-field-item]").forEach(field => {
 			field.addEventListener('dblclick', (e) => handleDoubleClick(e, context));
 			// Remove-Button-Listener setzen

@@ -22,7 +22,7 @@ import frameMessenger from "@cms/modules/frameMessenger.js";
 import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "@cms/modules/manager/toolbar-icons";
 const addSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
-    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     var command = {
         type: 'add-sectionEntry',
         payload: {
@@ -33,7 +33,7 @@ const addSection = (event) => {
 };
 const deleteSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
-    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     var command = {
         type: 'delete-sectionEntry',
         payload: {
@@ -44,7 +44,7 @@ const deleteSection = (event) => {
 };
 const setPublishForSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
-    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     var action = event.currentTarget.getAttribute('data-cms-action');
     var command = {
         type: 'section-set-published',
@@ -57,7 +57,7 @@ const setPublishForSection = (event) => {
 };
 const orderSections = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
-    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     var command = {
         type: 'edit-sections',
         payload: {
@@ -68,7 +68,7 @@ const orderSections = (event) => {
 };
 const editContent = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
-    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     var command = {
         type: 'edit',
         payload: {
@@ -83,7 +83,7 @@ const editContent = (event) => {
 };
 const editAttributes = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
-    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
     var command = {
         type: 'edit',
         payload: {
@@ -116,7 +116,7 @@ const editAttributes = (event) => {
     frameMessenger.send(window.parent, command);
 };
 export const initToolbar = (container) => {
-    var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar);
+    var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar || '{}');
     if (!toolbarDefinition.actions) {
         return;
     }
@@ -143,7 +143,7 @@ export const initToolbar = (container) => {
             toolbar.classList.remove('visible');
         }
     });
-    toolbarDefinition.actions.forEach(action => {
+    toolbarDefinition.actions.forEach((action) => {
         if (action === "editContent") {
             const button = document.createElement('button');
             button.setAttribute('data-cms-action', 'edit');

@@ -61,8 +61,12 @@ const createMediaField = (options: MediaFieldOptions, value : string = '') => {
 };
 
 const getData = (context : FormContext) => {
-	const data = {};
+	const data : any= {};
 	
+	if (!context.formElement) {
+		return data;
+	}
+
 	context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
 		const input = wrapper.querySelector(".cms-media-input-value") as HTMLInputElement;
 		if (input) {
@@ -76,7 +80,11 @@ const getData = (context : FormContext) => {
 };
 
 const init = (context : FormContext) => {
-       context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
+	if (!context.formElement) {
+		return;
+	}
+
+	context.formElement.querySelectorAll("[data-cms-form-field-type='media']").forEach(wrapper => {
 		const dropZone = wrapper.querySelector(".cms-drop-zone");
 		const input = wrapper.querySelector(".cms-media-input") as HTMLInputElement;
 		const preview = wrapper.querySelector(".cms-media-image") as HTMLImageElement;
@@ -85,18 +93,18 @@ const init = (context : FormContext) => {
 		if (!input || !dropZone || !preview || !openMediaManager) return;
 
 		// Handle file drop
-		dropZone.addEventListener("dragover", (e) => {
+		dropZone.addEventListener("dragover", (e : any) => {
 			e.preventDefault();
 			e.stopPropagation();
 			dropZone.classList.add("drag-over");
 		});
 
-		dropZone.addEventListener("dragleave", (e) => {
+		dropZone.addEventListener("dragleave", (e : any) => {
 			e.preventDefault();
 			e.stopPropagation();
 			dropZone.classList.remove("drag-over");
 		});
-		dropZone.addEventListener("drop", (e : DragEvent) => {
+		dropZone.addEventListener("drop", (e : any) => {
 			e.preventDefault();
 			e.stopPropagation();
 			dropZone.classList.remove("drag-over");
@@ -113,7 +121,14 @@ const init = (context : FormContext) => {
 
 		// Handle file selection
 		input.addEventListener("change", (e: Event) => {
-			const file = (e.target as HTMLInputElement).files[0];
+			if (e.target === null) {
+				return;
+			}
+			var inputElement = e.target as HTMLInputElement;
+			if (inputElement.files == null) {
+				return;
+			}
+			const file = inputElement.files[0];
 			if (file) {
 				preview.src = URL.createObjectURL(file);
 				handleUpload(wrapper, file);
@@ -125,7 +140,7 @@ const init = (context : FormContext) => {
 			openMediaManager.onclick = () => {
 				openFileBrowser({
 					type: "assets",
-					filter : (file) => {
+					filter : (file : any) => {
 						return file.media || file.directory;
 					},
 					onSelect: (file : any) => {
@@ -152,21 +167,21 @@ const init = (context : FormContext) => {
 	});
 };
 
-const handleUpload = (wrapper, file) => {
+const handleUpload = (wrapper : any, file : any) => {
 	const inputValue = wrapper.querySelector(".cms-media-input-value");
 	uploadFileWithProgress({
 		uploadEndpoint: "/manager/upload2",
 		file: file,
 		uri: "not relevant for media fields",
-		onProgress: (percent) => {
+		onProgress: (percent: number) => {
 			console.log(`Upload progress: ${percent}%`);
 		},
-		onSuccess: (data) => {
+		onSuccess: (data: any) => {
 			if (data.filename) {
 				inputValue.value = data.filename; // Set the input value to the uploaded file's name
 			}
 		},
-		onError: (error) => {
+		onError: (error: any) => {
 			console.error("Upload failed:", error);
 		}
 	});

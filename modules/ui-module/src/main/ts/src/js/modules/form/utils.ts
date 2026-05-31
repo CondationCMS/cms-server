@@ -24,7 +24,7 @@ const utcToLocalDateTimeInputValue = (utcString : string) => {
 	const date = new Date(utcString);
 	if (isNaN(date.getTime())) return "";
 
-	const pad = (n) => String(n).padStart(2, '0');
+	const pad = (n : any) => String(n).padStart(2, '0');
 
 	const yyyy = date.getFullYear();
 	const MM = pad(date.getMonth() + 1);

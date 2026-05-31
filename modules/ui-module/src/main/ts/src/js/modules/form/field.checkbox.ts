@@ -31,13 +31,13 @@ export interface CheckboxOptions extends FieldOptions{
 	};
 }
 
-const createCheckboxField = (options : CheckboxOptions, value = []) => {
+const createCheckboxField = (options : CheckboxOptions, value: string[] = []) => {
 	const id = createID();
 	const key = options.key || "";
 	const name = options.name || id;
 	const title = options.title || "";
-	const choices = options.options.choices || [];
-	const selectedValues = new Set(value);
+	const choices = options.options?.choices || [];
+	const selectedValues = new Set<string>(value);
 
 	const checkboxes = choices.map((choice, idx) => {
 		const inputId = `${id}-${idx}`;
@@ -61,11 +61,14 @@ const createCheckboxField = (options : CheckboxOptions, value = []) => {
 };
 
 const getData = (context : FormContext) => {
-	const data = {};
+	var data : any = {};
+	if (!context.formElement) {
+		return data;
+	}
 	context.formElement.querySelectorAll("[data-cms-form-field-type='checkbox']").forEach(container => {
 		const name = (container.querySelector("input[type='checkbox']") as HTMLInputElement).name;
 		const checkedBoxes = container.querySelectorAll("input[type='checkbox']:checked");
-		const values = Array.from(checkedBoxes).map((el : HTMLInputElement) => el.value);
+		const values = Array.from(checkedBoxes).map((el : any) => el.value);
 		data[name] = {
 			type: 'checkbox',
 			value: values

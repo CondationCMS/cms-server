@@ -41,6 +41,9 @@ const createDateTimeField = (options, value = '') => {
 };
 const getDateTimeData = (context) => {
     const data = {};
+    if (!context.formElement) {
+        return data;
+    }
     context.formElement.querySelectorAll("[data-cms-form-field-type='datetime'] input").forEach((el) => {
         const value = getUTCDateTimeFromInput(el); // "2025-05-31T15:30"
         data[el.name] = {

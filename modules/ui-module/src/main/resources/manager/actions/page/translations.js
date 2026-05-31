@@ -40,7 +40,7 @@ export async function runAction(params) {
         onOk: async (event) => {
         },
         onShow: async (modalElement) => {
-            modalElement.querySelectorAll('button[data-action]').forEach(button => {
+            modalElement.querySelectorAll('button[data-action]').forEach((button) => {
                 button.addEventListener('click', async (e) => {
                     const action = e.currentTarget.getAttribute('data-action');
                     const siteId = e.currentTarget.getAttribute('data-id');

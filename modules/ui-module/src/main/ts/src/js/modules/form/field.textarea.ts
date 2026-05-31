@@ -40,8 +40,12 @@ const createTextAreaField = (options: TextAreaFieldOptions, value : string = '')
 };
 
 const getData = (context : FormContext) => {
-	var data = {}
-	context.formElement.querySelectorAll("[data-cms-form-field-type='text'] textarea").forEach((el : HTMLInputElement) => {
+	var data : any = {}
+	if (context.formElement === null) {
+		console.error('Form element not found.');
+		return data;
+	}
+	context.formElement.querySelectorAll("[data-cms-form-field-type='text'] textarea").forEach((el : any) => {
 		let value = el.value
 		data[el.name] = {
 			type: 'textarea',

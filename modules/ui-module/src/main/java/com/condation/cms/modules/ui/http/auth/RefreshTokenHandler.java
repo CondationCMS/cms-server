@@ -26,7 +26,9 @@ import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.AuthUtil;
+import com.condation.cms.modules.ui.utils.CookieUtil;
 import com.condation.cms.modules.ui.utils.TokenUtils;
+import com.condation.cms.modules.ui.utils.UIConstants;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.time.Duration;
 import java.util.Map;
@@ -59,11 +61,17 @@ public class RefreshTokenHandler extends JettyHandler {
         boolean refreshed = AuthUtil.refreshTokens(request, response, moduleContext, requestContext);
         if (refreshed) {
             var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
+            
+            var authCookie = CookieUtil.getCookie(request, UIConstants.COOKIE_CMS_TOKEN);
+
+            var token = authCookie.get().getValue();
+
+            var payload = TokenUtils.getPayload(token, secret);
+            
             response.setStatus(200);
             Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(Map.of(
                     "status", "ok",
-                    // TODO: we can not access the name in this way
-                    "previewToken", TokenUtils.createToken(getUsername(request, moduleContext, requestContext), secret, Duration.ofHours(1), Duration.ofDays(7))
+                    "previewToken", TokenUtils.createToken(payload.get().username(), secret, Duration.ofHours(1), Duration.ofDays(7))
             )), callback);
         } else {
             response.setStatus(401);

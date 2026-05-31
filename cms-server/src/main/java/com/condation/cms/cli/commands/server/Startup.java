@@ -59,6 +59,7 @@ public class Startup implements Runnable {
 			
 			System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
 			System.setProperty("polyglotimpl.DisableClassPathIsolation", "true");
+            System.setProperty("polyglotimpl.AttachLibraryFailureAction","ignore");
 			//System.setProperty("polyglot.engine.WarnVirtualThreadSupport", "false");
 
 			var globalInjector = Guice.createInjector(new ServerGlobalModule());

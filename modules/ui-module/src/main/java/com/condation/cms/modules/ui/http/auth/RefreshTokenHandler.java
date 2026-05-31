@@ -62,6 +62,7 @@ public class RefreshTokenHandler extends JettyHandler {
             response.setStatus(200);
             Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(Map.of(
                     "status", "ok",
+                    // TODO: we can not access the name in this way
                     "previewToken", TokenUtils.createToken(getUsername(request, moduleContext, requestContext), secret, Duration.ofHours(1), Duration.ofDays(7))
             )), callback);
         } else {

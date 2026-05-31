@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	setInterval(() => {
 		heartbeat();
-	}, 10 * 1000);
+	}, 5 *60 * 1000);
 
 	//PreviewHistory.init("/");
 	//updateStateButton();

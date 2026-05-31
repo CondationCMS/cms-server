@@ -68,7 +68,7 @@ public class ImageProcessorFactory {
 
     private ImageProcessor create(String name) {
         return switch (name) {
-            case "libvips" -> new LibVipsProcessor(binPath != null ? binPath : "vips");
+            case "libvips" -> new LibVipsProcessor(binPath);
             case "imagemagick" -> new ImageMagickProcessor(binPath);
             case "imageio" -> new ImageIOProcessor();
             default -> throw new IllegalArgumentException("Unknown image processor: '" + name + "'");

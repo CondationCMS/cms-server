@@ -20,33 +20,38 @@ package com.condation.cms.media.processor;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
 import com.condation.cms.api.media.MediaFormat;
 import com.condation.cms.media.CropCalculator.CropArea;
+import com.google.common.base.Strings;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * Image processor using libvips CLI ({@code vips} command).
- * Crop is applied via {@code vips extract_area}, scaling via {@code vips thumbnail}.
+ * Image processor using libvips CLI ({@code vips} command). Crop is applied via
+ * {@code vips extract_area}, scaling via {@code vips thumbnail}.
  */
 @Slf4j
 public class LibVipsProcessor implements ImageProcessor {
 
     private Boolean available = null;
 
-	private final String binPath;
-	
-	public LibVipsProcessor () {
-		this("vips");
-	}
-	public LibVipsProcessor (String binPath) {
-		this.binPath = binPath;
-	}
-	
+    private final String binPath;
+
+    public LibVipsProcessor() {
+        this("vips");
+    }
+
+    public LibVipsProcessor(String binPath) {
+        if (Strings.isNullOrEmpty(binPath)) {
+            binPath = "vips";
+        }
+        this.binPath = binPath;
+    }
+
     @Override
     public String name() {
         return "libvips";
@@ -78,7 +83,14 @@ public class LibVipsProcessor implements ImageProcessor {
         Path inputForScale = source;
 
         if (crop != null) {
-            inputForScale = target.resolveSibling(target.getFileName() + ".crop.tmp");
+            String fileName = target.getFileName().toString();
+            String ext = fileName.substring(fileName.lastIndexOf('.'));
+
+            inputForScale = Files.createTempFile(
+                    target.getParent(),
+                    "crop-",
+                    ext
+            );
             runExtractArea(source, inputForScale, crop);
         }
 
@@ -86,7 +98,7 @@ public class LibVipsProcessor implements ImageProcessor {
             runThumbnail(inputForScale, target, format);
         } finally {
             if (crop != null) {
-                java.nio.file.Files.deleteIfExists(inputForScale);
+                Files.deleteIfExists(inputForScale);
             }
         }
     }
@@ -119,8 +131,8 @@ public class LibVipsProcessor implements ImageProcessor {
     }
 
     /**
-     * libvips determines output format from the file extension.
-     * The target Path already has the correct extension from MediaUtils.
+     * libvips determines output format from the file extension. The target Path
+     * already has the correct extension from MediaUtils.
      */
     private String formatTarget(Path target, MediaFormat format) {
         return target.toString();
@@ -128,14 +140,38 @@ public class LibVipsProcessor implements ImageProcessor {
 
     private void runCommand(List<String> cmd) throws IOException {
         log.debug("libvips: {}", String.join(" ", cmd));
+
+        Process process = null;
+
         try {
-            int exit = new ProcessBuilder(cmd)
+            process = new ProcessBuilder(cmd)
                     .redirectErrorStream(true)
-                    .start()
-                    .waitFor();
-            if (exit != 0) {
-                throw new IOException("vips exited with code " + exit + " for command: " + String.join(" ", cmd));
+                    .start();
+
+            String output;
+            try (var reader = process.inputReader()) {
+                output = reader.lines()
+                        .reduce("", (a, b) -> a + System.lineSeparator() + b);
             }
+
+            int exit = process.waitFor();
+
+            if (exit != 0) {
+                throw new IOException("""
+                vips exited with code %d
+                
+                Command:
+                %s
+                
+                Output:
+                %s
+                """.formatted(exit, String.join(" ", cmd), output));
+            }
+
+            if (!output.isBlank()) {
+                log.debug("vips output:\n{}", output);
+            }
+
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException("vips interrupted", e);

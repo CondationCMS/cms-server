@@ -42,7 +42,7 @@ Hello world!
 
 Here some content!
 
-Hello: [[cms:username]][[/cms:username]]
+Hello: [[cms:username]][[/cms:username]]  
 Theme: [[ext:theme_name]][[/ext:theme_name]]
 
 [about](/about)

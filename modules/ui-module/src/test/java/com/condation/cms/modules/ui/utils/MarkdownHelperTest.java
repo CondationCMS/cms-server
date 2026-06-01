@@ -20,6 +20,7 @@ package com.condation.cms.modules.ui.utils;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import org.assertj.core.api.Assertions;
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
@@ -208,4 +209,50 @@ class MarkdownHelperTest {
                         0,
                         null));
     }
+
+    @Test
+    void shouldReplaceSimpleMediaImage() {
+        String md = "![img](/media/images/test.jpg)";
+
+        String result = MarkdownHelper.replaceImage(
+                "/",
+                md,
+                0,
+                md.length(),
+                "testimg.jpg"
+        );
+
+        Assertions.assertThat(result).isEqualTo("![img](/media/testimg.jpg)");
+    }
+
+    @Test
+    void shouldReplaceSimpleMediaImageWithFormat() {
+        String md = "![img](/media/images/test.jpg?format=small)";
+
+        String result = MarkdownHelper.replaceImage(
+                "/",
+                md,
+                0,
+                md.length(),
+                "testimg.jpg"
+        );
+
+        Assertions.assertThat(result).isEqualTo("![img](/media/testimg.jpg?format=small)");
+    }
+
+    @Test
+    void shouldReplaceSimpleMediaImageWithContextPath() {
+        String md = "![img](/de/media/images/test.jpg)";
+
+        String result = MarkdownHelper.replaceImage(
+                "/de",
+                md,
+                0,
+                md.length(),
+                "testimg.jpg"
+        );
+
+        Assertions.assertThat(result).isEqualTo("![img](/de/media/testimg.jpg)");
+    }
+
 }

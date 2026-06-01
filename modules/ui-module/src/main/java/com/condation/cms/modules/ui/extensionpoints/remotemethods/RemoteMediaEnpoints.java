@@ -22,10 +22,13 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
+import com.condation.cms.api.configuration.configs.MediaConfiguration;
 import com.condation.cms.api.eventbus.events.InvalidateMediaCache;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
@@ -37,6 +40,7 @@ import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.modules.ui.utils.MetaConverter;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
+import com.condation.cms.media.SiteMediaManager;
 import java.net.URI;
 import java.util.HashMap;
 
@@ -48,6 +52,22 @@ import java.util.HashMap;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteMediaEnpoints extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
 
+    @RemoteMethod(name = "media.formats.get", permissions = {Permissions.CONTENT_EDIT})
+	public Object getResolutions(Map<String, Object> parameters) throws RPCException {
+		try {
+			var image = (String) parameters.getOrDefault("image", "");
+			
+			var imagePath = getMediaPath(image);
+			
+			var mediaFormats = getRequestContext().get(ConfigurationFeature.class).configuration().get(MediaConfiguration.class).getFormats();
+            
+            return Map.of("formats", mediaFormats.stream().map(format -> format.name()).toList());
+		} catch (Exception e) {
+			log.error("", e);
+			throw new RPCException(0, e.getMessage());
+		}
+	}
+    
 	@RemoteMethod(name = "media.meta.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getMediaMeta(Map<String, Object> parameters) throws RPCException {
 		try {

@@ -52,7 +52,7 @@ export async function runAction(params) {
                 };
                 var options = {
                     uri: uri,
-                    content: `![](${selectedFile}?format=small)`,
+                    content: selectedFile,
                     start: params.options.start,
                     end: params.options.end
                 };

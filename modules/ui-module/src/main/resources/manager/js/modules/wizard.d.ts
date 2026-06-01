@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-export function openFileBrowser(optionsParam: any): Promise<void>;
-export namespace state {
-    let options: null;
-    let currentFolder: string;
-}
+export function openWizard(optionsParam: any): {
+    wizardId: string;
+    modalInstance: any;
+    goToStep: (index: any) => void;
+    getCurrentStep: () => number;
+};

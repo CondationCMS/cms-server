@@ -20,7 +20,7 @@ package com.condation.cms.modules.ui.utils;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
+import com.condation.cms.content.markdown.rules.inline.ImageInlineRule;
 import java.util.Objects;
 
 /**
@@ -29,29 +29,80 @@ import java.util.Objects;
  */
 public class MarkdownHelper {
 
-	public static String replaceRange(String markdown,
-			int start,
-			int end,
-			String replacement) {
+    public static String replaceImage(String contextPath, String markdown,
+            int start,
+            int end,
+            String replacement) {
+        Objects.requireNonNull(markdown);
+        Objects.requireNonNull(replacement);
 
-		Objects.requireNonNull(markdown);
-		Objects.requireNonNull(replacement);
+        // step is necessary because it is also in markdown renderer
+        markdown = markdown.replace("\r\n", "\n");
 
-		// step is necessary because it is also in markdown renderer
-		markdown = markdown.replace("\r\n", "\n");
-		
-		if (start < 0 || end < start || end > markdown.length()) {
-			throw new IllegalArgumentException(
-					"Invalid range: start=" + start + ", end=" + end);
-		}
+        if (start < 0 || end < start || end > markdown.length()) {
+            throw new IllegalArgumentException(
+                    "Invalid range: start=" + start + ", end=" + end);
+        }
 
-		StringBuilder sb = new StringBuilder(
-				markdown.length() - (end - start) + replacement.length());
+        String segment = markdown.substring(start, end);
 
-		sb.append(markdown, 0, start);
-		sb.append(replacement);
-		sb.append(markdown, end, markdown.length());
+        ImageInlineRule rule = new ImageInlineRule();
+        ImageInlineRule.ImageInlineBlock block = (ImageInlineRule.ImageInlineBlock) rule.next(null, segment);
 
-		return sb.toString();
-	}
+        if (block == null) {
+            return markdown;
+        }
+
+        int qIndex = block.src().indexOf("?");
+        var query = "";
+        if (qIndex != -1) {
+            query = block.src().substring(qIndex);
+        }
+        
+        if (contextPath.equals("/")) {
+            contextPath = "";
+        }
+        var imageurl = contextPath + "/media/" + replacement;
+        if (block.src().startsWith(contextPath + "/assets")) {
+            imageurl = contextPath + "/assets/" + replacement;
+        }
+        
+        StringBuilder image = new StringBuilder()
+                .append("![").append(block.alt()).append("]")
+                .append("(").append(imageurl).append(query).append(")");
+
+        StringBuilder sb = new StringBuilder(
+                markdown.length() - (end - start) + replacement.length());
+        sb.append(markdown, 0, start);
+        sb.append(image);
+        sb.append(markdown, end, markdown.length());
+
+        return sb.toString();
+    }
+
+    public static String replaceRange(String markdown,
+            int start,
+            int end,
+            String replacement) {
+
+        Objects.requireNonNull(markdown);
+        Objects.requireNonNull(replacement);
+
+        // step is necessary because it is also in markdown renderer
+        markdown = markdown.replace("\r\n", "\n");
+
+        if (start < 0 || end < start || end > markdown.length()) {
+            throw new IllegalArgumentException(
+                    "Invalid range: start=" + start + ", end=" + end);
+        }
+
+        StringBuilder sb = new StringBuilder(
+                markdown.length() - (end - start) + replacement.length());
+
+        sb.append(markdown, 0, start);
+        sb.append(replacement);
+        sb.append(markdown, end, markdown.length());
+
+        return sb.toString();
+    }
 }

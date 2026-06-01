@@ -22,7 +22,6 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 
-import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.content.markdown.InlineBlock;

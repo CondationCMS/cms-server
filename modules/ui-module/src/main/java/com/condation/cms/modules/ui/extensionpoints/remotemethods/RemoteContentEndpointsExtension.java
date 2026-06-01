@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.NodeStatus;
@@ -31,6 +32,7 @@ import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
+import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.ContentFileParser;
@@ -144,7 +146,9 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 
 				var content = parser.getContent();
 				
-				var updatedContent = MarkdownHelper.replaceRange(content, start, end, replacement);
+                var contextPath = getContext().get(SitePropertiesFeature.class).siteProperties().contextPath();
+                
+				var updatedContent = MarkdownHelper.replaceImage(contextPath, content, start, end, replacement);
 
 				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 

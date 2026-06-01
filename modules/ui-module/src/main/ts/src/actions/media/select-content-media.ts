@@ -24,6 +24,7 @@ import { i18n } from "@cms/modules/localization.js";
 import { getPreviewUrl, reloadPreview } from "@cms/modules/preview.utils.js";
 import { getContentNode, replaceContent, ReplaceContentOptions } from "@cms/modules/rpc/rpc-content.js";
 import { showToast } from "@cms/modules/toast.js";
+import { openWizard } from "@cms/modules/wizard.js";
 
 export async function runAction(params : any) {
 
@@ -59,7 +60,7 @@ export async function runAction(params : any) {
 				}
 				var options: ReplaceContentOptions = {
 					uri : uri,
-					content: `![](${selectedFile}?format=small)`,
+					content: selectedFile,
 					start: params.options.start,
 					end: params.options.end
 				}

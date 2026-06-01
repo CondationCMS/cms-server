@@ -182,7 +182,7 @@ public class TableBlockRule implements BlockElementRule {
 		}
 		
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<table>");
 			
@@ -192,7 +192,7 @@ public class TableBlockRule implements BlockElementRule {
 				AtomicInteger index = new AtomicInteger(0);
 				table.header.values.forEach((header) -> {
 					sb.append("<th ").append(renderStyle(index.getAndIncrement())).append(">");
-					sb.append(inlineRenderer.render(header));
+					sb.append(inlineRenderer.render(header, documentOffset));
 					sb.append("</th>");
 				});
 				
@@ -206,7 +206,7 @@ public class TableBlockRule implements BlockElementRule {
 				sb.append("<tr>");
 				row.values.forEach(items -> {
 					sb.append("<td ").append(renderStyle(index.getAndIncrement())).append(">");
-					sb.append(inlineRenderer.render(items));
+					sb.append(inlineRenderer.render(items, documentOffset));
 					sb.append("</td>");
 				});
 				sb.append("</tr>");

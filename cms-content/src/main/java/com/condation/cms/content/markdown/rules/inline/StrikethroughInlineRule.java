@@ -50,7 +50,7 @@ public class StrikethroughInlineRule implements InlineElementRule {
         @Override
         public String render() {
             try {
-                var renderedContent = tokenizer.tokenize(content).stream().map(b -> b.render()).collect(Collectors.joining());
+                var renderedContent = tokenizer.tokenize(content).stream().map(b -> b.block().render()).collect(Collectors.joining());
                 return "<del>%s</del>".formatted(renderedContent);
             } catch (IOException ex) {
                 return "<del>%s</del>".formatted(content);

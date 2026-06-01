@@ -26,9 +26,7 @@ import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.modules.ui.http.JettyHandler;
 import com.condation.cms.modules.ui.utils.AuthUtil;
-import com.condation.cms.modules.ui.utils.CookieUtil;
 import com.condation.cms.modules.ui.utils.TokenUtils;
-import com.condation.cms.modules.ui.utils.UIConstants;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import java.time.Duration;
 import java.util.Map;
@@ -58,16 +56,18 @@ public class RefreshTokenHandler extends JettyHandler {
             return false;
         }
 
-        boolean refreshed = AuthUtil.refreshTokens(request, response, moduleContext, requestContext);
-        if (refreshed) {
+        var newAuthToken = AuthUtil.refreshTokens(request, response, moduleContext, requestContext);
+        if (newAuthToken.isPresent()) {
             var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
-            
-            var authCookie = CookieUtil.getCookie(request, UIConstants.COOKIE_CMS_TOKEN);
 
-            var token = authCookie.get().getValue();
+            var payload = TokenUtils.getPayload(newAuthToken.get(), secret);
+            if (payload.isEmpty()) {
+                log.warn("Refresh succeeded but token payload could not be parsed");
+                response.setStatus(401);
+                Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(Map.of("status", "error", "reason", "unauthorized")), callback);
+                return true;
+            }
 
-            var payload = TokenUtils.getPayload(token, secret);
-            
             response.setStatus(200);
             Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(Map.of(
                     "status", "ok",

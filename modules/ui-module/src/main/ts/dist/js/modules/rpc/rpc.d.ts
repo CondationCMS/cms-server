@@ -2,6 +2,9 @@ interface Options {
     method: string;
     parameters?: any;
 }
+export interface RPCResponse<T> {
+    result: T;
+}
 declare const executeRemoteCall: (options: Options) => Promise<any>;
 declare const executeRemoteMethodCall: (method: string, parameters: any) => Promise<any>;
 export { executeRemoteCall, executeRemoteMethodCall };

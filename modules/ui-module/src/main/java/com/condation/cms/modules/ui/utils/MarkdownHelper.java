@@ -37,6 +37,9 @@ public class MarkdownHelper {
 		Objects.requireNonNull(markdown);
 		Objects.requireNonNull(replacement);
 
+		// step is necessary because it is also in markdown renderer
+		markdown = markdown.replace("\r\n", "\n");
+		
 		if (start < 0 || end < start || end > markdown.length()) {
 			throw new IllegalArgumentException(
 					"Invalid range: start=" + start + ", end=" + end);

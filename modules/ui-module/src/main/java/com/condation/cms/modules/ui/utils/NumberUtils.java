@@ -39,4 +39,17 @@ public class NumberUtils {
 				throw new IllegalArgumentException("Invalid page value: " + value);
 		};
 	}
+	
+	public static int toInt(Object value) {
+		return switch (value) {
+			case null ->
+				1;
+			case Number n ->
+				n.intValue();
+			case String s ->
+				Integer.parseInt(s);
+			default ->
+				throw new IllegalArgumentException("Invalid page value: " + value);
+		};
+	}
 }

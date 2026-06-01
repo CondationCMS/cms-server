@@ -27,7 +27,11 @@ interface Options {
 	parameters?: any;
 }
 
-const executeRemoteCall = async (options: Options) => {
+export interface RPCResponse<T> {
+  result: T;
+}
+
+const executeRemoteCall = async (options: Options)  => {
 	return executeRemoteMethodCall(options.method, options.parameters);
 };
 
@@ -49,7 +53,7 @@ const executeRemoteMethodCall = async (method : string, parameters : any) => {
 	if (response.status === 403) {
 		alert(i18n.t("ui.redirect.login", "You where logged out due to inactivity. Please log in again."));
         window.location.href = window.manager.baseUrl + "/login";
-        return;
+        throw new Error("Unauthorized");
     }
 
 	return await response.json();

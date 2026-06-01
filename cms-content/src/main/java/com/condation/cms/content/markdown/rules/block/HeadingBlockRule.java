@@ -54,11 +54,11 @@ public class HeadingBlockRule implements BlockElementRule {
 	public static record HeadingBlock(int start, int end, String heading, int level, String id) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			return "<h%d id=\"%s\">%s</h%d>".formatted(
 					level,
 					id,
-					inlineRenderer.render(heading),
+					inlineRenderer.render(heading, documentOffset),
 					level
 			);
 		}

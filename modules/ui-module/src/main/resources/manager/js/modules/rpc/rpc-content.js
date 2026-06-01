@@ -40,6 +40,13 @@ const setContent = async (options) => {
     };
     return await executeRemoteCall(data);
 };
+const replaceContent = async (options) => {
+    var data = {
+        method: "content.replace",
+        parameters: options
+    };
+    return await executeRemoteCall(data);
+};
 const setMeta = async (options) => {
     var data = {
         method: "meta.set",
@@ -68,4 +75,4 @@ const deleteSection = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-export { getContentNode, getContent, setContent, setMeta, setMetaBatch, addSection, deleteSection };
+export { getContentNode, getContent, setContent, replaceContent, setMeta, setMetaBatch, addSection, deleteSection };

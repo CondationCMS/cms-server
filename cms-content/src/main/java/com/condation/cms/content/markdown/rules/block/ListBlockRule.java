@@ -74,13 +74,13 @@ public class ListBlockRule implements BlockElementRule {
 	public static record ListBlock(int start, int end, List<String> items, boolean ordered) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			if (ordered) {
 				return "<ol>%s</ol>".formatted(
-						items.stream().map(item -> "<li>" + inlineRenderer.render(item) + "</li>").collect(Collectors.joining()));
+						items.stream().map(item -> "<li>" + inlineRenderer.render(item, documentOffset) + "</li>").collect(Collectors.joining()));
 			} else {
 				return "<ul>%s</ul>".formatted(
-						items.stream().map(item -> "<li>" + inlineRenderer.render(item) + "</li>").collect(Collectors.joining()));
+						items.stream().map(item -> "<li>" + inlineRenderer.render(item, documentOffset) + "</li>").collect(Collectors.joining()));
 			}
 		}
 

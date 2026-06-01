@@ -51,8 +51,8 @@ public class ParagraphBlockRule implements BlockElementRule {
 	public static record ParagraphBlock(int start, int end, String content) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
-			return "<p>%s</p>".formatted(inlineRenderer.render(content));
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
+			return "<p>%s</p>".formatted(inlineRenderer.render(content, documentOffset));
 		}
 	}
 

@@ -37,6 +37,14 @@ public interface InlineBlock {
 
 	String render();
 
+	/**
+	 * Renders with absolute document positions. Override for elements that need
+	 * to embed position metadata (e.g. images). Defaults to {@link #render()}.
+	 */
+	default String render(int absoluteStart, int absoluteEnd) {
+		return render();
+	}
+
 	default boolean isPreview() {
 		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
 			return false;

@@ -54,7 +54,7 @@ public class TagBlockRuleTest {
 						"_content", "Google"
 				));
 		
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("[[link url=\"https://google.de/\"]]Google[[/link]]");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("[[link url=\"https://google.de/\"]]Google[[/link]]");
 	}
 	
 	@Test
@@ -75,7 +75,7 @@ public class TagBlockRuleTest {
 						"url", "https://google.de/"
 				));
 		
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
 	}
 	
 	@Test
@@ -98,7 +98,7 @@ public class TagBlockRuleTest {
 						"title", "Everybody loves little cats"
 				));
 		
-		Assertions.assertThat(next.render((content) -> content))
+		Assertions.assertThat(next.render((content, offset) -> content))
 				.isEqualTo("[[video id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\" type=\"youtube\"]][[/video]]");
 
 	}

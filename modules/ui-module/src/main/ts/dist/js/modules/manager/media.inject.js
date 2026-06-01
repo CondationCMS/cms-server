@@ -90,9 +90,12 @@ export const initContentMediaToolbar = (img) => {
     }
     var toolbarDefinition = {
         "options": {
-            "uri": parentToolbarDef.uri
+            "uri": parentToolbarDef.uri,
+            "start": img.dataset.cmsMdStart || null,
+            "end": img.dataset.cmsMdEnd || null
         },
         "actions": [
+            "replace",
             "meta",
             "focalPoint"
         ]
@@ -118,6 +121,15 @@ export const initToolbar = (img, toolbarDefinition) => {
             selectMedia(toolbarDefinition.options.element, toolbarDefinition.options.uri);
         });
         toolbar.appendChild(selectButton);
+    }
+    if (toolbarDefinition.actions.includes('replace')) {
+        const replaceButton = document.createElement('button');
+        replaceButton.innerHTML = IMAGE_ICON;
+        replaceButton.setAttribute("title", "Replace media");
+        replaceButton.addEventListener('click', (event) => {
+            replaceMedia(toolbarDefinition.options.start, toolbarDefinition.options.end, toolbarDefinition.options.element, toolbarDefinition.options.uri);
+        });
+        toolbar.appendChild(replaceButton);
     }
     if (toolbarDefinition.actions.includes('meta')) {
         const metaButton = document.createElement('button');
@@ -173,6 +185,22 @@ export const initToolbar = (img, toolbarDefinition) => {
         if (toolbar.style.visibility === 'visible')
             positionToolbar();
     });
+};
+const replaceMedia = (start, end, metaElement, uri) => {
+    var command = {
+        type: 'edit',
+        payload: {
+            editor: "replace",
+            element: "image",
+            options: {
+                metaElement: metaElement,
+                uri: uri,
+                start: start,
+                end: end
+            }
+        }
+    };
+    frameMessenger.send(window.parent, command);
 };
 const selectMedia = (metaElement, uri) => {
     var command = {

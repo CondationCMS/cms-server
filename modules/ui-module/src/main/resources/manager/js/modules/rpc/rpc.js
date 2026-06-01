@@ -40,7 +40,7 @@ const executeRemoteMethodCall = async (method, parameters) => {
     if (response.status === 403) {
         alert(i18n.t("ui.redirect.login", "You where logged out due to inactivity. Please log in again."));
         window.location.href = window.manager.baseUrl + "/login";
-        return;
+        throw new Error("Unauthorized");
     }
     return await response.json();
 };

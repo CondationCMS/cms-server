@@ -92,15 +92,15 @@ public class DefinitionListBlockRule implements BlockElementRule {
 	public static record DefinitionListBlock(int start, int end, DefinitionListContainer listContainer) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<dl>");
 			
 			listContainer.lists().forEach(list -> {
-				sb.append("<dt>").append(inlineRenderer.render(list.title())).append("</dt>");
-				
+				sb.append("<dt>").append(inlineRenderer.render(list.title(), documentOffset)).append("</dt>");
+
 				list.values.forEach(item -> {
-					sb.append("<dd>").append(inlineRenderer.render(item)).append("</dd>");
+					sb.append("<dd>").append(inlineRenderer.render(item, documentOffset)).append("</dd>");
 				});
 			});
 			

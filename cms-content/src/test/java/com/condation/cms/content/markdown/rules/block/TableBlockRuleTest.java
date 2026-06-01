@@ -85,7 +85,7 @@ public class TableBlockRuleTest {
 						new TableBlockRule.Row(List.of("r2 / c1", "r2 / c2"))
 				));
 
-		var rendered = next.render((md) -> md);
+		var rendered = next.render((md, offset) -> md);
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expected);
 	}
 
@@ -144,7 +144,7 @@ public class TableBlockRuleTest {
 						new TableBlockRule.Row(List.of("r2 / c1", "r2 / c2", "r2 / c3"))
 				));
 
-		var rendered = next.render((md) -> md);
+		var rendered = next.render((md, offset) -> md);
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expected);
 	}
 

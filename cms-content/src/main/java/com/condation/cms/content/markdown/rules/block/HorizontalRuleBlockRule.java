@@ -49,7 +49,7 @@ public class HorizontalRuleBlockRule implements BlockElementRule {
 	public static record HRBlock(int start, int end) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			return "<hr />";
 		}
 

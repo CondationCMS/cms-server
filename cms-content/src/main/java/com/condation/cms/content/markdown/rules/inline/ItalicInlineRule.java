@@ -51,7 +51,7 @@ public class ItalicInlineRule implements InlineElementRule {
         @Override
         public String render() {
             try {
-                var renderedContent = tokenizer.tokenize(content).stream().map(b -> b.render()).collect(Collectors.joining());
+                var renderedContent = tokenizer.tokenize(content).stream().map(b -> b.block().render()).collect(Collectors.joining());
                 return "<em>%s</em>".formatted(renderedContent);
             } catch (IOException ex) {
                 return "<em>%s</em>".formatted(content);

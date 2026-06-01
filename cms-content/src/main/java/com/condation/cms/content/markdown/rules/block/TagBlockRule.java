@@ -60,7 +60,7 @@ public class TagBlockRule implements BlockElementRule {
 	public static record TagBlock(int start, int end, TagParser.TagInfo tagInfo) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			List<String> params = tagInfo.rawAttributes()
 					.entrySet().stream()
 					.filter(entry -> !entry.getKey().equals("_content"))
@@ -72,7 +72,7 @@ public class TagBlockRule implements BlockElementRule {
 					.formatted(
 							tagInfo.name(),
 							String.join(" ", params),
-							inlineRenderer.render((String)tagInfo.rawAttributes().getOrDefault("_content", "")),
+							inlineRenderer.render((String)tagInfo.rawAttributes().getOrDefault("_content", ""), documentOffset),
 							tagInfo.name()
 					);
 		}

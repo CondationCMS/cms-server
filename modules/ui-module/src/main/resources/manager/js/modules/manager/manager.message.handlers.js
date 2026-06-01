@@ -47,6 +47,16 @@ const executeImageSelect = (payload) => {
     };
     executeScriptAction(cmd);
 };
+const executeContentImageReplace = (payload) => {
+    const cmd = {
+        "module": window.manager.baseUrl + "/actions/media/select-content-media",
+        "function": "runAction",
+        "parameters": {
+            "options": payload.options ? payload.options : {}
+        }
+    };
+    executeScriptAction(cmd);
+};
 const initMessageHandlers = () => {
     frameMessenger.on('preview:reload', (payload) => {
     });
@@ -87,6 +97,9 @@ const initMessageHandlers = () => {
         }
         else if (payload.element === "image" && payload.editor === "select") {
             executeImageSelect(payload);
+        }
+        else if (payload.element === "image" && payload.editor === "replace") {
+            executeContentImageReplace(payload);
         }
         else if (payload.element === "image" && payload.editor === "focal-point") {
             var cmd = {

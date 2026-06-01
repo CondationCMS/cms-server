@@ -88,7 +88,7 @@ public class TaskListBlockRule implements BlockElementRule {
 	public static record TaskListBlock(int start, int end, TaskList taskList) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			StringBuilder sb = new StringBuilder();
 			sb.append("<ul>");
 

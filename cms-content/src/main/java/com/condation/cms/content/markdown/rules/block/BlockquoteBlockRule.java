@@ -56,8 +56,8 @@ public class BlockquoteBlockRule implements BlockElementRule {
 		
 		
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
-			return "<blockquote>%s</blockquote>".formatted(inlineRenderer.render(content));
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
+			return "<blockquote>%s</blockquote>".formatted(inlineRenderer.render(content, documentOffset));
 		}
 
 		@Override

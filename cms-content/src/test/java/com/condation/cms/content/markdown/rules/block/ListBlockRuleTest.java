@@ -49,7 +49,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("Hallo", "Leute"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ol><li>Hallo</li><li>Leute</li></ol>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ol><li>Hallo</li><li>Leute</li></ol>");
 	}
 
 	@Test
@@ -65,7 +65,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("Hallo", "Leute"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ul><li>Hallo</li><li>Leute</li></ul>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ul><li>Hallo</li><li>Leute</li></ul>");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("Hallo", "Leute"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ul><li>Hallo</li><li>Leute</li></ul>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ul><li>Hallo</li><li>Leute</li></ul>");
 	}
 
 	@Test
@@ -97,7 +97,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("Hallo", "Leute"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ul><li>Hallo</li><li>Leute</li></ul>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ul><li>Hallo</li><li>Leute</li></ul>");
 	}
 
 	@Test
@@ -113,7 +113,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("ul item 1", "ul item 2"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ul><li>ul item 1</li><li>ul item 2</li></ul>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ul><li>ul item 1</li><li>ul item 2</li></ul>");
 	}
 	
 	@Test
@@ -129,7 +129,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("first sentence. second sentence.", "item 2"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ol><li>first sentence. second sentence.</li><li>item 2</li></ol>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ol><li>first sentence. second sentence.</li><li>item 2</li></ol>");
 	}
 	
 	@Test
@@ -145,7 +145,7 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("first sentence.\nsecond sentence.", "item 2"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ol><li>first sentence.\nsecond sentence.</li><li>item 2</li></ol>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ol><li>first sentence.\nsecond sentence.</li><li>item 2</li></ol>");
 	}
 	
 	@Test
@@ -161,6 +161,6 @@ public class ListBlockRuleTest {
 				.asInstanceOf(InstanceOfAssertFactories.type(ListBlockRule.ListBlock.class))
 				.hasFieldOrPropertyWithValue("items", List.of("first sentence.\nsecond sentence.", "item 2"));
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<ul><li>first sentence.\nsecond sentence.</li><li>item 2</li></ul>");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<ul><li>first sentence.\nsecond sentence.</li><li>item 2</li></ul>");
 	}
 }

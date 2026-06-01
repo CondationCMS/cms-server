@@ -42,7 +42,7 @@ function heartbeat() {
 document.addEventListener("DOMContentLoaded", function () {
     setInterval(() => {
         heartbeat();
-    }, 10 * 1000);
+    }, 10 * 60 * 1000);
     //PreviewHistory.init("/");
     //updateStateButton();
     activatePreviewOverlay();

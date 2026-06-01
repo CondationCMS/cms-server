@@ -64,7 +64,7 @@ public class TaskListBlockRuleTest {
 						))
 				);
 
-		var rendered = next.render((md) -> md);
+		var rendered = next.render((md, offset) -> md);
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expected);
 	}
 
@@ -102,7 +102,7 @@ public class TaskListBlockRuleTest {
 						))
 				);
 
-		var rendered = next.render((md) -> md);
+		var rendered = next.render((md, offset) -> md);
 		Assertions.assertThat(rendered).isEqualToIgnoringWhitespace(expected);
 	}
 

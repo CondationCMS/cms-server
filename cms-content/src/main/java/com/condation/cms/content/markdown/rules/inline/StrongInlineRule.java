@@ -51,7 +51,7 @@ public class StrongInlineRule implements InlineElementRule {
         @Override
         public String render() {
             try {
-                var renderedContent = tokenizer.tokenize(content).stream().map(b -> b.render()).collect(Collectors.joining());
+                var renderedContent = tokenizer.tokenize(content).stream().map(b -> b.block().render()).collect(Collectors.joining());
                 return "<strong>%s</strong>".formatted(renderedContent);
             } catch (IOException ex) {
                 return "<strong>%s</strong>".formatted(content);

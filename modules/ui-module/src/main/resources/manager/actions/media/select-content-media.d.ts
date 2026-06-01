@@ -18,8 +18,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-export function openFileBrowser(optionsParam: any): Promise<void>;
-export namespace state {
-    let options: any;
-    let currentFolder: string;
-}
+export declare function runAction(params: any): Promise<void>;

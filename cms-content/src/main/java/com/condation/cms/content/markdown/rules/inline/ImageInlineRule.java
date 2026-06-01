@@ -54,30 +54,35 @@ public class ImageInlineRule implements InlineElementRule {
 
 		@Override
 		public String render() {
+			return render(start, end);
+		}
+
+		@Override
+		public String render(int absoluteStart, int absoluteEnd) {
 			var altText = alt;
 			var requestContext = getRequestContext();
 			if (Strings.isNullOrEmpty(altText) && requestContext.isPresent()) {
 				var imageUrl = ImageUtil.getRawPath(src, requestContext.get());
 				var media = requestContext.get().get(SiteMediaServiceFeature.class).mediaService().get(imageUrl);
-			
+
 				if (media != null && media.meta().containsKey("alt")) {
 					altText = (String) media.meta().get("alt");
 				}
 			}
-			
+
 			var uiSelector = "";
 			if (isManagerPreview()) {
 				uiSelector = new StringBuilder()
 						.append(" data-cms-ui-selector=\"content-image\" ")
-						.append(" data-cms-md-start=\"").append(start).append("\" ")
-						.append(" data-cms-md-end=\"").append(end).append("\" ")
+						.append(" data-cms-md-start=\"").append(absoluteStart).append("\" ")
+						.append(" data-cms-md-end=\"").append(absoluteEnd).append("\" ")
 						.toString();
 			}
-			
+
 			if (title != null && !"".equals(title.trim())) {
 				return "<img src=\"%s\" alt=\"%s\" title=\"%s\" %s />".formatted(src, altText, title, uiSelector);
 			}
-			return  "<img src=\"%s\" alt=\"%s\" %s />".formatted(src, altText, uiSelector);
+			return "<img src=\"%s\" alt=\"%s\" %s />".formatted(src, altText, uiSelector);
 		}
 	}
 }

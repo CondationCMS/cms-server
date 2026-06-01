@@ -48,7 +48,7 @@ public final class AuthUtil {
 	private AuthUtil() {
 	}
 
-	private static boolean tryRefresh(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
+	private static Optional<String> tryRefresh(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 
 		var refreshTokenCache = moduleContext.get(CacheManagerFeature.class).cacheManager().get(
@@ -58,25 +58,27 @@ public final class AuthUtil {
 
 		var refreshCookie = CookieUtil.getCookie(request, UIConstants.COOKIE_CMS_REFRESH_TOKEN);
 		if (refreshCookie.isEmpty()) {
-			return false;
+			return Optional.empty();
 		}
 
 		var token = refreshCookie.get().getValue();
 
 		var payload = TokenUtils.getPayload(token, secret);
 		if (payload.isPresent()) {
-			refreshTokenCache.invalidate(token); // best-effort invalidation; refresh should still work after restart if token is valid
+			refreshTokenCache.invalidate(token);
 
 			Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).byUsername(Realm.of("manager-users"), payload.get().username());
 			if (userOpt.isPresent()) {
-				updateCookies(userOpt.get(), response, requestContext, moduleContext);
-				return true;
+				return Optional.of(updateCookies(userOpt.get(), response, requestContext, moduleContext));
 			}
 		}
-		return false;
+		return Optional.empty();
 	}
 
-	public static boolean refreshTokens(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
+	/**
+	 * Returns the new auth token string if refresh succeeded, empty otherwise.
+	 */
+	public static Optional<String> refreshTokens(Request request, Response response, SiteModuleContext moduleContext, RequestContext requestContext) {
 		return tryRefresh(request, response, moduleContext, requestContext);
 	}
 
@@ -86,8 +88,7 @@ public final class AuthUtil {
 		var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 
 		if (authCookie.isEmpty()) {
-			// try refresh
-			if (tryRefresh(request, response, moduleContext, requestContext)) {
+			if (tryRefresh(request, response, moduleContext, requestContext).isPresent()) {
 				return true;
 			}
 		} else {
@@ -96,8 +97,7 @@ public final class AuthUtil {
 			var payload = TokenUtils.getPayload(token, secret);
 
 			if (payload.isEmpty()) {
-				// try refresh
-				if (tryRefresh(request, response, moduleContext, requestContext)) {
+				if (tryRefresh(request, response, moduleContext, requestContext).isPresent()) {
 					return true;
 				}
 			} else {
@@ -108,7 +108,10 @@ public final class AuthUtil {
 		return false;
 	}
 
-	public static void updateCookies(User user, Response response, RequestContext requestContext, SiteModuleContext moduleContext) {
+	/**
+	 * Creates and sets new auth/refresh/preview cookies. Returns the new auth token.
+	 */
+	public static String updateCookies(User user, Response response, RequestContext requestContext, SiteModuleContext moduleContext) {
 
 		try {
 			var secret = moduleContext.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
@@ -142,6 +145,8 @@ public final class AuthUtil {
 					new CacheManager.CacheConfig(1000l, Duration.ofDays(7))
 			);
 			refreshTokenCache.put(refreshToken, true);
+
+			return authToken;
 		} catch (Exception ex) {
 			log.error("", ex);
 			throw new RuntimeException(ex);

@@ -50,7 +50,7 @@ public class HorizontalRuleBlockRuleTest {
 				.isNotNull()
 				.isInstanceOf(HorizontalRuleBlockRule.HRBlock.class);
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<hr />");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<hr />");
 	}
 	
 	@Test
@@ -69,7 +69,7 @@ public class HorizontalRuleBlockRuleTest {
 				.isNotNull()
 				.isInstanceOf(HorizontalRuleBlockRule.HRBlock.class);
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<hr />");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<hr />");
 	}
 	
 	@Test
@@ -91,9 +91,9 @@ public class HorizontalRuleBlockRuleTest {
 				.isNotNull()
 				.isInstanceOf(HorizontalRuleBlockRule.HRBlock.class);
 
-		Assertions.assertThat(next.render((content) -> content)).isEqualTo("<hr />");
+		Assertions.assertThat(next.render((content, offset) -> content)).isEqualTo("<hr />");
 		
-		Assertions.assertThat(next.render(value -> value)).isEqualToIgnoringWhitespace(expected);
+		Assertions.assertThat(next.render((value, offset) -> value)).isEqualToIgnoringWhitespace(expected);
 	}
 	
 	

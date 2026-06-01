@@ -19,7 +19,7 @@
  * #L%
  */
 
-import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
+import { executeRemoteCall, RPCResponse } from '@cms/modules/rpc/rpc.js'
 
 const getContentNode = async (options : any) => {
 	var data = {
@@ -40,6 +40,26 @@ const getContent = async (options : any) => {
 const setContent = async (options : any) => {
 	var data = {
 		method: "content.set",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+};
+
+export interface ReplaceContent {
+  error: boolean | null;
+  uri: string;
+}
+
+export interface ReplaceContentOptions {
+  uri: string;
+  content: string;
+  start: number;
+  end: number;
+}
+
+const replaceContent = async (options : ReplaceContentOptions): Promise<RPCResponse<ReplaceContent>> => {
+	var data = {
+		method: "content.replace",
 		parameters: options
 	}
 	return await executeRemoteCall(data);
@@ -77,4 +97,4 @@ const deleteSection = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
-export { getContentNode, getContent, setContent, setMeta, setMetaBatch, addSection, deleteSection };
+export { getContentNode, getContent, setContent, replaceContent, setMeta, setMetaBatch, addSection, deleteSection };

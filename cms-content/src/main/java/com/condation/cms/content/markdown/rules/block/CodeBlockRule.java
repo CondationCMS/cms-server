@@ -53,7 +53,7 @@ public class CodeBlockRule implements BlockElementRule {
 	public static record CodeBlock (int start, int end, String content, String language) implements Block {
 
 		@Override
-		public String render(InlineRenderer inlineRenderer) {
+		public String render(InlineRenderer inlineRenderer, int documentOffset) {
 			if (language == null || "".equals(language)) {
 				return "<pre><code>%s</code></pre>".formatted(escape(content));
 			}

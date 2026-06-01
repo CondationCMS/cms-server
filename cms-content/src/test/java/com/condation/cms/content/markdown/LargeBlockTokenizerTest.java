@@ -47,7 +47,7 @@ public class LargeBlockTokenizerTest extends MarkdownTest {
     @Test
     void test_large_file() throws IOException {
         String content = load("large_block.md");
-        List<Block> blocks = sut.tokenize(content);
+        List<LocatedBlock> blocks = sut.tokenize(content);
         assertThat(blocks).isNotEmpty();
     }
 }

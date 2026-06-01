@@ -44,10 +44,13 @@ import java.util.List;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.SectionEntry;
 import com.condation.cms.modules.ui.utils.FormHelper;
+import com.condation.cms.modules.ui.utils.MarkdownHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
+import com.condation.cms.modules.ui.utils.NumberUtils;
 import com.condation.cms.modules.ui.utils.UIFileNameUtil;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Files;
@@ -107,6 +110,45 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 
 				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, updatedContent);
+				log.debug("file {} saved", uri);
+			} catch (IOException ex) {
+				log.error("", ex);
+			}
+		}
+
+		return result;
+	}
+	
+	@RemoteMethod(name = "content.replace", permissions = {Permissions.CONTENT_EDIT})
+	public Object replaceContent(Map<String, Object> parameters) throws RPCException {
+		final DB db = getContext().get(DBFeature.class).db();
+		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+
+		var replacement = (String)parameters.get("content");
+		int start = NumberUtils.toInt(parameters.getOrDefault("start", -1l));
+		int end = NumberUtils.toInt(parameters.getOrDefault("end", -1l));
+		var uri = (String) parameters.get("uri");
+
+		Map<String, Object> result = new HashMap<>();
+		result.put("uri", uri);
+		
+		if (replacement == null) {
+			throw new RPCException("replacement must not be null");
+		}
+		
+		var contentFile = contentBase.resolve(uri);
+		
+		if (contentFile != null) {
+			try {
+				ContentFileParser parser = new ContentFileParser(contentFile);
+
+				var content = parser.getContent();
+				
+				var updatedContent = MarkdownHelper.replaceRange(content, start, end, replacement);
+
+				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
+
+				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, parser.getHeader(), updatedContent);
 				log.debug("file {} saved", uri);
 			} catch (IOException ex) {
 				log.error("", ex);

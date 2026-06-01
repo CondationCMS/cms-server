@@ -25,6 +25,7 @@ package com.condation.cms.content.markdown.rules.inline;
 import com.condation.cms.content.markdown.InlineBlock;
 import com.condation.cms.content.markdown.InlineElementRule;
 import com.condation.cms.content.markdown.InlineElementTokenizer;
+import com.condation.cms.content.markdown.utils.StringUtils;
 import com.google.common.base.Strings;
 
 /**
@@ -44,7 +45,7 @@ public class TextInlineRule implements InlineElementRule {
 	public static record TextBlock(int start, int end, String content) implements InlineBlock {
 		@Override
 		public String render() {
-			return content;
+			return StringUtils.escapeToEntities(content);
 		}
 	}
 }

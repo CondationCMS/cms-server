@@ -45,6 +45,17 @@ public interface InlineBlock {
 		return requestContext != null && requestContext.has(IsPreviewFeature.class);
 	}
 	
+	default boolean isManagerPreview() {
+		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			return false;
+		}
+		var requestContext = RequestContextScope.REQUEST_CONTEXT.get();
+		if (requestContext == null || !requestContext.has(IsPreviewFeature.class)) {
+			return false;
+		}
+		return IsPreviewFeature.Mode.MANAGER.equals(requestContext.get(IsPreviewFeature.class).mode());
+	}
+	
 	default Optional<RequestContext> getRequestContext () {
 		if (!RequestContextScope.REQUEST_CONTEXT.isBound()) {
 			return Optional.empty();

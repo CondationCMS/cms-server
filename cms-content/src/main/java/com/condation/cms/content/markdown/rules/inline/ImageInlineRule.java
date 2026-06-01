@@ -22,6 +22,7 @@ package com.condation.cms.content.markdown.rules.inline;
  */
 
 
+import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.utils.ImageUtil;
 import com.condation.cms.content.markdown.InlineBlock;
@@ -65,8 +66,12 @@ public class ImageInlineRule implements InlineElementRule {
 			}
 			
 			var uiSelector = "";
-			if (isPreview()) {
-				uiSelector = " data-cms-ui-selector=\"content-image\" ";
+			if (isManagerPreview()) {
+				uiSelector = new StringBuilder()
+						.append(" data-cms-ui-selector=\"content-image\" ")
+						.append(" data-cms-md-start=\"").append(start).append("\" ")
+						.append(" data-cms-md-end=\"").append(end).append("\" ")
+						.toString();
 			}
 			
 			if (title != null && !"".equals(title.trim())) {

@@ -23,7 +23,6 @@ package com.condation.cms.content.markdown;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.content.markdown.rules.block.ParagraphBlockRule;
 import com.condation.cms.content.markdown.rules.inline.TextInlineRule;
-import com.condation.cms.content.markdown.utils.StringUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
@@ -89,9 +88,7 @@ public class CMSMarkdown {
 	}
 
 	public String render(final String md) throws IOException {
-		// Escape input markdown
-		String escapedMd = StringUtils.escape(md);
-		List<Block> blocks = blockTokenizer.tokenize(escapedMd);
+		List<Block> blocks = blockTokenizer.tokenize(md);
 
 		// Pre-size StringBuilder based on input to reduce allocations
 		final StringBuilder htmlBuilder = new StringBuilder(md.length() + 256);
@@ -164,6 +161,6 @@ public class CMSMarkdown {
 			}
 		}
 
-		return StringUtils.unescape(htmlBuilder.toString());
+		return htmlBuilder.toString();
 	}
 }

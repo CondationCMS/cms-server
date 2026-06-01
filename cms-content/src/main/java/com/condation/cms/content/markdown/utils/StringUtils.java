@@ -36,9 +36,13 @@ public class StringUtils {
 
 	private static final Map<String, String> ESCAPE = new HashMap<>();
 
+	// Direct escape-sequence → HTML entity mapping (no placeholder needed)
+	private static final Map<String, String> ESCAPE_TO_ENTITY = new HashMap<>();
+
 	private static final String AMP_PLACEHOLDER = "AMP#PLACE#HOLDER";
 
 	private static final Pattern ESCAPE_PATTERN;
+	private static final Pattern ESCAPE_TO_ENTITY_PATTERN;
 	private static final Pattern UNESCAPE_PATTERN;
 
 	static {
@@ -60,12 +64,31 @@ public class StringUtils {
 		ESCAPE.put("\\!", AMP_PLACEHOLDER + "#33;");
 		ESCAPE.put("\\|", AMP_PLACEHOLDER + "#124;");
 
+		ESCAPE_TO_ENTITY.put("\\#", "&#35;");
+		ESCAPE_TO_ENTITY.put("\\*", "&#42;");
+		ESCAPE_TO_ENTITY.put("\\`", "&#96;");
+		ESCAPE_TO_ENTITY.put("\\_", "&#95;");
+		ESCAPE_TO_ENTITY.put("\\{", "&#123;");
+		ESCAPE_TO_ENTITY.put("\\}", "&#125;");
+		ESCAPE_TO_ENTITY.put("\\[", "&#91;");
+		ESCAPE_TO_ENTITY.put("\\]", "&#93;");
+		ESCAPE_TO_ENTITY.put("\\<", "&#60;");
+		ESCAPE_TO_ENTITY.put("\\>", "&#62;");
+		ESCAPE_TO_ENTITY.put("\\(", "&#40;");
+		ESCAPE_TO_ENTITY.put("\\)", "&#41;");
+		ESCAPE_TO_ENTITY.put("\\+", "&#43;");
+		ESCAPE_TO_ENTITY.put("\\-", "&#45;");
+		ESCAPE_TO_ENTITY.put("\\.", "&#46;");
+		ESCAPE_TO_ENTITY.put("\\!", "&#33;");
+		ESCAPE_TO_ENTITY.put("\\|", "&#124;");
+
 		// Build regex pattern: (\#|\*|\`|\_|...) - captures all escape sequences
 		String regexPattern = ESCAPE.keySet().stream()
 				.map(Pattern::quote)
 				.reduce((a, b) -> a + "|" + b)
 				.orElse("");
 		ESCAPE_PATTERN = Pattern.compile(regexPattern);
+		ESCAPE_TO_ENTITY_PATTERN = ESCAPE_PATTERN; // same pattern, different replacement map
 
 		// Pattern for unescaping
 		UNESCAPE_PATTERN = Pattern.compile(Pattern.quote(AMP_PLACEHOLDER));
@@ -103,6 +126,27 @@ public class StringUtils {
 		}
 		matcher.appendTail(result);
 
+		return result.toString();
+	}
+
+	/**
+	 * Converts markdown escape sequences (e.g. {@code \*}) directly to HTML entities
+	 * (e.g. {@code &#42;}). Used by TextBlock at render time so that positions in the
+	 * original markdown string are not shifted by pre-processing.
+	 */
+	public static String escapeToEntities(String text) {
+		if (Strings.isNullOrEmpty(text)) {
+			return text;
+		}
+		Matcher matcher = ESCAPE_TO_ENTITY_PATTERN.matcher(text);
+		StringBuffer result = new StringBuffer(text.length() + 32);
+		while (matcher.find()) {
+			String replacement = ESCAPE_TO_ENTITY.get(matcher.group());
+			if (replacement != null) {
+				matcher.appendReplacement(result, Matcher.quoteReplacement(replacement));
+			}
+		}
+		matcher.appendTail(result);
 		return result.toString();
 	}
 

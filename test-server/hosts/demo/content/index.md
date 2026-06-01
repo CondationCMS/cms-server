@@ -51,6 +51,7 @@ Theme: [[ext:theme_name]][[/ext:theme_name]]
 
 
 ```java
+// its a comment
 System.out.println("Hello world!");
 ```
 

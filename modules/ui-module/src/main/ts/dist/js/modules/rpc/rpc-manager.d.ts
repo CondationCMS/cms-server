@@ -20,5 +20,5 @@ export interface MediaFormatsResponse {
     result: MediaFormat[];
 }
 declare const getMediaFormats: (options: any) => Promise<MediaFormatsResponse>;
-declare const getTagNames: (options: any) => Promise<any>;
-export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };
+declare const getShortCodeNames: (options: any) => Promise<any>;
+export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getShortCodeNames, getMediaFormats, getListItemTypes, createCSRFToken };

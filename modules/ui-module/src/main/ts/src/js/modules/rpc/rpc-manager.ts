@@ -87,7 +87,7 @@ const getMediaFormats = async (options : any): Promise<MediaFormatsResponse> => 
 	return await executeRemoteCall(data);
 };
 
-const getTagNames = async (options : any) => {
+const getShortCodeNames = async (options : any) => {
 	var data = {
 		method: "manager.content.shortCodes",
 		parameters: options
@@ -99,7 +99,7 @@ export {
 	getSectionEntryTemplates, 
 	getPageTemplates, 
 	getMediaForm, 
-	getTagNames, 
+	getShortCodeNames, 
 	getMediaFormats,
 	getListItemTypes,
 	createCSRFToken

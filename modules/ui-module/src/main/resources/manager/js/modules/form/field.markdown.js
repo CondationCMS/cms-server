@@ -20,7 +20,7 @@
  */
 import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js";
-import { getMediaFormats, getTagNames } from "@cms/modules/rpc/rpc-manager.js";
+import { getMediaFormats, getShortCodeNames } from "@cms/modules/rpc/rpc-manager.js";
 import { openFileBrowser } from "@cms/modules/filebrowser.js";
 import { alertSelect } from "@cms/modules/alerts.js";
 import { patchPathWithContext } from "@cms/js/manager-globals";
@@ -66,7 +66,7 @@ const init = async (context) => {
     if (!formElement) {
         return;
     }
-    const cmsTagsMenu = await buildCmsTagsMenu();
+    const cmsShortCodesMenu = await buildCmsShortCodesMenu();
     const editorInputs = formElement.querySelectorAll('[data-cms-form-field-type="markdown"] input');
     editorInputs.forEach((input) => {
         const containerId = input.dataset.cherryId;
@@ -92,12 +92,12 @@ const init = async (context) => {
                     'code',
                     '|',
                     'cmsImageSelection',
-                    'cmsTagsMenu',
+                    'cmsShortCodesMenu',
                 ],
                 bubble: ['bold', 'italic', 'underline', 'strikethrough', 'sub', 'sup', 'quote', '|', 'size', 'color'], // array or false
                 float: ['h1', 'h2', 'h3', '|', 'checklist', 'table', 'code'],
                 customMenu: {
-                    cmsTagsMenu: cmsTagsMenu,
+                    cmsShortCodesMenu: cmsShortCodesMenu,
                     cmsImageSelection: cmsImageSelection
                 },
             }
@@ -118,24 +118,24 @@ const getEditorFromEvent = (event) => {
     const input = document.querySelector(`input[data-cherry-id="${editorContainer.id}"]`);
     return input ? input.cherryEditor : null;
 };
-const buildCmsTagsMenu = async () => {
-    const response = await getTagNames({});
-    const tagNames = response.result || [];
-    const submenuConfig = tagNames.map((tag) => ({
-        name: tag.charAt(0).toUpperCase() + tag.slice(1),
-        value: tag,
+const buildCmsShortCodesMenu = async () => {
+    const response = await getShortCodeNames({});
+    const shortCodeNames = response.result || [];
+    const submenuConfig = shortCodeNames.map((shortCode) => ({
+        name: shortCode.charAt(0).toUpperCase() + shortCode.slice(1),
+        value: shortCode,
         noIcon: true,
         onclick: (event) => {
             const editor = getEditorFromEvent(event);
             if (editor) {
-                editor.toolbar.menus.hooks["cmsTagsMenu"].fire(null, tag);
+                editor.toolbar.menus.hooks["cmsShortCodesMenu"].fire(null, shortCode);
             }
         }
     }));
-    return window.Cherry.createMenuHook("CMS-Tags", {
-        title: "CMS Tags",
-        onClick: (selection, tag) => {
-            return `[[${tag}]]${selection || ""}[[/${tag}]]`;
+    return window.Cherry.createMenuHook("CMS-ShortCodes", {
+        title: "CMS Short Codes",
+        onClick: (selection, shortCode) => {
+            return `[[${shortCode}]]${selection || ""}[[/${shortCode}]]`;
         },
         subMenuConfig: submenuConfig
     });

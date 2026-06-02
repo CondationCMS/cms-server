@@ -67,11 +67,11 @@ const getMediaFormats = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-const getTagNames = async (options) => {
+const getShortCodeNames = async (options) => {
     var data = {
         method: "manager.content.shortCodes",
         parameters: options
     };
     return await executeRemoteCall(data);
 };
-export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getTagNames, getMediaFormats, getListItemTypes, createCSRFToken };
+export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getShortCodeNames, getMediaFormats, getListItemTypes, createCSRFToken };

@@ -21,8 +21,8 @@ package com.condation.cms.content.tags;
  * #L%
  */
 
-import com.condation.cms.content.tags.TagMap;
-import com.condation.cms.content.tags.TagParser;
+import com.condation.cms.content.shortcodes.ShortCodeMap;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.api.request.RequestContext;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.assertj.core.api.Assertions;
@@ -35,9 +35,9 @@ import org.junit.jupiter.api.BeforeEach;
  */
 public class TagParserTest {
 	
-	TagParser tagParser;
+	ShortCodeParser shortCodeParser;
 
-	TagMap tagMap;
+	ShortCodeMap shortCodeMap;
 	
 	RequestContext requestContext;
 	
@@ -45,115 +45,115 @@ public class TagParserTest {
 	void setup() {
 		requestContext = new RequestContext();
 		
-		tagMap = new TagMap();
-		tagMap.put("code", params -> {
+		shortCodeMap = new ShortCodeMap();
+		shortCodeMap.put("code", params -> {
 			// Verarbeitung der Parameter hier
 			return "Ausgabe des Tags";
 		});
-		tagMap.put("content", params -> {
+		shortCodeMap.put("content", params -> {
 			return (String)params.get("_content");
 		});
 		
-		tagMap.put("exp", params -> {
+		shortCodeMap.put("exp", params -> {
 			return "expression: " + params.get("value");
 		});
 		
-		tagMap.put("param", params -> {
+		shortCodeMap.put("param", params -> {
 			return "param: " + params.get("param1");
 		});
 		
-		tagMap.put("ns1:print", params -> {
+		shortCodeMap.put("ns1:print", params -> {
 			return "message: " + params.get("message");
 		});
 		
-		tagMap.put("parent", params -> {
+		shortCodeMap.put("parent", params -> {
 			return "<div class='parent'>%s</div>".formatted((String)params.get("_content"));
 		});
-		tagMap.put("nested", params -> {
+		shortCodeMap.put("nested", params -> {
 			return "nested";
 		});
 		
-		this.tagParser = new TagParser(new JexlBuilder().create());
+		this.shortCodeParser = new ShortCodeParser(new JexlBuilder().create());
 	}
 
 	@Test
 	public void no_tag() {
-		String result = tagParser.parse("Dein Tag-Text hier", tagMap, requestContext);
+		String result = shortCodeParser.parse("Dein Tag-Text hier", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Dein Tag-Text hier");
 	}
 	
 	@Test
 	public void self_closing_tag() {
-		String result = tagParser.parse("[[code/]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[code/]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Ausgabe des Tags");
 	}
 	
 	@Test
 	public void self_closing_tag_with_space() {
-		String result = tagParser.parse("[[code /]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[code /]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Ausgabe des Tags");
 	}
 
 	@Test
 	public void end_closing_tag() {
-		String result = tagParser.parse("[[code]][[/code]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[code]][[/code]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Ausgabe des Tags");
 	}
 	
 	@Test
 	public void tag_with_content() {
-		String result = tagParser.parse("[[content]]Hello CondationCMS[[/content]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[content]]Hello CondationCMS[[/content]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Hello CondationCMS");
 	}
 	
 	@Test
 	public void expressions() {
-		String result = tagParser.parse("[[exp value=\"${5+4}\"/]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[exp value=\"${5+4}\"/]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("expression: 9");
 	}
 	
 	@Test
 	public void parameters_string() {
-		String result = tagParser.parse("[[param param1=\"5\"/]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[param param1=\"5\"/]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("param: 5");
 	}
 	
 	@Test
 	public void parameters_number() {
-		String result = tagParser.parse("[[param param1=5 /]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[param param1=5 /]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("param: 5");
 	}
 	
 	@Test
 	public void parameters_boolean_true() {
-		String result = tagParser.parse("[[param param1=true /]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[param param1=true /]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("param: true");
 	}
 	
 	@Test
 	public void parameters_boolean_false() {
-		String result = tagParser.parse("[[param param1=false /]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[param param1=false /]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("param: false");
 	}
 	
 	@Test
 	public void parameters_with_content() {
-		String result = tagParser.parse("[[param param1=\"5\"]]Hello[[/param]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[param param1=\"5\"]]Hello[[/param]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("param: 5");
 	}
 	
 	@Test
 	public void tag_in_text() {
-		String result = tagParser.parse("Hello [[content]]CondationCMS[[/content]]!", tagMap, requestContext);
+		String result = shortCodeParser.parse("Hello [[content]]CondationCMS[[/content]]!", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("Hello CondationCMS!");
 	}
 	
 	@Test
 	public void namespace() {
-		String result = tagParser.parse("[[ns1:print message='Hello CondationCMS']][[/ns1:print]]", tagMap, requestContext);
+		String result = shortCodeParser.parse("[[ns1:print message='Hello CondationCMS']][[/ns1:print]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("message: Hello CondationCMS");
 		
-		result = tagParser.parse("[[ns1:print message='Hello CondationCMS' /]]", tagMap, requestContext);
+		result = shortCodeParser.parse("[[ns1:print message='Hello CondationCMS' /]]", shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualTo("message: Hello CondationCMS");
 	}
 
@@ -165,7 +165,7 @@ public class TagParserTest {
 				[[/content]]
 				""";
 
-		String result = tagParser.parse(content, tagMap, requestContext);
+		String result = shortCodeParser.parse(content, shortCodeMap, requestContext);
 
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("This is a multiline tag!");
 	}
@@ -178,9 +178,9 @@ public class TagParserTest {
                    [[/parent]]
                    """;
 		
-		var tags = tagParser.findTags(content, tagMap);
+		var tags = shortCodeParser.findShortCodes(content, shortCodeMap);
 		Assertions.assertThat(tags.size()).isEqualTo(1);
-		String result = tagParser.parse(content, tagMap, requestContext);
+		String result = shortCodeParser.parse(content, shortCodeMap, requestContext);
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<div class='parent'>nested</div>");
 	}
 }

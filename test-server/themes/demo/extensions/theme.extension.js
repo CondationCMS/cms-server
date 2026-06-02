@@ -10,8 +10,8 @@ $hooks.registerAction("system/content/tags", ({tags}) => {
 	return null;
 })
 
-$hooks.registerAction("system/content/tags", ({tags}) => {
-	tags.put(
+$hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
+	shortCodes.put(
 			"say_hello",
 			({name}) => `Hello, ${name}`
 	)

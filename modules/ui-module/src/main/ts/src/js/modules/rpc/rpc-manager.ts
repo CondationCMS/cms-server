@@ -89,7 +89,7 @@ const getMediaFormats = async (options : any): Promise<MediaFormatsResponse> => 
 
 const getTagNames = async (options : any) => {
 	var data = {
-		method: "manager.content.tags",
+		method: "manager.content.shortCodes",
 		parameters: options
 	}
 	return await executeRemoteCall(data);

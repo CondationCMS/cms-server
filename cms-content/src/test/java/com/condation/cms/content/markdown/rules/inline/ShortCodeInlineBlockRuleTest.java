@@ -28,16 +28,15 @@ import com.condation.cms.content.markdown.InlineElementTokenizer;
 import com.condation.cms.content.markdown.Options;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 /**
  *
  * @author t.marx
  */
-public class TagInlineBlockRuleTest {
+public class ShortCodeInlineBlockRuleTest {
 	
-	private TagInlineBlockRule sut = new TagInlineBlockRule();
+	private ShortCodeInlineBlockRule sut = new ShortCodeInlineBlockRule();
 	Options options = new Options();
 	InlineElementTokenizer tokenizer = new InlineElementTokenizer(options);
 
@@ -50,10 +49,10 @@ public class TagInlineBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(TagInlineBlockRule.TagInlineBlock.class);
+				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class);
 		
-		var tag = (TagInlineBlockRule.TagInlineBlock)next;
-		Assertions.assertThat(tag.tagInfo())
+		var tag = (ShortCodeInlineBlockRule.ShortCodeInlineBlock)next;
+		Assertions.assertThat(tag.shortCodeInfo())
 				.hasFieldOrPropertyWithValue("name", "link")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"url", "https://google.de/",
@@ -72,10 +71,10 @@ public class TagInlineBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(TagInlineBlockRule.TagInlineBlock.class);
+				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class);
 
-		var tag = (TagInlineBlockRule.TagInlineBlock)next;
-		Assertions.assertThat(tag.tagInfo())
+		var tag = (ShortCodeInlineBlockRule.ShortCodeInlineBlock)next;
+		Assertions.assertThat(tag.shortCodeInfo())
 				.hasFieldOrPropertyWithValue("name", "link")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"url", "https://google.de/"

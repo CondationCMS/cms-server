@@ -1,4 +1,4 @@
-package com.condation.cms.content.tags;
+package com.condation.cms.content.shortcodes;
 
 /*-
  * #%L
@@ -22,7 +22,7 @@ package com.condation.cms.content.tags;
  */
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.content.tags.annotation.AnnotationTagRegistrar;
+import com.condation.cms.content.shortcodes.annotation.AnnotationShortCodeRegistrar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,14 +38,14 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class Tags {
+public class ShortCodes {
 
-	private final TagMap tagMap;
-	private final TagParser parser;
+	private final ShortCodeMap tagMap;
+	private final ShortCodeParser parser;
 
-	public Tags(Map<String, Function<Parameter, String>> codes, TagParser tagParser) {
+	public ShortCodes(Map<String, Function<Parameter, String>> codes, ShortCodeParser tagParser) {
 		this.parser = tagParser;
-		this.tagMap = new TagMap();
+		this.tagMap = new ShortCodeMap();
 		this.tagMap.putAll(codes);
 	}
 
@@ -83,27 +83,27 @@ public class Tags {
 		return "";
 	}
 
-	public static Tags.Builder builder(TagParser tagParser) {
+	public static ShortCodes.Builder builder(ShortCodeParser tagParser) {
 		return new Builder(tagParser);
 	}
 
 	public static class Builder {
 
-		private final TagParser tagParser;
-		private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
-		private final AnnotationTagRegistrar annotationRegistrar = new AnnotationTagRegistrar();
+		private final ShortCodeParser tagParser;
+		private final Map<String, Function<Parameter, String>> shortCodes = new HashMap<>();
+		private final AnnotationShortCodeRegistrar annotationRegistrar = new AnnotationShortCodeRegistrar();
 
-		private Builder(TagParser tagParser) {
+		private Builder(ShortCodeParser tagParser) {
 			this.tagParser = tagParser;
 		}
 
 		public Builder register(String name, Function<Parameter, String> tagFN) {
-			tags.put(name, tagFN);
+			shortCodes.put(name, tagFN);
 			return this;
 		}
 
 		public Builder register(Map<String, Function<Parameter, String>> codes) {
-			tags.putAll(codes);
+			shortCodes.putAll(codes);
 			return this;
 		}
 
@@ -116,12 +116,12 @@ public class Tags {
 		}
 
 		public Builder register(Object handler) {
-			annotationRegistrar.register(handler, tags);
+			annotationRegistrar.register(handler, shortCodes);
 			return this;
 		}
 
-		public Tags build() {
-			return new Tags(tags, tagParser);
+		public ShortCodes build() {
+			return new ShortCodes(shortCodes, tagParser);
 		}
 	}
 }

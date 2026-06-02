@@ -43,9 +43,9 @@ import java.time.Duration;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 
-	@RemoteMethod(name = "manager.content.tags", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "manager.content.shortCodes", permissions = {Permissions.CONTENT_EDIT})
 	public Object getShortCodeNames (Map<String, Object> parameters) throws RPCException {
-		return getRequestContext().get(RenderContext.class).tags().getTagNames();
+		return getRequestContext().get(RenderContext.class).shortCodes().getTagNames();
 	}
 	
 	@RemoteMethod(name = "manager.media.form", permissions = {Permissions.CONTENT_EDIT})

@@ -69,7 +69,7 @@ const getMediaFormats = async (options) => {
 };
 const getTagNames = async (options) => {
     var data = {
-        method: "manager.content.tags",
+        method: "manager.content.shortCodes",
         parameters: options
     };
     return await executeRemoteCall(data);

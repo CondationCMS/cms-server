@@ -36,13 +36,13 @@ import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.RenderContext;
-import com.condation.cms.content.tags.Tags;
-import com.condation.cms.content.tags.TagParser;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
+import com.condation.cms.content.shortcodes.ShortCodes;
+
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.extensions.request.RequestExtensions;
@@ -56,6 +56,7 @@ import com.google.inject.Injector;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.commons.jexl3.JexlBuilder;
+import org.junit.jupiter.api.Tags;
 import org.mockito.Mockito;
 
 /**
@@ -76,11 +77,11 @@ public abstract class TestHelper {
 		var markdownRenderer = TestHelper.getRenderer();
 		RequestContext context = new RequestContext();
 		
-		var tagparser = new TagParser(new JexlBuilder().create());
+		var tagparser = new ShortCodeParser(new JexlBuilder().create());
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
 		context.add(RequestExtensions.class, new RequestExtensions(null, null));
-		context.add(RenderContext.class, new RenderContext(markdownRenderer, new Tags(Map.of(), tagparser), DefaultTheme.NO_THEME));
+		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ShortCodes(Map.of(), tagparser), DefaultTheme.NO_THEME));
 
 		context.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(new FileMediaService(null)));
 		context.add(InjectorFeature.class, new InjectorFeature(Mockito.mock(Injector.class)));

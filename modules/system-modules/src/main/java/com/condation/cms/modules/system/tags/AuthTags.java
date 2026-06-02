@@ -21,8 +21,7 @@ package	com.condation.cms.modules.system.tags;
  * #L%
  */
 
-import com.condation.cms.api.annotations.Tag;
-import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
+import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.model.Parameter;
@@ -30,20 +29,21 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.modules.api.annotation.Extension;
 import java.util.List;
 import java.util.function.Function;
+import com.condation.cms.api.annotations.ShortCode;
 
 /**
  *
  * @author thmar
  */
-@Extension(value = RegisterTagsExtensionPoint.class, cached = Extension.Caching.TRUE)
-public class AuthTags extends RegisterTagsExtensionPoint {
+@Extension(value = RegisterShortCodesExtensionPoint.class, cached = Extension.Caching.TRUE)
+public class AuthTags extends RegisterShortCodesExtensionPoint {
 
     @Override
-    public List<Object> tagDefinitions() {
+    public List<Object> shortCodeDefinitions() {
         return List.of(this);
     }
     
-    @Tag(value = "username", namespace = "cms")
+    @ShortCode(value = "username", namespace = "cms")
     public String username (Parameter params) {
         return getUserName(params);
     }

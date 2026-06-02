@@ -26,7 +26,7 @@ import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.theme.Theme;
-import com.condation.cms.content.tags.Tags;
+import com.condation.cms.content.shortcodes.ShortCodes;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @FeatureScope(FeatureScope.Scope.REQUEST)
-public record RenderContext(MarkdownRenderer markdownRenderer, Tags tags, Theme theme) 
+public record RenderContext(MarkdownRenderer markdownRenderer, ShortCodes shortCodes, Theme theme) 
 		implements AutoCloseable, Feature {
 
 	@Override

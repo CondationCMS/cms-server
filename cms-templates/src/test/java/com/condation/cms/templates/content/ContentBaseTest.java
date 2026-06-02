@@ -21,7 +21,7 @@ package com.condation.cms.templates.content;
  * #L%
  */
 
-import com.condation.cms.content.tags.TagParser;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
 import org.apache.commons.jexl3.JexlBuilder;
 
 /**
@@ -30,11 +30,11 @@ import org.apache.commons.jexl3.JexlBuilder;
  */
 public abstract class ContentBaseTest {
 	
-	private TagParser tagParser;
+	private ShortCodeParser tagParser;
 	
-	public TagParser getTagParser () {
+	public ShortCodeParser getTagParser () {
 		if (tagParser == null) {
-			tagParser = new TagParser(
+			tagParser = new ShortCodeParser(
 					new JexlBuilder().cache(512).strict(true).silent(false).create()
 			);
 		}

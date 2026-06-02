@@ -21,22 +21,22 @@ package	com.condation.cms.modules.system.tags;
  * #L%
  */
 
-import com.condation.cms.api.annotations.Tag;
-import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
+import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.model.Parameter;
 import com.condation.modules.api.annotation.Extension;
 import com.google.common.base.Strings;
 import org.apache.commons.text.StringEscapeUtils;
+import com.condation.cms.api.annotations.ShortCode;
 
 /**
  *
  * @author thmar
  */
-@Extension(value = RegisterTagsExtensionPoint.class, cached = Extension.Caching.TRUE)
-public class ImageTags extends RegisterTagsExtensionPoint {
+@Extension(value = RegisterShortCodesExtensionPoint.class, cached = Extension.Caching.TRUE)
+public class ImageTags extends RegisterShortCodesExtensionPoint {
 	
-    @Tag(value = "image", namespace = "cms")
+    @ShortCode(value = "image", namespace = "cms")
 	public String getImage (Parameter param) {
 		var imageFile = (String)param.getOrDefault("image", "");
 		var format = (String)param.get("format");

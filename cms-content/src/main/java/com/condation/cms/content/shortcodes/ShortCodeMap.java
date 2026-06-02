@@ -1,4 +1,4 @@
-package com.condation.cms.content.tags;
+package com.condation.cms.content.shortcodes;
 
 /*-
  * #%L
@@ -32,27 +32,27 @@ import java.util.function.Function;
  *
  * @author t.marx
  */
-public class TagMap {
+public class ShortCodeMap {
 
-	private final Map<String, Function<Parameter, String>> tags = new HashMap<>();
+	private final Map<String, Function<Parameter, String>> shortCodes = new HashMap<>();
 
 	public Set<String> names () {
-		return Collections.unmodifiableSet(tags.keySet());
+		return Collections.unmodifiableSet(shortCodes.keySet());
 	}
 	
 	public void put(String codeName, Function<Parameter, String> function) {
-		tags.put(codeName, function);
+		shortCodes.put(codeName, function);
 	}
 
-	public void putAll(Map<String, Function<Parameter, String>> tags) {
-		this.tags.putAll(tags);
+	public void putAll(Map<String, Function<Parameter, String>> shortCodes) {
+		this.shortCodes.putAll(shortCodes);
 	}
 	
 	public boolean has(String codeName) {
-		return tags.containsKey(codeName);
+		return shortCodes.containsKey(codeName);
 	}
 
 	public Function<Parameter, String> get(String codeName) {
-		return tags.getOrDefault(codeName, (params) -> "");
+		return shortCodes.getOrDefault(codeName, (params) -> "");
 	}
 }

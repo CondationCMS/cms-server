@@ -31,9 +31,9 @@ import org.junit.jupiter.api.Test;
  *
  * @author t.marx
  */
-public class TagBlockRuleTest {
+public class ShortCodeBlockRuleTest {
 	
-	private TagBlockRule sut = new TagBlockRule();
+	private ShortCodeBlockRule sut = new ShortCodeBlockRule();
 
 	@Test
 	void long_form() {
@@ -44,10 +44,10 @@ public class TagBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(TagBlockRule.TagBlock.class);
+				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class);
 
-		var tag = (TagBlockRule.TagBlock)next;
-		Assertions.assertThat(tag.tagInfo())
+		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
+		Assertions.assertThat(tag.shortCodeInfo())
 				.hasFieldOrPropertyWithValue("name", "link")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"url", "https://google.de/",
@@ -66,10 +66,10 @@ public class TagBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(TagBlockRule.TagBlock.class);
+				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class);
 
-		var tag = (TagBlockRule.TagBlock)next;
-		Assertions.assertThat(tag.tagInfo())
+		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
+		Assertions.assertThat(tag.shortCodeInfo())
 				.hasFieldOrPropertyWithValue("name", "link")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"url", "https://google.de/"
@@ -86,11 +86,11 @@ public class TagBlockRuleTest {
 
 		Assertions.assertThat(next)
 				.isNotNull()
-				.isInstanceOf(TagBlockRule.TagBlock.class)
+				.isInstanceOf(ShortCodeBlockRule.ShortCodeBlock.class)
 				;
 
-		var tag = (TagBlockRule.TagBlock)next;
-		Assertions.assertThat(tag.tagInfo())
+		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
+		Assertions.assertThat(tag.shortCodeInfo())
 				.hasFieldOrPropertyWithValue("name", "video")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
 						"type", "youtube",

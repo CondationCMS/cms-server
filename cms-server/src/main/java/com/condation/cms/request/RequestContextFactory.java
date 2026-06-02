@@ -27,7 +27,7 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
-import com.condation.cms.api.extensions.RegisterTagsExtensionPoint;
+import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
 import com.condation.cms.api.feature.features.ContentParserFeature;
@@ -52,8 +52,8 @@ import com.condation.cms.api.theme.Theme;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.RenderContext;
-import com.condation.cms.content.tags.Tags;
-import com.condation.cms.content.tags.TagParser;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
+import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.hooksystem.extensions.ContentHooks;
@@ -149,22 +149,22 @@ public class RequestContextFactory {
 	 * @param requestContext
 	 * @return
 	 */
-	private Tags initContentTags(RequestContext requestContext) {
-		var parser = injector.getInstance(TagParser.class);
+	private ShortCodes initContentTags(RequestContext requestContext) {
+		var parser = injector.getInstance(ShortCodeParser.class);
 
-		var builder = Tags.builder(parser);
+		var builder = ShortCodes.builder(parser);
 		
-		injector.getInstance(ModuleManager.class).extensions(RegisterTagsExtensionPoint.class)
+		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
 				.forEach(extension -> {
-					builder.register(extension.tags());
+					builder.register(extension.shortCodes());
 					
-					builder.register(extension.tagDefinitions());
+					builder.register(extension.shortCodeDefinitions());
 				});
 
 		var codes = new HashMap<String, Function<Parameter, String>>();
-		var wrapper = requestContext.get(ContentHooks.class).getTags(codes);
+		var wrapper = requestContext.get(ContentHooks.class).getShortCodes(codes);
 		
-		builder.register(wrapper.getTags());
+		builder.register(wrapper.getShortCodes());
 
 		return builder.build();
 	}

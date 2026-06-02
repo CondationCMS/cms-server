@@ -23,22 +23,22 @@ package com.condation.cms.content.markdown.rules.block;
 import com.condation.cms.content.markdown.Block;
 import com.condation.cms.content.markdown.BlockElementRule;
 import com.condation.cms.content.markdown.InlineRenderer;
-import com.condation.cms.content.tags.TagMap;
-import com.condation.cms.content.tags.TagParser;
+import com.condation.cms.content.shortcodes.ShortCodeMap;
+import com.condation.cms.content.shortcodes.ShortCodeParser;
 import java.util.List;
 
 /**
  *
  * @author t.marx
  */
-public class TagBlockRule implements BlockElementRule {
+public class ShortCodeBlockRule implements BlockElementRule {
 
-	private static final TagParser tagParser = new TagParser(null);
+	private static final ShortCodeParser tagParser = new ShortCodeParser(null);
 
 	@Override
 	public Block next(final String md) {
 
-		List<TagParser.TagInfo> tags = tagParser.findTags(md, new TagMap() {
+		List<ShortCodeParser.ShortCodeInfo> shortCodes = tagParser.findShortCodes(md, new ShortCodeMap() {
 			@Override
 			public boolean has(String codeName) {
 				return true;
@@ -46,22 +46,22 @@ public class TagBlockRule implements BlockElementRule {
 		}).stream()
 				.filter(tag -> isStandaloneInLine(md, tag))
 				.toList();
-		if (tags.isEmpty()) {
+		if (shortCodes.isEmpty()) {
 			return null;
 		}
-		var tag = tags.getFirst();
-		return new TagBlock(
-				tag.startIndex(),
-				tag.endIndex(),
-				tag);
+		var shortcode = shortCodes.getFirst();
+		return new ShortCodeBlock(
+				shortcode.startIndex(),
+				shortcode.endIndex(),
+				shortcode);
 
 	}
 
-	public static record TagBlock(int start, int end, TagParser.TagInfo tagInfo) implements Block {
+	public static record ShortCodeBlock(int start, int end, ShortCodeParser.ShortCodeInfo shortCodeInfo) implements Block {
 
 		@Override
 		public String render(InlineRenderer inlineRenderer, int documentOffset) {
-			List<String> params = tagInfo.rawAttributes()
+			List<String> params = shortCodeInfo.rawAttributes()
 					.entrySet().stream()
 					.filter(entry -> !entry.getKey().equals("_content"))
 					.sorted((entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()))
@@ -69,11 +69,10 @@ public class TagBlockRule implements BlockElementRule {
 						return "%s=%s".formatted(entry.getKey(), parseValue((String) entry.getValue()));
 					}).toList();
 			return "[[%s %s]]%s[[/%s]]"
-					.formatted(
-							tagInfo.name(),
+					.formatted(shortCodeInfo.name(),
 							String.join(" ", params),
-							inlineRenderer.render((String)tagInfo.rawAttributes().getOrDefault("_content", ""), documentOffset),
-							tagInfo.name()
+							inlineRenderer.render((String)shortCodeInfo.rawAttributes().getOrDefault("_content", ""), documentOffset),
+							shortCodeInfo.name()
 					);
 		}
 	}
@@ -87,7 +86,7 @@ public class TagBlockRule implements BlockElementRule {
 		return "\"" + value + "\"";
 	}
 
-	public boolean isStandaloneInLine(String text, TagParser.TagInfo tag) {
+	public boolean isStandaloneInLine(String text, ShortCodeParser.ShortCodeInfo tag) {
 		var startIndex = tag.startIndex();
 		var endIndex = tag.endIndex();
 		// Prüfe, ob die Indizes gültig sind

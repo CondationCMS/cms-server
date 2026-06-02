@@ -1,4 +1,4 @@
-package com.condation.cms.content.tags;
+package com.condation.cms.content.shortcodes;
 
 /*-
  * #%L
@@ -28,22 +28,22 @@ import org.apache.commons.jexl3.MapContext;
 import java.util.*;
 import java.util.function.Function;
 
-public class TagParser {
+public class ShortCodeParser {
 
 	private final JexlEngine engine;
 
-	public TagParser(JexlEngine engine) {
+	public ShortCodeParser(JexlEngine engine) {
 		this.engine = engine;
 	}
 
-	// Klasse zur Speicherung der Tag-Informationen
-	public static record TagInfo(String name, Parameter rawAttributes, int startIndex, int endIndex) {
+	// Klasse zur Speicherung der ShortCode-Informationen
+	public static record ShortCodeInfo(String name, Parameter rawAttributes, int startIndex, int endIndex) {
 
 	}
 
-	// Erster Schritt: Alle Tags ermitteln und deren Positionen sowie Roh-Attribute speichern
-	public List<TagInfo> findTags(String text, TagMap tagHandlers) {
-		List<TagInfo> tags = new ArrayList<>();
+	// Erster Schritt: Alle ShortCodes ermitteln und deren Positionen sowie Roh-Attribute speichern
+	public List<ShortCodeInfo> findShortCodes(String text, ShortCodeMap shortCodeHandlers) {
+		List<ShortCodeInfo> shortCodes = new ArrayList<>();
 		int i = 0;
 
 		while (i < text.length()) {
@@ -82,8 +82,8 @@ public class TagParser {
 						}
 					}
 
-					if (tagHandlers.has(tagName)) {
-						tags.add(new TagInfo(tagName, rawAttributes, tagStart, endTagIndex + 2));
+					if (shortCodeHandlers.has(tagName)) {
+						shortCodes.add(new ShortCodeInfo(tagName, rawAttributes, tagStart, endTagIndex + 2));
 						i = endTagIndex + 2; // Zum nächsten Tag springen
 					} else {
 						i++;
@@ -95,31 +95,31 @@ public class TagParser {
 				i++;
 			}
 		}
-		return tags;
+		return shortCodes;
 	}
 
-	public String parse(String text, TagMap tagHandlers, RequestContext requestContext) {
-		return parse(text, tagHandlers, Collections.emptyMap(), requestContext);
+	public String parse(String text, ShortCodeMap shortCodeHandlers, RequestContext requestContext) {
+		return parse(text, shortCodeHandlers, Collections.emptyMap(), requestContext);
 	}
 
 	// Zweiter Schritt: Tags basierend auf den gespeicherten Positionen ersetzen
-	public String parse(String text, TagMap tagHandlers, Map<String, Object> contextModel, RequestContext requestContext) {
+	public String parse(String text, ShortCodeMap shortCodeHandlers, Map<String, Object> contextModel, RequestContext requestContext) {
 		// Erster Schritt: Finde alle Tags
-		List<TagInfo> tags = findTags(text, tagHandlers);
+		List<ShortCodeInfo> tags = findShortCodes(text, shortCodeHandlers);
 
 		// Zweiter Schritt: Ersetze alle Tags im Text
 		StringBuilder result = new StringBuilder();
 		int lastIndex = 0;
-		for (TagInfo tag : tags) {
+		for (ShortCodeInfo tag : tags) {
 			result.append(text, lastIndex, tag.startIndex); // Unveränderten Teil des Textes hinzufügen
-			Function<Parameter, String> handler = tagHandlers.get(tag.name);
+			Function<Parameter, String> handler = shortCodeHandlers.get(tag.name);
 
 			// Im zweiten Schritt: Attribute auswerten
 			Parameter evaluatedAttributes = evaluateAttributes(tag.rawAttributes, contextModel, requestContext);
 
 			if (evaluatedAttributes.containsKey("_content")) {
 				String rawContent = (String) evaluatedAttributes.get("_content");
-				String parsedContent = parse(rawContent, tagHandlers, contextModel, requestContext); // Rekursives Parsen
+				String parsedContent = parse(rawContent, shortCodeHandlers, contextModel, requestContext); // Rekursives Parsen
 				evaluatedAttributes.put("_content", parsedContent);
 			}
 

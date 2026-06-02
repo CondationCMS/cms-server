@@ -21,18 +21,18 @@
 
 import { $hooks } from 'system/hooks.mjs';
 
-$hooks.registerAction("system/content/tags", ({tags}) => {
+$hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
 
 	// default namespace (ext) — no parameters
-	tags.put("hello", () => "Hello World")
+	shortCodes.put("hello", () => "Hello World")
 
 	// default namespace (ext) — destructured parameter
-	tags.put("greet", ({name = "stranger"}) => `Hello ${name}`)
+	shortCodes.put("greet", ({name = "stranger"}) => `Hello ${name}`)
 
 	// explicit namespace
-	tags.put("theme", "info", () => "theme-info")
+	shortCodes.put("theme", "info", () => "theme-info")
 
 	// multiple parameters
-	tags.put("full_name", ({firstName, lastName}) => `${firstName} ${lastName}`)
+	shortCodes.put("full_name", ({firstName, lastName}) => `${firstName} ${lastName}`)
 
 })

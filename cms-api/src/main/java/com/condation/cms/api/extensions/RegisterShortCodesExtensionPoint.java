@@ -32,14 +32,14 @@ import java.util.function.Function;
  *
  * @author t.marx
  */
-public abstract class RegisterTagsExtensionPoint extends AbstractExtensionPoint {
+public abstract class RegisterShortCodesExtensionPoint extends AbstractExtensionPoint {
 
     @Deprecated(since = "8.1.0", forRemoval = true)
-    public Map<String, Function<Parameter, String>> tags () {
+    public Map<String, Function<Parameter, String>> shortCodes () {
 		return Collections.emptyMap();
 	}
 	
-	public List<Object> tagDefinitions () {
+	public List<Object> shortCodeDefinitions () {
 		return Collections.emptyList();
 	}
 }

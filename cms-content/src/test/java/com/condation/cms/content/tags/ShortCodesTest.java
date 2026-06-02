@@ -22,6 +22,7 @@ package com.condation.cms.content.tags;
  */
 
 
+import com.condation.cms.content.shortcodes.ShortCodes;
 import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
@@ -30,19 +31,19 @@ import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.condation.cms.api.annotations.Tag;
+import com.condation.cms.api.annotations.ShortCode;
 
 /**
  *
  * @author t.marx
  */
-public class TagsTest extends ContentBaseTest {
+public class ShortCodesTest extends ContentBaseTest {
 	
-	static Tags tags;
+	static ShortCodes shortCodes;
 	
 	@BeforeEach
 	public void init () {
-		var builder = Tags.builder(getTagParser());
+		var builder = ShortCodes.builder(getTagParser());
 		
 		builder.register(
 				"youtube", 
@@ -82,22 +83,22 @@ public class TagsTest extends ContentBaseTest {
 		
 		builder.register(new TagHandler());
 		
-		tags = builder.build();
+		shortCodes = builder.build();
 	}
 	
 
 	@Test
 	void simpleTest () {
-		var result = tags.replace("[[youtube    /]]");
+		var result = shortCodes.replace("[[youtube    /]]");
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 		
-		result = tags.replace("[[youtube/]]");
+		result = shortCodes.replace("[[youtube/]]");
 		Assertions.assertThat(result).isEqualTo("<video src=''></video>");
 	}
 	
 	@Test
 	void simple_with_text_before_and_After () {
-		var result = tags.replace("before [[youtube /]] after");
+		var result = shortCodes.replace("before [[youtube /]] after");
 		Assertions.assertThat(result).isEqualTo("before <video src=''></video> after");
 	}
 	
@@ -112,7 +113,7 @@ public class TagsTest extends ContentBaseTest {
                 some text after
                 """;
 		
-		var result = tags.replace(content);
+		var result = shortCodes.replace(content);
 		
 		var expected = """
                 some text before
@@ -127,32 +128,32 @@ public class TagsTest extends ContentBaseTest {
 	
 	@Test
 	void unknown_tag () {
-		var result = tags.replace("before [[vimeo id='TEST' /]] after");
+		var result = shortCodes.replace("before [[vimeo id='TEST' /]] after");
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("before [[vimeo id='TEST' /]] after");
 	}
 	
 	@Test
 	void hello_from () {
-		var result = tags.replace("[[hello_from name=\"Thorsten\" from=\"Bochum\" /]]");
+		var result = shortCodes.replace("[[hello_from name=\"Thorsten\" from=\"Bochum\" /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = tags.replace("[[hello_from name='Thorsten' from='Bochum'    /]]");
+		result = shortCodes.replace("[[hello_from name='Thorsten' from='Bochum'    /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
-		result = tags.replace("[[hello_from name='Thorsten' from='Bochum' /]]");
+		result = shortCodes.replace("[[hello_from name='Thorsten' from='Bochum' /]]");
 		Assertions.assertThat(result).isEqualTo("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
 	@Test
 	void test_long () {
-		var result = tags.replace("[[mark]]Important[[/mark]]");
+		var result = shortCodes.replace("[[mark]]Important[[/mark]]");
 		
 		Assertions.assertThat(result).isEqualTo("<mark>Important</mark>");
 	}
 	
 	@Test
 	void test_long_with_params () {
-		var result = tags.replace("[[mark2 class='test-class']]Important[[/mark2]]");
+		var result = shortCodes.replace("[[mark2 class='test-class']]Important[[/mark2]]");
 		
 		Assertions.assertThat(result).isEqualTo("<mark class='test-class'>Important</mark>");
 	}
@@ -168,7 +169,7 @@ public class TagsTest extends ContentBaseTest {
                 some text after
                 """;
 		
-		var result = tags.replace(content);
+		var result = shortCodes.replace(content);
 		
 		var expected = """
                 some text before
@@ -189,7 +190,7 @@ public class TagsTest extends ContentBaseTest {
 		var expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
               """;
-		var result = tags.replace(input);
+		var result = shortCodes.replace(input);
 		Assertions.assertThat(result).isEqualTo(expected);
 		
 		input = """
@@ -198,20 +199,20 @@ public class TagsTest extends ContentBaseTest {
 		expected = """
               <p><h3>Thorsten</h3><small>from Bochum</small></p><p><h3>Thorsten</h3><small>from Bochum</small></p>
               """;
-		result = tags.replace(input);
+		result = shortCodes.replace(input);
 		Assertions.assertThat(result).isEqualTo(expected);
 	}
 	
 	@Test
 	void test_mismach() {
-		var result = tags.replace("[[mark1 class='test-class']]Important[[/mark2]]");
+		var result = shortCodes.replace("[[mark1 class='test-class']]Important[[/mark2]]");
 		
 		Assertions.assertThat(result).isEqualTo("[[mark1 class='test-class']]Important[[/mark2]]");
 	}
 	
 	@Test
 	void test_expression() {
-		var result = tags.replace("[[exp expression='${meta.title}' /]]",
+		var result = shortCodes.replace("[[exp expression='${meta.title}' /]]",
 				Map.of(
 						"meta", Map.of("title", "CondationCMS")
 				)
@@ -225,9 +226,9 @@ public class TagsTest extends ContentBaseTest {
 		
 		RequestContext requestContext = new RequestContext();
 		
-		tags.replace("[[set_var /]]", Map.of(), requestContext);
+		shortCodes.replace("[[set_var /]]", Map.of(), requestContext);
 		
-		var result = tags.replace("[[get_var /]]", Map.of(), requestContext);
+		var result = shortCodes.replace("[[get_var /]]", Map.of(), requestContext);
 		
 		Assertions.assertThat(result).isEqualTo("Hello world!");
 	}
@@ -236,7 +237,7 @@ public class TagsTest extends ContentBaseTest {
 	void test_handler () {
 		RequestContext requestContext = new RequestContext();
 		
-		var result = tags.replace("[[ext:printHello name='CondationCMS' /]]", Map.of(), requestContext);
+		var result = shortCodes.replace("[[ext:printHello name='CondationCMS' /]]", Map.of(), requestContext);
 		
 		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
 	}
@@ -245,7 +246,7 @@ public class TagsTest extends ContentBaseTest {
 	void test_handler_var () {
 		RequestContext requestContext = new RequestContext();
 		
-		var result = tags.replace("[[ext:printHello2 name='CondationCMS' /]]", Map.of(), requestContext);
+		var result = shortCodes.replace("[[ext:printHello2 name='CondationCMS' /]]", Map.of(), requestContext);
 		
 		Assertions.assertThat(result).isEqualTo("hello CondationCMS");
 	}
@@ -257,7 +258,7 @@ public class TagsTest extends ContentBaseTest {
                  name=\"Thorsten\" 
                  from=\"Bochum\" /]]
                  """;
-		var result = tags.replace(template);
+		var result = shortCodes.replace(template);
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 		
 		template = """
@@ -266,17 +267,17 @@ public class TagsTest extends ContentBaseTest {
                  from=\"Bochum\"]]
 				 [[/hello_from]]
                  """;
-		result = tags.replace(template);
+		result = shortCodes.replace(template);
 		Assertions.assertThat(result).isEqualToIgnoringWhitespace("<p><h3>Thorsten</h3><small>from Bochum</small></p>");
 	}
 	
 	public static class TagHandler {
-		@Tag("printHello")
+		@ShortCode("printHello")
 		public String printHello (Parameter parameter) {
 			return "hello " + parameter.getOrDefault("name", "");
 		}
 		
-		@Tag("printHello2")
+		@ShortCode("printHello2")
 		public String printHello2 (@Param("name") String name) {
 			return "hello " + name;
 		}

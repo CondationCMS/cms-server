@@ -361,75 +361,75 @@ public class ExtensionManagerTest {
 		Assertions.assertThat(result).isEqualTo("<div class='card'>My Card</div>");
 	}
 
-	// --- tags registered via $tags.register ---
+	// --- shortCodes registered via $shortCodes.register ---
 
-	private TagsWrapper setupTags(RequestContext requestContext) throws IOException {
+	private ShortCodesWrapper setupShortCodes(RequestContext requestContext) throws IOException {
 		var hookSystem = setupHookSystem(requestContext);
 		var codes = new HashMap<String, java.util.function.Function<Parameter, String>>();
-		return new ContentHooks(requestContext).getTags(codes);
+		return new ContentHooks(requestContext).getShortCodes(codes);
 	}
 
 	@Test
-	public void test_tag_default_namespace_registered() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_default_namespace_registered() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		Assertions.assertThat(wrapper.getTags()).containsKey("ext:hello");
+		Assertions.assertThat(wrapper.getShortCodes()).containsKey("ext:hello");
 	}
 
 	@Test
-	public void test_tag_default_namespace_no_params_returns_correct_value() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_default_namespace_no_params_returns_correct_value() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		String result = wrapper.getTags().get("ext:hello").apply(new Parameter());
+		String result = wrapper.getShortCodes().get("ext:hello").apply(new Parameter());
 		Assertions.assertThat(result).isEqualTo("Hello World");
 	}
 
 	@Test
-	public void test_tag_default_namespace_with_named_param() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_default_namespace_with_named_param() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		String result = wrapper.getTags().get("ext:greet").apply(new Parameter(Map.of("name", "CondationCMS")));
+		String result = wrapper.getShortCodes().get("ext:greet").apply(new Parameter(Map.of("name", "CondationCMS")));
 		Assertions.assertThat(result).isEqualTo("Hello CondationCMS");
 	}
 
 	@Test
-	public void test_tag_default_namespace_with_missing_param_uses_default() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_default_namespace_with_missing_param_uses_default() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		String result = wrapper.getTags().get("ext:greet").apply(new Parameter());
+		String result = wrapper.getShortCodes().get("ext:greet").apply(new Parameter());
 		Assertions.assertThat(result).isEqualTo("Hello stranger");
 	}
 
 	@Test
-	public void test_tag_explicit_namespace_registered() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_explicit_namespace_registered() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		Assertions.assertThat(wrapper.getTags()).containsKey("theme:info");
+		Assertions.assertThat(wrapper.getShortCodes()).containsKey("theme:info");
 	}
 
 	@Test
-	public void test_tag_explicit_namespace_returns_correct_value() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_explicit_namespace_returns_correct_value() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		String result = wrapper.getTags().get("theme:info").apply(new Parameter());
+		String result = wrapper.getShortCodes().get("theme:info").apply(new Parameter());
 		Assertions.assertThat(result).isEqualTo("theme-info");
 	}
 
 	@Test
-	public void test_tag_multiple_destructured_params() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_multiple_destructured_params() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
-		String result = wrapper.getTags().get("ext:full_name")
+		String result = wrapper.getShortCodes().get("ext:full_name")
 				.apply(new Parameter(Map.of("firstName", "Max", "lastName", "Mustermann")));
 		Assertions.assertThat(result).isEqualTo("Max Mustermann");
 	}
 
 	@Test
-	public void test_tag_destructured_param_with_js_default() throws IOException {
-		var wrapper = setupTags(new RequestContext());
+	public void test_shortCode_destructured_param_with_js_default() throws IOException {
+		var wrapper = setupShortCodes(new RequestContext());
 
 		// no "name" attribute → JS default value kicks in
-		String result = wrapper.getTags().get("ext:greet").apply(new Parameter());
+		String result = wrapper.getShortCodes().get("ext:greet").apply(new Parameter());
 		Assertions.assertThat(result).isEqualTo("Hello stranger");
 	}
 }

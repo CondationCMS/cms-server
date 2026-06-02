@@ -90,7 +90,7 @@ public class FeaturesTest extends MarkdownTest {
 	}
 
 	@RepeatedTest(1)
-	public void test_tags() throws IOException {
+	public void test_shortCodes() throws IOException {
 
 		var md = load("features.tags.md").trim();
 		var expected = load("features.tags.html");

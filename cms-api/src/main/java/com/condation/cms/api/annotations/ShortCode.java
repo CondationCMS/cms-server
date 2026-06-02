@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Tag {
+public @interface ShortCode {
 	String value ();
     String namespace() default Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
 }

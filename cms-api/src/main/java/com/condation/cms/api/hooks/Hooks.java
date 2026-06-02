@@ -32,7 +32,7 @@ public enum Hooks {
 	NAVIGATION_PATH("system/navigation/%s/path"),
 	NAVIGATION_LIST("system/navigation/%s/list"),
 	/* content */
-	CONTENT_TAGS("system/content/tags"),
+	CONTENT_SHORTCODES("system/content/shortCodes"),
 	CONTENT_FILTER("system/content/filter"),
 	LAYOUT_HEADER("system/layout/header"),
 	LAYOUT_FOOTER("system/layout/footer"),

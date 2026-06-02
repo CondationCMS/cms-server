@@ -21,9 +21,9 @@ package com.condation.cms.content.tags.annotation;
  * #L%
  */
 
+import com.condation.cms.content.shortcodes.annotation.AnnotationShortCodeRegistrar;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.annotations.Param;
-import com.condation.cms.api.annotations.Tag;
 import com.condation.cms.api.model.Parameter;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,18 +31,19 @@ import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.condation.cms.api.annotations.ShortCode;
 
 /**
  * @author t.marx
  */
 class AnnotationTagRegistrarTest {
 
-    private AnnotationTagRegistrar registrar;
+    private AnnotationShortCodeRegistrar registrar;
     private Map<String, Function<Parameter, String>> tagMap;
 
     @BeforeEach
     void setup() {
-        registrar = new AnnotationTagRegistrar();
+        registrar = new AnnotationShortCodeRegistrar();
         tagMap = new HashMap<>();
     }
 
@@ -166,26 +167,26 @@ class AnnotationTagRegistrarTest {
     // --- handler classes ---
 
     public static class DefaultNamespaceHandler {
-        @Tag("hello")
+        @ShortCode("hello")
         public String hello(Parameter param) {
             return "Hello " + param.getOrDefault("name", "");
         }
     }
 
     public static class CustomNamespaceHandler {
-        @Tag(value = "greet", namespace = "ns1")
+        @ShortCode(value = "greet", namespace = "ns1")
         public String greet(Parameter param) {
             return param.getOrDefault("firstName", "") + " " + param.getOrDefault("lastName", "");
         }
     }
 
     public static class MultiTagHandler {
-        @Tag("tagA")
+        @ShortCode("tagA")
         public String tagA(Parameter param) {
             return "A";
         }
 
-        @Tag("tagB")
+        @ShortCode("tagB")
         public String tagB(Parameter param) {
             return "B";
         }
@@ -198,7 +199,7 @@ class AnnotationTagRegistrarTest {
     }
 
     public static class NamedParamHandler {
-        @Tag("greet2")
+        @ShortCode("greet2")
         public String greet2(@Param("firstName") String firstName, @Param("lastName") String lastName) {
             return firstName + " " + lastName;
         }

@@ -1,4 +1,4 @@
-package com.condation.cms.content.tags.annotation;
+package com.condation.cms.content.shortcodes.annotation;
 
 /*-
  * #%L
@@ -22,7 +22,6 @@ package com.condation.cms.content.tags.annotation;
  */
 
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.annotations.Tag;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.utils.ParamAnnotationUtil;
 import java.lang.reflect.Method;
@@ -30,21 +29,22 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
+import com.condation.cms.api.annotations.ShortCode;
 
 /**
- * Scans an object for {@link Tag}-annotated methods and registers them into a
- * tag map.
+ * Scans an object for {@link ShortCode}-annotated methods and registers them into a
+ * shortCode map.
  * <p>
  * Each method must have the signature {@code String method(Parameter param)}.
  * The registration key is built from the annotation's {@code namespace} and
- * {@code value}: {@code "namespace:tagname"}.
+ * {@code value}: {@code "namespace:shortCode"}.
  *
  * @author t.marx
  */
 @Slf4j
-public class AnnotationTagRegistrar {
+public class AnnotationShortCodeRegistrar {
 
-    public void register(Object handler, Map<String, Function<Parameter, String>> tagMap) {
+    public void register(Object handler, Map<String, Function<Parameter, String>> shortCodeMap) {
         if (handler == null) {
             return;
         }
@@ -53,15 +53,15 @@ public class AnnotationTagRegistrar {
             if (!Modifier.isPublic(method.getModifiers())) {
                 continue;
             }
-            if (!method.isAnnotationPresent(Tag.class)) {
+            if (!method.isAnnotationPresent(ShortCode.class)) {
                 continue;
             }
 
-            Tag annotation = method.getAnnotation(Tag.class);
+            ShortCode annotation = method.getAnnotation(ShortCode.class);
             String key = buildKey(annotation);
             Function<Parameter, String> fn = buildFunction(handler, method, key);
             if (fn != null) {
-                tagMap.put(key, fn);
+                shortCodeMap.put(key, fn);
             }
         }
     }
@@ -79,12 +79,12 @@ public class AnnotationTagRegistrar {
                     ParamAnnotationUtil.resolveArgs(param, names));
         }
 
-        log.warn("@Tag method '{}' in '{}' has unsupported signature — skipped",
+        log.warn("@ShortCode method '{}' in '{}' has unsupported signature — skipped",
                 method.getName(), target.getClass().getSimpleName());
         return null;
     }
 
-    private String buildKey(Tag annotation) {
+    private String buildKey(ShortCode annotation) {
         return ParamAnnotationUtil.buildNamespaceKey(
                 annotation.namespace(), annotation.value(),
                 Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE);

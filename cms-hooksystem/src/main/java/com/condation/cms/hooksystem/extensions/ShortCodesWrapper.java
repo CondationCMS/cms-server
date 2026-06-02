@@ -38,28 +38,28 @@ import org.graalvm.polyglot.proxy.ProxyObject;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class TagsWrapper {
+public class ShortCodesWrapper {
 
 	@Getter
-	private final Map<String, Function<Parameter, String>> tags;
+	private final Map<String, Function<Parameter, String>> shortCodes;
 
-	public void put(final String namespace, final String tag, final Function<Parameter, String> function) {
+	public void put(final String namespace, final String shortCode, final Function<Parameter, String> function) {
 		var ns = !Strings.isNullOrEmpty(namespace) ? namespace : Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
-		tags.put("%s:%s".formatted(ns, tag), function);
+		shortCodes.put("%s:%s".formatted(ns, shortCode), function);
 	}
 
-	public void put(final String tag, final Function<Parameter, String> function) {
-		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, tag, function);
+	public void put(final String shortCode, final Function<Parameter, String> function) {
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, shortCode, function);
 	}
 
-	// called from JS: tags.put("tagName", ({name}) => ...)
-	public void put(final String tag, final Value jsFunction) {
-		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, tag, jsFunction);
+	// called from JS: shortCodes.put("shortCodeName", ({name}) => ...)
+	public void put(final String shortCode, final Value jsFunction) {
+		put(Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE, shortCode, jsFunction);
 	}
 
-	// called from JS: tags.put("namespace", "tagName", ({name}) => ...)
-	public void put(final String namespace, final String tag, final Value jsFunction) {
-		put(namespace, tag, (Parameter param) -> {
+	// called from JS: shortCodes.put("namespace", "shortCodeName", ({name}) => ...)
+	public void put(final String namespace, final String shortCode, final Value jsFunction) {
+		put(namespace, shortCode, (Parameter param) -> {
 			Map<String, Object> jsArgs = new HashMap<>(param);
 			Value result = jsFunction.execute(ProxyObject.fromMap(jsArgs));
 			return result.isNull() ? "" : result.asString();

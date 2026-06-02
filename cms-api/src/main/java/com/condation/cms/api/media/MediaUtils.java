@@ -31,7 +31,8 @@ public class MediaUtils {
 	public enum Format {
 		PNG,
 		JPEG,
-		WEBP;
+		WEBP,
+		AVIF;
 	}
 
 	public static Format format4String(final String format) {
@@ -44,6 +45,8 @@ public class MediaUtils {
 				Format.JPEG;
 			case "png" ->
 				Format.PNG;
+			case "avif" -> 
+				Format.AVIF;
 			default ->
 				throw new RuntimeException("unknown image format");
 		};
@@ -57,6 +60,8 @@ public class MediaUtils {
 				"image/png";
 			case WEBP ->
 				"image/webp";
+			case AVIF -> 
+				"image/avif";
 			default ->
 				throw new RuntimeException("unknown image format");
 		};
@@ -70,6 +75,8 @@ public class MediaUtils {
 				".png";
 			case WEBP ->
 				".webp";
+			case AVIF ->
+				".avif";
 			default ->
 				throw new RuntimeException("unknown image format");
 		};

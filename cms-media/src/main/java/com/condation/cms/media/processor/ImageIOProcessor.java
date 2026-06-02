@@ -80,6 +80,7 @@ public class ImageIOProcessor implements ImageProcessor {
             case JPEG -> toJPG(imageBuff, !mediaFormat.compression());
             case WEBP -> toWEBP(imageBuff, !mediaFormat.compression());
             case PNG  -> toPNG(imageBuff, !mediaFormat.compression());
+			case AVIF -> throw new UnsupportedOperationException("avif format not supported by imageio processor");
         };
     }
 

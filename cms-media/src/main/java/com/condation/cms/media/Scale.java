@@ -103,6 +103,8 @@ public class Scale {
 					toWEBP(imageBuff, !mediaFormat.compression());
 				case PNG ->
 					toPNG(imageBuff, !mediaFormat.compression());
+				case AVIF ->
+					throw new UnsupportedOperationException("avif format not su8pported by imageio");
 			};
 		}
 		throw new IllegalArgumentException("unknown media format");

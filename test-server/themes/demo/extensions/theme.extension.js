@@ -2,8 +2,8 @@ import { $hooks } from 'system/hooks.mjs';
 import { $templates } from 'system/templates.mjs';
 
 
-$hooks.registerAction("system/content/tags", ({tags}) => {
-	tags.put(
+$hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
+	shortCodes.put(
 			"theme_name",
 			(params) => `Hello, I'm your <b>demo</b> theme.`
 	)

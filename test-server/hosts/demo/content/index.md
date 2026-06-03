@@ -57,3 +57,9 @@ System.out.println("Hello world!");
 
 ### say hello
 [[ext:say_hello name="CondationCMS" /]]
+
+
+### test ShortCode with content
+---
+[[ext:bold_content]]This content will be bold[[/ext:bold_content]]
+---

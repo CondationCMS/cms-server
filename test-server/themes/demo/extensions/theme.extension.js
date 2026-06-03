@@ -4,13 +4,13 @@ import { $templates } from 'system/templates.mjs';
 
 $hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
 	shortCodes.put(
+			"bold_content",
+			({_content}) => `<b>${_content}</b>`
+	)
+	shortCodes.put(
 			"theme_name",
 			(params) => `Hello, I'm your <b>demo</b> theme.`
 	)
-	return null;
-})
-
-$hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
 	shortCodes.put(
 			"say_hello",
 			({name}) => `Hello, ${name}`
@@ -27,6 +27,10 @@ $hooks.registerAction("system/template/function", ({functions}) => {
 })
 
 $hooks.registerAction("system/template/component", ({components}) => {
+	components.put(
+			"colored",
+			({color, _content}) => `<div style="color: ${color}">COMPONENT: ${_content}</div>`
+	)
 	components.put(
 			"component",
 			({color, message}) => `<div style="color: ${color}">COMPONENT: ${message}</div>`

@@ -85,6 +85,17 @@
 				{% endif %}
 			</div>
 		</div>
+		
+		<div>
+			<h3>Template component content test</h3>
+			<div>
+				---
+				{[ext:colored color="red"]}
+					This content should be red!
+				{[ /ext:colored ]}
+				---
+			</div>
+		</div>
 
 		{{ cms.hooks({'hook': 'theme/template/footer'}) | raw }}
 

@@ -120,7 +120,7 @@ export const initToolbar = (container) => {
     if (!toolbarDefinition.actions) {
         return;
     }
-    if (toolbarDefinition.type === "section") {
+    if (toolbarDefinition.type === "sectionEntry") {
         container.classList.add("cms-ui-editable-sections");
     }
     else {
@@ -128,7 +128,7 @@ export const initToolbar = (container) => {
     }
     const toolbar = document.createElement('div');
     toolbar.className = 'cms-ui-toolbar';
-    if (toolbarDefinition.type === "section") {
+    if (toolbarDefinition.type === "sectionEntry") {
         toolbar.classList.add("cms-ui-toolbar-tl");
     }
     else {

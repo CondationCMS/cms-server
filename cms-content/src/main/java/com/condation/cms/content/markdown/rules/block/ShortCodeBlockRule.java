@@ -71,8 +71,9 @@ public class ShortCodeBlockRule implements BlockElementRule {
 			return "[[%s %s]]%s[[/%s]]"
 					.formatted(shortCodeInfo.name(),
 							String.join(" ", params),
-							inlineRenderer.render((String)shortCodeInfo.rawAttributes().getOrDefault("_content", ""), documentOffset),
-							shortCodeInfo.name()
+							//inlineRenderer.render((String)shortCodeInfo.rawAttributes().getOrDefault("_content", ""), documentOffset),
+							shortCodeInfo.rawAttributes().getOrDefault("_content", ""),
+                            shortCodeInfo.name()
 					);
 		}
 	}

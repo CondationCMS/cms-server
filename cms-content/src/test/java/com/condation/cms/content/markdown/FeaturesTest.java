@@ -111,7 +111,7 @@ public class FeaturesTest extends MarkdownTest {
            """;
 		var expected = """
             [[hello]]
-			<strong>bold text</strong>
+			**bold text**
 			[[/hello]]
             <p></p>
             """.trim();

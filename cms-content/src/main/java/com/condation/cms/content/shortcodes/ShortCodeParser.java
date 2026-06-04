@@ -20,6 +20,7 @@ package com.condation.cms.content.shortcodes;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import org.apache.commons.jexl3.JexlEngine;
@@ -31,9 +32,15 @@ import java.util.function.Function;
 public class ShortCodeParser {
 
 	private final JexlEngine engine;
+	private final MarkdownRenderer markdownRenderer;
 
 	public ShortCodeParser(JexlEngine engine) {
+		this(engine, null);
+	}
+
+	public ShortCodeParser(JexlEngine engine, MarkdownRenderer markdownRenderer) {
 		this.engine = engine;
+		this.markdownRenderer = markdownRenderer;
 	}
 
 	// Klasse zur Speicherung der ShortCode-Informationen
@@ -119,7 +126,26 @@ public class ShortCodeParser {
 
 			if (evaluatedAttributes.containsKey("_content")) {
 				String rawContent = (String) evaluatedAttributes.get("_content");
-				String parsedContent = parse(rawContent, shortCodeHandlers, contextModel, requestContext); // Rekursives Parsen
+				String parsedContent = parse(rawContent, shortCodeHandlers, contextModel, requestContext); // Rekursives Parsen von inneren ShortCodes
+				
+				// Markdown in _content rendern NUR wenn explizit aktiviert (render-markdown="true")
+				boolean shouldRenderMarkdown = false;
+                if (evaluatedAttributes.get("render-markdown") instanceof Boolean bvalue) {
+                    shouldRenderMarkdown = bvalue;
+                } else if (evaluatedAttributes.get("render-markdown") instanceof String svalue) {
+                    shouldRenderMarkdown = "true".equals(svalue);
+
+                }
+				
+				if (shouldRenderMarkdown && markdownRenderer != null) {
+					try {
+						parsedContent = markdownRenderer.render(parsedContent);
+					} catch (Exception e) {
+						// Falls Markdown-Rendering fehlschlägt, originalen Content verwenden
+						parsedContent = rawContent;
+					}
+				}
+				
 				evaluatedAttributes.put("_content", parsedContent);
 			}
 

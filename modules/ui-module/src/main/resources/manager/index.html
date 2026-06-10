@@ -59,6 +59,11 @@
 	<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
 	
 	<script type="module" src="https://unpkg.com/ninja-keys?module"></script>
+	<link
+      rel="stylesheet"
+      href="https://unpkg.com/@bw-ui/command-palette/dist/bw-command-palette.min.css"
+    />
+    <script src="https://unpkg.com/@bw-ui/command-palette/dist/bw-command-palette.min.js"></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.css" />
@@ -235,8 +240,6 @@
 	<div id="sidebarContainer"></div>
 	<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
-	<ninja-keys> </ninja-keys>
-
 	<script type="module">
 
 		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
@@ -245,10 +248,10 @@
 			{% for entry in actionFactory.createShortCuts() %}
 		{
 			id: '{{ entry.id }}',
-			title: '{{ entry.title }}',
+			label: '{{ entry.title }}',
 			icon: '{{ entry.icon }}',
-			section: '{{ entry.section }}',
-			handler: () => {
+			group: '{{ entry.section }}',
+			action: () => {
 				var action = {{ entry.getActionDefinition() | raw }}
 				if (action.type === "hook") {
 					executeHookAction(action)
@@ -259,8 +262,11 @@
 		},
 		{% endfor %}
 		];
-		const ninja = document.querySelector('ninja-keys');
-		ninja.data = shortCuts;
+		window.manager.commandPalette = new BWCommandPalette({
+			trigger: 'mod+k',
+			placeholder: 'Type a command...',
+			commands: shortCuts
+		});
 	</script>
 </body>
 

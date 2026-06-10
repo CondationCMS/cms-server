@@ -13,6 +13,7 @@ declare global {
       siteId: string,
       previewUrl: string,
       refreshUrl: string,
+      commandPalette: any,
 		},
     EasyMDE : any,
     Cherry: any

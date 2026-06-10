@@ -164,8 +164,7 @@ const initMessageHandlers = () => {
         executeScriptAction(cmd);
     });
     frameMessenger.on('shortkeys', (payload) => {
-        const ninja = document.querySelector('ninja-keys');
-        ninja.open();
+        window.manager.commandPalette.open();
     });
     frameMessenger.on("section-set-published", (payload) => {
         var cmd = {

@@ -1,5 +1,7 @@
 package com.condation.cms.filesystem.metadata.query.parser.expressions;
 
+import com.condation.cms.filesystem.metadata.query.Queries;
+
 /*-
  * #%L
  * CMS FileSystem
@@ -24,7 +26,7 @@ package com.condation.cms.filesystem.metadata.query.parser.expressions;
 
 public enum Operator {
     EQ, NEQ, GT, GTE, LT, LTE, IN, NOT_IN, CONTAINS, CONTAINS_NOT;
-	
+    
 	public static Operator forName (String name) {
 		switch (name.toLowerCase()) {
 			case "=": return EQ;
@@ -41,4 +43,19 @@ public enum Operator {
 		}
 		return null;
 	}
+    
+    public Queries.Operator toQueriesOperator () {
+        return switch (this) {
+            case CONTAINS -> Queries.Operator.CONTAINS;
+            case CONTAINS_NOT -> Queries.Operator.CONTAINS_NOT;
+            case EQ -> Queries.Operator.EQ;
+            case GT -> Queries.Operator.GT;
+            case GTE -> Queries.Operator.GTE;
+            case IN -> Queries.Operator.IN;
+            case LT -> Queries.Operator.LT;
+            case LTE -> Queries.Operator.LTE;
+            case NEQ -> Queries.Operator.NOT_EQ;
+            case NOT_IN -> Queries.Operator.NOT_IN;
+        };
+    }
 }

@@ -74,46 +74,27 @@ public class DocumentHelper {
 		list.forEach(item -> addValue(document, name, item));
 	}
 
-	private static void addValue(Document document, String name, Object value) {
-		switch (value) {
-			case String stringValue -> {
-				document.add(new StringField(name, stringValue, Field.Store.NO));
-//				document.add(new SortedSetDocValuesField(name, new BytesRef(stringValue)));
+    private static void addValue (Document document, String name, Object value) {
+        switch (value) {
+            case String stringValue -> {
+                document.add(new StringField(name, stringValue, Field.Store.NO));
+            }
+            case Number numberValue -> {
+                document.add(new StringField(name, numberValue.toString(), Field.Store.NO));
+                document.add(new DoubleField("%s_double".formatted(name), numberValue.doubleValue(), Field.Store.NO));
+            } 
+            case Boolean booleanValue -> {
+				document.add(new StringField(name, booleanValue.toString(), Field.Store.NO));
+                document.add(new IntField("%s_bool".formatted(name), booleanValue ? 1 : 0, Field.Store.NO));
 			}
-			case Integer intValue -> {
-				document.add(new IntField(name, intValue, Field.Store.NO));
-//				document.add(new SortedNumericDocValuesField(name, intValue));
-			}
-			case Long longValue -> {
-				document.add(new LongField(name, longValue, Field.Store.NO));
-//				document.add(new SortedNumericDocValuesField(name, longValue));
-			}
-			case Float floatValue -> {
-				document.add(new FloatField(name, floatValue, Field.Store.NO));
-//				document.add(new SortedNumericDocValuesField(name, NumericUtils.floatToSortableInt(floatValue)));
-			}
-			case Double doubleValue -> {
-				document.add(new DoubleField(name, doubleValue, Field.Store.NO));
-//				document.add(new SortedNumericDocValuesField(name, NumericUtils.doubleToSortableLong(doubleValue)));
-			}
-			case Boolean booleanValue -> {
-				var intValue = booleanValue ? 1 : 0;
-				document.add(
-						new IntField(
-								name,
-								intValue,
-								Field.Store.NO
-						)
-				);
-//				document.add(new SortedNumericDocValuesField(name, intValue));
-			}
+            case Date dateValue -> {
+                // Datum lesbar in die Textsuche, Zeitstempel ins Long-Feld
+                document.add(new StringField(name, dateValue.toString(), Field.Store.NO));
+                document.add(new LongField("%s_date".formatted(name), dateValue.getTime(), Field.Store.NO));
+            }
 			case List<?> listValue ->
 				handleList(document, name, listValue);
-			case Date dateValue -> {
-				document.add(new LongField(name, dateValue.getTime(), Field.Store.NO));
-			}
-			default -> {
-			}
-		}
-	}
+            default -> {}
+        }
+    }
 }

@@ -109,6 +109,8 @@ public class JettyServer implements AutoCloseable {
         globalInjector.getInstance(MeterRegistry.class);
 
 		var properties = globalInjector.getInstance(ServerProperties.class);
+        
+        initServerModules();
 
 		SiteUtil.sitesStream().forEach((site) -> {
 			MdcScope.forSite(site.id()).run(() -> {
@@ -226,9 +228,6 @@ public class JettyServer implements AutoCloseable {
 				host.getInjector().getInstance(EventBus.class).publish(new HostReadyEvent(host.id()));
 				host.getInjector().getInstance(EventBus.class).publish(new ServerReadyEvent());
 			});
-
-			initServerModules();
-
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}

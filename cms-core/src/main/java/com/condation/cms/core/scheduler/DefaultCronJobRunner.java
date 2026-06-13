@@ -24,7 +24,7 @@ package com.condation.cms.core.scheduler;
 
 
 import com.condation.cms.api.scheduler.CronJob;
-import static com.condation.cms.core.scheduler.SingleCronJobRunner.DATA_CRONJOB;
+import static com.condation.cms.core.scheduler.AbstractCronJobScheduler.DATA_CRONJOB;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

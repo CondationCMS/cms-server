@@ -50,7 +50,7 @@ public class ServerCronJobScheduler implements CronJobScheduler {
 		var identity = "server-%s".formatted(name);
 
 		JobDataMap data = new JobDataMap();
-		data.put(SingleCronJobRunner.DATA_CRONJOB, job);
+		data.put(AbstractCronJobScheduler.DATA_CRONJOB, job);
 		JobDetail jobDetail = JobBuilder
 				.newJob(DefaultCronJobRunner.class)
 				.withIdentity(identity)

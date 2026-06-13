@@ -27,27 +27,17 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.CacheProvider;
 import com.condation.cms.api.extensions.CacheProviderExtensionPoint;
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.core.cache.LocalCacheProvider;
-import com.condation.cms.core.scheduler.SingleCronJobScheduler;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
-import com.condation.cms.extensions.GlobalExtensions;
-import com.condation.cms.hooksystem.CMSHookSystem;
-import com.condation.cms.hooksystem.extensions.GlobalHooks;
 import com.condation.modules.api.ModuleManager;
 import com.google.inject.Binder;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
-import org.graalvm.polyglot.Context;
-import org.graalvm.polyglot.Engine;
-import org.graalvm.polyglot.HostAccess;
 import org.quartz.Scheduler;
 
 /**
@@ -61,47 +51,11 @@ public class SiteGlobalModule implements com.google.inject.Module {
 	public void configure(Binder binder) {
 
 	}
-
-	@Provides
-	@Singleton
-	@Named("global")
-	public Context context(Engine engine) throws IOException {
-		return Context.newBuilder()
-				.allowHostClassLookup(className -> true)
-				.allowHostAccess(HostAccess.ALL)
-				.allowValueSharing(true)
-				.engine(engine).build();
-	}
-	@Provides
-	@Singleton
-	@Named("global")
-	public HookSystem hookSystem () {
-		return new CMSHookSystem();
-	}
-	
-	@Provides
-	@Singleton
-	public GlobalExtensions globalExtensions (@Named("global") HookSystem hookSystem, @Named("global") Context context) throws IOException {
-		var globalExtensions =  new GlobalExtensions(hookSystem, context);
-		globalExtensions.init();
-		return globalExtensions;
-	}
-	
-	@Provides
-	@Singleton
-	public GlobalHooks globalHooks (SingleCronJobScheduler scheduler, @Named("global") HookSystem hookSystem) {
-		return new GlobalHooks(hookSystem, scheduler);
-	}
 	
 	@Provides
 	@Singleton
 	public SiteCronJobScheduler cronJobScheduler (Scheduler scheduler, CronJobContext context, SiteProperties siteProperties) {
 		return new SiteCronJobScheduler(scheduler, context, siteProperties);
-	}
-	@Provides
-	@Singleton
-	public SingleCronJobScheduler singleCronJobScheduler (Scheduler scheduler, CronJobContext context, SiteProperties siteProperties) {
-		return new SingleCronJobScheduler(scheduler, context, siteProperties);
 	}
 	
 	@Provides

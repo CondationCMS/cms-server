@@ -21,6 +21,7 @@ package com.condation.cms.hooksystem;
  * #L%
  */
 
+import com.condation.cms.api.annotations.Scope;
 import com.condation.cms.api.hooks.ActionFunction;
 import com.condation.cms.api.hooks.FilterFunction;
 import com.condation.cms.api.hooks.HookSystem;
@@ -45,17 +46,24 @@ public class CMSHookSystem implements HookSystem {
     private final ActionExecutor actionExecutor;
     private final FilterExecutor filterExecutor;
     private final AnnotationHookRegistrar annotationRegistrar;
+    
+    private Scope scope = null; 
 
-    public CMSHookSystem() {
+    public CMSHookSystem (Scope scope) {
+        this.scope = scope;
         this.actionRegistry = new ActionRegistry();
         this.filterRegistry = new FilterRegistry();
         this.actionExecutor = new ActionExecutor(actionRegistry);
         this.filterExecutor = new FilterExecutor(filterRegistry);
-        this.annotationRegistrar = new AnnotationHookRegistrar(actionRegistry, filterRegistry);
+        this.annotationRegistrar = new AnnotationHookRegistrar(actionRegistry, filterRegistry, scope);
+    }
+    
+    public CMSHookSystem() {
+        this(Scope.APPLICATION);
     }
 
     public CMSHookSystem(CMSHookSystem source) {
-        this();
+        this(Scope.REQUEST);
         this.actionRegistry.putAll(source.actionRegistry);
         this.filterRegistry.putAll(source.filterRegistry);
     }

@@ -44,7 +44,6 @@ public class HTMLPipeline {
 	public String updateLayoutPosition (Hooks hook, String elementName, String rawContent) {
 		
 		if (!rawContent.contains(elementName)) {
-			log.debug("No {} found, skipping layout position injection", elementName);
 			return rawContent;
 		}
 		

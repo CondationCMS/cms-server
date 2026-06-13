@@ -19,5 +19,6 @@
   <link rel="stylesheet" href="{{ cms.links.createUrl('/manager/css/manager-inject.css') }}" />
 {% endif %}
 
+<!-- template header hook -->
 {{ hooks({'hook': 'theme/template/header'}) | raw }}
-
+<!-- end -->

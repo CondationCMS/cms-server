@@ -21,19 +21,12 @@ package com.condation.cms.api.annotations;
  * #L%
  */
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
  *
- * @author thorstenmarx
+ * @author thmar
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface Action {
-	String value ();
-	int priority () default 10;
-    Scope scope () default Scope.REQUEST;
+public enum Scope {
+    
+    REQUEST,
+    APPLICATION
 }

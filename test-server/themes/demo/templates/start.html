@@ -97,8 +97,10 @@
 			</div>
 		</div>
 
-		{{ cms.hooks({'hook': 'theme/template/footer'}) | raw }}
-
+        <!-- start call hook -->
+        {{ cms.hooks({'hook': 'theme/template/footer'}) | raw }}
+        {{ cms.hooks({'hook': 'example'}) | raw }}
+        <!-- end call hook -->
 	</body>
 
 

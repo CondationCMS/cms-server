@@ -25,6 +25,7 @@ package com.condation.cms.hooksystem;
 import com.condation.cms.api.annotations.Filter;
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.annotations.Param;
+import com.condation.cms.api.annotations.Scope;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.FilterContext;
 import java.util.ArrayList;
@@ -42,10 +43,13 @@ import org.junit.jupiter.api.Test;
 public class CMSHookSystemTest {
 
 	private CMSHookSystem hookSystem;
+    
+    private CMSHookSystem globalSystem;
 
 	@BeforeEach
 	public void setup() {
-		hookSystem = new CMSHookSystem();
+		hookSystem = new CMSHookSystem(Scope.REQUEST);
+        globalSystem = new CMSHookSystem(Scope.APPLICATION);
 	}
 
 	@Test
@@ -101,6 +105,18 @@ public class CMSHookSystemTest {
 		hookSystem.doAction("test/annotation/action1");
 		Assertions.assertThat(actionObject.counter).hasValue(2);
 	}
+    
+    	@Test
+	void test_action_scope() {
+		var actionObject = new MyActions();
+		hookSystem.register(actionObject);
+        globalSystem.register(actionObject);
+        
+		hookSystem.doAction("test/annotation/count");
+        Assertions.assertThat(actionObject.counter).hasValue(1);
+		globalSystem.doAction("test/annotation/count");
+        Assertions.assertThat(actionObject.counter).hasValue(2);
+	}
 
 	@Test
 	void test_filter_annotations() {
@@ -108,6 +124,19 @@ public class CMSHookSystemTest {
 		hookSystem.register(myFilters);
 		Assertions.assertThat(hookSystem.doFilter("test/annotation/filter1", new ArrayList<>(List.of("1", "2", "3"))))
 				.containsExactly("1", "3");
+	}
+    
+    @Test
+	void test_filter_scopes() {
+		var myFilters = new MyFilters();
+		hookSystem.register(myFilters);
+        globalSystem.register(myFilters);
+
+        Assertions.assertThat(hookSystem.doFilter("test/annotation/stringFilter", ""))
+                .isEqualTo("requestFilter");
+        
+        Assertions.assertThat(globalSystem.doFilter("test/annotation/stringFilter", ""))
+                .isEqualTo("globalFilter");
 	}
 
 	@Test
@@ -130,6 +159,16 @@ public class CMSHookSystemTest {
 			context.value().remove("2");
 			return context.value();
 		}
+        
+        @Filter(value = "test/annotation/stringFilter")
+		public String requestFilter(FilterContext<String> context) {
+			return "requestFilter";
+		}
+        
+        @Filter(value = "test/annotation/stringFilter", scope = Scope.APPLICATION)
+		public String globalFilter(FilterContext<String> context) {
+			return "globalFilter";
+		}
 	}
 
 	public class MyActions {
@@ -142,6 +181,15 @@ public class CMSHookSystemTest {
 
 		@Action("test/annotation/action1")
 		public void action2(ActionContext<?> context) {
+			counter.incrementAndGet();
+		}
+        
+        @Action(value = "test/annotation/count", scope = Scope.APPLICATION)
+		public void globalAction(ActionContext<?> context) {
+			counter.incrementAndGet();
+		}
+        @Action(value = "test/annotation/count")
+		public void requestAction(ActionContext<?> context) {
 			counter.incrementAndGet();
 		}
 	}

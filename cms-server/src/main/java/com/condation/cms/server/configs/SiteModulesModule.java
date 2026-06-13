@@ -21,6 +21,7 @@ package com.condation.cms.server.configs;
  * #L%
  */
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
 import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
@@ -38,6 +39,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -53,119 +55,124 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SiteModulesModule extends AbstractModule {
 
-	private final Path modulesPath;
+    private final Path modulesPath;
 
-	@Override
-	protected void configure() {
-	}
+    @Override
+    protected void configure() {
+    }
 
-	@Provides
-	@Singleton
-	public ModuleManager moduleManager(Injector injector, SiteModuleContext context) {
-		var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
-				List.of(
-						"org.slf4j",
-						"com.condation.cms",
-						"com.condation.modules",
-						"org.apache.logging",
-						"org.graalvm.polyglot",
-						"org.graalvm.js",
-						"org.eclipse.jetty",
-						"jakarta.servlet",
-						"com.google",
-						"org.w3c"
-				));
-		var moduleManager = ModuleManagerImpl.builder()
-				.setClassLoader(classLoader)
-				.setInjector((instance) -> injector.injectMembers(instance))
-				.setModulesDataPath(injector.getInstance(FileDB.class).getFileSystem().resolve("modules_data").toFile())
-				.setModulesPath(modulesPath.toFile())
-				.setContext(context)
-				.build();
+    @Provides
+    @Singleton
+    public ModuleManager moduleManager(Injector injector, SiteModuleContext context) {
+        var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
+                List.of(
+                        "org.slf4j",
+                        "com.condation.cms",
+                        "com.condation.modules",
+                        "org.apache.logging",
+                        "org.graalvm.polyglot",
+                        "org.graalvm.js",
+                        "org.eclipse.jetty",
+                        "jakarta.servlet",
+                        "com.google",
+                        "org.w3c"
+                ));
+        var moduleManager = ModuleManagerImpl.builder()
+                .setClassLoader(classLoader)
+                .setInjector((instance) -> injector.injectMembers(instance))
+                .setModulesDataPath(injector.getInstance(FileDB.class).getFileSystem().resolve("modules_data").toFile())
+                .setModulesPath(modulesPath.toFile())
+                .setContext(context)
+                .build();
 
-		context.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManager));
+        context.add(ModuleManagerFeature.class, new ModuleManagerFeature(moduleManager));
 
-		return moduleManager;
-	}
+        return moduleManager;
+    }
 
-	@Provides
-	@Singleton
-	public SiteModuleContext moduleContext() {
-		final SiteModuleContext cmsModuleContext = new SiteModuleContext();
+    @Provides
+    @Singleton
+    public SiteModuleContext moduleContext() {
+        final SiteModuleContext cmsModuleContext = new SiteModuleContext();
 
-		return cmsModuleContext;
-	}
+        return cmsModuleContext;
+    }
 
-	/**
-	 * 
-	 *
-	 * @param siteProperties
-	 * @param moduleManager
-	 * @return
-	 */
-	@Provides
-	@Singleton
-	public MarkdownRenderer markdownRenderer(SiteProperties siteProperties, ModuleManager moduleManager) {
-		var engine = siteProperties.markdownEngine();
+    /**
+     *
+     *
+     * @param siteProperties
+     * @param moduleManager
+     * @return
+     */
+    @Provides
+    @Singleton
+    public MarkdownRenderer markdownRenderer(SiteProperties siteProperties, ModuleManager moduleManager) {
+        var engine = siteProperties.markdownEngine();
 
-		List<MarkdownRendererProviderExtensionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtensionPoint.class);
-		Optional<MarkdownRendererProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
+        List<MarkdownRendererProviderExtensionPoint> extensions = moduleManager.extensions(MarkdownRendererProviderExtensionPoint.class);
+        Optional<MarkdownRendererProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
 
-		if (extOpt.isPresent()) {
-			return extOpt.get().getRenderer();
-		}
+        if (extOpt.isPresent()) {
+            return extOpt.get().getRenderer();
+        }
 
-		throw new RuntimeException("no markdown renderer found");
-	}
+        throw new RuntimeException("no markdown renderer found");
+    }
 
-	private String getTemplateEngine(SiteProperties siteProperties, Theme theme) {
-		var site_engine = siteProperties.templateEngine();
+    private String getTemplateEngine(SiteProperties siteProperties, Theme theme) {
+        var site_engine = siteProperties.templateEngine();
 
-		var theme_engine = theme.properties().templateEngine();
-		var parent_engine = theme.getParentTheme() != null ? theme.getParentTheme().properties().templateEngine() : null;
+        var theme_engine = theme.properties().templateEngine();
+        var parent_engine = theme.getParentTheme() != null ? theme.getParentTheme().properties().templateEngine() : null;
 
-		Optional<String> used_engine = Stream.of(site_engine, theme_engine, parent_engine)
-				.filter(engine -> engine != null)
-				.distinct()
-				.reduce((e1, e2) -> {
-					throw new RuntimeException("Detected usage of different template engines in site and themes.");
-				});
-		
-		return used_engine.orElse("system");
-	}
+        Optional<String> used_engine = Stream.of(site_engine, theme_engine, parent_engine)
+                .filter(engine -> engine != null)
+                .distinct()
+                .reduce((e1, e2) -> {
+                    throw new RuntimeException("Detected usage of different template engines in site and themes.");
+                });
 
-	@Provides
-	@Singleton
-	public TemplateEngine resolveTemplateEngine(SiteProperties siteProperties, Theme theme, ModuleManager moduleManager) {
-		var engine = getTemplateEngine(siteProperties, theme);
+        return used_engine.orElse("system");
+    }
 
-		List<TemplateEngineProviderExtensionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtensionPoint.class);
-		Optional<TemplateEngineProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
+    @Provides
+    @Singleton
+    public TemplateEngine resolveTemplateEngine(SiteProperties siteProperties, Theme theme, ModuleManager moduleManager) {
+        var engine = getTemplateEngine(siteProperties, theme);
 
-		if (extOpt.isPresent()) {
-			return extOpt.get().getTemplateEngine();
-		}
-		
-		throw new RuntimeException("no template engine found");
-	}
+        List<TemplateEngineProviderExtensionPoint> extensions = moduleManager.extensions(TemplateEngineProviderExtensionPoint.class);
+        Optional<TemplateEngineProviderExtensionPoint> extOpt = extensions.stream().filter((ext) -> ext.getName().equals(engine)).findFirst();
 
-	/**
-	 * new HookSystem for each request
-	 *
-	 * @param moduleManager
-	 * @return
-	 */
-	@Provides
-	public HookSystem hookSystem(final ModuleManager moduleManager) {
-		var hookSystem = new CMSHookSystem();
-		
-		/*
-			moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
-			extensionPoint.register(hookSystem);
-			hookSystem.register(extensionPoint);
-			});
-		*/
-		
-		return hookSystem;
-	}
+        if (extOpt.isPresent()) {
+            return extOpt.get().getTemplateEngine();
+        }
+
+        throw new RuntimeException("no template engine found");
+    }
+
+    @Provides
+    @Singleton
+    @Named("global")
+    public HookSystem globalHookSystem(final ModuleManager moduleManager) {
+        var hookSystem = new CMSHookSystem();
+
+        moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
+            hookSystem.register(extensionPoint);
+        });
+
+        return hookSystem;
+    }
+
+    /**
+     * new HookSystem for each request
+     *
+     * @param moduleManager
+     * @return
+     */
+    @Provides
+    public HookSystem hookSystem(final @Named("global") HookSystem globalHooks) {
+        var hookSystem = new CMSHookSystem((CMSHookSystem) globalHooks);
+        return hookSystem;
+    }
 }

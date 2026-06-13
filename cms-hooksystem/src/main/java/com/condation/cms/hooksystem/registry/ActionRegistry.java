@@ -36,7 +36,7 @@ import java.util.List;
 public class ActionRegistry {
 
     private final Multimap<String, ActionHook> hooks = ArrayListMultimap.create();
-
+    
     public <T> void register(String name, ActionFunction<T> function, int priority) {
         hooks.put(name, new ActionHook<>(name, priority, function));
     }

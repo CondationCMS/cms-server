@@ -34,8 +34,8 @@ public enum Hooks {
 	/* content */
 	CONTENT_SHORTCODES("system/content/shortCodes"),
 	CONTENT_FILTER("system/content/filter"),
-	LAYOUT_HEADER("system/layout/header"),
-	LAYOUT_FOOTER("system/layout/footer"),
+	LAYOUT_HEADER("system/layout/html/header"),
+	LAYOUT_FOOTER("system/layout/html/footer"),
 	/*query*/
 	DB_QUERY_OPERATIONS("system/db/query/operations"),
 	/* scheduler */

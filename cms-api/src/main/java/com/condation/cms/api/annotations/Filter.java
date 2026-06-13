@@ -35,4 +35,5 @@ import java.lang.annotation.Target;
 public @interface Filter {
 	String value ();
 	int priority () default 10;
+    Scope scope () default Scope.REQUEST;
 }

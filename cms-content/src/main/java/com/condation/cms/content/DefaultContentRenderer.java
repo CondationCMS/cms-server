@@ -54,6 +54,7 @@ import com.condation.cms.hooksystem.extensions.DBHooks;
 import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.content.template.functions.MarkdownFunction;
+import com.condation.cms.content.template.functions.hooks.HooksTemlateFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
@@ -189,8 +190,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 			model.values.put("messages", theme.getMessages());
 		}
 		
-		namespace.add(Constants.TemplateNamespaces.CMS, "hooks", context.get(HookSystemFeature.class).hookSystem());
-
 		namespace.add(Constants.TemplateNamespaces.CMS, "links", new LinkFunction(context));
 
 		model.values.put("PREVIEW_MODE", isPreview(context));

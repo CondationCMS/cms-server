@@ -23,6 +23,7 @@ package com.condation.cms.hooksystem.annotation;
 
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.annotations.Filter;
+import com.condation.cms.api.annotations.Scope;
 import com.condation.cms.api.hooks.ActionFunction;
 import com.condation.cms.api.hooks.ActionContext;
 import com.condation.cms.api.hooks.FilterContext;
@@ -57,6 +58,7 @@ public class AnnotationHookRegistrar {
 
     private final ActionRegistry actionRegistry;
     private final FilterRegistry filterRegistry;
+    private final Scope scope;
 
     public void register(Object source) {
         for (Method method : source.getClass().getMethods()) {
@@ -74,6 +76,11 @@ public class AnnotationHookRegistrar {
 
     private void registerAction(Object target, Method method) {
         Action annotation = method.getAnnotation(Action.class);
+        
+        if (!scope.equals(annotation.scope())) {
+            return;
+        }
+        
         ActionFunction<?> fn = buildActionFunction(target, method);
         if (fn != null) {
             actionRegistry.register(annotation.value(), fn, annotation.priority());
@@ -82,6 +89,11 @@ public class AnnotationHookRegistrar {
 
     private void registerFilter(Object target, Method method) {
         Filter annotation = method.getAnnotation(Filter.class);
+        
+        if (!scope.equals(annotation.scope())) {
+            return;
+        }
+        
         FilterFunction<?> fn = buildFilterFunction(target, method);
         if (fn != null) {
             filterRegistry.register(annotation.value(), fn, annotation.priority());

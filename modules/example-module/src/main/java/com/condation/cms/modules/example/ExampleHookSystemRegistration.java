@@ -20,9 +20,9 @@ package com.condation.cms.modules.example;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
+import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.annotations.Scope;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
-
 
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.modules.api.annotation.Extension;
@@ -34,9 +34,14 @@ import com.condation.modules.api.annotation.Extension;
 @Extension(HookSystemRegisterExtensionPoint.class)
 public class ExampleHookSystemRegistration extends HookSystemRegisterExtensionPoint {
 
-	@Override
-	public void register(HookSystem hookSystem) {
-		hookSystem.registerAction("example/test", (hookContext) -> "example hook function");
-	}
-	
+    @Override
+    public void register(HookSystem hookSystem) {
+        hookSystem.registerAction("example/test", (hookContext) -> "example hook function");
+    }
+
+    @Action(value = "example", scope = Scope.APPLICATION)
+    public String example() {
+        return "<!-- example from application scope -->";
+    }
+
 }

@@ -37,7 +37,6 @@ import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
-import com.condation.cms.api.db.DB;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
@@ -52,9 +51,7 @@ import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.core.configuration.ConfigManagement;
-import com.condation.cms.extensions.GlobalExtensions;
 import com.condation.cms.filesystem.FileDB;
-import com.condation.cms.hooksystem.extensions.GlobalHooks;
 import com.condation.cms.media.MediaManager;
 import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.media.ThemeMediaManager;
@@ -223,17 +220,6 @@ public class VHost {
 
         Initializer initializer = new Initializer(this);
         initializer.initServices();
-        initSiteGlobals();
-    }
-
-    private void initSiteGlobals() throws IOException {
-        var globalJs = injector.getInstance(DB.class).getReadOnlyFileSystem().resolve("site.globals.js");
-        if (globalJs.exists()) {
-            var context = injector.getInstance(GlobalExtensions.class);
-            context.evaluate(globalJs.getContent());
-
-            injector.getInstance(GlobalHooks.class).registerCronJob();
-        }
     }
 
     protected List<String> getActiveModules() {

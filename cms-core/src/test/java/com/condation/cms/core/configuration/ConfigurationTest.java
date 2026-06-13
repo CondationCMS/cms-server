@@ -31,7 +31,7 @@ import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.core.configuration.reload.CronReload;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
-import com.condation.cms.core.scheduler.SingleCronJobScheduler;
+import com.condation.cms.core.scheduler.ServerCronJobScheduler;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,7 +76,7 @@ public class ConfigurationTest {
 	public void setup() throws IOException, SchedulerException {
 		scheduler = StdSchedulerFactory.getDefaultScheduler();
 		scheduler.start();
-		cronScheduler = new SingleCronJobScheduler(scheduler, new CronJobContext(), siteProperties);
+		cronScheduler = new ServerCronJobScheduler(scheduler);
 
 		System.setProperty("cms.home", tempDir.toAbsolutePath().toString());
 

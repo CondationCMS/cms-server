@@ -46,6 +46,9 @@ import org.quartz.TriggerBuilder;
 @Slf4j
 public class AbstractCronJobScheduler {
 
+    public static final String DATA_CRONJOB = "cronjob";
+    public static final String DATA_CONTEXT = "context";
+    
 	private final Scheduler scheduler;
 	private final CronJobContext context;
 	private final SiteProperties siteProperties;
@@ -59,8 +62,8 @@ public class AbstractCronJobScheduler {
 		var identity = "%s-%s".formatted(siteProperties.id(), name);
 		
 		JobDataMap data = new JobDataMap();
-		data.put(SingleCronJobRunner.DATA_CRONJOB, job);
-		data.put(SingleCronJobRunner.DATA_CONTEXT, context);
+		data.put(AbstractCronJobScheduler.DATA_CRONJOB, job);
+		data.put(AbstractCronJobScheduler.DATA_CONTEXT, context);
 		JobDetail jobDetail = JobBuilder
 				.newJob(jobClass)
 				.withIdentity(identity)

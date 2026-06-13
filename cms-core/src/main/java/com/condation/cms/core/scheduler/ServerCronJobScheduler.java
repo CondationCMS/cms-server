@@ -20,15 +20,12 @@ package com.condation.cms.core.scheduler;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.scheduler.CronJob;
-import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.scheduler.CronJobScheduler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.CronScheduleBuilder;
 import org.quartz.CronTrigger;
-import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;

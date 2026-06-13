@@ -25,7 +25,6 @@ import com.condation.cms.api.hooks.ActionFunction;
 import com.condation.cms.hooksystem.ActionHook;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 

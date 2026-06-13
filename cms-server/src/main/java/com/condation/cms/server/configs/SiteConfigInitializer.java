@@ -39,6 +39,7 @@ import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
@@ -64,7 +65,7 @@ public class SiteConfigInitializer {
     }
 
     private void initCronJobContext() {
-        var context = injector.getInstance(SiteModuleContext.class);
+        var context = injector.getInstance(CronJobContext.class);
 
         context.add(SitePropertiesFeature.class, new SitePropertiesFeature(injector.getInstance(SiteProperties.class)));
 		context.add(ServerPropertiesFeature.class, new ServerPropertiesFeature(injector.getInstance(ServerProperties.class)));

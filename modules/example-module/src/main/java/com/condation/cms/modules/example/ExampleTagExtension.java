@@ -24,6 +24,7 @@ package com.condation.cms.modules.example;
 
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.annotations.Scope;
+import com.condation.cms.api.annotations.ShortCode;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
 import com.condation.cms.api.model.Parameter;
 import com.condation.modules.api.annotation.Extension;
@@ -37,13 +38,9 @@ import java.util.function.Function;
  */
 @Extension(RegisterShortCodesExtensionPoint.class)
 public class ExampleTagExtension extends RegisterShortCodesExtensionPoint {
-
-	@Override
-	public Map<String, Function<Parameter, String>> shortCodes() {
-		Map<String, Function<Parameter, String>> tags = new HashMap<>();
-		
-		tags.put("example", (params) -> "<b>example from module</b>");
-		
-		return tags;
-	}
+    
+    @ShortCode("example")
+    public String example () {
+        return "<b>example from module</b>";
+    }
 }

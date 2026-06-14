@@ -91,8 +91,7 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 		injector.getInstance(ModuleManager.class)
 				.extensions(RegisterTemplateFunctionExtensionPoint.class)
 				.forEach(extension -> {
-					templateFunctionsModel.register(extension.functions());
-					templateFunctionsModel.register(extension.functionDefinitions());
+					templateFunctionsModel.register(extension);
 				});
 		
 		templateFunctionsModel.getFunctionMap().functions().forEach(extFn -> {

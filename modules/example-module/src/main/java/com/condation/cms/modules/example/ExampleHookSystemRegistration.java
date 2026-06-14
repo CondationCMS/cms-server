@@ -34,11 +34,11 @@ import com.condation.modules.api.annotation.Extension;
 @Extension(HookSystemRegisterExtensionPoint.class)
 public class ExampleHookSystemRegistration extends HookSystemRegisterExtensionPoint {
 
-    @Override
-    public void register(HookSystem hookSystem) {
-        hookSystem.registerAction("example/test", (hookContext) -> "example hook function");
+    @Action(value = "example/test")
+    public String example_test() {
+        return "example hook function";
     }
-
+    
     @Action(value = "example", scope = Scope.APPLICATION)
     public String example() {
         return "<!-- example from application scope -->";

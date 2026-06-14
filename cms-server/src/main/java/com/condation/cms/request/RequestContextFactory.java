@@ -156,9 +156,7 @@ public class RequestContextFactory {
 		
 		injector.getInstance(ModuleManager.class).extensions(RegisterShortCodesExtensionPoint.class)
 				.forEach(extension -> {
-					builder.register(extension.shortCodes());
-					
-					builder.register(extension.shortCodeDefinitions());
+					builder.register(extension);
 				});
 
 		var codes = new HashMap<String, Function<Parameter, String>>();
@@ -244,7 +242,6 @@ public class RequestContextFactory {
 		var moduleManager = injector.getInstance(ModuleManager.class);
 		
 		moduleManager.extensions(HookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
-			extensionPoint.register(hookSystem);
 			hookSystem.register(extensionPoint);
 		});
 		

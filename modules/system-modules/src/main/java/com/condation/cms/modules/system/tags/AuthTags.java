@@ -27,7 +27,6 @@ import com.condation.cms.api.feature.features.AuthFeature;
 import com.condation.cms.api.model.Parameter;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.modules.api.annotation.Extension;
-import java.util.List;
 import java.util.function.Function;
 import com.condation.cms.api.annotations.ShortCode;
 
@@ -37,11 +36,6 @@ import com.condation.cms.api.annotations.ShortCode;
  */
 @Extension(value = RegisterShortCodesExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class AuthTags extends RegisterShortCodesExtensionPoint {
-
-    @Override
-    public List<Object> shortCodeDefinitions() {
-        return List.of(this);
-    }
     
     @ShortCode(value = "username", namespace = "cms")
     public String username (Parameter params) {

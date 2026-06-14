@@ -21,13 +21,10 @@ package com.condation.cms.api.extensions;
  * #L%
  */
 
-import com.condation.cms.api.hooks.HookSystem;
-
 /**
  * ExtensionPoint for modules to register hooks.
  * 
  */
 public abstract class HookSystemRegisterExtensionPoint extends AbstractExtensionPoint{
 
-	public void register (final HookSystem hookSystem) {}
 }

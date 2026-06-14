@@ -166,16 +166,11 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 
 	public static class TestFunctions extends RegisterTemplateFunctionExtensionPoint {
 
-		@Override
-		public Map<String, Function<Parameter, ?>> functions() {
-			return Map.of("testfn1", (params) -> "hi I'm testfn1");
+        @TemplateFunction("testfn1")
+		public Object testfn1(Parameter params) {
+			return "hi I'm testfn1";
 		}
-
-		@Override
-		public List<Object> functionDefinitions() {
-			return List.of(this);
-		}
-
+        
 		// context style
 		@TemplateFunction("testfn2")
 		public Object testfn2(Parameter params) {

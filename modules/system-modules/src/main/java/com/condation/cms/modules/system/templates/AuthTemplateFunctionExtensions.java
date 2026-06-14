@@ -37,11 +37,6 @@ import java.util.function.Function;
 @Extension(value = RegisterTemplateFunctionExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class AuthTemplateFunctionExtensions extends RegisterTemplateFunctionExtensionPoint {
 
-	@Override
-	public List<Object> functionDefinitions() {
-		return List.of(this);
-	}
-
 	@TemplateFunction(value = "username", namespace = "cms")
 	public Object userName() {
 		return (String) getFeatureValueOrDefault(

@@ -20,6 +20,8 @@ package com.condation.cms.modules.ui.extensionpoints;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.annotations.Action;
+import com.condation.cms.api.annotations.Filter;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.ui.action.UIHookAction;
@@ -36,12 +38,10 @@ import java.util.Map;
  */
 //@Extension(HookSystemRegisterExtensionPoint.class)
 public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
-
-	@Override
-	public void register(HookSystem hookSystem) {
-		hookSystem.<Menu>registerFilter("module/ui/menu", (context) -> {
-			var menu = context.value();
-			menu.addMenuEntry(MenuEntry.builder()
+    
+    @Filter("module/ui/menu")
+    public Menu createDemoMenu (Menu menu) {
+        menu.addMenuEntry(MenuEntry.builder()
 					.children(new ArrayList<>(
 							List.of(MenuEntry.builder().id("child1").name("ScriptAction")
 									.position(0)
@@ -56,13 +56,12 @@ public class MenuHookExtension extends HookSystemRegisterExtensionPoint {
 				.name("ExampleMenu")
 				.id("example-menu")
 				.build());
-			return menu;
-		});
-
-		hookSystem.registerAction("module/ui/demo/menu/action", context -> {
-			System.out.println("hook action executed");
-			System.out.println("hello " + context.arguments().get("name"));
-			return "";
-		});
-	}
+        return menu;
+    }
+    
+    @Action("module/ui/demo/menu/action")
+    public void demo_menu (String name) {
+        System.out.println("hook action executed");
+		System.out.println("hello " + name);
+    }
 }

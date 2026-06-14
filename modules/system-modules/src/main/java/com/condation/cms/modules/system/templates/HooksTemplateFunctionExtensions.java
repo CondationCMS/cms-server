@@ -36,11 +36,6 @@ import java.util.List;
 @Extension(value = RegisterTemplateFunctionExtensionPoint.class, cached = Extension.Caching.TRUE)
 public class HooksTemplateFunctionExtensions extends RegisterTemplateFunctionExtensionPoint {
 
-	@Override
-	public List<Object> functionDefinitions() {
-		return List.of(this);
-	}
-
 	@TemplateFunction(value = "hooks", namespace = "cms")
 	public Object hook(Parameter params){
 		

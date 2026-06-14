@@ -29,7 +29,7 @@ $hooks.registerAction("system/template/function", ({functions}) => {
 $hooks.registerAction("system/template/component", ({components}) => {
 	components.put(
 			"colored",
-			({color, _content}) => `<div style="color: ${color}">COMPONENT: ${_content}</div>`
+			({color, _content}) => `<div style="color: ${color}">COMPONENT(content): ${_content}</div>`
 	)
 	components.put(
 			"component",

@@ -32,24 +32,38 @@ import org.junit.jupiter.api.extension.ExtendWith;
  */
 @ExtendWith({CMSServerExtension.class})
 @UsePlaywright
-public class ShortCodesTest {
+public class TemplateTest {
 
 
     @Test
-    void bold_content(Page page) {
+    void function_fn_message(Page page) {
         page.navigate("http://localhost:2020");
-        Assertions.assertThat(page.content()).contains("<b>This content will be bold</b>");
+        Assertions.assertThat(page.content()).contains("<div style=\"color: red\">MESSAGE: Hello ConditionCMS</div>");
     }
     
     @Test
-    void theme_name (Page page) {
+    void component_colored (Page page) {
         page.navigate("http://localhost:2020");
-        Assertions.assertThat(page.content()).contains("Hello, I'm your <b>demo</b> theme.");
+        Assertions.assertThat(page.content()).containsIgnoringWhitespaces("<div style=\"color: red\">COMPONENT(content): This content should be red!</div>");
     }
     
     @Test
-    void say_hello (Page page) {
+    void component_component (Page page) {
         page.navigate("http://localhost:2020");
-        Assertions.assertThat(page.content()).contains("<p>Hello, CondationCMS</p>");
+        Assertions.assertThat(page.content()).contains("<div style=\"color: red\">COMPONENT: its a component</div>");
+    }
+    
+    @Test
+    void component_temp_comp (Page page) {
+        page.navigate("http://localhost:2020");
+        Assertions.assertThat(page.content()).containsIgnoringWhitespaces("""
+                                                       rendered: 
+                                                       <div>
+                                                       	<h5>CondationCMS</h5>
+                                                       	<p>
+                                                       		a compontent rendered by a template
+                                                       	</p>
+                                                       </div>
+                                                       """);
     }
 }

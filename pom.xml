@@ -109,7 +109,7 @@
                 <artifactId>cms-test</artifactId>
                 <version>${project.version}</version>
             </dependency>
-			<dependency>
+            <dependency>
                 <groupId>com.condation.cms</groupId>
                 <artifactId>cms-hooksystem</artifactId>
                 <version>${project.version}</version>
@@ -615,6 +615,31 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>ci</id>
+            <activation>
+                <property>
+                    <name>env.CI</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration>
+                            <argLine>
+                                --enable-preview
+                                -javaagent:${settings.localRepository}/org/mockito/mockito-core/${mockito.version}/mockito-core-${mockito.version}.jar
+                                -Xshare:off
+                            </argLine>
+                            <excludedGroups>performance</excludedGroups>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

@@ -32,7 +32,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import com.github.noconnor.junitperf.JUnitPerfInterceptor;
+import org.junit.jupiter.api.Tag;
 
+@Tag("performance")
 @ExtendWith(JUnitPerfInterceptor.class)
 public class MarkdownPerformanceTest {
 

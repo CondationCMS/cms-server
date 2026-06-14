@@ -40,7 +40,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.time.Duration;
 import java.util.Map;
+import org.junit.jupiter.api.Tag;
 
+@Tag("performance")
 @ExtendWith(JUnitPerfInterceptor.class)
 public class TemplatePerformanceTest {
 

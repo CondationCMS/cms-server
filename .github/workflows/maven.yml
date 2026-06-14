@@ -20,7 +20,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    # Playwright-Binaries cachen → kein erneuter Download bei jedem Run
+    # Playwright-Binaries cachen → automatischer Download beim ersten Playwright.create()
     - name: Cache Playwright browsers
       uses: actions/cache@v5
       with:
@@ -28,18 +28,31 @@ jobs:
         key: playwright-${{ hashFiles('**/pom.xml') }}
         restore-keys: playwright-
 
-    # Systembibliotheken für Chromium (fehlen auf Ubuntu-Runner)
-    - name: Install Playwright system dependencies
-      run: mvn -B exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install-deps chromium" --file pom.xml
-
-    # Chromium-Binary installieren (nur wenn Cache nicht greift)
-    - name: Install Playwright browsers
-      run: mvn -B exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install chromium" --file pom.xml
+    # Systembibliotheken für Chromium direkt via apt – kein Maven-Classpath-Problem
+    - name: Install Chromium system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libglib2.0-0 \
+          libnss3 \
+          libnspr4 \
+          libatk1.0-0 \
+          libatk-bridge2.0-0 \
+          libcups2 \
+          libdrm2 \
+          libdbus-1-3 \
+          libxkbcommon0 \
+          libxcomposite1 \
+          libxdamage1 \
+          libxfixes3 \
+          libxrandr2 \
+          libgbm1 \
+          libasound2t64
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
 
-    # Test-Reports auch bei Fehlern sichern
+    # Test-Reports bei Fehler als Artifact sichern
     - name: Upload Surefire Reports
       if: failure()
       uses: actions/upload-artifact@v4

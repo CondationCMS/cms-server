@@ -50,7 +50,7 @@ public class CMSCli {
 		return new CommandLine(new CLICommand());
 	}
 
-	public static void main(String[] args) {
+	public static void main(String... args) {
 		CMSCli.getCommandLine().execute(args);
 	}
 }

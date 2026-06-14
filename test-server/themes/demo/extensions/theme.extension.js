@@ -13,7 +13,7 @@ $hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
 	)
 	shortCodes.put(
 			"say_hello",
-			({name}) => `Hello, ${name}`
+			({name}) => `<p>Hello, ${name}</p>`
 	)
 	return null;
 })

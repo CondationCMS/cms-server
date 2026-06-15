@@ -2,7 +2,7 @@ import { $hooks } from 'system/hooks.mjs';
 import { $templates } from 'system/templates.mjs';
 
 
-$hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
+$hooks.registerAction("system/content/shortcode", ({shortCodes}) => {
 	shortCodes.put(
 			"bold_content",
 			({_content}) => `<b>${_content}</b>`

@@ -21,7 +21,7 @@
 
 import { $hooks } from 'system/hooks.mjs';
 
-$hooks.registerAction("system/content/shortCodes", ({shortCodes}) => {
+$hooks.registerAction("system/content/shortcode", ({shortCodes}) => {
 
 	// default namespace (ext) — no parameters
 	shortCodes.put("hello", () => "Hello World")

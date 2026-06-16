@@ -126,6 +126,10 @@ public class HTTPUtil {
 			url = contextPath + url;
 		}
 
+        if (!url.startsWith("/")) {
+            url = "/" + url;
+        }
+        
 		return url;
 	}
 

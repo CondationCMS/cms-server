@@ -119,10 +119,13 @@ public class SiteHandlerModule extends AbstractModule {
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
 		assetsHandler.setBaseResource(new FileFolderPathResource(assetBase));
+        assetsHandler.setEtags(true);
 		if (serverProperties.dev()) {
 			assetsHandler.setCacheControl("no-cache");
 		} else {
-			assetsHandler.setCacheControl("max-age=" + TimeUnit.HOURS.toSeconds(24));
+			assetsHandler.setCacheControl(
+                "public, max-age=0, must-revalidate"
+        );
 		}
 		
 		return assetsHandler;

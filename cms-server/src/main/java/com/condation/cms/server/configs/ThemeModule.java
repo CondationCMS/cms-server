@@ -71,6 +71,7 @@ public class ThemeModule extends AbstractModule {
     public ResourceHandler themeAssetsHandler(Theme theme, ServerProperties serverProperties) {
         ResourceHandler assetsHandler = new ResourceHandler();
         assetsHandler.setDirAllowed(false);
+        assetsHandler.setEtags(true);
 
         if (theme.getParentTheme() != null) {
             assetsHandler.setBaseResource(ResourceFactory.combine(
@@ -84,7 +85,9 @@ public class ThemeModule extends AbstractModule {
         if (serverProperties.dev()) {
             assetsHandler.setCacheControl("no-cache");
         } else {
-            assetsHandler.setCacheControl("max-age=" + TimeUnit.HOURS.toSeconds(24));
+            assetsHandler.setCacheControl(
+                "public, max-age=0, must-revalidate"
+        );
         }
         return assetsHandler;
     }

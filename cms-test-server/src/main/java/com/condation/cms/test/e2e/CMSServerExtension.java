@@ -62,7 +62,7 @@ public class CMSServerExtension implements BeforeAllCallback, AutoCloseable {
         waitForProcess(20);
 
         // Store a CloseableResource so JUnit shuts the server down after ALL tests
-        store.put(storeKey, (ExtensionContext.Store.CloseableResource) () -> {
+        store.put(storeKey, (AutoCloseable) () -> {
             System.setProperty("cms.home", serverHome);
             CMSCli.main("server", "stop");
             serverThread.join(10_000);

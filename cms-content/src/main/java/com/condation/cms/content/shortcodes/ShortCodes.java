@@ -107,14 +107,6 @@ public class ShortCodes {
 			return this;
 		}
 
-		public Builder register(List<Object> handlers) {
-			if (handlers == null || handlers.isEmpty()) {
-				return this;
-			}
-			handlers.forEach(this::register);
-			return this;
-		}
-
 		public Builder register(Object handler) {
 			annotationRegistrar.register(handler, shortCodes);
 			return this;

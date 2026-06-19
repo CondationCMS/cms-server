@@ -82,5 +82,18 @@ public class ShortCodeInlineBlockRuleTest {
 		
 		Assertions.assertThat(next.render()).isEqualTo("[[link url=\"https://google.de/\"]][[/link]]");
 	}
+
+	@Test
+	void preservesQuotedNumericAttribute() {
+		String md = "Text [[ext:video type=\"vimeo\" id=\"170338499\" title=\"Everybody loves little cats\" /]]";
+
+		InlineBlock next = sut.next(tokenizer, md);
+
+		Assertions.assertThat(next)
+				.isNotNull()
+				.isInstanceOf(ShortCodeInlineBlockRule.ShortCodeInlineBlock.class);
+		Assertions.assertThat(next.render())
+				.isEqualTo("[[ext:video id=\"170338499\" title=\"Everybody loves little cats\" type=\"vimeo\"]][[/ext:video]]");
+	}
 	
 }

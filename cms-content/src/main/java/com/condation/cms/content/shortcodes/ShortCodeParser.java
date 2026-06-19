@@ -45,7 +45,15 @@ public class ShortCodeParser {
 
 	// Klasse zur Speicherung der ShortCode-Informationen
 	public static record ShortCodeInfo(String name, Parameter rawAttributes, int startIndex, int endIndex) {
+	}
 
+	private static final class RawAttributes extends Parameter {
+		private final Set<String> quotedKeys = new HashSet<>();
+	}
+
+	public static boolean isQuotedAttribute(ShortCodeInfo shortCode, String key) {
+		return shortCode.rawAttributes() instanceof RawAttributes attributes
+				&& attributes.quotedKeys.contains(key);
 	}
 
 	// Erster Schritt: Alle ShortCodes ermitteln und deren Positionen sowie Roh-Attribute speichern
@@ -168,7 +176,7 @@ public class ShortCodeParser {
 	}
 
 	private Parameter parseRawAttributes(String attributesString) {
-		Parameter attributes = new Parameter();
+		RawAttributes attributes = new RawAttributes();
 		String key = null;
 		StringBuilder value = new StringBuilder();
 		boolean inQuotes = false;
@@ -199,6 +207,7 @@ public class ShortCodeParser {
 				inQuotes = false;
 				if (key != null) {
 					attributes.put(key.trim(), value.toString().trim());
+					attributes.quotedKeys.add(key.trim());
 					key = null;
 					value.setLength(0);
 					readingValue = false;
@@ -242,10 +251,16 @@ public class ShortCodeParser {
 	// Zweiter Schritt: Attribute auswerten
 	private Parameter evaluateAttributes(Parameter rawAttributes, Map<String, Object> contextModel, RequestContext requestContext) {
 		Parameter evaluatedAttributes = new Parameter(requestContext);
+		Set<String> quotedAttributes = rawAttributes instanceof RawAttributes attributes
+				? attributes.quotedKeys
+				: Collections.emptySet();
 		for (Map.Entry<String, Object> entry : rawAttributes.entrySet()) {
 			String key = entry.getKey();
 			String rawValue = (String) entry.getValue(); // Rohwert als String
-			evaluatedAttributes.put(key, parseValue(rawValue, contextModel, requestContext)); // Wert erst jetzt parsen
+			boolean isExpression = rawValue.startsWith("${") && rawValue.endsWith("}");
+			evaluatedAttributes.put(key, quotedAttributes.contains(key) && !isExpression
+					? rawValue
+					: parseValue(rawValue, contextModel, requestContext)); // Wert erst jetzt parsen
 		}
 		return evaluatedAttributes;
 	}

@@ -79,8 +79,8 @@ public class ShortCodeBlockRuleTest {
 	}
 	
 	@Test
-	void test_issue () {
-		String md = "[[video type=\"youtube\" id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\" /]]";
+	void preservesQuotedNumericAttribute() {
+		String md = "[[ext:video type=\"vimeo\" id=\"170338499\" title=\"Everybody loves little cats\" /]]";
 
 		Block next = sut.next(md);
 
@@ -91,15 +91,15 @@ public class ShortCodeBlockRuleTest {
 
 		var tag = (ShortCodeBlockRule.ShortCodeBlock)next;
 		Assertions.assertThat(tag.shortCodeInfo())
-				.hasFieldOrPropertyWithValue("name", "video")
+				.hasFieldOrPropertyWithValue("name", "ext:video")
 				.hasFieldOrPropertyWithValue("rawAttributes", Map.of(
-						"type", "youtube",
-						"id", "y0sF5xhGreA",
+						"type", "vimeo",
+						"id", "170338499",
 						"title", "Everybody loves little cats"
 				));
 		
 		Assertions.assertThat(next.render((content, offset) -> content))
-				.isEqualTo("[[video id=\"y0sF5xhGreA\" title=\"Everybody loves little cats\" type=\"youtube\"]][[/video]]");
+				.isEqualTo("[[ext:video id=\"170338499\" title=\"Everybody loves little cats\" type=\"vimeo\"]][[/ext:video]]");
 
 	}
 }

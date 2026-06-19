@@ -66,7 +66,9 @@ public class ShortCodeBlockRule implements BlockElementRule {
 					.filter(entry -> !entry.getKey().equals("_content"))
 					.sorted((entry1, entry2) -> entry1.getKey().compareTo(entry2.getKey()))
 					.map(entry -> {
-						return "%s=%s".formatted(entry.getKey(), parseValue((String) entry.getValue()));
+						return "%s=%s".formatted(entry.getKey(),
+								parseValue((String) entry.getValue(),
+										ShortCodeParser.isQuotedAttribute(shortCodeInfo, entry.getKey())));
 					}).toList();
 			return "[[%s %s]]%s[[/%s]]"
 					.formatted(shortCodeInfo.name(),
@@ -78,7 +80,10 @@ public class ShortCodeBlockRule implements BlockElementRule {
 		}
 	}
 
-	private static Object parseValue(String value) {
+	private static Object parseValue(String value, boolean quoted) {
+		if (quoted) {
+			return "\"" + value + "\"";
+		}
 		if (value.matches("\\d+")) {
 			return value;
 		} else if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {

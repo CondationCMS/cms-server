@@ -114,14 +114,20 @@ public class TagParserTest {
 	
 	@Test
 	public void parameters_string() {
-		String result = shortCodeParser.parse("[[param param1=\"5\"/]]", shortCodeMap, requestContext);
-		Assertions.assertThat(result).isEqualTo("param: 5");
+		shortCodeMap.put("param", params -> params.get("param1").getClass().getSimpleName());
+
+		String result = shortCodeParser.parse("[[param param1=\"1234\"/]]", shortCodeMap, requestContext);
+
+		Assertions.assertThat(result).isEqualTo("String");
 	}
 	
 	@Test
 	public void parameters_number() {
-		String result = shortCodeParser.parse("[[param param1=5 /]]", shortCodeMap, requestContext);
-		Assertions.assertThat(result).isEqualTo("param: 5");
+		shortCodeMap.put("param", params -> params.get("param1").getClass().getSimpleName());
+
+		String result = shortCodeParser.parse("[[param param1=1234 /]]", shortCodeMap, requestContext);
+
+		Assertions.assertThat(result).isEqualTo("Integer");
 	}
 	
 	@Test

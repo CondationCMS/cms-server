@@ -20,20 +20,23 @@ package com.condation.cms.e2e;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.test.e2e.CMSServerExtension;
 import com.condation.cms.cli.tools.CLIServerUtils;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.junit.UsePlaywright;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
 
 /**
  *
  * @author thmar
  */
-@ExtendWith({CMSServerExtension.class})
 @UsePlaywright
 public class SimpleTest {
+	
+	@RegisterExtension
+	static CMSServerExtension serverExtensions = new CMSServerExtension();
 
     @Test
     void server_is_started() throws Exception {

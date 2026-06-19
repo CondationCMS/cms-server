@@ -6,17 +6,19 @@
         <artifactId>cms-parent</artifactId>
         <version>8.1.0</version>
     </parent>
-    <artifactId>cms-test</artifactId>
+    <artifactId>cms-test-server</artifactId>
     <packaging>jar</packaging>
-	<name>CMS Test Framework</name>
-    <properties>
-        <exec.mainClass>com.condation.cms.test.CmsTest</exec.mainClass>
-    </properties>
-	
-	<dependencies>
-		<dependency>
-			<groupId>com.condation.cms</groupId>
-			<artifactId>cms-api</artifactId>
-		</dependency>
-	</dependencies>
+    <name>CMS Test Server</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.condation.cms</groupId>
+            <artifactId>cms-server</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+        </dependency>
+    </dependencies>
 </project>

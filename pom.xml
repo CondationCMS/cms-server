@@ -30,6 +30,7 @@
         <module>integration-tests</module>
         <module>cms-core</module>
         <module>cms-test</module>
+        <module>cms-test-server</module>
         <module>cms-hooksystem</module>
     </modules>
     <inceptionYear>2023</inceptionYear>
@@ -107,6 +108,11 @@
             <dependency>
                 <groupId>com.condation.cms</groupId>
                 <artifactId>cms-test</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.condation.cms</groupId>
+                <artifactId>cms-test-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

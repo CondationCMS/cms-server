@@ -81,6 +81,11 @@
             <artifactId>cms-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.condation.cms</groupId>
+            <artifactId>cms-test-server</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 	
 </project>

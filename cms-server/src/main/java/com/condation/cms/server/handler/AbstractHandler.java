@@ -24,7 +24,6 @@ package com.condation.cms.server.handler;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.utils.RequestUtil;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
 
@@ -41,7 +40,7 @@ public abstract class AbstractHandler extends Handler.Abstract {
 	
 	protected String getRelativePath(Request request) {
         String path = request.getHttpURI().getPath();
-        String contextPath = RequestUtil.getContextPath(request);
+        String contextPath = request.getContext().getContextPath();
 
         if (!contextPath.endsWith("/")) {
             contextPath += "/";

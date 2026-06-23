@@ -231,48 +231,19 @@ public class VHost {
 
     public Handler buildHttpHandler() {
 
-        Handler contentHandler = null;
-
-        contentHandler = injector.getInstance(JettyContentHandler.class);
-
-        var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
-        var viewHandler = injector.getInstance(JettyViewHandler.class);
-        var routesHandler = injector.getInstance(RoutesHandler.class);
-        var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
-        var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
-
-        var uiPreviewFilter = injector.getInstance(PreviewFilter.class);
-
-        var publicHandler = injector.getInstance(Key.get(StaticFileHandler.class, Names.named("site.public")));
-        var publicHandlerList = new ArrayList<Handler>();
-        publicHandlerList.add(publicHandler);
-        if (!injector.getInstance(Theme.class).empty()) {
-            var themePublicHandler = injector.getInstance(Key.get(StaticFileHandler.class, Names.named("theme.public")));
-            publicHandlerList.add(themePublicHandler);
-        }
-
-        var publicHandlerSequence = new Handler.Sequence(publicHandlerList);
-
-        var defaultHandlerSequence = new Handler.Sequence(
-                authHandler,
-                publicHandlerSequence,
-				injector.getInstance(WellKnownHandler.class),
-                initContextHandler,
-                uiPreviewFilter,
-                routesHandler,
-                viewHandler,
-                taxonomyHandler,
-                contentHandler
-        );
-
-        log.debug("create assets handler for site");
+		var uiPreviewFilter = injector.getInstance(PreviewFilter.class);
+		
+        var rootSequence = createRootSequence (uiPreviewFilter);
+		
+		PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
+		
+		pathMappingsHandler.addMapping(
+				PathSpec.from("/"),
+				rootSequence);
+		
+		log.debug("create assets handler for site");
         ResourceHandler assetsHandler = injector.getInstance(Key.get(ResourceHandler.class, Names.named("site.assets")));
-
-        PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
-        pathMappingsHandler.addMapping(
-                PathSpec.from("/"),
-                instrument("content", defaultHandlerSequence)
-        );
+		
         pathMappingsHandler.addMapping(
                 PathSpec.from("/assets/*"),
                 instrument("assets", assetsHandler));
@@ -294,22 +265,34 @@ public class VHost {
         );
         pathMappingsHandler.addMapping(
                 PathSpec.from("/media/*"),
-                instrument("media", siteMediaHandlerSequence)
+                requestContextFilter(
+						instrument("media", siteMediaHandlerSequence), 
+						injector
+				)
         );
 
         pathMappingsHandler.addMapping(
                 PathSpec.from("/" + JettyModuleHandler.PATH + "/*"),
-                instrument("modules", createModuleHandler())
+                requestContextFilter(
+						instrument("modules", createModuleHandler()), 
+						injector
+				)
         );
 
         pathMappingsHandler.addMapping(
                 PathSpec.from("/" + JettyHttpHandlerExtensionHandler.PATH + "/*"),
-                instrument("extensions", createExtensionHandler())
+                requestContextFilter(
+						instrument("extensions", createExtensionHandler()), 
+						injector
+				)
         );
 
         pathMappingsHandler.addMapping(
                 PathSpec.from("/" + APIHandler.PATH + "/*"),
-                instrument("api", createAPIHandler())
+                requestContextFilter(
+						instrument("api", createAPIHandler()), 
+						injector
+				)
         );
 
         ContextHandler defaultContextHandler = new ContextHandler(
@@ -332,7 +315,7 @@ public class VHost {
 
         hostHandler = logContextHandler;
 
-        return new RequestMetricsFilter(requestContextFilter(hostHandler, injector), siteId, injector.getInstance(MeterRegistry.class));
+        return new RequestMetricsFilter(hostHandler, siteId, injector.getInstance(MeterRegistry.class));
     }
 
     private Handler createAPIHandler() {
@@ -412,4 +395,52 @@ public class VHost {
         return new PipelineRequestMetricsFilter(handler, siteId, injector.getInstance(MeterRegistry.class),
                 pipeline);
     }
+
+	private Handler createRootSequence(PreviewFilter uiPreviewFilter) {
+		Handler contentHandler = null;
+
+        contentHandler = injector.getInstance(JettyContentHandler.class);
+
+        var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
+        var viewHandler = injector.getInstance(JettyViewHandler.class);
+        var routesHandler = injector.getInstance(RoutesHandler.class);
+        var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
+        var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
+
+        var publicHandler = injector.getInstance(Key.get(StaticFileHandler.class, Names.named("site.public")));
+        var publicHandlerList = new ArrayList<Handler>();
+        publicHandlerList.add(publicHandler);
+        if (!injector.getInstance(Theme.class).empty()) {
+            var themePublicHandler = injector.getInstance(Key.get(StaticFileHandler.class, Names.named("theme.public")));
+            publicHandlerList.add(themePublicHandler);
+        }
+
+        var publicHandlerSequence = new Handler.Sequence(publicHandlerList);
+
+        var defaultHandlerSequence = new Handler.Sequence(
+                authHandler,
+                uiPreviewFilter,
+                viewHandler,
+                taxonomyHandler,
+                contentHandler
+        );
+
+        Handler.Sequence rootSequence = new Handler.Sequence();
+		rootSequence.addHandler(
+			instrument("well-known", injector.getInstance(WellKnownHandler.class))
+		);
+		rootSequence.addHandler(
+			instrument("public", publicHandlerSequence)
+		);
+		var contextualSequence = new Handler.Sequence(
+				initContextHandler,
+				instrument("routes", routesHandler), 
+				instrument("content", defaultHandlerSequence)
+		);
+		rootSequence.addHandler(
+			requestContextFilter(contextualSequence, injector)
+		);
+		
+		return rootSequence;
+	}
 }

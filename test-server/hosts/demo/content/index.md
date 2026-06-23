@@ -65,5 +65,5 @@ System.out.println("Hello world!");
 ---
 
 
-### edxample from module
-[[]]
+### example from module
+[[ext:example /]]

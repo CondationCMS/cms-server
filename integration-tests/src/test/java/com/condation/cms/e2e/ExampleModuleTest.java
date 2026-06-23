@@ -45,7 +45,7 @@ public class ExampleModuleTest {
 	@Test
 	void test_hook (Page page) {
 		page.navigate("http://localhost:2020");
-        Assertions.assertThat(page.locator("body").innerHTML()).isEqualTo("<!-- example from application scope -->");
+        Assertions.assertThat(page.locator("body").innerHTML()).contains("<!-- example from application scope -->");
 	}
 	
 	@Test
@@ -56,6 +56,6 @@ public class ExampleModuleTest {
 	@Test
 	void test_shortcode (Page page) throws Exception {
 		page.navigate("http://localhost:2020");
-        Assertions.assertThat(page.locator("body").innerHTML()).isEqualTo("<b>example from module</b>");
+        Assertions.assertThat(page.locator("body").innerHTML()).contains("<b>example from module</b>");
 	}
 }

@@ -22,15 +22,9 @@ package com.condation.cms.modules.example;
  */
 
 
-import com.condation.cms.api.annotations.Action;
-import com.condation.cms.api.annotations.Scope;
 import com.condation.cms.api.annotations.ShortCode;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
-import com.condation.cms.api.model.Parameter;
 import com.condation.modules.api.annotation.Extension;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  *

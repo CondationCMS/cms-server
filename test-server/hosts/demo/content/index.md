@@ -63,3 +63,7 @@ System.out.println("Hello world!");
 ---
 [[ext:bold_content]]This content will be bold[[/ext:bold_content]]
 ---
+
+
+### edxample from module
+[[]]

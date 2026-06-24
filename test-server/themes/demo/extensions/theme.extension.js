@@ -23,6 +23,10 @@ $hooks.registerAction("system/template/function", ({functions}) => {
 			"fn_message",
 			({color, message}) => `<div style="color: ${color}">MESSAGE: ${message}</div>`
 	)
+	functions.put(
+			"node",
+			({node}) => `<div>TITLE: ${node.meta.title}</div>`
+	)
 	return null;
 })
 

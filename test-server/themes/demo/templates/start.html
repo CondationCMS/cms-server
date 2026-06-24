@@ -97,6 +97,15 @@
 				---
 			</div>
 		</div>
+		
+		<div>
+			<h3>Template function with node as parameter</h3>
+			<div>
+				---
+				{{ ext.node({'node': node}) | raw }}
+				---
+			</div>
+		</div>
 
         <!-- start call hook -->
         {{ cms.hooks({'hook': 'theme/template/footer'}) | raw }}

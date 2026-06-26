@@ -19,7 +19,7 @@
  * #L%
  */
 import frameMessenger from "@cms/modules/frameMessenger.js";
-import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "@cms/modules/manager/toolbar-icons";
+import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, MOVE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "@cms/modules/manager/toolbar-icons";
 
 const addSection = (event : Event) => {
 	var toolbar = (event.target as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
@@ -133,6 +133,172 @@ const editAttributes = (event: Event) => {
 }
 
 
+const initDragDrop = (container: HTMLElement) => {
+	const draggableItems = Array.from(
+		container.querySelectorAll<HTMLElement>(':scope > .cms-ui-editable-sections')
+	);
+
+	if (draggableItems.length === 0) {
+		return;
+	}
+
+	let draggedEl: HTMLElement | null = null;
+	let placeholder: HTMLElement | null = null;
+
+	draggableItems.forEach((item) => {
+		item.setAttribute('draggable', 'false');
+
+		const itemToolbar = item.querySelector<HTMLElement>('.cms-ui-toolbar');
+		if (itemToolbar) {
+			const handle = document.createElement('button');
+			handle.setAttribute('data-cms-drag-handle', '');
+			handle.setAttribute('title', 'Drag to reorder');
+			handle.innerHTML = MOVE_ICON;
+			handle.style.cursor = 'grab';
+			handle.addEventListener('mousedown', () => {
+				item.setAttribute('draggable', 'true');
+			});
+			itemToolbar.appendChild(handle);
+		}
+
+		item.addEventListener('dragstart', (e: DragEvent) => {
+			draggedEl = item;
+			e.dataTransfer?.setData('text/plain', '');
+
+			placeholder = document.createElement('div');
+			placeholder.setAttribute('data-cms-drag-placeholder', '');
+			const cs = getComputedStyle(item);
+			placeholder.style.width = item.offsetWidth + 'px';
+			placeholder.style.height = item.offsetHeight + 'px';
+			placeholder.style.margin = cs.margin;
+			placeholder.style.border = '2px dashed #aaa';
+			placeholder.style.boxSizing = 'border-box';
+			placeholder.style.opacity = '0.5';
+			placeholder.style.flexShrink = cs.flexShrink;
+			placeholder.style.flexGrow = cs.flexGrow;
+			placeholder.style.flexBasis = cs.flexBasis;
+
+			requestAnimationFrame(() => {
+				if (draggedEl && placeholder) {
+					container.insertBefore(placeholder, draggedEl);
+					draggedEl.style.display = 'none';
+				}
+			});
+		});
+
+		item.addEventListener('dragend', () => {
+			if (draggedEl) {
+				draggedEl.style.display = '';
+				draggedEl.setAttribute('draggable', 'false');
+			}
+			placeholder?.remove();
+			placeholder = null;
+			draggedEl = null;
+		});
+	});
+
+	container.addEventListener('dragover', (e: DragEvent) => {
+		e.preventDefault();
+		if (!draggedEl || !placeholder) return;
+
+		const siblings = Array.from(
+			container.querySelectorAll<HTMLElement>(':scope > .cms-ui-editable-sections')
+		).filter(el => el !== draggedEl);
+
+		if (siblings.length === 0) return;
+
+		const centers = siblings.map(el => {
+			const r = el.getBoundingClientRect();
+			return { el, cx: r.left + r.width / 2, cy: r.top + r.height / 2 };
+		});
+
+		// Build n+1 gap points for n siblings.
+		// Middle gaps: midpoint between consecutive element centers.
+		// Edge gaps: extrapolate from the first/last inter-element direction so
+		// the "before first" and "after last" zones are symmetric with the rest.
+		const gaps: Array<{ x: number; y: number; before: HTMLElement | null }> = [];
+
+		if (centers.length === 1) {
+			const r = siblings[0].getBoundingClientRect();
+			gaps.push({ x: r.left, y: r.top + r.height / 2, before: siblings[0] });
+			gaps.push({ x: r.right, y: r.top + r.height / 2, before: null });
+		} else {
+			const dx0 = centers[1].cx - centers[0].cx;
+			const dy0 = centers[1].cy - centers[0].cy;
+			gaps.push({ x: centers[0].cx - dx0 / 2, y: centers[0].cy - dy0 / 2, before: centers[0].el });
+
+			for (let i = 1; i < centers.length; i++) {
+				gaps.push({
+					x: (centers[i - 1].cx + centers[i].cx) / 2,
+					y: (centers[i - 1].cy + centers[i].cy) / 2,
+					before: centers[i].el
+				});
+			}
+
+			const last = centers.length - 1;
+			const dxL = centers[last].cx - centers[last - 1].cx;
+			const dyL = centers[last].cy - centers[last - 1].cy;
+			gaps.push({ x: centers[last].cx + dxL / 2, y: centers[last].cy + dyL / 2, before: null });
+		}
+
+		let bestDist = Infinity;
+		let bestBefore: HTMLElement | null | undefined = undefined;
+
+		for (const gap of gaps) {
+			const dx = e.clientX - gap.x;
+			const dy = e.clientY - gap.y;
+			const dist = dx * dx + dy * dy;
+			if (dist < bestDist) {
+				bestDist = dist;
+				bestBefore = gap.before;
+			}
+		}
+
+		if (bestBefore === undefined) return;
+
+		if (bestBefore === null) {
+			container.appendChild(placeholder);
+		} else {
+			container.insertBefore(placeholder, bestBefore);
+		}
+	});
+
+	container.addEventListener('drop', (e: DragEvent) => {
+		e.preventDefault();
+		if (!draggedEl || !placeholder) return;
+
+		container.insertBefore(draggedEl, placeholder);
+		placeholder.remove();
+		placeholder = null;
+		draggedEl.style.display = '';
+		draggedEl.setAttribute('draggable', 'false');
+
+		const items = Array.from(
+			container.querySelectorAll<HTMLElement>(':scope > .cms-ui-editable-sections')
+		);
+
+		const updates = items.map((el, index) => {
+			const toolbarData = el.dataset.cmsToolbar ? JSON.parse(el.dataset.cmsToolbar) : {};
+			return {
+				uri: toolbarData.uri,
+				meta: {
+					'layout.order': {
+						type: 'number',
+						value: index
+					}
+				}
+			};
+		}).filter(u => u.uri);
+
+		draggedEl = null;
+
+		frameMessenger.send(window.parent, {
+			type: 'sort-sections',
+			payload: { updates }
+		});
+	});
+};
+
 export const initToolbar = (container: HTMLElement) => {
 
 	var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar || '{}');
@@ -205,6 +371,12 @@ export const initToolbar = (container: HTMLElement) => {
 			button.addEventListener('click', deleteSection);
 
 			toolbar.appendChild(button);
+		} else if (action === "dragSectionEntries") {
+			// Kein Button — DnD wird nach dem ersten Render-Frame initialisiert,
+			// damit alle sectionEntry-Toolbars bereits im DOM sind.
+			requestAnimationFrame(() => {
+				initDragDrop(container);
+			});
 		}
 	})
 

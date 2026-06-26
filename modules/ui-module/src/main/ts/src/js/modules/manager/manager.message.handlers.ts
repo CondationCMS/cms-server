@@ -21,7 +21,7 @@
 import { executeScriptAction } from '@cms/js/manager-globals.js';
 import frameMessenger from '@cms/modules/frameMessenger.js';
 import { getPreviewFrame, getPreviewUrl } from '@cms/modules/preview.utils.js';
-import { getContentNode } from '@cms/modules/rpc/rpc-content.js';
+import { getContentNode, setMetaBatch } from '@cms/modules/rpc/rpc-content.js';
 
 const executeImageForm = (payload: any) => {
     const cmd: any = {
@@ -193,6 +193,10 @@ const initMessageHandlers = () => {
         }
         var previewFrame = getPreviewFrame() as any
         frameMessenger.send(previewFrame.contentWindow, message);
+    });
+
+    frameMessenger.on('sort-sections', async (payload: any) => {
+        await setMetaBatch({ updates: payload.updates });
     });
 }
 

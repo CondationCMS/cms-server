@@ -21,7 +21,7 @@
 import { executeScriptAction } from '@cms/js/manager-globals.js';
 import frameMessenger from '@cms/modules/frameMessenger.js';
 import { getPreviewFrame, getPreviewUrl } from '@cms/modules/preview.utils.js';
-import { getContentNode } from '@cms/modules/rpc/rpc-content.js';
+import { getContentNode, setMetaBatch } from '@cms/modules/rpc/rpc-content.js';
 const executeImageForm = (payload) => {
     const cmd = {
         "module": window.manager.baseUrl + "/actions/media/edit-media-form",
@@ -189,6 +189,9 @@ const initMessageHandlers = () => {
         };
         var previewFrame = getPreviewFrame();
         frameMessenger.send(previewFrame.contentWindow, message);
+    });
+    frameMessenger.on('sort-sections', async (payload) => {
+        await setMetaBatch({ updates: payload.updates });
     });
 };
 export { initMessageHandlers };

@@ -13,7 +13,7 @@
         <exec.mainClass>com.condation.cms.Startup</exec.mainClass>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
         <jetty.version>12.1.10</jetty.version>
-        <lucene.version>10.4.0</lucene.version>
+        <lucene.version>10.5.0</lucene.version>
         <modules-framework.version>1.4.2</modules-framework.version>
         <mockito.version>5.23.0</mockito.version>
     </properties>
@@ -150,7 +150,7 @@
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-jexl3</artifactId>
-                <version>3.6.2</version>
+                <version>3.6.4</version>
             </dependency>
 			
             <dependency>
@@ -334,7 +334,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>6.1.0</version>
+                <version>6.1.1</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>

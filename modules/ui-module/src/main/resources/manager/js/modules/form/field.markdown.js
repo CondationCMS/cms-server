@@ -21,7 +21,7 @@
 import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js";
 import { getMediaFormats, getShortCodeNames } from "@cms/modules/rpc/rpc-manager.js";
-import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { openMediaBrowser } from "@cms/modules/media/mediabrowser.js";
 import { alertSelect } from "@cms/modules/alerts.js";
 import { patchPathWithContext } from "@cms/js/manager-globals";
 const createMarkdownField = (options, value = '') => {
@@ -144,7 +144,7 @@ const cmsImageSelection = window.Cherry.createMenuHook("Image", {
     iconName: "image",
     title: "Image",
     onClick: (selection, name, event) => {
-        openFileBrowser({
+        openMediaBrowser({
             type: "assets",
             fullscreen: false,
             filter: (file) => {

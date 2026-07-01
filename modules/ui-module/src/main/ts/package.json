@@ -3,7 +3,7 @@
   "author": "CondationCMS",
   "version": "0.2.0",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc && node scripts/copy-dist.mjs"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { openMediaBrowser } from "@cms/modules/media/mediabrowser.js";
 import { i18n } from "@cms/modules/localization.js";
 import { getPreviewUrl, reloadPreview } from "@cms/modules/preview.utils.js";
 import { getContentNode, setMeta } from "@cms/modules/rpc/rpc-content.js";
@@ -34,7 +34,7 @@ export async function runAction(params) {
         });
         uri = contentNode.result.uri;
     }
-    openFileBrowser({
+    openMediaBrowser({
         type: "assets",
         filter: (file) => {
             return file.media || file.directory;

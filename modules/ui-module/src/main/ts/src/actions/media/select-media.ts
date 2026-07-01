@@ -19,7 +19,7 @@
  * #L%
  */
 
-import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { openMediaBrowser } from "@cms/modules/media/mediabrowser.js";
 import { i18n } from "@cms/modules/localization.js";
 import { getPreviewUrl, reloadPreview } from "@cms/modules/preview.utils.js";
 import { getContentNode, setMeta } from "@cms/modules/rpc/rpc-content.js";
@@ -38,7 +38,7 @@ export async function runAction(params : any) {
 		uri = contentNode.result.uri
 	}
 
-	openFileBrowser({
+	openMediaBrowser({
 		type: "assets",
 		filter : (file: any) => {
 			return file.media || file.directory;

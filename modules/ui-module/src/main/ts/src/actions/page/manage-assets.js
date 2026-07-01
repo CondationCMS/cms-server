@@ -18,11 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import {openFileBrowser} from '@cms/modules/filebrowser.js'
+import {openMediaBrowser} from '@cms/modules/media/mediabrowser.js'
 		// hook.js
 export async function runAction(params) {
 
-	openFileBrowser({
-		type: "assets"
+	openMediaBrowser({
+		type: "assets",
+		filter : (file) => {
+			return file.media || file.directory;
+		},
 	})
 }

@@ -21,7 +21,7 @@
 import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js"
 import { uploadFileWithProgress } from "@cms/modules/upload.js";
-import { openFileBrowser } from "@cms/modules/filebrowser.js";
+import { openMediaBrowser } from "@cms/modules/media/mediabrowser.js";
 import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
 import { patchPathWithContext } from "@cms/js/manager-globals";
 
@@ -138,7 +138,7 @@ const init = (context : FormContext) => {
 			// Handle MediaManager button robust: remove old handler, use onclick
 			openMediaManager.onclick = null;
 			openMediaManager.onclick = () => {
-				openFileBrowser({
+				openMediaBrowser({
 					type: "assets",
 					filter : (file : any) => {
 						return file.media || file.directory;

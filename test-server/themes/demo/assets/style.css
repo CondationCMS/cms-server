@@ -24,6 +24,18 @@ body {
   padding: 1rem;
 }
 
+.sections_v {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section_v {
+  box-sizing: border-box;
+  background: #f0f0f0;
+  padding: 1rem;
+}
+
 .language-buttons {
   display: flex;
   gap: 0.5rem;

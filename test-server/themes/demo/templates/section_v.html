@@ -1,0 +1,36 @@
+<div class="section_v" {{ ext.ui.toolbar(node.uri, "sectionEntry" , ["editContent", "editAttributes" , "deleteSectionEntry" ], {"uri":
+	node.uri, "form": "attributes"}) | raw }}>
+	<div class="container">
+		{{ node.content | default('your content here') | raw}}
+	</div>
+	
+
+	<div>
+		<div class="container">
+			{{ node.meta.getOrDefault('description', 'description here')}}
+		</div>
+		<div class="container">
+			{{ node.meta.getOrDefault('parent.text', 'Parent.Text here')}}
+		</div>
+		<div class="container">
+			{{ cms.markdown.render(node.meta.getOrDefault('about', '--about--')) | raw}}
+		</div>
+		<div class="container">
+			{{ cms.markdown.render(node.meta.getOrDefault('about1', '--about1--')) | raw}}
+		</div>
+	</div>
+	<div>
+		{% if node.meta.containsKey('media_url') %}
+		{% assign media = cms.mediaService.get(node.meta.media_url) %}
+		<img src="/media/{{ media.uri }}?format=small" alt="{{ media.meta.alt }}" 
+			{{ ext.ui.mediaToolbar(["select", "meta"], {"uri": node.uri, "element": "media_url" }) | raw }} />
+		{% endif %}
+	</div>
+	<div>
+		{% if node.meta.containsKey('object.values') %}
+			{% for item in node.meta.get("object.values") %}
+				{{ item.title }} - {{ item.description }} <br/>
+			{% endfor %}
+		{% endif %}
+	</div>
+</div>

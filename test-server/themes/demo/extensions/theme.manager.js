@@ -215,6 +215,53 @@ $hooks.registerFilter("manager/contentTypes/register", (contentTypes) => {
 			}
 		}
 	});
+	contentTypes.registerSectionEntryTemplate({
+		section: "vsection",
+		name: "SectionEntryTemplate",
+		template: "section_v.html",
+		forms: {
+			attributes: {
+				fields: [
+					TitleField,
+					DescriptionField,
+					PublishDateField,
+					UnPublishDateField,
+					{
+						type: "list",
+						name: "object.values",
+						title: "Object list",
+						options: {
+							nameField: "title"
+						}
+					},
+					{
+						type: "text",
+						name: "parent.text",
+						title: "Parent Text"
+					},
+					{
+						type: "markdown",
+						name: "about",
+						title: "About"
+					},
+					{
+						type: "divider",
+						title: "Additional Information"
+					},
+					{
+						type: "markdown",
+						name: "about1",
+						title: "About1"
+					},
+					{
+						type: "markdown",
+						name: "about2",
+						title: "About2"
+					}
+				]
+			}
+		}
+	});
 
 	/*
 	global definition if ListItemTypes

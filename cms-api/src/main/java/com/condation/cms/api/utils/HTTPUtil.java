@@ -66,7 +66,7 @@ public class HTTPUtil {
 
 		return url + fragment;
 	}
-	
+
 	/**
 	 * Adds the context according to the siteproperties and the preview to an
 	 * url
@@ -77,31 +77,58 @@ public class HTTPUtil {
 	 */
 	public static String modifyUrl(String url, final FeatureContainer featureContainer) {
 
-		// is external url
-		if (url.startsWith("http") || url.startsWith("https")) {
+		// Externe URL
+		if (url.startsWith("http://") || url.startsWith("https://")) {
 			return url;
 		}
 
-		// Fragment (#...) abtrennen, falls vorhanden
+		// Fragment (#...) abtrennen
 		String fragment = "";
 		int fragmentIndex = url.indexOf('#');
 		if (fragmentIndex >= 0) {
-			fragment = url.substring(fragmentIndex);   // inkl. #
+			fragment = url.substring(fragmentIndex);
 			url = url.substring(0, fragmentIndex);
 		}
 
-		url = prependContext(url, featureContainer.get(SitePropertiesFeature.class).siteProperties());
+		url = prependContext(
+				url,
+				featureContainer.get(SitePropertiesFeature.class).siteProperties()
+		);
 
-		if (featureContainer.has(IsPreviewFeature.class)) {
+		if (featureContainer.has(IsPreviewFeature.class)
+				&& !hasQueryParameter(url, "preview")) {
+
 			var feature = featureContainer.get(IsPreviewFeature.class);
-			if (url.contains("?")) {
-				url += "&preview=" + feature.mode().getValue();
-			} else {
-				url += "?preview=" + feature.mode().getValue();
-			}
+
+			url += url.contains("?")
+					? "&preview=" + feature.mode().getValue()
+					: "?preview=" + feature.mode().getValue();
 		}
 
 		return url + fragment;
+	}
+
+	private static boolean hasQueryParameter(String url, String parameterName) {
+		int queryStart = url.indexOf('?');
+
+		if (queryStart < 0) {
+			return false;
+		}
+
+		String query = url.substring(queryStart + 1);
+
+		for (String parameter : query.split("&")) {
+			int equalsIndex = parameter.indexOf('=');
+			String name = equalsIndex >= 0
+					? parameter.substring(0, equalsIndex)
+					: parameter;
+
+			if (parameterName.equals(name)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -126,10 +153,10 @@ public class HTTPUtil {
 			url = contextPath + url;
 		}
 
-        if (!url.startsWith("/")) {
-            url = "/" + url;
-        }
-        
+		if (!url.startsWith("/")) {
+			url = "/" + url;
+		}
+
 		return url;
 	}
 

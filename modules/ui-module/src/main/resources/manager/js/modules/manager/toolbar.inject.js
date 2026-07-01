@@ -19,7 +19,7 @@
  * #L%
  */
 import frameMessenger from "@cms/modules/frameMessenger.js";
-import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "@cms/modules/manager/toolbar-icons";
+import { EDIT_ATTRIBUTES_ICON, EDIT_PAGE_ICON, MOVE_ICON, SECTION_ADD_ICON, SECTION_DELETE_ICON, SECTION_SORT_ICON, SECTION_UNPUBLISHED_ICON } from "@cms/modules/manager/toolbar-icons";
 const addSection = (event) => {
     var toolbar = event.target.closest('[data-cms-toolbar]');
     var toolbarDefinition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
@@ -115,6 +115,194 @@ const editAttributes = (event) => {
     */
     frameMessenger.send(window.parent, command);
 };
+const initDragDrop = (container) => {
+    if (container.dataset.cmsDragDropInitialized === 'true') {
+        return;
+    }
+    const draggableItems = Array.from(container.querySelectorAll(':scope > .cms-ui-editable-sections'));
+    if (draggableItems.length === 0) {
+        return;
+    }
+    container.dataset.cmsDragDropInitialized = 'true';
+    let draggedEl = null;
+    let placeholder = null;
+    let dragItems = [];
+    let pendingDragPosition = null;
+    let dragOverFrame = 0;
+    const keepPlaceholderPosition = Symbol('keepPlaceholderPosition');
+    const createPlaceholder = (item) => {
+        const nextPlaceholder = document.createElement('div');
+        nextPlaceholder.setAttribute('data-cms-drag-placeholder', '');
+        const cs = getComputedStyle(item);
+        nextPlaceholder.style.width = item.offsetWidth + 'px';
+        nextPlaceholder.style.height = item.offsetHeight + 'px';
+        nextPlaceholder.style.margin = cs.margin;
+        nextPlaceholder.style.border = '2px dashed #aaa';
+        nextPlaceholder.style.boxSizing = 'border-box';
+        nextPlaceholder.style.opacity = '0.5';
+        nextPlaceholder.style.pointerEvents = 'none';
+        nextPlaceholder.style.flexShrink = cs.flexShrink;
+        nextPlaceholder.style.flexGrow = cs.flexGrow;
+        nextPlaceholder.style.flexBasis = cs.flexBasis;
+        return nextPlaceholder;
+    };
+    const resetDragState = () => {
+        if (dragOverFrame) {
+            cancelAnimationFrame(dragOverFrame);
+            dragOverFrame = 0;
+        }
+        if (draggedEl) {
+            draggedEl.style.display = '';
+            draggedEl.setAttribute('draggable', 'false');
+        }
+        placeholder?.remove();
+        placeholder = null;
+        draggedEl = null;
+        dragItems = [];
+        pendingDragPosition = null;
+    };
+    const getDirectChildSectionEntry = (element) => {
+        const item = element?.closest('.cms-ui-editable-sections');
+        if (!item || item.parentElement !== container || item === draggedEl) {
+            return null;
+        }
+        return item;
+    };
+    const getInsertBeforeElement = (position) => {
+        if (!draggedEl || !placeholder) {
+            return keepPlaceholderPosition;
+        }
+        const targetItem = getDirectChildSectionEntry(document.elementFromPoint(position.clientX, position.clientY));
+        if (targetItem) {
+            const children = Array.from(container.children);
+            const placeholderIndex = children.indexOf(placeholder);
+            const targetIndex = children.indexOf(targetItem);
+            if (placeholderIndex > -1 && targetIndex > -1 && placeholderIndex < targetIndex) {
+                return targetItem.nextElementSibling;
+            }
+            return targetItem;
+        }
+        return keepPlaceholderPosition;
+    };
+    const updatePlaceholderPosition = () => {
+        dragOverFrame = 0;
+        if (!placeholder || !pendingDragPosition) {
+            return;
+        }
+        const insertBeforeEl = getInsertBeforeElement(pendingDragPosition);
+        if (insertBeforeEl === keepPlaceholderPosition) {
+            return;
+        }
+        if (insertBeforeEl === null) {
+            if (placeholder.nextElementSibling !== null) {
+                container.appendChild(placeholder);
+            }
+            return;
+        }
+        if (insertBeforeEl !== placeholder && placeholder.nextElementSibling !== insertBeforeEl) {
+            container.insertBefore(placeholder, insertBeforeEl);
+        }
+    };
+    draggableItems.forEach((item) => {
+        if (item.dataset.cmsDragDropItemInitialized === 'true') {
+            return;
+        }
+        item.dataset.cmsDragDropItemInitialized = 'true';
+        item.setAttribute('draggable', 'false');
+        const itemToolbar = item.querySelector('.cms-ui-toolbar');
+        if (itemToolbar && !itemToolbar.querySelector('[data-cms-drag-handle]')) {
+            const handle = document.createElement('button');
+            handle.setAttribute('type', 'button');
+            handle.setAttribute('data-cms-drag-handle', '');
+            handle.setAttribute('title', 'Drag to reorder');
+            handle.setAttribute('aria-label', 'Drag to reorder');
+            handle.innerHTML = MOVE_ICON;
+            handle.style.cursor = 'grab';
+            handle.addEventListener('mousedown', (e) => {
+                if (e.button !== 0) {
+                    return;
+                }
+                item.setAttribute('draggable', 'true');
+                document.addEventListener('mouseup', () => {
+                    if (!draggedEl) {
+                        item.setAttribute('draggable', 'false');
+                    }
+                }, { once: true });
+            });
+            itemToolbar.appendChild(handle);
+        }
+        item.addEventListener('dragstart', (e) => {
+            if (item.getAttribute('draggable') !== 'true') {
+                e.preventDefault();
+                return;
+            }
+            draggedEl = item;
+            dragItems = Array.from(container.querySelectorAll(':scope > .cms-ui-editable-sections'));
+            e.dataTransfer?.setData('text/plain', '');
+            if (e.dataTransfer) {
+                e.dataTransfer.effectAllowed = 'move';
+            }
+            placeholder = createPlaceholder(item);
+            requestAnimationFrame(() => {
+                if (draggedEl && placeholder) {
+                    container.insertBefore(placeholder, draggedEl);
+                    draggedEl.style.display = 'none';
+                }
+            });
+        });
+        item.addEventListener('dragend', () => {
+            resetDragState();
+        });
+    });
+    container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        if (!draggedEl || !placeholder)
+            return;
+        pendingDragPosition = {
+            clientX: e.clientX,
+            clientY: e.clientY
+        };
+        if (!dragOverFrame) {
+            dragOverFrame = requestAnimationFrame(updatePlaceholderPosition);
+        }
+    });
+    container.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (!draggedEl || !placeholder)
+            return;
+        if (dragOverFrame) {
+            cancelAnimationFrame(dragOverFrame);
+            dragOverFrame = 0;
+            updatePlaceholderPosition();
+        }
+        const droppedEl = draggedEl;
+        container.insertBefore(draggedEl, placeholder);
+        placeholder.remove();
+        placeholder = null;
+        droppedEl.style.display = '';
+        droppedEl.setAttribute('draggable', 'false');
+        const items = Array.from(container.querySelectorAll(':scope > .cms-ui-editable-sections'));
+        const updates = items.map((el, index) => {
+            const toolbarData = el.dataset.cmsToolbar ? JSON.parse(el.dataset.cmsToolbar) : {};
+            return {
+                uri: toolbarData.uri,
+                meta: {
+                    'layout.order': {
+                        type: 'number',
+                        value: index
+                    }
+                }
+            };
+        }).filter(u => u.uri);
+        draggedEl = null;
+        dragItems = [];
+        pendingDragPosition = null;
+        frameMessenger.send(window.parent, {
+            type: 'sort-sections',
+            payload: { updates }
+        });
+    });
+};
 export const initToolbar = (container) => {
     var toolbarDefinition = JSON.parse(container.dataset.cmsToolbar || '{}');
     if (!toolbarDefinition.actions) {
@@ -183,6 +371,13 @@ export const initToolbar = (container) => {
             button.setAttribute("title", "Delete");
             button.addEventListener('click', deleteSection);
             toolbar.appendChild(button);
+        }
+        else if (action === "dragSectionEntries") {
+            // Kein Button — DnD wird nach dem ersten Render-Frame initialisiert,
+            // damit alle sectionEntry-Toolbars bereits im DOM sind.
+            requestAnimationFrame(() => {
+                initDragDrop(container);
+            });
         }
     });
     if (toolbarDefinition.type === "sectionEntry") {

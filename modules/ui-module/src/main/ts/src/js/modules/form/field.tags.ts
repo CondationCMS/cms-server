@@ -1,0 +1,113 @@
+/*-
+ * #%L
+ * UI Module
+ * %%
+ * Copyright (C) 2023 - 2026 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * #L%
+ */
+import { createID } from "@cms/modules/form/utils.js";
+import { i18n } from "@cms/modules/localization.js";
+import { FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
+import { getTaxonomyValues } from "@cms/modules/rpc/rpc-taxonomy.js";
+
+declare const Tags: any;
+
+export interface TagsFieldOptions extends FieldOptions {
+    options?: {
+        taxonomy: string;
+    };
+}
+
+const createTagsField = (options: TagsFieldOptions, value: string | string[] = []): string => {
+    const id = createID();
+    const key = "field." + options.name;
+    const title = i18n.t(key, options.title);
+    const slug = options.options?.taxonomy || '';
+    const valueArray: string[] = Array.isArray(value) ? value : (value ? [value] : []);
+    const selectedJson = JSON.stringify(valueArray);
+
+    return `
+        <div class="mb-3 cms-form-field" data-cms-form-field-type="tags" data-taxonomy-slug="${slug}" data-selected-values="${selectedJson.replace(/"/g, '&quot;')}">
+            <label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
+            <select id="${id}" name="${options.name}" class="form-select" multiple data-allow-clear="true"></select>
+        </div>
+    `;
+};
+
+const init = (context: FormContext): void => {
+    if (!context.formElement) {
+        return;
+    }
+
+    context.formElement.querySelectorAll("[data-cms-form-field-type='tags']").forEach(async (wrapper: Element) => {
+        const slug = (wrapper as HTMLElement).dataset.taxonomySlug || '';
+        const selectedRaw = (wrapper as HTMLElement).dataset.selectedValues || '[]';
+        const selected: string[] = JSON.parse(selectedRaw);
+        const select = wrapper.querySelector('select') as HTMLSelectElement;
+
+        if (!select || !slug) {
+            return;
+        }
+
+        try {
+            const values = await getTaxonomyValues(slug);
+            values.forEach(val => {
+                const option = document.createElement('option');
+                option.value = val.id;
+                option.text = val.title;
+                option.selected = selected.includes(val.id);
+                select.appendChild(option);
+            });
+
+            if (typeof Tags !== 'undefined') {
+                Tags.init(`#${select.id}`);
+            } else {
+                console.error('bootstrap5-tags not loaded — falling back to native multi-select');
+            }
+        } catch (e) {
+            console.error('Failed to load taxonomy values for slug:', slug, e);
+            const errorMsg = document.createElement('div');
+            errorMsg.className = 'text-danger small mt-1';
+            errorMsg.textContent = 'Could not load taxonomy values.';
+            wrapper.appendChild(errorMsg);
+        }
+    });
+};
+
+const getData = (context: FormContext): Record<string, any> => {
+    const data: Record<string, any> = {};
+
+    if (!context.formElement) {
+        return data;
+    }
+
+    context.formElement.querySelectorAll("[data-cms-form-field-type='tags'] select").forEach((el: Element) => {
+        const select = el as HTMLSelectElement;
+        const values = Array.from(select.selectedOptions).map(opt => opt.value);
+        data[select.name] = {
+            type: 'tags',
+            value: values
+        };
+    });
+
+    return data;
+};
+
+export const TagsField = {
+    markup: createTagsField,
+    init: init,
+    data: getData
+} as FormField;

@@ -37,6 +37,7 @@ import { MediaField } from "@cms/modules/form/field.media.js";
 import { ListField } from "@cms/modules/form/field.list.js";
 import { TextAreaField } from "@cms/modules/form/field.textarea.js";
 import { ReferenceField } from "@cms/modules/form/field.reference.js";
+import { TagsField } from "@cms/modules/form/field.tags.js";
 const createForm = (options) => {
     const fields = options.fields || [];
     const values = options.values || {};
@@ -84,6 +85,8 @@ const createForm = (options) => {
                 return TextAreaField.markup(field, val);
             case 'reference':
                 return ReferenceField.markup(field, val);
+            case 'tags':
+                return TagsField.markup(field, val);
             default:
                 return '';
         }
@@ -123,6 +126,7 @@ const createForm = (options) => {
         MediaField.init(context);
         ListField.init(context);
         ReferenceField.init(context);
+        TagsField.init(context);
     };
     const getData = () => {
         if (!context.formElement) {
@@ -146,7 +150,8 @@ const createForm = (options) => {
             ...MediaField.data(context),
             ...ListField.data(context),
             ...TextAreaField.data(context),
-            ...ReferenceField.data(context)
+            ...ReferenceField.data(context),
+            ...TagsField.data(context)
         };
         return data;
     };

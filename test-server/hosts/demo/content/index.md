@@ -30,6 +30,11 @@ seo:
 linked_page: about
 translations:
   de: /
+taxonomy:
+  tags:
+  - kleidung
+  - hoodies_sweatshirts
+  - kinderkleidung
 ---
 
 # Demo Project

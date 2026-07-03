@@ -18,7 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import { FieldOptions, FormField } from "@cms/modules/form/forms.js";
-export interface ColorFieldOptions extends FieldOptions {
+export interface TaxonomyValue {
+    id: string;
+    title: string;
 }
-export declare const ColorField: FormField;
+declare const getTaxonomies: () => Promise<Record<string, string>>;
+declare const getTaxonomyValues: (slug: string) => Promise<TaxonomyValue[]>;
+export { getTaxonomies, getTaxonomyValues };

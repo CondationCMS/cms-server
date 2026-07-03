@@ -19,6 +19,9 @@
  * #L%
  */
 import { FieldOptions, FormField } from "@cms/modules/form/forms.js";
-export interface ColorFieldOptions extends FieldOptions {
+export interface TagsFieldOptions extends FieldOptions {
+    options?: {
+        taxonomy: string;
+    };
 }
-export declare const ColorField: FormField;
+export declare const TagsField: FormField;

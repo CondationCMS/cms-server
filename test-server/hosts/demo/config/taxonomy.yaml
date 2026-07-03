@@ -9,3 +9,7 @@ taxonomies:
     slug: produkte
     field: taxonomy.products
     array: true
+  - title: Tags
+    slug: tags
+    field: taxonomy.tags
+    array: true

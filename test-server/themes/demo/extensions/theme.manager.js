@@ -105,6 +105,14 @@ $hooks.registerFilter("manager/contentTypes/register", (contentTypes) => {
 							name: "object.values",
 							title: "Objekt-Liste",
 							type: "list"
+						},
+						{
+							name: "taxonomy.tags",
+							title: "Tags",
+							type: "tags",
+							options: {
+								taxonomy: "tags"
+							}
 						}
 					]
 			},

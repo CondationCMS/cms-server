@@ -30,6 +30,7 @@ import com.condation.cms.templates.renderer.Renderer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.jexl3.JexlBuilder;
 import org.apache.commons.jexl3.JexlEngine;
+import org.apache.commons.jexl3.JexlFeatures;
 
 @Slf4j
 public class CMSTemplateEngine {
@@ -54,9 +55,14 @@ public class CMSTemplateEngine {
 	}
 	
 	private JexlEngine createJexlEngine() {
+		JexlFeatures features = new JexlFeatures()
+				.sideEffect(true)
+				.sideEffectGlobal(true);
+
 		JexlBuilder builder = new JexlBuilder();
 
 		builder
+				.features(features)
 				.cache(configuration.getExpressionCacheSize())
 				.safe(configuration.isJexlSafeMode())
 				.strict(configuration.isJexlStrict())

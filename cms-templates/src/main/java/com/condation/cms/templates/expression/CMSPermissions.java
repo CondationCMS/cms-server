@@ -29,6 +29,7 @@ public class CMSPermissions  {
 	public static JexlPermissions PERMISSIONS = JexlPermissions.parse(
             "# Restricted Uberspect Permissions",
 			"com.condation.cms.*",
+			"com.google.gson.*",
             "java.nio.*",
             "java.io.*",
             "java.lang.*",

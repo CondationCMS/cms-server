@@ -44,6 +44,33 @@ i[data-cms-section-handle] {
    MEDIA BROWSER GRID
 ========================================================= */
 
+.cms-media-browser-slider {
+	display: grid;
+	grid-template-columns: 100% 100%;
+	overflow: hidden;
+}
+
+.cms-media-browser-panel {
+	grid-row: 1;
+	min-width: 0;
+	transition: transform 0.25s ease;
+}
+
+.cms-media-browser-panel--browse {
+	grid-column: 1;
+}
+
+.cms-media-browser-panel--metadata {
+	grid-column: 2;
+	max-height: 65vh;
+	overflow-y: auto;
+	padding-left: 1rem;
+}
+
+.cms-media-browser-slider.is-editing-metadata .cms-media-browser-panel {
+	transform: translateX(-100%);
+}
+
 .cms-media-grid {
 	--cms-media-grid-gap: 12px;
 	--cms-media-card-preview-height: 140px;

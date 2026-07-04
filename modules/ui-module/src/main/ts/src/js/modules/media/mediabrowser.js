@@ -197,39 +197,8 @@ const fileActions = () => {
 			const filename = element.closest("[data-cms-file-name]").dataset.cmsFileName
 			const action = element.getAttribute("data-cms-file-action");
 
-			if (action === "open") {
-				await loadPreview(uri);
-				state.modal.hide();
-			} else if (action === "copyUrl") {
-				navigator.clipboard.writeText(uri).then(
-					() => {
-						showToast({
-							title: i18n.t('filebrowser.actions.url.copy.title', "URL copied"),
-							message: i18n.t('filebrowser.actions.url.copy.message', "URL copied to clipboard"),
-							type: 'success',
-							timeout: 3000
-						});
-					},
-					() => {
-						showToast({
-							title: i18n.t('filebrowser.actions.url.copy.title.error', "Error copying URL"),
-							message: i18n.t('filebrowser.actions.url.copy.message.error', "Failed to copy URL"),
-							type: 'error',
-							timeout: 3000
-						});
-					},
-  				);
-			} else if (action === "editMetadata") {
+			if (action === "editMetadata") {
 				await openMediaMetadataForm(uri, filename);
-			} else if (action === "deletePage") {
-				deleteElementAction({
-					elementName: filename,
-					state: state,
-					deleteFN: deletePage,
-					getTargetFolder: getTargetFolder
-				}).then(async () => {
-					await initMediaBrowser(state.currentFolder);
-				});
 			} else if (action === "deleteFile") {
 				deleteElementAction({
 					elementName: filename,

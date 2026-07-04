@@ -34,6 +34,7 @@ taxonomy:
   tags:
   - kleidung
   - hoodies_sweatshirts
+  - schuhe
   - kinderkleidung
 ---
 

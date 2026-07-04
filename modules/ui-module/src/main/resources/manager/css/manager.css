@@ -45,15 +45,24 @@ i[data-cms-section-handle] {
 ========================================================= */
 
 .cms-media-grid {
+	--cms-media-grid-gap: 12px;
+	--cms-media-card-preview-height: 140px;
+	--cms-media-card-footer-height: 38px;
+	--cms-media-card-height: calc(var(--cms-media-card-preview-height) + var(--cms-media-card-footer-height));
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-	gap: 12px;
+	grid-auto-rows: var(--cms-media-card-height);
+	gap: var(--cms-media-grid-gap);
+	max-height: calc((var(--cms-media-card-height) * 3) + (var(--cms-media-grid-gap) * 2));
+	overflow-y: auto;
+	overflow-x: hidden;
 	padding: 4px 0;
 }
 
 .cms-media-card {
 	border: 1px solid var(--bs-border-color, #dee2e6);
 	border-radius: 6px;
+	height: 100%;
 	overflow: hidden;
 	cursor: pointer;
 	transition: box-shadow 0.15s ease, border-color 0.15s ease;
@@ -70,7 +79,7 @@ i[data-cms-section-handle] {
 }
 
 .cms-media-card__preview {
-	height: 140px;
+	height: var(--cms-media-card-preview-height);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -94,6 +103,7 @@ i[data-cms-section-handle] {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	height: var(--cms-media-card-footer-height);
 	padding: 6px 8px;
 	gap: 4px;
 	border-top: 1px solid var(--bs-border-color, #dee2e6);

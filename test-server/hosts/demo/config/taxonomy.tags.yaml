@@ -9,3 +9,5 @@ values:
       title: Kleidung
     - id: hoodies_sweatshirts   
       title: Hoodies & Sweatshirts
+    - id: small-test
+      title: "Small Test"

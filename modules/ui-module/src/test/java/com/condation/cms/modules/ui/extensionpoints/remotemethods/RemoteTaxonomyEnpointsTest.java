@@ -22,11 +22,14 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.taxonomy.Taxonomies;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.db.taxonomy.Value;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.SiteModuleContext;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,10 +37,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.yaml.snakeyaml.Yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -52,6 +58,12 @@ public class RemoteTaxonomyEnpointsTest {
     @Mock
     private Taxonomies taxonomies;
 
+    @Mock
+    private DBFileSystem fileSystem;
+
+    @TempDir
+    private Path tempDir;
+
     private RemoteTaxonomyEnpoints endpoints;
 
     @BeforeEach
@@ -60,6 +72,8 @@ public class RemoteTaxonomyEnpointsTest {
         endpoints.setContext(moduleContext);
         when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
         when(db.getTaxonomies()).thenReturn(taxonomies);
+        lenient().when(db.getFileSystem()).thenReturn(fileSystem);
+        lenient().when(fileSystem.hostBase()).thenReturn(tempDir);
     }
 
     @Test
@@ -122,5 +136,79 @@ public class RemoteTaxonomyEnpointsTest {
         Map<String, Object> result = (Map<String, Object>) endpoints.remove(params);
 
         assertThat(result).isEmpty();
+    }
+
+    @Test
+    public void createValue_writesTaxonomyYamlValue() throws Exception {
+        Taxonomy taxonomy = new Taxonomy("Tags", "tags", "taxonomy.tags");
+        taxonomy.setValues(new HashMap<>());
+        when(taxonomies.forSlug("tags")).thenReturn(Optional.of(taxonomy));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("slug", "tags");
+        params.put("title", "Hoodies & Sweatshirts");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result = (Map<String, Object>) endpoints.createValue(params);
+
+        assertThat(result).containsEntry("id", "hoodies-sweatshirts");
+        assertThat(result).containsEntry("title", "Hoodies & Sweatshirts");
+
+        var taxonomyFile = tempDir.resolve("config/taxonomy.tags.yaml");
+        assertThat(readTaxonomyValues(taxonomyFile))
+                .contains(Map.of("id", "hoodies-sweatshirts", "title", "Hoodies & Sweatshirts"));
+    }
+
+    @Test
+    public void createValue_preservesExistingTaxonomyYamlValues() throws Exception {
+        var configDir = tempDir.resolve("config");
+        Files.createDirectories(configDir);
+        var taxonomyFile = configDir.resolve("taxonomy.tags.yaml");
+        Files.writeString(taxonomyFile, """
+                ---
+                values:
+                  - id: existing
+                    title: Existing
+                """);
+
+        Taxonomy taxonomy = new Taxonomy("Tags", "tags", "taxonomy.tags");
+        taxonomy.setValues(new HashMap<>());
+        when(taxonomies.forSlug("tags")).thenReturn(Optional.of(taxonomy));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("slug", "tags");
+        params.put("title", "New Tag");
+
+        endpoints.createValue(params);
+
+        assertThat(readTaxonomyValues(taxonomyFile))
+                .contains(Map.of("id", "existing", "title", "Existing"))
+                .contains(Map.of("id", "new-tag", "title", "New Tag"));
+    }
+
+    @Test
+    public void createValue_doesNotWriteExistingTaxonomyValue() throws Exception {
+        Map<String, Value> values = new HashMap<>();
+        values.put("existing", new Value("existing", "Existing"));
+
+        Taxonomy taxonomy = new Taxonomy("Tags", "tags", "taxonomy.tags");
+        taxonomy.setValues(values);
+        when(taxonomies.forSlug("tags")).thenReturn(Optional.of(taxonomy));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("slug", "tags");
+        params.put("title", "Existing");
+
+        @SuppressWarnings("unchecked")
+        Map<String, Object> result = (Map<String, Object>) endpoints.createValue(params);
+
+        assertThat(result).containsEntry("id", "existing");
+        assertThat(Files.exists(tempDir.resolve("config/taxonomy.tags.yaml"))).isFalse();
+    }
+
+    @SuppressWarnings("unchecked")
+    private List<Map<String, String>> readTaxonomyValues(Path taxonomyFile) throws Exception {
+        Map<String, Object> document = new Yaml().load(Files.readString(taxonomyFile));
+        return (List<Map<String, String>>) document.get("values");
     }
 }

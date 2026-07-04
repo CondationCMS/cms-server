@@ -41,4 +41,12 @@ const getTaxonomyValues = async (slug: string): Promise<TaxonomyValue[]> => {
     return Object.values(response.result || {}) as TaxonomyValue[];
 };
 
-export { getTaxonomies, getTaxonomyValues };
+const createTaxonomyValue = async (slug: string, title: string): Promise<TaxonomyValue> => {
+    const response = await executeRemoteCall({
+        method: 'taxonomy.value.create',
+        parameters: { slug, title }
+    });
+    return response.result as TaxonomyValue;
+};
+
+export { getTaxonomies, getTaxonomyValues, createTaxonomyValue };

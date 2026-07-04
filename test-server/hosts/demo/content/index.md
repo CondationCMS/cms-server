@@ -36,6 +36,7 @@ taxonomy:
   - hoodies_sweatshirts
   - schuhe
   - kinderkleidung
+  - Small Test
 ---
 
 # Demo Project

@@ -20,7 +20,7 @@
  */
 import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js";
-import { getTaxonomyValues } from "@cms/modules/rpc/rpc-taxonomy.js";
+import { createTaxonomyValue, getTaxonomyValues } from "@cms/modules/rpc/rpc-taxonomy.js";
 const createTagsField = (options, value = []) => {
     const id = createID();
     const key = "field." + options.name;
@@ -31,7 +31,7 @@ const createTagsField = (options, value = []) => {
     return `
         <div class="mb-3 cms-form-field" data-cms-form-field-type="tags" data-taxonomy-slug="${slug}" data-selected-values="${selectedJson.replace(/"/g, '&quot;')}">
             <label for="${id}" class="form-label" cms-i18n-key="${key}">${title}</label>
-            <select id="${id}" name="${options.name}" class="form-select" multiple data-allow-clear="true"></select>
+            <select id="${id}" name="${options.name}" class="form-select" multiple data-allow-clear="true" data-allow-new="true"></select>
         </div>
     `;
 };
@@ -56,11 +56,36 @@ const init = (context) => {
                 option.selected = selected.includes(val.id);
                 select.appendChild(option);
             });
+            selected
+                .filter(value => !values.some(taxonomyValue => taxonomyValue.id === value))
+                .forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.text = value;
+                option.selected = true;
+                select.appendChild(option);
+            });
             if (typeof Tags !== 'undefined') {
-                Tags.init(`#${select.id}`);
+                Tags.init(`#${select.id}`, {
+                    allowNew: true,
+                    onCreateItem: (option) => {
+                        const title = getTagTitle(option);
+                        if (!title) {
+                            return;
+                        }
+                        createTaxonomyValue(slug, title)
+                            .then(created => {
+                            option.value = created.id;
+                            option.text = created.title;
+                            option.label = created.title;
+                            option.selected = true;
+                        })
+                            .catch(e => console.error('Failed to create taxonomy value:', slug, title, e));
+                    }
+                });
             }
             else {
-                console.error('bootstrap5-tags not loaded — falling back to native multi-select');
+                console.error('bootstrap5-tags not loaded - falling back to native multi-select');
             }
         }
         catch (e) {
@@ -71,6 +96,15 @@ const init = (context) => {
             wrapper.appendChild(errorMsg);
         }
     });
+};
+const getTagTitle = (item) => {
+    if (typeof item === 'string') {
+        return item.trim();
+    }
+    if (item instanceof HTMLOptionElement) {
+        return String(item.text || item.label || item.value || '').trim();
+    }
+    return String(item?.label || item?.text || item?.value || '').trim();
 };
 const getData = (context) => {
     const data = {};

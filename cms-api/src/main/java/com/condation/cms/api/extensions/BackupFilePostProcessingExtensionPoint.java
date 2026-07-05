@@ -31,7 +31,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @author t.marx
  */
-@NullMarked
 public abstract class BackupFilePostProcessingExtensionPoint extends AbstractExtensionPoint {
 
 	public abstract void postProcess (Path backupFile);

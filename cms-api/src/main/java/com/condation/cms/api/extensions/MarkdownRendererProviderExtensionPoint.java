@@ -23,7 +23,6 @@ package com.condation.cms.api.extensions;
 
 
 import com.condation.cms.api.markdown.MarkdownRenderer;
-import org.jspecify.annotations.NonNull;
 
 /**
  *
@@ -31,7 +30,7 @@ import org.jspecify.annotations.NonNull;
  */
 public abstract class MarkdownRendererProviderExtensionPoint extends AbstractExtensionPoint {
 
-	public abstract @NonNull String getName ();
-	public abstract @NonNull MarkdownRenderer getRenderer ();
+	public abstract  String getName ();
+	public abstract MarkdownRenderer getRenderer ();
 	
 }

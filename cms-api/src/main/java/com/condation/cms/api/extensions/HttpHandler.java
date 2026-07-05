@@ -25,13 +25,11 @@ package com.condation.cms.api.extensions;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
-import org.jspecify.annotations.NullMarked;
 
 /**
  *
  * @author t.marx
  */
-@NullMarked
 public interface HttpHandler {
 	
 	/**

@@ -29,5 +29,5 @@ import org.jspecify.annotations.NonNull;
  * @author t.marx
  */
 public abstract class HttpRoutesExtensionPoint extends AbstractExtensionPoint {
-	abstract public @NonNull Mapping getMapping();
+	abstract public Mapping getMapping();
 }

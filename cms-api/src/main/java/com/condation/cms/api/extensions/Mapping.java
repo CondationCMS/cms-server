@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.eclipse.jetty.http.pathmap.PathSpec;
-import org.jspecify.annotations.NonNull;
 
 /**
  *
@@ -42,15 +41,15 @@ public class Mapping {
 		handlers = new ArrayList<>();
 	}
 	
-	public void add (@NonNull PathSpec pathSpec, @NonNull HttpHandler handler) {
+	public void add ( PathSpec pathSpec,  HttpHandler handler) {
 		handlers.add(new PathHandler(pathSpec, handler));
 	}
 	
-	public @NonNull Optional<HttpHandler> getMatchingHandler (@NonNull String uri) {
+	public  Optional<HttpHandler> getMatchingHandler ( String uri) {
 		return handlers.stream().filter(handler -> handler.pathSpec.matches(uri)).map(PathHandler::httpHandler).findFirst();
 	}
 	
-	public @NonNull List<HttpHandler> getHandlers () {
+	public  List<HttpHandler> getHandlers () {
 		return handlers.stream().map(PathHandler::httpHandler).toList();
 	}
 }

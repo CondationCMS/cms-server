@@ -23,13 +23,11 @@ package com.condation.cms.api.extensions;
 
 
 import java.util.function.BiPredicate;
-import org.jspecify.annotations.NullMarked;
 
 /**
  *
  * @author t.marx
  */
-@NullMarked
 public abstract class ContentQueryOperatorExtensionPoint extends AbstractExtensionPoint {
 	
 	/**

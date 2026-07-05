@@ -29,7 +29,6 @@ import org.jspecify.annotations.NullMarked;
  *
  * @author t.marx
  */
-@NullMarked
 public abstract class CacheProviderExtensionPoint extends AbstractExtensionPoint {
 
 	public abstract String getName ();

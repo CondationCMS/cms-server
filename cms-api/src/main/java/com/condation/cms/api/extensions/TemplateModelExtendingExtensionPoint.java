@@ -24,13 +24,14 @@ package com.condation.cms.api.extensions;
 import java.util.Map;
 
 import com.condation.cms.api.Constants;
+import org.jspecify.annotations.NonNull;
 
 
 public abstract class TemplateModelExtendingExtensionPoint extends AbstractExtensionPoint{
 
-	public abstract Map<String, Object> getModel ();
+	public abstract @NonNull Map<String, Object> getModel ();
 
-	public String getNamespace () {
+	public @NonNull String getNamespace () {
 		return Constants.TemplateNamespaces.DEFAULT_MODULE_NAMESPACE;
 	}
 

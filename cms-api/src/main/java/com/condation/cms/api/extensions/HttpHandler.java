@@ -25,11 +25,13 @@ package com.condation.cms.api.extensions;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
+import org.jspecify.annotations.NullMarked;
 
 /**
  *
  * @author t.marx
  */
+@NullMarked
 public interface HttpHandler {
 	
 	/**
@@ -40,5 +42,5 @@ public interface HttpHandler {
 	 * @return true if the request is handled by the HttpHandler, otherwise false
 	 * @throws Exception 
 	 */
-	boolean handle (Request request, Response response, Callback callback) throws Exception;
+	 boolean handle ( Request request, Response response,  Callback callback) throws Exception;
 }

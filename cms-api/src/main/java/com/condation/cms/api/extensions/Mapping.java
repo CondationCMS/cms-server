@@ -23,11 +23,10 @@ package com.condation.cms.api.extensions;
 
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.eclipse.jetty.http.pathmap.PathSpec;
+import org.jspecify.annotations.NonNull;
 
 /**
  *
@@ -43,15 +42,15 @@ public class Mapping {
 		handlers = new ArrayList<>();
 	}
 	
-	public void add (PathSpec pathSpec, HttpHandler handler) {
+	public void add (@NonNull PathSpec pathSpec, @NonNull HttpHandler handler) {
 		handlers.add(new PathHandler(pathSpec, handler));
 	}
 	
-	public Optional<HttpHandler> getMatchingHandler (String uri) {
+	public @NonNull Optional<HttpHandler> getMatchingHandler (@NonNull String uri) {
 		return handlers.stream().filter(handler -> handler.pathSpec.matches(uri)).map(PathHandler::httpHandler).findFirst();
 	}
 	
-	public List<HttpHandler> getHandlers () {
+	public @NonNull List<HttpHandler> getHandlers () {
 		return handlers.stream().map(PathHandler::httpHandler).toList();
 	}
 }

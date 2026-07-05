@@ -1,5 +1,7 @@
 package com.condation.cms.api.extensions;
 
+import org.jspecify.annotations.NonNull;
+
 /*-
  * #%L
  * CMS Api
@@ -27,5 +29,5 @@ package com.condation.cms.api.extensions;
  * @author t.marx
  */
 public abstract class HttpRoutesExtensionPoint extends AbstractExtensionPoint {
-	abstract public Mapping getMapping();
+	abstract public @NonNull Mapping getMapping();
 }

@@ -24,11 +24,13 @@ package com.condation.cms.api.extensions.http;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
 import org.eclipse.jetty.util.Callback;
+import org.jspecify.annotations.NullMarked;
 
 /**
  *
  * @author t.marx
  */
+@NullMarked
 public interface HttpHandler {
 	
 	boolean handle (Request request, Response response, Callback callback) throws Exception;

@@ -58,6 +58,11 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
+        <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 		<!-- guice-classes and asm are only added to provide jdk compatiblity -->
 		<dependency>
 			<groupId>com.google.inject</groupId>

@@ -22,11 +22,13 @@ package com.condation.cms.api.extensions.server;
  */
 
 import com.condation.cms.api.hooks.HookSystem;
+import org.jspecify.annotations.NullMarked;
 
 /**
  * ExtensionPoint for modules to register hooks.
  * 
  */
+@NullMarked
 public abstract class ServerHookSystemRegisterExtensionPoint extends ServerExtensionPoint {
 
 	public void register (final HookSystem hookSystem) {}

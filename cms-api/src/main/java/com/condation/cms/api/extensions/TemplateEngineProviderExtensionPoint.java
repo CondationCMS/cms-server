@@ -22,13 +22,14 @@ package com.condation.cms.api.extensions;
  */
 
 import com.condation.cms.api.template.TemplateEngine;
+import org.jspecify.annotations.NonNull;
 
 /**
  * ExtensionPoint to register TemplateEngines
  */
 public abstract class TemplateEngineProviderExtensionPoint extends AbstractExtensionPoint {
 
-	public abstract String getName ();
-	public abstract TemplateEngine getTemplateEngine ();
+	public abstract @NonNull String getName ();
+	public abstract @NonNull TemplateEngine getTemplateEngine ();
 	
 }

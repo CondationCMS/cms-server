@@ -22,6 +22,7 @@ package com.condation.cms.api.extensions;
  */
 
 import java.nio.file.Path;
+import org.jspecify.annotations.NullMarked;
 
 
 
@@ -30,6 +31,7 @@ import java.nio.file.Path;
  *
  * @author t.marx
  */
+@NullMarked
 public abstract class BackupFilePostProcessingExtensionPoint extends AbstractExtensionPoint {
 
 	public abstract void postProcess (Path backupFile);

@@ -37,6 +37,7 @@ taxonomy:
   - schuhe
   - kinderkleidung
   - Small Test
+  - New tag
 ---
 
 # Demo Project

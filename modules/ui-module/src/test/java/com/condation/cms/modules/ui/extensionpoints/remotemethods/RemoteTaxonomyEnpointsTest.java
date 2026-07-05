@@ -26,7 +26,10 @@ import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.taxonomy.Taxonomies;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.db.taxonomy.Value;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.ReloadTaxonomyConfig;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +47,8 @@ import org.yaml.snakeyaml.Yaml;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -61,6 +66,9 @@ public class RemoteTaxonomyEnpointsTest {
     @Mock
     private DBFileSystem fileSystem;
 
+    @Mock
+    private EventBus eventBus;
+
     @TempDir
     private Path tempDir;
 
@@ -71,6 +79,7 @@ public class RemoteTaxonomyEnpointsTest {
         endpoints = new RemoteTaxonomyEnpoints();
         endpoints.setContext(moduleContext);
         when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+        lenient().when(moduleContext.get(EventBusFeature.class)).thenReturn(new EventBusFeature(eventBus));
         when(db.getTaxonomies()).thenReturn(taxonomies);
         lenient().when(db.getFileSystem()).thenReturn(fileSystem);
         lenient().when(fileSystem.hostBase()).thenReturn(tempDir);
@@ -157,6 +166,7 @@ public class RemoteTaxonomyEnpointsTest {
         var taxonomyFile = tempDir.resolve("config/taxonomy.tags.yaml");
         assertThat(readTaxonomyValues(taxonomyFile))
                 .contains(Map.of("id", "hoodies-sweatshirts", "title", "Hoodies & Sweatshirts"));
+        verify(eventBus).publish(new ReloadTaxonomyConfig());
     }
 
     @Test
@@ -184,6 +194,7 @@ public class RemoteTaxonomyEnpointsTest {
         assertThat(readTaxonomyValues(taxonomyFile))
                 .contains(Map.of("id", "existing", "title", "Existing"))
                 .contains(Map.of("id", "new-tag", "title", "New Tag"));
+        verify(eventBus).publish(new ReloadTaxonomyConfig());
     }
 
     @Test
@@ -204,6 +215,7 @@ public class RemoteTaxonomyEnpointsTest {
 
         assertThat(result).containsEntry("id", "existing");
         assertThat(Files.exists(tempDir.resolve("config/taxonomy.tags.yaml"))).isFalse();
+        verify(eventBus, never()).publish(new ReloadTaxonomyConfig());
     }
 
     @SuppressWarnings("unchecked")

@@ -1,13 +1,14 @@
-## YAML Template.
 ---
 values:
-    - id: schuhe
-      title: Schuhe
-    - id: kinderkleidung
-      title: Kinderkleidung
-    - id: kleidung
-      title: Kleidung
-    - id: hoodies_sweatshirts   
-      title: Hoodies & Sweatshirts
-    - id: small-test
-      title: "Small Test"
+- id: schuhe
+  title: Schuhe
+- id: kinderkleidung
+  title: Kinderkleidung
+- id: kleidung
+  title: Kleidung
+- id: hoodies_sweatshirts
+  title: Hoodies & Sweatshirts
+- id: small-test
+  title: Small Test
+- id: new-tag
+  title: New tag

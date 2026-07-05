@@ -23,6 +23,8 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.taxonomy.Value;
+import com.condation.cms.api.eventbus.events.ReloadTaxonomyConfig;
+import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.modules.ui.utils.TaxonomyYamlWriter;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
@@ -102,6 +104,7 @@ public class RemoteTaxonomyEnpoints extends AbstractRemoteMethodeExtension {
 			if (!taxonomy.getValues().containsKey(id)) {
 				taxonomyYamlWriter.writeValue(db.getFileSystem().hostBase(), taxonomy.getSlug(), id, title);
 				taxonomy.getValues().put(id, new Value(id, title));
+				getContext().get(EventBusFeature.class).eventBus().publish(new ReloadTaxonomyConfig());
 			}
 
 			Map<String, Object> result = new HashMap<>();

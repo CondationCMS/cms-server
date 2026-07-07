@@ -2,7 +2,7 @@
 template: section.html
 description: sec descriptione
 layout:
-  order: 2
+  order: 1
 parent:
   text: sec parent text
 published: false

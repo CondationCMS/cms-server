@@ -190,6 +190,7 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 									"bootstrap/bootstrap.bundle.min.js.map",
 									"bootstrap/bootstrap.min.css",
 									"bootstrap/bootstrap-superhero.min.css",
+									"bootstrap/bootstrap-condation.min.css",
 									"bootstrap/bootstrap-icons.min.css",
 									"bootstrap/fonts/bootstrap-icons.woff",
 									"bootstrap/fonts/bootstrap-icons.woff2"

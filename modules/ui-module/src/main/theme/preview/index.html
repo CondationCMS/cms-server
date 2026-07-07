@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CondationCMS Theme Preview</title>
+  <link rel="stylesheet" href="../../resources/manager/bootstrap/bootstrap-condation.min.css">
+  <link rel="stylesheet" href="../../resources/manager/bootstrap/bootstrap-icons.min.css">
+  <style>
+    .preview-section {
+      padding: 3rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+    }
+    .preview-section:last-child {
+      border-bottom: none;
+    }
+    .section-label {
+      font-size: .7rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+      margin-bottom: 1.5rem;
+    }
+    .color-swatch {
+      height: 60px;
+      border-radius: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#">CondationCMS</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Content</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Settings</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">General</a></li>
+            <li><a class="dropdown-item" href="#">Theme</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="#">Logout</a></li>
+          </ul>
+        </li>
+      </ul>
+      <form class="d-flex" role="search">
+        <input class="form-control me-2" type="search" placeholder="Suchen…">
+        <button class="btn btn-outline-light" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid py-4">
+  <div class="row">
+
+    <!-- Sidebar -->
+    <div class="col-lg-2 mb-4">
+      <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action active">
+          <i class="bi bi-house me-2"></i>Dashboard
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="bi bi-file-text me-2"></i>Pages
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="bi bi-image me-2"></i>Media
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="bi bi-tags me-2"></i>Taxonomies
+        </a>
+        <a href="#" class="list-group-item list-group-item-action">
+          <i class="bi bi-gear me-2"></i>Settings
+        </a>
+      </div>
+    </div>
+
+    <!-- Main content -->
+    <div class="col-lg-10">
+
+      <!-- Breadcrumb -->
+      <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item"><a href="#">Content</a></li>
+          <li class="breadcrumb-item active">Theme Preview</li>
+        </ol>
+      </nav>
+
+      <!-- ── COLORS ── -->
+      <div class="preview-section">
+        <p class="section-label">Farben</p>
+        <div class="row g-2">
+          <div class="col"><div class="color-swatch bg-primary d-flex align-items-end p-1"><small class="text-white">primary</small></div></div>
+          <div class="col"><div class="color-swatch bg-secondary d-flex align-items-end p-1"><small class="text-white">secondary</small></div></div>
+          <div class="col"><div class="color-swatch bg-success d-flex align-items-end p-1"><small class="text-white">success</small></div></div>
+          <div class="col"><div class="color-swatch bg-info d-flex align-items-end p-1"><small class="text-white">info</small></div></div>
+          <div class="col"><div class="color-swatch bg-warning d-flex align-items-end p-1"><small class="text-white">warning</small></div></div>
+          <div class="col"><div class="color-swatch bg-danger d-flex align-items-end p-1"><small class="text-white">danger</small></div></div>
+          <div class="col"><div class="color-swatch bg-light d-flex align-items-end p-1"><small class="text-dark">light</small></div></div>
+          <div class="col"><div class="color-swatch bg-dark d-flex align-items-end p-1"><small class="text-white">dark</small></div></div>
+        </div>
+      </div>
+
+      <!-- ── TYPOGRAPHY ── -->
+      <div class="preview-section">
+        <p class="section-label">Typografie</p>
+        <h1>Heading 1 <small class="text-muted fs-5">small</small></h1>
+        <h2>Heading 2</h2>
+        <h3>Heading 3</h3>
+        <h4>Heading 4</h4>
+        <h5>Heading 5</h5>
+        <h6>Heading 6</h6>
+        <hr>
+        <p class="lead">Lead-Text: CondationCMS ist ein flexibles Content-Management-System auf Basis von Java.</p>
+        <p>Normaler Fließtext mit <strong>fett</strong>, <em>kursiv</em>, <a href="#">Link</a> und <code>inline code</code>.</p>
+        <blockquote class="blockquote border-start border-primary ps-3">
+          <p>„Das Theme ist die Grundlage für ein konsistentes UI."</p>
+          <footer class="blockquote-footer">CondationCMS Docs</footer>
+        </blockquote>
+        <p><span class="badge bg-primary">primary</span> <span class="badge bg-secondary">secondary</span> <span class="badge bg-success">success</span> <span class="badge bg-warning">warning</span> <span class="badge bg-danger">danger</span></p>
+      </div>
+
+      <!-- ── BUTTONS ── -->
+      <div class="preview-section">
+        <p class="section-label">Buttons</p>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Primary</button>
+          <button class="btn btn-secondary">Secondary</button>
+          <button class="btn btn-success">Success</button>
+          <button class="btn btn-info">Info</button>
+          <button class="btn btn-warning">Warning</button>
+          <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Danger</button>
+          <button class="btn btn-light">Light</button>
+          <button class="btn btn-dark">Dark</button>
+          <button class="btn btn-link">Link</button>
+        </div>
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <button class="btn btn-outline-primary">Outline Primary</button>
+          <button class="btn btn-outline-secondary">Outline Secondary</button>
+          <button class="btn btn-outline-success">Outline Success</button>
+          <button class="btn btn-outline-danger">Outline Danger</button>
+          <button class="btn btn-outline-light">Outline Light</button>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <button class="btn btn-primary btn-sm">Small</button>
+          <button class="btn btn-primary">Default</button>
+          <button class="btn btn-primary btn-lg">Large</button>
+          <button class="btn btn-primary" disabled>Disabled</button>
+          <button class="btn btn-primary">
+            <span class="spinner-border spinner-border-sm me-1"></span>Loading…
+          </button>
+        </div>
+      </div>
+
+      <!-- ── ALERTS ── -->
+      <div class="preview-section">
+        <p class="section-label">Alerts</p>
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+          <i class="bi bi-info-circle me-2"></i><strong>Info:</strong> Seite erfolgreich gespeichert.
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div class="alert alert-success" role="alert">
+          <i class="bi bi-check-circle me-2"></i><strong>Erfolg:</strong> Änderungen wurden übernommen.
+        </div>
+        <div class="alert alert-warning" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i><strong>Warnung:</strong> Cache sollte geleert werden.
+        </div>
+        <div class="alert alert-danger" role="alert">
+          <i class="bi bi-x-circle me-2"></i><strong>Fehler:</strong> Datei konnte nicht gespeichert werden.
+        </div>
+      </div>
+
+      <!-- ── CARDS ── -->
+      <div class="preview-section">
+        <p class="section-label">Cards</p>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-text me-1"></i>Seite</span>
+                <span class="badge bg-success">published</span>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">Startseite</h5>
+                <p class="card-text text-muted">Zuletzt bearbeitet vor 2 Stunden.</p>
+              </div>
+              <div class="card-footer d-flex gap-2">
+                <button class="btn btn-sm btn-primary">Bearbeiten</button>
+                <button class="btn btn-sm btn-outline-danger">Löschen</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-file-text me-1"></i>Seite</span>
+                <span class="badge bg-warning">draft</span>
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">Über uns</h5>
+                <p class="card-text text-muted">Noch nicht veröffentlicht.</p>
+              </div>
+              <div class="card-footer d-flex gap-2">
+                <button class="btn btn-sm btn-primary">Bearbeiten</button>
+                <button class="btn btn-sm btn-outline-danger">Löschen</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100 border-primary">
+              <div class="card-header bg-primary text-white">
+                <i class="bi bi-star me-1"></i>Featured
+              </div>
+              <div class="card-body">
+                <h5 class="card-title">Blog-Artikel</h5>
+                <p class="card-text text-muted">Hervorgehobener Inhalt.</p>
+              </div>
+              <div class="card-footer d-flex gap-2">
+                <button class="btn btn-sm btn-primary">Bearbeiten</button>
+                <button class="btn btn-sm btn-outline-danger">Löschen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── TABLE ── -->
+      <div class="preview-section">
+        <p class="section-label">Tabelle</p>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th><input type="checkbox"></th>
+                <th>Titel</th>
+                <th>Status</th>
+                <th>Autor</th>
+                <th>Zuletzt geändert</th>
+                <th>Aktionen</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td><i class="bi bi-file-text me-1"></i>Startseite</td>
+                <td><span class="badge bg-success">published</span></td>
+                <td>t.marx</td>
+                <td>2026-07-01 14:30</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td><i class="bi bi-file-text me-1"></i>Über uns</td>
+                <td><span class="badge bg-warning">draft</span></td>
+                <td>t.marx</td>
+                <td>2026-06-28 09:15</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+              <tr>
+                <td><input type="checkbox"></td>
+                <td><i class="bi bi-file-text me-1"></i>Kontakt</td>
+                <td><span class="badge bg-secondary">unpublished</span></td>
+                <td>a.user</td>
+                <td>2026-06-20 16:45</td>
+                <td>
+                  <button class="btn btn-sm btn-outline-primary me-1"><i class="bi bi-pencil"></i></button>
+                  <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- Pagination -->
+        <nav>
+          <ul class="pagination pagination-sm justify-content-end">
+            <li class="page-item disabled"><a class="page-link" href="#">«</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">»</a></li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- ── FORMS ── -->
+      <div class="preview-section">
+        <p class="section-label">Formulare</p>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">Seite bearbeiten</div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">Titel</label>
+                  <input type="text" class="form-control" value="Startseite" placeholder="Seitentitel">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Slug</label>
+                  <div class="input-group">
+                    <span class="input-group-text">/</span>
+                    <input type="text" class="form-control" value="startseite">
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Status</label>
+                  <select class="form-select">
+                    <option selected>published</option>
+                    <option>draft</option>
+                    <option>unpublished</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Beschreibung</label>
+                  <textarea class="form-control" rows="3" placeholder="Meta-Beschreibung…"></textarea>
+                </div>
+                <div class="mb-3">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="visibleCheck" checked>
+                    <label class="form-check-label" for="visibleCheck">Im Menü sichtbar</label>
+                  </div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Speichern</button>
+                  <button class="btn btn-outline-secondary">Abbrechen</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header">Validierung</div>
+              <div class="card-body">
+                <div class="mb-3">
+                  <label class="form-label">Gültiges Feld</label>
+                  <input type="text" class="form-control is-valid" value="Korrekter Wert">
+                  <div class="valid-feedback">Sieht gut aus!</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Ungültiges Feld</label>
+                  <input type="text" class="form-control is-invalid" value="">
+                  <div class="invalid-feedback">Dieses Feld ist Pflicht.</div>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Disabled</label>
+                  <input type="text" class="form-control" disabled value="Nicht bearbeitbar">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Range</label>
+                  <input type="range" class="form-range" min="0" max="100" value="60">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Floating Label</label>
+                  <div class="form-floating">
+                    <input type="email" class="form-control" id="floatEmail" placeholder="name@example.com" value="user@condation.com">
+                    <label for="floatEmail">E-Mail-Adresse</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── ACCORDION & TABS ── -->
+      <div class="preview-section">
+        <p class="section-label">Accordion &amp; Tabs</p>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="accordion" id="accordionPreview">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#acc1">
+                    Allgemeine Einstellungen
+                  </button>
+                </h2>
+                <div id="acc1" class="accordion-collapse collapse show" data-bs-parent="#accordionPreview">
+                  <div class="accordion-body">
+                    Site-ID, Sprache, Zeitzone und weitere Basiseinstellungen.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#acc2">
+                    Theme-Konfiguration
+                  </button>
+                </h2>
+                <div id="acc2" class="accordion-collapse collapse" data-bs-parent="#accordionPreview">
+                  <div class="accordion-body">
+                    Farben, Schriften und Layout-Einstellungen.
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#acc3">
+                    Plugins &amp; Extensions
+                  </button>
+                </h2>
+                <div id="acc3" class="accordion-collapse collapse" data-bs-parent="#accordionPreview">
+                  <div class="accordion-body">
+                    Installierte Erweiterungen verwalten.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <ul class="nav nav-tabs" id="tabPreview">
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab1">Inhalt</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab2">SEO</button>
+              </li>
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab3">Medien</button>
+              </li>
+            </ul>
+            <div class="tab-content border border-top-0 p-3">
+              <div class="tab-pane fade show active" id="tab1">
+                <p class="mb-0">Hier steht der Hauptinhalt der Seite.</p>
+              </div>
+              <div class="tab-pane fade" id="tab2">
+                <p class="mb-0">Meta-Title, Description, Open-Graph-Einstellungen.</p>
+              </div>
+              <div class="tab-pane fade" id="tab3">
+                <p class="mb-0">Bilder und Dateien dieser Seite.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── MODAL ── -->
+      <div class="preview-section">
+        <p class="section-label">Modal</p>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#demoModal">
+          <i class="bi bi-box-arrow-up me-1"></i>Modal öffnen
+        </button>
+      </div>
+
+      <!-- ── OFFCANVAS ── -->
+      <div class="preview-section">
+        <p class="section-label">Offcanvas</p>
+
+        <!-- Positionen -->
+        <p class="text-muted mb-2"><small>Positionen</small></p>
+        <div class="d-flex flex-wrap gap-2 mb-4">
+          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#ocStart">
+            <i class="bi bi-layout-sidebar me-1"></i>Start (links)
+          </button>
+          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#ocEnd">
+            <i class="bi bi-layout-sidebar-reverse me-1"></i>End (rechts)
+          </button>
+          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#ocTop">
+            <i class="bi bi-layout-three-columns me-1" style="transform:rotate(90deg)"></i>Top
+          </button>
+          <button class="btn btn-outline-secondary" data-bs-toggle="offcanvas" data-bs-target="#ocBottom">
+            <i class="bi bi-layout-three-columns me-1" style="transform:rotate(-90deg)"></i>Bottom
+          </button>
+        </div>
+
+        <!-- Realistisches Anwendungsbeispiel -->
+        <p class="text-muted mb-2"><small>Anwendungsbeispiel: Seiteneigenschaften-Panel</small></p>
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-file-text me-1"></i>Startseite</span>
+            <button class="btn btn-sm btn-primary" data-bs-toggle="offcanvas" data-bs-target="#ocPageProps">
+              <i class="bi bi-sliders me-1"></i>Eigenschaften
+            </button>
+          </div>
+          <div class="card-body">
+            <p class="text-muted mb-0">Klicke auf "Eigenschaften" um das Offcanvas-Panel mit Tabs zu öffnen.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PROGRESS & SPINNERS ── -->
+      <div class="preview-section">
+        <p class="section-label">Progress &amp; Spinners</p>
+        <div class="mb-3">
+          <div class="progress mb-2" style="height:8px">
+            <div class="progress-bar bg-primary" style="width:75%"></div>
+          </div>
+          <div class="progress mb-2" style="height:8px">
+            <div class="progress-bar bg-success" style="width:50%"></div>
+          </div>
+          <div class="progress" style="height:8px">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning" style="width:30%"></div>
+          </div>
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+          <div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading…</span></div>
+          <div class="spinner-border text-secondary" role="status"></div>
+          <div class="spinner-grow text-success" role="status"></div>
+          <div class="spinner-grow text-warning" role="status"></div>
+        </div>
+      </div>
+
+      <!-- ── TOAST ── -->
+      <div class="preview-section">
+        <p class="section-label">Toasts</p>
+        <div class="toast show" role="alert">
+          <div class="toast-header">
+            <strong class="me-auto"><i class="bi bi-bell me-1"></i>CondationCMS</strong>
+            <small class="text-muted">gerade eben</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+          </div>
+          <div class="toast-body">
+            Seite erfolgreich veröffentlicht.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col main -->
+  </div><!-- /row -->
+</div><!-- /container -->
+
+<!-- Modal -->
+<div class="modal fade" id="demoModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Seite löschen?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Möchtest du die Seite <strong>Startseite</strong> wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+        <button type="button" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Löschen</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Offcanvas: Start (links) -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="ocStart">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-layout-sidebar me-2"></i>Start (links)</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p class="text-muted">Schiebt von links herein. Typisch für mobile Navigation oder Kontextmenüs.</p>
+    <ul class="list-group">
+      <li class="list-group-item"><i class="bi bi-house me-2"></i>Dashboard</li>
+      <li class="list-group-item"><i class="bi bi-file-text me-2"></i>Pages</li>
+      <li class="list-group-item"><i class="bi bi-image me-2"></i>Media</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Offcanvas: End (rechts) -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="ocEnd">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-layout-sidebar-reverse me-2"></i>End (rechts)</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p class="text-muted">Schiebt von rechts herein. Typisch für Detail-Panels und Einstellungen.</p>
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between">Status <span class="badge bg-success">published</span></li>
+      <li class="list-group-item d-flex justify-content-between">Autor <span>t.marx</span></li>
+      <li class="list-group-item d-flex justify-content-between">Geändert <span>2026-07-07</span></li>
+    </ul>
+  </div>
+</div>
+
+<!-- Offcanvas: Top -->
+<div class="offcanvas offcanvas-top" tabindex="-1" id="ocTop" style="height:200px">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Top</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p class="text-muted">Schiebt von oben herein. Gut für globale Benachrichtigungen oder Suche.</p>
+    <div class="input-group">
+      <input type="search" class="form-control" placeholder="Seiten, Medien, Einstellungen suchen…">
+      <button class="btn btn-primary"><i class="bi bi-search"></i></button>
+    </div>
+  </div>
+</div>
+
+<!-- Offcanvas: Bottom -->
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="ocBottom" style="height:200px">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title">Bottom</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body">
+    <p class="text-muted">Schiebt von unten herein. Gut für Aktionsleisten auf Mobile.</p>
+    <div class="d-flex gap-2">
+      <button class="btn btn-primary"><i class="bi bi-save me-1"></i>Speichern</button>
+      <button class="btn btn-outline-secondary">Vorschau</button>
+      <button class="btn btn-outline-danger ms-auto"><i class="bi bi-trash me-1"></i>Löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Offcanvas: Seiteneigenschaften mit Tabs -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="ocPageProps" style="width:420px">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title"><i class="bi bi-sliders me-2"></i>Seiteneigenschaften</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body d-flex flex-column">
+    <ul class="nav nav-tabs mb-3" id="ocTabs">
+      <li class="nav-item">
+        <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#ocTabGeneral">Allgemein</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ocTabSeo">SEO</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" data-bs-toggle="tab" data-bs-target="#ocTabAdvanced">Erweitert</button>
+      </li>
+    </ul>
+    <div class="tab-content flex-grow-1">
+      <div class="tab-pane fade show active" id="ocTabGeneral">
+        <div class="mb-3">
+          <label class="form-label">Titel</label>
+          <input type="text" class="form-control" value="Startseite">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Status</label>
+          <select class="form-select">
+            <option selected>published</option>
+            <option>draft</option>
+            <option>unpublished</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Veröffentlichungsdatum</label>
+          <input type="date" class="form-control" value="2026-07-07">
+        </div>
+        <div class="mb-3">
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="ocVisible" checked>
+            <label class="form-check-label" for="ocVisible">Im Menü sichtbar</label>
+          </div>
+        </div>
+      </div>
+      <div class="tab-pane fade" id="ocTabSeo">
+        <div class="mb-3">
+          <label class="form-label">Meta-Title</label>
+          <input type="text" class="form-control" placeholder="SEO-Titel (optional)">
+          <div class="form-text">Leer = Seitentitel wird verwendet.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Meta-Description</label>
+          <textarea class="form-control" rows="3" placeholder="Kurzbeschreibung für Suchmaschinen…"></textarea>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Canonical URL</label>
+          <input type="url" class="form-control" placeholder="https://…">
+        </div>
+      </div>
+      <div class="tab-pane fade" id="ocTabAdvanced">
+        <div class="mb-3">
+          <label class="form-label">Template</label>
+          <select class="form-select">
+            <option selected>default.html</option>
+            <option>landing.html</option>
+            <option>blog-post.html</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Tags</label>
+          <input type="text" class="form-control" placeholder="tag1, tag2, …">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Gewichtung</label>
+          <input type="number" class="form-control" value="0">
+        </div>
+      </div>
+    </div>
+    <div class="border-top pt-3 mt-2 d-flex gap-2">
+      <button class="btn btn-primary flex-grow-1"><i class="bi bi-save me-1"></i>Speichern</button>
+      <button class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
+<script src="../../resources/manager/bootstrap/bootstrap.bundle.min.js"></script>
+</body>
+</html>

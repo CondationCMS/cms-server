@@ -1,4 +1,4 @@
-// CondationCMS Theme — Flat Dark — component overrides
+// CondationCMS Theme - modern graphite flat dark component overrides
 
 @use "sass:color";
 
@@ -9,48 +9,63 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500
 }
 
 :root {
-  --bs-body-bg: #1a1a1a;
-  --bs-border-color: #333333;
-  --bs-focus-ring-color: rgba(245, 158, 11, .3);
+  --bs-body-bg: #18212a;
+  --bs-border-color: rgba(178, 191, 205, .18);
+  --bs-focus-ring-color: rgba(77, 163, 255, .25);
 }
 
-// Flat focus — no glow, just a sharp amber outline
+body {
+  background:
+    radial-gradient(circle at top left, rgba(77, 163, 255, .14), transparent 34rem),
+    linear-gradient(180deg, #1b2630 0%, #18212a 42%, #141c24 100%);
+}
+
 *:focus-visible {
-  outline: 2px solid $primary;
+  outline: 2px solid rgba($primary, .8);
   outline-offset: 2px;
   box-shadow: none !important;
 }
 
 // Scrollbar
-::-webkit-scrollbar        { width: 6px; height: 6px; }
-::-webkit-scrollbar-track  { background: $body-bg; }
-::-webkit-scrollbar-thumb  { background: $gray-500; }
-::-webkit-scrollbar-thumb:hover { background: $gray-400; }
+::-webkit-scrollbar        { width: 8px; height: 8px; }
+::-webkit-scrollbar-track  { background: rgba($black, .12); }
+::-webkit-scrollbar-thumb  { background: rgba($gray-400, .55); }
+::-webkit-scrollbar-thumb:hover { background: rgba($primary, .72); }
 
 // Typography
 
 .text-secondary  { color: var(--bs-secondary-color) !important; }
-.dropdown-menu   { font-size: $font-size-sm; }
+.dropdown-menu   { font-size: $font-size-sm; backdrop-filter: blur(14px); }
 .dropdown-header { font-size: $font-size-sm; letter-spacing: .06em; text-transform: uppercase; }
 .blockquote-footer { color: $text-muted; }
 
-// Navbar — flat, sharp bottom border, solid background
+// Navbar
 
 .navbar {
-  border-bottom: 1px solid #333333;
+  position: relative;
+  z-index: $zindex-sticky;
+  border-bottom: 1px solid rgba(178, 191, 205, .14);
+  box-shadow: none;
 
   &.bg-dark {
-    background-color: #111111 !important;
+    background-color: rgba(17, 24, 32, .9) !important;
+    backdrop-filter: blur(16px);
   }
 }
 
-// Buttons — flat, no shadow, bold border on outlined variants
+.navbar .dropdown-menu {
+  z-index: $zindex-sticky + 1;
+}
+
+// Buttons
 
 .btn {
   font-weight: 500;
-  letter-spacing: .02em;
-  box-shadow: none !important;
-  transition: background-color .1s ease, color .1s ease, border-color .1s ease;
+  letter-spacing: .01em;
+  transition:
+    background-color .15s ease,
+    color .15s ease,
+    border-color .15s ease;
 
   @each $color, $value in $theme-colors {
     &-#{$color} {
@@ -59,25 +74,49 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500
   }
 
   &-primary {
-    background-color: $primary;
+    background: $primary;
     border-color: $primary;
-    color: #000;
+    color: color-contrast($primary);
     font-weight: 600;
-    &:hover, &:focus { background-color: color.adjust($primary, $lightness: 8%); border-color: color.adjust($primary, $lightness: 8%); color: #000; }
-    &:active         { background-color: color.adjust($primary, $lightness: -5%); }
+
+    &:hover,
+    &:focus {
+      background: color.adjust($primary, $lightness: 5%);
+      border-color: color.adjust($primary, $lightness: 5%);
+      color: color-contrast($primary);
+    }
+
+    &:active {
+      background: color.adjust($primary, $lightness: -8%);
+    }
   }
 
   &-secondary {
-    background-color: $gray-600;
-    border-color: #333333;
+    background-color: rgba($gray-700, .82);
+    border-color: rgba(178, 191, 205, .2);
     color: $gray-100;
-    &:hover { background-color: $gray-500; border-color: $gray-400; color: $white; }
+
+    &:hover {
+      background-color: rgba($secondary, .18);
+      border-color: rgba($secondary, .7);
+      color: $white;
+    }
   }
 
   &-outline-primary {
+    border-color: rgba($primary, .72);
+    color: color.adjust($primary, $lightness: 12%);
+
+    &:hover {
+      background-color: rgba($primary, .16);
+      border-color: $primary;
+      color: $white;
+    }
+  }
+
+  &:focus-visible {
     border-color: $primary;
-    color: $primary;
-    &:hover { background-color: $primary; color: #000; }
+    box-shadow: inset 0 -2px 0 $primary !important;
   }
 }
 
@@ -85,9 +124,12 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500
 
 .table {
   font-size: $font-size-sm;
+  --bs-table-bg: transparent;
 
   thead th {
-    border-bottom: 2px solid $primary;
+    background-color: rgba($gray-900, .28);
+    border-bottom: 2px solid rgba($primary, .75);
+    color: $gray-200;
     font-weight: 600;
     letter-spacing: .03em;
     text-transform: uppercase;
@@ -95,7 +137,7 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500
   }
 
   a:not(.btn) {
-    color: $primary;
+    color: color.adjust($primary, $lightness: 9%);
     text-decoration: none;
     &:hover { text-decoration: underline; }
   }
@@ -110,16 +152,60 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500
   background-color: $input-bg;
   border-color: $input-border-color;
   color: $input-color;
-  transition: border-color .1s ease;
+  box-shadow: none;
+  transition: border-color .15s ease, background-color .15s ease;
 
   &:focus {
     background-color: $input-focus-bg;
     border-color: $primary;
     color: $input-focus-color;
-    box-shadow: none;
+    box-shadow: $input-focus-box-shadow;
   }
 
   &::placeholder { color: $input-placeholder-color; }
+}
+
+.form-control[type="date"],
+.form-control[type="datetime-local"],
+.form-control[type="time"] {
+  color-scheme: dark;
+  padding-right: .5rem;
+}
+
+.form-control[type="date"]::-webkit-calendar-picker-indicator,
+.form-control[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.form-control[type="time"]::-webkit-calendar-picker-indicator {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-inline-start: .5rem;
+  padding: .25rem;
+  border-left: 1px solid rgba(178, 191, 205, .18);
+  background-color: rgba($primary, .1);
+  background-clip: content-box;
+  cursor: pointer;
+  filter: invert(78%) sepia(46%) saturate(1062%) hue-rotate(179deg) brightness(103%) contrast(101%);
+  opacity: .88;
+  transition: background-color .15s ease, opacity .15s ease, filter .15s ease;
+}
+
+.form-control[type="date"]::-webkit-calendar-picker-indicator:hover,
+.form-control[type="datetime-local"]::-webkit-calendar-picker-indicator:hover,
+.form-control[type="time"]::-webkit-calendar-picker-indicator:hover {
+  background-color: rgba($primary, .18);
+  opacity: 1;
+  filter: invert(73%) sepia(89%) saturate(1477%) hue-rotate(180deg) brightness(103%) contrast(103%);
+}
+
+.form-control[type="date"]::-webkit-datetime-edit,
+.form-control[type="datetime-local"]::-webkit-datetime-edit,
+.form-control[type="time"]::-webkit-datetime-edit {
+  color: $input-color;
+}
+
+.form-control[type="date"]::-webkit-datetime-edit-fields-wrapper,
+.form-control[type="datetime-local"]::-webkit-datetime-edit-fields-wrapper,
+.form-control[type="time"]::-webkit-datetime-edit-fields-wrapper {
+  padding: 0;
 }
 
 label,
@@ -143,20 +229,32 @@ label,
   .nav-link:hover { color: $body-color; }
   .nav-link.disabled { color: $nav-link-disabled-color; }
 
-  // Active tab: amber underline instead of background fill
+  .nav-link {
+    transition: color .15s ease, background-color .15s ease, border-color .15s ease;
+  }
+
   .nav-link.active {
-    border-bottom-color: $primary;
+    background-color: rgba($primary, .12);
+    border-color: rgba($primary, .35);
+    color: $white;
   }
 }
 
 .page-link:hover,
 .page-link:focus { color: $white; text-decoration: none; }
 
-// Cards — flat, accent top-border on hover
+// Cards
 
 .card {
-  transition: border-color .15s ease;
-  &:hover { border-color: $primary; }
+  backdrop-filter: none;
+  box-shadow: $card-box-shadow;
+  transition: border-color .15s ease, background-color .15s ease;
+
+  &:hover {
+    border-color: rgba($primary, .42);
+    background-color: rgba(37, 48, 59, .88);
+    box-shadow: inset 0 2px 0 rgba($primary, .55);
+  }
 }
 
 .card-header {
@@ -164,26 +262,28 @@ label,
   font-size: $font-size-sm;
   letter-spacing: .04em;
   text-transform: uppercase;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid rgba(178, 191, 205, .13);
 }
 
-// Alerts — flat, left border only, dark bg
+// Alerts
 
 .alert {
   border-left-width: 3px;
   border-top-width: 1px;
   border-right-width: 1px;
   border-bottom-width: 1px;
+  background-color: rgba($gray-800, .78);
+  backdrop-filter: none;
   font-size: $font-size-sm;
 
   a, .alert-link { color: inherit; text-decoration: underline; }
 
-  &-primary   { background-color: $gray-800; border-color: #333333; border-left-color: $primary;  color: color.adjust($primary,  $lightness: 20%); }
-  &-success   { background-color: $gray-800; border-color: #333333; border-left-color: $success;  color: color.adjust($success,  $lightness: 15%); }
-  &-info      { background-color: $gray-800; border-color: #333333; border-left-color: $info;     color: color.adjust($info,     $lightness: 12%); }
-  &-warning   { background-color: $gray-800; border-color: #333333; border-left-color: $warning;  color: color.adjust($warning,  $lightness: 15%); }
-  &-danger    { background-color: $gray-800; border-color: #333333; border-left-color: $danger;   color: color.adjust($danger,   $lightness: 15%); }
-  &-secondary { background-color: $gray-800; border-color: #333333; border-left-color: $gray-400; color: $gray-200; }
+  &-primary   { border-color: rgba($primary, .2);   border-left-color: $primary;   color: color.adjust($primary,   $lightness: 18%); }
+  &-success   { border-color: rgba($success, .2);   border-left-color: $success;   color: color.adjust($success,   $lightness: 15%); }
+  &-info      { border-color: rgba($info, .2);      border-left-color: $info;      color: color.adjust($info,      $lightness: 12%); }
+  &-warning   { border-color: rgba($warning, .24);  border-left-color: $warning;  color: color.adjust($warning,  $lightness: 12%); }
+  &-danger    { border-color: rgba($danger, .22);   border-left-color: $danger;   color: color.adjust($danger,   $lightness: 14%); }
+  &-secondary { border-color: rgba($secondary, .2); border-left-color: $secondary; color: color.adjust($secondary, $lightness: 18%); }
 }
 
 // Badges
@@ -196,34 +296,46 @@ label,
 }
 
 .tooltip {
-  --bs-tooltip-bg: #2e2e2e;
+  --bs-tooltip-bg: rgba(31, 41, 51, .96);
   --bs-tooltip-color: #{$gray-100};
 }
 
 // Popovers
+
+.popover {
+  backdrop-filter: none;
+}
 
 .popover-header {
   font-weight: 600;
   font-size: $font-size-sm;
   letter-spacing: .04em;
   text-transform: uppercase;
-  border-bottom: 1px solid #333333;
+  border-bottom: 1px solid rgba(178, 191, 205, .14);
 }
 
-// Modals — flat, sharp
+// Modals
 
 .modal {
+  &-content {
+    backdrop-filter: none;
+  }
+
   &-header,
-  &-footer { background-color: $gray-800; border-color: #333333; }
+  &-footer {
+    background-color: rgba($gray-900, .28);
+    border-color: rgba(178, 191, 205, .14);
+  }
 }
 
 // Offcanvas
 
 .offcanvas {
-  border-color: #333333;
+  border-color: rgba(178, 191, 205, .16);
+  backdrop-filter: none;
 
   &-header {
-    border-bottom: 1px solid #333333;
+    border-bottom: 1px solid rgba(178, 191, 205, .14);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .04em;
@@ -231,19 +343,27 @@ label,
   }
 }
 
-// List group — flat active with amber
+// List group
 
 .list-group-item {
-  transition: background-color .1s ease;
+  transition: background-color .15s ease, border-color .15s ease;
+
   &.active {
     font-weight: 600;
-    color: #000;
+    box-shadow: inset 3px 0 0 color.adjust($primary, $lightness: 16%);
   }
 }
 
-// Progress — flat
+// Progress
 
-.progress-bar { transition: width .3s ease; }
+.progress {
+  overflow: hidden;
+}
+
+.progress-bar {
+  background: $primary;
+  transition: width .3s ease;
+}
 
 // Spinners
 
@@ -255,6 +375,6 @@ label,
 code { color: $code-color; font-size: .875em; }
 kbd  { background-color: $kbd-bg; font-size: .875em; }
 
-// Horizontal rules — subtle
+// Horizontal rules
 
-hr { border-color: #333333; opacity: 1; }
+hr { border-color: rgba(178, 191, 205, .16); opacity: 1; }

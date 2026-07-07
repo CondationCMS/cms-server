@@ -1,43 +1,84 @@
-// Superhero 5.3.8
-// Bootswatch
+// CondationCMS Theme — Flat Dark — component overrides
 
-// Variables
+@use "sass:color";
 
-$web-font-path: "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" !default;
+// Inter font
+$web-font-path: "https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" !default;
 @if $web-font-path {
   @import url("#{$web-font-path}");
 }
 
-// Buttons
-
-.btn {
-  @each $color, $value in $theme-colors {
-    &-#{$color} {
-      @if $enable-gradients {
-        background: $value linear-gradient(180deg, mix($white, $value, 15%), $value) repeat-x;
-      } @else {
-        background-color: $value;
-      }
-    }
-  }
+:root {
+  --bs-body-bg: #1a1a1a;
+  --bs-border-color: #333333;
+  --bs-focus-ring-color: rgba(245, 158, 11, .3);
 }
+
+// Flat focus — no glow, just a sharp amber outline
+*:focus-visible {
+  outline: 2px solid $primary;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+// Scrollbar
+::-webkit-scrollbar        { width: 6px; height: 6px; }
+::-webkit-scrollbar-track  { background: $body-bg; }
+::-webkit-scrollbar-thumb  { background: $gray-500; }
+::-webkit-scrollbar-thumb:hover { background: $gray-400; }
 
 // Typography
 
-.text-secondary {
-  color: var(--bs-secondary-color) !important;
+.text-secondary  { color: var(--bs-secondary-color) !important; }
+.dropdown-menu   { font-size: $font-size-sm; }
+.dropdown-header { font-size: $font-size-sm; letter-spacing: .06em; text-transform: uppercase; }
+.blockquote-footer { color: $text-muted; }
+
+// Navbar — flat, sharp bottom border, solid background
+
+.navbar {
+  border-bottom: 1px solid #333333;
+
+  &.bg-dark {
+    background-color: #111111 !important;
+  }
 }
 
-.dropdown-menu {
-  font-size: $font-size-sm;
-}
+// Buttons — flat, no shadow, bold border on outlined variants
 
-.dropdown-header {
-  font-size: $font-size-sm;
-}
+.btn {
+  font-weight: 500;
+  letter-spacing: .02em;
+  box-shadow: none !important;
+  transition: background-color .1s ease, color .1s ease, border-color .1s ease;
 
-.blockquote-footer {
-  color: $body-color;
+  @each $color, $value in $theme-colors {
+    &-#{$color} {
+      background-color: $value;
+    }
+  }
+
+  &-primary {
+    background-color: $primary;
+    border-color: $primary;
+    color: #000;
+    font-weight: 600;
+    &:hover, &:focus { background-color: color.adjust($primary, $lightness: 8%); border-color: color.adjust($primary, $lightness: 8%); color: #000; }
+    &:active         { background-color: color.adjust($primary, $lightness: -5%); }
+  }
+
+  &-secondary {
+    background-color: $gray-600;
+    border-color: #333333;
+    color: $gray-100;
+    &:hover { background-color: $gray-500; border-color: $gray-400; color: $white; }
+  }
+
+  &-outline-primary {
+    border-color: $primary;
+    color: $primary;
+    &:hover { background-color: $primary; color: #000; }
+  }
 }
 
 // Tables
@@ -45,32 +86,46 @@ $web-font-path: "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&
 .table {
   font-size: $font-size-sm;
 
-  .thead-dark th {
-    color: $white;
+  thead th {
+    border-bottom: 2px solid $primary;
+    font-weight: 600;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    font-size: .75rem;
   }
 
   a:not(.btn) {
-    color: $white;
-    text-decoration: underline;
-  }
-
-  .dropdown-menu a {
+    color: $primary;
     text-decoration: none;
+    &:hover { text-decoration: underline; }
   }
 
-  .text-muted {
-    color: $text-muted;
-  }
+  .text-muted { color: $text-muted; }
 }
 
 // Forms
 
+.form-control,
+.form-select {
+  background-color: $input-bg;
+  border-color: $input-border-color;
+  color: $input-color;
+  transition: border-color .1s ease;
+
+  &:focus {
+    background-color: $input-focus-bg;
+    border-color: $primary;
+    color: $input-focus-color;
+    box-shadow: none;
+  }
+
+  &::placeholder { color: $input-placeholder-color; }
+}
+
 label,
 .radio label,
 .checkbox label,
-.help-block {
-  font-size: $font-size-sm;
-}
+.help-block { font-size: $font-size-sm; }
 
 .form-floating {
   > label,
@@ -80,73 +135,126 @@ label,
   }
 }
 
-// Navs
+// Navs / Tabs
 
 .nav-tabs,
 .nav-pills {
   .nav-link,
-  .nav-link:hover {
-    color: $body-color;
-  }
+  .nav-link:hover { color: $body-color; }
+  .nav-link.disabled { color: $nav-link-disabled-color; }
 
-  .nav-link.disabled {
-    color: $nav-link-disabled-color;
+  // Active tab: amber underline instead of background fill
+  .nav-link.active {
+    border-bottom-color: $primary;
   }
 }
 
 .page-link:hover,
-.page-link:focus {
-  color: $white;
-  text-decoration: none;
+.page-link:focus { color: $white; text-decoration: none; }
+
+// Cards — flat, accent top-border on hover
+
+.card {
+  transition: border-color .15s ease;
+  &:hover { border-color: $primary; }
 }
 
-// Indicators
+.card-header {
+  font-weight: 600;
+  font-size: $font-size-sm;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #333333;
+}
+
+// Alerts — flat, left border only, dark bg
 
 .alert {
-  color: $white;
-  border: none;
+  border-left-width: 3px;
+  border-top-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+  font-size: $font-size-sm;
 
-  a,
-  .alert-link {
-    color: $white;
-    text-decoration: underline;
-  }
+  a, .alert-link { color: inherit; text-decoration: underline; }
 
-  @each $color, $value in $theme-colors {
-    &-#{$color} {
-      @if $enable-gradients {
-        background: $value linear-gradient(180deg, mix($white, $value, 15%), $value) repeat-x;
-      } @else {
-        background-color: $value;
-      }
-    }
-  }
+  &-primary   { background-color: $gray-800; border-color: #333333; border-left-color: $primary;  color: color.adjust($primary,  $lightness: 20%); }
+  &-success   { background-color: $gray-800; border-color: #333333; border-left-color: $success;  color: color.adjust($success,  $lightness: 15%); }
+  &-info      { background-color: $gray-800; border-color: #333333; border-left-color: $info;     color: color.adjust($info,     $lightness: 12%); }
+  &-warning   { background-color: $gray-800; border-color: #333333; border-left-color: $warning;  color: color.adjust($warning,  $lightness: 15%); }
+  &-danger    { background-color: $gray-800; border-color: #333333; border-left-color: $danger;   color: color.adjust($danger,   $lightness: 15%); }
+  &-secondary { background-color: $gray-800; border-color: #333333; border-left-color: $gray-400; color: $gray-200; }
 }
 
+// Badges
+
 .badge {
-  &-warning,
-  &-info {
-    color: $white;
-  }
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  font-size: .65em;
 }
 
 .tooltip {
-  --bs-tooltip-bg: var(--bs-tertiary-bg);
-  --bs-tooltip-color: var(--bs-emphasis-color);
+  --bs-tooltip-bg: #2e2e2e;
+  --bs-tooltip-color: #{$gray-100};
 }
 
 // Popovers
 
 .popover-header {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+  font-weight: 600;
+  font-size: $font-size-sm;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-bottom: 1px solid #333333;
 }
 
-// Containers
+// Modals — flat, sharp
 
 .modal {
   &-header,
-  &-footer {
-    background-color: $table-hover-bg;
+  &-footer { background-color: $gray-800; border-color: #333333; }
+}
+
+// Offcanvas
+
+.offcanvas {
+  border-color: #333333;
+
+  &-header {
+    border-bottom: 1px solid #333333;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    font-size: $font-size-sm;
   }
 }
+
+// List group — flat active with amber
+
+.list-group-item {
+  transition: background-color .1s ease;
+  &.active {
+    font-weight: 600;
+    color: #000;
+  }
+}
+
+// Progress — flat
+
+.progress-bar { transition: width .3s ease; }
+
+// Spinners
+
+.spinner-border,
+.spinner-grow { color: $primary; }
+
+// Code
+
+code { color: $code-color; font-size: .875em; }
+kbd  { background-color: $kbd-bg; font-size: .875em; }
+
+// Horizontal rules — subtle
+
+hr { border-color: #333333; opacity: 1; }

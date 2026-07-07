@@ -21,13 +21,22 @@ package com.condation.cms.core.configuration;
  * #L%
  */
 
-import com.condation.cms.api.Constants;import com.condation.cms.core.configuration.configs.SimpleConfiguration;
+import com.condation.cms.api.Constants;
+import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.ReloadMediaConfig;
+import com.condation.cms.api.eventbus.events.ReloadParentThemeConfig;
+import com.condation.cms.api.eventbus.events.ReloadServerConfig;
+import com.condation.cms.api.eventbus.events.ReloadSiteConfig;
+import com.condation.cms.api.eventbus.events.ReloadTaxonomyConfig;
+import com.condation.cms.api.eventbus.events.ReloadThemeConfig;
 import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.core.configuration.configs.MediaConfiguration;
 import com.condation.cms.core.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.core.configuration.reload.CompositeReload;
 import com.condation.cms.core.configuration.reload.CronReload;
+import com.condation.cms.core.configuration.reload.EventReload;
 import com.condation.cms.core.configuration.reload.NoReload;
 import com.condation.cms.core.configuration.source.TomlConfigSource;
 import com.condation.cms.core.configuration.source.YamlConfigSource;
@@ -51,12 +60,18 @@ public class ConfigurationFactory {
 				eventBus, 
 				serverConfiguration.getString("env", "dev"), 
 				hostBase,
-				new CronReload("0/10 * * * * ?", cronScheduler)
+				new CompositeReload(
+						new CronReload("0/10 * * * * ?", cronScheduler),
+						new EventReload<>(eventBus, ReloadSiteConfig.class)
+				)
 		);
 		final TaxonomyConfiguration taxonomyConfiguration = taxonomyConfiguration(
 				eventBus, 
 				hostBase,
-				new CronReload("0/10 * * * * ?", cronScheduler)
+				new CompositeReload(
+						new CronReload("0/10 * * * * ?", cronScheduler),
+						new EventReload<>(eventBus, ReloadTaxonomyConfig.class)
+				)
 		);
 
 		final SimpleConfiguration themeConfiguration = themeConfiguration(
@@ -94,9 +109,12 @@ public class ConfigurationFactory {
 	}
 	private static SimpleConfiguration themeConfiguration(String id, EventBus eventBus, String theme) throws IOException {
 		var themeBase = ServerUtil.getPath(Constants.Folders.THEMES);
+		ReloadStrategy reloadStrategy = "parent-theme".equals(id)
+				? new EventReload<>(eventBus, ReloadParentThemeConfig.class)
+				: new EventReload<>(eventBus, ReloadThemeConfig.class);
 		return SimpleConfiguration.builder(eventBus)
 				.id(id)
-				.reloadStrategy(new NoReload())
+				.reloadStrategy(reloadStrategy)
 				.addSource(YamlConfigSource.build(themeBase.resolve("%s/theme.yaml".formatted(theme))))
 				.addSource(TomlConfigSource.build(themeBase.resolve("%s/theme.toml".formatted(theme))))
 				.build();
@@ -108,7 +126,7 @@ public class ConfigurationFactory {
 	private static SimpleConfiguration serverConfiguration(EventBus eventBus) throws IOException {
 		return SimpleConfiguration.builder(eventBus)
 				.id("server")
-				.reloadStrategy(new NoReload())
+				.reloadStrategy(new EventReload<>(eventBus, ReloadServerConfig.class))
 				.addSource(TomlConfigSource.build(ServerUtil.getPath("server.toml")))
 				.addSource(YamlConfigSource.build(ServerUtil.getPath("server.yaml")))
 				.build();
@@ -129,7 +147,7 @@ public class ConfigurationFactory {
 		
 		return MediaConfiguration.builder(eventBus)
 				.id("media")
-				.reloadStrategy(new NoReload())
+				.reloadStrategy(new EventReload<>(eventBus, ReloadMediaConfig.class))
 				.addAllSources(themeSources)
 				.build();
 	}

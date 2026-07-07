@@ -27,8 +27,6 @@ import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
-import com.condation.cms.api.db.cms.NIOReadOnlyFile;
-import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
 import com.condation.cms.api.feature.features.ContentParserFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
@@ -39,6 +37,7 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.model.NavNode;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.filesystem.NIOReadOnlyFile;
 import com.condation.cms.hooksystem.CMSHookSystem;
 import java.nio.file.Path;
 import java.util.List;
@@ -74,8 +73,6 @@ public class NavigationFunctionTest {
 	MarkdownRenderer markdownRenderer;
 	@Mock
 	ContentNodeMapper contentNodeMapper;
-	@Mock
-	ReadOnlyFileSystem cmsFileSystem;
 	
 	NavigationFunction sut;
 	
@@ -85,10 +82,9 @@ public class NavigationFunctionTest {
 		var contentBase = Path.of("content/");
 		
 		Mockito.lenient().when(db.getFileSystem()).thenReturn(fileSystem);
-		Mockito.lenient().when(db.getReadOnlyFileSystem()).thenReturn(cmsFileSystem);
 		Mockito.lenient().when(db.getContent()).thenReturn(content);
 		Mockito.lenient().when(fileSystem.resolve("content/")).thenReturn(contentBase);
-		Mockito.lenient().when(cmsFileSystem.contentBase()).thenReturn(new NIOReadOnlyFile(contentBase, contentBase.getParent())
+		Mockito.lenient().when(fileSystem.contentBase()).thenReturn(new NIOReadOnlyFile(contentBase, contentBase.getParent())
 		);
 		Mockito.lenient().when(content.byUri("current")).thenReturn(Optional.empty());
 		

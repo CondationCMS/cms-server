@@ -23,6 +23,7 @@ package com.condation.cms.filesystem.taxonomy;
 
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
+import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.db.taxonomy.Taxonomies;
@@ -47,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FileTaxonomies implements Taxonomies {
 
 	private final Configuration configuration;
-	private final FileSystem fileSystem;
+	private final Content content;
 
 	@Override
 	public List<Taxonomy> all() {
@@ -61,13 +62,13 @@ public class FileTaxonomies implements Taxonomies {
 
 	@Override
 	public Map<String, Integer> valueCount(Taxonomy taxonomy) {
-		fileSystem.query((node, index) -> node).where(taxonomy.getField(), "!=", null);
+		content.query((node, index) -> node).where(taxonomy.getField(), "!=", null);
 		return Map.of();
 	}
 
 	@Override
 	public Set<String> values(Taxonomy taxonomy) {
-		var nodes = fileSystem.query((node, index) -> node).where(taxonomy.getField(), "!=", null).get();
+		var nodes = content.query((node, index) -> node).where(taxonomy.getField(), "!=", null).get();
 
 		Set<String> values = new HashSet<>();
 		nodes.forEach(node -> {
@@ -86,12 +87,12 @@ public class FileTaxonomies implements Taxonomies {
 	public List<ContentNode> withValue(final Taxonomy taxonomy, final Object value) {
 		List<ContentNode> nodes;
 		if (taxonomy.isArray()) {
-			nodes = fileSystem
+			nodes = content
 					.query((node, index) -> node).whereContains(taxonomy.getField(), value)
 					.orderby("title").asc()
 					.get();
 		} else {
-			nodes = fileSystem
+			nodes = content
 					.query((node, index) -> node)
 					.where(taxonomy.getField(), value)
 					.orderby("title").asc()
@@ -105,12 +106,12 @@ public class FileTaxonomies implements Taxonomies {
 	public Page<ContentNode> withValue(Taxonomy taxonomy, Object value, long page, long size) {
 		
 		if (taxonomy.isArray()) {
-			return fileSystem.query((node, index) -> node)
+			return content.query((node, index) -> node)
 					.whereContains(taxonomy.getField(), value)
 					.orderby("title").asc()
 					.page(page, size);
 		} else {
-			return fileSystem.query((node, index) -> node)
+			return content.query((node, index) -> node)
 					.where(taxonomy.getField(), value)
 					.orderby("title").asc()
 					.page(page, size);

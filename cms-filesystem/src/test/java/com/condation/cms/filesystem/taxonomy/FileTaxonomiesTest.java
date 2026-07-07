@@ -26,14 +26,13 @@ import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.filesystem.FileContent;
 import com.condation.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -72,9 +71,9 @@ public class FileTaxonomiesTest {
 				throw new RuntimeException(e);
 			}
 		});
-		fileSystem.init();
+		fileSystem.init();	
 		
-		taxonomies = new FileTaxonomies(config, fileSystem);
+		taxonomies = new FileTaxonomies(config, new FileContent(fileSystem));
 	}
 	
 	@AfterAll

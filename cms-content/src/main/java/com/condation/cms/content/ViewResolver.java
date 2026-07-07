@@ -64,7 +64,7 @@ public class ViewResolver {
 			path = context.get(RequestFeature.class).uri();
 		}
 
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		var contentPath = contentBase.resolve(path);
 		ReadOnlyFile contentFile = null;
 		if (contentPath.exists() && contentPath.isDirectory()) {

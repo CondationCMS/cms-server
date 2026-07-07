@@ -22,7 +22,9 @@ package com.condation.cms.api.extensions.http;
  */
 
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public abstract class APIHandlerExtensionPoint extends AbstractExtensionPoint {
 	abstract public PathMapping getMapping();
 }

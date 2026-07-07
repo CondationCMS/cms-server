@@ -16,7 +16,10 @@
 		<div id="content" >
 			<h1>{{ taxonomy.title }}</h1>
 		</div>
-
+        
+        {% for tv in taxonomy_values %}
+        <p><b>{{tv}}</b></p>
+        {% endfor %}
 	</body>
 
 

@@ -25,7 +25,6 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
-import com.condation.cms.api.db.cms.NIOReadOnlyFile;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
@@ -33,7 +32,6 @@ import com.condation.cms.api.feature.features.ContentParserFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.MarkdownRendererFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
@@ -42,13 +40,12 @@ import com.condation.cms.content.markdown.module.CMSMarkdownRenderer;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.filesystem.FileDB;
+import com.condation.cms.filesystem.NIOReadOnlyFile;
 import com.condation.cms.hooksystem.CMSHookSystem;
-import com.google.inject.Injector;
 import java.nio.file.Path;
 import org.assertj.core.api.Assertions;
 import org.eclipse.jetty.server.Request;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -124,7 +121,7 @@ public class NavigationFunctionITest {
 	@Test
 	void test_root() {
 		ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).run(() -> {
-			var currentNode = db.getReadOnlyFileSystem().contentBase();
+			var currentNode = db.getFileSystem().contentBase();
 			NavigationFunction fn = new NavigationFunction(db, currentNode, requestContext);
 
 			var nodes = fn.json().list(".");

@@ -24,4 +24,5 @@ export interface TaxonomyValue {
 }
 declare const getTaxonomies: () => Promise<Record<string, string>>;
 declare const getTaxonomyValues: (slug: string) => Promise<TaxonomyValue[]>;
-export { getTaxonomies, getTaxonomyValues };
+declare const createTaxonomyValue: (slug: string, title: string) => Promise<TaxonomyValue>;
+export { getTaxonomies, getTaxonomyValues, createTaxonomyValue };

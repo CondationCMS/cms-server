@@ -34,7 +34,10 @@ taxonomy:
   tags:
   - kleidung
   - hoodies_sweatshirts
+  - schuhe
   - kinderkleidung
+  - Small Test
+  - New tag
 ---
 
 # Demo Project

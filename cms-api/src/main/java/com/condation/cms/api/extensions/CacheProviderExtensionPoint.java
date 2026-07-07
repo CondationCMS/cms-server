@@ -23,6 +23,7 @@ package com.condation.cms.api.extensions;
 
 
 import com.condation.cms.api.cache.CacheProvider;
+import org.jspecify.annotations.NullMarked;
 
 /**
  *

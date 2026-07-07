@@ -97,7 +97,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 	@RemoteMethod(name = "translations.remove", permissions = {Permissions.CONTENT_EDIT})
 	public Object remove(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 
 		var uri = (String) parameters.get("uri");
 		var language = (String) parameters.get("language");
@@ -151,7 +151,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 	@RemoteMethod(name = "translations.add", permissions = {Permissions.CONTENT_EDIT})
 	public Object add(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 
 		var uri = (String) parameters.get("uri");
 		var language = (String) parameters.get("language");

@@ -21,7 +21,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.NodeStatus;
@@ -69,7 +68,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 		
 		var uri = (String) parameters.get("uri");
 
@@ -94,7 +93,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setContent(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 
 		var updatedContent = FormHelper.getContent(parameters.get("content"));
 		var uri = (String) parameters.get("uri");
@@ -124,7 +123,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.replace", permissions = {Permissions.CONTENT_EDIT})
 	public Object replaceContent(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 
 		var replacement = (String)parameters.get("content");
 		int start = NumberUtils.toInt(parameters.getOrDefault("start", -1l));
@@ -165,7 +164,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "meta.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setMeta(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 
 		var updateParam = (Map<String, Map<String, Object>>) parameters.get("meta");
 		var update = MetaConverter.convertMeta(updateParam);
@@ -201,7 +200,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "meta.set.batch", permissions = {Permissions.CONTENT_EDIT})
 	public Object setMetaBatch(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("endpoint", "meta.set.batch");
@@ -270,7 +269,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.sectionEntry.add", permissions = {Permissions.CONTENT_EDIT})
 	public Object addSectionEntry(Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 
 		var content = (String) parameters.getOrDefault("content", "");
 		var parentUri = (String) parameters.get("parentUri");
@@ -316,7 +315,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.node", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContentNode (Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getReadOnlyFileSystem().resolve(Constants.Folders.CONTENT);
+		var contentBase = db.getFileSystem().contentBase();
 		
 		var url = (String) parameters.get("url");
 

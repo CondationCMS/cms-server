@@ -40,5 +40,5 @@ public interface HttpHandler {
 	 * @return true if the request is handled by the HttpHandler, otherwise false
 	 * @throws Exception 
 	 */
-	boolean handle (Request request, Response response, Callback callback) throws Exception;
+	 boolean handle ( Request request, Response response,  Callback callback) throws Exception;
 }

@@ -23,7 +23,7 @@ package com.condation.cms.content;
 
 
 
-import com.condation.cms.api.db.cms.NIOReadOnlyFile;
+import com.condation.cms.filesystem.NIOReadOnlyFile;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Date;

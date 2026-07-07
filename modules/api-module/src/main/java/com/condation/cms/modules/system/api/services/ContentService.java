@@ -60,7 +60,7 @@ public class ContentService {
 	}
 	
 	private Optional<ContentNode> resolveContentNode(String uri) {
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		var contentPath = contentBase.resolve(uri);
 		ReadOnlyFile contentFile = null;
 		if (contentPath.exists() && contentPath.isDirectory()) {

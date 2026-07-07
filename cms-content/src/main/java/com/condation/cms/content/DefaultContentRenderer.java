@@ -107,7 +107,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 			final Optional<ReadOnlyFile> contentFileOpt,
 			final Taxonomy taxonomy, Optional<String> taxonomyValue, final RequestContext context, 
 			final Map<String, Object> meta, final Page<ListNode> page, final Map<String, List<SectionEntry>> sectionEntries) throws IOException {
-		var contentFile = contentFileOpt.orElseGet(() -> db.getReadOnlyFileSystem().contentBase().resolve("index.md"));
+		var contentFile = contentFileOpt.orElseGet(() -> db.getFileSystem().contentBase().resolve("index.md"));
 		var content = contentFileOpt.isPresent() ? 
 				contentParser.parse(contentFileOpt.get()).content()
 				: "";
@@ -142,7 +142,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 			final Map<String, List<SectionEntry>> sectionEntries,
 			final Map<String, Object> meta, final String rawContent, final Consumer<TemplateEngine.Model> modelExtending
 	) throws IOException {
-		var uri = PathUtil.toRelativeFile(contentFile, db.getReadOnlyFileSystem().contentBase());
+		var uri = PathUtil.toRelativeFile(contentFile, db.getFileSystem().contentBase());
 		
 		Optional<ContentNode> contentNode = db.getContent().byUri(uri);
 
@@ -289,7 +289,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 
 		Map<String, List<SectionEntry>> sectionEntries = new HashMap<>();
 
-		final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
+		final ReadOnlyFile contentBase = db.getFileSystem().contentBase();
 		sectionEntryNodes.forEach(node -> {
 			try {
 				var sectionEntryPath = contentBase.resolve(node.uri());

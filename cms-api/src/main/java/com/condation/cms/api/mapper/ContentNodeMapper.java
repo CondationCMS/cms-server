@@ -66,7 +66,7 @@ public class ContentNodeMapper {
 	public ListNode toListNode(final ContentNode node, final RequestContext context, final int excerptLength) {
 
 		var name = NodeUtil.getName(node);
-		final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
+		final ReadOnlyFile contentBase = db.getFileSystem().contentBase();
 		var temp_path = contentBase.resolve(node.uri());
 		var url = PathUtil.toURL(temp_path, contentBase);
 		

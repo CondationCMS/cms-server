@@ -25,6 +25,7 @@ import com.condation.cms.api.ModuleFileSystem;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.DBFileSystem;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ContentChangedEvent;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
@@ -34,7 +35,6 @@ import com.condation.cms.api.eventbus.events.TemplateChangedEvent;
 import com.condation.cms.api.exceptions.AccessNotAllowedException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.utils.MdcScope;
-import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.PageMetaData;
 import com.condation.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.condation.cms.filesystem.metadata.persistent.PersistentMetaData;
@@ -83,15 +83,15 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		return hostBaseDirectory;
 	}
 
-	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
+	protected <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper) {
 		return metaData.query(nodeMapper);
 	}
 
-	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper) {
+	protected <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper) {
 		return metaData.query(startURI, nodeMapper);
 	}
 
-	public boolean isVisible(final String uri) {
+	protected boolean isVisible(final String uri) {
 		var node = metaData.byUri(uri);
 		if (node.isEmpty()) {
 			return false;
@@ -365,6 +365,18 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		reInitFolder(contentBase);
 		eventBus.publish(new ContentChangedEvent(contentBase));
 		eventBus.publish(new InvalidateContentCacheEvent());
+	}
+
+	@Override
+	public ReadOnlyFile contentBase() {
+		var path = resolve(Constants.Folders.CONTENT);
+		return new NIOReadOnlyFile(path, path);
+	}
+
+	@Override
+	public ReadOnlyFile assetBase() {
+		var path = resolve(Constants.Folders.ASSETS);
+		return new NIOReadOnlyFile(path, path);
 	}
 
 	private void reInitFolder(final Path folder) throws IOException {

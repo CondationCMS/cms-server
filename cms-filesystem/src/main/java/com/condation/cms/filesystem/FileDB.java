@@ -27,7 +27,6 @@ import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
-import com.condation.cms.api.db.cms.WrappedReadOnlyFileSystem;
 import com.condation.cms.api.db.taxonomy.Taxonomies;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.filesystem.taxonomy.FileTaxonomies;
@@ -67,11 +66,12 @@ public class FileDB implements DB {
 		fileSystem.init(metaDataType);
 		readOnlyFileSystem = new WrappedReadOnlyFileSystem(fileSystem);
 		
-		content = new FileContent(fileSystem, readOnlyFileSystem);
+		content = new FileContent(fileSystem);
 		
-		taxonomies = new FileTaxonomies(configuration, fileSystem);	
+		taxonomies = new FileTaxonomies(configuration, content);	
 	}
 
+	@Deprecated
 	@Override
 	public ReadOnlyFileSystem getReadOnlyFileSystem() {
 		return readOnlyFileSystem;

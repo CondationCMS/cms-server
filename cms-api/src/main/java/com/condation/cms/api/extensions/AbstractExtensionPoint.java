@@ -28,6 +28,7 @@ import com.condation.cms.api.request.RequestContextScope;
 import com.condation.modules.api.ExtensionPoint;
 import com.condation.modules.api.ModuleConfiguration;
 import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 /**
  *
@@ -49,7 +50,7 @@ public abstract class AbstractExtensionPoint implements ExtensionPoint<SiteModul
 		this.context = context;
 	}
 	
-    public RequestContext getRequestContext () {
+    public @Nullable RequestContext getRequestContext () {
         return RequestContextScope.REQUEST_CONTEXT.get();
     }
 	

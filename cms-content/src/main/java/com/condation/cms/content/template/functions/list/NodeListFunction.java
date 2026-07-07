@@ -96,7 +96,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 		String path = start;
 		// first select base node
 		if (start.startsWith("/")) {
-			baseNode = db.getReadOnlyFileSystem().contentBase();
+			baseNode = db.getFileSystem().contentBase();
 			path = start.substring(1);
 		} else if (start.equals(".")) {
 			baseNode = currentNode.getParent();
@@ -116,7 +116,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 		blog\/*\/*
 		 */
 		if (path.contains("*")) {
-			final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
+			final ReadOnlyFile contentBase = db.getFileSystem().contentBase();
 			List<ContentNode> relevantPaths = getPaths(baseNode, path);
 
 			List<ContentNode> allContentNodes = new ArrayList<>();
@@ -185,7 +185,7 @@ class NodeListFunction extends AbstractCurrentNodeFunction {
 					.listContent(base, start)
 					.stream().filter(nodeFilter)
 					.toList();
-			final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
+			final ReadOnlyFile contentBase = db.getFileSystem().contentBase();
 			long total = navNodes.stream().filter(nodeNameFilter).count();
 			int skipCount = (page - 1) * pageSize;
 

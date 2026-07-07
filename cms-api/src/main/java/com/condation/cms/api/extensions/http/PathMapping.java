@@ -26,7 +26,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jetty.http.pathmap.PathSpec;
+import org.jspecify.annotations.NullMarked;
 
+
+@NullMarked
 public class PathMapping {
 	
     private List<Mapping> mappings;

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
-import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 
 /**
  *
@@ -41,7 +40,6 @@ import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 public class FileContent implements Content {
 
 	private final FileSystem fileSystem;
-	private final ReadOnlyFileSystem cmsFileSystem;
 	
 	@Override
 	public boolean isVisible(String uri) {
@@ -55,7 +53,7 @@ public class FileContent implements Content {
 	
 	@Override
 	public List<ContentNode> listSectionEntries(ReadOnlyFile contentFile) {
-		String folder = PathUtil.toRelativePath(contentFile, cmsFileSystem.contentBase());
+		String folder = PathUtil.toRelativePath(contentFile, fileSystem.contentBase());
 		String filename = contentFile.getFileName();
 		filename = filename.substring(0, filename.length() - 3);
 		
@@ -65,14 +63,14 @@ public class FileContent implements Content {
 	@Override
 	public List<ContentNode> listContent(ReadOnlyFile base, String start) {
 		var startPath = base.resolve(start);
-		String folder = PathUtil.toRelativePath(startPath, cmsFileSystem.contentBase());
+		String folder = PathUtil.toRelativePath(startPath, fileSystem.contentBase());
 		return fileSystem.listContent(folder);
 	}
 
 	@Override
 	public List<ContentNode> listDirectories(ReadOnlyFile base, String start) {
 		var startPath = base.resolve(start);
-		String folder = PathUtil.toRelativePath(startPath, cmsFileSystem.contentBase());
+		String folder = PathUtil.toRelativePath(startPath, fileSystem.contentBase());
 		return fileSystem.listDirectories(folder);
 	}
 

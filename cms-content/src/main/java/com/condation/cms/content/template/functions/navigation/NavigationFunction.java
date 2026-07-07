@@ -79,7 +79,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 	 */
 	public List<NavNode> path() {
 		List<NavNode> navNodes = new ArrayList<>();
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		var node = currentNode;
 		while (node != null) {
 			var uri = PathUtil.toRelativeFile(node, contentBase);
@@ -136,15 +136,15 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 	private List<NavNode> getNodes(final String start, final int depth) {
 		List<NavNode> navNodes = Collections.emptyList();
 		if (start.startsWith("/")) { // root
-			navNodes = getNodesFromBase(db.getReadOnlyFileSystem().contentBase(), start.substring(1), depth);
+			navNodes = getNodesFromBase(db.getFileSystem().contentBase(), start.substring(1), depth);
 		} else if (start.equals(".")) { // current
-			if (currentNode.equals(db.getReadOnlyFileSystem().contentBase())) {
+			if (currentNode.equals(db.getFileSystem().contentBase())) {
 				navNodes = getNodesFromBase(currentNode, "", depth);
 			} else {
 				navNodes = getNodesFromBase(currentNode.getParent(), "", depth);
 			}
 		} else if (start.startsWith("./")) { // subfolder of current
-			if (currentNode.equals(db.getReadOnlyFileSystem().contentBase())) {
+			if (currentNode.equals(db.getFileSystem().contentBase())) {
 				navNodes = getNodesFromBase(currentNode, start.substring(2), depth);
 			} else {
 				navNodes = getNodesFromBase(currentNode.getParent(), start.substring(2), depth);
@@ -193,7 +193,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 			});
 
 			final List<NavNode> nodes = new ArrayList<>();
-			final ReadOnlyFile contentBase = db.getReadOnlyFileSystem().contentBase();
+			final ReadOnlyFile contentBase = db.getFileSystem().contentBase();
 			navNodes.forEach((node) -> {
 				var name = NodeUtil.getName(node);
 				var path = contentBase.resolve(node.uri());

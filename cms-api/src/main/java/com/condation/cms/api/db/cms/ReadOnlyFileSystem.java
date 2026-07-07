@@ -27,6 +27,7 @@ package com.condation.cms.api.db.cms;
  *
  * @author t.marx
  */
+@Deprecated
 public interface ReadOnlyFileSystem {
 
 	/**

@@ -67,7 +67,7 @@ public class NavigationHandler implements HttpHandler {
 		var depth = Integer.valueOf(queryParameters.getOrDefault("depth", List.of("1")).getFirst());
 		var contentType = queryParameters.getOrDefault("contentType", List.of(Constants.ContentTypes.HTML)).getFirst();
 		
-		var startNode = db.getReadOnlyFileSystem().contentBase().resolve(uri);
+		var startNode = db.getFileSystem().contentBase().resolve(uri);
 
 		if (startNode == null) {
 			response.setStatus(404);

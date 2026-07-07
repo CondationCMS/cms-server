@@ -59,7 +59,7 @@ public abstract class AbstractNodeFunction implements TemplateFunction {
 		String uri = ContentResolvingStrategy.uriToPath((String)params[0]);
 		
 		var db = requestContext.get(InjectorFeature.class).injector().getInstance(DB.class);
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		
 		Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(uri, db);
 		

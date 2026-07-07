@@ -1,8 +1,8 @@
-package com.condation.cms.api.db.cms;
+package com.condation.cms.filesystem;
 
 /*-
  * #%L
- * CMS Api
+ * CMS FileSystem
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -10,18 +10,18 @@ package com.condation.cms.api.db.cms;
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
 
-
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.exceptions.AccessNotAllowedException;
 import com.condation.cms.api.utils.PathUtil;
 import java.io.IOException;
@@ -44,17 +44,17 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 
 	protected final Path file;
 	private final Path basePath;
-	
+
 	@Override
-	public String uri () {
+	public String uri() {
 		return PathUtil.toURL(file, basePath);
 	}
-	
+
 	@Override
 	public String relativePath() {
 		return PathUtil.toRelativeFile(file, basePath);
 	}
-	
+
 	@Override
 	public boolean exists() {
 		return Files.exists(file);
@@ -63,11 +63,11 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	@Override
 	public ReadOnlyFile resolve(String uri) {
 		var resolved = file.resolve(uri);
-		
+
 		if (!PathUtil.isChild(basePath, resolved)) {
 			throw new AccessNotAllowedException("not allowed to access nodes outside the host base directory");
 		}
-		
+
 		return new NIOReadOnlyFile(resolved, basePath);
 	}
 
@@ -80,7 +80,7 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	public String getContent(Charset charset) throws IOException {
 		return Files.readString(file, charset);
 	}
-	
+
 	@Override
 	public List<String> getAllLines() throws IOException {
 		return getAllLines(StandardCharsets.UTF_8);
@@ -93,7 +93,7 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 
 	@Override
 	public ReadOnlyFile relativize(ReadOnlyFile node) {
-		var resolved = file.relativize(((NIOReadOnlyFile)node).file);
+		var resolved = file.relativize(((NIOReadOnlyFile) node).file);
 		return new NIOReadOnlyFile(resolved, basePath);
 	}
 
@@ -115,11 +115,11 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 	@Override
 	public ReadOnlyFile getParent() {
 		var resolved = file.getParent();
-		
+
 		if (!PathUtil.isChild(basePath, resolved)) {
 			throw new AccessNotAllowedException("not allowed to access nodes outside the host base directory");
 		}
-		
+
 		return new NIOReadOnlyFile(resolved, basePath);
 	}
 
@@ -152,7 +152,6 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 
 	@Override
 	public boolean isChild(ReadOnlyFile maybeChild) {
-	
 		try {
 			if (maybeChild == null) {
 				return false;
@@ -161,14 +160,14 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
-		
+
 		return false;
 	}
 
 	@Override
 	public boolean hasParent() {
 		var resolved = file.getParent();
-		
+
 		return PathUtil.isChild(basePath, resolved);
 	}
 
@@ -193,7 +192,4 @@ public class NIOReadOnlyFile implements ReadOnlyFile {
 		final NIOReadOnlyFile other = (NIOReadOnlyFile) obj;
 		return Objects.equals(this.file, other.file);
 	}
-	
-	
-	
 }

@@ -25,6 +25,7 @@ import com.condation.cms.api.configuration.configs.TaxonomyConfiguration;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.utils.FileUtils;
+import com.condation.cms.filesystem.FileContent;
 import com.condation.cms.filesystem.FileSystem;
 import com.condation.cms.filesystem.MetaData;
 
@@ -73,7 +74,7 @@ public class PersistentFileTaxonomiesTest {
 		});
 		fileSystem.init(MetaData.Type.PERSISTENT);
 
-		taxonomies = new FileTaxonomies(config, fileSystem);
+		taxonomies = new FileTaxonomies(config, new FileContent(fileSystem));
 	}
 
 	@AfterAll

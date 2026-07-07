@@ -63,7 +63,7 @@ public class ContentResolver {
 	}
 	
 	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		var path = ContentResolvingStrategy.uriToPath(context.get(RequestFeature.class).uri());
 		Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(context.get(RequestFeature.class).uri(), db);
 		ReadOnlyFile contentFile = contentFileOpt.orElse(null);

@@ -20,10 +20,8 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
@@ -41,7 +39,6 @@ import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Path;
-import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 
 /**
  *
@@ -63,7 +60,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 			uri = uri.substring(1);
 		}
 		var type = (String) parameters.get("type");
-		var contentBase = getBase(db.getReadOnlyFileSystem(), type);
+		var contentBase = getBase(db.getFileSystem(), type);
 
 		var contentFile = contentBase.resolve(uri);
 
@@ -110,7 +107,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
 			var type = (String) parameters.get("type");
-			var contentBase = getBase(db.getReadOnlyFileSystem(), type);
+			var contentBase = getBase(db.getFileSystem(), type);
 
 			var contentFile = contentBase.resolve(uri).resolve(name);
 
@@ -156,7 +153,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 				throw new IllegalArgumentException("newName must not be null or blank");
 			}
 
-			var contentBase = getBase(db.getReadOnlyFileSystem(), type);
+			var contentBase = getBase(db.getFileSystem(), type);
 			
 			// check if both paths are in host directory
 			contentBase.resolve(uri).resolve(name);

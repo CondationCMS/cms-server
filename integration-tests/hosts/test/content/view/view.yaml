@@ -1,12 +1,12 @@
 ## YAML Template.
 ---
-published: true
+status: published
 template: views/test.html
 content:
   nodelist:
     from: "/blog/*"
     reverse: true
-    sort: published
+    sort: status
     excerpt: 250
     page: "queryParams.getOrDefault('page', '1').getFirst()"
     size: 15

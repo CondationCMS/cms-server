@@ -1,6 +1,6 @@
 ---
 title: the child
-published: true
+status: published
 ---
 
 some content

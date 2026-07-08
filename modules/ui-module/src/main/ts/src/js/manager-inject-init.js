@@ -71,7 +71,7 @@ export function initIframe() {
 				if (!sectionContainer) {
 					continue;
 				}
-				if (item.data.published) {
+				if (item.data.status === 'published') {
 					sectionContainer.setAttribute('data-cms-action', 'unpublish');
 					sectionContainer.setAttribute("title", "Unpublish");
 					if (isSectionPublishedExpired(item)) {

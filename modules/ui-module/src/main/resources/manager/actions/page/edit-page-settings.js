@@ -34,12 +34,12 @@ const DEFAULT_FIELDS = [
     },
     {
         type: 'select',
-        name: 'published',
-        title: 'Published',
+        name: 'status',
+        title: 'Status',
         options: {
             choices: [
-                { label: 'No', value: false },
-                { label: 'Yes', value: true }
+                { label: 'Draft', value: 'draft' },
+                { label: 'Published', value: 'published' }
             ]
         }
     },
@@ -74,7 +74,7 @@ export async function runAction(params) {
     ];
     const values = {
         'title': getContentResponse?.result?.meta?.title,
-        'published': getContentResponse?.result?.meta?.published,
+        'status': getContentResponse?.result?.meta?.status || 'draft',
         'publish_date': getContentResponse?.result?.meta?.publish_date,
         'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
         ...buildValuesFromFields(pageSettingsForm, getContentResponse?.result?.meta)

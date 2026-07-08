@@ -1,7 +1,7 @@
 ---
 title: JSON
 template: start.ftl
-published: true
+status: published
 content:
     type: "application/json"
 ---

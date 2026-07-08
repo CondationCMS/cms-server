@@ -3,7 +3,7 @@ template: section.html
 description: test23
 layout:
   order: 1
-published: false
+status: draft
 parent:
   text: ''
 object:

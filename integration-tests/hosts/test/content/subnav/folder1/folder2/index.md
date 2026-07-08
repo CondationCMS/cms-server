@@ -1,7 +1,7 @@
 ---
 title: folder2
 template: start.ftl
-published: true
+status: published
 ---
 
 Und hier der Inhalt

@@ -1,6 +1,6 @@
 ---
 title: another
-published: true
+status: published
 ---
 
 some content

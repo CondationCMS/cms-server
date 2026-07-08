@@ -5,7 +5,7 @@ content:
   nodelist:
     from: "./"
     reverse: true
-    sort: published
+    sort: status
     excerpt: 250
     page: "queryParams.getOrDefault('page', 1)"
     size: 15

@@ -8,7 +8,7 @@ parent:
   text: text for a section
 layout:
   order: 1
-published: true
+status: published
 object:
   values:
   - title: section 1-1

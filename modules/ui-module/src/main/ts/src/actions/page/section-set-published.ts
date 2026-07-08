@@ -27,9 +27,9 @@ export async function runAction(params : any) {
     var request = {
         uri : params.sectionUri,
         meta: {
-            published: {
+            status: {
                 type: "select",
-                value: params.published ? true : false,
+                value: params.published ? "published" : "draft",
             }
         }
     };

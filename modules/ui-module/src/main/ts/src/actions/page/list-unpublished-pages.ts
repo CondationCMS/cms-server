@@ -86,9 +86,9 @@ const updateDialog = async (pageNumber: number) => {
     const filterOptions: FilterPagesOptions = {
         where: [
             {
-                field: "published",
+                field: "status",
                 operator: "=",
-                value: false
+                value: "draft"
             }
         ],
         page: pageNumber,

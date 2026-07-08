@@ -1,7 +1,7 @@
 ---
 title: ProduktSeite
 template: pages/product.ftl
-published: true
+status: published
 ---
 
 Das ist ein Produkt!

@@ -3,7 +3,7 @@ title: Content example
 template: content/content.html
 search:
   index: false
-published: true
+status: published
 ---
 
 # Content examples

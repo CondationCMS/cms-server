@@ -2,7 +2,7 @@
 template: section.html
 layout:
   order: 1000
-published: true
+status: published
 parent:
   text: testasdasdf
 description: test

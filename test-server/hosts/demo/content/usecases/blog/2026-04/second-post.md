@@ -1,6 +1,6 @@
 ---
 title: Our second blog post
-published: true
+status: published
 publish_date: 2026-04-08T00:00:00Z
 template: usecases/blog/article.html
 ---

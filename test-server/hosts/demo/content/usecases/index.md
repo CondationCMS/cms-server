@@ -1,6 +1,6 @@
 ---
 title: Use Cases
-published: true
+status: published
 template: content/content.html
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: Startseite
 template: start.ftl
-published: true
+status: published
 tags: 
     - eins
     - zwei

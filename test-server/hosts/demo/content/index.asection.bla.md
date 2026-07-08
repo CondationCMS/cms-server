@@ -9,7 +9,7 @@ parent:
 layout:
   order: 0
 media_url: compass-7592444_1920.jpg
-published: true
+status: published
 object:
   values:
   - title: section 1-1

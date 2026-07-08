@@ -1,6 +1,6 @@
 ---
 title: Templates
-published: true
+status: published
 template: templatelanguage/content.html
 ---
 

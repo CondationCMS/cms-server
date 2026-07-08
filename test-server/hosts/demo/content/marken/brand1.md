@@ -10,7 +10,7 @@ features: [
 background_color: '#000000'
 range_test: 0
 unpublish_date: null
-published: true
+status: published
 publish_date: null
 translations:
   de: /ueber

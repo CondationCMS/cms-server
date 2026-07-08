@@ -1,5 +1,5 @@
 ---
 title: Welcome to our blog
-published: true
+status: published
 template: usecases/blog/blog.html
 ---

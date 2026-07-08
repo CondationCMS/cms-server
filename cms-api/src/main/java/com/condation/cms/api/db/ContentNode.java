@@ -101,7 +101,7 @@ public record ContentNode(String uri, String name, Map<String, Object> data,
      */
     @Deprecated(since = "8.3.0", forRemoval = false)
     public boolean isDraft() {
-        return !((boolean) data().getOrDefault(Constants.MetaFields.PUBLISHED, false));
+        return !new DefaultWFStatusProvider().isPublished(this);
     }
 
     public boolean isParentPathHidden() {

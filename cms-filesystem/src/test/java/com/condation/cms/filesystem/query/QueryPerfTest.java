@@ -23,6 +23,7 @@ package com.condation.cms.filesystem.query;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.DefaultWFStatusProvider;
 import com.condation.cms.filesystem.metadata.memory.MemoryQuery;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -55,7 +56,7 @@ public class QueryPerfTest {
 			var node = new ContentNode("/test" + i, "test2.md", Map.of(
 					"article", Map.of("featured", (i % 2 == 0 ? true : false)),
 					"index", i,
-					Constants.MetaFields.PUBLISHED, true,
+					Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED,
 					Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now().minus(1, ChronoUnit.DAYS)),
 					"tags", List.of("one", "two"))
 			);

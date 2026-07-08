@@ -3,7 +3,7 @@ title: Section example page
 template: content/sections.html
 search:
   index: false
-published: true
+status: published
 description: Thats awesome 1234
 parent:
   text: another text for the meta attribute , seems to work

@@ -25,7 +25,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.DateRange;
 import java.time.Instant;
 import java.util.Date;
-import java.util.Map;
 
 /**
  *
@@ -33,14 +32,17 @@ import java.util.Map;
  */
 public class DefaultWFStatusProvider implements WFStatusProvider {
 
+	public static final String STATUS_DRAFT = "draft";
+	public static final String STATUS_PUBLISHED = "published";
+
 	@Override
 	public boolean isPublished(ContentNode node) {
-		return (boolean) node.data().getOrDefault(Constants.MetaFields.PUBLISHED, false);
+		return STATUS_PUBLISHED.equals(statusValue(node));
 	}
     
     @Override
     public Status status (ContentNode node) {
-		var published = (boolean) node.data().getOrDefault(Constants.MetaFields.PUBLISHED, false);
+		var published = isPublished(node);
 		var publish_date = (Date) node.data().getOrDefault(Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now()));
 		
 		var unpublish_date = (Date) node.data().getOrDefault(Constants.MetaFields.UNPUBLISH_DATE, null);
@@ -48,5 +50,13 @@ public class DefaultWFStatusProvider implements WFStatusProvider {
 		return new Status(published, DateRange.isNowWithin(publish_date, unpublish_date));
 	}
 	
+	private String statusValue(ContentNode node) {
+		if (node.data().containsKey(Constants.MetaFields.STATUS)) {
+			return (String) node.data().getOrDefault(Constants.MetaFields.STATUS, STATUS_DRAFT);
+		}
+		return (boolean) node.data().getOrDefault(Constants.MetaFields.PUBLISHED, false)
+				? STATUS_PUBLISHED
+				: STATUS_DRAFT;
+	}
 	
 }

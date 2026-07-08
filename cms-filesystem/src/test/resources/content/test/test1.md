@@ -6,5 +6,5 @@ number1: 1
 number2: 5
 publish_date: 2024-10-01
 keywords: ["eins", "zwei"]
-published: true
+status: published
 sort_field: Superman

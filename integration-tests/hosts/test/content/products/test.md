@@ -2,7 +2,7 @@
 title: ProduktSeite
 template: test.ftl
 tags: [eins,zwei,drei]
-published: true
+status: published
 ---
 
 Das ist ein Produkt!

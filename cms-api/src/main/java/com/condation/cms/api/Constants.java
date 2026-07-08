@@ -43,7 +43,9 @@ public abstract class Constants {
 	}
 	
 	public static class MetaFields {
+		@Deprecated(since = "8.3.0", forRemoval = false)
 		public static final String PUBLISHED = "published";
+		public static final String STATUS = "status";
 		public static final String PUBLISH_DATE = "publish_date";
 		public static final String UNPUBLISH_DATE = "unpublish_date";
 		

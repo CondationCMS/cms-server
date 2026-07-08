@@ -1,6 +1,6 @@
 ---
 title: the draft child
-published: false
+status: draft
 ---
 
 some content

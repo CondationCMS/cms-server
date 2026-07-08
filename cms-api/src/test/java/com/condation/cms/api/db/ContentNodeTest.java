@@ -48,7 +48,7 @@ public class ContentNodeTest {
 	@Test
 	public void test_custom_wf_status_provider() {
 		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.PUBLISHED, false
+				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_DRAFT
 		));
 		var requestContext = new RequestContext();
 		requestContext.add(WFStatusProviderFeature.class, new WFStatusProviderFeature(new WFStatusProvider() {
@@ -75,7 +75,7 @@ public class ContentNodeTest {
 		cal.set(2023, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.PUBLISHED, true
+				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
 	}
@@ -86,7 +86,7 @@ public class ContentNodeTest {
 		cal.set(2123, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.PUBLISHED, true
+				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 	}
@@ -97,7 +97,7 @@ public class ContentNodeTest {
 		cal.set(2023, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.PUBLISHED, true
+				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 	}
@@ -108,7 +108,7 @@ public class ContentNodeTest {
 		cal.set(2123, 11, 1);
 		var contentNode = new ContentNode("", "", Map.of(
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.PUBLISHED, true
+				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
 	}

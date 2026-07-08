@@ -1,6 +1,6 @@
 ## YAML Template.
 ---
-published: true
+status: published
 template: views/test.html
 content:
   query:

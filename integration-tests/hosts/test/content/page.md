@@ -1,7 +1,7 @@
 ---
 title: Startseite
 template: test.ftl
-published: true
+status: published
 ---
 
 Und hier der Inhalt

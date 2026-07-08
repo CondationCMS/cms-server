@@ -39,6 +39,8 @@ import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.content.RenderContentFunction;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.DefaultWFStatusProvider;
+import com.condation.cms.api.db.WFStatusProvider;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
@@ -104,6 +106,7 @@ public class SiteModule extends AbstractModule {
 	protected void configure() {
 		bind(Configuration.class).toInstance(configuration);
 		bind(EventBus.class).to(MessagingEventBus.class).in(Singleton.class);
+		bind(WFStatusProvider.class).to(DefaultWFStatusProvider.class).in(Singleton.class);
 		//bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 		bind(TaxonomyFunction.class).in(Singleton.class);
 		bind(TaxonomyResolver.class).in(Singleton.class);

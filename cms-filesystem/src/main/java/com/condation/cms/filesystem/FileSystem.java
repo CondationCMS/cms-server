@@ -25,6 +25,7 @@ import com.condation.cms.api.ModuleFileSystem;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.DBFileSystem;
+import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ContentChangedEvent;
@@ -234,7 +235,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			metaData.getTree().values()
 					.stream()
 					.filter(node -> !node.isHidden())
-					.filter(node -> node.isVisible())
+					.filter(NodeVisibility::isVisible)
 					.filter(node -> node.isSectionEntry())
 					.filter(node -> {
 						return isSectionEntryOf.matcher(node.name()).matches() || isNamedSectionEntryOf.matcher(node.name()).matches();
@@ -248,7 +249,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 				findFolder.get().children().values()
 						.stream()
 						.filter(node -> !node.isHidden())
-						.filter(node -> node.isVisible())
+						.filter(NodeVisibility::isVisible)
 						.filter(node -> node.isSectionEntry())
 						.filter(node
 								-> isSectionEntryOf.matcher(node.name()).matches() || isNamedSectionEntryOf.matcher(node.name()).matches()

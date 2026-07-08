@@ -37,6 +37,8 @@ import com.condation.cms.api.feature.features.MessagingFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
+import com.condation.cms.api.feature.features.WFStatusProviderFeature;
+import com.condation.cms.api.db.WFStatusProvider;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.scheduler.CronJobContext;
@@ -74,6 +76,7 @@ public class SiteConfigInitializer {
 		context.add(MessagingFeature.class, new MessagingFeature(injector.getInstance(Messaging.class)));
 		context.add(ThemeFeature.class, new ThemeFeature(injector.getInstance(Theme.class)));
 		context.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
+		context.add(WFStatusProviderFeature.class, new WFStatusProviderFeature(injector.getInstance(WFStatusProvider.class)));
     }
 
     private void initModuleContext () {
@@ -86,6 +89,7 @@ public class SiteConfigInitializer {
 		cmsModuleContext.add(MessagingFeature.class, new MessagingFeature(injector.getInstance(Messaging.class)));
 		cmsModuleContext.add(ThemeFeature.class, new ThemeFeature(injector.getInstance(Theme.class)));
 		cmsModuleContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
+		cmsModuleContext.add(WFStatusProviderFeature.class, new WFStatusProviderFeature(injector.getInstance(WFStatusProvider.class)));
 		cmsModuleContext.add(CronJobSchedulerFeature.class, new CronJobSchedulerFeature(injector.getInstance(SiteCronJobScheduler.class)));
 		cmsModuleContext.add(CacheManagerFeature.class, new CacheManagerFeature(injector.getInstance(CacheManager.class)));
 		cmsModuleContext.add(InjectorFeature.class, new InjectorFeature(injector));

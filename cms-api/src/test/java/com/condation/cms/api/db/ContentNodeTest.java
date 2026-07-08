@@ -23,7 +23,9 @@ package com.condation.cms.api.db;
 
 
 import com.condation.cms.api.Constants;
-import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.feature.features.WFStatusProviderFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import java.util.Calendar;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
@@ -39,7 +41,32 @@ public class ContentNodeTest {
 	@Test
 	public void test_publish() {
 		var contentNode = new ContentNode("", "", Map.of());
+		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 		Assertions.assertThat(contentNode.isVisible()).isFalse();
+	}
+
+	@Test
+	public void test_custom_wf_status_provider() {
+		var contentNode = new ContentNode("", "", Map.of(
+				Constants.MetaFields.PUBLISHED, false
+		));
+		var requestContext = new RequestContext();
+		requestContext.add(WFStatusProviderFeature.class, new WFStatusProviderFeature(new WFStatusProvider() {
+			@Override
+			public boolean isPublished(ContentNode node) {
+				return true;
+			}
+
+			@Override
+			public Status status(ContentNode node) {
+				return new Status(true, true);
+			}
+		}));
+
+		ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).run(() -> {
+			Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
+			Assertions.assertThat(contentNode.isVisible()).isTrue();
+		});
 	}
 	
 	@Test
@@ -50,7 +77,7 @@ public class ContentNodeTest {
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isVisible()).isTrue();
+		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
 	}
 	
 	@Test
@@ -61,7 +88,7 @@ public class ContentNodeTest {
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isVisible()).isFalse();
+		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 	}
 	
 	@Test
@@ -72,7 +99,7 @@ public class ContentNodeTest {
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isVisible()).isFalse();
+		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 	}
 	
 	@Test
@@ -83,6 +110,6 @@ public class ContentNodeTest {
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.PUBLISHED, true
 		));
-		Assertions.assertThat(contentNode.isVisible()).isTrue();
+		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
 	}
 }

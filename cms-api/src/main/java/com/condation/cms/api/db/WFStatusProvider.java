@@ -21,26 +21,15 @@ package com.condation.cms.api.db;
  * #L%
  */
 
-import com.condation.cms.api.Constants;
-import com.condation.cms.api.utils.DateRange;
-import java.time.Instant;
-import java.util.Date;
-import java.util.Map;
-
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public class NodeStatus {
-	
-	public static Status get (Map<String, Object> meta) {
-		var published = (boolean) meta.getOrDefault(Constants.MetaFields.PUBLISHED, false);
-		var publish_date = (Date) meta.getOrDefault(Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now()));
-		
-		var unpublish_date = (Date) meta.getOrDefault(Constants.MetaFields.UNPUBLISH_DATE, null);
-		
-		return new Status(published, DateRange.isNowWithin(publish_date, unpublish_date));
-	}
-	
-	public static record Status (boolean published, boolean withinSchedule){};
+public interface WFStatusProvider {
+
+	boolean isPublished(ContentNode node);
+    
+    Status status (ContentNode node) ;
+    
+    public static record Status (boolean published, boolean withinSchedule){};
 }

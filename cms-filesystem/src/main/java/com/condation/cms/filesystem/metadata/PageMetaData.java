@@ -22,6 +22,7 @@ package com.condation.cms.filesystem.metadata;
  */
 
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContextScope;
 
@@ -41,6 +42,7 @@ public abstract class PageMetaData {
 			return false;
 		}
 		
+		// Manager has access to hidden folder
 		if (RequestContextScope.REQUEST_CONTEXT.isBound()
 				&& RequestContextScope.REQUEST_CONTEXT.get().has(IsPreviewFeature.class)
 				&& RequestContextScope.REQUEST_CONTEXT.get().get(IsPreviewFeature.class).mode().equals(com.condation.cms.api.feature.features.IsPreviewFeature.Mode.MANAGER)
@@ -52,6 +54,6 @@ public abstract class PageMetaData {
 			return false;
 		}
 		
-		return node.isVisible() && !node.isHidden();
+		return NodeVisibility.isVisible(node) && !node.isHidden();
 	}
 }

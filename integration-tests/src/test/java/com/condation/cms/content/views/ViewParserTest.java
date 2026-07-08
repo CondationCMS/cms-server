@@ -169,7 +169,7 @@ public class ViewParserTest {
 		Assertions.assertThat(view.getContent().getNodelist().getIndex()).isEqualTo("false");
 		Assertions.assertThat(view.getContent().getNodelist().getReverse()).isEqualTo("true");
 		Assertions.assertThat(view.getContent().getNodelist().getSize()).isEqualTo("15");
-		Assertions.assertThat(view.getContent().getNodelist().getSort()).isEqualTo("published");
+		Assertions.assertThat(view.getContent().getNodelist().getSort()).isEqualTo("status");
 		Assertions.assertThat(view.getContent().getNodelist().getPage()).isEqualTo("queryParams.getOrDefault('page', 1)");
 	}
 	

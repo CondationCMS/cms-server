@@ -25,11 +25,14 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.mail.MailService;
 import com.condation.cms.api.mail.Message;
 import com.condation.cms.core.configuration.EnvironmentVariables;
+import jakarta.mail.Message.RecipientType;
 import java.nio.file.Files;
+import java.util.List;
 import org.simplejavamail.api.email.Recipient;
 import org.simplejavamail.api.mailer.Mailer;
 import org.simplejavamail.email.EmailBuilder;
 import org.simplejavamail.mailer.MailerBuilder;
+import org.simplejavamail.recipient.RecipientBuilder;
 
 /**
  *
@@ -40,62 +43,75 @@ public class DefaultMailService implements MailService {
 	private final DB db;
 
 	private MailConfig config;
-	
+
 	private final EnvironmentVariables ENV = new EnvironmentVariables();
-	
+
 	public DefaultMailService(DB db) {
 		this.db = db;
-		
+
 		init();
 	}
-	
-	private void init () {
+
+	private void init() {
 		var mailConfig = db.getFileSystem().resolve("config/mail.yaml");
 		if (Files.exists(mailConfig)) {
 			config = MailConfigLoader.load(mailConfig, ENV);
 		}
 	}
-	
+
 	@Override
 	public void sendText(String account, Message message) {
 		var acc = getAccount(account);
-		
+
 		var mail = EmailBuilder.startingBlank()
-				.appendText(message.message())
+				.withPlainText(message.message())
 				.withSubject(message.subject())
 				.from(message.from(), acc.getFromMail())
-				.to(message.to().stream().map(rec -> new Recipient(rec.name(), rec.mailAddress(), null)).toList());
-		
+				.withRecipients(toRecipients(message));
+
 		buildMailer(acc).sendMail(mail.buildEmail());
 	}
 
 	@Override
 	public void sendHtml(String account, Message message) {
 		var acc = getAccount(account);
-		
+
 		var mail = EmailBuilder.startingBlank()
-				.appendTextHTML(message.message())
+				.withHTMLText(message.message())
 				.withSubject(message.subject())
 				.from(message.from(), acc.getFromMail())
-				.to(message.to().stream().map(rec -> new Recipient(rec.name(), rec.mailAddress(), null)).toList());
-		
+				.withRecipients(toRecipients(message));
+
 		buildMailer(acc).sendMail(mail.buildEmail());
 	}
-	
-	private MailConfig.Account getAccount(String account) throws RuntimeException {
+
+	private List<Recipient> toRecipients(Message message) {
+		return message.to().stream()
+				.map(rec -> new RecipientBuilder()
+						.withName(rec.name())
+						.withAddress(rec.mailAddress())
+						.withType(RecipientType.TO)
+						.build())
+				.toList();
+	}
+
+	private MailConfig.Account getAccount(String account) {
+		if (config == null) {
+			throw new RuntimeException("mail config not found");
+		}
+
 		var acc = config.getAccount(account);
 		if (acc.isEmpty()) {
-			throw new RuntimeException("unknown account");
+			throw new RuntimeException("unknown mail account: " + account);
 		}
 		return acc.get();
 	}
-	
-	
-	private Mailer buildMailer (MailConfig.Account account) {
+
+	private Mailer buildMailer(MailConfig.Account account) {
 		return MailerBuilder.withSMTPServer(
-				account.getHost(), 
-				account.getPort(), 
-				account.getUsername(), 
+				account.getHost(),
+				account.getPort(),
+				account.getUsername(),
 				account.getPassword()
 		).buildMailer();
 	}

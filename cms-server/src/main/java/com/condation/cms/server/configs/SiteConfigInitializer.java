@@ -38,7 +38,7 @@ import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.feature.features.WFStatusProviderFeature;
-import com.condation.cms.api.db.WFStatusProvider;
+import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.scheduler.CronJobContext;

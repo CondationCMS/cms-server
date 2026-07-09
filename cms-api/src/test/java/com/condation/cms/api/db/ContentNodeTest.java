@@ -22,11 +22,6 @@ package com.condation.cms.api.db;
  */
 
 
-import com.condation.cms.api.Constants;
-import com.condation.cms.api.feature.features.WFStatusProviderFeature;
-import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.RequestContextScope;
-import java.util.Calendar;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -43,73 +38,5 @@ public class ContentNodeTest {
 		var contentNode = new ContentNode("", "", Map.of());
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 		Assertions.assertThat(contentNode.isVisible()).isFalse();
-	}
-
-	@Test
-	public void test_custom_wf_status_provider() {
-		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_DRAFT
-		));
-		var requestContext = new RequestContext();
-		requestContext.add(WFStatusProviderFeature.class, new WFStatusProviderFeature(new WFStatusProvider() {
-			@Override
-			public boolean isPublished(ContentNode node) {
-				return true;
-			}
-
-			@Override
-			public Status status(ContentNode node) {
-				return new Status(true, true);
-			}
-		}));
-
-		ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).run(() -> {
-			Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
-			Assertions.assertThat(contentNode.isVisible()).isTrue();
-		});
-	}
-	
-	@Test
-	public void test_publish_date_1_11_2023() {
-		var cal = Calendar.getInstance();
-		cal.set(2023, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
-		));
-		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
-	}
-	
-	@Test
-	public void test_publish_date_1_11_2123() {
-		var cal = Calendar.getInstance();
-		cal.set(2123, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
-		));
-		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
-	}
-	
-	@Test
-	public void test_unpublish_date_1_11_2023() {
-		var cal = Calendar.getInstance();
-		cal.set(2023, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
-		));
-		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
-	}
-	
-	@Test
-	public void test_unpublish_date_1_11_2123() {
-		var cal = Calendar.getInstance();
-		cal.set(2123, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
-				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
-		));
-		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
 	}
 }

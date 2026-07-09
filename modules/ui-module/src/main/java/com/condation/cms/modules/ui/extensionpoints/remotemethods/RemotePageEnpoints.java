@@ -23,11 +23,10 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.DefaultWFStatusProvider;
 import com.condation.cms.api.db.Page;
-import com.condation.cms.api.eventbus.events.ContentChangedEvent;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.feature.features.WFStatusProviderFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.modules.api.annotation.Extension;
@@ -186,7 +185,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 			meta.put("createdBy", getUserName());
 			meta.put(Constants.MetaFields.TITLE, name);
 			meta.put(Constants.MetaFields.TEMPLATE, pageTemplate.get().template());
-			meta.put(Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_DRAFT);
+			meta.put(Constants.MetaFields.STATUS, getContext().get(WFStatusProviderFeature.class).wfStatusProvider().newNodeStatus());
 
 			name = UIPathUtil.toValidFilename(name);
 			

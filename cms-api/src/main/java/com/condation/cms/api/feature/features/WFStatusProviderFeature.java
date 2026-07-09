@@ -22,7 +22,7 @@ package com.condation.cms.api.feature.features;
  */
 
 import com.condation.cms.api.annotations.FeatureScope;
-import com.condation.cms.api.db.WFStatusProvider;
+import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.feature.Feature;
 
 /**

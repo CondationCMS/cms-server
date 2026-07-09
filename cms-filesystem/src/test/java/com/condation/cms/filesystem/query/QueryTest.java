@@ -23,7 +23,7 @@ package com.condation.cms.filesystem.query;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.db.DefaultWFStatusProvider;
+import com.condation.cms.api.workflow.DefaultWFStatusProvider;
 import com.condation.cms.filesystem.metadata.memory.MemoryQuery;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;

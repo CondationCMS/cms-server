@@ -21,11 +21,13 @@ package com.condation.cms.api.db;
  * #L%
  */
 
+import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.WFStatusProviderFeature;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.DateRange;
+import com.condation.cms.api.workflow.DefaultWFStatusProvider;
 import java.time.Instant;
 import java.util.Date;
 import org.jspecify.annotations.NonNull;

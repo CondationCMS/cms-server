@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // 1. Eigene Variable-Überschreibungen (vor Bootstrap)
 @import "variables";
 
@@ -55,3 +57,432 @@
 
 // 8. Eigene Anpassungen hier einfügen
 // @import "custom-overrides";
+
+// Workflow status menu
+
+.workflow-status-button {
+	--workflow-status-color: #{$success};
+	--workflow-status-bg: #{rgba($success, .1)};
+	--workflow-status-border: #{rgba($success, .55)};
+
+	display: inline-flex;
+	align-items: center;
+	gap: .375rem;
+	min-height: 2rem;
+	padding-inline: .75rem;
+	white-space: nowrap;
+	background-color: var(--workflow-status-bg);
+	border-color: var(--workflow-status-border);
+	color: color.adjust($success, $lightness: 10%);
+	font-size: $font-size-sm;
+	font-weight: 600;
+
+	&:hover,
+	&:focus,
+	&[aria-expanded="true"] {
+		background-color: rgba($success, .18);
+		border-color: $success;
+		color: $white;
+	}
+
+	&::after {
+		margin-inline-start: .25rem;
+		opacity: .7;
+	}
+}
+
+.workflow-status-button__icon {
+	color: var(--workflow-status-color);
+	font-size: .875rem;
+}
+
+
+// Effective status variants
+
+.workflow-status-button--visible {
+	--workflow-status-color: #{$success};
+	--workflow-status-bg: #{rgba($success, .1)};
+	--workflow-status-border: #{rgba($success, .55)};
+
+	color: color.adjust($success, $lightness: 10%);
+}
+
+.workflow-status-button--scheduled {
+	--workflow-status-color: #{$info};
+	--workflow-status-bg: #{rgba($info, .1)};
+	--workflow-status-border: #{rgba($info, .55)};
+
+	color: color.adjust($info, $lightness: 10%);
+
+	&:hover,
+	&:focus,
+	&[aria-expanded="true"] {
+		background-color: rgba($info, .18);
+		border-color: $info;
+		color: $white;
+	}
+}
+
+.workflow-status-button--draft {
+	--workflow-status-color: #{$warning};
+	--workflow-status-bg: #{rgba($warning, .1)};
+	--workflow-status-border: #{rgba($warning, .52)};
+
+	color: color.adjust($warning, $lightness: 8%);
+
+	&:hover,
+	&:focus,
+	&[aria-expanded="true"] {
+		background-color: rgba($warning, .17);
+		border-color: $warning;
+		color: $white;
+	}
+}
+
+.workflow-status-button--inactive,
+.workflow-status-button--expired,
+.workflow-status-button--archived {
+	--workflow-status-color: #{$gray-300};
+	--workflow-status-bg: #{rgba($gray-300, .07)};
+	--workflow-status-border: #{rgba($gray-300, .28)};
+
+	color: $gray-200;
+
+	&:hover,
+	&:focus,
+	&[aria-expanded="true"] {
+		background-color: rgba($gray-300, .12);
+		border-color: rgba($gray-300, .48);
+	}
+}
+
+.workflow-status-button--invalid {
+	--workflow-status-color: #{$danger};
+	--workflow-status-bg: #{rgba($danger, .1)};
+	--workflow-status-border: #{rgba($danger, .55)};
+
+	color: color.adjust($danger, $lightness: 10%);
+
+	&:hover,
+	&:focus,
+	&[aria-expanded="true"] {
+		background-color: rgba($danger, .18);
+		border-color: $danger;
+	}
+}
+
+
+// Dropdown container
+
+.workflow-dropdown {
+	width: 24rem;
+	max-width: calc(100vw - 2rem);
+	padding-block: .375rem;
+	overflow: hidden;
+	background-color: $dropdown-bg;
+	border: 1px solid $dropdown-border-color;
+	box-shadow:
+		inset 0 1px 0 rgba($white, .035),
+		inset 3px 0 0 rgba($primary, .6);
+	backdrop-filter: blur(14px);
+}
+
+.workflow-dropdown .dropdown-divider {
+	margin-block: .375rem;
+	border-color: $dropdown-divider-bg;
+}
+
+
+// Regular menu items
+
+.workflow-dropdown .dropdown-item {
+	display: flex;
+	align-items: center;
+	gap: .75rem;
+	min-height: 2.5rem;
+	padding: .5rem 1rem;
+	color: $gray-100;
+	transition:
+		background-color .15s ease,
+		color .15s ease,
+		box-shadow .15s ease;
+
+	&:hover,
+	&:focus {
+		background-color: rgba($primary, .12);
+		color: $white;
+		box-shadow: inset 3px 0 0 rgba($primary, .75);
+	}
+
+	&:active {
+		background-color: rgba($primary, .18);
+	}
+
+	> .bi {
+		flex: 0 0 1.25rem;
+		width: 1.25rem;
+		color: $gray-300;
+		text-align: center;
+	}
+
+	&:hover > .bi,
+	&:focus > .bi {
+		color: color.adjust($primary, $lightness: 12%);
+	}
+}
+
+.workflow-dropdown .dropdown-item.text-danger {
+	color: color.adjust($danger, $lightness: 10%) !important;
+
+	> .bi {
+		color: inherit;
+	}
+
+	&:hover,
+	&:focus {
+		background-color: rgba($danger, .1);
+		color: color.adjust($danger, $lightness: 15%) !important;
+		box-shadow: inset 3px 0 0 $danger;
+	}
+}
+
+
+// Section headings
+
+.workflow-dropdown .dropdown-header {
+	padding: .5rem 1rem .25rem;
+	color: $gray-400;
+	font-size: .6875rem;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+
+
+// Workflow information block
+
+.workflow-info {
+	position: relative;
+	margin: .5rem;
+	padding: .875rem 1rem;
+	background-color: rgba($gray-900, .28);
+	border: 1px solid rgba(178, 191, 205, .14);
+	border-left: 3px solid rgba($primary, .72);
+}
+
+.workflow-info-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: .75rem;
+	padding-bottom: .5rem;
+	border-bottom: 1px solid rgba(178, 191, 205, .12);
+	color: $gray-300;
+	font-size: .6875rem;
+	font-weight: 700;
+	letter-spacing: .08em;
+	text-transform: uppercase;
+}
+
+.workflow-info-header .btn-link {
+	color: $gray-400;
+
+	&:hover,
+	&:focus {
+		color: color.adjust($primary, $lightness: 12%);
+	}
+}
+
+.workflow-info-row {
+	display: grid;
+	grid-template-columns: minmax(7rem, 1fr) auto;
+	align-items: center;
+	gap: 1rem;
+	min-height: 1.875rem;
+	font-size: .8125rem;
+}
+
+.workflow-info-label {
+	color: $gray-400;
+}
+
+.workflow-info-value {
+	color: $gray-100;
+	font-weight: 500;
+	text-align: right;
+}
+
+
+// Workflow stage badge
+
+.workflow-stage {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 1.375rem;
+	padding: .125rem .5rem;
+	background-color: rgba($primary, .12);
+	border: 1px solid rgba($primary, .32);
+	color: color.adjust($primary, $lightness: 15%);
+	font-size: .625rem;
+	font-weight: 700;
+	letter-spacing: .055em;
+	line-height: 1;
+	text-transform: uppercase;
+}
+
+.workflow-stage--draft {
+	background-color: rgba($warning, .09);
+	border-color: rgba($warning, .3);
+	color: color.adjust($warning, $lightness: 10%);
+}
+
+.workflow-stage--review {
+	background-color: rgba($info, .09);
+	border-color: rgba($info, .3);
+	color: color.adjust($info, $lightness: 10%);
+}
+
+.workflow-stage--published {
+	background-color: rgba($success, .09);
+	border-color: rgba($success, .3);
+	color: color.adjust($success, $lightness: 10%);
+}
+
+.workflow-stage--archived {
+	background-color: rgba($gray-300, .07);
+	border-color: rgba($gray-300, .2);
+	color: $gray-300;
+}
+
+
+// Effective visibility
+
+.workflow-visibility {
+	display: inline-flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: .375rem;
+	color: $gray-200;
+	font-weight: 600;
+	text-align: right;
+}
+
+.workflow-visibility::before {
+	width: .45rem;
+	height: .45rem;
+	background-color: currentColor;
+	content: "";
+	flex: 0 0 auto;
+}
+
+.workflow-visibility--visible {
+	color: color.adjust($success, $lightness: 8%);
+}
+
+.workflow-visibility--scheduled {
+	color: color.adjust($info, $lightness: 8%);
+}
+
+.workflow-visibility--inactive,
+.workflow-visibility--expired {
+	color: $gray-300;
+}
+
+.workflow-visibility--invalid {
+	color: color.adjust($danger, $lightness: 8%);
+}
+
+
+// Available transitions
+
+.workflow-transition {
+	align-items: flex-start !important;
+	padding-block: .625rem !important;
+
+	> .bi {
+		margin-top: .125rem;
+	}
+
+	&:hover,
+	&:focus {
+		background-color: rgba($secondary, .09) !important;
+		box-shadow: inset 3px 0 0 rgba($secondary, .8) !important;
+	}
+
+	&:hover > .bi,
+	&:focus > .bi {
+		color: color.adjust($secondary, $lightness: 10%) !important;
+	}
+}
+
+.workflow-transition__content {
+	display: block;
+	min-width: 0;
+}
+
+.workflow-transition__label {
+	display: block;
+	color: $gray-100;
+	font-weight: 500;
+	line-height: 1.35;
+}
+
+.workflow-transition__description {
+	display: block;
+	margin-top: .125rem;
+	color: $gray-400;
+	font-size: .725rem;
+	line-height: 1.4;
+	white-space: normal;
+}
+
+.workflow-transition--primary {
+	background-color: rgba($primary, .07);
+	box-shadow: inset 3px 0 0 rgba($primary, .7);
+
+	> .bi {
+		color: color.adjust($primary, $lightness: 10%) !important;
+	}
+}
+
+
+// Optional workflow history action
+
+.workflow-history-link {
+	color: $gray-300;
+
+	&:hover,
+	&:focus {
+		color: $white;
+	}
+}
+
+
+// Responsive navbar behavior
+
+@media (max-width: 991.98px) {
+	.workflow-status-button {
+		justify-content: space-between;
+		width: 100%;
+	}
+
+	.workflow-dropdown {
+		width: 100%;
+		max-width: 100%;
+		margin-top: .25rem;
+	}
+
+	.workflow-info-row {
+		grid-template-columns: 1fr;
+		gap: 0;
+		padding-block: .25rem;
+	}
+
+	.workflow-info-value,
+	.workflow-visibility {
+		justify-content: flex-start;
+		text-align: left;
+	}
+}

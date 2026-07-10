@@ -31,33 +31,202 @@
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="#">CondationCMS</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarMain">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item"><a class="nav-link active" href="#">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Content</a></li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Settings</a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" href="#">General</a></li>
-            <li><a class="dropdown-item" href="#">Theme</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="#">Logout</a></li>
-          </ul>
-        </li>
-      </ul>
-      <form class="d-flex" role="search">
-        <input class="form-control me-2" type="search" placeholder="Suchen…">
-        <button class="btn btn-outline-light" type="submit">
-          <i class="bi bi-search"></i>
-        </button>
-      </form>
-    </div>
-  </div>
+	<div class="container-fluid">
+		<a class="navbar-brand" href="#">CondationCMS</a>
+
+		<button
+			class="navbar-toggler"
+			type="button"
+			data-bs-toggle="collapse"
+			data-bs-target="#navbarMain"
+			aria-controls="navbarMain"
+			aria-expanded="false"
+			aria-label="Navigation umschalten">
+
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarMain">
+			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+				<li class="nav-item">
+					<a class="nav-link active" href="#">Dashboard</a>
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="#">Content</a>
+				</li>
+
+				<li class="nav-item dropdown">
+					<a
+						class="nav-link dropdown-toggle"
+						href="#"
+						role="button"
+						data-bs-toggle="dropdown"
+						aria-expanded="false">
+
+						Settings
+					</a>
+
+					<ul class="dropdown-menu">
+						<li>
+							<a class="dropdown-item" href="#">General</a>
+						</li>
+
+						<li>
+							<a class="dropdown-item" href="#">Theme</a>
+						</li>
+
+						<li>
+							<hr class="dropdown-divider">
+						</li>
+
+						<li>
+							<a class="dropdown-item" href="#">Logout</a>
+						</li>
+					</ul>
+				</li>
+			</ul>
+
+			<div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2">
+
+				<div class="dropdown">
+	<button
+		class="btn btn-sm dropdown-toggle workflow-status-button workflow-status-button--visible"
+		type="button"
+		id="workflowStatusMenu"
+		data-bs-toggle="dropdown"
+		data-bs-auto-close="outside"
+		aria-expanded="false">
+
+		<i class="bi bi-eye-fill workflow-status-button__icon"></i>
+		<span>Sichtbar</span>
+	</button>
+
+	<div
+		class="dropdown-menu dropdown-menu-lg-end workflow-dropdown"
+		aria-labelledby="workflowStatusMenu">
+
+		<a class="dropdown-item" href="#">
+			<i class="bi bi-pencil-square"></i>
+			<span>Bearbeiten</span>
+		</a>
+
+		<a class="dropdown-item" href="#">
+			<i class="bi bi-box-arrow-up-right"></i>
+			<span>Vorschau öffnen</span>
+		</a>
+
+		<button class="dropdown-item" type="button">
+			<i class="bi bi-copy"></i>
+			<span>Duplizieren</span>
+		</button>
+
+		<div class="dropdown-divider"></div>
+
+		<div class="workflow-info">
+			<div class="workflow-info-header">
+				<span>Workflow</span>
+
+				<button
+					type="button"
+					class="btn btn-sm btn-link p-0"
+					title="Workflow-Verlauf anzeigen"
+					aria-label="Workflow-Verlauf anzeigen">
+
+					<i class="bi bi-clock-history"></i>
+				</button>
+			</div>
+
+			<div class="workflow-info-row">
+				<span class="workflow-info-label">Stage</span>
+
+				<span class="workflow-info-value">
+					<span class="workflow-stage workflow-stage--published">
+						Veröffentlicht
+					</span>
+				</span>
+			</div>
+
+			<div class="workflow-info-row">
+				<span class="workflow-info-label">Sichtbarkeit</span>
+
+				<span class="workflow-info-value">
+					<span class="workflow-visibility workflow-visibility--visible">
+						Aktuell sichtbar
+					</span>
+				</span>
+			</div>
+
+			<div class="workflow-info-row">
+				<span class="workflow-info-label">Sichtbar seit</span>
+				<span class="workflow-info-value">10.07.2026, 14:30</span>
+			</div>
+		</div>
+
+		<div class="dropdown-divider"></div>
+
+		<h6 class="dropdown-header">Mögliche Übergänge</h6>
+
+		<button
+			class="dropdown-item workflow-transition workflow-transition--primary"
+			type="button">
+
+			<i class="bi bi-eye-slash"></i>
+
+			<span class="workflow-transition__content">
+				<span class="workflow-transition__label">
+					Depublizieren
+				</span>
+
+				<small class="workflow-transition__description">
+					In den Entwurfsstatus zurücksetzen
+				</small>
+			</span>
+		</button>
+
+		<button class="dropdown-item workflow-transition" type="button">
+			<i class="bi bi-archive"></i>
+
+			<span class="workflow-transition__content">
+				<span class="workflow-transition__label">
+					Archivieren
+				</span>
+
+				<small class="workflow-transition__description">
+					Den Inhalt in das Archiv verschieben
+				</small>
+			</span>
+		</button>
+
+		<div class="dropdown-divider"></div>
+
+		<button class="dropdown-item" type="button">
+			<i class="bi bi-calendar-event"></i>
+			<span>Zeitplanung bearbeiten</span>
+		</button>
+
+		<button class="dropdown-item text-danger" type="button">
+			<i class="bi bi-trash"></i>
+			<span>Löschen</span>
+		</button>
+	</div>
+</div>
+
+				<!-- Suche -->
+				<form class="d-flex" role="search">
+					<input
+						class="form-control form-control-sm me-2"
+						type="search"
+						placeholder="Suchen…"
+						aria-label="Suchen">
+
+					<button class="btn btn-sm btn-outline-light" type="submit">
+						<i class="bi bi-search"></i>
+					</button>
+				</form>
+			</div>
+		</div>
+	</div>
 </nav>
 
 <div class="container-fluid py-4">

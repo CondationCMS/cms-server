@@ -32,7 +32,7 @@ import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.feature.features.WFStatusProviderFeature;
+import com.condation.cms.api.feature.features.WorkFlowFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.ContentFileParser;
@@ -87,9 +87,8 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
                 var node_uri = PathUtil.toRelativeFile(contentFile, contentBase);
                 final Optional<ContentNode> nodeByUri = db.getContent().byUri(node_uri);
                 if (nodeByUri.isPresent()) {
-                    result.put(
-                            "status", 
-                            getContext().get(WFStatusProviderFeature.class).wfStatusProvider().status(nodeByUri.get()));
+                    result.put("status", 
+                            getContext().get(WorkFlowFeature.class).workflow().getStatusProvider().status(nodeByUri.get()));
                 }
 			} catch (IOException ex) {
 				log.error("", ex);

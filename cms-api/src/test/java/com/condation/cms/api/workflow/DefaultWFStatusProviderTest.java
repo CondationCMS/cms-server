@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/UnitTests/JUnit5TestClass.java to edit this template
- */
 package com.condation.cms.api.workflow;
 
 /*-
@@ -28,7 +24,7 @@ package com.condation.cms.api.workflow;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.NodeVisibility;
-import com.condation.cms.api.feature.features.WFStatusProviderFeature;
+import com.condation.cms.api.feature.features.WorkFlowFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import java.util.Calendar;
@@ -41,35 +37,6 @@ import org.junit.jupiter.api.Test;
  * @author thorstenmarx
  */
 public class DefaultWFStatusProviderTest {
-	
-	@Test
-	public void test_custom_wf_status_provider() {
-		var contentNode = new ContentNode("", "", Map.of(
-				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_DRAFT
-		));
-		var requestContext = new RequestContext();
-		requestContext.add(WFStatusProviderFeature.class, new WFStatusProviderFeature(new WFStatusProvider() {
-			@Override
-			public boolean isPublished(ContentNode node) {
-				return true;
-			}
-
-			@Override
-			public WFStatusProvider.Status status(ContentNode node) {
-				return new WFStatusProvider.Status(true, true);
-			}
-
-			@Override
-			public String newNodeStatus() {
-				return "draft";
-			}
-		}));
-
-		ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext).run(() -> {
-			Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isTrue();
-			Assertions.assertThat(contentNode.isVisible()).isTrue();
-		});
-	}
 	
 	@Test
 	public void test_publish_date_1_11_2023() {

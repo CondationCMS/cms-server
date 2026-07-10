@@ -24,7 +24,7 @@ package com.condation.cms.api.db;
 import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
-import com.condation.cms.api.feature.features.WFStatusProviderFeature;
+import com.condation.cms.api.feature.features.WorkFlowFeature;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.DateRange;
 import com.condation.cms.api.workflow.DefaultWFStatusProvider;
@@ -59,10 +59,10 @@ public class NodeVisibility {
 
 	private static WFStatusProvider wfStatusProvider() {
 		if (RequestContextScope.REQUEST_CONTEXT.isBound()
-				&& RequestContextScope.REQUEST_CONTEXT.get().has(WFStatusProviderFeature.class)) {
+				&& RequestContextScope.REQUEST_CONTEXT.get().has(WorkFlowFeature.class)) {
 			return RequestContextScope.REQUEST_CONTEXT.get()
-					.get(WFStatusProviderFeature.class)
-					.wfStatusProvider();
+					.get(WorkFlowFeature.class)
+					.workflow().getStatusProvider();
 		}
 
 		return DEFAULT_WF_STATUS_PROVIDER;

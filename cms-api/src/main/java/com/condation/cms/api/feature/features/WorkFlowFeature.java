@@ -22,13 +22,13 @@ package com.condation.cms.api.feature.features;
  */
 
 import com.condation.cms.api.annotations.FeatureScope;
-import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.workflow.Workflow;
 
 /**
  *
  * @author t.marx
  */
 @FeatureScope({FeatureScope.Scope.GLOBAL, FeatureScope.Scope.MODULE, FeatureScope.Scope.REQUEST})
-public record WFStatusProviderFeature(WFStatusProvider wfStatusProvider) implements Feature {
+public record WorkFlowFeature(Workflow workflow) implements Feature {
 }

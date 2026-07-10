@@ -53,6 +53,9 @@ import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.workflow.WFTransition;
+import com.condation.cms.api.workflow.Workflow;
+import com.condation.cms.api.workflow.WorkflowInstance;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.content.ContentRenderer;
 import com.condation.cms.content.ContentResolver;
@@ -106,10 +109,33 @@ public class SiteModule extends AbstractModule {
 	protected void configure() {
 		bind(Configuration.class).toInstance(configuration);
 		bind(EventBus.class).to(MessagingEventBus.class).in(Singleton.class);
-		bind(WFStatusProvider.class).to(DefaultWFStatusProvider.class).in(Singleton.class);
 		//bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 		bind(TaxonomyFunction.class).in(Singleton.class);
 		bind(TaxonomyResolver.class).in(Singleton.class);
+	}
+
+	@Provides
+	@Singleton
+	public Workflow workflow () {
+		WorkflowInstance wf = new WorkflowInstance("release", "Release", new DefaultWFStatusProvider());
+		
+				wf.addTransition(new WFTransition(
+				"publish",
+				"Publish",
+				"published",
+				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_PUBLISHED),
+				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_DRAFT)
+		));
+
+		wf.addTransition(new WFTransition(
+				"unpublish",
+				"Unpublish",
+				"draft",
+				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_DRAFT),
+				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_PUBLISHED)
+		));
+		
+		return wf;
 	}
 	
 	@Provides

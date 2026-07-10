@@ -26,7 +26,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.EventBusFeature;
-import com.condation.cms.api.feature.features.WorkFlowFeature;
+import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.modules.api.annotation.Extension;
@@ -185,7 +185,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 			meta.put("createdBy", getUserName());
 			meta.put(Constants.MetaFields.TITLE, name);
 			meta.put(Constants.MetaFields.TEMPLATE, pageTemplate.get().template());
-			meta.put(Constants.MetaFields.STATUS, getContext().get(WorkFlowFeature.class).workflow().getStatusProvider().newNodeStatus());
+			meta.put(Constants.MetaFields.STATUS, getContext().get(WorkflowFeature.class).workflow().getStatusProvider().newNodeStatus());
 
 			name = UIPathUtil.toValidFilename(name);
 			

@@ -22,7 +22,6 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
-import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
@@ -32,7 +31,6 @@ import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
-import com.condation.cms.api.feature.features.WorkFlowFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.ContentFileParser;
@@ -57,7 +55,6 @@ import com.condation.cms.modules.ui.utils.UIFileNameUtil;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 
 /**
  *
@@ -83,13 +80,6 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				ContentFileParser parser = new ContentFileParser(contentFile);
 				result.put("content", parser.getContent());
 				result.put("meta", parser.getHeader());
-                
-                var node_uri = PathUtil.toRelativeFile(contentFile, contentBase);
-                final Optional<ContentNode> nodeByUri = db.getContent().byUri(node_uri);
-                if (nodeByUri.isPresent()) {
-                    result.put("status", 
-                            getContext().get(WorkFlowFeature.class).workflow().getStatusProvider().status(nodeByUri.get()));
-                }
 			} catch (IOException ex) {
 				log.error("", ex);
 			}

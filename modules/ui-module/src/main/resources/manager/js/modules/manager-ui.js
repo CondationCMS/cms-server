@@ -20,6 +20,7 @@
  */
 import { getPreviewUrl } from '@cms/modules/preview.utils.js';
 import { getContent, getContentNode } from '@cms/modules/rpc/rpc-content.js';
+import { getWfStatus } from './rpc/rpc-workflow';
 export function updateStateButton() {
     var previewUrl = getPreviewUrl();
     ;
@@ -32,14 +33,14 @@ export function updateStateButton() {
     getContentNode({
         url: previewUrl
     }).then((contentNode) => {
-        getContent({
+        getWfStatus({
             uri: contentNode.result.uri
-        }).then((getContentResponse) => {
-            updateNodeStatus(getContentResponse);
+        }).then((getStatusResponse) => {
+            updateNodeStatus(getStatusResponse);
         });
     });
 }
-function updateNodeStatus(getContentResponse) {
+function updateNodeStatus(statusResponse) {
     const statusBtn = document.querySelector('#cms-btn-status');
     if (!statusBtn)
         return;
@@ -49,13 +50,13 @@ function updateNodeStatus(getContentResponse) {
             statusBtn.classList.remove(className);
         }
     });
-    var published = getContentResponse?.result?.status?.published;
+    var published = statusResponse?.status.published;
     // Status bestimmen (Provider-fähig)
     let status;
     if (!published) {
         status = 'unpublished';
     }
-    else if (!getContentResponse?.result?.status?.withinSchedule) {
+    else if (!statusResponse?.status.withinSchedule) {
         status = 'published-not-visible';
     }
     else {

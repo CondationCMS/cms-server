@@ -1,6 +1,8 @@
+package com.condation.cms.api.feature.features;
+
 /*-
  * #%L
- * UI Module
+ * CMS Api
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -18,8 +20,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-export function openFileBrowser(optionsParam: any): Promise<void>;
-export namespace state {
-    let options: any;
-    let currentFolder: string;
+
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.feature.Feature;
+import com.condation.cms.api.workflow.Workflow;
+
+/**
+ *
+ * @author t.marx
+ */
+@FeatureScope({FeatureScope.Scope.GLOBAL, FeatureScope.Scope.MODULE, FeatureScope.Scope.REQUEST})
+public record WorkflowFeature(Workflow workflow) implements Feature {
 }

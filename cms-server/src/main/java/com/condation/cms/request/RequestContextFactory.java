@@ -41,7 +41,7 @@ import com.condation.cms.api.feature.features.SiteMediaServiceFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.TemplateEngineFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
-import com.condation.cms.api.feature.features.WorkFlowFeature;
+import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
@@ -95,7 +95,7 @@ public class RequestContextFactory {
 		requestContext.add(ThemeFeature.class, new ThemeFeature(theme));
 		requestContext.add(ContentParserFeature.class, new ContentParserFeature(injector.getInstance(ContentParser.class)));
 		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(injector.getInstance(ContentNodeMapper.class)));
-		requestContext.add(WorkFlowFeature.class, new WorkFlowFeature(injector.getInstance(Workflow.class)));
+		requestContext.add(WorkflowFeature.class, new WorkflowFeature(injector.getInstance(Workflow.class)));
 		if (ServerContext.IS_DEV) {
 			requestContext.add(IsDevModeFeature.class, new IsDevModeFeature());
 		}
@@ -185,7 +185,7 @@ public class RequestContextFactory {
 		requestContext.add(ThemeFeature.class, new ThemeFeature(theme));
 		requestContext.add(ContentParserFeature.class, new ContentParserFeature(injector.getInstance(ContentParser.class)));
 		requestContext.add(ContentNodeMapperFeature.class, new ContentNodeMapperFeature(injector.getInstance(ContentNodeMapper.class)));
-		requestContext.add(WorkFlowFeature.class, new WorkFlowFeature(injector.getInstance(Workflow.class)));
+		requestContext.add(WorkflowFeature.class, new WorkflowFeature(injector.getInstance(Workflow.class)));
 		if (ServerContext.IS_DEV) {
 			requestContext.add(IsDevModeFeature.class, new IsDevModeFeature());
 		}

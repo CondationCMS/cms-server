@@ -37,7 +37,7 @@ import com.condation.cms.api.feature.features.MessagingFeature;
 import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
-import com.condation.cms.api.feature.features.WorkFlowFeature;
+import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.SiteModuleContext;
@@ -77,7 +77,7 @@ public class SiteConfigInitializer {
 		context.add(MessagingFeature.class, new MessagingFeature(injector.getInstance(Messaging.class)));
 		context.add(ThemeFeature.class, new ThemeFeature(injector.getInstance(Theme.class)));
 		context.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
-		context.add(WorkFlowFeature.class, new WorkFlowFeature(injector.getInstance(Workflow.class)));
+		context.add(WorkflowFeature.class, new WorkflowFeature(injector.getInstance(Workflow.class)));
     }
 
     private void initModuleContext () {
@@ -90,7 +90,7 @@ public class SiteConfigInitializer {
 		cmsModuleContext.add(MessagingFeature.class, new MessagingFeature(injector.getInstance(Messaging.class)));
 		cmsModuleContext.add(ThemeFeature.class, new ThemeFeature(injector.getInstance(Theme.class)));
 		cmsModuleContext.add(ConfigurationFeature.class, new ConfigurationFeature(injector.getInstance(Configuration.class)));
-		cmsModuleContext.add(WorkFlowFeature.class, new WorkFlowFeature(injector.getInstance(Workflow.class)));
+		cmsModuleContext.add(WorkflowFeature.class, new WorkflowFeature(injector.getInstance(Workflow.class)));
 		cmsModuleContext.add(CronJobSchedulerFeature.class, new CronJobSchedulerFeature(injector.getInstance(SiteCronJobScheduler.class)));
 		cmsModuleContext.add(CacheManagerFeature.class, new CacheManagerFeature(injector.getInstance(CacheManager.class)));
 		cmsModuleContext.add(InjectorFeature.class, new InjectorFeature(injector));

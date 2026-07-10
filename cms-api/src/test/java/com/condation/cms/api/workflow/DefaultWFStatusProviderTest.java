@@ -24,7 +24,7 @@ package com.condation.cms.api.workflow;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.NodeVisibility;
-import com.condation.cms.api.feature.features.WorkFlowFeature;
+import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import java.util.Calendar;

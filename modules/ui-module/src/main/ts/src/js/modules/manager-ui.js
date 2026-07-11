@@ -48,24 +48,41 @@ export function updateStateButton() {
 function updateNodeStatus(statusResponse) {
   const statusBtn = document.querySelector('#cms-btn-status');
   if (!statusBtn) return;
+  const iconEl = statusBtn.querySelector('#cms-btn-status-icon');
+  if (!iconEl) return;
 
   // Alle cms-node-status-* Klassen entfernen
   Array.from(statusBtn.classList).forEach(className => {
-    if (className.startsWith('cms-node-status-')) {
+    if (className.startsWith('workflow-status-button--')) {
       statusBtn.classList.remove(className);
+    }
+  });
+  Array.from(iconEl.classList).forEach(className => {
+    if (className.startsWith('bi-')) {
+      iconEl.classList.remove(className);
     }
   });
 
   var published = statusResponse?.status.published;
   // Status bestimmen (Provider-fähig)
-  let status;
+  let statusClass = "workflow-status-button--";
+  let statusIcon = ""
+  let statusText = ""
   if (!published) {
-    status = 'unpublished';
+    statusClass += 'draft';
+    statusIcon = "bi-pencil"
+    statusText = "Draft"
   } else if (!statusResponse?.status.withinSchedule) {
-    status = 'published-not-visible';
+    statusClass += 'scheduled';
+    statusIcon = "bi-eye-slash"
+    statusText = "Scheduled"
   } else {
-    status = 'published';
+    statusClass += 'visible';
+    statusIcon = "bi-eye-fill"
+    statusText = "Visible"
   }
 
-  statusBtn.classList.add(`cms-node-status-${status}`);
+  statusBtn.classList.add(statusClass);
+  iconEl.classList.add(statusIcon);
+  statusBtn.querySelector('#cms-btn-status-text').textContent = "";
 }

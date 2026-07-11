@@ -39,7 +39,6 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.workflow.WFTransitionException;
 import com.condation.cms.core.content.io.ContentFileParser;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.Optional;
 
 /**

@@ -61,9 +61,9 @@
 // Workflow status menu
 
 .workflow-status-button {
-	--workflow-status-color: #{$success};
-	--workflow-status-bg: #{rgba($success, .1)};
-	--workflow-status-border: #{rgba($success, .55)};
+	--workflow-status-color: #{$gray-400};
+	--workflow-status-bg: #{rgba($gray-700, .82)};
+	--workflow-status-border: #{rgba($gray-300, .2)};
 
 	display: inline-flex;
 	align-items: center;
@@ -73,15 +73,15 @@
 	white-space: nowrap;
 	background-color: var(--workflow-status-bg);
 	border-color: var(--workflow-status-border);
-	color: color.adjust($success, $lightness: 10%);
+	color: $gray-100;
 	font-size: $font-size-sm;
 	font-weight: 600;
 
 	&:hover,
 	&:focus,
 	&[aria-expanded="true"] {
-		background-color: rgba($success, .18);
-		border-color: $success;
+		background-color: rgba($gray-300, .12);
+		border-color: rgba($gray-300, .42);
 		color: $white;
 	}
 

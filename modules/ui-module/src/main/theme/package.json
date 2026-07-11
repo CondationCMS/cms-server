@@ -1,0 +1,13 @@
+{
+  "name": "condation-cms-theme",
+  "author": "CondationCMS",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "sass scss/condation.scss dist/bootstrap-condation.css --style=compressed --load-path=node_modules --silence-deprecation=import && node scripts/copy-dist.mjs",
+    "watch": "sass --watch scss/condation.scss dist/bootstrap-condation.css --load-path=node_modules --silence-deprecation=import"
+  },
+  "devDependencies": {
+    "bootstrap": "^5.3.8",
+    "sass": "^1.89.2"
+  }
+}

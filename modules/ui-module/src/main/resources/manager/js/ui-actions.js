@@ -49,6 +49,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     actionElements.forEach(element => {
         try {
             element.addEventListener("click", (action) => {
+                action.preventDefault();
                 const definition = element.getAttribute('data-cms-action-definition');
                 try {
                     const action = JSON.parse(definition);

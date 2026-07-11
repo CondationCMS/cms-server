@@ -26,9 +26,9 @@ const getWfTransitions = async (options) => {
     };
     return (await executeRemoteCall(data)).result;
 };
-const getWfStatus = async (options) => {
+const getWfManagerStatus = async (options) => {
     var data = {
-        method: "workflow.node.status",
+        method: "workflow.manager.node.status",
         parameters: options
     };
     return (await executeRemoteCall(data)).result;
@@ -40,4 +40,4 @@ const wfTransit = async (options) => {
     };
     return (await executeRemoteCall(data)).result;
 };
-export { getWfTransitions, getWfStatus, wfTransit };
+export { getWfTransitions, getWfManagerStatus, wfTransit };

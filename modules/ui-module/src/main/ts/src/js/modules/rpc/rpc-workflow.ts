@@ -39,22 +39,33 @@ const getWfTransitions = async (options: GetTransitionsRequest) => {
 	return (await executeRemoteCall(data)).result as { transitions: GetTransitionsDto[]};
 };
 
-export interface GetStatusRequest {
+export interface GetWFManagerRequest {
 	uri: string; // The URI of the folder where the page should be created
 }
-export interface GetStatusDto {
+export interface GetWFManagerStatusDto {
 	published: boolean,
 	withinSchedule: boolean,
+	currentStage: string,
+	publish_date?: Date,
+	unpublish_date?: Date,
 	error?: boolean,
 	message?: string,
 	code?: number
 }
-const getWfStatus = async (options: GetStatusRequest) => {
+export interface GetWFManagerTransitionsDto {
+	id: string,
+	label: string,
+}
+export interface getWFManagerDto {
+	status: GetWFManagerStatusDto
+	transitions: GetWFManagerTransitionsDto[]
+}
+const getWfManagerStatus = async (options: GetWFManagerRequest) => {
 	var data = {
-		method: "workflow.node.status",
+		method: "workflow.manager.node.status",
 		parameters: options
 	}
-	return (await executeRemoteCall(data)).result as GetStatusDto;
+	return (await executeRemoteCall(data)).result as getWFManagerDto;
 };
 
 export interface WfTransitRequest {
@@ -73,4 +84,4 @@ const wfTransit = async (options: WfTransitRequest) => {
 	return (await executeRemoteCall(data)).result as WFTransitDto;
 };
 
-export { getWfTransitions, getWfStatus, wfTransit };
+export { getWfTransitions, getWfManagerStatus, wfTransit };

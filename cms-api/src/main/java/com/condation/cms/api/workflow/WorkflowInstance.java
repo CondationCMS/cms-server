@@ -33,14 +33,14 @@ import java.util.Optional;
 public class WorkflowInstance implements Workflow {
 
 	private final String id;
-	private final String name;
+	private final String label;
 	private final WFStatusProvider statusProvider;
 	
 	private final List<WFTransition> transitions = new ArrayList<>();
 	
-	public WorkflowInstance(String id, String name, WFStatusProvider statusProvider) {
+	public WorkflowInstance(String id, String label, WFStatusProvider statusProvider) {
 		this.id = id;
-		this.name = name;
+		this.label = label;
 		this.statusProvider = statusProvider;
 	}
 	
@@ -61,16 +61,14 @@ public class WorkflowInstance implements Workflow {
 		return id;
 	}
 	
-	
-
 	@Override
 	public List<WFTransition> getNextTransitions(ContentNode node) {
 		return transitions.stream().filter(transition -> transition.guard().isAllowed(node)).toList();
 	}
 
 	@Override
-	public String getName() {
-		return name;
+	public String getLabel() {
+		return label;
 	}
 
 	@Override
@@ -86,4 +84,9 @@ public class WorkflowInstance implements Workflow {
 	private Optional<WFTransition> findTransition (String transitionId) {
 		return transitions.stream().filter(transition -> transition.id().equals(transitionId)).findFirst();
 	}
+
+    @Override
+    public String currentStage(ContentNode node) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

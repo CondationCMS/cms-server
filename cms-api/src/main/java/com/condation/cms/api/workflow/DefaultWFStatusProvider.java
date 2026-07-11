@@ -47,7 +47,7 @@ public class DefaultWFStatusProvider implements WFStatusProvider {
 		var publish_date = (Date) node.data().getOrDefault(Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now()));
 		var unpublish_date = (Date) node.data().getOrDefault(Constants.MetaFields.UNPUBLISH_DATE, null);
 
-		return new Status(published, DateRange.isNowWithin(publish_date, unpublish_date));
+		return new Status(published, publish_date, unpublish_date, DateRange.isNowWithin(publish_date, unpublish_date), statusValue(node));
 	}
 
 	private String statusValue(ContentNode node) {

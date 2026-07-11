@@ -37,6 +37,7 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.workflow.WFTransitionException;
+import com.condation.cms.api.workflow.Workflow;
 import com.condation.cms.core.content.io.ContentFileParser;
 import java.io.IOException;
 import java.util.Optional;
@@ -81,8 +82,8 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 		var contentBase = db.getFileSystem().contentBase();
 		return contentBase.resolve(uri);
 	}
-
-	@RemoteMethod(name = "workflow.node.status", permissions = {Permissions.CONTENT_EDIT})
+    
+	@RemoteMethod(name = "workflow.manager.node.status", permissions = {Permissions.CONTENT_EDIT})
 	public Object nodeStatus(Map<String, Object> parameters) {
 
 		var uri = (String) parameters.get("uri");
@@ -97,10 +98,14 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 			return result;
 		}
+        
+        var node = contentNodeOpt.get();
+        final Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
 
-		var status = getContext().get(WorkflowFeature.class).workflow().getStatusProvider().status(contentNodeOpt.get());
+		var status = workflow.getStatusProvider().status(node);
 
 		result.put("status", status);
+        result.put("transitions", workflow.getNextTransitions(node));
 		
 		return result;
 	}

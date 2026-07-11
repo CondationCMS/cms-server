@@ -34,9 +34,11 @@ public interface Workflow {
 	
 	String getId();
 	
-	String getName();
+	String getLabel();
 	
 	List<WFTransition> getNextTransitions (ContentNode node);
 	
-	void transit (String transitionId, ContentNode ndoe);
+	void transit (String transitionId, ContentNode node);
+    
+    String currentStage (ContentNode node);
 }

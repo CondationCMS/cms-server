@@ -1,6 +1,11 @@
 package com.condation.cms.api.workflow;
 
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.utils.DateRange;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.Date;
+import org.jspecify.annotations.NonNull;
 
 /*-
  * #%L
@@ -35,5 +40,5 @@ public interface WFStatusProvider {
     
 	String newNodeStatus ();
 	
-    public static record Status (boolean published, boolean withinSchedule){};
+    public static record Status (boolean published, @NonNull Date publish_date, Date unpublish_date, boolean withinSchedule, String currentStage){};
 }

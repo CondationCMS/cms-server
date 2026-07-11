@@ -20,7 +20,7 @@
  */
 import { getPreviewUrl } from '@cms/modules/preview.utils.js';
 import { getContent, getContentNode } from '@cms/modules/rpc/rpc-content.js';
-import { getWfStatus } from './rpc/rpc-workflow';
+import { getWfManagerStatus } from './rpc/rpc-workflow';
 export function updateStateButton() {
     var previewUrl = getPreviewUrl();
     ;
@@ -33,7 +33,7 @@ export function updateStateButton() {
     getContentNode({
         url: previewUrl
     }).then((contentNode) => {
-        getWfStatus({
+        getWfManagerStatus({
             uri: contentNode.result.uri
         }).then((getStatusResponse) => {
             updateNodeStatus(getStatusResponse);
@@ -41,6 +41,7 @@ export function updateStateButton() {
     });
 }
 function updateNodeStatus(statusResponse) {
+    console.log('updateNodeStatus', statusResponse);
     const statusBtn = document.querySelector('#cms-btn-status');
     if (!statusBtn)
         return;
@@ -58,27 +59,56 @@ function updateNodeStatus(statusResponse) {
             iconEl.classList.remove(className);
         }
     });
+    let visibilityStatus = document.querySelector('#cms-workflow-visibility');
+    Array.from(visibilityStatus.classList).forEach(className => {
+        if (className.startsWith('bi-')) {
+            visibilityStatus.classList.remove(className);
+        }
+    });
     var published = statusResponse?.status.published;
     // Status bestimmen (Provider-fähig)
     let statusClass = "workflow-status-button--";
     let statusIcon = "";
     let statusText = "";
+    let visibilityText = "";
     if (!published) {
         statusClass += 'draft';
         statusIcon = "bi-pencil";
         statusText = "Draft";
+        visibilityText = "Not visible";
     }
     else if (!statusResponse?.status.withinSchedule) {
         statusClass += 'scheduled';
         statusIcon = "bi-eye-slash";
         statusText = "Scheduled";
+        visibilityText = "Not visible";
     }
     else {
         statusClass += 'visible';
         statusIcon = "bi-eye-fill";
         statusText = "Visible";
+        visibilityText = "Visible";
     }
     statusBtn.classList.add(statusClass);
     iconEl.classList.add(statusIcon);
-    statusBtn.querySelector('#cms-btn-status-text').textContent = "";
+    statusBtn.querySelector('#cms-btn-status-text').textContent = statusText;
+    document.querySelector('#cms-workflow-stage').textContent = statusResponse?.status.currentStage || '---';
+    visibilityStatus.textContent = visibilityText;
+    visibilityStatus.classList.add(statusClass);
+    const formatter = new Intl.DateTimeFormat(undefined, {
+        dateStyle: "medium",
+        timeStyle: "short"
+    });
+    if (statusResponse?.status.publish_date) {
+        document.querySelector('#cms-workflow-visibility-since').textContent = formatter.format(new Date(statusResponse?.status.publish_date));
+    }
+    else {
+        document.querySelector('#cms-workflow-visibility-since').textContent = "---";
+    }
+    if (statusResponse?.status.unpublish_date) {
+        document.querySelector('#cms-workflow-visibility-until').textContent = formatter.format(new Date(statusResponse?.status.unpublish_date));
+    }
+    else {
+        document.querySelector('#cms-workflow-visibility-until').textContent = "---";
+    }
 }

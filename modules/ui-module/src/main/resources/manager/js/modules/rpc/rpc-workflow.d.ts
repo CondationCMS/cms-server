@@ -47,6 +47,7 @@ export interface GetWFManagerStatusDto {
 export interface GetWFManagerTransitionsDto {
     id: string;
     label: string;
+    description: string;
 }
 export interface getWFManagerDto {
     status: GetWFManagerStatusDto;

@@ -1,8 +1,6 @@
-package com.condation.cms.api.workflow;
-
 /*-
  * #%L
- * CMS Api
+ * UI Module
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,33 +19,18 @@ package com.condation.cms.api.workflow;
  * #L%
  */
 
-import com.condation.cms.api.db.ContentNode;
+import { reloadPreview } from "@cms/modules/preview.utils";
+import { wfTransit } from "@cms/modules/rpc/rpc-workflow";
 
-/**
- *
- * @author thorstenmarx
- */
-public record WFTransition(
-		String id, 
-		String label,
-        String description,
-		String toStage,
-		WFTransitionAction action,
-		WFTransitionGuard guard) {
-	
-	public WFTransition {
-		if (action == null) {
-			action = (node) -> {};
-		}
-		if (guard == null) {
-			guard = (node) -> true;
-		}
-	}
-	
-	void execute (ContentNode node) {
-		if (!guard.isAllowed(node)) {
-			throw new WFTransitionException("transition not allowed");
-		}
-		action.execute(node);
-	}
+export async function runAction(params : any) {
+
+    var request = {
+        uri : params.uri,
+        transitionId: params.transitionId
+    };
+
+    var wfTransitResponse = await wfTransit(request);
+
+    reloadPreview();
+
 }

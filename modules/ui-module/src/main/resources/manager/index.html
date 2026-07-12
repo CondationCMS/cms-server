@@ -18,6 +18,7 @@
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   #L%
 -->
+<!-- formatter:off -->
 {% macro menuEntry(entry) %}
 {% if entry != null && entry.hasChildren() %}
 <li class="nav-item dropdown cms-menu-dropdown">
@@ -47,6 +48,7 @@
 </li>
 {% endif %}
 {% endmacro %}
+<!-- formatter:on -->
 <!doctype html>
 <html lang="en" class="h-100">
 
@@ -115,143 +117,160 @@
 
 <body class="d-flex flex-column h-100 m-0">
 
-	<div id="menu">
-        
-          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div id="menu">
+
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">CondationCMS</a>
+                <a class="navbar-brand" href="#">CondationCMS</a>
 
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
-                aria-controls="navbarMain" aria-expanded="false" aria-label="Navigation umschalten">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                        aria-controls="navbarMain" aria-expanded="false" aria-label="Navigation umschalten">
 
-                <span class="navbar-toggler-icon"></span>
-              </button>
-              
-              <div class="collapse navbar-collapse" id="navbarMain">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                      <a class="nav-link cms-toolbar-button" title="Reload"
-                            data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/reload-preview') }}","parameters":{},"type":"script"}'>
-                        <i class="bi bi-arrow-clockwise"></i>
-                      </a>
-                    </li>
-                    {% assign contentTypeMenu = actionFactory.createContentTypeMenu() %}
-                    {% if contentTypeMenu.entries().size() > 0 %}
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link cms-toolbar-button" title="Reload"
+                               data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/reload-preview') }}","parameters":{},"type":"script"}'>
+                                <i class="bi bi-arrow-clockwise"></i>
+                            </a>
+                        </li>
+                        {% assign contentTypeMenu = actionFactory.createContentTypeMenu() %}
+                        {% if contentTypeMenu.entries().size() > 0 %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle dropdown-nocaret" href="#" role="button"
-                                data-bs-toggle="dropdown" aria-expanded="false"
-                                title="Create new content">
+                               data-bs-toggle="dropdown" aria-expanded="false"
+                               title="Create new content">
                                 <i class="bi bi-plus-circle"></i>
                             </a>
                             <ul class="dropdown-menu">
                                 {% for entry in contentTypeMenu.entries() %}
-                                    <li>
-                                        <a class="dropdown-item cms-ct-create" href="#"
-                                           data-cms-action-definition='{{ entry.getActionDefinition() }}'
-                                           >Create {{ entry.name }}</a>
-                                    </li>
+                                <li>
+                                    <a class="dropdown-item cms-ct-create" href="#"
+                                       data-cms-action-definition='{{ entry.getActionDefinition() }}'
+                                       >Create {{ entry.name }}</a>
+                                </li>
                                 {% /for %}
                             </ul>
                         </li>
-                    {% /if %}
-                    <li class="nav-item">
-                        <a class="nav-link cms-toolbar-button" title="New page"
-                            data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
-                            <i class="bi bi-folder2-open"></i>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link cms-toolbar-button" title="Manage media"
-                            data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
-                            <i class="bi bi-images"></i>
-                        </a>
-                    </li>
-                    {% for entry in actionFactory.createMenu().entries() %}
+                        {% /if %}
+                        <li class="nav-item">
+                            <a class="nav-link cms-toolbar-button" title="New page"
+                               data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/create-page') }}","parameters":{},"type":"script"}'>
+                                <i class="bi bi-folder2-open"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link cms-toolbar-button" title="Manage media"
+                               data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/manage-assets') }}","parameters":{},"type":"script"}'>
+                                <i class="bi bi-images"></i>
+                            </a>
+                        </li>
+                        {% for entry in actionFactory.createMenu().entries() %}
                         {{ menuEntry(entry) | raw }}
-                    {% endfor %}
-                </ul>
-                <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2">
-                      <div class="dropdown">
-                          <button id="cms-btn-status" class="btn btn-sm dropdown-toggle workflow-status-button"
-                              type="button" id="cms-btn-status" data-bs-toggle="dropdown"
-                              data-bs-auto-close="outside" aria-expanded="false">
-                              <i id="cms-btn-status-icon" class="bi  workflow-status-button__icon"></i>
-                              <span id="cms-btn-status-text" data-cms-i18n-key="menu.status">Status</span>
-                          </button>
-                          <div class="dropdown-menu dropdown-menu-lg-end workflow-dropdown" aria-labelledby="cms-btn-status">
-                            <button class="dropdown-item" href="#" data-cms-i18n-lang="en"
-                                data-cms-i18n-key="menu.page.settings"
-                                data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings')}}","parameters":{},"type":"script"}'>
-                                <i class="bi bi-sliders"></i>
-                                <span>Page settings</span>
+                        {% endfor %}
+                    </ul>
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2">
+                        <div class="dropdown">
+                            <button id="cms-btn-status" class="btn btn-sm dropdown-toggle workflow-status-button"
+                                    type="button" id="cms-btn-status" data-bs-toggle="dropdown"
+                                    data-bs-auto-close="outside" aria-expanded="false">
+                                <i id="cms-btn-status-icon" class="bi  workflow-status-button__icon"></i>
+                                <span id="cms-btn-status-text" data-cms-i18n-key="menu.status">Status</span>
                             </button>
-                            {% if translation.enabled %}
+                            <div class="dropdown-menu dropdown-menu-lg-end workflow-dropdown" aria-labelledby="cms-btn-status">
                                 <button class="dropdown-item" href="#" data-cms-i18n-lang="en"
-                                    data-cms-i18n-key="menu.page.translation"
-                                    data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/translations')}}","parameters":{},"type":"script"}'>
+                                        data-cms-i18n-key="menu.page.settings"
+                                        data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings')}}","parameters":{},"type":"script"}'>
+                                    <i class="bi bi-sliders"></i>
+                                    <span>Page settings</span>
+                                </button>
+                                {% if translation.enabled %}
+                                <button class="dropdown-item" href="#" data-cms-i18n-lang="en"
+                                        data-cms-i18n-key="menu.page.translation"
+                                        data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/translations')}}","parameters":{},"type":"script"}'>
                                     <i class="bi bi-translate"></i>
                                     <span>Translation</span>
                                 </button>
-                            {% endif %}
-                            <div class="dropdown-divider"></div>
+                                {% endif %}
+                                <div class="dropdown-divider"></div>
                                 <div class="workflow-info">
                                     <div class="workflow-info-header">
-                                      <span>Workflow</span>
+                                        <span>Workflow</span>
                                     </div>
 
                                     <div class="workflow-info-row">
-                                      <span class="workflow-info-label">Stage</span>
+                                        <span class="workflow-info-label">Stage</span>
 
-                                      <span class="workflow-info-value">
-                                        <span id="cms-workflow-stage" class="workflow-stage workflow-stage--published">
-                                          ---
+                                        <span class="workflow-info-value">
+                                            <span id="cms-workflow-stage" class="workflow-stage workflow-stage--published">
+                                                ---
+                                            </span>
                                         </span>
-                                      </span>
                                     </div>
 
                                     <div class="workflow-info-row">
-                                      <span class="workflow-info-label">Visibility</span>
+                                        <span class="workflow-info-label">Visibility</span>
 
-                                      <span class="workflow-info-value">
-                                        <span id="cms-workflow-visibility" class="workflow-visibility workflow-visibility--visible">
-                                          ---
+                                        <span class="workflow-info-value">
+                                            <span id="cms-workflow-visibility" class="workflow-visibility workflow-visibility--visible">
+                                                ---
+                                            </span>
                                         </span>
-                                      </span>
                                     </div>
 
                                     <div class="workflow-info-row">
-                                      <span class="workflow-info-label">Visible from</span>
-                                      <span id="cms-workflow-visibility-since" class="workflow-info-value">---</span>
+                                        <span class="workflow-info-label">Visible from</span>
+                                        <span id="cms-workflow-visibility-since" class="workflow-info-value">---</span>
                                     </div>
                                     <div class="workflow-info-row">
-                                      <span class="workflow-info-label">Visible until</span>
-                                      <span id="cms-workflow-visibility-until" class="workflow-info-value">---</span>
+                                        <span class="workflow-info-label">Visible until</span>
+                                        <span id="cms-workflow-visibility-until" class="workflow-info-value">---</span>
                                     </div>
-                              </div>
-                          </div>
-                      </div>
+                                </div>
+                                <div id="cms-workflow-transitions">
+                                    <div class="dropdown-divider"></div>
+                                    <h6  class="dropdown-header">Workflow actions</h6>
+                                    <div id="cms-workflow-transitions-container">
+                                        <button class="dropdown-item workflow-transition workflow-transition--primary" type="button">
+                                            <span class="workflow-transition__content">
+                                                <span class="workflow-transition__label">
+                                                    Depublizieren
+                                                </span>
 
-                      <div class="dropdown">
-                          <a class="btn btn-sm btn-secondary dropdown-toggle dropdown-nocaret" href="#" role="button"
-                              data-bs-toggle="dropdown" aria-expanded="false" data-cms-i18n-key11="menu.settings">
-                              <i class="bi bi-sliders2-vertical"></i>
-                          </a>
-                          <ul class="dropdown-menu dropdown-menu-lg-end">
-                              <li>
-                                  <a class="dropdown-item" id="cms-action-logout"
-                                      href="{{ links.createUrl('/manager/logout') }}"
-                                      data-cms-i18n-key="menu.settings.logout">
-                                      <i class="bi bi-box-arrow-right"></i>
-                                      <span>Logout</span>
-                                  </a>
-                              </li>
-                          </ul>
-                      </div>
-                  </div>
-              </div>
+                                                <small class="workflow-transition__description">
+                                                    In den Entwurfsstatus zurücksetzen
+                                                </small>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dropdown">
+                            <a class="btn btn-sm btn-secondary dropdown-toggle dropdown-nocaret" href="#" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false" data-cms-i18n-key11="menu.settings">
+                                <i class="bi bi-sliders2-vertical"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-lg-end">
+                                <li>
+                                    <a class="dropdown-item" id="cms-action-logout"
+                                       href="{{ links.createUrl('/manager/logout') }}"
+                                       data-cms-i18n-key="menu.settings.logout">
+                                        <i class="bi bi-box-arrow-right"></i>
+                                        <span>Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </nav>
-	</div>
+        </nav>
+    </div>
 	<div id="content" class="flex-grow-1 d-flex flex-column overflow-hidden">
 		<div id="previewWrapper" class="flex-grow-1 position-relative">
 			<iframe id="contentPreview" class="position-absolute top-0 start-0 w-100 h-100 border-0"></iframe>
@@ -276,6 +295,7 @@
 	<div id="sidebarContainer"></div>
 	<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
 
+    <!-- formatter:off -->
 	<script type="module">
 
 		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
@@ -305,6 +325,7 @@
 			commands: shortCuts
 		});
 	</script>
+    <!-- formatter:on -->
 </body>
 
 </html>

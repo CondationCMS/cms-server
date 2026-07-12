@@ -21,6 +21,7 @@
 import { getPreviewUrl } from '@cms/modules/preview.utils.js';
 import { getContent, getContentNode } from '@cms/modules/rpc/rpc-content.js';
 import { getWfManagerStatus } from './rpc/rpc-workflow';
+import { executeScriptAction } from '../manager-globals';
 export function updateStateButton() {
     var previewUrl = getPreviewUrl();
     ;
@@ -36,11 +37,11 @@ export function updateStateButton() {
         getWfManagerStatus({
             uri: contentNode.result.uri
         }).then((getStatusResponse) => {
-            updateNodeStatus(getStatusResponse);
+            updateNodeStatus(getStatusResponse, contentNode.result.uri);
         });
     });
 }
-function updateNodeStatus(statusResponse) {
+function updateNodeStatus(statusResponse, uri) {
     console.log('updateNodeStatus', statusResponse);
     const statusBtn = document.querySelector('#cms-btn-status');
     if (!statusBtn)
@@ -111,4 +112,39 @@ function updateNodeStatus(statusResponse) {
     else {
         document.querySelector('#cms-workflow-visibility-until').textContent = "---";
     }
+    const wfTransitionsContainer = document.querySelector('#cms-workflow-transitions-container');
+    const transitions = statusResponse?.transitions || [];
+    wfTransitionsContainer.innerHTML = transitions.map(transitionButton).join('');
+    wfTransitionsContainer.querySelectorAll('.workflow-transition').forEach((btn, index) => {
+        btn.addEventListener('click', () => {
+            const transition = transitions[index];
+            executeTransition(uri, transition.id);
+        });
+    });
 }
+const executeTransition = async (uri, transitionId) => {
+    var cmd = {
+        "module": window.manager.baseUrl + "/actions/page/wf-run-transition",
+        "function": "runAction",
+        "parameters": {
+            "uri": uri,
+            "transitionId": transitionId
+        }
+    };
+    executeScriptAction(cmd);
+};
+const transitionButton = (transition) => {
+    return `
+    <button class="dropdown-item workflow-transition workflow-transition--primary" type="button">
+      <span class="workflow-transition__content">
+          <span class="workflow-transition__label">
+              ${transition.label}
+          </span>
+
+          <small class="workflow-transition__description">
+              ${transition.description}
+          </small>
+      </span>
+    </button>
+  `;
+};

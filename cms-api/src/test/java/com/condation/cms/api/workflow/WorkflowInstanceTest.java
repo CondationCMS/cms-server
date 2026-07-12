@@ -43,6 +43,7 @@ public class WorkflowInstanceTest {
 		wf.addTransition(new WFTransition(
 				"publish",
 				"Publish",
+                "Sets the state of the node to published",
 				"published",
 				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_PUBLISHED),
 				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_DRAFT)
@@ -51,6 +52,7 @@ public class WorkflowInstanceTest {
 		wf.addTransition(new WFTransition(
 				"unpublish",
 				"Unpublish",
+                "Sets the state of the node to draft",
 				"draft",
 				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_DRAFT),
 				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_PUBLISHED)
@@ -105,6 +107,7 @@ public class WorkflowInstanceTest {
 				wf.addTransition(new WFTransition(
 						"publish",
 						"Duplicate Publish",
+                        "the description",
 						"published",
 						(node) -> {},
 						null

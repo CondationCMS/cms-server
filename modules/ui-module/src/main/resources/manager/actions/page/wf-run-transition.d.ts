@@ -1,8 +1,6 @@
-package com.condation.cms.api.workflow;
-
 /*-
  * #%L
- * CMS Api
+ * UI Module
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -20,34 +18,4 @@ package com.condation.cms.api.workflow;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
-import com.condation.cms.api.db.ContentNode;
-
-/**
- *
- * @author thorstenmarx
- */
-public record WFTransition(
-		String id, 
-		String label,
-        String description,
-		String toStage,
-		WFTransitionAction action,
-		WFTransitionGuard guard) {
-	
-	public WFTransition {
-		if (action == null) {
-			action = (node) -> {};
-		}
-		if (guard == null) {
-			guard = (node) -> true;
-		}
-	}
-	
-	void execute (ContentNode node) {
-		if (!guard.isAllowed(node)) {
-			throw new WFTransitionException("transition not allowed");
-		}
-		action.execute(node);
-	}
-}
+export declare function runAction(params: any): Promise<void>;

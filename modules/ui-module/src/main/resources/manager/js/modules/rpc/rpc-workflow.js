@@ -35,7 +35,7 @@ const getWfManagerStatus = async (options) => {
 };
 const wfTransit = async (options) => {
     var data = {
-        method: "workflow.node.status",
+        method: "workflow.transit",
         parameters: options
     };
     return (await executeRemoteCall(data)).result;

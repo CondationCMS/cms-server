@@ -138,7 +138,8 @@ const openModal = (optionsParam) => {
 	});
 
 	document.getElementById(`${modalId}_okBtn`).addEventListener('click', async () => {
-		if (options.validate()) {
+		const formIsValid = !options.form || typeof options.form.validate !== 'function' || options.form.validate();
+		if (formIsValid && options.validate()) {
 			let shouldClose = true;
 			if (typeof options.onOk === 'function') {
 				shouldClose = await options.onOk() !== false;

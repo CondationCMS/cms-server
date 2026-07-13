@@ -21,6 +21,7 @@ const TextField = (overrides = {}) => ({
 const TitleField = TextField({
 	name: "title",
 	title: "Title",
+	required: true,
 });
 const DescriptionField = TextField({
 	name: "description",

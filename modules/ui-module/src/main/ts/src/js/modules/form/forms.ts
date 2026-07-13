@@ -38,6 +38,7 @@ import { ListField } from "@cms/modules/form/field.list.js";
 import { TextAreaField } from "@cms/modules/form/field.textarea.js";
 import { ReferenceField } from "@cms/modules/form/field.reference.js";
 import { TagsField } from "@cms/modules/form/field.tags.js";
+import { i18n } from "@cms/modules/localization.js";
 
 
 const createForm = (options : any) : Form => {
@@ -127,7 +128,7 @@ const createForm = (options : any) : Form => {
 		context.formElement.addEventListener('submit', (e) => {
 			e.preventDefault();
 			e.stopPropagation();
-			context.formElement?.classList.add('was-validated');
+			validate();
 		});
 		CodeField.init(context)
 		MarkdownField.init(context)
@@ -136,6 +137,7 @@ const createForm = (options : any) : Form => {
 		ListField.init(context)
 		ReferenceField.init(context)
 		TagsField.init(context)
+		markRequiredFields();
 	};
 
 	const getData = () => {
@@ -166,8 +168,110 @@ const createForm = (options : any) : Form => {
 		return data
 	};
 
+	const getFieldContainer = (fieldName: string) : HTMLElement | null => {
+		if (!context.formElement) {
+			return null;
+		}
+
+		const containers = context.formElement.querySelectorAll<HTMLElement>("[data-cms-form-field-type]");
+		return Array.from(containers).find(container => {
+			if (container.getAttribute('name') === fieldName) {
+				return true;
+			}
+			return Array.from(container.querySelectorAll<HTMLElement>('[name]'))
+				.some(element => element.getAttribute('name') === fieldName);
+		}) || null;
+	};
+
+	const markRequiredFields = () => {
+		fields.filter((field: FieldOptions) => field.required && field.name).forEach((field: FieldOptions) => {
+			const container = getFieldContainer(field.name as string);
+			if (!container) {
+				return;
+			}
+
+			container.dataset.cmsRequired = 'true';
+			container.setAttribute('aria-required', 'true');
+
+			const label = container.querySelector<HTMLElement>('.form-label');
+			if (label && !label.querySelector('.cms-required-marker')) {
+				label.insertAdjacentHTML('beforeend', ' <span class="cms-required-marker text-danger" aria-hidden="true">*</span>');
+			}
+
+			const controls = Array.from(container.querySelectorAll<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('[name]'))
+				.filter(control => control.name === field.name);
+			controls.forEach(control => {
+				control.setAttribute('aria-required', 'true');
+				// A required attribute on every checkbox would mean that every option
+				// has to be selected. Checkbox groups are validated as one field below.
+				if (!(control instanceof HTMLInputElement && control.type === 'checkbox')) {
+					control.required = true;
+				}
+			});
+
+			if (!container.querySelector('.invalid-feedback')) {
+				const message = field.requiredMessage || i18n.t('form.validation.required', 'This field is required.');
+				container.insertAdjacentHTML('beforeend', `<div class="invalid-feedback" role="alert">${message}</div>`);
+			}
+		});
+	};
+
+	const isEmpty = (value: any) => {
+		if (value === null || value === undefined) {
+			return true;
+		}
+		if (typeof value === 'string') {
+			return value.trim().length === 0;
+		}
+		if (Array.isArray(value)) {
+			return value.length === 0;
+		}
+		return false;
+	};
+
+	const validate = () => {
+		if (!context.formElement) {
+			console.warn('Form not initialised.');
+			return false;
+		}
+
+		const data = getData();
+		const invalidContainers: HTMLElement[] = [];
+
+		fields.filter((field: FieldOptions) => field.required && field.name).forEach((field: FieldOptions) => {
+			const container = getFieldContainer(field.name as string);
+			if (!container) {
+				return;
+			}
+
+			const invalid = isEmpty(data[field.name as string]?.value);
+			container.classList.toggle('is-invalid', invalid);
+			container.querySelector('.invalid-feedback')?.classList.toggle('d-block', invalid);
+			container.querySelectorAll<HTMLElement>('[name]').forEach(control => {
+				if (control.getAttribute('name') === field.name) {
+					control.classList.toggle('is-invalid', invalid);
+					control.setAttribute('aria-invalid', String(invalid));
+				}
+			});
+
+			if (invalid) {
+				invalidContainers.push(container);
+			}
+		});
+
+		const firstInvalidContainer = invalidContainers[0];
+		if (firstInvalidContainer) {
+			firstInvalidContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			const focusTarget = firstInvalidContainer.querySelector<HTMLElement>('input:not([type="hidden"]), select, textarea, button, [tabindex]');
+			focusTarget?.focus();
+			return false;
+		}
+		return true;
+	};
+
 	return {
 		init,
+		validate,
 		getData,
 		getRawData: () => {
 			let data = getData()
@@ -204,6 +308,7 @@ export interface FormContext {
 
 export interface Form {
 	init: (container: Element | string) => void;
+	validate: () => boolean;
 	getData: () => any;
 	getRawData: () => any;
 }
@@ -217,4 +322,6 @@ export interface FormField {
 export interface FieldOptions {
     name?: string;
     title?: string;
+	required?: boolean;
+	requiredMessage?: string;
 }

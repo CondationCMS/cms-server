@@ -30,7 +30,9 @@ const DEFAULT_FIELDS = [
     {
         type: 'text',
         name: 'title',
-        title: 'Title'
+        title: 'Title',
+        required: true,
+        requiredMessage: "Please enter a title."
     }
 ];
 export async function runAction(params) {

@@ -26,6 +26,7 @@ export interface FormContext {
 }
 export interface Form {
     init: (container: Element | string) => void;
+    validate: () => boolean;
     getData: () => any;
     getRawData: () => any;
 }
@@ -37,4 +38,6 @@ export interface FormField {
 export interface FieldOptions {
     name?: string;
     title?: string;
+    required?: boolean;
+    requiredMessage?: string;
 }

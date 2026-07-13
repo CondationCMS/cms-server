@@ -102,9 +102,18 @@ const openSidebar = (options) => {
 		if (typeof options.onCancel === 'function') options.onCancel();
 	});
 
-	document.getElementById(`${sidebarId}_okBtn`).addEventListener('click', () => {
-		sidebarInstance.hide();
-		if (typeof options.onOk === 'function') options.onOk();
+	document.getElementById(`${sidebarId}_okBtn`).addEventListener('click', async () => {
+		if (options.form && typeof options.form.validate === 'function' && !options.form.validate()) {
+			return;
+		}
+
+		let shouldClose = true;
+		if (typeof options.onOk === 'function') {
+			shouldClose = await options.onOk() !== false;
+		}
+		if (shouldClose) {
+			sidebarInstance.hide();
+		}
 	});
 
 	// Resize-Funktion (nur bei "end"-Position UND resizable === true)

@@ -1,5 +1,5 @@
 ---
-title: Demo page
+title: Startpage
 template: start.html
 search:
   index: false

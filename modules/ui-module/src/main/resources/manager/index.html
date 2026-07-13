@@ -181,14 +181,14 @@
                                 <span id="cms-btn-status-text" data-cms-i18n-key="menu.status">Status</span>
                             </button>
                             <div class="dropdown-menu dropdown-menu-lg-end workflow-dropdown" aria-labelledby="cms-btn-status">
-                                <button class="dropdown-item" href="#" data-cms-i18n-lang="en"
+                                <button class="dropdown-item" data-cms-i18n-lang="en"
                                         data-cms-i18n-key="menu.page.settings"
                                         data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-page-settings')}}","parameters":{},"type":"script"}'>
                                     <i class="bi bi-sliders"></i>
                                     <span>Page settings</span>
                                 </button>
                                 {% if translation.enabled %}
-                                <button class="dropdown-item" href="#" data-cms-i18n-lang="en"
+                                <button class="dropdown-item" data-cms-i18n-lang="en"
                                         data-cms-i18n-key="menu.page.translation"
                                         data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/translations')}}","parameters":{},"type":"script"}'>
                                     <i class="bi bi-translate"></i>
@@ -234,19 +234,18 @@
                                     <div class="dropdown-divider"></div>
                                     <h6  class="dropdown-header">Workflow actions</h6>
                                     <div id="cms-workflow-transitions-container">
-                                        <button class="dropdown-item workflow-transition workflow-transition--primary" type="button">
-                                            <span class="workflow-transition__content">
-                                                <span class="workflow-transition__label">
-                                                    Depublizieren
-                                                </span>
-
-                                                <small class="workflow-transition__description">
-                                                    In den Entwurfsstatus zurücksetzen
-                                                </small>
-                                            </span>
-                                        </button>
+                                       
                                     </div>
                                 </div>
+                                <div class="dropdown-divider"></div>
+
+                                <button class="dropdown-item" type="button"
+                                        data-cms-i18n-lang="en"
+                                        data-cms-i18n-key="menu.page.schedule"
+                                        data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/edit-schedule')}}","parameters":{},"type":"script"}'>
+                                  <i class="bi bi-calendar-event"></i>
+                                  <span>Edit schedule</span>
+                                </button>
                             </div>
                         </div>
 

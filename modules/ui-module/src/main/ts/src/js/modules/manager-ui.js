@@ -47,7 +47,6 @@ export function updateStateButton() {
 }
 
 function updateNodeStatus(statusResponse, uri) {
-  console.log('updateNodeStatus', statusResponse);
   const statusBtn = document.querySelector('#cms-btn-status');
   if (!statusBtn) return;
   const iconEl = statusBtn.querySelector('#cms-btn-status-icon');
@@ -64,12 +63,6 @@ function updateNodeStatus(statusResponse, uri) {
       iconEl.classList.remove(className);
     }
   });
-  let visibilityStatus = document.querySelector('#cms-workflow-visibility');
-  Array.from(visibilityStatus.classList).forEach(className => {
-    if (className.startsWith('bi-')) {
-      visibilityStatus.classList.remove(className);
-    }
-  });
   
 
   var published = statusResponse?.status.published;
@@ -77,27 +70,50 @@ function updateNodeStatus(statusResponse, uri) {
   let statusClass = "workflow-status-button--";
   let statusIcon = ""
   let statusText = ""
-  let visibilityText = ""
   if (!published) {
     statusClass += 'draft';
     statusIcon = "bi-pencil"
     statusText = "Draft"
-    visibilityText = "Not visible"
   } else if (!statusResponse?.status.withinSchedule) {
     statusClass += 'scheduled';
     statusIcon = "bi-eye-slash"
     statusText = "Scheduled"
-    visibilityText = "Not visible"
   } else {
     statusClass += 'visible';
     statusIcon = "bi-eye-fill"
     statusText = "Visible"
-    visibilityText = "Visible"
   }
 
   statusBtn.classList.add(statusClass);
   iconEl.classList.add(statusIcon);
   statusBtn.querySelector('#cms-btn-status-text').textContent = statusText;
+  
+  updateWorkflowStatus(statusResponse, uri);
+}
+
+const updateWorkflowStatus = (statusResponse, uri) => {
+
+  let visibilityStatus = document.querySelector('#cms-workflow-visibility');
+  Array.from(visibilityStatus.classList).forEach(className => {
+    if (className.startsWith('bi-')) {
+      visibilityStatus.classList.remove(className);
+    }
+  });
+
+  let statusClass = "workflow-status-button--";
+  var published = statusResponse?.status.published;
+  let visibilityText = ""
+  if (!published) {
+    visibilityText = "Not visible"
+    statusClass += 'draft';
+  } else if (!statusResponse?.status.withinSchedule) {
+    visibilityText = "Not visible"
+    statusClass += 'scheduled';
+  } else {
+    visibilityText = "Visible"
+    statusClass += 'visible';
+  }
+
   document.querySelector('#cms-workflow-stage').textContent = statusResponse?.status.currentStage || '---';
   visibilityStatus.textContent = visibilityText;
   visibilityStatus.classList.add(statusClass);

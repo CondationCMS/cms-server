@@ -42,7 +42,6 @@ export function updateStateButton() {
     });
 }
 function updateNodeStatus(statusResponse, uri) {
-    console.log('updateNodeStatus', statusResponse);
     const statusBtn = document.querySelector('#cms-btn-status');
     if (!statusBtn)
         return;
@@ -60,39 +59,53 @@ function updateNodeStatus(statusResponse, uri) {
             iconEl.classList.remove(className);
         }
     });
+    var published = statusResponse?.status.published;
+    // Status bestimmen (Provider-fähig)
+    let statusClass = "workflow-status-button--";
+    let statusIcon = "";
+    let statusText = "";
+    if (!published) {
+        statusClass += 'draft';
+        statusIcon = "bi-pencil";
+        statusText = "Draft";
+    }
+    else if (!statusResponse?.status.withinSchedule) {
+        statusClass += 'scheduled';
+        statusIcon = "bi-eye-slash";
+        statusText = "Scheduled";
+    }
+    else {
+        statusClass += 'visible';
+        statusIcon = "bi-eye-fill";
+        statusText = "Visible";
+    }
+    statusBtn.classList.add(statusClass);
+    iconEl.classList.add(statusIcon);
+    statusBtn.querySelector('#cms-btn-status-text').textContent = statusText;
+    updateWorkflowStatus(statusResponse, uri);
+}
+const updateWorkflowStatus = (statusResponse, uri) => {
     let visibilityStatus = document.querySelector('#cms-workflow-visibility');
     Array.from(visibilityStatus.classList).forEach(className => {
         if (className.startsWith('bi-')) {
             visibilityStatus.classList.remove(className);
         }
     });
-    var published = statusResponse?.status.published;
-    // Status bestimmen (Provider-fähig)
     let statusClass = "workflow-status-button--";
-    let statusIcon = "";
-    let statusText = "";
+    var published = statusResponse?.status.published;
     let visibilityText = "";
     if (!published) {
-        statusClass += 'draft';
-        statusIcon = "bi-pencil";
-        statusText = "Draft";
         visibilityText = "Not visible";
+        statusClass += 'draft';
     }
     else if (!statusResponse?.status.withinSchedule) {
-        statusClass += 'scheduled';
-        statusIcon = "bi-eye-slash";
-        statusText = "Scheduled";
         visibilityText = "Not visible";
+        statusClass += 'scheduled';
     }
     else {
-        statusClass += 'visible';
-        statusIcon = "bi-eye-fill";
-        statusText = "Visible";
         visibilityText = "Visible";
+        statusClass += 'visible';
     }
-    statusBtn.classList.add(statusClass);
-    iconEl.classList.add(statusIcon);
-    statusBtn.querySelector('#cms-btn-status-text').textContent = statusText;
     document.querySelector('#cms-workflow-stage').textContent = statusResponse?.status.currentStage || '---';
     visibilityStatus.textContent = visibilityText;
     visibilityStatus.classList.add(statusClass);
@@ -121,7 +134,7 @@ function updateNodeStatus(statusResponse, uri) {
             executeTransition(uri, transition.id);
         });
     });
-}
+};
 const executeTransition = async (uri, transitionId) => {
     var cmd = {
         "module": window.manager.baseUrl + "/actions/page/wf-run-transition",

@@ -19,8 +19,10 @@
  * #L%
  */
 
+import { i18n } from "@cms/modules/localization";
 import { reloadPreview } from "@cms/modules/preview.utils";
 import { wfTransit } from "@cms/modules/rpc/rpc-workflow";
+import { showToast } from "@cms/modules/toast";
 
 export async function runAction(params : any) {
 
@@ -31,6 +33,21 @@ export async function runAction(params : any) {
 
     var wfTransitResponse = await wfTransit(request);
 
-    reloadPreview();
+    if (wfTransitResponse?.error) {
+        showToast({
+            title: i18n.t('manager.actions.page.workflow.error.toast.title', "Workflow transition failed"),
+            message: i18n.t('manager.actions.page.workflow.error.toast.message', "An error occurred while transitioning the workflow."),
+            type: 'error', // optional: info | success | warning | error
+            timeout: 3000
+        });
+    } else {
+        showToast({
+            title: i18n.t('manager.actions.page.workflow.success.toast.title', "Workflow transition completed"),
+            message: i18n.t('manager.actions.page.workflow.success.toast.message', "The workflow transition has been completed successfully."),
+            type: 'success', // optional: info | success | warning | error
+            timeout: 3000
+        });
+        reloadPreview();
+    }
 
 }

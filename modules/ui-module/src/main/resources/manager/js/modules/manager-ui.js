@@ -163,7 +163,7 @@ const executeTransition = async (uri, transitionId) => {
 };
 const transitionButton = (transition) => {
     return `
-    <button class="dropdown-item workflow-transition workflow-transition--primary" type="button">
+    <button class="dropdown-item workflow-transition" type="button">
       <span class="workflow-transition__content">
           <span class="workflow-transition__label">
               ${transition.label}

@@ -24,9 +24,6 @@ export interface GetTransitionsRequest {
 export interface GetTransitionsDto {
     id: string;
     label: string;
-    error?: boolean;
-    message?: string;
-    code?: number;
 }
 declare const getWfTransitions: (options: GetTransitionsRequest) => Promise<{
     transitions: GetTransitionsDto[];
@@ -40,9 +37,6 @@ export interface GetWFManagerStatusDto {
     currentStage: string;
     publish_date?: Date;
     unpublish_date?: Date;
-    error?: boolean;
-    message?: string;
-    code?: number;
 }
 export interface GetWFManagerTransitionsDto {
     id: string;
@@ -50,8 +44,8 @@ export interface GetWFManagerTransitionsDto {
     description: string;
 }
 export interface getWFManagerDto {
-    status: GetWFManagerStatusDto;
-    transitions: GetWFManagerTransitionsDto[];
+    status?: GetWFManagerStatusDto;
+    transitions?: GetWFManagerTransitionsDto[];
 }
 declare const getWfManagerStatus: (options: GetWFManagerRequest) => Promise<getWFManagerDto>;
 export interface WfTransitRequest {
@@ -60,7 +54,6 @@ export interface WfTransitRequest {
 }
 export interface WFTransitDto {
     success?: boolean;
-    error?: boolean;
 }
 declare const wfTransit: (options: WfTransitRequest) => Promise<WFTransitDto>;
 export { getWfTransitions, getWfManagerStatus, wfTransit };

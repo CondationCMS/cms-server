@@ -32,65 +32,85 @@ export async function runAction(params) {
   			<div class="cms-focal-point" id="cmsFocalPoint" style="display: none;"></div>
 		</div>
 	`;
-    var mediaMeta = (await getMediaMetaData({ image: params.options.uri })).result.meta;
-    const focal = mediaMeta?.focal || {};
-    const focalX = typeof focal.x === 'number' ? focal.x : 0.5;
-    const focalY = typeof focal.y === 'number' ? focal.y : 0.5;
-    openModal({
-        title: i18n.t("media.focal.title", "Edit focal point"),
-        body: template,
-        onCancel: (event) => { },
-        onOk: async (event) => {
-            var setMetaResponse = await setMediaMetaData({
-                image: mediaUrl,
-                meta: {
-                    "focal.x": {
-                        "type": "number",
-                        "value": focal.x
-                    },
-                    "focal.y": {
-                        "type": "number",
-                        "value": focal.y
-                    }
+    try {
+        var mediaMeta = (await getMediaMetaData({ image: params.options.uri })).result.meta;
+        const focal = mediaMeta?.focal || {};
+        const focalX = typeof focal.x === 'number' ? focal.x : 0.5;
+        const focalY = typeof focal.y === 'number' ? focal.y : 0.5;
+        openModal({
+            title: i18n.t("media.focal.title", "Edit focal point"),
+            body: template,
+            onCancel: (event) => { },
+            onOk: async (event) => {
+                try {
+                    await setMediaMetaData({
+                        image: mediaUrl,
+                        meta: {
+                            "focal.x": {
+                                "type": "number",
+                                "value": focal.x
+                            },
+                            "focal.y": {
+                                "type": "number",
+                                "value": focal.y
+                            }
+                        }
+                    });
+                    showToast({
+                        title: i18n.t('manager.actions.media.focal-point.toast.title', "Media focal point updated"),
+                        message: i18n.t('manager.actions.media.focal-point.toast.message', "The focal point was successfuly updated."),
+                        type: 'success',
+                        timeout: 3000
+                    });
+                    reloadPreview();
                 }
-            });
-            showToast({
-                title: i18n.t('manager.actions.media.focal-point.toast.title', "Media focal point updated"),
-                message: i18n.t('manager.actions.media.focal-point.toast.message', "The focal point was successfuly updated."),
-                type: 'success',
-                timeout: 3000
-            });
-            reloadPreview();
-        },
-        onShow: () => {
-            const wrapper = document.getElementById("cmsFocalWrapper");
-            const image = document.getElementById("cms-image");
-            const point = document.getElementById("cmsFocalPoint");
-            if (wrapper === null || image === null || point === null) {
-                console.error("One or more required elements not found");
-                return;
+                catch (e) {
+                    showToast({
+                        title: i18n.t('manager.actions.media.focal-point.toast.error.title', "Focal point not updated"),
+                        message: e.message,
+                        type: 'error',
+                        timeout: 3000
+                    });
+                }
+            },
+            onShow: () => {
+                const wrapper = document.getElementById("cmsFocalWrapper");
+                const image = document.getElementById("cms-image");
+                const point = document.getElementById("cmsFocalPoint");
+                if (wrapper === null || image === null || point === null) {
+                    console.error("One or more required elements not found");
+                    return;
+                }
+                if (image.complete) {
+                    setFocalPoint(image, point, focalX, focalY);
+                }
+                else {
+                    image.onload = () => setFocalPoint(image, point, focalX, focalY);
+                }
+                wrapper.addEventListener("click", function (e) {
+                    const rect = image.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const relX = (x / rect.width).toFixed(4);
+                    const relY = (y / rect.height).toFixed(4);
+                    // Punkt anzeigen
+                    point.style.left = `${x}px`;
+                    point.style.top = `${y}px`;
+                    point.style.display = "block";
+                    focal.x = parseFloat(relX);
+                    focal.y = parseFloat(relY);
+                });
             }
-            if (image.complete) {
-                setFocalPoint(image, point, focalX, focalY);
-            }
-            else {
-                image.onload = () => setFocalPoint(image, point, focalX, focalY);
-            }
-            wrapper.addEventListener("click", function (e) {
-                const rect = image.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                const relX = (x / rect.width).toFixed(4);
-                const relY = (y / rect.height).toFixed(4);
-                // Punkt anzeigen
-                point.style.left = `${x}px`;
-                point.style.top = `${y}px`;
-                point.style.display = "block";
-                focal.x = parseFloat(relX);
-                focal.y = parseFloat(relY);
-            });
-        }
-    });
+        });
+    }
+    catch (e) {
+        showToast({
+            title: i18n.t("media.focal.toast.error.title", "Could not load focal point"),
+            message: e.message,
+            type: 'error',
+            timeout: 3000
+        });
+    }
 }
 const setFocalPoint = (image, point, relX, relY) => {
     const rect = image.getBoundingClientRect();

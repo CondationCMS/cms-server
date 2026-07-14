@@ -20,6 +20,13 @@
  */
 import { i18n } from "@cms/modules/localization.js";
 import { getCSRFToken } from "../utils";
+export class RPCClientError extends Error {
+    constructor(code, message) {
+        super(message);
+        this.code = code;
+        this.name = "RPCClientError";
+    }
+}
 const executeRemoteCall = async (options) => {
     return executeRemoteMethodCall(options.method, options.parameters);
 };
@@ -42,6 +49,10 @@ const executeRemoteMethodCall = async (method, parameters) => {
         window.location.href = window.manager.baseUrl + "/login";
         throw new Error("Unauthorized");
     }
-    return await response.json();
+    const json = await response.json();
+    if (json.error) {
+        throw new RPCClientError(json.error.code, json.error.message);
+    }
+    return json;
 };
 export { executeRemoteCall, executeRemoteMethodCall };

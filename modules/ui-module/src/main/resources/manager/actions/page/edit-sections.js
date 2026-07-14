@@ -53,15 +53,25 @@ export async function runAction(params) {
         fullscreen: false,
         onCancel: (event) => { },
         onOk: async (event) => {
-            await saveSections();
-            showToast({
-                title: 'Entry saved',
-                message: 'Entry successfuly saved.',
-                type: 'success', // optional: info | success | warning | error
-                timeout: 3000
-            });
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            reloadPreview();
+            try {
+                await saveSections();
+                showToast({
+                    title: 'Entry saved',
+                    message: 'Entry successfuly saved.',
+                    type: 'success', // optional: info | success | warning | error
+                    timeout: 3000
+                });
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                reloadPreview();
+            }
+            catch (e) {
+                showToast({
+                    title: 'Entry not saved',
+                    message: e.message,
+                    type: 'error',
+                    timeout: 3000
+                });
+            }
         },
         onShow: () => {
             document.querySelectorAll(".cms-sortable").forEach(elem => {

@@ -38,7 +38,6 @@ export interface AddTranslationOptions {
 }
 export interface AddTranslationResult {
     uri: string;
-    error?: boolean;
 }
 declare const addTranslation: (options: AddTranslationOptions) => Promise<AddTranslationResult>;
 export interface RemoveTranslationOptions {
@@ -47,7 +46,6 @@ export interface RemoveTranslationOptions {
 }
 export interface RemoveTranslationResult {
     uri: string;
-    error?: boolean;
 }
 declare const removeTranslation: (options: RemoveTranslationOptions) => Promise<RemoveTranslationResult>;
 export { getTranslations, addTranslation, removeTranslation };

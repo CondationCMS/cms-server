@@ -59,22 +59,14 @@ const openCreateContentBrowser = async (params) => {
             if (state.options.siteId) {
                 extraOptions.siteId = state.options.siteId;
             }
-            const response = await createPage({
-                uri: getTargetFolder(),
-                name: fileName,
-                contentType: state.options.contentType,
-                type: state.options.type,
-                ...extraOptions
-            });
-            if (response.error) {
-                showToast({
-                    title: i18n.t("filebrowser.createFile.error.title", 'Error creating file'),
-                    message: response.error.message,
-                    type: 'error',
-                    timeout: 3000
+            try {
+                const response = await createPage({
+                    uri: getTargetFolder(),
+                    name: fileName,
+                    contentType: state.options.contentType,
+                    type: state.options.type,
+                    ...extraOptions
                 });
-            }
-            else {
                 showToast({
                     title: i18n.t("filebrowser.createFile.success.title", 'File created'),
                     message: i18n.t("filebrowser.createFile.success.message", "File created successfully"),
@@ -87,6 +79,14 @@ const openCreateContentBrowser = async (params) => {
                         name: fileName
                     });
                 }
+            }
+            catch (e) {
+                showToast({
+                    title: i18n.t("filebrowser.createFile.error.title", 'Error creating file'),
+                    message: e.message,
+                    type: 'error',
+                    timeout: 3000
+                });
             }
         },
         onShow: async () => {

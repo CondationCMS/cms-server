@@ -26,7 +26,6 @@ export interface CreatePageOptions {
 export interface CreatePageResponse {
     result: {
         uri?: string;
-        error?: string;
     };
 }
 declare const createPage: (options: CreatePageOptions) => Promise<CreatePageResponse>;

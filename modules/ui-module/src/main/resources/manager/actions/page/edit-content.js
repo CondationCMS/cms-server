@@ -36,41 +36,61 @@ export async function runAction(params) {
         });
         uri = contentNode.result.uri;
     }
-    const nodeContent = await getContent({
-        uri: uri
-    });
-    const form = createForm({
-        fields: [
-            {
-                type: params.editor,
-                name: 'content',
-                title: 'Main content',
-                height: '80%'
+    try {
+        const nodeContent = await getContent({
+            uri: uri
+        });
+        const form = createForm({
+            fields: [
+                {
+                    type: params.editor,
+                    name: 'content',
+                    title: 'Main content',
+                    height: '80%'
+                }
+            ],
+            values: {
+                "content": nodeContent?.result?.content
             }
-        ],
-        values: {
-            "content": nodeContent?.result?.content
-        }
-    });
-    openModal({
-        title: 'Edit Content',
-        body: 'modal body',
-        form: form,
-        fullscreen: true,
-        onCancel: (event) => { },
-        onOk: async (event) => {
-            var updateData = form.getData();
-            var setContentResponse = await setContent({
-                uri: uri,
-                content: updateData.content
-            });
-            showToast({
-                title: i18n.t('manager.actions.page.edit-content.toast.title', "Content updated"),
-                message: i18n.t('manager.actions.page.edit-content.toast.message', "The content has been updated successfully."),
-                type: 'success', // optional: info | success | warning | error
-                timeout: 3000
-            });
-            reloadPreview();
-        }
-    });
+        });
+        openModal({
+            title: 'Edit Content',
+            body: 'modal body',
+            form: form,
+            fullscreen: true,
+            onCancel: (event) => { },
+            onOk: async (event) => {
+                var updateData = form.getData();
+                try {
+                    await setContent({
+                        uri: uri,
+                        content: updateData.content
+                    });
+                    showToast({
+                        title: i18n.t('manager.actions.page.edit-content.toast.title', "Content updated"),
+                        message: i18n.t('manager.actions.page.edit-content.toast.message', "The content has been updated successfully."),
+                        type: 'success', // optional: info | success | warning | error
+                        timeout: 3000
+                    });
+                    reloadPreview();
+                }
+                catch (e) {
+                    showToast({
+                        title: i18n.t('manager.actions.page.edit-content.toast.error.title', "Content not updated"),
+                        message: e.message,
+                        type: 'error', // optional: info | success | warning | error
+                        timeout: 3000
+                    });
+                }
+            }
+        });
+    }
+    catch (e) {
+        showToast({
+            title: i18n.t('manager.actions.page.edit-content.toast.error.title', "Content not updated"),
+            message: e.message,
+            type: 'error', // optional: info | success | warning | error
+            timeout: 3000
+        });
+    }
 }

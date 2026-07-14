@@ -27,39 +27,59 @@ import { i18n } from '@cms/modules/localization.js';
 import { getMediaForm } from '@cms/modules/rpc/rpc-manager.js';
 import { getMediaMetaData, setMediaMetaData } from '@cms/modules/rpc/rpc-media.js';
 export async function runAction(params) {
-    var mediaForm = (await getMediaForm({
-        form: params.options.form || 'meta'
-    })).result;
-    const fields = [
-        ...mediaForm?.form?.fields
-    ];
-    const values = {
-        ...(await getMediaMetaData({ image: params.options.image })).result.meta
-    };
-    const form = createForm({
-        fields: fields,
-        values: values
-    });
-    openSidebar({
-        title: 'Media attributes',
-        body: 'modal body',
-        form: form,
-        onCancel: (event) => { },
-        onOk: async (event) => {
-            var updateData = form.getData();
-            var setMetaResponse = await setMediaMetaData({
-                image: params.options.image,
-                meta: updateData
-            });
-            showToast({
-                title: i18n.t('manager.actions.media.edit-media-form.toast.title', "Media meta updated"),
-                message: i18n.t('manager.actions.media.edit-media-form.toast.message', "The media meta have been updated successfully."),
-                type: 'success', // optional: info | success | warning | error
-                timeout: 3000
-            });
-            reloadPreview();
-        }
-    });
+    try {
+        var mediaForm = (await getMediaForm({
+            form: params.options.form || 'meta'
+        })).result;
+        const fields = [
+            ...mediaForm?.form?.fields
+        ];
+        const values = {
+            ...(await getMediaMetaData({ image: params.options.image })).result.meta
+        };
+        const form = createForm({
+            fields: fields,
+            values: values
+        });
+        openSidebar({
+            title: 'Media attributes',
+            body: 'modal body',
+            form: form,
+            onCancel: (event) => { },
+            onOk: async (event) => {
+                var updateData = form.getData();
+                try {
+                    await setMediaMetaData({
+                        image: params.options.image,
+                        meta: updateData
+                    });
+                    showToast({
+                        title: i18n.t('manager.actions.media.edit-media-form.toast.title', "Media meta updated"),
+                        message: i18n.t('manager.actions.media.edit-media-form.toast.message', "The media meta have been updated successfully."),
+                        type: 'success', // optional: info | success | warning | error
+                        timeout: 3000
+                    });
+                    reloadPreview();
+                }
+                catch (e) {
+                    showToast({
+                        title: i18n.t('manager.actions.media.edit-media-form.toast.error.title', "Media meta not updated"),
+                        message: e.message,
+                        type: 'error',
+                        timeout: 3000
+                    });
+                }
+            }
+        });
+    }
+    catch (e) {
+        showToast({
+            title: i18n.t('manager.actions.media.edit-media-form.toast.error.title', "Media meta not updated"),
+            message: e.message,
+            type: 'error',
+            timeout: 3000
+        });
+    }
 }
 /**
  * Retrieves a nested value from an object using a dot-notated path like "meta.title"

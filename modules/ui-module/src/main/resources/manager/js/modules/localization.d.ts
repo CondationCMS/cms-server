@@ -21,7 +21,7 @@
 export function localizeUi(): Promise<void>;
 export namespace i18n {
     let _locale: any;
-    let _cache: null;
+    let _cache: any;
     /**
      * Loads and merges remote localizations with defaults.
      */

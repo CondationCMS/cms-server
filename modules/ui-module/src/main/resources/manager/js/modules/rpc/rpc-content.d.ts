@@ -23,7 +23,6 @@ declare const getContentNode: (options: any) => Promise<any>;
 declare const getContent: (options: any) => Promise<any>;
 declare const setContent: (options: any) => Promise<any>;
 export interface ReplaceContent {
-    error: boolean | null;
     uri: string;
 }
 export interface ReplaceContentOptions {

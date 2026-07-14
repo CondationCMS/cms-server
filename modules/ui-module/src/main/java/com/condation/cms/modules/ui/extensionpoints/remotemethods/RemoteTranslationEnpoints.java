@@ -95,7 +95,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 	}
 
 	@RemoteMethod(name = "translations.remove", permissions = {Permissions.CONTENT_EDIT})
-	public Object remove(Map<String, Object> parameters) {
+	public Object remove(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
@@ -142,6 +142,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 				}
 			} catch (IOException ex) {
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 
@@ -149,7 +150,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 	}
 
 	@RemoteMethod(name = "translations.add", permissions = {Permissions.CONTENT_EDIT})
-	public Object add(Map<String, Object> parameters) {
+	public Object add(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
@@ -193,7 +194,7 @@ public class RemoteTranslationEnpoints extends AbstractRemoteMethodeExtension {
 				}
 			} catch (IOException ex) {
 				log.error("", ex);
-				result.put("error", true);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 

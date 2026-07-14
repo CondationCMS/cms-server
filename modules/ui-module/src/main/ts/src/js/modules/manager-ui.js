@@ -42,8 +42,19 @@ export function updateStateButton() {
       uri: contentNode.result.uri
     }).then((getStatusResponse) => {
       updateNodeStatus(getStatusResponse, contentNode.result.uri);
-    })
-  })
+    }).catch(() => {
+      hideStatusButton();
+    });
+  }).catch(() => {
+    hideStatusButton();
+  });
+}
+
+function hideStatusButton() {
+  const statusBtn = document.querySelector('#cms-btn-status');
+  if (statusBtn) {
+    statusBtn.classList.add('disabled');
+  }
 }
 
 function updateNodeStatus(statusResponse, uri) {
@@ -51,6 +62,13 @@ function updateNodeStatus(statusResponse, uri) {
   if (!statusBtn) return;
   const iconEl = statusBtn.querySelector('#cms-btn-status-icon');
   if (!iconEl) return;
+
+  if (!statusResponse?.status) {
+    hideStatusButton();
+    return;
+  }
+
+  statusBtn.classList.remove('disabled');
 
   // Alle cms-node-status-* Klassen entfernen
   Array.from(statusBtn.classList).forEach(className => {
@@ -63,7 +81,7 @@ function updateNodeStatus(statusResponse, uri) {
       iconEl.classList.remove(className);
     }
   });
-  
+
 
   var published = statusResponse?.status.published;
   // Status bestimmen (Provider-fähig)

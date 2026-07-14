@@ -46,7 +46,6 @@ const setContent = async (options : any) => {
 };
 
 export interface ReplaceContent {
-  error: boolean | null;
   uri: string;
 }
 

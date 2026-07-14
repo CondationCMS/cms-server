@@ -31,16 +31,8 @@ export async function runAction(params : any) {
         transitionId: params.transitionId
     };
 
-    var wfTransitResponse = await wfTransit(request);
-
-    if (wfTransitResponse?.error) {
-        showToast({
-            title: i18n.t('manager.actions.page.workflow.error.toast.title', "Workflow transition failed"),
-            message: i18n.t('manager.actions.page.workflow.error.toast.message', "An error occurred while transitioning the workflow."),
-            type: 'error', // optional: info | success | warning | error
-            timeout: 3000
-        });
-    } else {
+    try {
+        await wfTransit(request);
         showToast({
             title: i18n.t('manager.actions.page.workflow.success.toast.title', "Workflow transition completed"),
             message: i18n.t('manager.actions.page.workflow.success.toast.message', "The workflow transition has been completed successfully."),
@@ -48,6 +40,13 @@ export async function runAction(params : any) {
             timeout: 3000
         });
         reloadPreview();
+    } catch (e) {
+        showToast({
+            title: i18n.t('manager.actions.page.workflow.error.toast.title', "Workflow transition failed"),
+            message: i18n.t('manager.actions.page.workflow.error.toast.message', "An error occurred while transitioning the workflow."),
+            type: 'error', // optional: info | success | warning | error
+            timeout: 3000
+        });
     }
 
 }

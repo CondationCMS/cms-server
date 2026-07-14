@@ -29,6 +29,7 @@ import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
+import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import com.condation.modules.api.annotation.Extension;
@@ -84,7 +85,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 	}
     
 	@RemoteMethod(name = "workflow.manager.node.status", permissions = {Permissions.CONTENT_EDIT})
-	public Object nodeStatus(Map<String, Object> parameters) {
+	public Object nodeStatus(Map<String, Object> parameters) throws RPCException {
 
 		var uri = (String) parameters.get("uri");
 		Map<String, Object> result = new HashMap<>();
@@ -92,13 +93,9 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 		var contentNodeOpt = getContentNode(uri);
 
 		if (contentNodeOpt.isEmpty()) {
-			result.put("error", true);
-			result.put("message", "content node not found");
-			result.put("code", 403);
-
 			return result;
 		}
-        
+
         var node = contentNodeOpt.get();
         final Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
 
@@ -106,12 +103,12 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 		result.put("status", status);
         result.put("transitions", workflow.getNextTransitions(node));
-		
+
 		return result;
 	}
 
 	@RemoteMethod(name = "workflow.transitions.get", permissions = {Permissions.CONTENT_EDIT})
-	public Object getTransitions(Map<String, Object> parameters) {
+	public Object getTransitions(Map<String, Object> parameters) throws RPCException {
 
 		var uri = (String) parameters.get("uri");
 
@@ -119,13 +116,10 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 		var contentNodeOpt = getContentNode(uri);
 		if (contentNodeOpt.isEmpty()) {
-			result.put("error", true);
-			result.put("message", "content node not found");
-			result.put("code", 403);
-
+			result.put("transitions", java.util.List.of());
 			return result;
 		}
-		
+
 		var validTransitions = getContext().get(WorkflowFeature.class).workflow().getNextTransitions(contentNodeOpt.get());
 
 		var transitions = validTransitions.stream().map(
@@ -133,14 +127,14 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 						"id", transition.id(),
 						"label", transition.label()
 				)).toList();
-		
+
 		result.put("transitions", transitions);
-		
+
 		return result;
 	}
 
 	@RemoteMethod(name = "workflow.transit", permissions = {Permissions.CONTENT_EDIT})
-	public Object transit(Map<String, Object> parameters) {
+	public Object transit(Map<String, Object> parameters) throws RPCException {
 		var result = new HashMap<String, Object>();
 		try {
 			var uri = (String) parameters.get("uri");
@@ -150,17 +144,13 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 			var contentNodeOpt = getContentNode(uri);
 			if (contentNodeOpt.isEmpty()) {
-				result.put("error", true);
-				result.put("message", "content node not found");
-				result.put("code", 403);
-
-				return result;
+				throw new RPCException(404, "content node not found");
 			}
 
 			var contentNode = contentNodeOpt.get();
 
 			getContext().get(WorkflowFeature.class).workflow().transit(transition, contentNode);
-			
+
 			var contentFile = getContentFile(uri);
 
 			ContentFileParser parser = new ContentFileParser(contentFile);
@@ -171,7 +161,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 			result.put("success", true);
 		} catch (IOException | WFTransitionException ex) {
 			log.error("error transit workflow", ex);
-			result.put("error", true);
+			throw new RPCException(0, ex.getMessage());
 		}
 		return result;
 	}

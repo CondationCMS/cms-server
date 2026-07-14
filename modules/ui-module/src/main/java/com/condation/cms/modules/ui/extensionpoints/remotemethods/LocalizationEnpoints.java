@@ -33,6 +33,7 @@ import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
+import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.modules.ui.utils.UIHooks;
 
 /**
@@ -46,10 +47,10 @@ public class LocalizationEnpoints extends AbstractExtensionPoint implements UIRe
 
 
 	@RemoteMethod(name = "i18n.load", permissions = {Permissions.CONTENT_EDIT})
-	public Object list(Map<String, Object> parameters) {
-		
+	public Object list(Map<String, Object> parameters) throws RPCException {
+
 		var moduleManager = getContext().get(ModuleManagerFeature.class).moduleManager();
-		
+
 		Map<String, Map<String, String>> localizations = new HashMap<>();
 		try {
 			moduleManager.extensions(UILocalizationExtensionPoint.class).forEach(ext -> {
@@ -61,8 +62,9 @@ public class LocalizationEnpoints extends AbstractExtensionPoint implements UIRe
 			TranslationMerger.mergeTranslationMaps(uiHooks.translations(), localizations);
 		} catch (Exception e) {
 			log.error("error loading translation", e);
+			throw new RPCException(0, e.getMessage());
 		}
-		
+
 		return localizations;
 	}
 }

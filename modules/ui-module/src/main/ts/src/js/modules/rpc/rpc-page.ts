@@ -29,7 +29,6 @@ export interface CreatePageOptions {
 export interface CreatePageResponse {
 	result: {
 		uri?: string; // The URI of the created page, if successful
-		error?: string; // Error message, if any
 	}
 }
 const createPage = async (options: CreatePageOptions) : Promise<CreatePageResponse> => {

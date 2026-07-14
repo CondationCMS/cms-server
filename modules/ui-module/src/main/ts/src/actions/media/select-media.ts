@@ -57,17 +57,26 @@ export async function runAction(params : any) {
 					type: 'media',
 					value: selectedFile
 				}
-				var setMetaResponse = await setMeta({
-					uri: uri,
-					meta: updateData
-				})
-				showToast({
-					title: i18n.t('manager.actions.media.select-media.toast.title', "Media updated"),
-					message: i18n.t('manager.actions.media.select-media.toast.message', "New media has been updated successfully."),
-					type: 'success', // optional: info | success | warning | error
-					timeout: 3000
-				});
-				reloadPreview()
+				try {
+					await setMeta({
+						uri: uri,
+						meta: updateData
+					})
+					showToast({
+						title: i18n.t('manager.actions.media.select-media.toast.title', "Media updated"),
+						message: i18n.t('manager.actions.media.select-media.toast.message', "New media has been updated successfully."),
+						type: 'success', // optional: info | success | warning | error
+						timeout: 3000
+					});
+					reloadPreview()
+				} catch (e) {
+					showToast({
+						title: i18n.t('manager.actions.media.select-media.toast.error.title', "Media not updated"),
+						message: (e as Error).message,
+						type: 'error', // optional: info | success | warning | error
+						timeout: 3000
+					});
+				}
 			}
 		}
 	})

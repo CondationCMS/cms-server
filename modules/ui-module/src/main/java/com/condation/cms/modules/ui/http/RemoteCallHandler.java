@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.http;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
+import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.ui.rpc.RPCResult;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.modules.ui.model.RemoteCall;
@@ -74,10 +75,9 @@ public class RemoteCallHandler extends JettyHandler {
 					rpcResult = new RPCResult();
 				}
 			}
-			
+
 		} catch (Exception e) {
-			log.error("error executing endpoint", remoteCall.method(), e);
-			rpcResult = new RPCResult(new RPCError(e.getMessage()));
+			rpcResult = buildErrorResult(e, remoteCall.method());
 		}
 
 		response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/json; charset=UTF-8");
@@ -85,6 +85,14 @@ public class RemoteCallHandler extends JettyHandler {
 		Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(rpcResult), callback);
 
 		return true;
+	}
+
+	private RPCResult buildErrorResult(Exception e, String method) {
+		log.error("error executing endpoint {}", method, e);
+		if (e instanceof RPCException rpcException) {
+			return new RPCResult(new RPCError(rpcException.getCode(), rpcException.getMessage()));
+		}
+		return new RPCResult(new RPCError(e.getMessage()));
 	}
 
 }

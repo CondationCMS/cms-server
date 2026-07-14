@@ -57,10 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	activatePreviewOverlay();
 
 	const intervalId = window.setInterval(() =>  {
-		var token = createCSRFToken({});
-		token.then((token) => {
+		createCSRFToken({}).then((token) => {
 			setCSRFToken(token.result);
-		})
+		}).catch((e) => {
+			console.error("Error refreshing CSRF token", e);
+		});
 	}, 5 * 60 * 1000);
 
 	const iframe = getPreviewFrame();

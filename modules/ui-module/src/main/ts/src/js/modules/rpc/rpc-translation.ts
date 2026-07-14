@@ -46,7 +46,6 @@ export interface AddTranslationOptions {
 }
 export interface AddTranslationResult {
 	uri: string
-	error? : boolean
 }
 const addTranslation = async (options: AddTranslationOptions) => {
 	var data = {
@@ -62,7 +61,6 @@ export interface RemoveTranslationOptions {
 }
 export interface RemoveTranslationResult {
 	uri: string
-	error? : boolean
 }
 const removeTranslation = async (options: RemoveTranslationOptions) => {
 	var data = {

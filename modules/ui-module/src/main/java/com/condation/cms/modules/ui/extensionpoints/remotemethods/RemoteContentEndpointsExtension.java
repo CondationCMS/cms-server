@@ -65,10 +65,10 @@ import java.nio.file.Path;
 public class RemoteContentEndpointsExtension extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
 
 	@RemoteMethod(name = "content.get", permissions = {Permissions.CONTENT_EDIT})
-	public Object getContent(Map<String, Object> parameters) {
+	public Object getContent(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
-		
+
 		var uri = (String) parameters.get("uri");
 
 		var contentFile = contentBase.resolve(uri);
@@ -82,6 +82,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				result.put("meta", parser.getHeader());
 			} catch (IOException ex) {
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 
@@ -89,7 +90,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	}
 
 	@RemoteMethod(name = "content.set", permissions = {Permissions.CONTENT_EDIT})
-	public Object setContent(Map<String, Object> parameters) {
+	public Object setContent(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
@@ -112,6 +113,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				log.debug("file {} saved", uri);
 			} catch (IOException ex) {
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 
@@ -153,6 +155,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				log.debug("file {} saved", uri);
 			} catch (IOException ex) {
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 
@@ -160,7 +163,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	}
 
 	@RemoteMethod(name = "meta.set", permissions = {Permissions.CONTENT_EDIT})
-	public Object setMeta(Map<String, Object> parameters) {
+	public Object setMeta(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
@@ -187,6 +190,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
 			} catch (IOException ex) {
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 
@@ -194,9 +198,9 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	}
 
 	private record Update (String uri, Map<String, Map<String, Object>> meta) {}
-	
+
 	@RemoteMethod(name = "meta.set.batch", permissions = {Permissions.CONTENT_EDIT})
-	public Object setMetaBatch(Map<String, Object> parameters) {
+	public Object setMetaBatch(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
@@ -204,41 +208,46 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		result.put("endpoint", "meta.set.batch");
 
 		List<Map<String, Object>> updatesParam = (List<Map<String, Object>>) parameters.get("updates");
-		
+
 		var updates = updatesParam.stream().map(update -> {
 			return new Update(
-					(String)update.get("uri"), 
+					(String)update.get("uri"),
 					(Map<String, Map<String, Object>>)update.get("meta"));
 		}).toList();
-		
-		updates.forEach(update -> {
-			var contentFile = contentBase.resolve(update.uri);
 
-			if (contentFile != null) {
-				try {
-					ContentFileParser parser = new ContentFileParser(contentFile);
+		try {
+			updates.forEach(update -> {
+				var contentFile = contentBase.resolve(update.uri);
 
-					Map<String, Object> fileMeta = parser.getHeader();
-					var metaUpdated = MetaConverter.convertMeta(update.meta);
-					YamlHeaderUpdater.mergeFlatMapIntoNestedMap(fileMeta, metaUpdated);
+				if (contentFile != null) {
+					try {
+						ContentFileParser parser = new ContentFileParser(contentFile);
 
-					var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(update.uri);
+						Map<String, Object> fileMeta = parser.getHeader();
+						var metaUpdated = MetaConverter.convertMeta(update.meta);
+						YamlHeaderUpdater.mergeFlatMapIntoNestedMap(fileMeta, metaUpdated);
 
-					YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, fileMeta, parser.getContent());
-					log.debug("file {} saved", update.uri);
+						var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(update.uri);
 
-					getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(update.uri));
-				} catch (IOException ex) {
-					log.error("", ex);
+						YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, fileMeta, parser.getContent());
+						log.debug("file {} saved", update.uri);
+
+						getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(update.uri));
+					} catch (IOException ex) {
+						throw new java.io.UncheckedIOException(ex);
+					}
 				}
-			}
-		});
+			});
+		} catch (java.io.UncheckedIOException ex) {
+			log.error("", ex.getCause());
+			throw new RPCException(0, ex.getCause().getMessage());
+		}
 
 		return result;
 	}
 
 	@RemoteMethod(name = "content.sectionEntry.delete", permissions = {Permissions.CONTENT_EDIT})
-	public Object deleteSectionEntry(Map<String, Object> parameters) {
+	public Object deleteSectionEntry(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var uri = (String) parameters.get("uri");
 		final Path contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
@@ -247,7 +256,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("uri", uri);
-		if (contentFile != null 
+		if (contentFile != null
 				&& PathUtil.isChild(contentBase, contentFile)
 				&& Files.exists(contentFile)
 				&& !Files.isDirectory(contentFile)
@@ -256,16 +265,16 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				Files.delete(contentFile);
 				getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateContentCacheEvent());
 			} catch (Exception ex) {
-				result.put("error", true);
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 
 		return result;
 	}
-	
+
 	@RemoteMethod(name = "content.sectionEntry.add", permissions = {Permissions.CONTENT_EDIT})
-	public Object addSectionEntry(Map<String, Object> parameters) {
+	public Object addSectionEntry(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 
@@ -300,16 +309,16 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 
 				getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
 			} catch (IOException ex) {
-				result.put("error", true);
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		} else {
-			result.put("error", true);
+			throw new RPCException(0, "invalid uri");
 		}
 
 		return result;
 	}
-	
+
 	@RemoteMethod(name = "content.node", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContentNode (Map<String, Object> parameters) {
 		final DB db = getContext().get(DBFeature.class).db();

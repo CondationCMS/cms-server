@@ -49,7 +49,7 @@ import java.nio.file.Path;
 public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 
 	@RemoteMethod(name = "files.list", permissions = {Permissions.CONTENT_EDIT})
-	public Object list(Map<String, Object> parameters) {
+	public Object list(Map<String, Object> parameters) throws RPCException {
 		final DB db = getDB(parameters);
 		
 		var uri = (String) parameters.getOrDefault("uri", "");
@@ -80,6 +80,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 						.forEach(files::add);
 			} catch (IOException ex) {
 				log.error("", ex);
+				throw new RPCException(0, ex.getMessage());
 			}
 		}
 		files.sort((f1, f2) -> {

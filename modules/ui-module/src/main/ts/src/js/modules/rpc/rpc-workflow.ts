@@ -8,12 +8,12 @@
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
@@ -26,10 +26,7 @@ export interface GetTransitionsRequest {
 }
 export interface GetTransitionsDto {
 	id: string,
-	label: string,
-	error?: boolean,
-	message?: string,
-	code?: number
+	label: string
 }
 const getWfTransitions = async (options: GetTransitionsRequest) => {
 	var data = {
@@ -47,10 +44,7 @@ export interface GetWFManagerStatusDto {
 	withinSchedule: boolean,
 	currentStage: string,
 	publish_date?: Date,
-	unpublish_date?: Date,
-	error?: boolean,
-	message?: string,
-	code?: number
+	unpublish_date?: Date
 }
 export interface GetWFManagerTransitionsDto {
 	id: string,
@@ -58,8 +52,8 @@ export interface GetWFManagerTransitionsDto {
 	description: string,
 }
 export interface getWFManagerDto {
-	status: GetWFManagerStatusDto
-	transitions: GetWFManagerTransitionsDto[]
+	status?: GetWFManagerStatusDto
+	transitions?: GetWFManagerTransitionsDto[]
 }
 const getWfManagerStatus = async (options: GetWFManagerRequest) => {
 	var data = {
@@ -74,8 +68,7 @@ export interface WfTransitRequest {
 	transitionId: string; // The URI of the folder where the page should be created
 }
 export interface WFTransitDto {
-	success?: boolean,
-	error?: boolean
+	success?: boolean
 }
 const wfTransit = async (options: WfTransitRequest) => {
 	var data = {

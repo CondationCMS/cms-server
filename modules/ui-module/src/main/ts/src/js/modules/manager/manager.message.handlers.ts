@@ -196,7 +196,11 @@ const initMessageHandlers = () => {
     });
 
     frameMessenger.on('sort-sections', async (payload: any) => {
-        await setMetaBatch({ updates: payload.updates });
+        try {
+            await setMetaBatch({ updates: payload.updates });
+        } catch (e) {
+            console.error("Error sorting sections", e);
+        }
     });
 }
 

@@ -37,26 +37,25 @@ export async function runAction(params) {
 	}
 
 	const sectionUri = params.sectionUri;
-	
-	deleteSection({
-		uri: sectionUri
-	}).then((response) => {
-		if (response.error) {
-			showToast({
-				title: i18n.t("manager.actions.section.delete.error.title", "Error deleting item"),
-				message: i18n.t("manager.actions.section.delete.error.message", "Error deleting item"),
-				type: 'error',
-				timeout: 3000
-			});
-		} else {
-			showToast({
-				title: i18n.t("manager.actions.section.delete.success.title", "Delete item"),
-				message: i18n.t("manager.actions.section.delete.success.message", "Item deleted successfully"),
-				type: 'success',
-				timeout: 3000
-			});
-			reloadPreview();
-		}
-	})
+
+	try {
+		await deleteSection({
+			uri: sectionUri
+		});
+		showToast({
+			title: i18n.t("manager.actions.section.delete.success.title", "Delete item"),
+			message: i18n.t("manager.actions.section.delete.success.message", "Item deleted successfully"),
+			type: 'success',
+			timeout: 3000
+		});
+		reloadPreview();
+	} catch (e) {
+		showToast({
+			title: i18n.t("manager.actions.section.delete.error.title", "Error deleting item"),
+			message: i18n.t("manager.actions.section.delete.error.message", "Error deleting item"),
+			type: 'error',
+			timeout: 3000
+		});
+	}
 }
 

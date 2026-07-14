@@ -249,72 +249,70 @@ const fileActions = () => {
 };
 
 const openMediaMetadataForm = async (image, filename) => {
-	const formResponse = await getMediaForm({
-		form: state.options.form || 'meta'
-	});
-	const metadataResponse = await getMediaMetaData({
-		image: image,
-		...getSiteOptions()
-	});
+	try {
+		const formResponse = await getMediaForm({
+			form: state.options.form || 'meta'
+		});
+		const metadataResponse = await getMediaMetaData({
+			image: image,
+			...getSiteOptions()
+		});
 
-	if (formResponse.error || metadataResponse.error) {
+		const fields = [
+			...(formResponse.result?.form?.fields || [])
+		];
+		const values = {
+			...metadataResponse.result.meta
+		};
+
+		state.metadataImage = image;
+		state.metadataForm = createForm({
+			fields: fields,
+			values: values
+		});
+
+		const title = document.getElementById("cms-media-metadata-title");
+		if (title) {
+			title.textContent = i18n.t('mediabrowser.metadata.title', 'Media attributes') + (filename ? `: ${filename}` : '');
+		}
+
+		state.metadataForm.init("#cms-media-metadata-form");
+		document.getElementById("cms-media-browser-slider")?.classList.add("is-editing-metadata");
+	} catch (e) {
 		showToast({
 			title: i18n.t('manager.actions.media.edit-media-form.toast.error.title', "Error loading media meta"),
-			message: formResponse.error?.message || metadataResponse.error?.message,
+			message: e.message,
 			type: 'error',
 			timeout: 3000
 		});
-		return;
 	}
-
-	const fields = [
-		...(formResponse.result?.form?.fields || [])
-	];
-	const values = {
-		...metadataResponse.result.meta
-	};
-
-	state.metadataImage = image;
-	state.metadataForm = createForm({
-		fields: fields,
-		values: values
-	});
-
-	const title = document.getElementById("cms-media-metadata-title");
-	if (title) {
-		title.textContent = i18n.t('mediabrowser.metadata.title', 'Media attributes') + (filename ? `: ${filename}` : '');
-	}
-
-	state.metadataForm.init("#cms-media-metadata-form");
-	document.getElementById("cms-media-browser-slider")?.classList.add("is-editing-metadata");
 };
 
 const saveMediaMetadata = async () => {
 	if (!state.metadataForm || !state.metadataImage) return;
 
-	const response = await setMediaMetaData({
-		image: state.metadataImage,
-		meta: state.metadataForm.getData(),
-		...getSiteOptions()
-	});
+	try {
+		await setMediaMetaData({
+			image: state.metadataImage,
+			meta: state.metadataForm.getData(),
+			...getSiteOptions()
+		});
 
-	if (response.error) {
+		showToast({
+			title: i18n.t('manager.actions.media.edit-media-form.toast.title', "Media meta updated"),
+			message: i18n.t('manager.actions.media.edit-media-form.toast.message', "The media meta have been updated successfully."),
+			type: 'success',
+			timeout: 3000
+		});
+		closeMediaMetadataForm();
+	} catch (e) {
 		showToast({
 			title: i18n.t('manager.actions.media.edit-media-form.toast.error.title', "Error updating media meta"),
-			message: response.error.message,
+			message: e.message,
 			type: 'error',
 			timeout: 3000
 		});
-		return;
 	}
-
-	showToast({
-		title: i18n.t('manager.actions.media.edit-media-form.toast.title', "Media meta updated"),
-		message: i18n.t('manager.actions.media.edit-media-form.toast.message', "The media meta have been updated successfully."),
-		type: 'success',
-		timeout: 3000
-	});
-	closeMediaMetadataForm();
 };
 
 const closeMediaMetadataForm = () => {

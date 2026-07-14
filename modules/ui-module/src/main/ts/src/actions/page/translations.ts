@@ -59,18 +59,27 @@ export async function runAction(params: any) {
 								console.log('Selected translation file:', file);
 								if (file && file.uri) {
 									var selectedFile = file.uri; // Use the file's URI
-									
-									await addTranslation({
-										uri: uri,
-										language: lang || '',
-										translationUri: selectedFile
-									});
-									showToast({
-										title: i18n.t('manager.translation.added.title', "Translation Added"),
-										message: i18n.t('manager.translation.added.message', "Translation successfuly added."),
-										type: 'success', // optional: info | success | warning | error
-										timeout: 3000
-									});
+
+									try {
+										await addTranslation({
+											uri: uri,
+											language: lang || '',
+											translationUri: selectedFile
+										});
+										showToast({
+											title: i18n.t('manager.translation.added.title', "Translation Added"),
+											message: i18n.t('manager.translation.added.message', "Translation successfuly added."),
+											type: 'success', // optional: info | success | warning | error
+											timeout: 3000
+										});
+									} catch (e) {
+										showToast({
+											title: i18n.t('manager.translation.added.error.title', "Translation Not Added"),
+											message: (e as Error).message,
+											type: 'error',
+											timeout: 3000
+										});
+									}
 								}
 							}
 						})

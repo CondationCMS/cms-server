@@ -46,45 +46,63 @@ export async function runAction(params) {
 		url: getPreviewUrl()
 	})
 
-	const getContentResponse = await getContent({
-		uri: contentNode.result.uri
-	})
+	try {
+		const getContentResponse = await getContent({
+			uri: contentNode.result.uri
+		})
 
-	//const previewMetaForm = getMetaForm()
-	const fields = [
-		...DEFAULT_FIELDS,
-	]
-	
+		//const previewMetaForm = getMetaForm()
+		const fields = [
+			...DEFAULT_FIELDS,
+		]
 
-	const values = {
-		'publish_date': getContentResponse?.result?.meta?.publish_date,
-		'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-	}
 
-	const form = createForm({
-		fields: fields,
-		values: values
-	});
-
-	openModal({
-		title: 'Edit schedule',
-		body: 'modal body',
-		form: form,
-		resizable: false,
-		onCancel: (event) => {},
-		onOk: async (event) => {
-			var updateData = form.getData()
-			var setMetaResponse = await setMeta({
-				uri: contentNode.result.uri,
-				meta: updateData
-			})
-			showToast({
-				title: i18n.t('manager.actions.page.edit-schedule.toast.title', "Schedule date updated"),
-				message: i18n.t('manager.actions.page.edit-schedule.toast.message', "The schedule date has been updated successfully."),
-				type: 'success', // optional: info | success | warning | error
-				timeout: 3000
-			});
-			reloadPreview()
+		const values = {
+			'publish_date': getContentResponse?.result?.meta?.publish_date,
+			'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
 		}
-	});
+
+		const form = createForm({
+			fields: fields,
+			values: values
+		});
+
+		openModal({
+			title: 'Edit schedule',
+			body: 'modal body',
+			form: form,
+			resizable: false,
+			onCancel: (event) => {},
+			onOk: async (event) => {
+				var updateData = form.getData()
+				try {
+					await setMeta({
+						uri: contentNode.result.uri,
+						meta: updateData
+					})
+					showToast({
+						title: i18n.t('manager.actions.page.edit-schedule.toast.title', "Schedule date updated"),
+						message: i18n.t('manager.actions.page.edit-schedule.toast.message', "The schedule date has been updated successfully."),
+						type: 'success', // optional: info | success | warning | error
+						timeout: 3000
+					});
+					reloadPreview()
+				} catch (e) {
+					showToast({
+						title: i18n.t('manager.actions.page.edit-schedule.toast.error.title', "Schedule date not updated"),
+						message: e.message,
+						type: 'error',
+						timeout: 3000
+					});
+				}
+			}
+		});
+	} catch (e) {
+		showToast({
+			title: i18n.t('manager.actions.page.edit-schedule.toast.error.title', "Schedule date not updated"),
+			message: e.message,
+			type: 'error',
+			timeout: 3000
+		});
+	}
 }

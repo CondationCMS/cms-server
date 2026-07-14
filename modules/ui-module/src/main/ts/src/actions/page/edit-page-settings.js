@@ -43,58 +43,76 @@ export async function runAction(params) {
 		url: getPreviewUrl()
 	})
 
-	const getContentResponse = await getContent({
-		uri: contentNode.result.uri
-	})
+	try {
+		const getContentResponse = await getContent({
+			uri: contentNode.result.uri
+		})
 
-	var pageTemplates = (await getPageTemplates()).result
+		var pageTemplates = (await getPageTemplates()).result
 
-	var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
+		var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
 
-	var pageSettingsForm = []
-	if (selected.length === 1) {
-		pageSettingsForm = selected[0].data?.forms?.settings ? selected[0].data.forms.settings.fields : []
-	}
-
-	//const previewMetaForm = getMetaForm()
-	const fields = [
-		...DEFAULT_FIELDS,
-		...pageSettingsForm
-	]
-	
-
-	const values = {
-		'title': getContentResponse?.result?.meta?.title,
-		'status': getContentResponse?.result?.meta?.status || 'draft',
-		'publish_date': getContentResponse?.result?.meta?.publish_date,
-		'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-		...buildValuesFromFields(pageSettingsForm, getContentResponse?.result?.meta)
-	}
-
-	const form = createForm({
-		fields: fields,
-		values: values
-	});
-
-	openSidebar({
-		title: 'Page settings',
-		body: 'modal body',
-		form: form,
-		resizable: true,
-		onCancel: (event) => {},
-		onOk: async (event) => {
-			var updateData = form.getData()
-			var setMetaResponse = await setMeta({
-				uri: contentNode.result.uri,
-				meta: updateData
-			})
-			showToast({
-				title: i18n.t('manager.actions.page.edit-page-settings.toast.title', "Page settings updated"),
-				message: i18n.t('manager.actions.page.edit-page-settings.toast.message', "The page settings have been updated successfully."),
-				type: 'success', // optional: info | success | warning | error
-				timeout: 3000
-			});
-			reloadPreview()
+		var pageSettingsForm = []
+		if (selected.length === 1) {
+			pageSettingsForm = selected[0].data?.forms?.settings ? selected[0].data.forms.settings.fields : []
 		}
-	});
+
+		//const previewMetaForm = getMetaForm()
+		const fields = [
+			...DEFAULT_FIELDS,
+			...pageSettingsForm
+		]
+
+
+		const values = {
+			'title': getContentResponse?.result?.meta?.title,
+			'status': getContentResponse?.result?.meta?.status || 'draft',
+			'publish_date': getContentResponse?.result?.meta?.publish_date,
+			'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
+			...buildValuesFromFields(pageSettingsForm, getContentResponse?.result?.meta)
+		}
+
+		const form = createForm({
+			fields: fields,
+			values: values
+		});
+
+		openSidebar({
+			title: 'Page settings',
+			body: 'modal body',
+			form: form,
+			resizable: true,
+			onCancel: (event) => {},
+			onOk: async (event) => {
+				var updateData = form.getData()
+				try {
+					await setMeta({
+						uri: contentNode.result.uri,
+						meta: updateData
+					})
+					showToast({
+						title: i18n.t('manager.actions.page.edit-page-settings.toast.title', "Page settings updated"),
+						message: i18n.t('manager.actions.page.edit-page-settings.toast.message', "The page settings have been updated successfully."),
+						type: 'success', // optional: info | success | warning | error
+						timeout: 3000
+					});
+					reloadPreview()
+				} catch (e) {
+					showToast({
+						title: i18n.t('manager.actions.page.edit-page-settings.toast.error.title', "Page settings not updated"),
+						message: e.message,
+						type: 'error', // optional: info | success | warning | error
+						timeout: 3000
+					});
+				}
+			}
+		});
+	} catch (e) {
+		showToast({
+			title: i18n.t('manager.actions.page.edit-page-settings.toast.error.title', "Page settings not updated"),
+			message: e.message,
+			type: 'error',
+			timeout: 3000
+		});
+	}
 }

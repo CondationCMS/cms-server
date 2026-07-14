@@ -111,34 +111,39 @@ const handleAddItem = (e: Event, container: HTMLElement, context: FormContext) =
 declare const bootstrap: any;
 
 const getItemForm = async (el: HTMLElement) => {
-	var pageTemplates = (await getPageTemplates({})).result
+	try {
+		var pageTemplates = (await getPageTemplates({})).result
 
-	const contentNode = await getContentNode({
-		url: getPreviewUrl()
-	})
+		const contentNode = await getContentNode({
+			url: getPreviewUrl()
+		})
 
-	const getContentResponse = await getContent({
-		uri: contentNode.result.uri
-	})
+		const getContentResponse = await getContent({
+			uri: contentNode.result.uri
+		})
 
-	var selected = pageTemplates.filter((pageTemplate : any) => pageTemplate.template === getContentResponse?.result?.meta?.template)
+		var selected = pageTemplates.filter((pageTemplate : any) => pageTemplate.template === getContentResponse?.result?.meta?.template)
 
-	const listContainer = el.closest("[data-cms-form-field-type='list']");
-	const fieldName = listContainer?.getAttribute('name');
+		const listContainer = el.closest("[data-cms-form-field-type='list']");
+		const fieldName = listContainer?.getAttribute('name');
 
-	var itemForm = []
-	if (selected.length === 1) {
-		itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName].fields : [];
+		var itemForm = []
+		if (selected.length === 1) {
+			itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName].fields : [];
+		}
+
+		if (!itemForm || itemForm.length === 0) {
+			let itemTypes = (await getListItemTypes({})).result
+			var selectedItemType = itemTypes.filter((itemType : any) => itemType.name === fieldName)
+
+			itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form.fields : []
+		}
+
+		return itemForm
+	} catch (e) {
+		console.error("Error loading item form", e);
+		return [];
 	}
-
-	if (!itemForm || itemForm.length === 0) {
-		let itemTypes = (await getListItemTypes({})).result
-		var selectedItemType = itemTypes.filter((itemType : any) => itemType.name === fieldName)
-
-		itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form.fields : []
-	}
-
-	return itemForm
 }
 
 const handleDoubleClick = async (event: Event, context: FormContext) => {

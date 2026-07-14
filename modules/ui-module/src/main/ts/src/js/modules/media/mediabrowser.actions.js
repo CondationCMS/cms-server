@@ -38,24 +38,24 @@ export async function renameMediaAction({ state, getTargetFolder, filename }) {
 		extraOptions.siteId = state.options.siteId;
 	}
 	if (newName) {
-		var response = await renameMedia({
-			uri: getTargetFolder(),
-			name: filename,
-			newName: newName,
-			...extraOptions
-		});
-		if (response.error) {
-			showToast({
-				title: i18n.t("mediabrowser.rename.error.title", 'Error renaming media'),
-				message: response.error.message,
-				type: 'error', 
-				timeout: 3000
+		try {
+			await renameMedia({
+				uri: getTargetFolder(),
+				name: filename,
+				newName: newName,
+				...extraOptions
 			});
-		} else {
 			showToast({
 				title: i18n.t("mediabrowser.rename.success.title", 'Media renamed'),
 				message: i18n.t("mediabrowser.rename.success.message", "Media renamed successfully"),
-				type: 'info', 
+				type: 'info',
+				timeout: 3000
+			});
+		} catch (e) {
+			showToast({
+				title: i18n.t("mediabrowser.rename.error.title", 'Error renaming media'),
+				message: e.message,
+				type: 'error',
 				timeout: 3000
 			});
 		}
@@ -79,24 +79,24 @@ export async function deleteElementAction({ elementName, state, deleteFN, getTar
 		extraOptions.siteId = state.options.siteId;
 	}
 
-	var response = await deleteFN({
-		uri: getTargetFolder(),
-		name: elementName,
-		type: state.options.type,
-		...extraOptions
-	})
-	if (response.error) {
-		showToast({
-			title: 'Error deleting',
-			message: response.error.message,
-			type: 'error', // optional: info | success | warning | error
-			timeout: 3000
-		});
-	} else {
+	try {
+		await deleteFN({
+			uri: getTargetFolder(),
+			name: elementName,
+			type: state.options.type,
+			...extraOptions
+		})
 		showToast({
 			title: 'Element deleted',
 			message: "Element deleted",
 			type: 'success', // optional: info | success | warning | error
+			timeout: 3000
+		});
+	} catch (e) {
+		showToast({
+			title: 'Error deleting',
+			message: e.message,
+			type: 'error', // optional: info | success | warning | error
 			timeout: 3000
 		});
 	}
@@ -115,24 +115,24 @@ export async function createFolderAction({ state, getTargetFolder }) {
 			extraOptions.siteId = state.options.siteId;
 		}
 
-		var response = await createFolder({
-			uri: getTargetFolder(),
-			name: folderName,
-			type: state.options.type,
-			...extraOptions
-		});
-		if (response.error) {
-			showToast({
-				title: i18n.t("mediabrowser.createFolder.error.title", 'Error creating folder'),
-				message: response.error.message,
-				type: 'error', // optional: info | success | warning | error
-				timeout: 3000
+		try {
+			await createFolder({
+				uri: getTargetFolder(),
+				name: folderName,
+				type: state.options.type,
+				...extraOptions
 			});
-		} else {
 			showToast({
 				title: i18n.t("mediabrowser.createFolder.success.title", 'Folder created'),
 				message: i18n.t("mediabrowser.createFolder.success.message", "Folder created successfully"),
 				type: 'success', // optional: info | success | warning | error
+				timeout: 3000
+			});
+		} catch (e) {
+			showToast({
+				title: i18n.t("mediabrowser.createFolder.error.title", 'Error creating folder'),
+				message: e.message,
+				type: 'error', // optional: info | success | warning | error
 				timeout: 3000
 			});
 		}

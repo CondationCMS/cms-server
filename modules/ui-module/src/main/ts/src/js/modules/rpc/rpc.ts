@@ -31,6 +31,15 @@ export interface RPCResponse<T> {
   result: T;
 }
 
+export class RPCClientError extends Error {
+	code: number;
+	constructor(code: number, message: string) {
+		super(message);
+		this.code = code;
+		this.name = "RPCClientError";
+	}
+}
+
 const executeRemoteCall = async (options: Options)  => {
 	return executeRemoteMethodCall(options.method, options.parameters);
 };
@@ -56,7 +65,11 @@ const executeRemoteMethodCall = async (method : string, parameters : any) => {
         throw new Error("Unauthorized");
     }
 
-	return await response.json();
+	const json = await response.json();
+	if (json.error) {
+		throw new RPCClientError(json.error.code, json.error.message);
+	}
+	return json;
 };
 
 export { executeRemoteCall, executeRemoteMethodCall };

@@ -39,49 +39,67 @@ export async function runAction(params) {
 		uri = contentNode.result.uri
 	}
 
-	const getContentResponse = await getContent({
-		uri: uri
-	})
+	try {
+		const getContentResponse = await getContent({
+			uri: uri
+		})
 
-	let formDefinition = {
-		fields: [],
-		values: {}
-	}
-	
-	params.attributes.forEach(attr => {
-		formDefinition.values[attr.name] = getValueByPath(getContentResponse?.result?.meta, attr.name)
-		formDefinition.fields.push(
-			{
-				type: attr.editor, 
-				name: attr.name, 
-				title: attr.name,
-				options: attr.options ? attr.options : {}
-			}
-		)
-	})
-
-
-	const form = createForm(formDefinition)
-
-	openSidebar({
-		title: 'Edit meta attribute',
-		body: 'modal body',
-		form: form,
-		resizable: true,
-		onCancel: (event) => {},
-		onOk: async (event) => {
-			var updateData = form.getData()
-			var setMetaResponse = await setMeta({
-				uri: uri,
-				meta: updateData
-			})
-			showToast({
-				title: i18n.t('manager.actions.page.edit-metaattribute-list.toast.title', "MetaData updated"),
-				message: i18n.t('manager.actions.page.edit-metaattribute-list.toast.message', "The metadata has been updated successfully."),
-				type: 'success', // optional: info | success | warning | error
-				timeout: 3000
-			});
-			reloadPreview()
+		let formDefinition = {
+			fields: [],
+			values: {}
 		}
-	});
+
+		params.attributes.forEach(attr => {
+			formDefinition.values[attr.name] = getValueByPath(getContentResponse?.result?.meta, attr.name)
+			formDefinition.fields.push(
+				{
+					type: attr.editor,
+					name: attr.name,
+					title: attr.name,
+					options: attr.options ? attr.options : {}
+				}
+			)
+		})
+
+
+		const form = createForm(formDefinition)
+
+		openSidebar({
+			title: 'Edit meta attribute',
+			body: 'modal body',
+			form: form,
+			resizable: true,
+			onCancel: (event) => {},
+			onOk: async (event) => {
+				var updateData = form.getData()
+				try {
+					await setMeta({
+						uri: uri,
+						meta: updateData
+					})
+					showToast({
+						title: i18n.t('manager.actions.page.edit-metaattribute-list.toast.title', "MetaData updated"),
+						message: i18n.t('manager.actions.page.edit-metaattribute-list.toast.message', "The metadata has been updated successfully."),
+						type: 'success', // optional: info | success | warning | error
+						timeout: 3000
+					});
+					reloadPreview()
+				} catch (e) {
+					showToast({
+						title: i18n.t('manager.actions.page.edit-metaattribute-list.toast.error.title', "MetaData not updated"),
+						message: e.message,
+						type: 'error',
+						timeout: 3000
+					});
+				}
+			}
+		});
+	} catch (e) {
+		showToast({
+			title: i18n.t('manager.actions.page.edit-metaattribute-list.toast.error.title', "MetaData not updated"),
+			message: e.message,
+			type: 'error',
+			timeout: 3000
+		});
+	}
 }

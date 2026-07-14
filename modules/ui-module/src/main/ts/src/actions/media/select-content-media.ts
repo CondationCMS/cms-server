@@ -65,20 +65,20 @@ export async function runAction(params : any) {
 					end: params.options.end
 				}
 
-				var replaceMedia = await replaceContent(options)
-				if (replaceMedia.result.error != null && replaceMedia.result.error === true) {
-					showToast({
-						title: i18n.t('manager.actions.media.select-content-media.toast.title-error', "Media not updated"),
-						message: i18n.t('manager.actions.media.select-content-media.toast.message-error', "New media has not been updated successfully."),
-						type: 'error', // optional: info | success | warning | error
-						timeout: 3000
-					});
-					reloadPreview()
-				} else {
+				try {
+					await replaceContent(options)
 					showToast({
 						title: i18n.t('manager.actions.media.select-media.toast.title', "Media updated"),
 						message: i18n.t('manager.actions.media.select-media.toast.message', "New media has been updated successfully."),
 						type: 'success', // optional: info | success | warning | error
+						timeout: 3000
+					});
+					reloadPreview()
+				} catch (e) {
+					showToast({
+						title: i18n.t('manager.actions.media.select-content-media.toast.title-error', "Media not updated"),
+						message: i18n.t('manager.actions.media.select-content-media.toast.message-error', "New media has not been updated successfully."),
+						type: 'error', // optional: info | success | warning | error
 						timeout: 3000
 					});
 					reloadPreview()

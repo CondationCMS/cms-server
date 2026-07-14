@@ -149,8 +149,13 @@ const getEditorFromEvent = (event: any): any => {
 };
 
 const buildCmsShortCodesMenu = async () => {
-	const response = await getShortCodeNames({});
-	const shortCodeNames = response.result || [];
+	let shortCodeNames: string[] = [];
+	try {
+		const response = await getShortCodeNames({});
+		shortCodeNames = response.result || [];
+	} catch (e) {
+		console.error("Error loading short codes", e);
+	}
 
 	const submenuConfig = shortCodeNames.map((shortCode: string) => ({
 		name: shortCode.charAt(0).toUpperCase() + shortCode.slice(1),
@@ -201,7 +206,12 @@ const cmsImageSelection = window.Cherry.createMenuHook("Image", {
 					let altText = file.title || file.name || "Image";
 
 					// select media format
-					var mediaFormats  = (await getMediaFormats({})).result || [];
+					var mediaFormats: any[] = [];
+					try {
+						mediaFormats = (await getMediaFormats({})).result || [];
+					} catch (e) {
+						console.error("Error loading media formats", e);
+					}
 					var formatOptions : any = {};
 					formatOptions["original"] = "Original";
 					mediaFormats.forEach((format : any) => {

@@ -95,32 +95,39 @@ const updateDialog = async (pageNumber: number) => {
         size: ITEMS_PER_PAGE
     };
 
-    const response = await filterPages(filterOptions);
+    try {
+        const response = await filterPages(filterOptions);
 
-    var pageData = response.result;
-    const modalBodyHtml = renderPageListHtml(pageData.items, pageData.page, pageData.totalPages);
+        var pageData = response.result;
+        const modalBodyHtml = renderPageListHtml(pageData.items, pageData.page, pageData.totalPages);
 
-    var modalElement = document.getElementById('cms-unpublished-pages-modal-body');
-    if (modalElement) {
-        modalElement.innerHTML = modalBodyHtml;
+        var modalElement = document.getElementById('cms-unpublished-pages-modal-body');
+        if (modalElement) {
+            modalElement.innerHTML = modalBodyHtml;
 
-        modalElement.querySelectorAll('.page-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const newPage = parseInt((e.target as HTMLElement).dataset.page || '1');
-                if (newPage >= 1 && newPage <= pageData.totalPages) {
-                    updateDialog(newPage);
-                }
+            modalElement.querySelectorAll('.page-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const newPage = parseInt((e.target as HTMLElement).dataset.page || '1');
+                    if (newPage >= 1 && newPage <= pageData.totalPages) {
+                        updateDialog(newPage);
+                    }
+                });
             });
-        });
-        modalElement.querySelectorAll('a[data-cms-page-uri]').forEach((link) => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                state.modal.hide();
-                loadPreview((link as HTMLElement).dataset.cmsPageUri || '');
-            })
-        });
+            modalElement.querySelectorAll('a[data-cms-page-uri]').forEach((link) => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    state.modal.hide();
+                    loadPreview((link as HTMLElement).dataset.cmsPageUri || '');
+                })
+            });
 
+        }
+    } catch (e) {
+        var modalElement = document.getElementById('cms-unpublished-pages-modal-body');
+        if (modalElement) {
+            modalElement.innerHTML = `<p>${i18n.t('page.unpublished.loadError', 'Could not load unpublished pages.')}</p>`;
+        }
     }
 }
 

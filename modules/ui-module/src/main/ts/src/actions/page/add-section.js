@@ -138,11 +138,15 @@ const createSection = async (parentUri, parentSectionName) => {
 	if (template === "000") {
 		return false
 	}
-	await addSection({
-		parentUri: parentUri,
-		sectionEntryName: getSectionEntryName(),
-		section: parentSectionName,
-		template: template
-	})
-	return true
+	try {
+		await addSection({
+			parentUri: parentUri,
+			sectionEntryName: getSectionEntryName(),
+			section: parentSectionName,
+			template: template
+		})
+		return true
+	} catch (e) {
+		return false
+	}
 }

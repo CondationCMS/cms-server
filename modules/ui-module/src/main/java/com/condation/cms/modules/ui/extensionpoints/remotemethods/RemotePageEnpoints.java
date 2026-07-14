@@ -78,6 +78,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
                 query.excerpt(excerpt);
             } catch (NumberFormatException e) {
                 log.error("Error parsing excerpt", e);
+                throw new RPCException(0, "invalid excerpt value: " + parameters.get("excerpt"));
             }
         }
         

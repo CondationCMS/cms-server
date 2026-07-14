@@ -20,8 +20,8 @@
  */
 export function openMediaBrowser(optionsParam: any): Promise<void>;
 export namespace state {
-    let options: any;
+    let options: null;
     let currentFolder: string;
-    let metadataForm: any;
-    let metadataImage: any;
+    let metadataForm: null;
+    let metadataImage: null;
 }

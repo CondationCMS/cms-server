@@ -1,3 +1,4 @@
+"use strict";
 /*-
  * #%L
  * UI Module
@@ -35,9 +36,6 @@
     const script = document.createElement('script');
     script.type = 'importmap';
     script.textContent = JSON.stringify(importMap);
-    script.onload = () => {
-        resolve();
-    };
     document.head.appendChild(script);
     // 3. window.manager kopieren
     window.manager = parentManager;

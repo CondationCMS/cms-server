@@ -53,6 +53,19 @@
 <html lang="en" class="h-100">
 
 <head>
+    
+    	<script type="importmap">
+		{
+		  "imports": {
+			"@cms/js/": "{{ managerBaseURL }}/js/",
+			"@cms/libs/": "{{ managerBaseURL }}/js/libs/",
+			"@cms/manager/": "{{ managerBaseURL }}/js/manager/",
+			"@cms/modules/": "{{ managerBaseURL }}/js/modules/",
+			"condation-cms-ui/dist/js/modules/" : "{{ managerBaseURL }}/js/modules/"
+		  }
+		}
+	</script>
+    
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Manager</title>
@@ -74,7 +87,7 @@
 		import Tags from 'https://cdn.jsdelivr.net/npm/bootstrap5-tags@1.7.17/tags.min.js';
 		window.Tags = Tags;
 	</script>
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap5-tags@1.7.17/tags.min.css" />
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap5-tags@1.7.17/tags-pure.min.css" />
 
 	<script src="https://cdn.jsdelivr.net/npm/cherry-markdown@0.11.1/dist/cherry-markdown.core.min.js"></script>
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cherry-markdown@0.11.1/dist/cherry-markdown.min.css">
@@ -88,17 +101,7 @@
 			height: 100%;
 		}
 	</style>
-	<script type="importmap">
-		{
-		  "imports": {
-			"@cms/js/": "{{ managerBaseURL }}/js/",
-			"@cms/libs/": "{{ managerBaseURL }}/js/libs/",
-			"@cms/manager/": "{{ managerBaseURL }}/js/manager/",
-			"@cms/modules/": "{{ managerBaseURL }}/js/modules/",
-			"condation-cms-ui/dist/js/modules/" : "{{ managerBaseURL }}/js/modules/"
-		  }
-		}
-	</script>
+
 	<meta name="csrf-token" content="{{ csrfToken }}">
 	<script>
 

@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.ContentNode;
@@ -160,5 +161,69 @@ public class RemotePageEnpointsTest {
         assertThat(result).isInstanceOf(Page.class);
         assertThat(result).isEqualTo(expectedPage);
         verify(query).page(1L, 10L);
+    }
+
+    @Test
+    public void testSearchPages_returnsRewrittenUriAndTitle() throws RPCException {
+        // Arrange
+        when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+        when(db.getContent()).thenReturn(content);
+        when(moduleContext.get(SitePropertiesFeature.class)).thenReturn(new SitePropertiesFeature(siteProperties));
+
+        Map<String, Object> meta = new HashMap<>();
+        meta.put(Constants.MetaFields.TITLE, "Superman Returns");
+        ContentNode node = new ContentNode("test/test1.md", "test1.md", meta);
+
+        when(content.searchByTitle("superman")).thenReturn(List.of(node));
+        when(contentBase.resolve("test/test1.md")).thenReturn(contentFile);
+        when(contentBase.relativize(contentFile)).thenReturn(contentFile);
+        when(contentFile.toString()).thenReturn("test/test1.md");
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("query", "superman");
+
+        // Act
+        Object result = pageEndpoints.searchPages(parameters);
+
+        // Assert
+        assertThat(result).isInstanceOf(Map.class);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> resultMap = (Map<String, Object>) result;
+        @SuppressWarnings("unchecked")
+        List<RemotePageEnpoints.SearchResultDto> hits = (List<RemotePageEnpoints.SearchResultDto>) resultMap.get("result");
+
+        assertThat(hits).hasSize(1);
+        assertThat(hits.get(0).title()).isEqualTo("Superman Returns");
+        assertThat(hits.get(0).uri()).isNotNull();
+    }
+
+    @Test
+    public void testSearchPages_missingTitle_fallsBackToEmptyString() throws RPCException {
+        // Arrange
+        when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+        when(db.getContent()).thenReturn(content);
+        when(moduleContext.get(SitePropertiesFeature.class)).thenReturn(new SitePropertiesFeature(siteProperties));
+
+        ContentNode node = new ContentNode("test/test2.md", "test2.md", new HashMap<>());
+
+        when(content.searchByTitle("")).thenReturn(List.of(node));
+        when(contentBase.resolve("test/test2.md")).thenReturn(contentFile);
+        when(contentBase.relativize(contentFile)).thenReturn(contentFile);
+        when(contentFile.toString()).thenReturn("test/test2.md");
+
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("query", "");
+
+        // Act
+        Object result = pageEndpoints.searchPages(parameters);
+
+        // Assert
+        @SuppressWarnings("unchecked")
+        Map<String, Object> resultMap = (Map<String, Object>) result;
+        @SuppressWarnings("unchecked")
+        List<RemotePageEnpoints.SearchResultDto> hits = (List<RemotePageEnpoints.SearchResultDto>) resultMap.get("result");
+
+        assertThat(hits).hasSize(1);
+        assertThat(hits.get(0).title()).isEqualTo("");
     }
 }

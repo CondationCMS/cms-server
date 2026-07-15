@@ -58,18 +58,38 @@ import java.util.List;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 
+	public record SearchResultDto(String uri, String title) {
+	}
+
 	@RemoteMethod(name = "pages.search", permissions = {Permissions.CONTENT_EDIT})
     public Object searchPages (Map<String, Object> parameters) throws RPCException {
 		String query = "";
-		
+
 		if (parameters.get("query") instanceof String stringValue) {
 			query = stringValue;
 		}
-		
+
+		final DB db = getContext().get(DBFeature.class).db();
+		var contentBase = db.getFileSystem().contentBase();
+
+		var hits = db.getContent().searchByTitle(query).stream()
+				.map(node -> {
+					var contentFile = contentBase.resolve(node.uri());
+					var url = PathUtil.toURL(contentFile, contentBase);
+					url = HTTPUtil.modifyUrl(url, context);
+
+					String title = "";
+					if (node.data().get(Constants.MetaFields.TITLE) instanceof String titleValue) {
+						title = titleValue;
+					}
+
+					return new SearchResultDto(url, title);
+				})
+				.toList();
+
 		Map<String, Object> result = new HashMap<>();
-		
-		result.put("result", getContext().get(DBFeature.class).db().getContent().searchByTitle(query));
-		
+		result.put("result", hits);
+
 		return result;
 	}
 	

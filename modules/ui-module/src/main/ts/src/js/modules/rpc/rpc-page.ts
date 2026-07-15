@@ -79,4 +79,22 @@ const deletePage = async (options: any) => {
 	return await executeRemoteCall(data);
 };
 
-export { createPage, deletePage, filterPages };
+export interface SearchPagesOptions {
+	query: string;
+}
+export interface SearchResultDto {
+	uri: string;
+	title: string;
+}
+export interface SearchPagesResponse {
+	result: SearchResultDto[];
+}
+const searchPages = async (options: SearchPagesOptions) : Promise<SearchPagesResponse> => {
+	var data = {
+		method: "pages.search",
+		parameters: options
+	}
+	return await executeRemoteCall(data);
+}
+
+export { createPage, deletePage, filterPages, searchPages };

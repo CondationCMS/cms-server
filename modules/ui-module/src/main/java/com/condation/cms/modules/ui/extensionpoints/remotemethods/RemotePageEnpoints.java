@@ -25,6 +25,7 @@ import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
+import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
@@ -57,7 +58,22 @@ import java.util.List;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 
-    @RemoteMethod(name = "pages.filter", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "pages.search", permissions = {Permissions.CONTENT_EDIT})
+    public Object searchPages (Map<String, Object> parameters) throws RPCException {
+		String query = "";
+		
+		if (parameters.get("query") instanceof String stringValue) {
+			query = stringValue;
+		}
+		
+		Map<String, Object> result = new HashMap<>();
+		
+		result.put("result", getContext().get(DBFeature.class).db().getContent().searchByTitle(query));
+		
+		return result;
+	}
+	
+	@RemoteMethod(name = "pages.filter", permissions = {Permissions.CONTENT_EDIT})
     public Object filterPages (Map<String, Object> parameters) throws RPCException {
         
         final DB db = getDB(parameters);

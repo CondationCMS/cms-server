@@ -158,4 +158,22 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 	)
 	public void list_unpublished_pages() {
 	}
+
+	@MenuEntry(
+			parent = "toolMenu",
+			id = "search_pages",
+			name = "Search pages",
+			permissions = {Permissions.CONTENT_EDIT},
+			position = 5,
+			scriptAction = @ScriptAction(module = "/manager/actions/page/search-pages")
+	)
+	@ShortCut(
+			id = "search_pages",
+			title = "Search pages",
+			permissions = {Permissions.CONTENT_EDIT},
+			section = "tools",
+			scriptAction = @ScriptAction(module = "/manager/actions/page/search-pages")
+	)
+	public void search_pages() {
+	}
 }

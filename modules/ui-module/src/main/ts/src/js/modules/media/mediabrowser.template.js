@@ -33,73 +33,88 @@ Handlebars.registerHelper('ifNotEquals', function(arg1, arg2, options) {
 
 const template = Handlebars.compile(`
 	<div>
-		<div class="d-flex gap-3 mb-3">
-			<div class="dropdown">
-				<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-					Actions
-				</button>
-				<ul class="dropdown-menu">
-					{{#each actions}}
-						<li><a class="dropdown-item" href="#" id="{{id}}">{{name}}</a></li>
-					{{/each}}
-				</ul>
-			</div>
-		</div>
-
-		<div class="cms-media-grid" id="cms-filebrowser-files">
-		{{#each files}}
-			<div class="cms-media-card"
-				data-cms-file-uri="{{uri}}"
-				data-cms-file-name="{{name}}"
-				{{#if directory}}data-cms-file-directory="true"{{/if}}>
-				<div class="cms-media-card__preview">
-					{{#if directory}}
-						<i class="bi bi-folder cms-media-icon"></i>
-					{{else if media}}
-						<img src="{{patchPathWithContext (concat "/assets" uri)}}" alt="{{name}}" />
-					{{else}}
-						<i class="bi bi-file-earmark cms-media-icon"></i>
-					{{/if}}
-				</div>
-				<div class="cms-media-card__footer">
-					<span class="cms-media-card__name" title="{{name}}">{{name}}</span>
-					{{#ifNotEquals name ".."}}
+		<div class="cms-media-browser-slider" id="cms-media-browser-slider">
+			<div class="cms-media-browser-panel cms-media-browser-panel--browse">
+				<div class="d-flex gap-3 mb-3">
 					<div class="dropdown">
-						<button class="btn btn-sm p-0 px-1 dropdown-nocaret" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-							<i class="bi bi-three-dots-vertical"></i>
+						<button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+							Actions
 						</button>
-						<ul class="dropdown-menu dropdown-menu-end">
-							{{#if directory}}
-								<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder">
-									<i class="bi bi-folder-x me-2"></i>Delete folder
-								</a></li>
-								<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile">
-									<i class="bi bi-pencil-square me-2"></i>Rename
-								</a></li>
-							{{else}}
-								<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile">
-									<i class="bi bi-file-earmark-x me-2"></i>Delete file
-								</a></li>
-								<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile">
-									<i class="bi bi-pencil-square me-2"></i>Rename
-								</a></li>
-							{{/if}}
+						<ul class="dropdown-menu">
+							{{#each actions}}
+								<li><a class="dropdown-item" href="#" id="{{id}}">{{name}}</a></li>
+							{{/each}}
 						</ul>
 					</div>
-					{{/ifNotEquals}}
 				</div>
-			</div>
-		{{/each}}
-		</div>
 
-		{{#if asset}}
-			<div class="mt-3">
-				<input id="cms-fileupload" type="file" name="cms-fileupload" accept="image/png, image/jpeg, image/web, image/gif, image/svg+xml, image/tiff, image/avif" />
-				<button id="cms-filebrowser-upload-button" class="btn btn-secondary btn-sm">Upload</button>
-				<span id="cms-filebrowser-upload-progress"></span>
-				<div id="drop-zone">Drop files here</div>
+				<div class="cms-media-grid" id="cms-filebrowser-files">
+				{{#each files}}
+					<div class="cms-media-card"
+						data-cms-file-uri="{{uri}}"
+						data-cms-file-name="{{name}}"
+						{{#if directory}}data-cms-file-directory="true"{{/if}}>
+						<div class="cms-media-card__preview">
+							{{#if directory}}
+								<i class="bi bi-folder cms-media-icon"></i>
+							{{else if media}}
+								<img src="{{patchPathWithContext (concat "/assets" uri)}}" alt="{{name}}" />
+							{{else}}
+								<i class="bi bi-file-earmark cms-media-icon"></i>
+							{{/if}}
+						</div>
+						<div class="cms-media-card__footer">
+							<span class="cms-media-card__name" title="{{name}}">{{name}}</span>
+							{{#ifNotEquals name ".."}}
+							<div class="dropdown">
+								<button class="btn btn-sm p-0 px-1 dropdown-nocaret" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+									<i class="bi bi-three-dots-vertical"></i>
+								</button>
+								<ul class="dropdown-menu dropdown-menu-end">
+									{{#if directory}}
+										<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFolder">
+											<i class="bi bi-folder-x me-2"></i>Delete folder
+										</a></li>
+										<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile">
+											<i class="bi bi-pencil-square me-2"></i>Rename
+										</a></li>
+									{{else}}
+										<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="editMetadata">
+											<i class="bi bi-card-text me-2"></i>Edit metadata
+										</a></li>
+										<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="deleteFile">
+											<i class="bi bi-file-earmark-x me-2"></i>Delete file
+										</a></li>
+										<li><a class="dropdown-item" href="#" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile">
+											<i class="bi bi-pencil-square me-2"></i>Rename
+										</a></li>
+									{{/if}}
+								</ul>
+							</div>
+							{{/ifNotEquals}}
+						</div>
+					</div>
+				{{/each}}
+				</div>
+
+				{{#if asset}}
+					<div class="mt-3">
+						<input id="cms-fileupload" type="file" name="cms-fileupload" accept="image/png, image/jpeg, image/web, image/gif, image/svg+xml, image/tiff, image/avif" />
+						<button id="cms-filebrowser-upload-button" class="btn btn-secondary btn-sm">Upload</button>
+						<span id="cms-filebrowser-upload-progress"></span>
+						<div id="drop-zone">Drop files here</div>
+					</div>
+				{{/if}}
 			</div>
-		{{/if}}
+
+			<div class="cms-media-browser-panel cms-media-browser-panel--metadata">
+				<div class="d-flex align-items-center justify-content-between mb-3">
+					<h6 class="mb-0" id="cms-media-metadata-title">Media attributes</h6>
+					<button type="button" class="btn btn-sm btn-secondary" id="cms-media-metadata-back">Back</button>
+				</div>
+				<div id="cms-media-metadata-form"></div>
+			</div>
+		</div>
 	</div>
 `);
 

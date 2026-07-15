@@ -20,12 +20,12 @@
 -->
 {% macro menuEntry(entry) %}
 {% if entry != null && entry.hasChildren() %}
-<li class="nav-item dropdown">
+<li class="nav-item dropdown cms-menu-dropdown">
 	<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
 		data-cms-i18n-key="{{ entry.id }}">
 		{{ entry.name }}
 	</a>
-	<ul class="dropdown-menu">
+	<ul class="dropdown-menu cms-menu-dropdown-menu">
 		{% for child in entry.getChildren() %}
 		{% if child.isDivider() %}
 		<li>
@@ -43,7 +43,7 @@
 {% else %}
 <li class="nav-item">
 	<a class="nav-link" aria-current="page" href="#" data-cms-action-definition='{{ entry.getActionDefinition() }}'
-		data-cms-i18n-key="{{ child.id }}">{{ entry.name }}</a>
+		data-cms-i18n-key="{{ entry.id }}">{{ entry.name }}</a>
 </li>
 {% endif %}
 {% endmacro %}
@@ -54,7 +54,7 @@
 	<meta charset="utf-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<title>Manager</title>
-	<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-superhero.min.css') }}" rel="stylesheet" />
+	<link href="{{ links.createUrl('/manager/bootstrap/bootstrap-condation.min.css') }}" rel="stylesheet" />
 
 	<link rel="stylesheet" href="{{ links.createUrl('/manager/bootstrap/bootstrap-icons.min.css') }}" />
 	

@@ -107,7 +107,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 		
         var pageList = query.page(page, size);
 		
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		return new Page<>(pageList.getTotalItems(), pageList.getPageSize(), pageList.getTotalPages(), pageList.getPage(), 
 				pageList.getItems().stream().map(node -> {
 					var temp_path = contentBase.resolve(node.uri());
@@ -129,7 +129,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 		try {
 			var uri = (String) parameters.getOrDefault("uri", "");
 			var name = (String) parameters.getOrDefault("name", "");
-			var contentBase = db.getReadOnlyFileSystem().contentBase();
+			var contentBase = db.getFileSystem().contentBase();
 
 			if (Strings.isNullOrEmpty(name)) {
 				throw new RPCException(0, "filename can not be null");

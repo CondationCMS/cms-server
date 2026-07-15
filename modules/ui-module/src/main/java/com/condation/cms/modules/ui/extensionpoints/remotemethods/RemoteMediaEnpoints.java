@@ -125,7 +125,7 @@ public class RemoteMediaEnpoints extends AbstractRemoteMethodeExtension implemen
 				throw new IllegalArgumentException("newName must not be null or blank");
 			}
 
-			var mediaBase = getBase(db.getReadOnlyFileSystem(), "assets");
+			var mediaBase = getBase(db.getFileSystem(), "assets");
 			
 			// check if both paths are in host directory
 			mediaBase.resolve(uri).resolve(name);

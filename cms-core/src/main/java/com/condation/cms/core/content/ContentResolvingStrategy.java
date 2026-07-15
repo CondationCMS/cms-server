@@ -45,7 +45,7 @@ public class ContentResolvingStrategy {
 	public static Optional<ReadOnlyFile> resolve (String uri, DB db) {
 		var path = uriToPath(uri);
 		
-		var contentBase = db.getReadOnlyFileSystem().contentBase();
+		var contentBase = db.getFileSystem().contentBase();
 		var contentPath = contentBase.resolve(path);
 		ReadOnlyFile contentFile = null;
 		if (contentPath.exists() && contentPath.isDirectory()) {

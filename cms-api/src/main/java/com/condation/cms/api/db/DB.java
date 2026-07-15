@@ -32,7 +32,11 @@ import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 public interface DB extends AutoCloseable{
 	
 	public DBFileSystem getFileSystem();
-	
+
+	/**
+	 * @deprecated Use {@link DBFileSystem#contentBase()} or {@link DBFileSystem#assetBase()} instead.
+	 */
+	@Deprecated
 	public ReadOnlyFileSystem getReadOnlyFileSystem();
 	
 	public Content getContent();

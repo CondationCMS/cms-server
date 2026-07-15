@@ -127,17 +127,25 @@ const openModal = (optionsParam) => {
 	modalInstance.show();
 
 	// Event-Handler
-	document.getElementById(`${modalId}_cancelBtn`).addEventListener('click', () => {
-		modalInstance.hide();
-		if (typeof options.onCancel === 'function')
-			options.onCancel();
+	document.getElementById(`${modalId}_cancelBtn`).addEventListener('click', async () => {
+		let shouldClose = true;
+		if (typeof options.onCancel === 'function') {
+			shouldClose = await options.onCancel() !== false;
+		}
+		if (shouldClose) {
+			modalInstance.hide();
+		}
 	});
 
-	document.getElementById(`${modalId}_okBtn`).addEventListener('click', () => {
+	document.getElementById(`${modalId}_okBtn`).addEventListener('click', async () => {
 		if (options.validate()) {
-			modalInstance.hide();
-			if (typeof options.onOk === 'function')
-				options.onOk();
+			let shouldClose = true;
+			if (typeof options.onOk === 'function') {
+				shouldClose = await options.onOk() !== false;
+			}
+			if (shouldClose) {
+				modalInstance.hide();
+			}
 		}
 	});
 

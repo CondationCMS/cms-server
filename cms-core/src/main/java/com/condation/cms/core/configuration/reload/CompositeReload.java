@@ -1,0 +1,40 @@
+package com.condation.cms.core.configuration.reload;
+
+/*-
+ * #%L
+ * CMS Core
+ * %%
+ * Copyright (C) 2023 - 2026 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * #L%
+ */
+
+import com.condation.cms.core.configuration.IConfiguration;
+import com.condation.cms.core.configuration.ReloadStrategy;
+import java.util.List;
+
+public class CompositeReload implements ReloadStrategy {
+
+	private final List<ReloadStrategy> reloadStrategies;
+
+	public CompositeReload(ReloadStrategy... reloadStrategies) {
+		this.reloadStrategies = List.of(reloadStrategies);
+	}
+
+	@Override
+	public void register(IConfiguration configuration) {
+		reloadStrategies.forEach(reloadStrategy -> reloadStrategy.register(configuration));
+	}
+}

@@ -22,9 +22,12 @@ radioed: form
 media_url: images/fff.png
 object:
   values:
-  - name: Test 1 and more
+  - title: Test 1 and more
     description: desc 1 - 2
-  - name: Test 2 update
+  - title: Test 2 update
+  - title: test
+    description: blub
+    features: search
 seo:
   description: hier kommt die beschreibung
 linked_page: about
@@ -34,7 +37,10 @@ taxonomy:
   tags:
   - kleidung
   - hoodies_sweatshirts
+  - schuhe
   - kinderkleidung
+  - Small Test
+  - New tag
 ---
 
 # Demo Project

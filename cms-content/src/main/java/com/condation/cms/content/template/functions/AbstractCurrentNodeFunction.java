@@ -52,7 +52,7 @@ public abstract class AbstractCurrentNodeFunction {
 	protected String getUrl(ReadOnlyFile node) {
 		StringBuilder sb = new StringBuilder();
 
-		while (node != null && !node.equals(db.getReadOnlyFileSystem().contentBase())) {
+		while (node != null && !node.equals(db.getFileSystem().contentBase())) {
 
 			var filename = node.getFileName();
 			if (!filename.equals("index.md")) {

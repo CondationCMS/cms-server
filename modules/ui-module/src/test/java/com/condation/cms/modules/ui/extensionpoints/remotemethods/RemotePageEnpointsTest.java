@@ -31,7 +31,6 @@ import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.rpc.RPCException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,8 +48,8 @@ import org.mockito.Mockito;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.filesystem.FileSystem;
 
 @ExtendWith(MockitoExtension.class)
 public class RemotePageEnpointsTest {
@@ -71,7 +70,7 @@ public class RemotePageEnpointsTest {
     private ContentQuery.Sort sort;
 
 	@Mock
-	private ReadOnlyFileSystem readOnlyFileSystem;
+	private FileSystem fileSystem;
 	
 	@Mock
 	private ReadOnlyFile contentBase;
@@ -89,8 +88,8 @@ public class RemotePageEnpointsTest {
         pageEndpoints = new RemotePageEnpoints();
         pageEndpoints.setContext(moduleContext);
 		
-		when(db.getReadOnlyFileSystem()).thenReturn(readOnlyFileSystem);
-		when(readOnlyFileSystem.contentBase()).thenReturn(contentBase);
+		when(db.getFileSystem()).thenReturn(fileSystem);
+		when(fileSystem.contentBase()).thenReturn(contentBase);
     }
 
     @Test

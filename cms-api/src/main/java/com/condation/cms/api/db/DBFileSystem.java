@@ -21,6 +21,7 @@ package com.condation.cms.api.db;
  * #L%
  */
 
+import com.condation.cms.api.db.cms.ReadOnlyFile;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -31,11 +32,11 @@ import java.util.List;
  * @author thmar
  */
 public interface DBFileSystem {
-	
+
 	Path hostBase();
-	
+
 	Path resolve(String path);
-	
+
 	String loadContent(final Path file) throws IOException;
 
 	List<String> loadLines(final Path file) throws IOException;
@@ -43,4 +44,8 @@ public interface DBFileSystem {
 	String loadContent(final Path file, final Charset charset) throws IOException;
 
 	List<String> loadLines(final Path file, final Charset charset) throws IOException;
+
+	ReadOnlyFile contentBase();
+
+	ReadOnlyFile assetBase();
 }

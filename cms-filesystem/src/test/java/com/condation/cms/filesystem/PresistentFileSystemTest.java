@@ -21,6 +21,9 @@ package com.condation.cms.filesystem;
  * #L%
  */
 
+import com.condation.cms.api.db.Content;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.cms.WrappedReadOnlyFileSystem;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
@@ -28,6 +31,7 @@ import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
@@ -43,13 +47,14 @@ import org.yaml.snakeyaml.Yaml;
 public class PresistentFileSystemTest {
 
 	static FileSystem fileSystem;
-	
-	
+	static Content content;
+
+
 	@BeforeAll
 	static void setup() throws IOException {
-		
+
 		var eventBus = Mockito.mock(EventBus.class);
-		
+
 		fileSystem = new FileSystem("test-site", Path.of("src/test/resources"), eventBus, (file) -> {
 			try {
 				return new Yaml().load(Files.readString(file));
@@ -58,6 +63,8 @@ public class PresistentFileSystemTest {
 			}
 		});
 		fileSystem.init(MetaData.Type.PERSISTENT);
+
+		content = new FileContent(fileSystem, new WrappedReadOnlyFileSystem(fileSystem));
 	}
 	
 	@AfterAll
@@ -229,5 +236,51 @@ public class PresistentFileSystemTest {
 		Assertions.assertThat(page.getItems()).hasSize(2);
 		Assertions.assertThat(page.getItems().get(0).data().get("name")).isEqualTo("test1");
 		Assertions.assertThat(page.getItems().get(1).data().get("name")).isEqualTo("test2");
+	}
+
+	@Test
+	public void test_searchByTitle_matchesSingleWord() {
+		List<ContentNode> nodes = content.searchByTitle("Superman");
+
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("test1");
+	}
+
+	@Test
+	public void test_searchByTitle_matchesPrefix() {
+		List<ContentNode> nodes = content.searchByTitle("Sup");
+
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("test1");
+	}
+
+	@Test
+	public void test_searchByTitle_isCaseInsensitive() {
+		List<ContentNode> nodes = content.searchByTitle("superman");
+
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("test1");
+	}
+
+	@Test
+	public void test_searchByTitle_matchesDifferentNode() {
+		List<ContentNode> nodes = content.searchByTitle("Ant Man");
+
+		Assertions.assertThat(nodes).hasSize(1);
+		Assertions.assertThat(nodes.get(0).data().get("name")).isEqualTo("test2");
+	}
+
+	@Test
+	public void test_searchByTitle_noMatch() {
+		List<ContentNode> nodes = content.searchByTitle("Batman");
+
+		Assertions.assertThat(nodes).isEmpty();
+	}
+
+	@Test
+	public void test_searchByTitle_blankInputMatchesAllPages() {
+		List<ContentNode> nodes = content.searchByTitle("");
+
+		Assertions.assertThat(nodes).hasSize(3);
 	}
 }

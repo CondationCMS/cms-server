@@ -1,5 +1,6 @@
 name: test1
 featured: true
+title: Superman Returns
 taxonomy:
     tags: [eins, zwei]
 number1: 1

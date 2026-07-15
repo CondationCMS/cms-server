@@ -35,6 +35,14 @@ export namespace MODULE_LOCALIZATIONS {
         "page.unpublished.title": string;
         "page.unpublished.noPages": string;
         "page.unpublished.editLink": string;
+        "page.search.title": string;
+        "page.search.placeholder": string;
+        "page.search.minLength": string;
+        "page.search.noResults": string;
+        "page.search.columnTitle": string;
+        "page.search.columnUri": string;
+        "page.search.loadLink": string;
+        "page.search.loadError": string;
         "pagination.previous": string;
         "pagination.next": string;
     };

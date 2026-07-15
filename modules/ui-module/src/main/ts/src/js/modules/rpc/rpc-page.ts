@@ -94,7 +94,7 @@ const searchPages = async (options: SearchPagesOptions) : Promise<SearchPagesRes
 		method: "pages.search",
 		parameters: options
 	}
-	return await executeRemoteCall(data);
+	return (await executeRemoteCall(data)).result as SearchPagesResponse;
 }
 
 export { createPage, deletePage, filterPages, searchPages };

@@ -40,4 +40,11 @@ const deletePage = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-export { createPage, deletePage, filterPages };
+const searchPages = async (options) => {
+    var data = {
+        method: "pages.search",
+        parameters: options
+    };
+    return (await executeRemoteCall(data)).result;
+};
+export { createPage, deletePage, filterPages, searchPages };

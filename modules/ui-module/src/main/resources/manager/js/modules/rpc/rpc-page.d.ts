@@ -55,4 +55,15 @@ export interface FilterPagesResponse {
 }
 declare const filterPages: (options: FilterPagesOptions) => Promise<FilterPagesResponse>;
 declare const deletePage: (options: any) => Promise<any>;
-export { createPage, deletePage, filterPages };
+export interface SearchPagesOptions {
+    query: string;
+}
+export interface SearchResultDto {
+    uri: string;
+    title: string;
+}
+export interface SearchPagesResponse {
+    result: SearchResultDto[];
+}
+declare const searchPages: (options: SearchPagesOptions) => Promise<SearchPagesResponse>;
+export { createPage, deletePage, filterPages, searchPages };

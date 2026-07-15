@@ -35,6 +35,14 @@ export const MODULE_LOCALIZATIONS = {
         "page.unpublished.title": "Unveröffentlichte Seiten",
         "page.unpublished.noPages": "Keine unveröffentlichten Seiten gefunden.",
         "page.unpublished.editLink": "Bearbeiten",
+        "page.search.title": "Seiten suchen",
+        "page.search.placeholder": "Nach Titel suchen...",
+        "page.search.minLength": "Mindestens 3 Zeichen eingeben und Enter drücken, um zu suchen.",
+        "page.search.noResults": "Keine Seiten gefunden.",
+        "page.search.columnTitle": "Titel",
+        "page.search.columnUri": "URI",
+        "page.search.loadLink": "Laden",
+        "page.search.loadError": "Seiten konnten nicht durchsucht werden.",
         "pagination.previous": "Zurück",
         "pagination.next": "Weiter"
     }

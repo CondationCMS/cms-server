@@ -23,7 +23,6 @@ package com.condation.cms.filesystem;
 
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.db.cms.WrappedReadOnlyFileSystem;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
@@ -64,7 +63,7 @@ public class PresistentFileSystemTest {
 		});
 		fileSystem.init(MetaData.Type.PERSISTENT);
 
-		content = new FileContent(fileSystem, new WrappedReadOnlyFileSystem(fileSystem));
+		content = new FileContent(fileSystem);
 	}
 	
 	@AfterAll

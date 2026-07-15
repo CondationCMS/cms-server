@@ -20,8 +20,6 @@ package com.condation.cms.filesystem.metadata.persistent;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
-
 import com.condation.cms.filesystem.metadata.persistent.utils.FlattenMap;
 
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.util.BytesRef;
 
 /**
@@ -44,7 +43,7 @@ import org.apache.lucene.util.BytesRef;
  */
 public class DocumentHelper {
 
-	public static void addAvailableFields (Document document) {
+	public static void addAvailableFields(Document document) {
 		List<String> fieldNames = new ArrayList<>();
 		document.getFields().forEach(field -> fieldNames.add(field.name()));
 
@@ -60,41 +59,61 @@ public class DocumentHelper {
 				.filter(entry -> entry.getValue() != null)
 				.forEach(entry -> {
 
-			switch (entry.getValue()) {
-				case List listValue ->
-					handleList(document, entry.getKey(), listValue);
-				default -> {
-					addValue(document, entry.getKey(), entry.getValue());
-				}
-			}
-		});
+					switch (entry.getValue()) {
+						case List listValue ->
+							handleList(document, entry.getKey(), listValue);
+						default -> {
+							addValue(document, entry.getKey(), entry.getValue());
+						}
+					}
+				});
 	}
 
 	private static void handleList(Document document, String name, List<?> list) {
 		list.forEach(item -> addValue(document, name, item));
 	}
 
-    private static void addValue (Document document, String name, Object value) {
-        switch (value) {
-            case String stringValue -> {
-                document.add(new StringField(name, stringValue, Field.Store.NO));
-            }
-            case Number numberValue -> {
-                document.add(new StringField(name, numberValue.toString(), Field.Store.NO));
-                document.add(new DoubleField("%s_double".formatted(name), numberValue.doubleValue(), Field.Store.NO));
-            } 
-            case Boolean booleanValue -> {
-				document.add(new StringField(name, booleanValue.toString(), Field.Store.NO));
-                document.add(new IntField("%s_bool".formatted(name), booleanValue ? 1 : 0, Field.Store.NO));
+	private static void addValue(Document document, String name, Object value) {
+		switch (value) {
+			case String stringValue -> {
+				document.add(new StringField(name, stringValue, Field.Store.NO));
 			}
-            case Date dateValue -> {
-                // Datum lesbar in die Textsuche, Zeitstempel ins Long-Feld
-                document.add(new StringField(name, dateValue.toString(), Field.Store.NO));
-                document.add(new LongField("%s_date".formatted(name), dateValue.getTime(), Field.Store.NO));
-            }
+			case Number numberValue -> {
+				document.add(new StringField(name, numberValue.toString(), Field.Store.NO));
+				document.add(new DoubleField("%s_double".formatted(name), numberValue.doubleValue(), Field.Store.NO));
+			}
+			case Boolean booleanValue -> {
+				document.add(new StringField(name, booleanValue.toString(), Field.Store.NO));
+				document.add(new IntField("%s_bool".formatted(name), booleanValue ? 1 : 0, Field.Store.NO));
+			}
+			case Date dateValue -> {
+				// Datum lesbar in die Textsuche, Zeitstempel ins Long-Feld
+				document.add(new StringField(name, dateValue.toString(), Field.Store.NO));
+				document.add(new LongField("%s_date".formatted(name), dateValue.getTime(), Field.Store.NO));
+			}
 			case List<?> listValue ->
 				handleList(document, name, listValue);
-            default -> {}
-        }
-    }
+			default -> {
+			}
+		}
+	}
+
+	public static void addSearchFields(Document document, Map<String, Object> metadata) {
+		Object titleValue = metadata.get("title");
+
+		if (!(titleValue instanceof CharSequence title)) {
+			return;
+		}
+
+		String value = title.toString().strip();
+		if (value.isEmpty()) {
+			return;
+		}
+
+		document.add(new TextField(
+				TitleQueryFactory.FIELD_SEARCH_TITLE,
+				value,
+				Field.Store.NO
+		));
+	}
 }

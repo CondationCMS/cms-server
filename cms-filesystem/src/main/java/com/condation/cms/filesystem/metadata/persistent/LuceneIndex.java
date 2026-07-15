@@ -22,14 +22,19 @@ package com.condation.cms.filesystem.metadata.persistent;
  */
 
 import com.condation.cms.api.utils.FileUtils;
+import com.condation.cms.filesystem.metadata.persistent.lucene.TitleAnalyzer;
+import com.condation.cms.filesystem.metadata.persistent.lucene.TitlePrefixAnalyzer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexWriter;
@@ -52,6 +57,10 @@ import org.apache.lucene.store.NRTCachingDirectory;
 @Slf4j
 public class LuceneIndex implements AutoCloseable {
 
+	
+	public static final Analyzer INDEX_ANALYZER = new TitlePrefixAnalyzer();
+	public static final Analyzer SEARCH_ANALYZER = new TitleAnalyzer();
+	
 	private Directory directory;
 	private IndexWriter writer = null;
 
@@ -147,7 +156,16 @@ public class LuceneIndex implements AutoCloseable {
 		Files.createDirectories(path);
 
 		this.directory = FSDirectory.open(path);
-		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(new KeywordAnalyzer());
+		
+		
+		PerFieldAnalyzerWrapper analyzer = new PerFieldAnalyzerWrapper(
+				new KeywordAnalyzer(),
+				Map.of(
+					TitleQueryFactory.FIELD_SEARCH_TITLE, INDEX_ANALYZER
+				)
+		);
+		
+		IndexWriterConfig indexWriterConfig = new IndexWriterConfig(analyzer);
 		indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
 		indexWriterConfig.setCommitOnClose(true);
 		nrt_index = new NRTCachingDirectory(directory, 5.0, 60.0);

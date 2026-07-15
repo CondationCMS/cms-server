@@ -34,7 +34,6 @@ import com.condation.cms.api.eventbus.events.TemplateChangedEvent;
 import com.condation.cms.api.exceptions.AccessNotAllowedException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.utils.MdcScope;
-import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.PageMetaData;
 import com.condation.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.condation.cms.filesystem.metadata.persistent.PersistentMetaData;
@@ -290,7 +289,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	public void init() throws IOException {
-		init(MetaData.Type.MEMORY);
+		init(MetaData.Type.PERSISTENT);
 	}
 
 	public void init(MetaData.Type metaDataType) throws IOException {

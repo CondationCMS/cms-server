@@ -24,6 +24,7 @@ package com.condation.cms.filesystem;
 
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.filesystem.metadata.persistent.TitleQuery;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
@@ -53,6 +54,8 @@ public interface MetaData {
 	Optional<ContentNode> findFolder(String uri);
 
 	List<ContentNode> listChildren(String uri);
+	
+	TitleQuery searchByTitle(String uri);
 	
 	void clear ();
 	

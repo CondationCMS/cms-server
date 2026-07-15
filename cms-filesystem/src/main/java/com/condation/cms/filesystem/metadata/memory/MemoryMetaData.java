@@ -26,6 +26,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
+import com.condation.cms.filesystem.metadata.persistent.TitleQuery;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -100,6 +101,11 @@ public class MemoryMetaData extends AbstractMetaData {
 		var filtered = getNodes().values().stream().filter(node -> node.uri().startsWith(uri)).toList();
 
 		return new MemoryQuery<T>(filtered, nodeMapper);
+	}
+
+	@Override
+	public TitleQuery searchByTitle(String uri) {
+		throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
 
 	

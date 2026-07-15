@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import org.jspecify.annotations.NonNull;
 
 /**
  *
@@ -49,4 +50,6 @@ public interface Content {
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper);
 
 	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper);
+	
+	public List<ContentNode> searchByTitle (@NonNull String input);
 }

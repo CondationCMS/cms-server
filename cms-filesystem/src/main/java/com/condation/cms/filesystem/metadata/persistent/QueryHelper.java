@@ -23,25 +23,20 @@ package com.condation.cms.filesystem.metadata.persistent;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.MapUtil;
 import com.condation.cms.filesystem.metadata.query.Queries;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.Condition;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.ContainsCondition;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.Expression;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.InCondition;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.Logical;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.LogicalOperator;
-import com.condation.cms.filesystem.metadata.query.parser.values.Value;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.DoubleField;
-import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
-import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.queryparser.flexible.precedence.PrecedenceQueryParser;
+import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
@@ -222,5 +217,5 @@ public class QueryHelper {
                 field; // Strings und unbekannte Typen nutzen immer das Hauptfeld
         };
     }
-
+	
 }

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero"
+  style="background-image:linear-gradient(90deg,rgba(7,28,23,.9) 0%,rgba(7,28,23,.45) 48%,rgba(7,28,23,.05) 78%),url('/assets/images/hero-northern-norway.png')">
+  <div class="shell hero-inner reveal">
+    <p class="eyebrow light">Guided adventures across Europe's wild north</p>
+    <h1>Where the trail ends,<br><em>adventure begins.</em></h1>
+    <p class="hero-copy">Small groups, seasoned guides and trails far from the crowds. For people who want to feel
+      nature, not just see it.</p>
+    <div class="button-row"><a class="button button-accent" href="/trips/">Explore trips <i
+          class="bi bi-arrow-right"></i></a><a class="button button-ghost" href="/courses/">View courses</a></div>
+  </div>
+  <div class="hero-facts">
+    <div class="shell"><span><strong>12+</strong> years of experience</span><span><strong>8</strong> expert
+        guides</span><span><strong>max. 10</strong> guests per group</span><span><i class="bi bi-shield-check"></i>
+        Safety first</span></div>
+  </div>
+</section>
+
+{% assign trips = cms.nodeList.from("/trips/*").sort("menu.position").page(1).size(3).list() %}
+<section class="section shell">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Hand-picked journeys</p>
+      <h2>Leave the everyday.<br><em>Enter the wild.</em></h2>
+    </div><a class="text-link" href="/trips/">All trips <i class="bi bi-arrow-right"></i></a>
+  </div>
+  <div class="card-grid">
+    {% for entry in trips.items %}<article class="trip-card reveal"><a href="{{ cms.links.createUrl(entry.path) }}">
+        <div class="card-media"><img src="{{ entry.meta.featuredImage }}" alt="{{ entry.meta.title }}"><span
+            class="card-tag">{{ entry.meta.country }}</span></div>
+        <div class="card-body">
+          <div class="card-meta"><span><i class="bi bi-clock"></i> {{ entry.meta.duration }} days</span><span><i
+                class="bi bi-bar-chart"></i> {{ entry.meta.difficulty }}</span></div>
+          <h3>{{ entry.meta.title }}</h3>
+          <p>{{ entry.meta.description }}</p>
+          <div class="card-foot"><strong>from €{{ entry.meta.price }}</strong><span>View trip <i
+                class="bi bi-arrow-right"></i></span></div>
+        </div>
+      </a></article>{% endfor %}
+  </div>
+</section>
+
+<section class="story-section">
+  <div class="shell split">
+    <div class="story-image reveal"><img src="/assets/images/alpine-hut-hike.png"
+        alt="A small hiking group approaching a mountain hut"><span class="image-note"><strong>850+</strong> guests have
+        explored with us</span></div>
+    <div class="story-copy">
+      <p class="eyebrow">What drives us</p>
+      <h2>Small groups.<br><em>Big experiences.</em></h2>
+      <p>We believe the best stories begin where phone reception ends. We take you beyond the familiar — thoughtfully,
+        personally and with deep respect for the places we visit.</p>
+      <ul class="check-list">
+        <li><i class="bi bi-check2"></i><span><strong>Personally guided</strong><small>Seasoned guides who truly know
+              their regions.</small></span></li>
+        <li><i class="bi bi-check2"></i><span><strong>Travel with care</strong><small>Small groups and partners rooted
+              in each destination.</small></span></li>
+        <li><i class="bi bi-check2"></i><span><strong>Ready and safe</strong><small>Thorough planning and honest
+              difficulty ratings.</small></span></li>
+      </ul><a class="text-link" href="/about/">More about us <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+
+{% assign events = cms.nodeList.from("/departures/*").sort("startDate").page(1).size(4).list() %}
+<section class="section section-dark">
+  <div class="shell">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow light">Save the date</p>
+        <h2>Upcoming <em>adventures.</em></h2>
+      </div><a class="text-link light" href="/departures/">All departures <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="event-list">{% for event in events.items %}<a class="event-row"
+        href="{{ cms.links.createUrl(event.path) }}"><time><strong>{{ event.meta.day }}</strong><span>{{
+            event.meta.month
+            }}<br>{{ event.meta.year }}</span></time>
+        <div><span class="status {{ event.meta.bookingStatus }}">{{ event.meta.statusLabel }}</span>
+          <h3>{{ event.meta.title }}</h3>
+          <p><i class="bi bi-geo-alt"></i> {{ event.meta.location }} · {{ event.meta.durationLabel }}</p>
+        </div><strong class="event-price">€{{ event.meta.price }} <i class="bi bi-arrow-up-right"></i></strong>
+      </a>{% endfor %}</div>
+  </div>
+</section>
+
+{% assign courses = cms.nodeList.from("/courses/*").sort("menu.position").page(1).size(3).list() %}
+<section class="section shell">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Skills that matter outside</p>
+      <h2>Get <em>ready.</em></h2>
+    </div>
+    <p class="heading-copy">Our courses build calm confidence and practical skill — clearly taught and tested outside.
+    </p>
+  </div>
+  <div class="course-grid">{% for course in courses.items %}<article class="course-card reveal"><a
+        href="{{ cms.links.createUrl(course.path) }}"><img src="{{ course.meta.featuredImage }}"
+          alt="{{ course.meta.title }}">
+        <div><span>{{ course.meta.level }}</span>
+          <h3>{{ course.meta.title }}</h3>
+          <p>{{ course.meta.description }}</p><small>{{ course.meta.duration }} days · from €{{ course.meta.price
+            }}</small><i class="bi bi-arrow-up-right"></i>
+        </div>
+      </a></article>{% endfor %}</div>
+</section>
+
+<section class="quote-section">
+  <div class="shell"><i class="bi bi-quote"></i>
+    <blockquote>“I left with a healthy respect for the cold — and came home with an entirely new trust in myself.”
+    </blockquote>
+    <p><strong>Mara, 34</strong> · Northern Norway Winter Adventure</p>
+  </div>
+</section>
+
+<section class="newsletter">
+  <div class="shell">
+    <div>
+      <p class="eyebrow light">Notes from the wild</p>
+      <h2>Your next adventure<br>starts in your <em>inbox.</em></h2>
+    </div>
+    <form><label for="email">Email address</label>
+      <div><input id="email" type="email" placeholder="you@example.com"><button class="button button-accent">Join us <i
+            class="bi bi-arrow-right"></i></button></div><small>No noise. Just new trips, useful field notes and outdoor
+        inspiration.</small>
+    </form>
+  </div>
+</section>
+{% endblock %}

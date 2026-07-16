@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}<section class="page-hero compact">
+    <div class="shell">
+        <p class="eyebrow">Here when you need us</p>
+        <h1>Let's talk about your<br><em>next adventure.</em></h1>
+        <p>Not sure which trip is right for you? Send us a note — our advice is honest, personal and without obligation.
+        </p>
+    </div>
+</section>
+<section class="section shell contact-grid">
+    <div>
+        <h2>Get in touch</h2>
+        <p>Monday to Friday, 9 am–5 pm CET</p>
+        <p class="contact-line"><i
+                class="bi bi-envelope"></i><span><small>Email</small>hello@nordlicht-outdoor.com</span></p>
+        <p class="contact-line"><i class="bi bi-telephone"></i><span><small>Phone</small>+49 40 555 71 920</span></p>
+        <p class="contact-line"><i class="bi bi-geo-alt"></i><span><small>Office</small>Am Sandtorkai 27, Hamburg</span>
+        </p>
+    </div>
+    <form class="contact-form">
+        <div class="two-col"><label>Name<input type="text" required></label><label>Email<input type="email"
+                    required></label></div><label>What can we help with?<select>
+                <option>General enquiry</option>
+                <option>Trip advice</option>
+                <option>Course booking</option>
+            </select></label><label>Your message<textarea rows="6"></textarea></label><label class="privacy"><input
+                type="checkbox" required> I have read the privacy policy.</label><button
+            class="button button-accent">Send message <i class="bi bi-arrow-right"></i></button>
+    </form>
+</section>{% endblock %}

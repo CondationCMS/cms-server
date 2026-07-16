@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ node.meta.getOrDefault("seo.title", node.meta.getOrDefault("title", "Nordlicht Outdoor")) }}</title>
+  <meta name="description" content="{{ node.meta.getOrDefault(" seo.description",
+    node.meta.getOrDefault("description", "Small-group guided adventures and outdoor courses." )) }}">
+  <link rel="icon" href="/assets/images/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="/assets/css/site.css">
+  <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" x-data="{ open: false }">
+    <div class="shell nav-wrap">
+      <a class="brand" href="/" aria-label="Nordlicht Outdoor – Home">
+        <span class="brand-mark"><i class="bi bi-triangle-fill"></i></span>
+        <span>NORDLICHT <small>OUTDOOR</small></span>
+      </a>
+      <button class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-label="Open menu"><i
+          class="bi bi-list"></i></button>
+      <nav class="main-nav" :class="{ 'is-open': open }" aria-label="Main navigation">
+        <a href="/trips/">Trips</a><a href="/courses/">Courses</a><a href="/departures/">Departures</a>
+        <a href="/destinations/">Destinations</a><a href="/journal/">Journal</a><a href="/about/">About</a>
+        <a class="nav-cta" href="/contact/">Let's talk <i class="bi bi-arrow-up-right"></i></a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">{% block content %}{{ node.content | raw }}{% endblock %}</main>
+  <footer class="site-footer">
+    <div class="shell footer-grid">
+      <div><a class="brand brand-light" href="/"><span class="brand-mark"><i
+              class="bi bi-triangle-fill"></i></span><span>NORDLICHT <small>OUTDOOR</small></span></a>
+        <p>Guided adventures. Small groups.<br>Real wilderness.</p>
+      </div>
+      <div>
+        <h3>Explore</h3><a href="/trips/">Trips</a><a href="/courses/">Courses</a><a
+          href="/departures/">Departures</a><a href="/journal/">Journal</a>
+      </div>
+      <div>
+        <h3>Nordlicht</h3><a href="/about/">About us</a><a href="/about/sustainability/">Sustainability</a><a
+          href="/faq/">FAQ</a><a href="/contact/">Contact</a>
+      </div>
+      <div>
+        <h3>Notes from the wild</h3>
+        <p>Trips, field notes and new departure dates — about once a month.</p>
+        <form class="footer-form"><label class="sr-only" for="footer-email">Email</label><input id="footer-email"
+            type="email" placeholder="you@example.com"><button aria-label="Subscribe to newsletter"><i
+              class="bi bi-arrow-right"></i></button></form>
+      </div>
+    </div>
+    <div class="shell footer-bottom"><span>© 2026 Nordlicht Outdoor</span><span><a href="/legal-notice/">Legal
+          notice</a><a href="/privacy/">Privacy</a><a href="#">EN <i class="bi bi-chevron-down"></i></a></span></div>
+  </footer>
+  <script src="/assets/js/site.js"></script>
+</body>
+
+</html>

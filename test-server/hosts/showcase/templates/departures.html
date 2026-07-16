@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero">
+  <div class="shell">
+    <p class="eyebrow">{{ node.meta.eyebrow }}</p>
+    <h1>{{ node.meta.title }}</h1>
+    <p>{{ node.meta.description }}</p>
+  </div>
+</section>
+{% assign pageNumber = requestContext.getQueryParameter('page', '1') %}
+{% assign page = cms.nodeList.from("/departures/*").sort("startDate").page(pageNumber).size(12).list() %}
+<section class="section section-dark">
+  <div class="shell">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow light">Choose your date</p>
+        <h2>{{ page.totalItems }} upcoming <em>departures.</em></h2>
+      </div>
+      <p class="heading-copy">Every departure is led by an experienced guide and limited to a small group.</p>
+    </div>
+    <div class="event-list">
+      {% for event in page.items %}
+      <a class="event-row" href="{{ cms.links.createUrl(event.path) }}">
+        <time><strong>{{ event.meta.day }}</strong><span>{{ event.meta.month }}<br>{{ event.meta.year }}</span></time>
+        <div><span class="status {{ event.meta.bookingStatus }}">{{ event.meta.statusLabel }}</span>
+          <h3>{{ event.meta.title }}</h3>
+          <p><i class="bi bi-geo-alt"></i> {{ event.meta.location }} · {{ event.meta.durationLabel }}</p>
+        </div>
+        <strong class="event-price">€{{ event.meta.price }} <i class="bi bi-arrow-up-right"></i></strong>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="newsletter">
+  <div class="shell">
+    <div>
+      <p class="eyebrow light">Need another date?</p>
+      <h2>Let's plan your<br><em>adventure.</em></h2>
+    </div>
+    <div>
+      <p>We also arrange private departures for groups and companies.</p><a class="button button-accent"
+        href="/contact/">Talk to us <i class="bi bi-arrow-right"></i></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

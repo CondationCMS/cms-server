@@ -1,0 +1,25 @@
+---
+values:
+  - id: norway
+    title: Norway
+  - id: sweden
+    title: Sweden
+  - id: alps
+    title: Alps
+  - id: winter
+    title: Winter
+  - id: summer
+    title: Summer
+  - id: hiking
+    title: Hiking
+  - id: trekking
+    title: Trekking
+  - id: snowshoeing
+    title: Snowshoeing
+  - id: survival
+    title: Survival
+  - id: beginners
+    title: Beginners
+  - id: weekend-course
+    title: Weekend course
+

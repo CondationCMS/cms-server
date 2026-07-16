@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}<section class="page-hero compact">
+    <div class="shell">
+        <p class="eyebrow">{{ node.meta.eyebrow }}</p>
+        <h1>{{ node.meta.title }}</h1>
+        <p>{{ node.meta.description }}</p>
+    </div>
+</section>
+<section class="section shell">
+    <article class="prose wide">{{ node.content | raw }}</article>
+</section>{% endblock %}

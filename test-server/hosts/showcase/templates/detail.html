@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="detail-hero"><img src="{{ node.meta.featuredImage }}" alt="{{ node.meta.title }}">
+    <div class="detail-overlay"></div>
+    <div class="shell"><a class="back-link" href="{{ node.meta.parentUrl }}"><i class="bi bi-arrow-left"></i> Back to
+            overview</a><span class="card-tag">{{ node.meta.getOrDefault("country", node.meta.location) }}</span>
+        <h1>{{ node.meta.title }}</h1>
+        <p>{{ node.meta.description }}</p>
+    </div>
+</section>
+<section class="detail-facts">
+    <div class="shell"><span><i class="bi bi-clock"></i><small>Duration</small><strong>{{ node.meta.duration }}
+                days</strong></span><span><i class="bi bi-bar-chart"></i><small>Level</small><strong>{{
+                node.meta.getOrDefault("difficulty", node.meta.level) }}</strong></span><span><i
+                class="bi bi-people"></i><small>Group</small><strong>4–{{ node.meta.getOrDefault("groupSize.maximum",
+                "10") }} people</strong></span><span><i class="bi bi-geo-alt"></i><small>Region</small><strong>{{
+                node.meta.getOrDefault("region", node.meta.location) }}</strong></span></div>
+</section>
+<section class="section shell detail-layout">
+    <article class="prose">
+        <p class="eyebrow">What to expect</p>{{ node.content | raw }}
+    </article>
+    <aside class="booking-box"><span>from</span><strong>€{{ node.meta.price }}</strong><small>per person</small>
+        <hr>
+        <p><i class="bi bi-check2-circle"></i> Small groups</p>
+        <p><i class="bi bi-check2-circle"></i> Experienced guides</p>
+        <p><i class="bi bi-check2-circle"></i> Personal advice</p><a class="button button-accent" href="/contact/">Send
+            an enquiry <i class="bi bi-arrow-right"></i></a><small>Still unsure? <a href="/contact/">We are happy to
+                help.</a></small>
+    </aside>
+</section>
+{% endblock %}

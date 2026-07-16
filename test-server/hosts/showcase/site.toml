@@ -1,0 +1,9 @@
+id = "outdoor"
+hostname = [ "localhost", "127.0.0.1" ]
+baseurl = "http://localhost:2020"
+context_path = "/"
+
+# ui manager application configuration
+[ui]
+force2fa = false                    # force 2fa for all users
+managerEnabled = true               # enable the ui manager application

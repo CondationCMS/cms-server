@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero">
+    <div class="shell">
+        <p class="eyebrow">{{ node.meta.eyebrow }}</p>
+        <h1>{{ node.meta.title }}</h1>
+        <p>{{ node.meta.description }}</p>
+    </div>
+</section>
+{% assign pageNumber = requestContext.getQueryParameter('page', '1') %}
+{% assign page = cms.nodeList.from(node.meta.source).sort("menu.position").page(pageNumber).size(9).list() %}
+<section class="section shell">
+    <div class="filter-bar"><span>{{ page.totalItems }} adventures</span>
+        <div><button class="filter active">All</button><button class="filter">Easy</button><button
+                class="filter">Moderate</button><button class="filter">Challenging</button></div>
+    </div>
+    <div class="card-grid">{% for entry in page.items %}<article class="trip-card"><a
+                href="{{ cms.links.createUrl(entry.path) }}">
+                <div class="card-media"><img src="{{ entry.meta.featuredImage }}" alt="{{ entry.meta.title }}"><span
+                        class="card-tag">{{ entry.meta.getOrDefault("country", entry.meta.location) }}</span></div>
+                <div class="card-body">
+                    <div class="card-meta"><span><i class="bi bi-clock"></i> {{ entry.meta.duration }}
+                            days</span><span><i class="bi bi-bar-chart"></i> {{ entry.meta.getOrDefault("difficulty",
+                            entry.meta.level) }}</span></div>
+                    <h3>{{ entry.meta.title }}</h3>
+                    <p>{{ entry.meta.description }}</p>
+                    <div class="card-foot"><strong>from €{{ entry.meta.price }}</strong><span>Details <i
+                                class="bi bi-arrow-right"></i></span></div>
+                </div>
+            </a></article>{% endfor %}</div>
+</section>
+{% endblock %}

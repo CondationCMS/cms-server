@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-hero compact">
+    <div class="shell"><a class="back-link dark" href="/departures/"><i class="bi bi-arrow-left"></i> All departures</a>
+        <p class="eyebrow">{{ node.meta.statusLabel }}</p>
+        <h1>{{ node.meta.title }}</h1>
+        <p>{{ node.meta.description }}</p>
+    </div>
+</section>
+<section class="detail-facts">
+    <div class="shell"><span><i class="bi bi-calendar3"></i><small>Start date</small><strong>{{ node.meta.day }} {{
+                node.meta.month }} {{ node.meta.year }}</strong></span><span><i
+                class="bi bi-clock"></i><small>Duration</small><strong>{{ node.meta.durationLabel
+                }}</strong></span><span><i class="bi bi-geo-alt"></i><small>Location</small><strong>{{
+                node.meta.location }}</strong></span><span><i
+                class="bi bi-people"></i><small>Availability</small><strong>{{ node.meta.availablePlaces }} places
+                left</strong></span></div>
+</section>
+<section class="section shell departure-layout">
+    <article class="prose">
+        <p class="eyebrow">Your departure</p>{{ node.content | raw }}<h2>Ready to join?</h2>
+        <p>Send us a short enquiry. We will confirm availability, answer your questions and share all details before you
+            make a booking decision.</p><a class="text-link" href="{{ node.meta.relatedContent }}">View the full trip or
+            course <i class="bi bi-arrow-right"></i></a>
+    </article>
+    <aside class="booking-box"><span>from</span><strong>€{{ node.meta.price }}</strong><small>per person</small>
+        <hr>
+        <p><i class="bi bi-calendar-check"></i> {{ node.meta.day }} {{ node.meta.month }} {{ node.meta.year }}</p>
+        <p><i class="bi bi-geo-alt"></i> {{ node.meta.location }}</p>
+        <p><i class="bi bi-people"></i> {{ node.meta.availablePlaces }} of {{ node.meta.maximumPlaces }} places
+            available</p><a class="button button-accent" href="/contact/">Request this date <i
+                class="bi bi-arrow-right"></i></a><small>No payment required to enquire.</small>
+    </aside>
+</section>
+{% endblock %}

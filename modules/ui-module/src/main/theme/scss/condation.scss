@@ -58,6 +58,17 @@
 // 8. Eigene Anpassungen hier einfügen
 // @import "custom-overrides";
 
+// Tooltip: Override must come after Bootstrap's tooltip import
+.tooltip {
+	--bs-tooltip-bg: rgba(31, 41, 51, .96);
+	--bs-tooltip-color: #{$gray-100};
+}
+
+.tooltip-inner {
+	background-color: rgba(31, 41, 51, .96);
+	color: #{$gray-100};
+}
+
 // Workflow status menu
 
 .workflow-status-button {

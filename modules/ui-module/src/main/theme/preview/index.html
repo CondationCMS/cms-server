@@ -338,6 +338,31 @@
           </div>
         </div>
 
+        <!-- ── TOOLTIPS ── -->
+        <div class="preview-section">
+          <p class="section-label">Tooltips</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-primary" data-bs-toggle="tooltip" data-bs-placement="top" title="Tooltip oben">
+              <i class="bi bi-arrow-up me-1"></i>Oben
+            </button>
+            <button class="btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tooltip unten">
+              <i class="bi bi-arrow-down me-1"></i>Unten
+            </button>
+            <button class="btn btn-success" data-bs-toggle="tooltip" data-bs-placement="left" title="Tooltip links">
+              <i class="bi bi-arrow-left me-1"></i>Links
+            </button>
+            <button class="btn btn-info" data-bs-toggle="tooltip" data-bs-placement="right" title="Tooltip rechts">
+              <i class="bi bi-arrow-right me-1"></i>Rechts
+            </button>
+            <button class="btn btn-outline-danger" data-bs-toggle="tooltip" title="Diese Aktion kann nicht rückgängig gemacht werden">
+              <i class="bi bi-trash me-1"></i>Mit Warnung
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="Kleiner Button mit Tooltip">
+              <i class="bi bi-info-circle"></i>
+            </button>
+          </div>
+        </div>
+
         <!-- ── ALERTS ── -->
         <div class="preview-section">
           <p class="section-label">Alerts</p>
@@ -881,6 +906,9 @@
   </div>
 
   <script src="../../resources/manager/bootstrap/bootstrap.bundle.min.js"></script>
+  <script>
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
+  </script>
 </body>
 
 </html>

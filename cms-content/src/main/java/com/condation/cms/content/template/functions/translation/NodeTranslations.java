@@ -25,7 +25,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.HTTPUtil;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.serivce.ServiceRegistry;
 import com.condation.cms.core.serivce.impl.SiteLinkService;
 import com.condation.cms.core.serivce.impl.SitePropertiesService;
@@ -61,7 +60,7 @@ public class NodeTranslations {
 				locale = ServiceRegistry.getInstance().get(mapping.site(), SitePropertiesService.class).get().siteProperties().locale().getCountry().toLowerCase();
 			} else if (mapping.language().equals(siteProperties.language())) {
 				url = HTTPUtil.prependContext(
-						PathUtil.toURL(node.uri()), 
+						node.url(),
 						siteProperties);
 				locale = siteProperties.locale().getCountry().toLowerCase();
 			}

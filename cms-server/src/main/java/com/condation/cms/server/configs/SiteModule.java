@@ -290,11 +290,7 @@ public class SiteModule extends AbstractModule {
 				throw new RuntimeException(ioe);
 			}
 		}, configuration);
-		if ("MEMORY".equals(site.queryIndexMode())) {
-			db.init(MetaData.Type.MEMORY);
-		} else {
-			db.init(MetaData.Type.PERSISTENT);
-		}
+		db.init();
 		return db;
 	}
 

@@ -61,7 +61,7 @@ public class WorkflowInstanceTest {
 
 	@Test
 	void simple_wf_test () {
-		ContentNode node = new ContentNode("/", "Node", new HashMap<>());
+		ContentNode node = new ContentNode("/", "/", "Node", new HashMap<>());
 		
 		var transitions = wf.getNextTransitions(node);
 		
@@ -84,7 +84,7 @@ public class WorkflowInstanceTest {
 
 	@Test
 	void transit_with_unknown_id_throws() {
-		ContentNode node = new ContentNode("/", "Node", new HashMap<>());
+		ContentNode node = new ContentNode("/", "/", "Node", new HashMap<>());
 
 		Assertions.assertThatThrownBy(() -> wf.transit("nonexistent", node))
 				.isInstanceOf(WFTransitionException.class)
@@ -94,7 +94,7 @@ public class WorkflowInstanceTest {
 	@Test
 	void transit_blocked_by_guard_throws() {
 		// node is in draft — "unpublish" guard requires published status
-		ContentNode node = new ContentNode("/", "Node", new HashMap<>());
+		ContentNode node = new ContentNode("/", "/", "Node", new HashMap<>());
 
 		Assertions.assertThatThrownBy(() -> wf.transit("unpublish", node))
 				.isInstanceOf(WFTransitionException.class)

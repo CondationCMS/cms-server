@@ -1,4 +1,4 @@
-package com.condation.cms.filesystem.metadata.memory;
+package com.condation.cms.filesystem.metadata.persistent;
 
 /*-
  * #%L

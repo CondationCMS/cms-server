@@ -32,9 +32,7 @@ import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.ContentResolvingStrategy;
-import com.google.common.base.Strings;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -63,32 +61,34 @@ public class ContentResolver {
 	}
 	
 	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
-		var contentBase = db.getFileSystem().contentBase();
-		var path = ContentResolvingStrategy.uriToPath(context.get(RequestFeature.class).uri());
-		Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(context.get(RequestFeature.class).uri(), db);
+        final String uri = context.get(RequestFeature.class).uri();
+		var path = ContentResolvingStrategy.uriToPath(uri);
+		/*
+        Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(uri, db);
 		ReadOnlyFile contentFile = contentFileOpt.orElse(null);
+        */
+
+		Optional<ContentNode> contentNodeOpt = db.getContent().byUrl(uri);
+
 		// handle alias
 		ContentNode contentNode = null;
-		boolean aliasRedirect = false;
-		if (contentFile == null || !contentFile.exists()) {
+        Optional<String> aliasRedirectUrl = Optional.empty();
+		if (contentNodeOpt.isEmpty()) {
 			var query = db.getContent().query((node, count) -> node);
 			var result = query.whereContains(Constants.MetaFields.ALIASES, "/" + path).get();
 			if (!result.isEmpty()) {
 				contentNode = result.getFirst();
-				contentFile = contentBase.resolve(contentNode.uri());
-				aliasRedirect = true;
+                aliasRedirectUrl = Optional.of(contentNode.url());
 			}
 		} else {
-			var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-			final Optional<ContentNode> nodeByUri = db.getContent().byUri(uri);
-			if (nodeByUri.isPresent()) {
-				contentNode = nodeByUri.get();
-			}
+			contentNode = contentNodeOpt.get();
 		}
 		
 		if (contentNode == null) {
 			return Optional.empty();
 		}
+
+        var contentFile = db.getFileSystem().contentBase().resolve(contentNode.path());
 		
 		if (checkVisibility && !db.getContent().isVisible(contentNode)) {
 			return Optional.empty();
@@ -104,11 +104,10 @@ public class ContentResolver {
 		
 		if (contentNode.isRedirect()) {
 			return Optional.of(new RedirectContentResponse(contentNode.getRedirectLocation(), contentNode.getRedirectStatus()));
-		} else if (aliasRedirect) {
+		} else if (aliasRedirectUrl.isPresent()) {
 			var doRedirect = contentNode.getMetaValue(Constants.MetaFields.ALIASES_REDIRECT, true);
 			if (doRedirect) {
-				var url = PathUtil.toURL(contentFile, contentBase);
-				url = HTTPUtil.modifyUrl(url, context);
+                var url = HTTPUtil.modifyUrl(aliasRedirectUrl.get(), context);
 				return Optional.of(new RedirectContentResponse(url, 301));
 			}
 		}

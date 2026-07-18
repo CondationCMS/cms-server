@@ -24,7 +24,6 @@ package com.condation.cms.content;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.HTTPUtil;
-import com.condation.cms.api.utils.PathUtil;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +42,7 @@ public class NodeProperties {
 		
 		Map<String, Object> properties = new HashMap<>();
 		
-		var canonicalUrl = PathUtil.toURL(node .uri());
+		var canonicalUrl = node.url();
 		canonicalUrl = HTTPUtil.prependContext(canonicalUrl, siteProperties);
 		
 		properties.put("url", canonicalUrl);

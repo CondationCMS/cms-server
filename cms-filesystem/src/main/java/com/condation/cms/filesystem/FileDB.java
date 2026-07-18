@@ -55,15 +55,12 @@ public class FileDB implements DB {
 	
 	private FileTaxonomies taxonomies;
 	
-	public void init () throws IOException {
-		init(MetaData.Type.PERSISTENT);
-	}
 	
-	public void init (MetaData.Type metaDataType) throws IOException {
+	public void init () throws IOException {
 		fileSystem = new FileSystem(
 				configuration.get(SiteConfiguration.class).siteProperties().id(),
 				hostBaseDirectory, eventBus, contentParser);
-		fileSystem.init(metaDataType);
+		fileSystem.init();
 		readOnlyFileSystem = new WrappedReadOnlyFileSystem(fileSystem);
 		
 		content = new FileContent(fileSystem);

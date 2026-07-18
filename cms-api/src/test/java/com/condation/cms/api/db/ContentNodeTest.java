@@ -35,7 +35,7 @@ public class ContentNodeTest {
 
 	@Test
 	public void test_publish() {
-		var contentNode = new ContentNode("", "", Map.of());
+		var contentNode = new ContentNode("", "", "", Map.of());
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}

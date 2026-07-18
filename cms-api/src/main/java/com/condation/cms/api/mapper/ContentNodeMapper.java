@@ -31,7 +31,6 @@ import com.condation.cms.api.model.ListNode;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.NodeUtil;
-import com.condation.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -67,10 +66,9 @@ public class ContentNodeMapper {
 
 		var name = NodeUtil.getName(node);
 		final ReadOnlyFile contentBase = db.getFileSystem().contentBase();
-		var temp_path = contentBase.resolve(node.uri());
-		var url = PathUtil.toURL(temp_path, contentBase);
+		var temp_path = contentBase.resolve(node.path());
 		
-		url = HTTPUtil.modifyUrl(url, context);
+		var url = HTTPUtil.modifyUrl(node.url(), context);
 		
 		var md = parse(temp_path);
 		var excerpt = NodeUtil.excerpt(node, md.get().content(), excerptLength, context.get(MarkdownRendererFeature.class).markdownRenderer());

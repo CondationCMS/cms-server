@@ -119,4 +119,22 @@ public class PathUtil {
 
 		return relFile;
 	}
+
+	public static String normalizeURL(final String url) {
+		if (url == null || url.isBlank()) {
+			return "/";
+		}
+
+		var normalized = url.trim().replace('\\', '/');
+		if (!normalized.startsWith("/")) {
+			normalized = "/" + normalized;
+		}
+		while (normalized.contains("//")) {
+			normalized = normalized.replace("//", "/");
+		}
+		while (normalized.length() > 1 && normalized.endsWith("/")) {
+			normalized = normalized.substring(0, normalized.length() - 1);
+		}
+		return normalized;
+	}
 }

@@ -24,15 +24,12 @@ import com.condation.cms.api.content.ContentResponse;
 import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.ContentParserFeature;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.content.views.ViewParser;
 import com.condation.cms.extensions.request.RequestExtensions;
-import com.google.common.base.Strings;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -54,43 +51,22 @@ public class ViewResolver {
 	}
 
 	public Optional<ContentResponse> getViewContent(final RequestContext context, final boolean checkVisibility) {
-		String path;
-		if (Strings.isNullOrEmpty(context.get(RequestFeature.class).uri())) {
-			path = "";
-		} else if (context.get(RequestFeature.class).uri().startsWith("/")) {
-			// remove leading slash
-			path = context.get(RequestFeature.class).uri().substring(1);
-		} else {
-			path = context.get(RequestFeature.class).uri();
-		}
-
-		var contentBase = db.getFileSystem().contentBase();
-		var contentPath = contentBase.resolve(path);
-		ReadOnlyFile contentFile = null;
-		if (contentPath.exists() && contentPath.isDirectory()) {
-			// use index.md
-			var tempFile = contentPath.resolve("index.md");
-			if (tempFile.exists()) {
-				contentFile = tempFile;
-			} else {
-				return Optional.empty();
-			}
-		} else {
-			var temp = contentBase.resolve(path + ".md");
-			if (temp.exists()) {
-				contentFile = temp;
-			} else {
-				return Optional.empty();
-			}
-		}
-
-		var uri = PathUtil.toRelativeFile(contentFile, contentBase);
-		if (checkVisibility && !db.getContent().isVisible(uri)) {
+		var requestUrl = context.get(RequestFeature.class).uri();
+		var contentNodeOpt = db.getContent().byUrl(requestUrl);
+		if (contentNodeOpt.isEmpty()) {
 			return Optional.empty();
 		}
 
-		final ContentNode contentNode = db.getContent().byUri(uri).get();
+		final ContentNode contentNode = contentNodeOpt.get();
+		if (checkVisibility && !db.getContent().isVisible(contentNode)) {
+			return Optional.empty();
+		}
 		if (!contentNode.isView()) {
+			return Optional.empty();
+		}
+
+		var contentFile = db.getFileSystem().contentBase().resolve(contentNode.path());
+		if (!contentFile.exists()) {
 			return Optional.empty();
 		}
 		context.add(CurrentNodeFeature.class, new CurrentNodeFeature(contentNode));

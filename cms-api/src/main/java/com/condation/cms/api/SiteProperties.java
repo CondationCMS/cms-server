@@ -47,6 +47,7 @@ public interface SiteProperties {
 	
 	public String theme ();
 
+    @Deprecated(since = "8.3.0")
 	public String queryIndexMode ();
 	
 	public Locale locale ();

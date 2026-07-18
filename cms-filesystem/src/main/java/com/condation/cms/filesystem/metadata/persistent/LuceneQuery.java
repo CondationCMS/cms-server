@@ -26,7 +26,6 @@ import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.filesystem.metadata.PageMetaData;
-import com.condation.cms.filesystem.metadata.memory.QueryUtil;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
 import com.condation.cms.filesystem.metadata.query.Queries;

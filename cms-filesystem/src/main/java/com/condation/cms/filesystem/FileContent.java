@@ -79,6 +79,16 @@ public class FileContent implements Content {
 		return fileSystem.getMetaData().byUri(uri);
 	}
 
+    @Override
+	public Optional<ContentNode> byPath(String path) {
+		return fileSystem.getMetaData().byPath(path);
+	}
+
+	@Override
+	public Optional<ContentNode> byUrl(String url) {
+		return fileSystem.getMetaData().byUrl(url);
+	}
+
 	@Override
 	public <T> ContentQuery<T> query(BiFunction<ContentNode, Integer, T> nodeMapper) {
 		return fileSystem.query(nodeMapper);

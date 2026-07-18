@@ -41,7 +41,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_default_name() {
-		ContentNode node = new ContentNode("/", "index", Map.of());
+		ContentNode node = new ContentNode("/", "/", "index", Map.of());
 
 		var name = NodeUtil.getName(node);
 
@@ -50,7 +50,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_title() {
-		ContentNode node = new ContentNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "/", "index", Map.of(
 				"title", "The Title"
 		));
 
@@ -61,7 +61,7 @@ public class NodeUtilNGTest {
 
 	@Test
 	public void getName_returns_title_if_emtpy_menu() {
-		ContentNode node = new ContentNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "/", "index", Map.of(
 				"title", "The Title",
 				"menu", Map.of(
 				)
@@ -74,7 +74,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getName_returns_menu_title() {
-		ContentNode node = new ContentNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "/", "index", Map.of(
 				"title", "The Title",
 				"menu", Map.of(
 						"title", "Menu title"
@@ -88,7 +88,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getMenuPosition() {
-		ContentNode node = new ContentNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "/", "index", Map.of(
 				"menu", Map.of(
 						"position", 1.5
 				)
@@ -99,7 +99,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getDefaultMenuPosition() {
-		ContentNode node = new ContentNode("/", "index", Map.of(
+		ContentNode node = new ContentNode("/", "/", "index", Map.of(
 				"menu", Map.of()
 		));
 		var position = NodeUtil.getMenuPosition(node);
@@ -108,7 +108,7 @@ public class NodeUtilNGTest {
 	
 	@Test
 	public void getDefaultMenuPositionNoMenuMap() {
-		ContentNode node = new ContentNode("/", "index", Map.of());
+		ContentNode node = new ContentNode("/", "/", "index", Map.of());
 		var position = NodeUtil.getMenuPosition(node);
 		Assertions.assertThat(position).isEqualTo(Constants.DEFAULT_MENU_POSITION);
 	}

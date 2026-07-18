@@ -42,7 +42,7 @@ public class DefaultWFStatusProviderTest {
 	public void test_publish_date_1_11_2023() {
 		var cal = Calendar.getInstance();
 		cal.set(2023, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
+		var contentNode = new ContentNode("", "", "", Map.of(
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
@@ -53,7 +53,7 @@ public class DefaultWFStatusProviderTest {
 	public void test_publish_date_1_11_2123() {
 		var cal = Calendar.getInstance();
 		cal.set(2123, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
+		var contentNode = new ContentNode("", "", "", Map.of(
 				Constants.MetaFields.PUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
@@ -64,7 +64,7 @@ public class DefaultWFStatusProviderTest {
 	public void test_unpublish_date_1_11_2023() {
 		var cal = Calendar.getInstance();
 		cal.set(2023, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
+		var contentNode = new ContentNode("", "", "", Map.of(
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
@@ -75,7 +75,7 @@ public class DefaultWFStatusProviderTest {
 	public void test_unpublish_date_1_11_2123() {
 		var cal = Calendar.getInstance();
 		cal.set(2123, 11, 1);
-		var contentNode = new ContentNode("", "", Map.of(
+		var contentNode = new ContentNode("", "", "", Map.of(
 				Constants.MetaFields.UNPUBLISH_DATE, cal.getTime(),
 				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));

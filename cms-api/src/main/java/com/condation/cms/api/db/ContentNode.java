@@ -26,6 +26,7 @@ import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.MapUtil;
+import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
 import com.google.common.math.DoubleMath;
 import java.io.Serializable;
@@ -38,23 +39,27 @@ import java.util.Optional;
  *
  * @author t.marx
  */
-public record ContentNode(String uri, String name, Map<String, Object> data,
+public record ContentNode(String uri, String url, String name, Map<String, Object> data,
         boolean directory, Map<String, ContentNode> children, LocalDate lastmodified) implements Serializable {
 
-    public ContentNode(String uri, String name, Map<String, Object> data, boolean directory, Map<String, ContentNode> children) {
-        this(uri, name, data, directory, children, LocalDate.now());
+    public ContentNode(String uri, String url, String name, Map<String, Object> data, boolean directory, Map<String, ContentNode> children) {
+        this(uri, url, name, data, directory, children, LocalDate.now());
     }
 
-    public ContentNode(String uri, String name, Map<String, Object> data, boolean directory) {
-        this(uri, name, data, directory, new HashMap<>(), LocalDate.now());
+    public ContentNode(String uri, String url, String name, Map<String, Object> data, boolean directory) {
+        this(uri, url, name, data, directory, new HashMap<>(), LocalDate.now());
     }
 
-    public ContentNode(String uri, String name, Map<String, Object> data) {
-        this(uri, name, data, false, new HashMap<>(), LocalDate.now());
+    public ContentNode(String uri, String url, String name, Map<String, Object> data) {
+        this(uri, url, name, data, false, new HashMap<>(), LocalDate.now());
     }
 
-    public ContentNode(String uri, String name, Map<String, Object> data, LocalDate lastmodified) {
-        this(uri, name, data, false, new HashMap<>(), lastmodified);
+    public ContentNode(String uri, String url, String name, Map<String, Object> data, LocalDate lastmodified) {
+        this(uri, url, name, data, false, new HashMap<>(), lastmodified);
+    }
+
+    public String path () {
+        return uri;
     }
 
     public String nodeType() {

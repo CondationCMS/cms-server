@@ -34,6 +34,7 @@ import com.condation.cms.api.model.NavNode;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.NodeUtil;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.content.template.functions.AbstractCurrentNodeFunction;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,13 +84,13 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 		var node = currentNode;
 		while (node != null) {
 			var uri = PathUtil.toRelativeFile(node, contentBase);
-			final Optional<ContentNode> contentNode = db.getContent().byUri(uri);
+			final Optional<ContentNode> contentNode = db.getContent().byPath(uri);
 			if (contentNode.isPresent()) {
 				var metaNode = contentNode.get();
 				var nodeName = NodeUtil.getName(metaNode);
 
 				var path = contentBase.resolve(metaNode.uri());
-				final NavNode navNode = new NavNode(nodeName, getUrl(path), isCurrentNode(path));
+				final NavNode navNode = new NavNode(nodeName, HTTPUtil.modifyUrl(metaNode.url(), context), isCurrentNode(path));
 				if (!navNodes.contains(navNode)) {
 					navNodes.add(navNode);
 				}
@@ -197,7 +198,7 @@ public class NavigationFunction extends AbstractCurrentNodeFunction {
 			navNodes.forEach((node) -> {
 				var name = NodeUtil.getName(node);
 				var path = contentBase.resolve(node.uri());
-				var node_url = getUrl(path);
+				var node_url = HTTPUtil.modifyUrl(node.url(), context);
 				final NavNode navNode = new NavNode(
 						name,
 						node_url,

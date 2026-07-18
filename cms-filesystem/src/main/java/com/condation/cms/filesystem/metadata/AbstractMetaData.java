@@ -24,9 +24,8 @@ package com.condation.cms.filesystem.metadata;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.feature.features.IsPreviewFeature;
-import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.filesystem.MetaData;
+import com.condation.cms.api.utils.PathUtil;
 import com.google.common.base.Strings;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,6 +45,8 @@ public abstract class AbstractMetaData implements MetaData {
 	
 	protected ConcurrentMap<String, ContentNode> nodes;
 
+	protected ConcurrentMap<String, String> urlToUri;
+
 	protected ConcurrentMap<String, ContentNode> tree;
 	
 	@Override
@@ -53,6 +54,7 @@ public abstract class AbstractMetaData implements MetaData {
 		if (nodes != null) {
 			nodes.clear();
 			tree.clear();
+            urlToUri.clear();
 		}
 	}
 	
@@ -74,11 +76,24 @@ public abstract class AbstractMetaData implements MetaData {
 	
 	@Override
 	public Optional<ContentNode> byUri(String uri) {
-		if (!nodes.containsKey(uri)) {
+		return Optional.ofNullable(nodes.get(uri));
+	}
+
+	@Override
+	public Optional<ContentNode> byPath(String path) {
+		return Optional.ofNullable(nodes.get(path));
+	}
+
+	@Override
+	public Optional<ContentNode> byUrl(String url) {
+
+		if (url == null) {
 			return Optional.empty();
 		}
-		return Optional.of(nodes.get(uri));
-	}
+		var uri = urlToUri.get(PathUtil.normalizeURL(url));
+		return Optional.ofNullable(uri).flatMap(this::byPath);
+
+    }
 	
 	@Override
 	public Optional<ContentNode> findFolder(String uri) {
@@ -108,7 +123,7 @@ public abstract class AbstractMetaData implements MetaData {
 			return;
 		}
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		ContentNode n = new ContentNode(uri, parts[parts.length - 1], Map.of(), true);
+		ContentNode n = new ContentNode(uri, uri, parts[parts.length - 1], Map.of(), true);
 
 		Optional<ContentNode> parentFolder;
 		if (parts.length == 1) {

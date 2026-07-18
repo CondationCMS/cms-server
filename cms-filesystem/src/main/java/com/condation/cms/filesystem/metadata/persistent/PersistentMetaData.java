@@ -24,14 +24,13 @@ package com.condation.cms.filesystem.metadata.persistent;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +39,6 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
-import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
-import org.apache.lucene.queryparser.flexible.standard.StandardQueryParser;
 import org.apache.lucene.search.MatchAllDocsQuery;
 import org.h2.mvstore.MVStore;
 
@@ -69,15 +66,17 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		index = new LuceneIndex();
 		index.open(hostPath.resolve("data/metadata/index"));
 
-		
-		
+
+
 		store = MVStore.open(hostPath.resolve("data/metadata/store/data.db").toString());
 
 		nodes = store.openMap("nodes");
 		tree = store.openMap("tree");
+        urlToUri = store.openMap("urlToUri");
 
 		nodes.clear();
 		tree.clear();
+        urlToUri.clear();
 
 		titleQueryFactory = new TitleQueryFactory(LuceneIndex.SEARCH_ANALYZER);
 	}
@@ -112,10 +111,21 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	@Override
 	public void addFile(String uri, Map<String, Object> data, LocalDate lastModified) {
 
-		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
-		final ContentNode node = new ContentNode(uri, parts[parts.length - 1], data, lastModified);
+		var url = PathUtil.toURL(uri);
 
-		nodes.put(uri, node);
+		if (data.get(Constants.MetaFields.URL) instanceof String configuredUrl && !configuredUrl.isBlank()) {
+			url = configuredUrl;
+		}
+		url = PathUtil.normalizeURL(url);
+
+		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
+		final ContentNode node = new ContentNode(uri, url, parts[parts.length - 1], data, lastModified);
+
+		var previousNode = nodes.put(uri, node);
+		if (previousNode != null && !previousNode.url().equals(url)) {
+			urlToUri.remove(previousNode.url(), uri);
+		}
+		urlToUri.put(url, uri);
 
 		var folder = getFolder(uri);
 		if (folder.isPresent()) {
@@ -126,6 +136,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 
 		Document document = new Document();
 		document.add(new StringField("_uri", uri, Field.Store.YES));
+        document.add(new StringField("_url", node.url(), Field.Store.YES));
 		//document.add(new StringField("_source", GSON.toJson(node), Field.Store.NO));
 
 		DocumentHelper.addData(document, data);
@@ -146,7 +157,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	public void clear() {
 		super.clear();
 		try {
-			index.delete(new MatchAllDocsQuery());
+			index.delete(MatchAllDocsQuery.INSTANCE);
 		} catch (IOException ex) {
 			log.error("", ex);
 		}

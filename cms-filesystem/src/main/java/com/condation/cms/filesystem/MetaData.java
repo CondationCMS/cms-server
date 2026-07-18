@@ -38,24 +38,25 @@ import java.util.function.BiFunction;
  */
 public interface MetaData {
 	
-	public enum Type {
-		MEMORY, PERSISTENT
-	}
-	
 	void open () throws IOException;
 	void close () throws IOException;
 
-	void addFile(final String uri, final Map<String, Object> data, final LocalDate lastModified);
+	void addFile(final String path, final Map<String, Object> data, final LocalDate lastModified);
 
+	@Deprecated(since = "8.3.0")
 	Optional<ContentNode> byUri(final String uri);
 
-	void createDirectory(final String uri);
+	Optional<ContentNode> byPath(final String path);
 
-	Optional<ContentNode> findFolder(String uri);
+	Optional<ContentNode> byUrl (final String url);
 
-	List<ContentNode> listChildren(String uri);
+	void createDirectory(final String path);
+
+	Optional<ContentNode> findFolder(String path);
+
+	List<ContentNode> listChildren(String path);
 	
-	TitleQuery searchByTitle(String uri);
+	TitleQuery searchByTitle(String path);
 	
 	void clear ();
 	
@@ -64,5 +65,5 @@ public interface MetaData {
 	Map<String, ContentNode> getTree();
 	
 	<Q> ContentQuery<Q> query(final BiFunction<ContentNode, Integer, Q> nodeMapper);
-	<Q> ContentQuery<Q> query(final String startURI, final BiFunction<ContentNode, Integer, Q> nodeMapper);
+	<Q> ContentQuery<Q> query(final String startPath, final BiFunction<ContentNode, Integer, Q> nodeMapper);
 }

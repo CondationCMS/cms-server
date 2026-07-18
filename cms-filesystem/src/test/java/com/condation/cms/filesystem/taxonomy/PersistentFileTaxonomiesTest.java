@@ -72,7 +72,7 @@ public class PersistentFileTaxonomiesTest {
 				throw new RuntimeException(e);
 			}
 		});
-		fileSystem.init(MetaData.Type.PERSISTENT);
+		fileSystem.init();
 
 		taxonomies = new FileTaxonomies(config, new FileContent(fileSystem));
 	}

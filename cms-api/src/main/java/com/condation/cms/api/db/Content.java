@@ -43,9 +43,14 @@ public interface Content {
 	
 	List<ContentNode> listDirectories(final ReadOnlyFile base, final String start);
 	
+	@Deprecated(since = "8.3.0")
 	Optional<ContentNode> byUri (final String uri);
-	
-	Optional<Map<String,Object>> getMeta(final String uri);
+
+	Optional<ContentNode> byPath (final String path);
+
+	Optional<ContentNode> byUrl (final String url);
+
+	Optional<Map<String,Object>> getMeta(final String path);
 	
 	public <T> ContentQuery<T> query(final BiFunction<ContentNode, Integer, T> nodeMapper);
 

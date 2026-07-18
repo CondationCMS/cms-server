@@ -61,5 +61,12 @@ public class PathUtilTest {
 		toURI = PathUtil.toURL(contentBase.resolve(""), contentBase);
 		assertThat(toURI).isEqualTo("/");
 	}
+
+	@Test
+	public void test_normalize_url() {
+		assertThat(PathUtil.normalizeURL(null)).isEqualTo("/");
+		assertThat(PathUtil.normalizeURL("shop//item/")).isEqualTo("/shop/item");
+		assertThat(PathUtil.normalizeURL("/shop/item")).isEqualTo("/shop/item");
+	}
 	
 }

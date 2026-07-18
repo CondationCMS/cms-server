@@ -172,7 +172,7 @@ public class RemotePageEnpointsTest {
 
         Map<String, Object> meta = new HashMap<>();
         meta.put(Constants.MetaFields.TITLE, "Superman Returns");
-        ContentNode node = new ContentNode("test/test1.md", "test1.md", meta);
+        ContentNode node = new ContentNode("test/test1.md", "/test/test1", "test1.md", meta);
 
         when(content.searchByTitle("superman")).thenReturn(List.of(node));
         when(contentBase.resolve("test/test1.md")).thenReturn(contentFile);
@@ -204,7 +204,7 @@ public class RemotePageEnpointsTest {
         when(db.getContent()).thenReturn(content);
         when(moduleContext.get(SitePropertiesFeature.class)).thenReturn(new SitePropertiesFeature(siteProperties));
 
-        ContentNode node = new ContentNode("test/test2.md", "test2.md", new HashMap<>());
+        ContentNode node = new ContentNode("test/test2.md", "/test/test2", "test2.md", new HashMap<>());
 
         when(content.searchByTitle("")).thenReturn(List.of(node));
         when(contentBase.resolve("test/test2.md")).thenReturn(contentFile);

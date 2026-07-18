@@ -37,7 +37,6 @@ import com.condation.cms.api.exceptions.AccessNotAllowedException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.utils.MdcScope;
 import com.condation.cms.filesystem.metadata.PageMetaData;
-import com.condation.cms.filesystem.metadata.memory.MemoryMetaData;
 import com.condation.cms.filesystem.metadata.persistent.PersistentMetaData;
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -93,7 +92,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	protected boolean isVisible(final String uri) {
-		var node = metaData.byUri(uri);
+		var node = metaData.byPath(uri);
 		if (node.isEmpty()) {
 			return false;
 		}
@@ -103,7 +102,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 	@Override
 	public Optional<Map<String, Object>> getMeta(final String uri) {
-		var node = metaData.byUri(uri);
+		var node = metaData.byPath(uri);
 		if (node.isEmpty()) {
 			return Optional.empty();
 		}
@@ -290,18 +289,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		}
 	}
 
-	public void init() throws IOException {
-		init(MetaData.Type.PERSISTENT);
-	}
 
-	public void init(MetaData.Type metaDataType) throws IOException {
+	public void init() throws IOException {
 		log.debug("init filesystem");
 
-		if (MetaData.Type.MEMORY.equals(metaDataType)) {
-			this.metaData = new MemoryMetaData();
-		} else {
-			this.metaData = new PersistentMetaData(this.hostBaseDirectory);
-		}
+		this.metaData = new PersistentMetaData(this.hostBaseDirectory);
+
 		this.metaData.open();
 
 		this.contentBase = resolve("content/");

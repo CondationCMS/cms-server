@@ -70,6 +70,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 		return Optional.of(
 				new ContentNode(
 						node.get().uri(),
+                        node.get().url(),
 						node.get().name(),
 						node.get().data(),
 						node.get().directory(),

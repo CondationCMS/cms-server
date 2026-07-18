@@ -24,6 +24,7 @@ package com.condation.cms.filesystem.metadata.persistent;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
@@ -31,6 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 
 	private LuceneIndex index;
 	private MVStore store;
+	private SectionIndex sectionIndex;
 	
 	private TitleQueryFactory titleQueryFactory;
 
@@ -73,10 +76,12 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		nodes = store.openMap("nodes");
 		tree = store.openMap("tree");
         urlToUri = store.openMap("urlToUri");
+		sectionIndex = new SectionIndex(store);
 
 		nodes.clear();
 		tree.clear();
         urlToUri.clear();
+		sectionIndex.clear();
 
 		titleQueryFactory = new TitleQueryFactory(LuceneIndex.SEARCH_ANALYZER);
 	}
@@ -126,6 +131,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 			urlToUri.remove(previousNode.url(), uri);
 		}
 		urlToUri.put(url, uri);
+		sectionIndex.add(uri);
 
 		var folder = getFolder(uri);
 		if (folder.isPresent()) {
@@ -154,8 +160,19 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	}
 
 	@Override
+	public List<ContentNode> listSectionEntries(String pagePath) {
+		return sectionIndex.findByPagePath(pagePath).stream()
+				.map(nodes::get)
+				.filter(node -> node != null)
+				.filter(node -> !node.isHidden())
+				.filter(NodeVisibility::isVisible)
+				.toList();
+	}
+
+	@Override
 	public void clear() {
 		super.clear();
+		sectionIndex.clear();
 		try {
 			index.delete(MatchAllDocsQuery.INSTANCE);
 		} catch (IOException ex) {

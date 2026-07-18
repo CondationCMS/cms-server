@@ -295,4 +295,14 @@ public class PresistentFileSystemTest {
 		Assertions.assertThat(node).isPresent();
         Assertions.assertThat(node.get().uri()).isEqualTo("test/test1.md");
 	}
+
+	@Test
+	public void test_listSectionEntriesUsesPagePath() {
+		var page = fileSystem.contentBase().resolve("index.md");
+
+		Assertions.assertThat(content.listSectionEntries(page))
+				.singleElement()
+				.extracting(node -> node.path())
+				.isEqualTo("index.slot.item.md");
+	}
 }

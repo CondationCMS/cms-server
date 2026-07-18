@@ -25,7 +25,6 @@ import com.condation.cms.api.ModuleFileSystem;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.DBFileSystem;
-import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ContentChangedEvent;
@@ -54,7 +53,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -217,49 +215,11 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	public List<ContentNode> listSectionEntries(final Path contentFile) {
-		String folder = PathUtil.toRelativePath(contentFile, contentBase);
-		String filename = contentFile.getFileName().toString();
-		filename = filename.substring(0, filename.length() - 3);
-
-		return FileSystem.this.listSectionEntries(filename, folder);
+		return listSectionEntries(PathUtil.toRelativeFile(contentFile, contentBase));
 	}
 
-	public List<ContentNode> listSectionEntries(final String filename, String folder) {
-		List<ContentNode> nodes = new ArrayList<>();
-
-		final Pattern isSectionEntryOf = Constants.SECTION_ENTRY_OF_PATTERN.apply(filename);
-		final Pattern isNamedSectionEntryOf = Constants.SECTION_ENTRY_NAMED_OF_PATTERN.apply(filename);
-
-		if ("".equals(folder)) {
-			metaData.getTree().values()
-					.stream()
-					.filter(node -> !node.isHidden())
-					.filter(NodeVisibility::isVisible)
-					.filter(node -> node.isSectionEntry())
-					.filter(node -> {
-						return isSectionEntryOf.matcher(node.name()).matches() || isNamedSectionEntryOf.matcher(node.name()).matches();
-					})
-					.forEach((node) -> {
-						nodes.add(node);
-					});
-		} else {
-			Optional<ContentNode> findFolder = metaData.findFolder(folder);
-			if (findFolder.isPresent()) {
-				findFolder.get().children().values()
-						.stream()
-						.filter(node -> !node.isHidden())
-						.filter(NodeVisibility::isVisible)
-						.filter(node -> node.isSectionEntry())
-						.filter(node
-								-> isSectionEntryOf.matcher(node.name()).matches() || isNamedSectionEntryOf.matcher(node.name()).matches()
-						)
-						.forEach((node) -> {
-							nodes.add(node);
-						});
-			}
-		}
-
-		return nodes;
+	public List<ContentNode> listSectionEntries(final String pagePath) {
+		return metaData.listSectionEntries(pagePath);
 	}
 
 	private void addOrUpdateMetaData(Path file) {

@@ -53,11 +53,8 @@ public class FileContent implements Content {
 	
 	@Override
 	public List<ContentNode> listSectionEntries(ReadOnlyFile contentFile) {
-		String folder = PathUtil.toRelativePath(contentFile, fileSystem.contentBase());
-		String filename = contentFile.getFileName();
-		filename = filename.substring(0, filename.length() - 3);
-		
-		return fileSystem.listSectionEntries(filename, folder);
+		var pagePath = PathUtil.toRelativeFile(contentFile, fileSystem.contentBase());
+		return fileSystem.listSectionEntries(pagePath);
 	}
 
 	@Override

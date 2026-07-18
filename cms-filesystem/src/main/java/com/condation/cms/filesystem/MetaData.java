@@ -55,6 +55,8 @@ public interface MetaData {
 	Optional<ContentNode> findFolder(String path);
 
 	List<ContentNode> listChildren(String path);
+
+	List<ContentNode> listSectionEntries(String pagePath);
 	
 	TitleQuery searchByTitle(String path);
 	

@@ -44,6 +44,11 @@ final class SectionIndex {
 				entries.put(keyPrefix(pagePath) + sectionPath, sectionPath));
 	}
 
+	void remove(String sectionPath) {
+		ownerPath(sectionPath).ifPresent(pagePath ->
+				entries.remove(keyPrefix(pagePath) + sectionPath));
+	}
+
 	List<String> findByPagePath(String pagePath) {
 		var prefix = keyPrefix(pagePath);
 		var cursor = entries.cursor(prefix);

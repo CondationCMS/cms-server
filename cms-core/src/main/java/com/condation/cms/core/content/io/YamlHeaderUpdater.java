@@ -28,8 +28,10 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 
 public class YamlHeaderUpdater {
@@ -94,8 +96,7 @@ public class YamlHeaderUpdater {
         builder.append("---\n\n");
         builder.append(content.trim()).append("\n");
 
-        // Write to file
-        Files.write(filePath, builder.toString().getBytes(StandardCharsets.UTF_8));
+		writeAtomically(filePath, builder.toString());
     }
 	
 	public static void saveMetaData(Path filePath, Map<String, Object> metadata) throws IOException {
@@ -113,6 +114,24 @@ public class YamlHeaderUpdater {
         builder.append(yamlContent);
 
         // Write to file
-        Files.write(filePath, builder.toString().getBytes(StandardCharsets.UTF_8));
+		writeAtomically(filePath, builder.toString());
     }
+
+	private static void writeAtomically(Path filePath, String content) throws IOException {
+		var absolutePath = filePath.toAbsolutePath();
+		var parent = absolutePath.getParent();
+		var temporaryFile = Files.createTempFile(
+				parent, "." + absolutePath.getFileName() + ".cms-write-", ".tmp");
+		try {
+			Files.writeString(temporaryFile, content, StandardCharsets.UTF_8);
+			try {
+				Files.move(temporaryFile, absolutePath,
+						StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+			} catch (AtomicMoveNotSupportedException ex) {
+				Files.move(temporaryFile, absolutePath, StandardCopyOption.REPLACE_EXISTING);
+			}
+		} finally {
+			Files.deleteIfExists(temporaryFile);
+		}
+	}
 }

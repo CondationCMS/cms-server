@@ -52,7 +52,7 @@ public class PathUtil {
 		if (!Files.isDirectory(contentPath)) {
 			tempPath = contentPath.getParent();
 		}
-		Path relativize = contentBase.relativize(tempPath);
+		Path relativize = normalizedAbsolute(contentBase).relativize(normalizedAbsolute(tempPath));
 		var uri = relativize.toString();
 		uri = uri.replaceAll("\\\\", "/");
 		return uri;
@@ -70,13 +70,28 @@ public class PathUtil {
 	}
 
 	public static String toRelativeFile(final Path contentFile, final Path contentBase) {
-		Path relativize = contentBase.relativize(contentFile);
+		Path relativize = normalizedAbsolute(contentBase).relativize(normalizedAbsolute(contentFile));
 		if (Files.isDirectory(contentFile)) {
 			relativize = relativize.resolve("index.md");
 		}
 		var uri = relativize.toString();
 		uri = uri.replaceAll("\\\\", "/");
 		return uri;
+	}
+
+	/**
+	 * Relativizes a file system entry without accessing the entry itself. This
+	 * is required for delete events, where the path no longer exists.
+	 */
+	public static String toRelativeEntry(final Path entry, final Path contentBase) {
+		return normalizedAbsolute(contentBase)
+				.relativize(normalizedAbsolute(entry))
+				.toString()
+				.replace('\\', '/');
+	}
+
+	private static Path normalizedAbsolute(Path path) {
+		return path.toAbsolutePath().normalize();
 	}
 
 	public static String toRelativeFile(ReadOnlyFile contentFile, final ReadOnlyFile contentBase) {

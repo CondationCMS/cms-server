@@ -43,6 +43,12 @@ public interface MetaData {
 
 	void addFile(final String path, final Map<String, Object> data, final LocalDate lastModified);
 
+	void removeFile(final String path);
+
+	void removeDirectory(final String path);
+
+	void removePath(final String path);
+
 	@Deprecated(since = "8.3.0")
 	Optional<ContentNode> byUri(final String uri);
 

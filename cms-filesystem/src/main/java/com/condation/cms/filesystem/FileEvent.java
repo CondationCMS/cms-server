@@ -33,6 +33,7 @@ public record FileEvent(File file, Type type) {
 	public enum Type {
 		CREATED,
 		MODIFIED,
-		DELETED
+		DELETED,
+		OVERFLOW
 	}
 }

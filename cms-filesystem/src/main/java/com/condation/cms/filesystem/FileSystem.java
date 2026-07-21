@@ -46,11 +46,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
+import java.time.Duration;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.Getter;
@@ -65,12 +69,15 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
+	private static final Duration CONTENT_CHANGE_QUIET_PERIOD = Duration.ofMillis(200);
+
 	private final String siteId;
 	private final Path hostBaseDirectory;
 	private final EventBus eventBus;
 	final Function<Path, Map<String, Object>> contentParser;
 
 	private MultiRootRecursiveWatcher fileWatcher;
+	private ContentChangeCoordinator contentChangeCoordinator;
 	private Path contentBase;
 
 	@Getter
@@ -111,6 +118,9 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void shutdown() {
 		if (fileWatcher != null) {
 			fileWatcher.stop();
+		}
+		if (contentChangeCoordinator != null) {
+			contentChangeCoordinator.close();
 		}
 		if (metaData != null) {
 			try {
@@ -223,10 +233,6 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	}
 
 	private void addOrUpdateMetaData(Path file) {
-		addOrUpdateMetaData(file, false);
-	}
-
-	private void addOrUpdateMetaData(Path file, boolean batch) {
 		try {
 			if (!Files.exists(file)) {
 				return;
@@ -238,8 +244,6 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 			Map<String, Object> fileMeta = contentParser.apply(file);
 
 			var uri = PathUtil.toRelativeFile(file, contentBase);
-            
-            eventBus.publish(new InvalidateContentCacheEvent());
 
 			var lastModified = LocalDate.ofInstant(Files.getLastModifiedTime(file).toInstant(), ZoneId.systemDefault());
 
@@ -258,23 +262,15 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		this.metaData.open();
 
 		this.contentBase = resolve("content/");
+		this.contentChangeCoordinator = new ContentChangeCoordinator(
+				CONTENT_CHANGE_QUIET_PERIOD, this::processContentChanges);
 		var templateBase = resolve("templates/");
 		log.debug("init filewatcher");
 		this.fileWatcher = new MultiRootRecursiveWatcher(siteId, List.of(contentBase, templateBase));
 		fileWatcher.getPublisher(contentBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
 			@Override
 			public void onNext(FileEvent item) {
-				MdcScope.forSite(siteId).run(() -> {
-					try {
-						if (item.file().isDirectory() || FileEvent.Type.DELETED.equals(item.type())) {
-							swapMetaData();
-						} else {
-							addOrUpdateMetaData(item.file().toPath());
-						}
-					} catch (IOException ex) {
-						log.error("", ex);
-					}
-				});
+				handleContentEvent(item);
 
 				this.subscription.request(1);
 			}
@@ -300,17 +296,74 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		fileWatcher.start();
 
 		eventBus.register(ReIndexContentMetaDataEvent.class, (event) -> {
-			try {
-				if (event.uri() == null) {
-					swapMetaData();
-				} else {
-					var contentFile = contentBase.resolve(event.uri());
-					addOrUpdateMetaData(contentFile);
-				}
-			} catch (IOException ex) {
-				log.error("error while reindex meta data", ex);
+			if (event.uri() == null) {
+				contentChangeCoordinator.requestFullResync();
+			} else {
+				contentChangeCoordinator.submit(contentBase.resolve(event.uri()));
 			}
 		});
+	}
+
+	void handleContentEvent(FileEvent event) {
+		if (event.type() == FileEvent.Type.OVERFLOW) {
+			contentChangeCoordinator.requestFullResync();
+		} else {
+			contentChangeCoordinator.submit(event.file().toPath());
+		}
+	}
+
+	void flushContentChanges() {
+		contentChangeCoordinator.flushNow();
+	}
+
+	private void processContentChanges(boolean fullResync, Set<Path> paths) {
+		MdcScope.forSite(siteId).run(() -> {
+			try {
+				if (fullResync) {
+					swapMetaData();
+					return;
+				}
+
+				var changedPaths = new LinkedHashSet<Path>();
+				for (var path : paths) {
+					if (processContentPath(path)) {
+						changedPaths.add(path);
+					}
+				}
+				publishContentChanges(changedPaths);
+			} catch (IOException ex) {
+				log.error("error while processing content changes", ex);
+			}
+		});
+	}
+
+	private boolean processContentPath(Path path) throws IOException {
+		if (Files.exists(path)) {
+			if (Files.isDirectory(path)) {
+				reInitFolder(path);
+				return true;
+			}
+			if (PathUtil.isContentFile(path)) {
+				addOrUpdateMetaData(path);
+				return true;
+			}
+			return false;
+		}
+
+		var relativePath = PathUtil.toRelativeEntry(path, contentBase);
+		if (metaData.byPath(relativePath).isEmpty() && metaData.findFolder(relativePath).isEmpty()) {
+			return false;
+		}
+		metaData.removePath(relativePath);
+		return true;
+	}
+
+	private void publishContentChanges(Collection<Path> paths) {
+		if (paths.isEmpty()) {
+			return;
+		}
+		paths.forEach(path -> eventBus.publish(new ContentChangedEvent(path)));
+		eventBus.publish(new InvalidateContentCacheEvent());
 	}
 
 	private void swapMetaData() throws IOException {

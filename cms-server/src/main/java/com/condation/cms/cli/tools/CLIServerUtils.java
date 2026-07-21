@@ -24,7 +24,11 @@ import com.condation.cms.Startup;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.ServerUtil;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneOffset;
@@ -39,15 +43,41 @@ import org.semver4j.Semver;
  */
 public class CLIServerUtils {
 
+	private static final String PID_PROPERTY = "pid";
+	private static final String STARTED_AT_PROPERTY = "startedAt";
 	private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneOffset.UTC);
 
-	public static Optional<ProcessHandle> getCMSProcess() throws Exception {
+	public static Optional<ProcessHandle> getCMSProcess() throws IOException {
 		var pidFile = ServerUtil.getPath(Constants.PID_FILE);
 		if (!Files.exists(pidFile)) {
 			return Optional.empty();
 		}
-		var pid = Files.readString(pidFile);
-		return ProcessHandle.of(Long.parseLong(pid.trim()));
+
+		var properties = new Properties();
+		try (var reader = Files.newBufferedReader(pidFile, StandardCharsets.UTF_8)) {
+			properties.load(reader);
+		}
+
+		final long pid;
+		final long expectedStart;
+		try {
+			pid = Long.parseLong(properties.getProperty(PID_PROPERTY));
+			expectedStart = Long.parseLong(properties.getProperty(STARTED_AT_PROPERTY));
+		} catch (NumberFormatException | NullPointerException ex) {
+			return removeStalePidFile(pidFile);
+		}
+
+		var process = ProcessHandle.of(pid);
+		if (process.isEmpty() || !process.get().isAlive()) {
+			return removeStalePidFile(pidFile);
+		}
+
+		var actualStart = process.get().info().startInstant().map(Instant::toEpochMilli);
+		if (actualStart.isEmpty() || actualStart.get() != expectedStart) {
+			return removeStalePidFile(pidFile);
+		}
+
+		return process;
 	}
 
 	private static Optional<Instant> getStartTime() {
@@ -87,8 +117,27 @@ public class CLIServerUtils {
 	}
 
 	public static void writePidFile() throws IOException {
-		Files.deleteIfExists(ServerUtil.getPath(Constants.PID_FILE));
-		Files.writeString(ServerUtil.getPath(Constants.PID_FILE), String.valueOf(ProcessHandle.current().pid()));
+		var process = ProcessHandle.current();
+		var startedAt = process.info().startInstant()
+				.orElseThrow(() -> new IOException("process start time is not available"));
+
+		var content = PID_PROPERTY + "=" + process.pid() + System.lineSeparator()
+				+ STARTED_AT_PROPERTY + "=" + startedAt.toEpochMilli() + System.lineSeparator();
+		var pidFile = ServerUtil.getPath(Constants.PID_FILE);
+		var temporaryPidFile = pidFile.resolveSibling(pidFile.getFileName() + ".tmp");
+
+		Files.writeString(temporaryPidFile, content, StandardCharsets.UTF_8);
+		try {
+			Files.move(temporaryPidFile, pidFile,
+					StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+		} catch (AtomicMoveNotSupportedException ex) {
+			Files.move(temporaryPidFile, pidFile, StandardCopyOption.REPLACE_EXISTING);
+		}
+	}
+
+	private static Optional<ProcessHandle> removeStalePidFile(Path pidFile) throws IOException {
+		Files.deleteIfExists(pidFile);
+		return Optional.empty();
 	}
 
 	public static Semver getVersion() {

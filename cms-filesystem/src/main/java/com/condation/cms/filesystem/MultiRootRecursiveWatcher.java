@@ -127,19 +127,25 @@ public class MultiRootRecursiveWatcher {
 
 						events.forEach((event) -> {
 							Path path = (Path) watchKey.watchable();
+							if (event.kind() == OVERFLOW) {
+								log.warn("Overflow occurred, requesting metadata resync");
+								roots.values().stream()
+										.filter(root -> PathUtil.isChild(root.path, path))
+										.forEach(root -> root.publisher.submit(new FileEvent(path.toFile(), FileEvent.Type.OVERFLOW)));
+								return;
+							}
 							File file = path.resolve((Path) event.context()).toFile();
 
 							final FileEvent fileEvent;
 							if (event.kind().equals(ENTRY_CREATE)) {
 								fileEvent = new FileEvent(file, FileEvent.Type.CREATED);
+								if (file.isDirectory()) {
+									walkTreeAndSetWatches(file.toPath());
+								}
 							} else if (event.kind().equals(ENTRY_DELETE)) {
 								fileEvent = new FileEvent(file, FileEvent.Type.DELETED);
 							} else if (event.kind().equals(ENTRY_MODIFY)) {
 								fileEvent = new FileEvent(file, FileEvent.Type.MODIFIED);
-							} else if (event.kind() == OVERFLOW) {
-								log.warn("Overflow occurred, resyncing watches");
-								walkTreeAndSetWatches();
-								fileEvent = null;
 							} else {
 								fileEvent = null;
 							}
@@ -199,35 +205,40 @@ public class MultiRootRecursiveWatcher {
 	private synchronized void walkTreeAndSetWatches() {
 		log.debug("Registering new folders at watch service ...");
 
-		roots.values().forEach(root -> {
-			try {
-				Files.walkFileTree(root.path, new FileVisitor<Path>() {
-					@Override
-					public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-						registerWatch(dir);
-						return FileVisitResult.CONTINUE;
-					}
+		roots.values().forEach(root -> walkTreeAndSetWatches(root.path));
 
-					@Override
-					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-						return FileVisitResult.CONTINUE;
-					}
+	}
 
-					@Override
-					public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
-						return FileVisitResult.CONTINUE;
-					}
+	private synchronized void walkTreeAndSetWatches(Path root) {
+		if (!Files.isDirectory(root)) {
+			return;
+		}
+		try {
+			Files.walkFileTree(root, new FileVisitor<Path>() {
+				@Override
+				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+					registerWatch(dir);
+					return FileVisitResult.CONTINUE;
+				}
 
-					@Override
-					public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
-						return FileVisitResult.CONTINUE;
-					}
-				});
-			} catch (IOException e) {
-				log.warn("Failed to walkTreeAndSetWatches {}", root, e);
-			}
-		});
+				@Override
+				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
 
+				@Override
+				public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+
+				@Override
+				public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+					return FileVisitResult.CONTINUE;
+				}
+			});
+		} catch (IOException e) {
+			log.warn("Failed to register folder tree {}", root, e);
+		}
 	}
 
 	private synchronized void unregisterStaleWatches() {

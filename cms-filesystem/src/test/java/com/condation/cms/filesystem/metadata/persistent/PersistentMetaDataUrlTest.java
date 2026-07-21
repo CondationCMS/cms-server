@@ -66,4 +66,20 @@ public class PersistentMetaDataUrlTest {
 			Assertions.assertThat(metadata.byUrl("/duplicate")).get().extracting(node -> node.path()).isEqualTo("second.md");
 		}
 	}
+
+	@Test
+	public void previousDuplicateWinsWhenCurrentWinnerIsDeleted() throws Exception {
+		try (var metadata = new PersistentMetaData(tempDirectory)) {
+			metadata.open();
+			metadata.addFile("first.md", Map.of(Constants.MetaFields.URL, "/duplicate"), LocalDate.now());
+			metadata.addFile("second.md", Map.of(Constants.MetaFields.URL, "/duplicate"), LocalDate.now());
+
+			metadata.removeFile("second.md");
+
+			Assertions.assertThat(metadata.byUrl("/duplicate"))
+					.get()
+					.extracting(node -> node.path())
+					.isEqualTo("first.md");
+		}
+	}
 }

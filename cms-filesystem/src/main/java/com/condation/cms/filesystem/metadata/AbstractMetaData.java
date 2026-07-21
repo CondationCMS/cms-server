@@ -122,6 +122,9 @@ public abstract class AbstractMetaData implements MetaData {
 		if (Strings.isNullOrEmpty(uri)) {
 			return;
 		}
+		if (getFolder(uri).isPresent()) {
+			return;
+		}
 		var parts = uri.split(Constants.SPLIT_PATH_PATTERN);
 		ContentNode n = new ContentNode(uri, uri, parts[parts.length - 1], Map.of(), true);
 
@@ -140,6 +143,18 @@ public abstract class AbstractMetaData implements MetaData {
 		} else {
 			tree.put(n.name(), n);
 		}
+	}
+
+	protected void removeFromTree(String path) {
+		var separatorIndex = path.lastIndexOf('/');
+		var name = path.substring(separatorIndex + 1);
+		if (separatorIndex < 0) {
+			tree.remove(name);
+			return;
+		}
+
+		var parentPath = path.substring(0, separatorIndex);
+		getFolder(parentPath).ifPresent(parent -> parent.children().remove(name));
 	}
 
 	@Override

@@ -67,4 +67,16 @@ public class PersistentMetaDataSectionIndexTest {
 					.isEqualTo("products/article.hero.md");
 		}
 	}
+
+	@Test
+	public void deletedSectionIsRemovedFromIndex() throws Exception {
+		try (var metadata = new PersistentMetaData(tempDirectory)) {
+			metadata.open();
+			metadata.addFile("products/article.hero.md", PUBLISHED, LocalDate.now());
+
+			metadata.removeFile("products/article.hero.md");
+
+			Assertions.assertThat(metadata.listSectionEntries("products/article.md")).isEmpty();
+		}
+	}
 }

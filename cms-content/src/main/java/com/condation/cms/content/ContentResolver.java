@@ -27,7 +27,6 @@ import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.content.RedirectContentResponse;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
-import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
@@ -63,10 +62,6 @@ public class ContentResolver {
 	private Optional<ContentResponse> getContent(final RequestContext context, boolean checkVisibility) {
         final String uri = context.get(RequestFeature.class).uri();
 		var path = ContentResolvingStrategy.uriToPath(uri);
-		/*
-        Optional<ReadOnlyFile> contentFileOpt = ContentResolvingStrategy.resolve(uri, db);
-		ReadOnlyFile contentFile = contentFileOpt.orElse(null);
-        */
 
 		Optional<ContentNode> contentNodeOpt = db.getContent().byUrl(uri);
 
@@ -96,13 +91,6 @@ public class ContentResolver {
 		
 		
 		if (contentNode.isRedirect()) {
-			return Optional.of(new DefaultContentResponse(contentNode));
-		} else if (!Constants.NodeType.PAGE.equals(contentNode.nodeType())) {
-			return Optional.empty();
-		}
-		context.add(CurrentNodeFeature.class, new CurrentNodeFeature(contentNode));
-		
-		if (contentNode.isRedirect()) {
 			return Optional.of(new RedirectContentResponse(contentNode.getRedirectLocation(), contentNode.getRedirectStatus()));
 		} else if (aliasRedirectUrl.isPresent()) {
 			var doRedirect = contentNode.getMetaValue(Constants.MetaFields.ALIASES_REDIRECT, true);
@@ -110,7 +98,10 @@ public class ContentResolver {
                 var url = HTTPUtil.modifyUrl(aliasRedirectUrl.get(), context);
 				return Optional.of(new RedirectContentResponse(url, 301));
 			}
+		} else if (!Constants.NodeType.PAGE.equals(contentNode.nodeType())) {
+			return Optional.empty();
 		}
+		context.add(CurrentNodeFeature.class, new CurrentNodeFeature(contentNode));
 		
 		try {
 			

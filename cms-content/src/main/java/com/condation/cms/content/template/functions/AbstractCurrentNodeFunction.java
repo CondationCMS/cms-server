@@ -28,7 +28,6 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
-import com.condation.cms.api.utils.HTTPUtil;
 import java.io.IOException;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -48,33 +47,6 @@ public abstract class AbstractCurrentNodeFunction {
 	protected final MarkdownRenderer markdownRenderer;
 	protected final ContentNodeMapper contentNodeMapper;
 	protected final RequestContext context;
-
-	protected String getUrl(ReadOnlyFile node) {
-		StringBuilder sb = new StringBuilder();
-
-		while (node != null && !node.equals(db.getFileSystem().contentBase())) {
-
-			var filename = node.getFileName();
-			if (!filename.equals("index.md")) {
-				if (filename.endsWith(".md")) {
-					filename = filename.substring(0, filename.length() - 3);
-				}
-				sb.insert(0, filename);
-				sb.insert(0, "/");
-			}
-			if (node.hasParent()) {
-				node = node.getParent();
-			} else {
-				node = null;
-			}
-		}
-
-		var url = sb.toString();
-
-		url = "".equals(url) ? "/" : url;
-		
-		return HTTPUtil.modifyUrl(url, context);
-	}
 
 	protected boolean isPreview() {
 		if (RequestContextScope.REQUEST_CONTEXT.isBound()

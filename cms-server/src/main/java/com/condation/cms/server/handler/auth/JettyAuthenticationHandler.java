@@ -97,10 +97,16 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 							String username = credentials.substring(0, p).trim();
 							String password = credentials.substring(p + 1).trim();
 
+							if (getUserLoginCounter(username).get() > ATTEMPTS_TO_BLOCK) {
+								response.setStatus(403);
+								callback.succeeded();
+								return true;
+							}
+
 							java.util.Optional<com.condation.cms.auth.services.User> userOpt = userService.login(Realm.of(authPath.getRealm()), username, password);
 
 							if (userOpt.isEmpty()) {
-								unauthorized(request, response, callback, authPath.getRealm());
+								unauthorized(request, response, callback, authPath.getRealm(), username);
 								return true;
 							}
 
@@ -110,11 +116,12 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 								requestContext.add(AuthFeature.class, new AuthFeature(username));
 
 								loginFails.invalidate(RequestUtil.clientAddress(request));
+								loginFails.invalidate(userLoginFailKey(username));
 								return false;
 							}
 
 						} else {
-							unauthorized(request, response, callback, authPath.getRealm());
+							unauthorized(request, response, callback, authPath.getRealm(), null);
 							return true;
 						}
 					} catch (UnsupportedEncodingException e) {
@@ -123,13 +130,16 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 				}
 			}
 		}
-		unauthorized(request, response, callback, authPath.getRealm());
+		unauthorized(request, response, callback, authPath.getRealm(), null);
 		return true;
 	}
 
-	private void unauthorized(Request request, Response response, Callback callback, String realm) throws IOException {
+	private void unauthorized(Request request, Response response, Callback callback, String realm, String username) throws IOException {
 
 		getClientLoginCounter(request).incrementAndGet();
+		if (username != null) {
+			getUserLoginCounter(username).incrementAndGet();
+		}
 
 		response.getHeaders().add("WWW-Authenticate", "Basic realm=\"" + realm + "\"");
 		response.setStatus(401);
@@ -138,6 +148,14 @@ public class JettyAuthenticationHandler extends Handler.Abstract {
 
 	private AtomicInteger getClientLoginCounter(Request request) {
 		return loginFails.get(RequestUtil.clientAddress(request));
+	}
+
+	private AtomicInteger getUserLoginCounter(String username) {
+		return loginFails.get(userLoginFailKey(username));
+	}
+
+	private String userLoginFailKey(String username) {
+		return "user:" + username.toLowerCase();
 	}
 
 }

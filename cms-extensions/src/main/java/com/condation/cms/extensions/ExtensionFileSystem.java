@@ -21,6 +21,7 @@ package com.condation.cms.extensions;
  * #L%
  */
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.PathUtil;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -60,8 +61,12 @@ public class ExtensionFileSystem implements FileSystem {
 		if (path.startsWith("system/") || path.startsWith("system\\")) {
 			return Path.of(path);
 		}
+
 		var resolved = siteExtensionPath.resolve(path);
-		if (!Files.exists(resolved) && !theme.empty()) {
+		if (!PathUtil.isChild(siteExtensionPath, resolved)) {
+			resolved = null;
+		}
+		if ((resolved == null || !Files.exists(resolved)) && !theme.empty()) {
 			resolved = theme.resolveExtension(path);
 		}
 		return resolved;

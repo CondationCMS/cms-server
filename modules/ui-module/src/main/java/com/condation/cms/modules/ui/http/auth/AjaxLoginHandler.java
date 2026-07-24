@@ -107,25 +107,35 @@ public class AjaxLoginHandler extends JettyHandler {
 	private void simpleLogin (Request request, Response response, Callback callback, Command command) throws Exception {
 		var username = (String) command.data().getOrDefault("username", "<empty>");
 		var password = (String) command.data().getOrDefault("password", "<empty>");
-		
+
+		if (getUserLoginCounter(username).get() > ATTEMPTS_TO_BLOCK) {
+			response.setStatus(403);
+			callback.succeeded();
+			return;
+		}
+
 		Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-		
+
 			AuthUtil.updateCookies(user, response, requestContext, moduleContext);
 
+			loginFails.invalidate(RequestUtil.clientAddress(request));
+			loginFails.invalidate(userLoginFailKey(username));
+
 			Content.Sink.write(
-					response, 
-					true, 
-					UIGsonProvider.INSTANCE.toJson(Map.of("status", "ok")), 
+					response,
+					true,
+					UIGsonProvider.INSTANCE.toJson(Map.of("status", "ok")),
 					callback);
-			
+
 		} else {
 			getClientLoginCounter(request).incrementAndGet();
+			getUserLoginCounter(username).incrementAndGet();
 			Content.Sink.write(
-					response, 
-					true, 
-					UIGsonProvider.INSTANCE.toJson(Map.of("status", "error")), 
+					response,
+					true,
+					UIGsonProvider.INSTANCE.toJson(Map.of("status", "error")),
 					callback);
 		}
 	}
@@ -133,6 +143,12 @@ public class AjaxLoginHandler extends JettyHandler {
 	private void handleLogin(Request request, Response response, Callback callback, Command command) throws Exception {
 		var username = (String) command.data().getOrDefault("username", "<empty>");
 		var password = (String) command.data().getOrDefault("password", "<empty>");
+
+		if (getUserLoginCounter(username).get() > ATTEMPTS_TO_BLOCK) {
+			response.setStatus(403);
+			callback.succeeded();
+			return;
+		}
 
 		java.util.Optional<User> userOpt = moduleContext.get(InjectorFeature.class).injector().getInstance(UserService.class).login(Realm.of("manager-users"), username, password);
 		if (userOpt.isPresent()) {
@@ -152,6 +168,7 @@ public class AjaxLoginHandler extends JettyHandler {
 			callback.succeeded();
 		} else {
 			getClientLoginCounter(request).incrementAndGet();
+			getUserLoginCounter(username).incrementAndGet();
 
 			Map<String, Object> responseData = Map.of(
 					"status", "error"
@@ -171,8 +188,11 @@ public class AjaxLoginHandler extends JettyHandler {
 
 		if (userOpt.isPresent()) {
 			com.condation.cms.auth.services.User user = userOpt.get();
-			
+
 			AuthUtil.updateCookies(user, response, requestContext, moduleContext);
+
+			loginFails.invalidate(RequestUtil.clientAddress(request));
+			loginFails.invalidate(userLoginFailKey(user.username()));
 
 			Map<String, Object> responseData = Map.of(
 					"status", "ok"
@@ -220,6 +240,14 @@ public class AjaxLoginHandler extends JettyHandler {
 
 	private AtomicInteger getClientLoginCounter(Request request) {
 		return loginFails.get(RequestUtil.clientAddress(request));
+	}
+
+	private AtomicInteger getUserLoginCounter(String username) {
+		return loginFails.get(userLoginFailKey(username));
+	}
+
+	private String userLoginFailKey(String username) {
+		return "user:" + username.toLowerCase();
 	}
 
 }

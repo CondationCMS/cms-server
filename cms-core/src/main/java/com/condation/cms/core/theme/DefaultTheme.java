@@ -32,6 +32,7 @@ import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.messages.MessageSource;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedThemeProperties;
 import com.condation.cms.core.messages.EmptyMessageSource;
@@ -171,13 +172,17 @@ public class DefaultTheme implements Theme {
 	
 	public Path resolve(String path, Path override, Path parent) {
 		var resolved = override.resolve(path);
-		if (resolved != null) {
+		if (PathUtil.isChild(override, resolved)) {
 			return resolved;
 		}
 		if (parent == null) {
 			return null;
 		}
-		return parent.resolve(path);
+		var parentResolved = parent.resolve(path);
+		if (PathUtil.isChild(parent, parentResolved)) {
+			return parentResolved;
+		}
+		return null;
 	}
 	
 	@Override

@@ -23,11 +23,13 @@ package com.condation.cms.media;
 import com.condation.cms.api.media.Media;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.media.meta.Meta;
+import com.condation.cms.api.utils.PathUtil;
 import com.google.common.base.Strings;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.yaml.snakeyaml.Yaml;
@@ -44,27 +46,31 @@ public class FileMediaService implements MediaService {
 
 	public boolean hasMetaData(final String media) {
 		var metaFile = getMetaFile(media);
-		return Files.exists(metaFile);
+		return metaFile.isPresent() ? Files.exists(metaFile.get()) : false;
 	}
 
-	private Path getMetaFile(final String media) {
+	private Optional<Path> getMetaFile(final String media) {
 		String mediaPath = media;
 		if (mediaPath.startsWith("/")) {
 			mediaPath = mediaPath.substring(1);
 		}
 		var mediaFile = assetBase.resolve(mediaPath);
+
+		if (!PathUtil.isChild(assetBase, mediaFile)) {
+			return Optional.empty();
+		}
 		var metaFileName = mediaFile.getFileName().toString() + ".meta.yaml";
 		var metaFile = mediaFile.getParent().resolve(metaFileName);
 
-		return metaFile;
+		return Optional.of(metaFile);
 	}
 
 	private Meta loadMeta(final String media) {
 
 		var metaFile = getMetaFile(media);
-		if (Files.exists(metaFile)) {
+		if (metaFile.isPresent() && Files.exists(metaFile.get())) {
 			try {
-				var content = Files.readString(metaFile, StandardCharsets.UTF_8);
+				var content = Files.readString(metaFile.get(), StandardCharsets.UTF_8);
 				return new Yaml().loadAs(content, Meta.class);
 			} catch (IOException ex) {
 				log.error(null, ex);
@@ -85,6 +91,9 @@ public class FileMediaService implements MediaService {
 			mediaPath = mediaPath.substring(1);
 		}
 		var mediaFile = assetBase.resolve(mediaPath);
+		if (!PathUtil.isChild(assetBase, mediaFile)) {
+			return new Media(mediaPath, new Meta(), false);
+		}
 		var meta = loadMeta(media);
 
 		var size = ImageSize.getSize(mediaFile);

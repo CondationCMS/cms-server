@@ -158,10 +158,15 @@ public class ExtensionManager {
 				.option("js.ecmascript-version", "2025")
 				.option("js.console", "false")
 				.option("js.allow-eval", "false")
-				//.allowAllAccess(true) // TODO: reduce later
-				.allowHostClassLookup(name -> true)
+				.allowHostClassLookup(ExtensionClassAccess::isAllowed)
 				.allowHostAccess(HostAccess.ALL)
 				.allowValueSharing(true)
+				.allowHostClassLoading(false)
+				.allowCreateProcess(false)
+				.allowCreateThread(false)
+				.allowEnvironmentAccess(EnvironmentAccess.NONE)
+				.allowNativeAccess(false)
+				.allowPolyglotAccess(PolyglotAccess.NONE)
 				.hostClassLoader(libsClassLoader)
 				.allowIO(IOAccess.newBuilder()
 						.fileSystem(new ExtensionFileSystem(

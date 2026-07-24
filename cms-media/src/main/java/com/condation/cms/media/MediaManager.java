@@ -72,7 +72,7 @@ public abstract class MediaManager implements EventListener<ConfigurationReloadE
 	public Optional<Path> resolve(String uri) {
 		for (Path assets : assetBase) {
 			var resolved = assets.resolve(uri);
-			if (Files.exists(resolved)) {
+			if (PathUtil.isChild(assets, resolved) && Files.exists(resolved)) {
 				return Optional.of(resolved);
 			}
 		}

@@ -25,9 +25,9 @@ import com.condation.cms.api.client.ClientContext;
 import com.condation.cms.api.client.ClientType;
 import com.condation.cms.api.client.DeviceClass;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import nl.basjes.parse.useragent.UserAgent;
 import nl.basjes.parse.useragent.UserAgentAnalyzer;
 
@@ -51,7 +51,7 @@ public class ClientContextService {
         var parsedUserAgent = parse(userAgent);
         if (parsedUserAgent == null) {
             return new ClientContext(
-                    getLocale(acceptLanguage, null),
+                    getLanguages(acceptLanguage),
                     DeviceClass.UNKNOWN,
                     ClientType.UNKNOWN,
                     Map.of()
@@ -59,7 +59,7 @@ public class ClientContextService {
         }
 
         return new ClientContext(
-                getLocale(acceptLanguage, parsedUserAgent),
+                getLanguages(acceptLanguage),
                 getDeviceClass(parsedUserAgent),
                 getClientType(parsedUserAgent),
                 getAttributes(parsedUserAgent)
@@ -73,41 +73,16 @@ public class ClientContextService {
         return userAgentAnalyzer.parse(userAgent);
     }
 
-    private Locale getLocale(String acceptLanguage, UserAgent userAgent) {
-        return getLocaleFromAcceptLanguage(acceptLanguage)
-                .orElseGet(() -> getLocaleFromUserAgent(userAgent));
-    }
-
-    private Optional<Locale> getLocaleFromAcceptLanguage(String acceptLanguage) {
+    private List<Locale.LanguageRange> getLanguages(String acceptLanguage) {
         if (acceptLanguage == null || acceptLanguage.isBlank()) {
-            return Optional.empty();
+            return List.of();
         }
 
         try {
-            return Locale.LanguageRange.parse(acceptLanguage).stream()
-                    .filter(range -> range.getWeight() > 0)
-                    .map(Locale.LanguageRange::getRange)
-                    .filter(languageTag -> !"*".equals(languageTag))
-                    .map(Locale::forLanguageTag)
-                    .filter(locale -> !locale.getLanguage().isBlank())
-                    .findFirst();
+            return List.copyOf(Locale.LanguageRange.parse(acceptLanguage));
         } catch (IllegalArgumentException exception) {
-            return Optional.empty();
+            return List.of();
         }
-    }
-
-    private Locale getLocaleFromUserAgent(UserAgent userAgent) {
-        if (userAgent == null) {
-            return Locale.ROOT;
-        }
-
-        var languageCode = userAgent.getValue(UserAgent.AGENT_LANGUAGE_CODE);
-        if (isUnknown(languageCode)) {
-            return Locale.ROOT;
-        }
-
-        var locale = Locale.forLanguageTag(languageCode.replace('_', '-'));
-        return locale.getLanguage().isBlank() ? Locale.ROOT : locale;
     }
 
     private DeviceClass getDeviceClass(UserAgent userAgent) {

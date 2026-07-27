@@ -21,6 +21,7 @@ package com.condation.cms.api.client;
  * #L%
  */
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -29,7 +30,7 @@ import java.util.Map;
  * @author thmar
  */
 public record ClientContext(
-        Locale locale,
+        List<Locale.LanguageRange> languages,
         DeviceClass deviceClass,
         ClientType clientType,
         Map<String, Object> attributes

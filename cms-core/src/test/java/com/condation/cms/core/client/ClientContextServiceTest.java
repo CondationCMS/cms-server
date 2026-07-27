@@ -85,31 +85,38 @@ class ClientContextServiceTest {
     }
 
     @Test
-    void extractsLocaleFromUserAgent() {
+    void keepsUserAgentLanguageInAttributes() {
         var context = service.create(
                 "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_15_7; en-US) "
                 + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15"
         );
 
-        Assertions.assertThat(context.locale()).isEqualTo(Locale.forLanguageTag("en-US"));
+        Assertions.assertThat(context.languages()).isEmpty();
+        Assertions.assertThat((String) context.attributes().get(UserAgent.AGENT_LANGUAGE_CODE))
+                .isEqualToIgnoringCase("en-US");
     }
 
     @Test
-    void prefersAcceptLanguageByQuality() {
+    void keepsAcceptLanguagePreferencesOrderedByQuality() {
         var context = service.create(
                 "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_15_7; en-US) "
                 + "AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Safari/605.1.15",
                 "en-US;q=0.7, de-DE;q=0.9, de;q=0.8"
         );
 
-        Assertions.assertThat(context.locale()).isEqualTo(Locale.forLanguageTag("de-DE"));
+        Assertions.assertThat(context.languages().getFirst().getRange()).isEqualTo("de-de");
+        Assertions.assertThat(context.languages().getFirst().getWeight()).isEqualTo(0.9);
+        Assertions.assertThat(context.languages())
+                .extracting(Locale.LanguageRange::getRange)
+                .contains("de", "en-us");
     }
 
     @Test
     void extractsAcceptLanguageWithoutUserAgent() {
         var context = service.create(null, "fr-FR, fr;q=0.9");
 
-        Assertions.assertThat(context.locale()).isEqualTo(Locale.forLanguageTag("fr-FR"));
+        Assertions.assertThat(context.languages().getFirst().getRange()).isEqualTo("fr-fr");
+        Assertions.assertThat(context.languages().getFirst().getWeight()).isEqualTo(1.0);
         Assertions.assertThat(context.deviceClass()).isEqualTo(DeviceClass.UNKNOWN);
         Assertions.assertThat(context.clientType()).isEqualTo(ClientType.UNKNOWN);
         Assertions.assertThat(context.attributes()).isEmpty();
@@ -123,14 +130,27 @@ class ClientContextServiceTest {
                 "not_a_valid_language;q=broken"
         );
 
-        Assertions.assertThat(context.locale()).isEqualTo(Locale.forLanguageTag("en-US"));
+        Assertions.assertThat(context.languages()).isEmpty();
+        Assertions.assertThat((String) context.attributes().get(UserAgent.AGENT_LANGUAGE_CODE))
+                .isEqualToIgnoringCase("en-US");
+    }
+
+    @Test
+    void keepsWildcardAndZeroWeightForTargeting() {
+        var context = service.create(null, "de-DE, *;q=0");
+
+        Assertions.assertThat(context.languages())
+                .anySatisfy(language -> {
+                    Assertions.assertThat(language.getRange()).isEqualTo("*");
+                    Assertions.assertThat(language.getWeight()).isZero();
+                });
     }
 
     @Test
     void createsEmptyContextForMissingUserAgent() {
         var context = service.create(null);
 
-        Assertions.assertThat(context.locale()).isEqualTo(Locale.ROOT);
+        Assertions.assertThat(context.languages()).isEmpty();
         Assertions.assertThat(context.deviceClass()).isEqualTo(DeviceClass.UNKNOWN);
         Assertions.assertThat(context.clientType()).isEqualTo(ClientType.UNKNOWN);
         Assertions.assertThat(context.attributes()).isEmpty();

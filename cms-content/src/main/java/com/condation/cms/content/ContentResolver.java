@@ -32,6 +32,7 @@ import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.core.content.ContentResolvingStrategy;
+import com.condation.cms.filesystem.FileSystem;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +50,7 @@ public class ContentResolver {
 
 	private final ContentRenderer contentRenderer;
 	
-	private final DB db;
+	private final DB db;	
 	
 	public Optional<ContentResponse> getContent (final RequestContext context) {
 		return getContent(context, true);
@@ -82,6 +83,10 @@ public class ContentResolver {
 		if (contentNode == null) {
 			return Optional.empty();
 		}
+		
+		VariantResolver variantResolver = new VariantResolver(db);
+		
+		var variants = variantResolver.getVariants(contentNode);
 
         var contentFile = db.getFileSystem().contentBase().resolve(contentNode.path());
 		

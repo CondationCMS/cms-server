@@ -32,7 +32,6 @@ import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.core.serivce.ServiceRegistry;
 import com.condation.cms.core.serivce.impl.SiteDBService;
-import com.condation.cms.filesystem.FileSystem;
 import com.condation.cms.modules.ui.utils.UIHooks;
 import java.nio.file.Path;
 import java.util.Map;

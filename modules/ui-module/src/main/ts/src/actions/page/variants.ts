@@ -1,0 +1,120 @@
+/*-
+ * #%L
+ * UI Module
+ * %%
+ * Copyright (C) 2023 - 2026 CondationCMS
+ * %%
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * #L%
+ */
+
+import { i18n } from '@cms/modules/localization.js'
+import { openModal } from '@cms/modules/modal.js'
+import { getPreviewUrl, loadPreview } from '@cms/modules/preview.utils.js'
+import { getContentNode } from '@cms/modules/rpc/rpc-content.js'
+import { getVariants, VariantDto } from '@cms/modules/rpc/rpc-variant.js'
+import { showToast } from '@cms/modules/toast.js'
+
+const VARIANT_LIST_ID = 'cms-page-variants';
+
+const variantTitle = (variant: VariantDto): string => {
+	const title = variant.meta?.title;
+	return typeof title === 'string' && title.trim() ? title : variant.id;
+};
+
+const renderVariants = (container: HTMLElement, variants: VariantDto[], modal: any) => {
+	if (variants.length === 0) {
+		const emptyMessage = document.createElement('p');
+		emptyMessage.className = 'text-body-secondary mb-0';
+		emptyMessage.textContent = i18n.t(
+			'manager.actions.page.variants.empty',
+			'This page has no variants.'
+		);
+		container.appendChild(emptyMessage);
+		return;
+	}
+
+	const list = document.createElement('div');
+	list.className = 'list-group';
+
+	variants.forEach((variant) => {
+		const link = document.createElement('a');
+		link.href = variant.url;
+		link.className = 'list-group-item list-group-item-action';
+		link.dataset.cmsVariantUrl = variant.url;
+
+		const heading = document.createElement('div');
+		heading.className = 'd-flex w-100 justify-content-between align-items-center gap-3';
+
+		const title = document.createElement('strong');
+		title.textContent = variantTitle(variant);
+		heading.appendChild(title);
+
+		const id = document.createElement('span');
+		id.className = 'badge text-bg-secondary';
+		id.textContent = variant.id;
+		heading.appendChild(id);
+		link.appendChild(heading);
+
+		const uri = document.createElement('small');
+		uri.className = 'text-body-secondary';
+		uri.textContent = variant.uri;
+		link.appendChild(uri);
+
+		link.addEventListener('click', (event) => {
+			event.preventDefault();
+			modal.hide();
+			loadPreview(variant.url);
+		});
+
+		list.appendChild(link);
+	});
+
+	container.appendChild(list);
+};
+
+export const runAction = async () => {
+	try {
+		const contentNode = await getContentNode({
+			url: getPreviewUrl()
+		});
+		const result = await getVariants({
+			uri: contentNode.result.uri
+		});
+
+		let modal: any;
+		modal = openModal({
+			title: i18n.t('manager.actions.page.variants.title', 'Page variants'),
+			body: `<div id="${VARIANT_LIST_ID}"></div>`,
+			fullscreen: false,
+			size: 'lg',
+			onCancel: () => { },
+			onOk: () => { },
+			onShow: (modalElement: HTMLElement) => {
+				const container = modalElement.querySelector(`#${VARIANT_LIST_ID}`) as HTMLElement;
+				renderVariants(container, result.variants, modal);
+			}
+		});
+	} catch (error) {
+		showToast({
+			title: i18n.t(
+				'manager.actions.page.variants.error.title',
+				'Could not load page variants'
+			),
+			message: error instanceof Error ? error.message : String(error),
+			type: 'error',
+			timeout: 3000
+		});
+	}
+};

@@ -116,6 +116,16 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/translations")
 	)
 	public void manage_translations() {}
+
+	@ShortCut(
+			id = "page-variants",
+			title = "Page variants",
+			permissions = {Permissions.CONTENT_EDIT},
+			hotkey = "ctrl-6",
+			section = "Page",
+			scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/variants")
+	)
+	public void page_variants() {}
 	
 
 	@Override
@@ -126,6 +136,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 						"page-create", "Neue Seite erstellen",
 						"page-edit-content", "Inhalt bearbeiten",
 						"page-edit-meta", "Metadaten bearbeiten",
+						"page-variants", "Seitenvarianten",
 						"language.de", "Deutsch",
 						"language.en", "Englisch"
 				),
@@ -134,6 +145,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
 						"page-create", "Create new page",
 						"page-edit-content", "Edit content",
 						"page-edit-meta", "Edit metadata",
+						"page-variants", "Page variants",
 						"language.de", "German",
 						"language.en", "English"
 				)

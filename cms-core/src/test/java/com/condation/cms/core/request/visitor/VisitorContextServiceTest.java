@@ -1,4 +1,4 @@
-package com.condation.cms.core.client;
+package com.condation.cms.core.request.visitor;
 
 /*-
  * #%L
@@ -21,21 +21,21 @@ package com.condation.cms.core.client;
  * #L%
  */
 
-import com.condation.cms.api.client.ClientType;
-import com.condation.cms.api.client.DeviceClass;
+import com.condation.cms.api.request.visitor.VisitorType;
+import com.condation.cms.api.request.visitor.DeviceClass;
 import java.util.Locale;
 import nl.basjes.parse.useragent.UserAgent;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-class ClientContextServiceTest {
+class VisitorContextServiceTest {
 
-    private static ClientContextService service;
+    private static VisitorContextService service;
 
     @BeforeAll
     static void setUp() {
-        service = new ClientContextService();
+        service = new VisitorContextService();
     }
 
     @Test
@@ -47,7 +47,7 @@ class ClientContextServiceTest {
         );
 
         Assertions.assertThat(context.deviceClass()).isEqualTo(DeviceClass.DESKTOP);
-        Assertions.assertThat(context.clientType()).isEqualTo(ClientType.BROWSER);
+        Assertions.assertThat(context.visitorType()).isEqualTo(VisitorType.BROWSER);
         Assertions.assertThat(context.attributes())
                 .containsEntry(UserAgent.AGENT_NAME, "Chrome")
                 .containsEntry(UserAgent.OPERATING_SYSTEM_NAME, "Windows NT");
@@ -62,7 +62,7 @@ class ClientContextServiceTest {
         );
 
         Assertions.assertThat(context.deviceClass()).isEqualTo(DeviceClass.MOBILE);
-        Assertions.assertThat(context.clientType()).isEqualTo(ClientType.BROWSER);
+        Assertions.assertThat(context.visitorType()).isEqualTo(VisitorType.BROWSER);
     }
 
     @Test
@@ -72,14 +72,14 @@ class ClientContextServiceTest {
                 + "+http://www.google.com/bot.html)"
         );
 
-        Assertions.assertThat(context.clientType()).isEqualTo(ClientType.BOT);
+        Assertions.assertThat(context.visitorType()).isEqualTo(VisitorType.BOT);
     }
 
     @Test
     void createsApiClientContext() {
         var context = service.create("curl/8.7.1");
 
-        Assertions.assertThat(context.clientType()).isEqualTo(ClientType.API_CLIENT);
+        Assertions.assertThat(context.visitorType()).isEqualTo(VisitorType.API_CLIENT);
         Assertions.assertThat(context.attributes())
                 .containsEntry(UserAgent.AGENT_NAME, "Curl");
     }
@@ -118,7 +118,7 @@ class ClientContextServiceTest {
         Assertions.assertThat(context.languages().getFirst().getRange()).isEqualTo("fr-fr");
         Assertions.assertThat(context.languages().getFirst().getWeight()).isEqualTo(1.0);
         Assertions.assertThat(context.deviceClass()).isEqualTo(DeviceClass.UNKNOWN);
-        Assertions.assertThat(context.clientType()).isEqualTo(ClientType.UNKNOWN);
+        Assertions.assertThat(context.visitorType()).isEqualTo(VisitorType.UNKNOWN);
         Assertions.assertThat(context.attributes()).isEmpty();
     }
 
@@ -152,7 +152,7 @@ class ClientContextServiceTest {
 
         Assertions.assertThat(context.languages()).isEmpty();
         Assertions.assertThat(context.deviceClass()).isEqualTo(DeviceClass.UNKNOWN);
-        Assertions.assertThat(context.clientType()).isEqualTo(ClientType.UNKNOWN);
+        Assertions.assertThat(context.visitorType()).isEqualTo(VisitorType.UNKNOWN);
         Assertions.assertThat(context.attributes()).isEmpty();
     }
 }

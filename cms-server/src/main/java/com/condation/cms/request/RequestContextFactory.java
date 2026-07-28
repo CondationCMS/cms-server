@@ -22,14 +22,13 @@ package com.condation.cms.request;
  */
 import com.condation.cms.api.ServerContext;
 import com.condation.cms.api.SiteProperties;
-import com.condation.cms.api.client.ClientContext;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
 import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
-import com.condation.cms.api.feature.features.ClientContextFeature;
+import com.condation.cms.api.feature.features.VisitorContextFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
 import com.condation.cms.api.feature.features.ContentParserFeature;
@@ -60,7 +59,7 @@ import com.condation.cms.api.workflow.Workflow;
 import com.condation.cms.content.RenderContext;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.shortcodes.ShortCodes;
-import com.condation.cms.core.client.ClientContextService;
+import com.condation.cms.core.request.visitor.VisitorContextService;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.hooksystem.extensions.ContentHooks;
@@ -150,7 +149,7 @@ public class RequestContextFactory {
 
 		requestContext.add(RequestExtensions.class, requestExtensions);
         
-        initClientContext(requestContext);
+        initVisitorContext(requestContext);
 	}
 	
 	/**
@@ -259,20 +258,19 @@ public class RequestContextFactory {
 		
 	}
 
-    private void initClientContext (RequestContext requestContext) {
-        var injector = requestContext.get(InjectorFeature.class).injector();
+    private void initVisitorContext (RequestContext requestContext) {
         var request = requestContext.get(RequestFeature.class).request();
         var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
         
         var acceptLanguage = request.getHeaders().get(HttpHeader.ACCEPT_LANGUAGE);
         var userAgent = request.getHeaders().get(HttpHeader.USER_AGENT);
         
-        var clientContextService = injector.getInstance(ClientContextService.class);
+        var clientContextService = injector.getInstance(VisitorContextService.class);
         
         var clientContext = clientContextService.create(userAgent, acceptLanguage);
         
-        clientContext = hookSystem.doFilter(Hooks.CLIENT_CONTEXT.hook(), clientContext);
+        clientContext = hookSystem.doFilter(Hooks.REQUEST_VISITOR_CONTEXT.hook(), clientContext);
         
-        requestContext.add(ClientContextFeature.class, new ClientContextFeature(clientContext));
+        requestContext.add(VisitorContextFeature.class, new VisitorContextFeature(clientContext));
     }
 }

@@ -1,4 +1,4 @@
-package com.condation.cms.api.client;
+package com.condation.cms.api.request.visitor;
 
 /*-
  * #%L

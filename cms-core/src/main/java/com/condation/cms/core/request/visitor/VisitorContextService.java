@@ -1,4 +1,4 @@
-package com.condation.cms.core.client;
+package com.condation.cms.core.request.visitor;
 
 /*-
  * #%L
@@ -21,9 +21,9 @@ package com.condation.cms.core.client;
  * #L%
  */
 
-import com.condation.cms.api.client.ClientContext;
-import com.condation.cms.api.client.ClientType;
-import com.condation.cms.api.client.DeviceClass;
+import com.condation.cms.api.request.visitor.VisitorContext;
+import com.condation.cms.api.request.visitor.VisitorType;
+import com.condation.cms.api.request.visitor.DeviceClass;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -35,7 +35,7 @@ import nl.basjes.parse.useragent.UserAgentAnalyzer;
  *
  * @author thmar
  */
-public class ClientContextService {
+public class VisitorContextService {
 
     private final UserAgentAnalyzer userAgentAnalyzer = UserAgentAnalyzer
             .newBuilder()
@@ -43,25 +43,25 @@ public class ClientContextService {
             .withCache(10000)
             .build();
 
-    public ClientContext create(String userAgent) {
+    public VisitorContext create(String userAgent) {
         return create(userAgent, null);
     }
 
-    public ClientContext create(String userAgent, String acceptLanguage) {
+    public VisitorContext create(String userAgent, String acceptLanguage) {
         var parsedUserAgent = parse(userAgent);
         if (parsedUserAgent == null) {
-            return new ClientContext(
+            return new VisitorContext(
                     getLanguages(acceptLanguage),
                     DeviceClass.UNKNOWN,
-                    ClientType.UNKNOWN,
+                    VisitorType.UNKNOWN,
                     Map.of()
             );
         }
 
-        return new ClientContext(
+        return new VisitorContext(
                 getLanguages(acceptLanguage),
                 getDeviceClass(parsedUserAgent),
-                getClientType(parsedUserAgent),
+                getVisitorType(parsedUserAgent),
                 getAttributes(parsedUserAgent)
         );
     }
@@ -94,25 +94,25 @@ public class ClientContextService {
         };
     }
 
-    private ClientType getClientType(UserAgent userAgent) {
+    private VisitorType getVisitorType(UserAgent userAgent) {
         var agentClass = normalize(userAgent.getValue(UserAgent.AGENT_CLASS));
         var agentName = normalize(userAgent.getValue(UserAgent.AGENT_NAME));
         var deviceClass = normalize(userAgent.getValue(UserAgent.DEVICE_CLASS));
 
         if (agentClass.contains("browser") || agentClass.contains("webview")) {
-            return ClientType.BROWSER;
+            return VisitorType.BROWSER;
         }
         if (isApiClient(agentClass, agentName)) {
-            return ClientType.API_CLIENT;
+            return VisitorType.API_CLIENT;
         }
         if (agentClass.contains("robot")
                 || agentClass.contains("bot")
                 || agentClass.contains("crawler")
                 || agentClass.contains("spider")
                 || deviceClass.contains("robot")) {
-            return ClientType.BOT;
+            return VisitorType.BOT;
         }
-        return ClientType.UNKNOWN;
+        return VisitorType.UNKNOWN;
     }
 
     private boolean isApiClient(String agentClass, String agentName) {

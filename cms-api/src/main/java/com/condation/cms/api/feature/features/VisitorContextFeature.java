@@ -1,4 +1,4 @@
-package com.condation.cms.api.client;
+package com.condation.cms.api.feature.features;
 
 /*-
  * #%L
@@ -21,17 +21,15 @@ package com.condation.cms.api.client;
  * #L%
  */
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+
+import com.condation.cms.api.annotations.FeatureScope;
+import com.condation.cms.api.request.visitor.VisitorContext;
+import com.condation.cms.api.feature.Feature;
 
 /**
  *
- * @author thmar
+ * @author t.marx
  */
-public record ClientContext(
-        List<Locale.LanguageRange> languages,
-        DeviceClass deviceClass,
-        ClientType clientType,
-        Map<String, Object> attributes
-) {}
+@FeatureScope(FeatureScope.Scope.REQUEST)
+public record VisitorContextFeature (VisitorContext visitorContext) implements Feature {
+}

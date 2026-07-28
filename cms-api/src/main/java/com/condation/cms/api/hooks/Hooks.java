@@ -49,8 +49,8 @@ public enum Hooks {
 	TEMPLATE_COMPONENT("system/template/component"),
 	TEMPLATE_SUPPLIER("system/template/supplier"),
 	TEMPLATE_FUNCTION("system/template/function"),
-    /*client context*/
-    CLIENT_CONTEXT("system/client/context")
+    /* request context related */
+	REQUEST_VISITOR_CONTEXT("system/request/visitor")
 	;
 	
 	private String pattern;

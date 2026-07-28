@@ -65,7 +65,7 @@ import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
-import com.condation.cms.core.client.ClientContextService;
+import com.condation.cms.core.request.visitor.VisitorContextService;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
@@ -378,7 +378,7 @@ public class SiteModule extends AbstractModule {
     
     @Provides
     @Singleton
-    public ClientContextService clientContextService () {
-        return new ClientContextService();
+    public VisitorContextService visitorContextService () {
+        return new VisitorContextService();
     }
 }

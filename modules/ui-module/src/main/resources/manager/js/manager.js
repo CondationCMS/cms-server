@@ -82,6 +82,7 @@ const previewLoadedHandler = () => {
         const iframe = getPreviewFrame();
         const currentUrl = iframe.contentWindow.location.href;
         const url = new URL(currentUrl);
+        updateCurrentPage(url);
         const preview_url = url.pathname + url.search;
         const preview_update = {
             url: preview_url,
@@ -94,5 +95,18 @@ const previewLoadedHandler = () => {
     catch (e) {
         console.log(e);
     }
+};
+const updateCurrentPage = (url) => {
+    const pagePath = document.getElementById("cms-current-page-path");
+    if (!pagePath) {
+        return;
+    }
+    const displayUrl = new URL(url);
+    displayUrl.searchParams.delete("preview");
+    displayUrl.searchParams.delete("preview-token");
+    displayUrl.searchParams.delete("nocache");
+    const displayPath = `${displayUrl.pathname}${displayUrl.search}${displayUrl.hash}`;
+    pagePath.textContent = displayPath;
+    pagePath.closest(".cms-current-page")?.setAttribute("title", displayUrl.href);
 };
 // DOMContentLoaded  end

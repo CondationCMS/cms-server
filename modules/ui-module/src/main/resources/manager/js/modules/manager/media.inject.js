@@ -113,6 +113,10 @@ export const initToolbar = (img, toolbarDefinition) => {
     const toolbar = document.createElement('div');
     toolbar.classList.add("cms-ui-toolbar");
     toolbar.classList.add("cms-ui-toolbar-tl");
+    const parentContainer = img.closest('[data-cms-toolbar]');
+    const parentToolbar = parentContainer
+        ? Array.from(parentContainer.children).find((element) => element instanceof HTMLElement && element.classList.contains('cms-ui-toolbar'))
+        : undefined;
     if (toolbarDefinition.actions.includes('select')) {
         const selectButton = document.createElement('button');
         selectButton.innerHTML = IMAGE_ICON;
@@ -171,18 +175,27 @@ export const initToolbar = (img, toolbarDefinition) => {
             toolbar.classList.remove('visible');
         }
     });
+    toolbar.addEventListener('mouseenter', () => {
+        parentToolbar?.classList.add('visible');
+        parentContainer?.classList.add('cms-ui-media-toolbar-hover');
+    });
     toolbar.addEventListener('mouseleave', (event) => {
+        const related = event.relatedTarget;
+        parentContainer?.classList.remove('cms-ui-media-toolbar-hover');
         if (!event.relatedTarget || event.relatedTarget !== img) {
             //toolbar.style.display = 'none';
             toolbar.classList.remove('visible');
         }
+        if (!related || (related !== img && !parentContainer?.contains(related))) {
+            parentToolbar?.classList.remove('visible');
+        }
     });
     window.addEventListener('scroll', () => {
-        if (toolbar.style.visibility === 'visible')
+        if (toolbar.classList.contains('visible'))
             positionToolbar();
     });
     window.addEventListener('resize', () => {
-        if (toolbar.style.visibility === 'visible')
+        if (toolbar.classList.contains('visible'))
             positionToolbar();
     });
 };

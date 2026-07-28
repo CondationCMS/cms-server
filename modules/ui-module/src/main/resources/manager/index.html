@@ -173,6 +173,14 @@
                         {% for entry in actionFactory.createMenu().entries() %}
                         {{ menuEntry(entry) | raw }}
                         {% endfor %}
+                        <li class="nav-item cms-current-page-container">
+                            <div class="cms-current-page" role="status" aria-live="polite" aria-atomic="true"
+                                 title="Current preview page">
+                                <i class="bi bi-file-earmark" aria-hidden="true"></i>
+                                <span class="cms-current-page__label">Page</span>
+                                <span id="cms-current-page-path" class="cms-current-page__path">/</span>
+                            </div>
+                        </li>
                     </ul>
                     <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-2">
                         <div class="dropdown">

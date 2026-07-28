@@ -28,6 +28,7 @@ import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.RegisterShortCodesExtensionPoint;
+import com.condation.cms.api.feature.features.VisitorContextFeature;
 import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.feature.features.ContentNodeMapperFeature;
 import com.condation.cms.api.feature.features.ContentParserFeature;
@@ -43,6 +44,7 @@ import com.condation.cms.api.feature.features.TemplateEngineFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.hooks.Hooks;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.media.MediaService;
@@ -57,6 +59,7 @@ import com.condation.cms.api.workflow.Workflow;
 import com.condation.cms.content.RenderContext;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.shortcodes.ShortCodes;
+import com.condation.cms.core.request.visitor.VisitorContextService;
 import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.extensions.request.RequestExtensions;
 import com.condation.cms.hooksystem.extensions.ContentHooks;
@@ -72,6 +75,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.server.Request;
 
 /**
@@ -144,6 +148,8 @@ public class RequestContextFactory {
 		requestContext.add(RenderContext.class, renderContext);
 
 		requestContext.add(RequestExtensions.class, requestExtensions);
+        
+        initVisitorContext(requestContext);
 	}
 	
 	/**
@@ -171,7 +177,7 @@ public class RequestContextFactory {
 		return builder.build();
 	}
 	
-	public RequestContext create() throws IOException {
+	private RequestContext create() throws IOException {
 
 		var theme = injector.getInstance(Theme.class);
 		var markdownRenderer = injector.getInstance(MarkdownRenderer.class);
@@ -251,4 +257,20 @@ public class RequestContextFactory {
 		});
 		
 	}
+
+    private void initVisitorContext (RequestContext requestContext) {
+        var request = requestContext.get(RequestFeature.class).request();
+        var hookSystem = requestContext.get(HookSystemFeature.class).hookSystem();
+        
+        var acceptLanguage = request.getHeaders().get(HttpHeader.ACCEPT_LANGUAGE);
+        var userAgent = request.getHeaders().get(HttpHeader.USER_AGENT);
+        
+        var clientContextService = injector.getInstance(VisitorContextService.class);
+        
+        var clientContext = clientContextService.create(userAgent, acceptLanguage);
+        
+        clientContext = hookSystem.doFilter(Hooks.REQUEST_VISITOR_CONTEXT.hook(), clientContext);
+        
+        requestContext.add(VisitorContextFeature.class, new VisitorContextFeature(clientContext));
+    }
 }

@@ -135,6 +135,13 @@ export const initToolbar = (img: HTMLImageElement, toolbarDefinition: any) => {
 	const toolbar = document.createElement('div');
 	toolbar.classList.add("cms-ui-toolbar");
 	toolbar.classList.add("cms-ui-toolbar-tl");
+	const parentContainer = img.closest<HTMLElement>('[data-cms-toolbar]');
+	const parentToolbar = parentContainer
+		? Array.from(parentContainer.children).find(
+			(element): element is HTMLElement =>
+				element instanceof HTMLElement && element.classList.contains('cms-ui-toolbar')
+		)
+		: undefined;
 
 	if (toolbarDefinition.actions.includes('select')) {
 		const selectButton = document.createElement('button');
@@ -200,18 +207,28 @@ export const initToolbar = (img: HTMLImageElement, toolbarDefinition: any) => {
 		}
 	});
 
-	toolbar.addEventListener('mouseleave', (event) => {
+	toolbar.addEventListener('mouseenter', () => {
+		parentToolbar?.classList.add('visible');
+		parentContainer?.classList.add('cms-ui-media-toolbar-hover');
+	});
+
+	toolbar.addEventListener('mouseleave', (event: MouseEvent) => {
+		const related = event.relatedTarget as Node | null;
+		parentContainer?.classList.remove('cms-ui-media-toolbar-hover');
 		if (!event.relatedTarget || event.relatedTarget !== img) {
 			//toolbar.style.display = 'none';
 			toolbar.classList.remove('visible');
 		}
+		if (!related || (related !== img && !parentContainer?.contains(related))) {
+			parentToolbar?.classList.remove('visible');
+		}
 	});
 
 	window.addEventListener('scroll', () => {
-		if (toolbar.style.visibility === 'visible') positionToolbar();
+		if (toolbar.classList.contains('visible')) positionToolbar();
 	});
 	window.addEventListener('resize', () => {
-		if (toolbar.style.visibility === 'visible') positionToolbar();
+		if (toolbar.classList.contains('visible')) positionToolbar();
 	});
 };
 

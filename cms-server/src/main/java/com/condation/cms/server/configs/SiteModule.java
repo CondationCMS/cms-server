@@ -65,6 +65,7 @@ import com.condation.cms.content.TaxonomyResolver;
 import com.condation.cms.content.ViewResolver;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
+import com.condation.cms.core.request.visitor.VisitorContextService;
 import com.condation.cms.core.configuration.ConfigManagement;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
@@ -374,4 +375,10 @@ public class SiteModule extends AbstractModule {
 	public MailService mailServife (DB db) {
 		return new DefaultMailService(db);
 	}
+    
+    @Provides
+    @Singleton
+    public VisitorContextService visitorContextService () {
+        return new VisitorContextService();
+    }
 }

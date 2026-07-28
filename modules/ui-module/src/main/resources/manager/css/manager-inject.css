@@ -45,7 +45,8 @@
 	display: none;
 }
 
-.cms-ui-editable:hover::after {
+.cms-ui-editable:hover::after,
+.cms-ui-editable.cms-ui-media-toolbar-hover::after {
 	display: block;
 }
 
@@ -66,7 +67,8 @@
 	display: none;
 }
 
-.cms-ui-editable-sections:hover::after {
+.cms-ui-editable-sections:hover::after,
+.cms-ui-editable-sections.cms-ui-media-toolbar-hover::after {
 	display: block;
 }
 

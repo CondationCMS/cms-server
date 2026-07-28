@@ -32,6 +32,8 @@ import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.content.RedirectContentResponse;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.template.TemplateEngine;
 import static com.condation.cms.content.ContentRendererNGTest.contentRenderer;
@@ -145,6 +147,25 @@ public class ContentResolverTest {
 		context = TestHelper.requestContext("hidden");
 		optional = contentResolver.getContent(context);
 		Assertions.assertThat(optional).isEmpty();
+	}
+
+	@Test
+	public void previewVariantOverride() throws IOException {
+		var context = TestHelper.requestContext("test");
+		context.add(
+				RequestFeature.class,
+				new RequestFeature("test", Map.of("variant", java.util.List.of("summer")))
+		);
+		context.add(IsPreviewFeature.class, new IsPreviewFeature());
+
+		var optional = contentResolver.getContent(context);
+
+		Assertions.assertThat(optional).isPresent();
+		Assertions.assertThat(optional.get()).isInstanceOf(DefaultContentResponse.class);
+		var response = (DefaultContentResponse) optional.get();
+		Assertions.assertThat(response.content()).contains("Summer variant content");
+		Assertions.assertThat(response.node().path())
+				.isEqualTo(".variants/test/summer/test.md");
 	}
 
 }

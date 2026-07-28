@@ -61,7 +61,10 @@ import com.condation.cms.content.ContentRenderer;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
+import com.condation.cms.content.DefaultVariantSelector;
 import com.condation.cms.content.TaxonomyResolver;
+import com.condation.cms.content.VariantResolver;
+import com.condation.cms.content.VariantSelector;
 import com.condation.cms.content.ViewResolver;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
@@ -350,8 +353,20 @@ public class SiteModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public ContentResolver contentResolver(ContentRenderer contentRenderer,
-			FileDB db) {
-		return new ContentResolver(contentRenderer, db);
+			FileDB db, VariantResolver variantResolver, VariantSelector variantSelector) {
+		return new ContentResolver(contentRenderer, db, variantResolver, variantSelector);
+	}
+
+	@Provides
+	@Singleton
+	public VariantResolver variantResolver(FileDB db) {
+		return new VariantResolver(db);
+	}
+
+	@Provides
+	@Singleton
+	public VariantSelector variantSelector() {
+		return new DefaultVariantSelector();
 	}
 
 	@Provides

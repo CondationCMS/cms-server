@@ -1,5 +1,5 @@
 ---
-title: 'About summer campaign'
+title: About summer campaign
 template: default.html
 parent:
   text: testsdf

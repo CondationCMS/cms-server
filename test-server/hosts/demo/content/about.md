@@ -12,6 +12,8 @@ range_test: 0
 status: published
 translations:
   de: /ueber
+unpublish_date: null
+publish_date: null
 ---
 
 # About

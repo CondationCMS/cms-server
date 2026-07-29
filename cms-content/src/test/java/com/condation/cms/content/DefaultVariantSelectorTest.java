@@ -136,6 +136,27 @@ public class DefaultVariantSelectorTest {
 	}
 
 	@Test
+	public void automaticSelectionSupportsPublishedVariantWithoutSchedule() {
+		var unscheduled = new VariantResolver.Variant(
+				"unscheduled",
+				new ContentNode(
+						".variants/about/unscheduled/about.md",
+						"/.variants/about/unscheduled/about",
+						"about.md",
+						Map.of(Constants.MetaFields.STATUS, "published")
+				)
+		);
+
+		var selection = selector.select(
+				canonicalNode,
+				List.of(unscheduled),
+				context(false, null)
+		);
+
+		Assertions.assertThat(selection.variant()).contains(unscheduled);
+	}
+
+	@Test
 	public void automaticSelectionIgnoresDraftAndVariantsOutsideSchedule() {
 		var draft = scheduledVariant(
 				"draft",

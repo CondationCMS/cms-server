@@ -62,7 +62,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 		var node_uri = PathUtil.toRelativeFile(contentFile, contentBase);
 
-		var node = db.getContent().byUri(node_uri);
+		var node = db.getContent().byPath(node_uri);
 		if (node.isEmpty()) {
 			return Optional.empty();
 		}

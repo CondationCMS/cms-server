@@ -37,6 +37,18 @@ import org.junit.jupiter.api.Test;
  * @author thorstenmarx
  */
 public class DefaultWFStatusProviderTest {
+
+	@Test
+	public void missingPublishDateRemainsUnsetAndHasNoStartLimit() {
+		var contentNode = new ContentNode("", "", "", Map.of(
+				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
+		));
+
+		var status = new DefaultWFStatusProvider().status(contentNode);
+
+		Assertions.assertThat(status.publish_date()).isNull();
+		Assertions.assertThat(status.withinSchedule()).isTrue();
+	}
 	
 	@Test
 	public void test_publish_date_1_11_2023() {

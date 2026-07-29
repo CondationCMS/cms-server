@@ -88,7 +88,8 @@ public class DefaultVariantSelector implements VariantSelector {
 				.filter(variant -> variant.status().published())
 				.filter(variant -> variant.status().withinSchedule())
 				.max(Comparator.comparing(
-						variant -> variant.status().publish_date()
+						variant -> variant.status().publish_date(),
+						Comparator.nullsFirst(Comparator.naturalOrder())
 				))
 				.map(ScheduledVariant::variant)
 				.map(VariantSelection::automatic)

@@ -24,7 +24,6 @@ package com.condation.cms.api.workflow;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.utils.DateRange;
-import java.time.Instant;
 import java.util.Date;
 
 /**
@@ -44,7 +43,7 @@ public class DefaultWFStatusProvider implements WFStatusProvider {
 	@Override
 	public Status status(ContentNode node) {
 		var published = isPublished(node);
-		var publish_date = (Date) node.data().getOrDefault(Constants.MetaFields.PUBLISH_DATE, Date.from(Instant.now()));
+		var publish_date = (Date) node.data().getOrDefault(Constants.MetaFields.PUBLISH_DATE, null);
 		var unpublish_date = (Date) node.data().getOrDefault(Constants.MetaFields.UNPUBLISH_DATE, null);
 
 		return new Status(published, publish_date, unpublish_date, DateRange.isNowWithin(publish_date, unpublish_date), statusValue(node));

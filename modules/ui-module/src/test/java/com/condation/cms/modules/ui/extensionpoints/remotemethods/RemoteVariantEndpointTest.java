@@ -87,10 +87,13 @@ class RemoteVariantEndpointTest {
 				Map.of("title", "Campaign")
 		);
 		when(content.byPath("about.md")).thenReturn(Optional.of(node));
-		when(variantResolver.getVariants(node)).thenReturn(List.of(
+		var variants = List.of(
 				new VariantResolver.Variant("summer", summerNode),
 				new VariantResolver.Variant("campaign", campaignNode)
-		));
+		);
+		when(variantResolver.resolveContext(node)).thenReturn(
+				new VariantResolver.VariantContext(node, Optional.empty(), variants)
+		);
 
 		@SuppressWarnings("unchecked")
 		var result = (Map<String, Object>) endpoint.get(Map.of("uri", "about.md"));
@@ -105,13 +108,40 @@ class RemoteVariantEndpointTest {
 						"/.variants/about/campaign/about?preview=manager",
 						"/.variants/about/summer/about?preview=manager"
 				);
+		assertThat(result).containsEntry("activeVariantId", null);
+	}
+
+	@Test
+	void getFromVariantReturnsCanonicalAndActiveVariant() throws RPCException {
+		var canonical = node("about.md", "/about", Map.of("title", "About"));
+		var summer = node(
+				".variants/about/summer/about.md",
+				"/.variants/about/summer/about",
+				Map.of("title", "Summer")
+		);
+		var variants = List.of(new VariantResolver.Variant("summer", summer));
+		when(content.byPath(summer.path())).thenReturn(Optional.of(summer));
+		when(variantResolver.resolveContext(summer)).thenReturn(
+				new VariantResolver.VariantContext(canonical, Optional.of("summer"), variants)
+		);
+
+		@SuppressWarnings("unchecked")
+		var result = (Map<String, Object>) endpoint.get(Map.of("uri", summer.path()));
+
+		assertThat(result)
+				.containsEntry("uri", "about.md")
+				.containsEntry("activeVariantId", "summer");
+		assertThat((Map<String, Object>) result.get("canonical"))
+				.containsEntry("url", "/about?preview=manager");
 	}
 
 	@Test
 	void getReturnsEmptyListWhenNodeHasNoVariants() throws RPCException {
 		var node = node("about.md", "/about", Map.of());
 		when(content.byPath("about.md")).thenReturn(Optional.of(node));
-		when(variantResolver.getVariants(node)).thenReturn(List.of());
+		when(variantResolver.resolveContext(node)).thenReturn(
+				new VariantResolver.VariantContext(node, Optional.empty(), List.of())
+		);
 
 		@SuppressWarnings("unchecked")
 		var result = (Map<String, Object>) endpoint.get(Map.of("uri", "about.md"));

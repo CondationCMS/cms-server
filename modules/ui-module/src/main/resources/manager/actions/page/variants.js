@@ -29,8 +29,34 @@ const variantTitle = (variant) => {
     const title = variant.meta?.title;
     return typeof title === 'string' && title.trim() ? title : variant.id;
 };
-const renderVariants = (container, variants, modal) => {
-    if (variants.length === 0) {
+const createVariantLink = (titleText, idText, uriText, url, active, modal) => {
+    const link = document.createElement('a');
+    link.href = url;
+    link.className = `list-group-item list-group-item-action${active ? ' active' : ''}`;
+    link.setAttribute('aria-current', active ? 'true' : 'false');
+    const heading = document.createElement('div');
+    heading.className = 'd-flex w-100 justify-content-between align-items-center gap-3';
+    const title = document.createElement('strong');
+    title.textContent = titleText;
+    heading.appendChild(title);
+    const id = document.createElement('span');
+    id.className = active ? 'badge text-bg-light' : 'badge text-bg-secondary';
+    id.textContent = idText;
+    heading.appendChild(id);
+    link.appendChild(heading);
+    const uri = document.createElement('small');
+    uri.className = active ? '' : 'text-body-secondary';
+    uri.textContent = uriText;
+    link.appendChild(uri);
+    link.addEventListener('click', (event) => {
+        event.preventDefault();
+        modal.hide();
+        loadPreview(url);
+    });
+    return link;
+};
+const renderVariants = (container, result, modal) => {
+    if (result.variants.length === 0) {
         const emptyMessage = document.createElement('p');
         emptyMessage.className = 'text-body-secondary mb-0';
         emptyMessage.textContent = i18n.t('manager.actions.page.variants.empty', 'This page has no variants.');
@@ -39,31 +65,9 @@ const renderVariants = (container, variants, modal) => {
     }
     const list = document.createElement('div');
     list.className = 'list-group';
-    variants.forEach((variant) => {
-        const link = document.createElement('a');
-        link.href = variant.url;
-        link.className = 'list-group-item list-group-item-action';
-        link.dataset.cmsVariantUrl = variant.url;
-        const heading = document.createElement('div');
-        heading.className = 'd-flex w-100 justify-content-between align-items-center gap-3';
-        const title = document.createElement('strong');
-        title.textContent = variantTitle(variant);
-        heading.appendChild(title);
-        const id = document.createElement('span');
-        id.className = 'badge text-bg-secondary';
-        id.textContent = variant.id;
-        heading.appendChild(id);
-        link.appendChild(heading);
-        const uri = document.createElement('small');
-        uri.className = 'text-body-secondary';
-        uri.textContent = variant.uri;
-        link.appendChild(uri);
-        link.addEventListener('click', (event) => {
-            event.preventDefault();
-            modal.hide();
-            loadPreview(variant.url);
-        });
-        list.appendChild(link);
+    list.appendChild(createVariantLink(result.canonical.title, i18n.t('manager.actions.page.variants.canonical', 'Original'), result.canonical.uri, result.canonical.url, !result.activeVariantId, modal));
+    result.variants.forEach((variant) => {
+        list.appendChild(createVariantLink(variantTitle(variant), variant.id, variant.uri, variant.url, result.activeVariantId === variant.id, modal));
     });
     container.appendChild(list);
 };
@@ -85,7 +89,7 @@ export const runAction = async () => {
             onOk: () => { },
             onShow: (modalElement) => {
                 const container = modalElement.querySelector(`#${VARIANT_LIST_ID}`);
-                renderVariants(container, result.variants, modal);
+                renderVariants(container, result, modal);
             }
         });
     }

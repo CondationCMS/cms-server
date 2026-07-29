@@ -23,7 +23,7 @@ import { i18n } from '@cms/modules/localization.js'
 import { openModal } from '@cms/modules/modal.js'
 import { getPreviewUrl, loadPreview } from '@cms/modules/preview.utils.js'
 import { getContentNode } from '@cms/modules/rpc/rpc-content.js'
-import { getVariants, VariantDto } from '@cms/modules/rpc/rpc-variant.js'
+import { getVariants, GetVariantsResult, VariantDto } from '@cms/modules/rpc/rpc-variant.js'
 import { showToast } from '@cms/modules/toast.js'
 
 const VARIANT_LIST_ID = 'cms-page-variants';
@@ -33,8 +33,47 @@ const variantTitle = (variant: VariantDto): string => {
 	return typeof title === 'string' && title.trim() ? title : variant.id;
 };
 
-const renderVariants = (container: HTMLElement, variants: VariantDto[], modal: any) => {
-	if (variants.length === 0) {
+const createVariantLink = (
+	titleText: string,
+	idText: string,
+	uriText: string,
+	url: string,
+	active: boolean,
+	modal: any
+): HTMLAnchorElement => {
+	const link = document.createElement('a');
+	link.href = url;
+	link.className = `list-group-item list-group-item-action${active ? ' active' : ''}`;
+	link.setAttribute('aria-current', active ? 'true' : 'false');
+
+	const heading = document.createElement('div');
+	heading.className = 'd-flex w-100 justify-content-between align-items-center gap-3';
+
+	const title = document.createElement('strong');
+	title.textContent = titleText;
+	heading.appendChild(title);
+
+	const id = document.createElement('span');
+	id.className = active ? 'badge text-bg-light' : 'badge text-bg-secondary';
+	id.textContent = idText;
+	heading.appendChild(id);
+	link.appendChild(heading);
+
+	const uri = document.createElement('small');
+	uri.className = active ? '' : 'text-body-secondary';
+	uri.textContent = uriText;
+	link.appendChild(uri);
+
+	link.addEventListener('click', (event) => {
+		event.preventDefault();
+		modal.hide();
+		loadPreview(url);
+	});
+	return link;
+};
+
+const renderVariants = (container: HTMLElement, result: GetVariantsResult, modal: any) => {
+	if (result.variants.length === 0) {
 		const emptyMessage = document.createElement('p');
 		emptyMessage.className = 'text-body-secondary mb-0';
 		emptyMessage.textContent = i18n.t(
@@ -47,38 +86,24 @@ const renderVariants = (container: HTMLElement, variants: VariantDto[], modal: a
 
 	const list = document.createElement('div');
 	list.className = 'list-group';
+	list.appendChild(createVariantLink(
+		result.canonical.title,
+		i18n.t('manager.actions.page.variants.canonical', 'Original'),
+		result.canonical.uri,
+		result.canonical.url,
+		!result.activeVariantId,
+		modal
+	));
 
-	variants.forEach((variant) => {
-		const link = document.createElement('a');
-		link.href = variant.url;
-		link.className = 'list-group-item list-group-item-action';
-		link.dataset.cmsVariantUrl = variant.url;
-
-		const heading = document.createElement('div');
-		heading.className = 'd-flex w-100 justify-content-between align-items-center gap-3';
-
-		const title = document.createElement('strong');
-		title.textContent = variantTitle(variant);
-		heading.appendChild(title);
-
-		const id = document.createElement('span');
-		id.className = 'badge text-bg-secondary';
-		id.textContent = variant.id;
-		heading.appendChild(id);
-		link.appendChild(heading);
-
-		const uri = document.createElement('small');
-		uri.className = 'text-body-secondary';
-		uri.textContent = variant.uri;
-		link.appendChild(uri);
-
-		link.addEventListener('click', (event) => {
-			event.preventDefault();
-			modal.hide();
-			loadPreview(variant.url);
-		});
-
-		list.appendChild(link);
+	result.variants.forEach((variant) => {
+		list.appendChild(createVariantLink(
+			variantTitle(variant),
+			variant.id,
+			variant.uri,
+			variant.url,
+			result.activeVariantId === variant.id,
+			modal
+		));
 	});
 
 	container.appendChild(list);
@@ -103,7 +128,7 @@ export const runAction = async () => {
 			onOk: () => { },
 			onShow: (modalElement: HTMLElement) => {
 				const container = modalElement.querySelector(`#${VARIANT_LIST_ID}`) as HTMLElement;
-				renderVariants(container, result.variants, modal);
+				renderVariants(container, result, modal);
 			}
 		});
 	} catch (error) {

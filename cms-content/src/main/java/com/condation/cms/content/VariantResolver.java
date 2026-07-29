@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.nio.file.Path;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -44,7 +45,25 @@ public class VariantResolver {
 	private final DB db;
 
 	public Optional<Variant> loadVariant (ContentNode node, String variantId) {
-		return getVariants(node).stream().filter(variant -> variant.id().equals(variantId)).findFirst();
+		return getVariants(resolveContext(node).canonical()).stream()
+				.filter(variant -> variant.id().equals(variantId))
+				.findFirst();
+	}
+
+	/**
+	 * Resolves the canonical page, active variant and sibling variants for
+	 * either a canonical page or one of its variants.
+	 */
+	public VariantContext resolveContext(ContentNode node) {
+		var location = variantLocation(node);
+		var canonical = location
+				.flatMap(value -> db.getContent().byPath(value.canonicalPath()))
+				.orElse(node);
+		var activeVariantId = location
+				.filter(value -> canonical != node)
+				.map(VariantLocation::variantId);
+
+		return new VariantContext(canonical, activeVariantId, getVariants(canonical));
 	}
 	
 	public List<Variant> getVariants (ContentNode node) {
@@ -80,6 +99,44 @@ public class VariantResolver {
 		}
 		return filename;
 	}
+
+	private Optional<VariantLocation> variantLocation(ContentNode node) {
+		var path = Path.of(node.path());
+		for (int index = 0; index < path.getNameCount(); index++) {
+			if (!".variants".equals(path.getName(index).toString())) {
+				continue;
+			}
+			if (index + 3 != path.getNameCount() - 1) {
+				return Optional.empty();
+			}
+
+			var pageFolder = path.getName(index + 1).toString();
+			var variantId = path.getName(index + 2).toString();
+			var fileName = path.getName(index + 3).toString();
+			if (!pageFolder.equals(removeMarkdown(fileName))) {
+				return Optional.empty();
+			}
+
+			Path canonicalPath = index == 0
+					? Path.of(fileName)
+					: path.subpath(0, index).resolve(fileName);
+			return Optional.of(new VariantLocation(
+					canonicalPath.toString().replace('\\', '/'),
+					variantId
+			));
+		}
+		return Optional.empty();
+	}
 	
 	public record Variant (String id, ContentNode node) {}
+
+	public record VariantContext(
+			ContentNode canonical,
+			Optional<String> activeVariantId,
+			List<Variant> variants
+	) {
+	}
+
+	private record VariantLocation(String canonicalPath, String variantId) {
+	}
 }

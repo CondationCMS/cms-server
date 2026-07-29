@@ -76,7 +76,8 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 		}
 
 		var db = getDB(parameters);
-		var canonicalNode = findContentNode(db, uri);
+		var requestedNode = findContentNode(db, uri);
+		var canonicalNode = getVariantResolver(db).resolveContext(requestedNode).canonical();
 		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 		var canonicalFile = contentBase.resolve(canonicalNode.path());
 		var variantId = UIPathUtil.toValidFilename(id);
@@ -175,8 +176,8 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 
 		var db = getDB(parameters);
 		var contentNode = findContentNode(db, uri);
-		var variants = getVariantResolver(db)
-				.getVariants(contentNode)
+		var variantContext = getVariantResolver(db).resolveContext(contentNode);
+		var variants = variantContext.variants()
 				.stream()
 				.sorted(Comparator.comparing(VariantResolver.Variant::id))
 				.map(variant -> new VariantDto(
@@ -188,7 +189,14 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 				.toList();
 
 		Map<String, Object> result = new LinkedHashMap<>();
-		result.put("uri", contentNode.uri());
+		result.put("uri", variantContext.canonical().uri());
+		result.put("canonical", Map.of(
+				"uri", variantContext.canonical().uri(),
+				"url", managerPreviewUrl(variantContext.canonical().url()),
+				"title", variantContext.canonical()
+						.getMetaValue(Constants.MetaFields.TITLE, variantContext.canonical().name())
+		));
+		result.put("activeVariantId", variantContext.activeVariantId().orElse(null));
 		result.put("variants", variants);
 		return result;
 	}

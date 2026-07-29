@@ -30,6 +30,12 @@ export interface GetVariantsOptions {
 }
 export interface GetVariantsResult {
     uri: string;
+    canonical: {
+        uri: string;
+        url: string;
+        title: string;
+    };
+    activeVariantId?: string | null;
     variants: VariantDto[];
 }
 export interface CreateVariantOptions {

@@ -48,4 +48,10 @@ public interface DBFileSystem {
 	ReadOnlyFile contentBase();
 
 	ReadOnlyFile assetBase();
+
+	/**
+	 * Processes all content changes that have already been queued for indexing
+	 * and waits until the index has been updated.
+	 */
+	void flushContentChanges();
 }

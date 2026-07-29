@@ -18,32 +18,4 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-export interface VariantDto {
-    id: string;
-    uri: string;
-    url: string;
-    meta: Record<string, unknown>;
-}
-export interface GetVariantsOptions {
-    uri: string;
-    siteId?: string;
-}
-export interface GetVariantsResult {
-    uri: string;
-    variants: VariantDto[];
-}
-export interface CreateVariantOptions {
-    uri: string;
-    id: string;
-    title: string;
-    template: string;
-    copyContent: boolean;
-}
-export interface CreateVariantResult {
-    id: string;
-    uri: string;
-    url: string;
-}
-declare const getVariants: (options: GetVariantsOptions) => Promise<GetVariantsResult>;
-declare const createVariant: (options: CreateVariantOptions) => Promise<CreateVariantResult>;
-export { createVariant, getVariants };
+export declare const runAction: () => Promise<void>;

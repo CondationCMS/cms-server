@@ -38,6 +38,20 @@ export interface GetVariantsResult {
 	variants: VariantDto[];
 }
 
+export interface CreateVariantOptions {
+	uri: string;
+	id: string;
+	title: string;
+	template: string;
+	copyContent: boolean;
+}
+
+export interface CreateVariantResult {
+	id: string;
+	uri: string;
+	url: string;
+}
+
 const getVariants = async (options: GetVariantsOptions): Promise<GetVariantsResult> => {
 	const data = {
 		method: 'variants.get',
@@ -46,4 +60,12 @@ const getVariants = async (options: GetVariantsOptions): Promise<GetVariantsResu
 	return (await executeRemoteCall(data)).result as GetVariantsResult;
 };
 
-export { getVariants };
+const createVariant = async (options: CreateVariantOptions): Promise<CreateVariantResult> => {
+	const data = {
+		method: 'variants.create',
+		parameters: options
+	};
+	return (await executeRemoteCall(data)).result as CreateVariantResult;
+};
+
+export { createVariant, getVariants };

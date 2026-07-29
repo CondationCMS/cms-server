@@ -26,4 +26,11 @@ const getVariants = async (options) => {
     };
     return (await executeRemoteCall(data)).result;
 };
-export { getVariants };
+const createVariant = async (options) => {
+    const data = {
+        method: 'variants.create',
+        parameters: options
+    };
+    return (await executeRemoteCall(data)).result;
+};
+export { createVariant, getVariants };

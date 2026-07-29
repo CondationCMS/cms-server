@@ -1,8 +1,8 @@
-package com.condation.cms.content;
+package com.condation.cms.api.extensions;
 
 /*-
  * #%L
- * CMS Content
+ * CMS Api
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,20 +21,20 @@ package com.condation.cms.content;
  * #L%
  */
 
-import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.request.RequestContext;
-import java.util.List;
+import com.condation.cms.api.variants.VariantSelector;
 
 /**
- * Selects the content variant to render for a request.
+ * Extension point for automatic variant selection strategies.
  *
- * @author thorstenmarx
+ * <p>Manager and explicit preview selection are handled by the CMS before an
+ * extension is invoked. Implementations therefore only select a variant for a
+ * normal public request.</p>
  */
-public interface VariantSelector {
+public abstract class VariantSelectorExtensionPoint
+		extends AbstractExtensionPoint
+		implements VariantSelector {
 
-	VariantSelection select(
-			ContentNode canonicalNode,
-			List<VariantResolver.Variant> variants,
-			RequestContext context
-	);
+	public abstract String id();
+
+	public abstract String label();
 }

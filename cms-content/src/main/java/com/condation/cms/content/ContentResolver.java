@@ -31,6 +31,8 @@ import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.variants.Variant;
+import com.condation.cms.api.variants.VariantSelector;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.core.content.ContentResolvingStrategy;
 import java.io.IOException;
@@ -125,7 +127,7 @@ public class ContentResolver {
 				context
 		);
 		var selectedNode = selection.variant()
-				.map(VariantResolver.Variant::node)
+				.map(Variant::node)
 				.filter(node -> !checkVisibility || NodeVisibility.isVisible(node))
 				.orElse(contentNode);
 

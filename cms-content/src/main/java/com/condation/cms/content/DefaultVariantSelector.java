@@ -22,60 +22,27 @@ package com.condation.cms.content;
  */
 
 import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.feature.features.IsPreviewFeature;
-import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.variants.Variant;
+import com.condation.cms.api.variants.VariantSelection;
+import com.condation.cms.api.variants.VariantSelector;
 import com.condation.cms.api.workflow.DefaultWFStatusProvider;
 import com.condation.cms.api.workflow.WFStatusProvider;
 import java.util.Comparator;
 import java.util.List;
-import lombok.extern.slf4j.Slf4j;
 
 /**
- * Default variant selection with support for preview overrides.
+ * Selects the newest published variant within its configured date range.
  *
  * @author thorstenmarx
  */
-@Slf4j
 public class DefaultVariantSelector implements VariantSelector {
-
-	public static final String VARIANT_QUERY_PARAMETER = "variant";
-	public static final String CANONICAL_VARIANT_ID = "default";
 
 	@Override
 	public VariantSelection select(
 			ContentNode canonicalNode,
-			List<VariantResolver.Variant> variants,
-			RequestContext context
-	) {
-		if (isManager(context)) {
-			return VariantSelection.canonical();
-		}
-
-		if (isPreview(context) && context.has(RequestFeature.class)) {
-			var request = context.get(RequestFeature.class);
-			if (request.hasQueryParameter(VARIANT_QUERY_PARAMETER)) {
-				return selectPreviewVariant(canonicalNode, variants, request);
-			}
-		}
-
-		return selectAutomatically(canonicalNode, variants, context);
-	}
-    
-	private boolean isPreview (RequestContext context) {
-		return context.has(IsPreviewFeature.class) 
-				&& IsPreviewFeature.Mode.PREVIEW.equals(context.get(IsPreviewFeature.class).mode());
-	}
-
-	private boolean isManager(RequestContext context) {
-		return context.has(IsPreviewFeature.class)
-				&& IsPreviewFeature.Mode.MANAGER.equals(context.get(IsPreviewFeature.class).mode());
-	}
-
-	protected VariantSelection selectAutomatically(
-			ContentNode canonicalNode,
-			List<VariantResolver.Variant> variants,
+			List<Variant> variants,
 			RequestContext context
 	) {
 		var statusProvider = getStatusProvider(context);
@@ -105,32 +72,8 @@ public class DefaultVariantSelector implements VariantSelector {
 		return new DefaultWFStatusProvider();
 	}
 
-	private VariantSelection selectPreviewVariant(
-			ContentNode canonicalNode,
-			List<VariantResolver.Variant> variants,
-			RequestFeature request
-	) {
-		var variantId = request.getQueryParameter(VARIANT_QUERY_PARAMETER, "").trim();
-		if (variantId.isBlank() || CANONICAL_VARIANT_ID.equalsIgnoreCase(variantId)) {
-			return VariantSelection.canonical();
-		}
-
-		return variants.stream()
-				.filter(variant -> variant.id().equals(variantId))
-				.findFirst()
-				.map(VariantSelection::preview)
-				.orElseGet(() -> {
-					log.warn(
-							"Requested preview variant '{}' does not exist for '{}'",
-							variantId,
-							canonicalNode.path()
-					);
-					return VariantSelection.canonical();
-				});
-	}
-
 	private record ScheduledVariant(
-			VariantResolver.Variant variant,
+			Variant variant,
 			WFStatusProvider.Status status
 	) {
 	}

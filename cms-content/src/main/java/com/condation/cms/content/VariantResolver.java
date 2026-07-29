@@ -25,6 +25,7 @@ import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.api.variants.Variant;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -128,8 +129,6 @@ public class VariantResolver {
 		return Optional.empty();
 	}
 	
-	public record Variant (String id, ContentNode node) {}
-
 	public record VariantContext(
 			ContentNode canonical,
 			Optional<String> activeVariantId,

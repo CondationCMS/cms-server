@@ -33,4 +33,18 @@ const createVariant = async (options) => {
     };
     return (await executeRemoteCall(data)).result;
 };
-export { createVariant, getVariants };
+const getVariantSelectors = async (uri) => {
+    const data = {
+        method: 'variants.selectors.get',
+        parameters: { uri }
+    };
+    return (await executeRemoteCall(data)).result;
+};
+const setVariantSelector = async (uri, selector) => {
+    const data = {
+        method: 'variants.selector.set',
+        parameters: { uri, selector }
+    };
+    return (await executeRemoteCall(data)).result;
+};
+export { createVariant, getVariants, getVariantSelectors, setVariantSelector };

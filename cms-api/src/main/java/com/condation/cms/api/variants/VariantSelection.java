@@ -1,8 +1,8 @@
-package com.condation.cms.content;
+package com.condation.cms.api.variants;
 
 /*-
  * #%L
- * CMS Content
+ * CMS Api
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -25,23 +25,18 @@ import java.util.Optional;
 
 /**
  * Describes the result and origin of a variant selection.
- *
- * @author thorstenmarx
  */
-public record VariantSelection(
-		Optional<VariantResolver.Variant> variant,
-		Source source
-) {
+public record VariantSelection(Optional<Variant> variant, Source source) {
 
 	public static VariantSelection canonical() {
 		return new VariantSelection(Optional.empty(), Source.CANONICAL);
 	}
 
-	public static VariantSelection preview(VariantResolver.Variant variant) {
+	public static VariantSelection preview(Variant variant) {
 		return new VariantSelection(Optional.of(variant), Source.PREVIEW);
 	}
 
-	public static VariantSelection automatic(VariantResolver.Variant variant) {
+	public static VariantSelection automatic(Variant variant) {
 		return new VariantSelection(Optional.of(variant), Source.AUTOMATIC);
 	}
 

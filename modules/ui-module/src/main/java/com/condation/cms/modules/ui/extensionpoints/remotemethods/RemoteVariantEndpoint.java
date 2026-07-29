@@ -32,8 +32,11 @@ import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.api.variants.Variant;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.content.VariantResolver;
+import com.condation.cms.content.ConfigurableVariantSelector;
+import com.condation.cms.content.VariantSelectorConfigurationRepository;
 import com.condation.cms.core.content.io.ContentFileParser;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import com.condation.cms.modules.ui.extensionpoints.remotemethods.dto.VariantDto;
@@ -58,6 +61,53 @@ import lombok.extern.slf4j.Slf4j;
 @Extension(UIRemoteMethodExtensionPoint.class)
 @Slf4j
 public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
+
+	@RemoteMethod(name = "variants.selectors.get", permissions = {Permissions.CONTENT_EDIT})
+	public Object getSelectors(Map<String, Object> parameters) throws RPCException {
+		var uri = stringParameter(parameters, "uri");
+		if (uri.isBlank()) {
+			throw new RPCException(400, "uri must not be blank");
+		}
+
+		var db = getDB(parameters);
+		var node = findContentNode(db, uri);
+		var configurableSelector = getConfigurableVariantSelector();
+		var repository = getVariantSelectorConfigurationRepository();
+
+		return Map.of(
+				"selector", repository.getSelectorId(node),
+				"selectors", configurableSelector.availableSelectors().values()
+						.stream()
+						.sorted(Comparator.comparing(
+								ConfigurableVariantSelector.SelectorDescriptor::label
+						))
+						.toList()
+		);
+	}
+
+	@RemoteMethod(name = "variants.selector.set", permissions = {Permissions.CONTENT_EDIT})
+	public Object setSelector(Map<String, Object> parameters) throws RPCException {
+		var uri = stringParameter(parameters, "uri");
+		var selectorId = stringParameter(parameters, "selector");
+		if (uri.isBlank() || selectorId.isBlank()) {
+			throw new RPCException(400, "uri and selector must not be blank");
+		}
+
+		var configurableSelector = getConfigurableVariantSelector();
+		if (!configurableSelector.hasSelector(selectorId)) {
+			throw new RPCException(400, "unknown variant selector");
+		}
+
+		var db = getDB(parameters);
+		var node = findContentNode(db, uri);
+		try {
+			getVariantSelectorConfigurationRepository().setSelectorId(node, selectorId);
+			return Map.of("selector", selectorId);
+		} catch (Exception exception) {
+			log.error("Could not save variant selector for '{}'", node.path(), exception);
+			throw new RPCException(500, exception.getMessage());
+		}
+	}
 
 	@RemoteMethod(name = "variants.create", permissions = {Permissions.CONTENT_EDIT})
 	public Object create(Map<String, Object> parameters) throws RPCException {
@@ -179,7 +229,7 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 		var variantContext = getVariantResolver(db).resolveContext(contentNode);
 		var variants = variantContext.variants()
 				.stream()
-				.sorted(Comparator.comparing(VariantResolver.Variant::id))
+				.sorted(Comparator.comparing(Variant::id))
 				.map(variant -> new VariantDto(
 						variant.id(),
 						variant.node().uri(),
@@ -213,6 +263,16 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 
 	protected VariantResolver getVariantResolver(DB db) {
 		return getContext().get(InjectorFeature.class).injector().getInstance(VariantResolver.class);
+	}
+
+	protected ConfigurableVariantSelector getConfigurableVariantSelector() {
+		return getContext().get(InjectorFeature.class)
+				.injector().getInstance(ConfigurableVariantSelector.class);
+	}
+
+	protected VariantSelectorConfigurationRepository getVariantSelectorConfigurationRepository() {
+		return getContext().get(InjectorFeature.class)
+				.injector().getInstance(VariantSelectorConfigurationRepository.class);
 	}
 
 	private String stringParameter(Map<String, Object> parameters, String name) {

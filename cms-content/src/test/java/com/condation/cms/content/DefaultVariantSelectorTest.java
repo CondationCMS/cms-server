@@ -23,9 +23,9 @@ package com.condation.cms.content;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
-import com.condation.cms.api.feature.features.IsPreviewFeature;
-import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.variants.Variant;
+import com.condation.cms.api.variants.VariantSelection;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
@@ -39,83 +39,6 @@ public class DefaultVariantSelectorTest {
 
 	private final DefaultVariantSelector selector = new DefaultVariantSelector();
 	private final ContentNode canonicalNode = node("about.md");
-	private final VariantResolver.Variant summer = new VariantResolver.Variant(
-			"summer",
-			node(".variants/about/summer/about.md")
-	);
-
-	@Test
-	public void previewCanSelectVariant() {
-		var selection = selector.select(
-				canonicalNode,
-				List.of(summer),
-				context(true, "summer")
-		);
-
-		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.PREVIEW);
-		Assertions.assertThat(selection.variant()).contains(summer);
-	}
-
-	@Test
-	public void previewCanForceCanonicalVariant() {
-		var selection = selector.select(
-				canonicalNode,
-				List.of(summer),
-				context(true, DefaultVariantSelector.CANONICAL_VARIANT_ID)
-		);
-
-		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.CANONICAL);
-		Assertions.assertThat(selection.variant()).isEmpty();
-	}
-
-	@Test
-	public void managerAlwaysUsesCanonicalVariant() {
-		var active = scheduledVariant(
-				"active",
-				Instant.now().minus(Duration.ofDays(1)),
-				Instant.now().plus(Duration.ofDays(1)),
-				"published"
-		);
-		var context = context(false, "active");
-		context.add(
-				IsPreviewFeature.class,
-				new IsPreviewFeature(IsPreviewFeature.Mode.MANAGER)
-		);
-
-		var selection = selector.select(
-				canonicalNode,
-				List.of(active),
-				context
-		);
-
-		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.CANONICAL);
-		Assertions.assertThat(selection.variant()).isEmpty();
-	}
-
-	@Test
-	public void invalidPreviewVariantFallsBackToCanonicalVariant() {
-		var selection = selector.select(
-				canonicalNode,
-				List.of(summer),
-				context(true, "missing")
-		);
-
-		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.CANONICAL);
-		Assertions.assertThat(selection.variant()).isEmpty();
-	}
-
-	@Test
-	public void publicRequestCannotOverrideVariant() {
-		var selection = selector.select(
-				canonicalNode,
-				List.of(summer),
-				context(false, "summer")
-		);
-
-		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.CANONICAL);
-		Assertions.assertThat(selection.variant()).isEmpty();
-	}
-
 	@Test
 	public void automaticSelectionUsesPublishedVariantWithinSchedule() {
 		var active = scheduledVariant(
@@ -128,7 +51,7 @@ public class DefaultVariantSelectorTest {
 		var selection = selector.select(
 				canonicalNode,
 				List.of(active),
-				context(false, null)
+				context()
 		);
 
 		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.AUTOMATIC);
@@ -137,7 +60,7 @@ public class DefaultVariantSelectorTest {
 
 	@Test
 	public void automaticSelectionSupportsPublishedVariantWithoutSchedule() {
-		var unscheduled = new VariantResolver.Variant(
+		var unscheduled = new Variant(
 				"unscheduled",
 				new ContentNode(
 						".variants/about/unscheduled/about.md",
@@ -150,7 +73,7 @@ public class DefaultVariantSelectorTest {
 		var selection = selector.select(
 				canonicalNode,
 				List.of(unscheduled),
-				context(false, null)
+				context()
 		);
 
 		Assertions.assertThat(selection.variant()).contains(unscheduled);
@@ -180,7 +103,7 @@ public class DefaultVariantSelectorTest {
 		var selection = selector.select(
 				canonicalNode,
 				List.of(draft, future, expired),
-				context(false, null)
+				context()
 		);
 
 		Assertions.assertThat(selection.source()).isEqualTo(VariantSelection.Source.CANONICAL);
@@ -205,32 +128,21 @@ public class DefaultVariantSelectorTest {
 		var selection = selector.select(
 				canonicalNode,
 				List.of(newer, older),
-				context(false, null)
+				context()
 		);
 
 		Assertions.assertThat(selection.variant()).contains(newer);
 	}
 
-	private RequestContext context(boolean preview, String variantId) {
-		var context = new RequestContext();
-		var queryParameters = variantId == null
-				? Map.<String, List<String>>of()
-				: Map.of("variant", List.of(variantId));
-		context.add(
-				RequestFeature.class,
-				new RequestFeature("", "/", queryParameters, null)
-		);
-		if (preview) {
-			context.add(IsPreviewFeature.class, new IsPreviewFeature());
-		}
-		return context;
+	private RequestContext context() {
+		return new RequestContext();
 	}
 
 	private ContentNode node(String path) {
 		return new ContentNode(path, "/" + path, path, Map.of());
 	}
 
-	private VariantResolver.Variant scheduledVariant(
+	private Variant scheduledVariant(
 			String id,
 			Instant publishDate,
 			Instant unpublishDate,
@@ -240,7 +152,7 @@ public class DefaultVariantSelectorTest {
 		data.put(Constants.MetaFields.STATUS, status);
 		data.put(Constants.MetaFields.PUBLISH_DATE, Date.from(publishDate));
 		data.put(Constants.MetaFields.UNPUBLISH_DATE, Date.from(unpublishDate));
-		return new VariantResolver.Variant(
+		return new Variant(
 				id,
 				new ContentNode(
 						".variants/about/" + id + "/about.md",

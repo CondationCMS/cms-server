@@ -58,6 +58,16 @@ export interface CreateVariantResult {
 	url: string;
 }
 
+export interface VariantSelectorDto {
+	id: string;
+	label: string;
+}
+
+export interface GetVariantSelectorsResult {
+	selector: string;
+	selectors: VariantSelectorDto[];
+}
+
 const getVariants = async (options: GetVariantsOptions): Promise<GetVariantsResult> => {
 	const data = {
 		method: 'variants.get',
@@ -74,4 +84,20 @@ const createVariant = async (options: CreateVariantOptions): Promise<CreateVaria
 	return (await executeRemoteCall(data)).result as CreateVariantResult;
 };
 
-export { createVariant, getVariants };
+const getVariantSelectors = async (uri: string): Promise<GetVariantSelectorsResult> => {
+	const data = {
+		method: 'variants.selectors.get',
+		parameters: { uri }
+	};
+	return (await executeRemoteCall(data)).result as GetVariantSelectorsResult;
+};
+
+const setVariantSelector = async (uri: string, selector: string): Promise<{ selector: string }> => {
+	const data = {
+		method: 'variants.selector.set',
+		parameters: { uri, selector }
+	};
+	return (await executeRemoteCall(data)).result as { selector: string };
+};
+
+export { createVariant, getVariants, getVariantSelectors, setVariantSelector };

@@ -27,7 +27,10 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.api.variants.Variant;
+import com.condation.cms.content.ConfigurableVariantSelector;
 import com.condation.cms.content.VariantResolver;
+import com.condation.cms.content.VariantSelectorConfigurationRepository;
 import com.condation.cms.modules.ui.extensionpoints.remotemethods.dto.VariantDto;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +44,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,6 +62,12 @@ class RemoteVariantEndpointTest {
 	@Mock
 	private VariantResolver variantResolver;
 
+	@Mock
+	private ConfigurableVariantSelector configurableVariantSelector;
+
+	@Mock
+	private VariantSelectorConfigurationRepository selectorConfigurationRepository;
+
 	private RemoteVariantEndpoint endpoint;
 
 	@BeforeEach
@@ -66,6 +76,16 @@ class RemoteVariantEndpointTest {
 			@Override
 			protected VariantResolver getVariantResolver(DB db) {
 				return variantResolver;
+			}
+
+			@Override
+			protected ConfigurableVariantSelector getConfigurableVariantSelector() {
+				return configurableVariantSelector;
+			}
+
+			@Override
+			protected VariantSelectorConfigurationRepository getVariantSelectorConfigurationRepository() {
+				return selectorConfigurationRepository;
 			}
 		};
 		endpoint.setContext(moduleContext);
@@ -88,8 +108,8 @@ class RemoteVariantEndpointTest {
 		);
 		when(content.byPath("about.md")).thenReturn(Optional.of(node));
 		var variants = List.of(
-				new VariantResolver.Variant("summer", summerNode),
-				new VariantResolver.Variant("campaign", campaignNode)
+				new Variant("summer", summerNode),
+				new Variant("campaign", campaignNode)
 		);
 		when(variantResolver.resolveContext(node)).thenReturn(
 				new VariantResolver.VariantContext(node, Optional.empty(), variants)
@@ -119,7 +139,7 @@ class RemoteVariantEndpointTest {
 				"/.variants/about/summer/about",
 				Map.of("title", "Summer")
 		);
-		var variants = List.of(new VariantResolver.Variant("summer", summer));
+		var variants = List.of(new Variant("summer", summer));
 		when(content.byPath(summer.path())).thenReturn(Optional.of(summer));
 		when(variantResolver.resolveContext(summer)).thenReturn(
 				new VariantResolver.VariantContext(canonical, Optional.of("summer"), variants)
@@ -168,6 +188,39 @@ class RemoteVariantEndpointTest {
 				.satisfies(exception ->
 						assertThat(((RPCException) exception).getCode()).isEqualTo(404)
 				);
+	}
+
+	@Test
+	void getSelectorsReturnsConfigurationAndAvailableStrategies() throws RPCException {
+		var node = node("about.md", "/about", Map.of());
+		when(content.byPath("about.md")).thenReturn(Optional.of(node));
+		when(selectorConfigurationRepository.getSelectorId(node)).thenReturn("audience");
+		when(configurableVariantSelector.availableSelectors()).thenReturn(Map.of(
+				"date-range",
+				new ConfigurableVariantSelector.SelectorDescriptor("date-range", "Date range"),
+				"audience",
+				new ConfigurableVariantSelector.SelectorDescriptor("audience", "Audience")
+		));
+
+		@SuppressWarnings("unchecked")
+		var result = (Map<String, Object>) endpoint.getSelectors(Map.of("uri", "about.md"));
+
+		assertThat(result).containsEntry("selector", "audience");
+		assertThat((List<ConfigurableVariantSelector.SelectorDescriptor>) result.get("selectors"))
+				.extracting(ConfigurableVariantSelector.SelectorDescriptor::id)
+				.containsExactly("audience", "date-range");
+	}
+
+	@Test
+	void setSelectorPersistsConfigurationForPage() throws Exception {
+		var node = node("about.md", "/about", Map.of());
+		when(content.byPath("about.md")).thenReturn(Optional.of(node));
+		when(configurableVariantSelector.hasSelector("audience")).thenReturn(true);
+
+		var result = endpoint.setSelector(Map.of("uri", "about.md", "selector", "audience"));
+
+		assertThat(result).isEqualTo(Map.of("selector", "audience"));
+		verify(selectorConfigurationRepository).setSelectorId(node, "audience");
 	}
 
 	private ContentNode node(String uri, String url, Map<String, Object> data) {

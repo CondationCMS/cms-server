@@ -58,10 +58,14 @@ const createVariantLink = (titleText, idText, uriText, url, variantId, active, m
 };
 const createVariantItem = (variant, result, modal, container) => {
     const item = document.createElement('div');
-    item.className = 'list-group-item d-flex align-items-center gap-2 p-0';
-    const link = createVariantLink(variantTitle(variant), variant.id, variant.uri, result.canonical.url, variant.id, result.activeVariantId === variant.id, modal);
-    link.classList.remove('list-group-item');
-    link.classList.add('flex-grow-1', 'border-0', 'rounded-0');
+    const active = result.activeVariantId === variant.id;
+    item.className = `list-group-item d-flex align-items-center gap-2 p-0${active ? ' active' : ''}`;
+    const link = createVariantLink(variantTitle(variant), variant.id, variant.uri, result.canonical.url, variant.id, active, modal);
+    link.classList.remove('list-group-item', 'active');
+    link.classList.add('flex-grow-1', 'border-0', 'rounded-0', 'px-3', 'py-2');
+    if (active) {
+        link.classList.add('text-reset');
+    }
     item.appendChild(link);
     const deleteButton = document.createElement('button');
     deleteButton.type = 'button';

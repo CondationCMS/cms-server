@@ -125,8 +125,8 @@ class RemoteVariantEndpointTest {
 		assertThat((List<VariantDto>) result.get("variants"))
 				.extracting(VariantDto::url)
 				.containsExactly(
-						"/.variants/about/campaign/about?preview=manager",
-						"/.variants/about/summer/about?preview=manager"
+						"/about?preview=manager&variant=campaign",
+						"/about?preview=manager&variant=summer"
 				);
 		assertThat(result).containsEntry("activeVariantId", null);
 	}

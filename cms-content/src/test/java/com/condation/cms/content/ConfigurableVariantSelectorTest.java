@@ -99,6 +99,17 @@ class ConfigurableVariantSelectorTest {
 	}
 
 	@Test
+	void explicitManagerPreviewSelectsVariantWithoutInvokingASelector() {
+		var context = context(IsPreviewFeature.Mode.MANAGER, "summer");
+
+		assertThat(selector.select(canonical, variants, context))
+				.isEqualTo(VariantSelection.preview(summer));
+		verify(configuration, never()).getSelectorId(canonical);
+		verify(dateRange, never()).select(canonical, variants, context);
+		verify(extension, never()).select(canonical, variants, context);
+	}
+
+	@Test
 	void explicitPreviewCanForceCanonicalContent() {
 		var context = context(
 				IsPreviewFeature.Mode.PREVIEW,

@@ -21,8 +21,8 @@
 import { openSidebar } from '@cms/modules/sidebar.js';
 import { createForm } from '@cms/modules/form/forms.js';
 import { showToast } from '@cms/modules/toast.js';
-import { getContentNode, setMeta, getContent } from '@cms/modules/rpc/rpc-content.js';
-import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js';
+import { setMeta, getContent } from '@cms/modules/rpc/rpc-content.js';
+import { reloadPreview } from '@cms/modules/preview.utils.js';
 import { i18n } from '@cms/modules/localization.js';
 import { getPageTemplates } from '@cms/modules/rpc/rpc-manager.js';
 import { buildValuesFromFields } from '@cms/modules/node.js';
@@ -36,13 +36,8 @@ const DEFAULT_FIELDS = [
     }
 ];
 export async function runAction(params) {
-    const contentNode = await getContentNode({
-        url: getPreviewUrl()
-    });
     try {
-        const getContentResponse = await getContent({
-            uri: contentNode.result.uri
-        });
+        const getContentResponse = await getContent({});
         var pageTemplates = (await getPageTemplates()).result;
         var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template);
         var pageSettingsForm = [];
@@ -75,7 +70,6 @@ export async function runAction(params) {
                 var updateData = form.getData();
                 try {
                     await setMeta({
-                        uri: contentNode.result.uri,
                         meta: updateData
                     });
                     showToast({

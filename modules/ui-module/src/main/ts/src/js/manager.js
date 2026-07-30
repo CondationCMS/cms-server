@@ -122,8 +122,9 @@ const updateCurrentPage = (url) => {
 
 	const displayUrl = new URL(url);
 	displayUrl.searchParams.delete("preview");
-	displayUrl.searchParams.delete("preview-token");
-	displayUrl.searchParams.delete("nocache");
+    displayUrl.searchParams.delete("preview-token");
+    displayUrl.searchParams.delete("nocache");
+    displayUrl.searchParams.delete("variant");
 
 	const displayPath = `${displayUrl.pathname}${displayUrl.search}${displayUrl.hash}`;
 	pagePath.textContent = displayPath;

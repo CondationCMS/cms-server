@@ -2,11 +2,25 @@
 template: start.html
 createdAt: 2026-07-29T12:06:01.530Z
 createdBy: test
-title: Summer time
+title: Summer time 2
 status: draft
+features: [
+  ]
+object:
+  values: [
+    ]
+taxonomy:
+  tags: [
+    ]
+background_color: '#000000'
+range_test: 0
+seo:
+  description: ''
+linked_page: ''
+media_url: ''
 ---
 
-# Demo Project
+# Demo Project (summer)
 
 ![TestBild!](/media/images/test.jpg?format=small)
 

@@ -66,11 +66,11 @@ public class ConfigurableVariantSelector implements VariantSelector {
 			List<Variant> variants,
 			RequestContext context
 	) {
-		if (isManager(context)) {
-			return VariantSelection.canonical();
-		}
 		if (hasExplicitPreviewSelection(context)) {
 			return selectPreviewVariant(canonicalNode, variants, context.get(RequestFeature.class));
+		}
+		if (isManager(context)) {
+			return VariantSelection.canonical();
 		}
 
 		var selectorId = configurationRepository.getSelectorId(canonicalNode);
@@ -136,7 +136,8 @@ public class ConfigurableVariantSelector implements VariantSelector {
 
 	private boolean hasExplicitPreviewSelection(RequestContext context) {
 		return context.has(IsPreviewFeature.class)
-				&& IsPreviewFeature.Mode.PREVIEW.equals(context.get(IsPreviewFeature.class).mode())
+				&& (IsPreviewFeature.Mode.PREVIEW.equals(context.get(IsPreviewFeature.class).mode())
+						|| IsPreviewFeature.Mode.MANAGER.equals(context.get(IsPreviewFeature.class).mode()))
 				&& context.has(RequestFeature.class)
 				&& context.get(RequestFeature.class)
 						.hasQueryParameter(VARIANT_QUERY_PARAMETER);

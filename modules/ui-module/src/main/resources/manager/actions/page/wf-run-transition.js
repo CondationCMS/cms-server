@@ -24,7 +24,6 @@ import { wfTransit } from "@cms/modules/rpc/rpc-workflow";
 import { showToast } from "@cms/modules/toast";
 export async function runAction(params) {
     var request = {
-        uri: params.uri,
         transitionId: params.transitionId
     };
     try {

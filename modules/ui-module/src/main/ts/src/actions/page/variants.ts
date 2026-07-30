@@ -38,6 +38,7 @@ const createVariantLink = (
 	idText: string,
 	uriText: string,
 	url: string,
+	variantId: string | null,
 	active: boolean,
 	modal: any
 ): HTMLAnchorElement => {
@@ -67,7 +68,7 @@ const createVariantLink = (
 	link.addEventListener('click', (event) => {
 		event.preventDefault();
 		modal.hide();
-		loadPreview(url);
+		loadPreview(url, variantId ? { variant: variantId } : {});
 	});
 	return link;
 };
@@ -91,6 +92,7 @@ const renderVariants = (container: HTMLElement, result: GetVariantsResult, modal
 		i18n.t('manager.actions.page.variants.canonical', 'Original'),
 		result.canonical.uri,
 		result.canonical.url,
+		null,
 		!result.activeVariantId,
 		modal
 	));
@@ -100,7 +102,8 @@ const renderVariants = (container: HTMLElement, result: GetVariantsResult, modal
 			variantTitle(variant),
 			variant.id,
 			variant.uri,
-			variant.url,
+			result.canonical.url,
+			variant.id,
 			result.activeVariantId === variant.id,
 			modal
 		));

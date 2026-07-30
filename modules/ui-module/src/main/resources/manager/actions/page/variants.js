@@ -29,7 +29,7 @@ const variantTitle = (variant) => {
     const title = variant.meta?.title;
     return typeof title === 'string' && title.trim() ? title : variant.id;
 };
-const createVariantLink = (titleText, idText, uriText, url, active, modal) => {
+const createVariantLink = (titleText, idText, uriText, url, variantId, active, modal) => {
     const link = document.createElement('a');
     link.href = url;
     link.className = `list-group-item list-group-item-action${active ? ' active' : ''}`;
@@ -51,7 +51,7 @@ const createVariantLink = (titleText, idText, uriText, url, active, modal) => {
     link.addEventListener('click', (event) => {
         event.preventDefault();
         modal.hide();
-        loadPreview(url);
+        loadPreview(url, variantId ? { variant: variantId } : {});
     });
     return link;
 };
@@ -65,9 +65,9 @@ const renderVariants = (container, result, modal) => {
     }
     const list = document.createElement('div');
     list.className = 'list-group';
-    list.appendChild(createVariantLink(result.canonical.title, i18n.t('manager.actions.page.variants.canonical', 'Original'), result.canonical.uri, result.canonical.url, !result.activeVariantId, modal));
+    list.appendChild(createVariantLink(result.canonical.title, i18n.t('manager.actions.page.variants.canonical', 'Original'), result.canonical.uri, result.canonical.url, null, !result.activeVariantId, modal));
     result.variants.forEach((variant) => {
-        list.appendChild(createVariantLink(variantTitle(variant), variant.id, variant.uri, variant.url, result.activeVariantId === variant.id, modal));
+        list.appendChild(createVariantLink(variantTitle(variant), variant.id, variant.uri, result.canonical.url, variant.id, result.activeVariantId === variant.id, modal));
     });
     container.appendChild(list);
 };

@@ -29,6 +29,7 @@ import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.variants.Variant;
@@ -128,7 +129,9 @@ public class ContentResolver {
 		);
 		var selectedNode = selection.variant()
 				.map(Variant::node)
-				.filter(node -> !checkVisibility || NodeVisibility.isVisible(node))
+				.filter(node -> !checkVisibility
+						|| context.has(IsPreviewFeature.class)
+						|| NodeVisibility.isVisible(node))
 				.orElse(contentNode);
 
 		var contentFile = db.getFileSystem().contentBase().resolve(selectedNode.path());

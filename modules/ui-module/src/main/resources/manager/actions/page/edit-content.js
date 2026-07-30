@@ -20,26 +20,15 @@
  */
 import { openModal } from '@cms/modules/modal.js';
 import { createForm } from '@cms/modules/form/forms.js';
-import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js';
-import { getContentNode, getContent, setContent } from '@cms/modules/rpc/rpc-content.js';
+import { reloadPreview } from '@cms/modules/preview.utils.js';
+import { getContent, setContent } from '@cms/modules/rpc/rpc-content.js';
 import { i18n } from '@cms/modules/localization.js';
 import { showToast } from '@cms/modules/toast.js';
 // hook.js
 export async function runAction(params) {
-    var uri = null;
-    if (params.uri) {
-        uri = params.uri;
-    }
-    else {
-        const contentNode = await getContentNode({
-            url: getPreviewUrl()
-        });
-        uri = contentNode.result.uri;
-    }
+    const uri = params.uri || null;
     try {
-        const nodeContent = await getContent({
-            uri: uri
-        });
+        const nodeContent = await getContent(uri ? { uri } : {});
         const form = createForm({
             fields: [
                 {
@@ -63,7 +52,7 @@ export async function runAction(params) {
                 var updateData = form.getData();
                 try {
                     await setContent({
-                        uri: uri,
+                        ...(uri && { uri }),
                         content: updateData.content
                     });
                     showToast({

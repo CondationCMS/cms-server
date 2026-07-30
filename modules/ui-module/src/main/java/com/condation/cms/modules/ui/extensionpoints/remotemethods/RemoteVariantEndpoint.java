@@ -207,7 +207,7 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 			return Map.of(
 					"id", variantId,
 					"uri", newUri,
-					"url", managerPreviewUrl(PathUtil.toURL(variantFile, contentBase))
+					"url", managerVariantPreviewUrl(canonicalNode.url(), variantId)
 			);
 		} catch (RPCException exception) {
 			throw exception;
@@ -233,7 +233,7 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 				.map(variant -> new VariantDto(
 						variant.id(),
 						variant.node().uri(),
-						managerPreviewUrl(variant.node().url()),
+						managerVariantPreviewUrl(variantContext.canonical().url(), variant.id()),
 						variant.node().data()
 				))
 				.toList();
@@ -282,6 +282,14 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 
 	private String managerPreviewUrl(String url) {
 		return url + (url.contains("?") ? "&" : "?") + "preview=manager";
+	}
+
+	private String managerVariantPreviewUrl(String canonicalUrl, String variantId) {
+		return managerPreviewUrl(canonicalUrl)
+				+ "&"
+				+ ConfigurableVariantSelector.VARIANT_QUERY_PARAMETER
+				+ "="
+				+ java.net.URLEncoder.encode(variantId, java.nio.charset.StandardCharsets.UTF_8);
 	}
 
 	private record SectionCopy(java.nio.file.Path source, java.nio.file.Path target) {

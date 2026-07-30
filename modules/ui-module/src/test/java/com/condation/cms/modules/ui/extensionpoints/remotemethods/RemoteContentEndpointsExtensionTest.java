@@ -25,7 +25,11 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.ui.rpc.RPCException;
 import java.io.IOException;
 import java.util.Map;
@@ -89,5 +93,24 @@ class RemoteContentEndpointsExtensionTest {
 		assertThatThrownBy(() -> endpoints.setContent(params))
 				.isInstanceOf(RPCException.class)
 				.hasMessage("disk error");
+	}
+
+	@Test
+	void getContentUsesCurrentNodeWhenUriIsOmitted() throws Exception {
+		var uri = ".variants/about/summer/about.md";
+		var requestContext = new RequestContext();
+		requestContext.add(
+				CurrentNodeFeature.class,
+				new CurrentNodeFeature(new ContentNode(uri, "/about", "about.md", Map.of()))
+		);
+		when(contentBase.resolve(uri)).thenReturn(contentFile);
+		when(contentFile.getContent()).thenThrow(new IOException("variant selected"));
+
+		assertThatThrownBy(() -> ScopedValue.where(
+				RequestContextScope.REQUEST_CONTEXT,
+				requestContext
+		).call(() -> endpoints.getContent(Map.of())))
+				.isInstanceOf(RPCException.class)
+				.hasMessage("variant selected");
 	}
 }

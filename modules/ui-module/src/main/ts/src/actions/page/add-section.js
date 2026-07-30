@@ -20,17 +20,13 @@
  */
 import { openModal } from '@cms/modules/modal.js'
 import { showToast } from '@cms/modules/toast.js'
-import { addSection, getContentNode } from '@cms/modules/rpc/rpc-content.js'
-import { getPreviewUrl, reloadPreview } from '@cms/modules/preview.utils.js'
+import { addSection } from '@cms/modules/rpc/rpc-content.js'
+import { reloadPreview } from '@cms/modules/preview.utils.js'
 import Handlebars from 'https://cdn.jsdelivr.net/npm/handlebars@4.7.8/+esm'
 import { i18n } from '@cms/modules/localization.js'
 import { getSectionEntryTemplates } from '@cms/modules/rpc/rpc-manager.js';
 
 export async function runAction(params) {
-
-	const contentNode = await getContentNode({
-		url: getPreviewUrl()
-	})
 
 	var template = Handlebars.compile(`
 		<div class="mb-3">
@@ -57,9 +53,9 @@ export async function runAction(params) {
 		}),
 		fullscreen: false,
 		onCancel: (event) => {},
-		validate: () => validate(contentNode, params.section),
+		validate: () => validate(params.section),
 		onOk: async (event) => {
-			var result = await createSection(contentNode.result.uri, params.section);
+			var result = await createSection(params.section);
 			if (result) {
 				showToast({
 					title: i18n.t("manager.actions.addsection.titles.alert", "Create Entry"),
@@ -86,7 +82,7 @@ const getSectionEntryName = () => {
 	return document.getElementById("cms-section-name").value
 }
 
-const validate = (contentNode, targetSection) => {
+const validate = (targetSection) => {
 	const template = document.getElementById("cms-section-template-selection").value
 	if (template === "000") {
 		showToast({
@@ -132,7 +128,7 @@ function isUriInSection(data, sectionEntryKey, targetUri) {
 	return sectionArray.some(item => item.uri === targetUri);
 }
 
-const createSection = async (parentUri, parentSectionName) => {
+const createSection = async (parentSectionName) => {
 
 	const template = document.getElementById("cms-section-template-selection").value
 	if (template === "000") {
@@ -140,7 +136,6 @@ const createSection = async (parentUri, parentSectionName) => {
 	}
 	try {
 		await addSection({
-			parentUri: parentUri,
 			sectionEntryName: getSectionEntryName(),
 			section: parentSectionName,
 			template: template

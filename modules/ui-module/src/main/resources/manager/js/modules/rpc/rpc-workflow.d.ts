@@ -19,7 +19,7 @@
  * #L%
  */
 export interface GetTransitionsRequest {
-    uri: string;
+    uri?: string;
 }
 export interface GetTransitionsDto {
     id: string;
@@ -29,7 +29,7 @@ declare const getWfTransitions: (options: GetTransitionsRequest) => Promise<{
     transitions: GetTransitionsDto[];
 }>;
 export interface GetWFManagerRequest {
-    uri: string;
+    uri?: string;
 }
 export interface GetWFManagerStatusDto {
     published: boolean;
@@ -49,7 +49,7 @@ export interface getWFManagerDto {
 }
 declare const getWfManagerStatus: (options: GetWFManagerRequest) => Promise<getWFManagerDto>;
 export interface WfTransitRequest {
-    uri: string;
+    uri?: string;
     transitionId: string;
 }
 export interface WFTransitDto {

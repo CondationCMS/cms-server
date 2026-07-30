@@ -22,5 +22,27 @@ let activeContent = null;
 const setActivePreviewContent = (content) => {
     activeContent = content?.uri ? { ...content } : null;
 };
-const getActivePreviewContent = () => activeContent;
+const comparableUrl = (url) => {
+    try {
+        const parsed = new URL(url, window.location.origin);
+        parsed.hash = '';
+        return `${parsed.pathname}${parsed.search}`;
+    }
+    catch {
+        return null;
+    }
+};
+const getActivePreviewContent = (currentPreviewUrl) => {
+    if (!activeContent) {
+        return null;
+    }
+    if (!currentPreviewUrl || !activeContent.url) {
+        return activeContent;
+    }
+    const activeUrl = comparableUrl(activeContent.url);
+    const currentUrl = comparableUrl(currentPreviewUrl);
+    return activeUrl !== null && activeUrl === currentUrl
+        ? activeContent
+        : null;
+};
 export { getActivePreviewContent, setActivePreviewContent };

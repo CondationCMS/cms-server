@@ -24,7 +24,7 @@ import { executeScriptAction } from '../manager-globals';
 import { getActivePreviewContent } from './preview-context.js';
 export function updateStateButton() {
     const previewUrl = getPreviewUrl();
-    const activePreviewContent = getActivePreviewContent();
+    const activePreviewContent = getActivePreviewContent(previewUrl);
     if (!previewUrl || !activePreviewContent?.uri) {
         const statusButton = document.querySelector('#cms-btn-status');
         statusButton?.classList.add('disabled');

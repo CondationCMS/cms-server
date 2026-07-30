@@ -54,10 +54,10 @@ public class DefaultVariantSelector implements VariantSelector {
 				))
 				.filter(variant -> variant.status().published())
 				.filter(variant -> variant.status().withinSchedule())
-				.max(Comparator.comparing(
+				.max(Comparator.<ScheduledVariant, java.util.Date>comparing(
 						variant -> variant.status().publish_date(),
 						Comparator.nullsFirst(Comparator.naturalOrder())
-				))
+				).thenComparing(variant -> variant.variant().id()))
 				.map(ScheduledVariant::variant)
 				.map(VariantSelection::automatic)
 				.orElseGet(VariantSelection::canonical);

@@ -24,7 +24,6 @@ import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.request.RequestContext;
-import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.ui.rpc.RPCResult;

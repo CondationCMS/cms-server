@@ -21,6 +21,7 @@
 
 export interface ActivePreviewContent {
 	uri: string;
+	url?: string;
 	canonicalUri?: string;
 	variantId?: string | null;
 }
@@ -31,6 +32,30 @@ const setActivePreviewContent = (content: ActivePreviewContent | null) => {
 	activeContent = content?.uri ? { ...content } : null;
 };
 
-const getActivePreviewContent = (): ActivePreviewContent | null => activeContent;
+const comparableUrl = (url: string): string | null => {
+	try {
+		const parsed = new URL(url, window.location.origin);
+		parsed.hash = '';
+		return `${parsed.pathname}${parsed.search}`;
+	} catch {
+		return null;
+	}
+};
+
+const getActivePreviewContent = (
+	currentPreviewUrl?: string
+): ActivePreviewContent | null => {
+	if (!activeContent) {
+		return null;
+	}
+	if (!currentPreviewUrl || !activeContent.url) {
+		return activeContent;
+	}
+	const activeUrl = comparableUrl(activeContent.url);
+	const currentUrl = comparableUrl(currentPreviewUrl);
+	return activeUrl !== null && activeUrl === currentUrl
+		? activeContent
+		: null;
+};
 
 export { getActivePreviewContent, setActivePreviewContent };

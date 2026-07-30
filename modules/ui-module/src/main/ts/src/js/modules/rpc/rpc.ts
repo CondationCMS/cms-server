@@ -51,7 +51,14 @@ const executeRemoteMethodCall = async (method : string, parameters : any) => {
 		parameters: parameters
 	}
 	const csrfToken = getCSRFToken();
-	const activePreviewContent = getActivePreviewContent();
+	const previewFrame = document.getElementById("contentPreview") as HTMLIFrameElement | null;
+	let currentPreviewUrl = "";
+	try {
+		currentPreviewUrl = previewFrame?.contentWindow?.location.href ?? "";
+	} catch {
+		// A context header is optional when the preview URL cannot be read.
+	}
+	const activePreviewContent = getActivePreviewContent(currentPreviewUrl);
 	var response = await fetch(window.manager.baseUrl + "/rpc", {
 		method: "POST",
 		headers: {

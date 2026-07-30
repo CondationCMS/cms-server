@@ -134,6 +134,28 @@ public class DefaultVariantSelectorTest {
 		Assertions.assertThat(selection.variant()).contains(newer);
 	}
 
+	@Test
+	public void variantsWithSameScheduleUseIdAsStableTieBreaker() {
+		var publishDate = Instant.now().minus(Duration.ofDays(1));
+		var unpublishDate = Instant.now().plus(Duration.ofDays(1));
+		var alpha = scheduledVariant("alpha", publishDate, unpublishDate, "published");
+		var beta = scheduledVariant("beta", publishDate, unpublishDate, "published");
+
+		var firstOrder = selector.select(
+				canonicalNode,
+				List.of(beta, alpha),
+				context()
+		);
+		var secondOrder = selector.select(
+				canonicalNode,
+				List.of(alpha, beta),
+				context()
+		);
+
+		Assertions.assertThat(firstOrder.variant()).contains(beta);
+		Assertions.assertThat(secondOrder.variant()).contains(beta);
+	}
+
 	private RequestContext context() {
 		return new RequestContext();
 	}

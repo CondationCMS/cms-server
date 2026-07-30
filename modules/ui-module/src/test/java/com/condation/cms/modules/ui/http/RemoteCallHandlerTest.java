@@ -114,4 +114,27 @@ class RemoteCallHandlerTest {
 
 		assertThat(context.get(CurrentNodeFeature.class).node()).isEqualTo(node);
 	}
+
+	@Test
+	void unknownContentUriHeaderDoesNotAddCurrentNodeFeature() throws Exception {
+		var context = new RequestContext();
+		var db = mock(DB.class);
+		var content = mock(Content.class);
+		var request = mock(Request.class);
+		var headers = mock(HttpFields.class);
+		when(moduleContext.has(DBFeature.class)).thenReturn(true);
+		when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+		when(db.getContent()).thenReturn(content);
+		when(request.getHeaders()).thenReturn(headers);
+		when(headers.get(RemoteCallHandler.CONTENT_URI_HEADER)).thenReturn("unknown.md");
+		when(content.byUri("unknown.md")).thenReturn(Optional.empty());
+		when(content.byPath("unknown.md")).thenReturn(Optional.empty());
+
+		var handler = new RemoteCallHandler(remoteMethodService, moduleContext, context);
+		var method = RemoteCallHandler.class.getDeclaredMethod("setCurrentContentNode", Request.class);
+		method.setAccessible(true);
+		method.invoke(handler, request);
+
+		assertThat(context.has(CurrentNodeFeature.class)).isFalse();
+	}
 }

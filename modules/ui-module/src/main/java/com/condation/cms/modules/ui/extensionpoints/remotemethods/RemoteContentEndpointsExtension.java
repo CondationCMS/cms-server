@@ -365,13 +365,15 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 						ConfigurableVariantSelector.VARIANT_QUERY_PARAMETER,
 						List.of()
 				).stream().findFirst().orElse("").trim();
+				String activeVariantId = null;
 				if (selectedNode != null
 						&& !variantId.isBlank()
 						&& !ConfigurableVariantSelector.CANONICAL_VARIANT_ID.equalsIgnoreCase(variantId)) {
-					selectedNode = new VariantResolver(db)
-							.loadVariant(selectedNode, variantId)
-							.map(com.condation.cms.api.variants.Variant::node)
-							.orElse(selectedNode);
+					var selectedVariant = new VariantResolver(db).loadVariant(selectedNode, variantId);
+					if (selectedVariant.isPresent()) {
+						selectedNode = selectedVariant.get().node();
+						activeVariantId = selectedVariant.get().id();
+					}
 				}
 				if (selectedNode != null) {
 					contentFile = contentBase.resolve(selectedNode.uri());
@@ -380,10 +382,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 					result.put("uri", canonicalUri);
 				}
 				result.put("canonicalUri", canonicalUri);
-				result.put("variantId", variantId.isBlank()
-						|| ConfigurableVariantSelector.CANONICAL_VARIANT_ID.equalsIgnoreCase(variantId)
-						? null
-						: variantId);
+				result.put("variantId", activeVariantId);
 				
 				var sectionEntries = db.getContent().listSectionEntries(contentFile);
 				Map<String, List<SectionEntry>> sectionMap = new HashMap<>();

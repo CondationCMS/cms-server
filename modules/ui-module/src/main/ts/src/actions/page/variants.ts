@@ -20,10 +20,16 @@
  */
 
 import { i18n } from '@cms/modules/localization.js'
+import { alertConfirm } from '@cms/modules/alerts.js'
 import { openModal } from '@cms/modules/modal.js'
 import { getPreviewUrl, loadPreview } from '@cms/modules/preview.utils.js'
 import { getContentNode } from '@cms/modules/rpc/rpc-content.js'
-import { getVariants, GetVariantsResult, VariantDto } from '@cms/modules/rpc/rpc-variant.js'
+import {
+	deleteVariant,
+	getVariants,
+	GetVariantsResult,
+	VariantDto
+} from '@cms/modules/rpc/rpc-variant.js'
 import { showToast } from '@cms/modules/toast.js'
 
 const VARIANT_LIST_ID = 'cms-page-variants';
@@ -73,6 +79,82 @@ const createVariantLink = (
 	return link;
 };
 
+const createVariantItem = (
+	variant: VariantDto,
+	result: GetVariantsResult,
+	modal: any,
+	container: HTMLElement
+): HTMLElement => {
+	const item = document.createElement('div');
+	item.className = 'list-group-item d-flex align-items-center gap-2 p-0';
+
+	const link = createVariantLink(
+		variantTitle(variant),
+		variant.id,
+		variant.uri,
+		result.canonical.url,
+		variant.id,
+		result.activeVariantId === variant.id,
+		modal
+	);
+	link.classList.remove('list-group-item');
+	link.classList.add('flex-grow-1', 'border-0', 'rounded-0');
+	item.appendChild(link);
+
+	const deleteButton = document.createElement('button');
+	deleteButton.type = 'button';
+	deleteButton.className = 'btn btn-sm btn-outline-danger flex-shrink-0 me-2';
+	deleteButton.title = i18n.t('manager.actions.page.variants.delete', 'Delete variant');
+	deleteButton.setAttribute('aria-label', `${deleteButton.title}: ${variant.id}`);
+	deleteButton.innerHTML = '<i class="bi bi-trash" aria-hidden="true"></i>';
+	deleteButton.addEventListener('click', async () => {
+		const confirmed = await alertConfirm({
+			title: i18n.t('manager.actions.page.variants.delete.confirm.title', 'Delete page variant?'),
+			message: i18n.t(
+				'manager.actions.page.variants.delete.confirm.message',
+				`The variant “${escapeHtml(variantTitle(variant))}” and all its sections will be permanently deleted.`
+			)
+		});
+		if (!confirmed) {
+			return;
+		}
+
+		try {
+			const wasActive = result.activeVariantId === variant.id;
+			const deleted = await deleteVariant(result.canonical.uri, variant.id);
+			showToast({
+				title: i18n.t('manager.actions.page.variants.delete.success.title', 'Variant deleted'),
+				message: i18n.t(
+					'manager.actions.page.variants.delete.success.message',
+					`The variant “${variant.id}” was deleted.`
+				),
+				type: 'success',
+				timeout: 3000
+			});
+			if (wasActive) {
+				modal.hide();
+				loadPreview(deleted.url);
+				return;
+			}
+			result.variants = result.variants.filter(candidate => candidate.id !== variant.id);
+			container.replaceChildren();
+			renderVariants(container, result, modal);
+		} catch (error) {
+			showToast({
+				title: i18n.t(
+					'manager.actions.page.variants.delete.error.title',
+					'Could not delete variant'
+				),
+				message: error instanceof Error ? error.message : String(error),
+				type: 'error',
+				timeout: 3000
+			});
+		}
+	});
+	item.appendChild(deleteButton);
+	return item;
+};
+
 const renderVariants = (container: HTMLElement, result: GetVariantsResult, modal: any) => {
 	if (result.variants.length === 0) {
 		const emptyMessage = document.createElement('p');
@@ -98,18 +180,16 @@ const renderVariants = (container: HTMLElement, result: GetVariantsResult, modal
 	));
 
 	result.variants.forEach((variant) => {
-		list.appendChild(createVariantLink(
-			variantTitle(variant),
-			variant.id,
-			variant.uri,
-			result.canonical.url,
-			variant.id,
-			result.activeVariantId === variant.id,
-			modal
-		));
+		list.appendChild(createVariantItem(variant, result, modal, container));
 	});
 
 	container.appendChild(list);
+};
+
+const escapeHtml = (input: unknown): string => {
+	const element = document.createElement('div');
+	element.textContent = String(input ?? '');
+	return element.innerHTML;
 };
 
 export const runAction = async () => {

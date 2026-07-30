@@ -22,16 +22,26 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  */
 
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.Content;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
+import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.core.content.io.ContentFileParser;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -54,6 +64,9 @@ public class RemoteFileEnpointsTest {
 	
 	@Mock
 	private DBFileSystem dbFileSystem;
+
+	@TempDir
+	private Path tempDir;
 	
 	public RemoteFileEnpointsTest() {
 	}
@@ -74,6 +87,81 @@ public class RemoteFileEnpointsTest {
 				"uri", "/test/absolut/path"
 		))).isInstanceOf(RPCException.class);//.hasMessage("invalid path");
 		
+	}
+
+	@Test
+	void listUsesContentTitleButKeepsTechnicalName() throws Exception {
+		var content = Mockito.mock(Content.class);
+		var contentBase = Mockito.mock(ReadOnlyFile.class);
+		var page = Mockito.mock(ReadOnlyFile.class);
+		var node = new ContentNode(
+				"about.md",
+				"/about",
+				"about.md",
+				Map.of(Constants.MetaFields.TITLE, "About us")
+		);
+		Mockito.when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+		Mockito.when(db.getFileSystem()).thenReturn(dbFileSystem);
+		Mockito.when(db.getContent()).thenReturn(content);
+		Mockito.when(dbFileSystem.contentBase()).thenReturn(contentBase);
+		Mockito.when(contentBase.resolve("")).thenReturn(contentBase);
+		Mockito.when(contentBase.isDirectory()).thenReturn(true);
+		Mockito.when(contentBase.children()).thenReturn(List.of(page));
+		Mockito.when(page.getFileName()).thenReturn("about.md");
+		Mockito.when(page.uri()).thenReturn("/about");
+		Mockito.when(page.relativePath()).thenReturn("about.md");
+		Mockito.when(content.byPath("about.md")).thenReturn(Optional.of(node));
+
+		var endpoints = new RemoteFileEnpoints();
+		endpoints.setContext(moduleContext);
+
+		@SuppressWarnings("unchecked")
+		var result = (Map<String, Object>) endpoints.list(Map.of(
+				"type", "content",
+				"uri", ""
+		));
+		var files = (List<RemoteFileEnpoints.File>) result.get("files");
+
+		Assertions.assertThat(files).singleElement().satisfies(file -> {
+			Assertions.assertThat(file.name()).isEqualTo("about.md");
+			Assertions.assertThat(file.displayName()).isEqualTo("About us");
+			Assertions.assertThat(((RemoteFileEnpoints.Content) file).title()).isEqualTo("About us");
+		});
+	}
+
+	@Test
+	void renameMarkdownContentUpdatesTitleWithoutChangingFileName() throws Exception {
+		var contentBase = Mockito.mock(ReadOnlyFile.class);
+		var directory = Mockito.mock(ReadOnlyFile.class);
+		var contentFile = Mockito.mock(ReadOnlyFile.class);
+		var eventBus = Mockito.mock(EventBus.class);
+		var page = tempDir.resolve("about.md");
+		Files.writeString(page, "---\ntitle: Old title\ntemplate: page\n---\n\nBody");
+		Mockito.when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+		Mockito.when(moduleContext.get(EventBusFeature.class)).thenReturn(new EventBusFeature(eventBus));
+		Mockito.when(db.getFileSystem()).thenReturn(dbFileSystem);
+		Mockito.when(dbFileSystem.contentBase()).thenReturn(contentBase);
+		Mockito.when(dbFileSystem.resolve(Constants.Folders.CONTENT)).thenReturn(tempDir);
+		Mockito.when(contentBase.resolve("")).thenReturn(directory);
+		Mockito.when(directory.resolve("about.md")).thenReturn(contentFile);
+
+		var endpoints = new RemoteFileEnpoints();
+		endpoints.setContext(moduleContext);
+		endpoints.renameFile(Map.of(
+				"type", "content",
+				"uri", "",
+				"name", "about.md",
+				"newName", "New title"
+		));
+
+		Assertions.assertThat(page).exists();
+		Assertions.assertThat(tempDir.resolve("New title")).doesNotExist();
+		var parser = new ContentFileParser(page.toString());
+		Assertions.assertThat(parser.getHeader())
+				.containsEntry(Constants.MetaFields.TITLE, "New title")
+				.containsEntry(Constants.MetaFields.TEMPLATE, "page");
+		Assertions.assertThat(parser.getContent()).isEqualTo("Body");
+		Mockito.verify(dbFileSystem).flushContentChanges();
 	}
 	
 }

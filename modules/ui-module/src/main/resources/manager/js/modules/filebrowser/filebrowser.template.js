@@ -71,6 +71,7 @@ const template = Handlebars.compile(`
 			<tr 
 				data-cms-file-uri="{{uri}}"
 				data-cms-file-name="{{name}}"
+				{{#if content}} data-cms-file-content="true"{{/if}}
 				{{#if directory}} data-cms-file-directory="true"{{/if}}>
 				<th scope="row">
 					{{#if directory}}
@@ -79,7 +80,7 @@ const template = Handlebars.compile(`
 						<i class="bi bi-file"></i>
 					{{/if}}
 				</th>
-				<td>{{name}}</td>
+				<td>{{#if title}}{{title}}{{else}}{{name}}{{/if}}</td>
 				<td>
 					{{#if directory}}
 						{{#ifNotEquals name ".."}}
@@ -120,7 +121,7 @@ const template = Handlebars.compile(`
 					{{#ifNotEquals name ".."}}
 						<button class="btn" data-cms-file-uri="{{uri}}" data-cms-file-action="renameFile"
 							data-bs-toggle="tooltip" data-bs-placement="top"
-        					data-bs-title="Rename file."
+							data-bs-title="{{#if content}}Edit title.{{else}}Rename.{{/if}}"
 						>
 							<i class="bi bi-pencil-square"></i>
 						</button>

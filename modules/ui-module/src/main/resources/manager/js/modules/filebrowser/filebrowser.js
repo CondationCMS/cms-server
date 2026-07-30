@@ -32,7 +32,7 @@ const defaultOptions = {
     uri: "",
     onSelect: null,
     fullscreen: true,
-    title: i18n.t("filebrowser.title", "Filesystem"),
+    title: i18n.t("filebrowser.title", "Content"),
     filter: (file) => {
         return true; // Default filter allows all files
     }
@@ -81,7 +81,7 @@ const initFileBrowser = async (uri) => {
     if (fileBrowserElement) {
         fileBrowserElement.innerHTML = filebrowserTemplate({
             files: files,
-            filenameHeader: i18n.t("filebrowser.filename", "Filename"),
+            filenameHeader: i18n.t("filebrowser.filename", "Name"),
             actionHeader: i18n.t("filebrowser.action", "Action"),
             actions: getActions(),
             asset: state.options.type === "assets",
@@ -204,10 +204,13 @@ const fileActions = () => {
                 });
             }
             else if (action === "renameFile") {
+                const row = element.closest("[data-cms-file-name]");
                 renameFileAction({
                     state: state,
                     getTargetFolder: getTargetFolder,
-                    filename: filename
+                    filename: filename,
+                    title: row.querySelector('td')?.textContent?.trim() || filename,
+                    content: row.hasAttribute("data-cms-file-content")
                 }).then(async () => {
                     await initFileBrowser(state.currentFolder);
                 });

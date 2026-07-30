@@ -38,12 +38,17 @@ public class UIGsonProviderTest {
 
     @Test
     void testContentSerializationIncludesInterfaceProperties() {
-		var content = new RemoteFileEnpoints.Content("readme.md", "/docs/readme.md");
+		var content = new RemoteFileEnpoints.Content(
+				"readme.md",
+				"/docs/readme.md",
+				"Read me"
+		);
         String json = UIGsonProvider.INSTANCE.toJson(content);
         JsonObject obj = JsonParser.parseString(json).getAsJsonObject();
 
         Assertions.assertThat(obj.get("name").getAsString()).isEqualTo("readme.md");
         Assertions.assertThat(obj.get("uri").getAsString()).isEqualTo("/docs/readme.md");
+        Assertions.assertThat(obj.get("title").getAsString()).isEqualTo("Read me");
         Assertions.assertThat(obj.get("directory").getAsBoolean()).isFalse();
         Assertions.assertThat(obj.get("media").getAsBoolean()).isFalse();
         Assertions.assertThat(obj.get("content").getAsBoolean()).isTrue();

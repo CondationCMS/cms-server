@@ -21,8 +21,11 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 import com.condation.cms.api.auth.Permissions;
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
+import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
+import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.api.utils.SectionUtil;
@@ -38,6 +41,8 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
+import com.condation.cms.core.content.io.ContentFileParser;
+import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import java.nio.file.Path;
 
 /**
@@ -76,7 +81,8 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 				}
 				contentFile.children().stream()
 						.filter(child -> !SectionUtil.isSectionEntry(child.getFileName()))
-						.map(this::map)
+						.filter(child -> !".variants".equals(child.getFileName()))
+						.map(child -> map(db, type, child))
 						.forEach(files::add);
 			} catch (IOException ex) {
 				log.error("", ex);
@@ -89,7 +95,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 			} else if (!f1.directory() && f2.directory()) {
 				return 1;
 			} else {
-				return f1.name().compareToIgnoreCase(f2.name());
+				return f1.displayName().compareToIgnoreCase(f2.displayName());
 			}
 		});
 
@@ -165,30 +171,36 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 			var sourcePath = writableBase.resolve(uri).resolve(name);
 			var targetPath = writableBase.resolve(uri).resolve(newName);
 
-			log.debug("renaming from {} to {}", sourcePath, targetPath);
-
 			if (!Files.exists(sourcePath)) {
 				throw new RPCException("Source file not found: " + sourcePath);
 			}
+			if (!"assets".equals(type) && name.endsWith(".md") && !Files.isDirectory(sourcePath)) {
+				var parser = new ContentFileParser(sourcePath.toString());
+				var metadata = parser.getHeader() == null
+						? new HashMap<String, Object>()
+						: new HashMap<>(parser.getHeader());
+				metadata.put(Constants.MetaFields.TITLE, newName.trim());
+				YamlHeaderUpdater.saveMarkdownFileWithHeader(
+						sourcePath,
+						metadata,
+						parser.getContent()
+				);
+				getContext().get(EventBusFeature.class).eventBus().syncPublish(
+						new ReIndexContentMetaDataEvent(PathUtil.toRelativeFile(sourcePath, writableBase))
+				);
+				db.getFileSystem().flushContentChanges();
+				result.put("success", true);
+				result.put("newName", name);
+				result.put("title", newName.trim());
+				return result;
+			}
+
+			log.debug("renaming from {} to {}", sourcePath, targetPath);
 			if (Files.exists(targetPath)) {
 				throw new RPCException("Target file already exists: " + targetPath);
 			}
 
 			Files.move(sourcePath, targetPath);
-
-			if (!"assets".equals(type) && !Files.isDirectory(targetPath)) {
-				var contentFile = contentBase.resolve(uri).resolve(name);
-				var sections = db.getContent().listSectionEntries(contentFile);
-
-				for (var node : sections) {
-					var sourceSectionPath = writableBase.resolve(node.uri());
-					var targetSectionPath = writableBase.resolve(node.uri().replace(name, newName));
-					if (Files.exists(sourceSectionPath)) {
-						log.debug("renaming section {} to {}", sourceSectionPath, targetSectionPath);
-						Files.move(sourceSectionPath, targetSectionPath);
-					}
-				}
-			}
 
 			result.put("success", true);
 			result.put("newName", newName);
@@ -269,12 +281,13 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 		return name.endsWith(".jpg")
 				|| name.endsWith(".jpeg")
 				|| name.endsWith(".webp")
+				|| name.endsWith(".avif")
 				|| name.endsWith(".png")
 				|| name.endsWith(".svg")
 				|| name.endsWith(".gif");
 	}
 	
-	private File map (ReadOnlyFile readOnlyFile) {
+	private File map (DB db, String type, ReadOnlyFile readOnlyFile) {
 		if (readOnlyFile.isDirectory()) {
 			return new Directory(
 						readOnlyFile.getFileName(),
@@ -286,14 +299,27 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 					readOnlyFile.uri()
 			);
 		} else {
+			var title = "assets".equals(type)
+					? readOnlyFile.getFileName()
+					: db.getContent().byPath(readOnlyFile.relativePath())
+							.map(node -> node.data().get(Constants.MetaFields.TITLE))
+							.filter(String.class::isInstance)
+							.map(String.class::cast)
+							.filter(value -> !value.isBlank())
+							.orElse(readOnlyFile.getFileName());
 			return new Content(
 					readOnlyFile.getFileName(), 
-					readOnlyFile.uri()
+					readOnlyFile.uri(),
+					title
 			);
 		}
 	}
 	
-	public record Content(String name, String uri) implements File {
+	public record Content(String name, String uri, String title) implements File {
+		@Override
+		public String displayName() {
+			return title;
+		}
 	}
 	
 	public record Media(String name, String uri) implements File {
@@ -313,6 +339,9 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 	public static interface File {
 		String name ();
 		String uri ();
+		default String displayName () {
+			return name();
+		}
 		default boolean directory () {
 			return false;
 		}

@@ -58,6 +58,11 @@ export interface CreateVariantResult {
 	url: string;
 }
 
+export interface DeleteVariantResult {
+	id: string;
+	url: string;
+}
+
 export interface VariantSelectorDto {
 	id: string;
 	label: string;
@@ -84,6 +89,14 @@ const createVariant = async (options: CreateVariantOptions): Promise<CreateVaria
 	return (await executeRemoteCall(data)).result as CreateVariantResult;
 };
 
+const deleteVariant = async (uri: string, id: string): Promise<DeleteVariantResult> => {
+	const data = {
+		method: 'variants.delete',
+		parameters: { uri, id }
+	};
+	return (await executeRemoteCall(data)).result as DeleteVariantResult;
+};
+
 const getVariantSelectors = async (uri: string): Promise<GetVariantSelectorsResult> => {
 	const data = {
 		method: 'variants.selectors.get',
@@ -100,4 +113,4 @@ const setVariantSelector = async (uri: string, selector: string): Promise<{ sele
 	return (await executeRemoteCall(data)).result as { selector: string };
 };
 
-export { createVariant, getVariants, getVariantSelectors, setVariantSelector };
+export { createVariant, deleteVariant, getVariants, getVariantSelectors, setVariantSelector };

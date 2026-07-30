@@ -217,6 +217,53 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 		}
 	}
 
+	@RemoteMethod(name = "variants.delete", permissions = {Permissions.CONTENT_EDIT})
+	public Object delete(Map<String, Object> parameters) throws RPCException {
+		var uri = stringParameter(parameters, "uri");
+		var variantId = stringParameter(parameters, "id");
+		if (uri.isBlank() || variantId.isBlank()) {
+			throw new RPCException(400, "uri and id must not be blank");
+		}
+
+		var db = getDB(parameters);
+		var requestedNode = findContentNode(db, uri);
+		var variantContext = getVariantResolver(db).resolveContext(requestedNode);
+		var variant = variantContext.variants().stream()
+				.filter(candidate -> candidate.id().equals(variantId))
+				.findFirst()
+				.orElseThrow(() -> new RPCException(404, "variant not found"));
+		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
+		var variantFolder = contentBase.resolve(variant.node().path()).getParent();
+
+		try {
+			if (!UIPathUtil.isChild(contentBase, variantFolder)
+					|| !Files.exists(variantFolder)
+					|| !Files.isDirectory(variantFolder)) {
+				throw new RPCException(404, "variant folder not found");
+			}
+			var folderUri = PathUtil.toRelativeFile(variantFolder, contentBase);
+			try (var paths = Files.walk(variantFolder)) {
+				for (var path : paths.sorted(Comparator.reverseOrder()).toList()) {
+					Files.delete(path);
+				}
+			}
+			getContext().get(EventBusFeature.class).eventBus().syncPublish(
+					new ReIndexContentMetaDataEvent(folderUri)
+			);
+			db.getFileSystem().flushContentChanges();
+
+			return Map.of(
+					"id", variantId,
+					"url", managerPreviewUrl(variantContext.canonical().url())
+			);
+		} catch (RPCException exception) {
+			throw exception;
+		} catch (Exception exception) {
+			log.error("Could not delete variant '{}' for '{}'", variantId, variantContext.canonical().path(), exception);
+			throw new RPCException(500, exception.getMessage());
+		}
+	}
+
 	@RemoteMethod(name = "variants.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object get(Map<String, Object> parameters) throws RPCException {
 		var uri = (String) parameters.getOrDefault("uri", "");

@@ -30,6 +30,10 @@ let activeContent: ActivePreviewContent | null = null;
 
 const setActivePreviewContent = (content: ActivePreviewContent | null) => {
 	activeContent = content?.uri ? { ...content } : null;
+	window.dispatchEvent(new CustomEvent(
+		"cms:preview-context-changed",
+		{ detail: activeContent }
+	));
 };
 
 const comparableUrl = (url: string): string | null => {

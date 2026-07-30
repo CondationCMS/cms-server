@@ -24,6 +24,40 @@ import { getWfManagerStatus } from './rpc/rpc-workflow';
 import { executeScriptAction } from '../manager-globals';
 import { getActivePreviewContent } from './preview-context.js';
 
+const updateVariantBadge = (content) => {
+  const badge = document.querySelector('#cms-current-variant');
+  const label = document.querySelector('#cms-current-variant-label');
+  if (!badge || !label) {
+    return;
+  }
+
+  const variantId = content?.variantId;
+  label.textContent = content ? (variantId || 'Original') : 'Loading…';
+  badge.disabled = !content?.uri;
+  badge.classList.toggle('text-bg-warning', Boolean(variantId));
+  badge.classList.toggle('text-bg-secondary', !variantId);
+  badge.setAttribute(
+    'title',
+    variantId ? `Current variant: ${variantId}` : (content ? 'Original page' : 'Loading preview content')
+  );
+};
+
+window.addEventListener('cms:preview-context-changed', (event) => {
+  updateVariantBadge(event.detail);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const badge = document.querySelector('#cms-current-variant');
+  badge?.addEventListener('click', () => {
+    executeScriptAction({
+      module: window.manager.baseUrl + '/actions/page/variants',
+      function: 'runAction',
+      parameters: {}
+    });
+  });
+  updateVariantBadge(getActivePreviewContent());
+});
+
 export function updateStateButton() {
   const previewUrl = getPreviewUrl();
   const activePreviewContent = getActivePreviewContent(previewUrl);

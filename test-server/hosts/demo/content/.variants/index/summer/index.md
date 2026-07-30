@@ -2,7 +2,7 @@
 template: start.html
 createdAt: 2026-07-29T12:06:01.530Z
 createdBy: test
-title: Summer time 2
+title: Summer time
 status: draft
 features: [
   ]

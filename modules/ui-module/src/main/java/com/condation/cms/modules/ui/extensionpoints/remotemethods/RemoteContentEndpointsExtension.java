@@ -329,75 +329,87 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		
 		var url = (String) parameters.get("url");
 
-			var path = URI.create(url).getPath();
+		var requestUri = URI.create(url);
+		var path = requestUri.getPath();
+		var contextPath = getRequestContext().get(RequestFeature.class).context();
+		if (contextPath != null && !"/".equals(contextPath) && path.startsWith(contextPath)) {
+			path = path.substring(contextPath.length());
+		}
+		if (path.isBlank()) {
+			path = "/";
+		} else if (!path.startsWith("/")) {
+			path = "/" + path;
+		}
 
-			var contextPath = getRequestContext().get(RequestFeature.class).context();
-			if (!"/".equals(contextPath) && path.startsWith(contextPath)) {
-				path = path.replaceFirst(contextPath, "");
-			}
-
-			if (path.startsWith("/")) {
-				path = path.substring(1);
-			}
-
-			var contentPath = contentBase.resolve(path);
-			ReadOnlyFile contentFile = null;
+		var selectedNode = db.getContent().byUrl(path).orElse(null);
+		ReadOnlyFile contentFile = null;
+		String canonicalUri = null;
+		if (selectedNode != null) {
+			canonicalUri = selectedNode.path();
+			contentFile = contentBase.resolve(canonicalUri);
+		} else {
+			var filePath = path.substring(1);
+			var contentPath = contentBase.resolve(filePath);
 			if (contentPath.exists() && contentPath.isDirectory()) {
-				// use index.md
-				var tempFile = contentPath.resolve("index.md");
-				if (tempFile.exists()) {
-					contentFile = tempFile;
+				var indexFile = contentPath.resolve("index.md");
+				if (indexFile.exists()) {
+					contentFile = indexFile;
 				}
 			} else {
-				var temp = contentBase.resolve(path + ".md");
-				if (temp.exists()) {
-					contentFile = temp;
+				var markdownFile = contentBase.resolve(filePath + ".md");
+				if (markdownFile.exists()) {
+					contentFile = markdownFile;
 				}
 			}
-			
-			Map<String, Object> result = new HashMap<>();
-			result.put("url", url);
 			if (contentFile != null) {
-				var canonicalUri = PathUtil.toRelativeFile(contentFile, contentBase);
-				var selectedNode = db.getContent().byUri(canonicalUri).orElse(null);
-				var query = com.condation.cms.api.utils.HTTPUtil.queryParameters(URI.create(url).getQuery());
-				var variantId = query.getOrDefault(
-						ConfigurableVariantSelector.VARIANT_QUERY_PARAMETER,
-						List.of()
-				).stream().findFirst().orElse("").trim();
-				String activeVariantId = null;
-				if (selectedNode != null
-						&& !variantId.isBlank()
-						&& !ConfigurableVariantSelector.CANONICAL_VARIANT_ID.equalsIgnoreCase(variantId)) {
-					var selectedVariant = new VariantResolver(db).loadVariant(selectedNode, variantId);
-					if (selectedVariant.isPresent()) {
-						selectedNode = selectedVariant.get().node();
-						activeVariantId = selectedVariant.get().id();
-					}
-				}
-				if (selectedNode != null) {
-					contentFile = contentBase.resolve(selectedNode.uri());
-					result.put("uri", selectedNode.uri());
-				} else {
-					result.put("uri", canonicalUri);
-				}
-				result.put("canonicalUri", canonicalUri);
-				result.put("variantId", activeVariantId);
-				
-				var sectionEntries = db.getContent().listSectionEntries(contentFile);
-				Map<String, List<SectionEntry>> sectionMap = new HashMap<>();
-				sectionEntries.forEach(sectionEntry -> {
-					String uri = sectionEntry.uri();
-					String name = SectionUtil.getSectionName(sectionEntry.name());
-					var index = sectionEntry.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_ENTRY_LAYOUT_ORDER);
-					
-					sectionMap.computeIfAbsent(name, k -> new ArrayList<>())
-						.add(new SectionEntry(sectionEntry.name(), index, "", sectionEntry.data(), uri));
-				});
-				result.put("sections", sectionMap);
+				canonicalUri = PathUtil.toRelativeFile(contentFile, contentBase);
+				selectedNode = db.getContent().byPath(canonicalUri).orElse(null);
 			}
+		}
 
+		Map<String, Object> result = new HashMap<>();
+		result.put("url", url);
+		if (contentFile == null || canonicalUri == null) {
 			return result;
+		}
+
+		var query = com.condation.cms.api.utils.HTTPUtil.queryParameters(requestUri.getQuery());
+		var variantId = query.getOrDefault(
+				ConfigurableVariantSelector.VARIANT_QUERY_PARAMETER,
+				List.of()
+		).stream().findFirst().orElse("").trim();
+		String activeVariantId = null;
+		if (selectedNode != null
+				&& !variantId.isBlank()
+				&& !ConfigurableVariantSelector.CANONICAL_VARIANT_ID.equalsIgnoreCase(variantId)) {
+			var selectedVariant = new VariantResolver(db).loadVariant(selectedNode, variantId);
+			if (selectedVariant.isPresent()) {
+				selectedNode = selectedVariant.get().node();
+				activeVariantId = selectedVariant.get().id();
+			}
+		}
+		if (selectedNode != null) {
+			contentFile = contentBase.resolve(selectedNode.path());
+			result.put("uri", selectedNode.path());
+		} else {
+			result.put("uri", canonicalUri);
+		}
+		result.put("canonicalUri", canonicalUri);
+		result.put("variantId", activeVariantId);
+
+		var sectionEntries = db.getContent().listSectionEntries(contentFile);
+		Map<String, List<SectionEntry>> sectionMap = new HashMap<>();
+		sectionEntries.forEach(sectionEntry -> {
+			String uri = sectionEntry.uri();
+			String name = SectionUtil.getSectionName(sectionEntry.name());
+			var index = sectionEntry.getMetaValue(Constants.MetaFields.LAYOUT_ORDER, Constants.DEFAULT_SECTION_ENTRY_LAYOUT_ORDER);
+
+			sectionMap.computeIfAbsent(name, k -> new ArrayList<>())
+					.add(new SectionEntry(sectionEntry.name(), index, "", sectionEntry.data(), uri));
+		});
+		result.put("sections", sectionMap);
+
+		return result;
 	}
 
 	private String contentUri(Map<String, Object> parameters) throws RPCException {

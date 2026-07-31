@@ -41,7 +41,7 @@ const uuid = () => {
 const createItem = (type = 'link') => ({
     id: uuid(),
     type,
-    label: type === 'heading' ? 'Neue Überschrift' : type === 'divider' ? 'Trenner' : 'Neuer Menüpunkt',
+    label: type === 'heading' ? 'New heading' : type === 'divider' ? 'Divider' : 'New menu item',
     url: type === 'link' ? '/' : '',
     target: '_self',
     enabled: true,
@@ -50,8 +50,8 @@ const createItem = (type = 'link') => ({
 const countItems = (items) => items.reduce((total, item) => total + 1 + countItems(item.children), 0);
 const typeMeta = {
     link: { icon: '↗', name: 'Link' },
-    heading: { icon: 'T', name: 'Überschrift' },
-    divider: { icon: '―', name: 'Trenner' }
+    heading: { icon: 'T', name: 'Heading' },
+    divider: { icon: '―', name: 'Divider' }
 };
 class MenuManager {
     constructor(root, modalElement) {
@@ -63,37 +63,37 @@ class MenuManager {
         this.modalElement = modalElement;
     }
     async showOverview() {
-        this.setTitle('Menüs verwalten');
+        this.setTitle('Manage menus');
         this.root.innerHTML = `
 			<section class="cms-menu-overview">
 				<div class="cms-menu-overview__heading">
 					<div>
 						<p class="cms-menu-eyebrow">CondationCMS · Navigation</p>
-						<h2>Menüs</h2>
-						<p>Erstelle und bearbeite die Navigationen dieser Site.</p>
+						<h2>Menus</h2>
+						<p>Create and edit navigation menus for this site.</p>
 					</div>
 					<button class="btn btn-primary" type="button" data-menu-create>
-						<i class="bi bi-plus-lg"></i> Neues Menü
+						<i class="bi bi-plus-lg"></i> New menu
 					</button>
 				</div>
 				<div class="cms-menu-create card" data-menu-create-form hidden>
 					<div>
-						<label class="form-label" for="cms-menu-new-id">Menü-ID</label>
-						<input class="form-control" id="cms-menu-new-id" placeholder="z. B. main-navigation"
+						<label class="form-label" for="cms-menu-new-id">Menu ID</label>
+						<input class="form-control" id="cms-menu-new-id" placeholder="e.g. main-navigation"
 							pattern="[A-Za-z0-9][A-Za-z0-9_-]*">
-						<div class="form-text">Wird als Dateiname unter config/menus verwendet.</div>
+						<div class="form-text">Used as the filename under config/menus.</div>
 					</div>
 					<div>
-						<label class="form-label" for="cms-menu-new-name">Anzeigename</label>
-						<input class="form-control" id="cms-menu-new-name" placeholder="Hauptnavigation">
+						<label class="form-label" for="cms-menu-new-name">Display name</label>
+						<input class="form-control" id="cms-menu-new-name" placeholder="Main navigation">
 					</div>
 					<div class="d-flex gap-2 align-items-end">
-						<button class="btn btn-primary" type="button" data-menu-create-confirm>Editor öffnen</button>
-						<button class="btn btn-secondary" type="button" data-menu-create-cancel>Abbrechen</button>
+						<button class="btn btn-primary" type="button" data-menu-create-confirm>Open editor</button>
+						<button class="btn btn-secondary" type="button" data-menu-create-cancel>Cancel</button>
 					</div>
 				</div>
 				<div class="cms-menu-list" data-menu-list>
-					<div class="cms-menu-empty"><span class="spinner-border spinner-border-sm"></span> Menüs werden geladen …</div>
+					<div class="cms-menu-empty"><span class="spinner-border spinner-border-sm"></span> Loading menus…</div>
 				</div>
 			</section>`;
         this.root.querySelector('[data-menu-create]')?.addEventListener('click', () => {
@@ -115,8 +115,8 @@ class MenuManager {
                 list.innerHTML = `
 					<div class="cms-menu-empty">
 						<i class="bi bi-list-nested"></i>
-						<strong>Noch keine Menüs</strong>
-						<span>Lege das erste Menü für diese Site an.</span>
+						<strong>No menus yet</strong>
+						<span>Create the first menu for this site.</span>
 					</div>`;
                 return;
             }
@@ -127,13 +127,13 @@ class MenuManager {
 						<strong>${escapeHtml(menu.name)}</strong>
 						<code>${escapeHtml(menu.id)}.yaml</code>
 					</div>
-					<span class="badge text-bg-primary">${countItems(menu.items)} Einträge</span>
+					<span class="badge text-bg-primary">${countItems(menu.items)} items</span>
 					<div class="cms-menu-card__actions">
 						<button class="btn btn-outline-primary btn-sm" type="button" data-menu-edit>
-							<i class="bi bi-pencil"></i> Bearbeiten
+							<i class="bi bi-pencil"></i> Edit
 						</button>
 						<button class="btn btn-outline-danger btn-sm" type="button" data-menu-delete
-							aria-label="${escapeHtml(menu.name)} löschen">
+							aria-label="Delete ${escapeHtml(menu.name)}">
 							<i class="bi bi-trash"></i>
 						</button>
 					</div>
@@ -152,8 +152,8 @@ class MenuManager {
             });
         }
         catch (error) {
-            list.innerHTML = '<div class="alert alert-danger">Die Menüs konnten nicht geladen werden.</div>';
-            this.toastError('Menüs konnten nicht geladen werden', error);
+            list.innerHTML = '<div class="alert alert-danger">Could not load menus.</div>';
+            this.toastError('Could not load menus', error);
         }
     }
     openNewMenu() {
@@ -178,19 +178,19 @@ class MenuManager {
             this.showEditor();
         }
         catch (error) {
-            this.toastError('Menü konnte nicht geladen werden', error);
+            this.toastError('Could not load menu', error);
         }
     }
     async removeMenu(id, card) {
-        if (!window.confirm(`Menü „${id}“ wirklich löschen?`)) {
+        if (!window.confirm(`Delete menu “${id}”?`)) {
             return;
         }
         try {
             if (await deleteMenu(id)) {
                 card.remove();
                 showToast({
-                    title: 'Menü gelöscht',
-                    message: `${id}.yaml wurde gelöscht.`,
+                    title: 'Menu deleted',
+                    message: `${id}.yaml was deleted.`,
                     type: 'success'
                 });
                 if (!this.root.querySelector('[data-menu-id]')) {
@@ -199,18 +199,18 @@ class MenuManager {
             }
         }
         catch (error) {
-            this.toastError('Menü konnte nicht gelöscht werden', error);
+            this.toastError('Could not delete menu', error);
         }
     }
     showEditor() {
         if (!this.menu)
             return;
-        this.setTitle(`Menü bearbeiten · ${this.menu.name}`);
+        this.setTitle(`Edit menu · ${this.menu.name}`);
         this.root.innerHTML = `
 			<section class="cms-menu-builder">
 				<header class="cms-menu-builder__bar">
 					<button class="btn btn-secondary" type="button" data-menu-back>
-						<i class="bi bi-arrow-left"></i> Übersicht
+						<i class="bi bi-arrow-left"></i> Overview
 					</button>
 					<div class="cms-menu-builder__identity">
 						<label>
@@ -223,42 +223,42 @@ class MenuManager {
 						<button class="btn btn-outline-secondary" type="button" data-menu-json>
 							<span aria-hidden="true">{ }</span> JSON
 						</button>
-						<button class="btn btn-secondary" type="button" data-menu-reset>Zurücksetzen</button>
+						<button class="btn btn-secondary" type="button" data-menu-reset>Reset</button>
 						<button class="btn btn-primary" type="button" data-menu-save>
-							<i class="bi bi-floppy"></i> Speichern
+							<i class="bi bi-floppy"></i> Save
 						</button>
 					</div>
 				</header>
 				<div class="cms-menu-builder__workspace">
 					<aside class="cms-menu-toolbox card">
 						<div>
-							<p class="cms-menu-eyebrow">Eintrag hinzufügen</p>
-							<h3>Bausteine</h3>
+							<p class="cms-menu-eyebrow">Add item</p>
+							<h3>Components</h3>
 						</div>
 						<div class="cms-menu-tools">
-							${this.toolButton('link', '↗', 'Link', 'Seite oder externe URL')}
-							${this.toolButton('heading', 'T', 'Überschrift', 'Gruppiert Menübereiche')}
-							${this.toolButton('divider', '―', 'Trenner', 'Optische Abgrenzung')}
+							${this.toolButton('link', '↗', 'Link', 'Page or external URL')}
+							${this.toolButton('heading', 'T', 'Heading', 'Groups menu sections')}
+							${this.toolButton('divider', '―', 'Divider', 'Visual separator')}
 						</div>
 						<div class="cms-menu-tip">
 							<i class="bi bi-stars"></i>
-							<span><strong>Tipp</strong> Ziehe Einträge am Griff. Unterpunkte legst du über das Verzweigungs-Symbol an.</span>
+							<span><strong>Tip</strong> Drag items by the handle. Add child items using the branch icon.</span>
 						</div>
 					</aside>
 					<div class="cms-menu-editor card">
 						<div class="cms-menu-editor__heading">
 							<div>
-								<p class="cms-menu-eyebrow">Menüstruktur</p>
+								<p class="cms-menu-eyebrow">Menu structure</p>
 								<h3>${escapeHtml(this.menu.name)}</h3>
 							</div>
 							<span class="badge text-bg-primary" data-menu-count></span>
 						</div>
 						<div class="cms-menu-columns" aria-hidden="true">
-							<span>Menüpunkt</span><span>Typ &amp; Ziel</span><span>Aktionen</span>
+							<span>Menu item</span><span>Type &amp; target</span><span>Actions</span>
 						</div>
 						<div class="cms-menu-tree cms-menu-sortable" data-menu-root></div>
 						<button class="cms-menu-add-main" type="button" data-menu-add-main>
-							<span>+</span> Neuen Menüpunkt hinzufügen
+							<span>+</span> Add new menu item
 						</button>
 						<pre class="cms-menu-json" data-menu-json-output hidden></pre>
 					</div>
@@ -299,7 +299,7 @@ class MenuManager {
         const root = this.root.querySelector('[data-menu-root]');
         root.replaceChildren(...this.menu.items.map(item => this.renderItem(item)));
         this.root.querySelector('[data-menu-count]').textContent =
-            `${countItems(this.menu.items)} Einträge`;
+            `${countItems(this.menu.items)} items`;
         this.setupSortable(root);
     }
     renderItem(item) {
@@ -308,7 +308,7 @@ class MenuManager {
         element.dataset.id = item.id;
         element.innerHTML = `
 			<div class="cms-menu-item__main">
-				<button class="cms-menu-drag" type="button" aria-label="Menüpunkt verschieben">
+				<button class="cms-menu-drag" type="button" aria-label="Move menu item">
 					<i class="bi bi-grip-vertical"></i>
 				</button>
 				<span class="cms-menu-type">${typeMeta[item.type].icon}</span>
@@ -317,32 +317,32 @@ class MenuManager {
 				</div>
 				<span class="cms-menu-kind">${typeMeta[item.type].name}</span>
 				<div class="cms-menu-item__actions">
-					<button class="btn btn-outline-secondary btn-sm" data-add-child title="Unterpunkt hinzufügen">↳</button>
-					<button class="btn btn-outline-primary btn-sm" data-edit-item title="Bearbeiten"><i class="bi bi-pencil"></i></button>
-					<button class="btn btn-outline-danger btn-sm" data-delete-item title="Löschen"><i class="bi bi-x-lg"></i></button>
+					<button class="btn btn-outline-secondary btn-sm" data-add-child title="Add child item">↳</button>
+					<button class="btn btn-outline-primary btn-sm" data-edit-item title="Edit"><i class="bi bi-pencil"></i></button>
+					<button class="btn btn-outline-danger btn-sm" data-delete-item title="Delete"><i class="bi bi-x-lg"></i></button>
 				</div>
 			</div>
 			<form class="cms-menu-item__form" hidden>
-				<label><span>Bezeichnung</span><input class="form-control form-control-sm" name="label"></label>
-				<label data-url-field><span>URL / Pfad</span><span class="input-group input-group-sm">
-					<input class="form-control" name="url" placeholder="/beispiel">
-					<button class="btn btn-outline-primary" type="button" data-select-page title="Seite suchen"
-						aria-label="Seite suchen">
+				<label><span>Label</span><input class="form-control form-control-sm" name="label"></label>
+				<label data-url-field><span>URL / path</span><span class="input-group input-group-sm">
+					<input class="form-control" name="url" placeholder="/example">
+					<button class="btn btn-outline-primary" type="button" data-select-page title="Search pages"
+						aria-label="Search pages">
 						<i class="bi bi-search"></i>
 					</button>
-					<button class="btn btn-outline-primary" type="button" data-browse-page title="Content-Browser öffnen"
-						aria-label="Content-Browser öffnen">
+					<button class="btn btn-outline-primary" type="button" data-browse-page title="Open content browser"
+						aria-label="Open content browser">
 						<i class="bi bi-folder2-open"></i>
 					</button>
 				</span></label>
-				<label><span>Typ</span><select class="form-select form-select-sm" name="type">
-					<option value="link">Link</option><option value="heading">Überschrift</option><option value="divider">Trenner</option>
+				<label><span>Type</span><select class="form-select form-select-sm" name="type">
+					<option value="link">Link</option><option value="heading">Heading</option><option value="divider">Divider</option>
 				</select></label>
-				<label data-target-field><span>Öffnen in</span><select class="form-select form-select-sm" name="target">
-					<option value="_self">Gleichem Fenster</option><option value="_blank">Neuem Fenster</option>
+				<label data-target-field><span>Open in</span><select class="form-select form-select-sm" name="target">
+					<option value="_self">Same window</option><option value="_blank">New window</option>
 				</select></label>
-				<label class="cms-menu-enabled"><input class="form-check-input" name="enabled" type="checkbox"><span>Eintrag aktiv</span></label>
-				<button class="btn btn-outline-primary btn-sm" type="submit">Übernehmen</button>
+				<label class="cms-menu-enabled"><input class="form-check-input" name="enabled" type="checkbox"><span>Item enabled</span></label>
+				<button class="btn btn-outline-primary btn-sm" type="submit">Apply</button>
 			</form>
 			<div class="cms-menu-children" hidden>
 				<div class="cms-menu-branch"></div>
@@ -350,10 +350,10 @@ class MenuManager {
 			</div>`;
         element.querySelector('.cms-menu-item__copy strong').textContent = item.label;
         const detail = item.type === 'link'
-            ? item.url || 'Keine URL'
-            : item.type === 'heading' ? `${item.children.length} Unterpunkte` : 'Optische Trennung';
+            ? item.url || 'No URL'
+            : item.type === 'heading' ? `${item.children.length} child items` : 'Visual separator';
         element.querySelector('.cms-menu-item__copy small').textContent =
-            `${detail}${item.enabled ? '' : ' · Deaktiviert'}`;
+            `${detail}${item.enabled ? '' : ' · Disabled'}`;
         const form = element.querySelector('form');
         form.elements.namedItem('label').value = item.label;
         form.elements.namedItem('url').value = item.url;
@@ -363,12 +363,12 @@ class MenuManager {
         this.updateFormFields(form, item.type);
         element.querySelector('[data-select-page]')?.addEventListener('click', () => {
             openPagePicker({
-                title: 'Interne Seite auswählen',
+                title: 'Select internal page',
                 onSelect: page => {
                     const urlInput = form.elements.namedItem('url');
                     const labelInput = form.elements.namedItem('label');
                     urlInput.value = page.url;
-                    if (page.title && (!labelInput.value.trim() || labelInput.value === 'Neuer Menüpunkt')) {
+                    if (page.title && (!labelInput.value.trim() || labelInput.value === 'New menu item')) {
                         labelInput.value = page.title;
                     }
                 }
@@ -376,13 +376,18 @@ class MenuManager {
         });
         element.querySelector('[data-browse-page]')?.addEventListener('click', () => {
             openFileBrowser({
-                title: 'Interne Seite auswählen',
+                title: 'Select internal page',
                 type: 'content',
                 filter: (file) => file.directory || file.content,
                 onSelect: (file) => {
                     if (!file.url)
                         return;
-                    form.elements.namedItem('url').value = file.url;
+                    const urlInput = form.elements.namedItem('url');
+                    const labelInput = form.elements.namedItem('label');
+                    urlInput.value = file.url;
+                    if (file.title && (!labelInput.value.trim() || labelInput.value === 'New menu item')) {
+                        labelInput.value = file.title;
+                    }
                 }
             });
         });
@@ -396,7 +401,7 @@ class MenuManager {
         });
         form.addEventListener('submit', event => {
             event.preventDefault();
-            item.label = form.elements.namedItem('label').value.trim() || 'Unbenannter Eintrag';
+            item.label = form.elements.namedItem('label').value.trim() || 'Unnamed item';
             item.type = form.elements.namedItem('type').value;
             item.url = item.type === 'link' ? form.elements.namedItem('url').value.trim() : '';
             item.target = item.type === 'link'
@@ -527,15 +532,15 @@ class MenuManager {
             this.menu = this.isNew ? await createMenu(this.menu) : await updateMenu(this.menu);
             this.originalMenu = clone(this.menu);
             this.isNew = false;
-            this.setTitle(`Menü bearbeiten · ${this.menu.name}`);
+            this.setTitle(`Edit menu · ${this.menu.name}`);
             showToast({
-                title: 'Menü gespeichert',
-                message: `${this.menu.id}.yaml wurde aktualisiert.`,
+                title: 'Menu saved',
+                message: `${this.menu.id}.yaml was updated.`,
                 type: 'success'
             });
         }
         catch (error) {
-            this.toastError('Menü konnte nicht gespeichert werden', error);
+            this.toastError('Could not save menu', error);
         }
         finally {
             saveButton.disabled = false;
@@ -549,14 +554,14 @@ class MenuManager {
     toastError(title, error) {
         showToast({
             title,
-            message: error instanceof Error ? error.message : 'Unbekannter Fehler',
+            message: error instanceof Error ? error.message : 'Unknown error',
             type: 'error'
         });
     }
 }
 export const runAction = async () => {
     openModal({
-        title: 'Menüs verwalten',
+        title: 'Manage menus',
         body: '<div class="cms-menu-manager-root"></div>',
         fullscreen: true,
         showFooter: false,

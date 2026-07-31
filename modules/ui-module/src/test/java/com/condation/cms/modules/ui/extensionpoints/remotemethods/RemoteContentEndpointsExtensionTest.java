@@ -21,25 +21,31 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
  * #L%
  */
 
+import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.ui.rpc.RPCException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -50,6 +56,9 @@ class RemoteContentEndpointsExtensionTest {
 
 	@Mock
 	private DB db;
+
+	@Mock
+	private Content content;
 
 	@Mock
 	private DBFileSystem fileSystem;
@@ -112,5 +121,38 @@ class RemoteContentEndpointsExtensionTest {
 		).call(() -> endpoints.getContent(Map.of())))
 				.isInstanceOf(RPCException.class)
 				.hasMessage("variant selected");
+	}
+
+	@Test
+	void getContentNodeResolvesUriFromCustomPageUrl() throws Exception {
+		var node = new ContentNode(
+				"pages/other.md",
+				"/total-other-page",
+				"other.md",
+				Map.of()
+		);
+		when(db.getContent()).thenReturn(content);
+		when(content.byUrl("/total-other-page")).thenReturn(Optional.of(node));
+		when(contentBase.resolve("pages/other.md")).thenReturn(contentFile);
+		when(content.listSectionEntries(contentFile)).thenReturn(List.of());
+
+		var requestContext = new RequestContext();
+		requestContext.add(
+				RequestFeature.class,
+				new RequestFeature("/", "/total-other-page", Map.of(), null)
+		);
+
+		@SuppressWarnings("unchecked")
+		var result = (Map<String, Object>) ScopedValue.where(
+				RequestContextScope.REQUEST_CONTEXT,
+				requestContext
+		).call(() -> endpoints.getContentNode(Map.of(
+				"url", "https://example.test/total-other-page?preview=manager"
+		)));
+
+		assertThat(result)
+				.containsEntry("uri", "pages/other.md")
+				.containsEntry("canonicalUri", "pages/other.md");
+		verify(content).byUrl("/total-other-page");
 	}
 }

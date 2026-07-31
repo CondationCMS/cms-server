@@ -539,6 +539,12 @@ i[data-cms-section-handle] {
 	font-weight: 600;
 }
 
+.cms-menu-item__form label > .input-group {
+	color: inherit;
+	font-size: inherit;
+	font-weight: inherit;
+}
+
 .cms-menu-enabled {
 	display: flex !important;
 	grid-template-columns: auto 1fr;

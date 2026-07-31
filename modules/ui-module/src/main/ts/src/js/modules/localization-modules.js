@@ -38,12 +38,16 @@ export const MODULE_LOCALIZATIONS = {
 		"page.unpublished.editLink": "Bearbeiten",
 		"page.search.title": "Seiten suchen",
 		"page.search.placeholder": "Nach Titel suchen...",
-		"page.search.minLength": "Mindestens 3 Zeichen eingeben und Enter drücken, um zu suchen.",
+		"page.search.minLength": "Mindestens 3 Zeichen eingeben, um zu suchen.",
 		"page.search.noResults": "Keine Seiten gefunden.",
 		"page.search.columnTitle": "Titel",
 		"page.search.columnUri": "URI",
 		"page.search.loadLink": "Laden",
 		"page.search.loadError": "Seiten konnten nicht durchsucht werden.",
+		"page.picker.title": "Seite auswählen",
+		"page.picker.searchLabel": "Nach Seitentitel suchen",
+		"page.picker.searching": "Seiten werden gesucht...",
+		"page.picker.select": "Auswählen",
 		"pagination.previous": "Zurück",
 		"pagination.next": "Weiter"
 	}

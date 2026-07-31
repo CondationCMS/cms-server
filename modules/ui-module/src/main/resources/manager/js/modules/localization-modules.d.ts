@@ -43,6 +43,10 @@ export namespace MODULE_LOCALIZATIONS {
         "page.search.columnUri": string;
         "page.search.loadLink": string;
         "page.search.loadError": string;
+        "page.picker.title": string;
+        "page.picker.searchLabel": string;
+        "page.picker.searching": string;
+        "page.picker.select": string;
         "pagination.previous": string;
         "pagination.next": string;
     };

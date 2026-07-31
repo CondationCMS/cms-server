@@ -20,6 +20,7 @@
  */
 
 import { openModal } from '@cms/modules/modal.js';
+import { openPagePicker } from '@cms/modules/page-picker.js';
 import { showToast } from '@cms/modules/toast.js';
 import {
 	createMenu,
@@ -354,7 +355,12 @@ class MenuManager {
 			</div>
 			<form class="cms-menu-item__form" hidden>
 				<label><span>Bezeichnung</span><input class="form-control form-control-sm" name="label"></label>
-				<label data-url-field><span>URL / Pfad</span><input class="form-control form-control-sm" name="url" placeholder="/beispiel"></label>
+				<label data-url-field><span>URL / Pfad</span><span class="input-group input-group-sm">
+					<input class="form-control" name="url" placeholder="/beispiel">
+					<button class="btn btn-outline-primary" type="button" data-select-page title="Interne Seite auswählen">
+						<i class="bi bi-search"></i> Seite
+					</button>
+				</span></label>
 				<label><span>Typ</span><select class="form-select form-select-sm" name="type">
 					<option value="link">Link</option><option value="heading">Überschrift</option><option value="divider">Trenner</option>
 				</select></label>
@@ -383,6 +389,20 @@ class MenuManager {
 		(form.elements.namedItem('target') as HTMLSelectElement).value = item.target;
 		(form.elements.namedItem('enabled') as HTMLInputElement).checked = item.enabled;
 		this.updateFormFields(form, item.type);
+
+		element.querySelector('[data-select-page]')?.addEventListener('click', () => {
+			openPagePicker({
+				title: 'Interne Seite auswählen',
+				onSelect: page => {
+					const urlInput = form.elements.namedItem('url') as HTMLInputElement;
+					const labelInput = form.elements.namedItem('label') as HTMLInputElement;
+					urlInput.value = page.url;
+					if (page.title && (!labelInput.value.trim() || labelInput.value === 'Neuer Menüpunkt')) {
+						labelInput.value = page.title;
+					}
+				}
+			});
+		});
 
 		(form.elements.namedItem('type') as HTMLSelectElement).addEventListener('change', event => {
 			this.updateFormFields(form, (event.target as HTMLSelectElement).value as MenuItemType);

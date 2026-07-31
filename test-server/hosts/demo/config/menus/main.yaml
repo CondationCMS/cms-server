@@ -7,12 +7,13 @@ items:
   url: /
   target: _self
   enabled: true
-  children:
-  - id: e6eb3c9d-ee1c-40c0-8d74-2be5dfd66e70
-    type: link
-    label: Produkte
-    url: /products
-    target: _self
-    enabled: true
-    children: [
-      ]
+  children: [
+    ]
+- id: 07bc9ae6-d520-442e-93cb-9c53d12af13a
+  type: link
+  label: das ist eine neue seite
+  url: /total-other-page
+  target: _self
+  enabled: true
+  children: [
+    ]

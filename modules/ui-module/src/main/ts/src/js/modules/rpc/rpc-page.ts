@@ -84,6 +84,7 @@ export interface SearchPagesOptions {
 }
 export interface SearchResultDto {
 	uri: string;
+	url: string;
 	title: string;
 }
 export interface SearchPagesResponse {

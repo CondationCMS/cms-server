@@ -64,9 +64,10 @@ const openModal = (optionsParam) => {
     // Prüfe ob eine Offcanvas offen ist
     const openOffcanvas = document.querySelector('.offcanvas.show');
     const hasOpenOffcanvas = openOffcanvas !== null;
-    // Z-Index höher setzen wenn Offcanvas offen ist
-    const modalZIndex = hasOpenOffcanvas ? 1080 : 1060;
-    const backdropZIndex = hasOpenOffcanvas ? 1070 : 1055;
+    const openModalCount = document.querySelectorAll('.modal.show').length;
+    // Stack dialogs above an already open dialog (for example the page picker in the menu editor).
+    const modalZIndex = (hasOpenOffcanvas ? 1080 : 1060) + (openModalCount * 20);
+    const backdropZIndex = modalZIndex - 5;
     modalElement.style.zIndex = modalZIndex;
     modalElement.style.pointerEvents = 'auto';
     const modalInstance = new bootstrap.Modal(modalElement, {
@@ -142,6 +143,9 @@ const openModal = (optionsParam) => {
             }
         }
         modalNode.remove();
+        if (document.querySelector('.modal.show')) {
+            document.body.classList.add('modal-open');
+        }
         if (options.onClose) {
             options.onClose();
         }

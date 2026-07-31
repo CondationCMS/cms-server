@@ -56,6 +56,7 @@ class FileMenuServiceTest {
 				.contains("id: main-navigation")
 				.contains("label: Startseite")
 				.doesNotContain("{\"id\"")
+				.doesNotContain("current")
 				.doesNotContain("&id");
 		Assertions.assertThat(service.get("main-navigation")).contains(menu);
 		Assertions.assertThat(service.list()).containsExactly(menu);

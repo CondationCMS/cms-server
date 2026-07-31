@@ -33,9 +33,21 @@ public record MenuItem(
 		String url,
 		String target,
 		boolean enabled,
-		List<MenuItem> children) {
+		List<MenuItem> children,
+		boolean current) {
 
 	public MenuItem {
 		children = children == null ? List.of() : List.copyOf(children);
+	}
+
+	public MenuItem(
+			String id,
+			String type,
+			String label,
+			String url,
+			String target,
+			boolean enabled,
+			List<MenuItem> children) {
+		this(id, type, label, url, target, enabled, children, false);
 	}
 }

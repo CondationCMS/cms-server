@@ -23,7 +23,9 @@ package com.condation.cms.templates;
 
 import com.condation.cms.api.annotations.Param;
 import com.condation.cms.api.annotations.TemplateFunction;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.extensions.RegisterTemplateFunctionExtensionPoint;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
@@ -63,6 +65,8 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 		var requestContext = new RequestContext();
 		requestContext.add(HookSystemFeature.class, new HookSystemFeature(new CMSHookSystem()));
 		requestContext.add(TemplateHooks.class, new TemplateHooks(requestContext));
+		requestContext.add(CurrentNodeFeature.class, new CurrentNodeFeature(
+				new ContentNode("index.md", "/", "index.md", Map.of())));
 
 		var injectorMock = Mockito.mock(Injector.class);
 		requestContext.add(InjectorFeature.class, new InjectorFeature(injectorMock));
@@ -87,7 +91,7 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 	public TemplateLoader getLoader() {
 		return new StringTemplateLoader()
 				.add("date", "{{ date() | date('YYYY') }}")
-				.add("menu", "{% assign navigation = cms.menu('main') %}{{ navigation.name }}:{{ navigation.items[0].label }}")
+				.add("menu", "{% assign navigation = cms.menu('main') %}{{ navigation.name }}:{{ navigation.items[0].label }}:{{ navigation.items[0].current }}")
 				// no-arg style
 				.add("fn_noarg", "{{ ext.testfn3() }}")
 				// context style (Parameter)
@@ -114,7 +118,7 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 	void test_menu() throws IOException {
 		Template template = SUT.getTemplate("menu");
 		Assertions.assertThat(template.evaluate(Map.of(), dynamicConfiguration))
-				.isEqualToIgnoringWhitespace("Main navigation:Home");
+				.isEqualToIgnoringWhitespace("Main navigation:Home:true");
 	}
 
 	// --- no-arg style renders correctly ---

@@ -24,6 +24,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.templates.exceptions.TagException;
 import com.condation.cms.templates.functions.JexlTemplateFunction;
 import com.condation.cms.templates.functions.impl.DateFunction;
+import com.condation.cms.templates.functions.impl.MenuFunction;
 import com.condation.cms.templates.functions.impl.MessageFunction;
 import com.condation.cms.templates.functions.impl.NodeFunction;
 import com.condation.cms.templates.functions.impl.NodeMetaFunction;
@@ -97,6 +98,8 @@ public class DefaultTemplate implements Template {
 
 		getOrCreateNamespace(scope, Constants.TemplateNamespaces.CMS)
 				.put(MessageFunction.NAME, new JexlTemplateFunction(new MessageFunction(dynamicConfiguration.requestContext())));
+		getOrCreateNamespace(scope, Constants.TemplateNamespaces.CMS)
+				.put(MenuFunction.NAME, new JexlTemplateFunction(new MenuFunction(dynamicConfiguration.requestContext())));
 		
 		dynamicConfiguration.templateFunctions().forEach(tf -> {
 			getOrCreateNamespace(scope, tf.namespace()).put(tf.name(), new JexlTemplateFunction(tf));

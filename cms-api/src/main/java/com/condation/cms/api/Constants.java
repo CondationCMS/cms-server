@@ -142,6 +142,7 @@ public abstract class Constants {
 		public static final String TEMPLATE = "template";
         public static final String CONTENT = "content";
         public static final String MEDIA = "media";
+        public static final String MENU = "menu";
         public static final String RESPONSE = "response";
 	}
 	

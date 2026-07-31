@@ -45,6 +45,7 @@ import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.mail.MailService;
+import com.condation.cms.api.menu.Menu;
 import com.condation.cms.api.menu.MenuService;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
@@ -72,6 +73,7 @@ import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedSiteProperties;
 import com.condation.cms.core.eventbus.MessagingEventBus;
 import com.condation.cms.core.mail.DefaultMailService;
+import com.condation.cms.core.menu.CachingMenuService;
 import com.condation.cms.core.menu.FileMenuService;
 import com.condation.cms.core.messages.DefaultMessageSource;
 import com.condation.cms.core.messaging.DefaultMessaging;
@@ -240,8 +242,14 @@ public class SiteModule extends AbstractModule {
 
 	@Provides
 	@Singleton
-	public MenuService menuService(DB db) {
-		return new FileMenuService(db.getFileSystem().hostBase());
+	public MenuService menuService(DB db, CacheManager cacheManager, EventBus eventBus) {
+		ICache<String, Menu> menuCache = cacheManager.get(
+				Constants.CacheNames.MENU,
+				new CacheManager.CacheConfig(100L, Duration.ofMinutes(5)));
+		return new CachingMenuService(
+				new FileMenuService(db.getFileSystem().hostBase()),
+				menuCache,
+				eventBus);
 	}
 	
 	@Provides

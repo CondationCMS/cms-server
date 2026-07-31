@@ -22,6 +22,8 @@ import { executeScriptAction } from '@cms/js/manager-globals.js';
 import frameMessenger from '@cms/modules/frameMessenger.js';
 import { getPreviewFrame, getPreviewUrl } from '@cms/modules/preview.utils.js';
 import { getContentNode, setMetaBatch } from '@cms/modules/rpc/rpc-content.js';
+import { setActivePreviewContent } from '@cms/modules/preview-context.js';
+import { updateStateButton } from '@cms/modules/manager-ui.js';
 
 const executeImageForm = (payload: any) => {
     const cmd: any = {
@@ -185,6 +187,8 @@ const initMessageHandlers = () => {
         const contentNode = await getContentNode({
             url: getPreviewUrl()
         })
+        setActivePreviewContent(contentNode.result);
+        updateStateButton();
         var message : any = {
             "type": "getContentNodeResponse",
             "payload": {

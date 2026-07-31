@@ -23,6 +23,7 @@ package com.condation.cms.filesystem.metadata.persistent;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.filesystem.metadata.PageMetaData;
 import java.io.IOException;
@@ -36,7 +37,6 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 /**
@@ -54,21 +54,34 @@ public class TitleQuery {
 
 	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
 
-	public List<ContentNode> list() {
-		return queryContentNodes();
+	public List<ContentNode> list(VariantSearchMode variantSearchMode) {
+		return queryContentNodes(variantSearchMode);
 	}
 
-	private List<ContentNode> queryContentNodes() {
+	public List<ContentNode> list() {
+		return queryContentNodes(VariantSearchMode.ALL);
+	}
+
+	private List<ContentNode> queryContentNodes(VariantSearchMode variantSearchMode) {
 
 		try {
 			BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();
 			queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
 			queryBuilder.add(titleQueryFactory.createQuery(input), BooleanClause.Occur.MUST);
+			if (variantSearchMode != VariantSearchMode.ALL) {
+				queryBuilder.add(
+						new TermQuery(new Term(
+								"_variant",
+								Boolean.toString(variantSearchMode == VariantSearchMode.VARIANT)
+						)),
+						BooleanClause.Occur.MUST
+				);
+			}
 			List<Document> result = index.query(queryBuilder.build());
 
 			var contentNodes = result.stream()
 					.map(document -> document.get("_uri"))
-					.map(metaData::byUri)
+					.map(metaData::byPath)
 					.filter(Optional::isPresent)
 					.map(Optional::get)
 					.filter(node -> !node.isDirectory())

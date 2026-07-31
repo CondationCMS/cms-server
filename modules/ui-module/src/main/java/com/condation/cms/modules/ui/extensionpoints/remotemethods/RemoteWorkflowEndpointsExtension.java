@@ -27,6 +27,7 @@ import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.ui.rpc.RPCException;
@@ -62,7 +63,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 		var node_uri = PathUtil.toRelativeFile(contentFile, contentBase);
 
-		var node = db.getContent().byUri(node_uri);
+		var node = db.getContent().byPath(node_uri);
 		if (node.isEmpty()) {
 			return Optional.empty();
 		}
@@ -88,7 +89,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 	@RemoteMethod(name = "workflow.manager.node.status", permissions = {Permissions.CONTENT_EDIT})
 	public Object nodeStatus(Map<String, Object> parameters) throws RPCException {
 
-		var uri = (String) parameters.get("uri");
+		var uri = contentUri(parameters);
 		Map<String, Object> result = new HashMap<>();
 
 		var contentNodeOpt = getContentNode(uri);
@@ -111,7 +112,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 	@RemoteMethod(name = "workflow.transitions.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getTransitions(Map<String, Object> parameters) throws RPCException {
 
-		var uri = (String) parameters.get("uri");
+		var uri = contentUri(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -138,7 +139,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 	public Object transit(Map<String, Object> parameters) throws RPCException {
 		var result = new HashMap<String, Object>();
 		try {
-			var uri = (String) parameters.get("uri");
+			var uri = contentUri(parameters);
 			var transition = (String) parameters.get("transitionId");
 
 			final DB db = getContext().get(DBFeature.class).db();
@@ -165,6 +166,17 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 			throw new RPCException(0, ex.getMessage());
 		}
 		return result;
+	}
+
+	private String contentUri(Map<String, Object> parameters) throws RPCException {
+		var value = parameters.get("uri");
+		if (value instanceof String uri && !uri.isBlank()) {
+			return uri;
+		}
+		if (getRequestContext().has(CurrentNodeFeature.class)) {
+			return getRequestContext().get(CurrentNodeFeature.class).node().uri();
+		}
+		throw new RPCException(400, "uri must not be blank");
 	}
 
 }

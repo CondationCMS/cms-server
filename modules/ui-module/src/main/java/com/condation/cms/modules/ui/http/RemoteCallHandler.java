@@ -21,6 +21,8 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCException;
@@ -47,6 +49,8 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 public class RemoteCallHandler extends JettyHandler {
 
+	public static final String CONTENT_URI_HEADER = "X-CMS-Content-Uri";
+
 	private final RemoteMethodService remoteCallService;
 	private final SiteModuleContext moduleContext;
 	private final RequestContext requestContext;
@@ -68,6 +72,7 @@ public class RemoteCallHandler extends JettyHandler {
 			if (userOpt.isEmpty()) {
 				rpcResult = new RPCResult(new RPCError("no user present"));
 			} else {
+				setCurrentContentNode(request);
 				Optional<?> result = remoteCallService.execute(remoteCall.method(), remoteCall.parameters(), userOpt.get());
 				if (result.isPresent()) {
 					rpcResult = new RPCResult(result.get());
@@ -85,6 +90,23 @@ public class RemoteCallHandler extends JettyHandler {
 		Content.Sink.write(response, true, UIGsonProvider.INSTANCE.toJson(rpcResult), callback);
 
 		return true;
+	}
+
+	private void setCurrentContentNode(Request request) {
+		var uri = request.getHeaders().get(CONTENT_URI_HEADER);
+		if (uri == null || uri.isBlank()) {
+			return;
+		}
+		if (!moduleContext.has(DBFeature.class)) {
+			return;
+		}
+		var content = moduleContext.get(DBFeature.class).db().getContent();
+		content.byUri(uri.trim())
+				.or(() -> content.byPath(uri.trim()))
+				.ifPresent(node -> requestContext.add(
+						CurrentNodeFeature.class,
+						new CurrentNodeFeature(node)
+				));
 	}
 
 	private RPCResult buildErrorResult(Exception e, String method) {

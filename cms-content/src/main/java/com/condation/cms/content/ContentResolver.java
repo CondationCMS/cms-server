@@ -27,29 +27,51 @@ import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.content.RedirectContentResponse;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.variants.Variant;
+import com.condation.cms.api.variants.VariantSelector;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.core.content.ContentResolvingStrategy;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
 @Slf4j
 public class ContentResolver {
 
 	private final ContentRenderer contentRenderer;
 	
 	private final DB db;
+
+	private final VariantResolver variantResolver;
+
+	private final VariantSelector variantSelector;
+
+	public ContentResolver(ContentRenderer contentRenderer, DB db) {
+		this(contentRenderer, db, new VariantResolver(db), new DefaultVariantSelector());
+	}
+
+	public ContentResolver(
+			ContentRenderer contentRenderer,
+			DB db,
+			VariantResolver variantResolver,
+			VariantSelector variantSelector
+	) {
+		this.contentRenderer = contentRenderer;
+		this.db = db;
+		this.variantResolver = variantResolver;
+		this.variantSelector = variantSelector;
+	}
 	
 	public Optional<ContentResponse> getContent (final RequestContext context) {
 		return getContent(context, true);
@@ -82,8 +104,6 @@ public class ContentResolver {
 		if (contentNode == null) {
 			return Optional.empty();
 		}
-
-        var contentFile = db.getFileSystem().contentBase().resolve(contentNode.path());
 		
 		if (checkVisibility && !db.getContent().isVisible(contentNode)) {
 			return Optional.empty();
@@ -101,7 +121,22 @@ public class ContentResolver {
 		} else if (!Constants.NodeType.PAGE.equals(contentNode.nodeType())) {
 			return Optional.empty();
 		}
-		context.add(CurrentNodeFeature.class, new CurrentNodeFeature(contentNode));
+
+		var selection = variantSelector.select(
+				contentNode,
+				variantResolver.getVariants(contentNode),
+				context
+		);
+		var selectedNode = selection.variant()
+				.map(Variant::node)
+				.filter(node -> !checkVisibility
+						|| context.has(IsPreviewFeature.class)
+						|| NodeVisibility.isVisible(node))
+				.orElse(contentNode);
+
+		var contentFile = db.getFileSystem().contentBase().resolve(selectedNode.path());
+
+		context.add(CurrentNodeFeature.class, new CurrentNodeFeature(selectedNode));
 		
 		try {
 			
@@ -111,9 +146,9 @@ public class ContentResolver {
 			
 			var content = contentRenderer.render(contentFile, context, renderedSectionEntries);
 			
-			var contentType = contentNode.contentType();
+			var contentType = selectedNode.contentType();
 			
-			return Optional.of(new DefaultContentResponse(content, contentType, contentNode));
+			return Optional.of(new DefaultContentResponse(content, contentType, selectedNode));
 		} catch (IOException ex) {
 			log.error(null, ex);
 			return Optional.empty();

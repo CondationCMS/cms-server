@@ -1,0 +1,31 @@
+---
+title: Startseite
+template: section.html
+search:
+  index: false
+description: my new descritpion for that awesome section-lol
+parent:
+  text: text for a section
+layout:
+  order: 0
+media_url: compass-7592444_1920.jpg
+status: published
+object:
+  values:
+  - title: section 1-1
+    description: in section 1
+    features: search
+  - title: New Item
+    description: asdads
+    features: export
+about: its all about content
+unpublish_date: null
+publish_date: null
+about1: more content more better
+---
+
+# This is a section: summer
+
+And no i can edit the content
+
+blabladdddsd asd

@@ -22,7 +22,6 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 import com.condation.cms.api.annotations.Action;
 import com.condation.cms.api.annotations.Filter;
-import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.ui.action.UIHookAction;
 import com.condation.cms.api.ui.action.UIScriptAction;

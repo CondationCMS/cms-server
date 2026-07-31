@@ -24,11 +24,15 @@ import { i18n } from '@cms/modules/localization.js';
 import { alertSelect, alertConfirm, alertPrompt } from '@cms/modules/alerts.js';
 import { showToast } from '@cms/modules/toast.js';
 import { getPageTemplates } from '@cms/modules/rpc/rpc-manager.js';
-export async function renameFileAction({ state, getTargetFolder, filename }) {
+export async function renameFileAction({ state, getTargetFolder, filename, title, content }) {
     const newName = await alertPrompt({
-        title: i18n.t("filebrowser.rename.title", "Rename file"),
-        label: i18n.t("filebrowser.rename.label", "New name"),
-        placeholder: filename
+        title: content
+            ? i18n.t("filebrowser.renameContent.title", "Edit title")
+            : i18n.t("filebrowser.rename.title", "Rename"),
+        label: content
+            ? i18n.t("filebrowser.renameContent.label", "Title")
+            : i18n.t("filebrowser.rename.label", "New name"),
+        placeholder: content ? title : filename
     });
     var extraOptions = {};
     if (state.options.siteId) {
@@ -44,8 +48,12 @@ export async function renameFileAction({ state, getTargetFolder, filename }) {
                 ...extraOptions
             });
             showToast({
-                title: i18n.t("filebrowser.rename.success.title", 'File renamed'),
-                message: i18n.t("filebrowser.rename.success.message", "File renamed successfully"),
+                title: content
+                    ? i18n.t("filebrowser.renameContent.success.title", 'Title updated')
+                    : i18n.t("filebrowser.rename.success.title", 'Renamed'),
+                message: content
+                    ? i18n.t("filebrowser.renameContent.success.message", "Title updated successfully")
+                    : i18n.t("filebrowser.rename.success.message", "Renamed successfully"),
                 type: 'info',
                 timeout: 3000
             });

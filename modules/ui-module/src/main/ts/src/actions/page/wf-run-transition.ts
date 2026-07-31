@@ -27,7 +27,6 @@ import { showToast } from "@cms/modules/toast";
 export async function runAction(params : any) {
 
     var request = {
-        uri : params.uri,
         transitionId: params.transitionId
     };
 

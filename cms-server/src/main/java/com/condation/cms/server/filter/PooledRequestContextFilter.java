@@ -23,6 +23,7 @@ package com.condation.cms.server.filter;
 import com.condation.cms.api.PerformanceProperties;
 import com.condation.cms.api.annotations.Experimental;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
@@ -92,6 +93,7 @@ public class PooledRequestContextFilter extends Handler.Wrapper {
 		} finally {
 			requestContext.features.remove(RequestFeature.class);
 			requestContext.features.remove(IsPreviewFeature.class);
+			requestContext.features.remove(CurrentNodeFeature.class);
 			requestContextPoolable.release();
 		}
 	}

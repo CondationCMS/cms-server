@@ -21,6 +21,7 @@
 
 import { i18n } from "@cms/modules/localization.js";
 import { getCSRFToken } from "../utils";
+import { getActivePreviewContent } from "../preview-context.js";
 
 interface Options {
 	method: string;
@@ -50,11 +51,22 @@ const executeRemoteMethodCall = async (method : string, parameters : any) => {
 		parameters: parameters
 	}
 	const csrfToken = getCSRFToken();
+	const previewFrame = document.getElementById("contentPreview") as HTMLIFrameElement | null;
+	let currentPreviewUrl = "";
+	try {
+		currentPreviewUrl = previewFrame?.contentWindow?.location.href ?? "";
+	} catch {
+		// A context header is optional when the preview URL cannot be read.
+	}
+	const activePreviewContent = getActivePreviewContent(currentPreviewUrl);
 	var response = await fetch(window.manager.baseUrl + "/rpc", {
 		method: "POST",
 		headers: {
 			'Content-Type': 'application/json',
-			...(csrfToken && { 'X-CSRF-Token': csrfToken })
+			...(csrfToken && { 'X-CSRF-Token': csrfToken }),
+			...(activePreviewContent?.uri && {
+				'X-CMS-Content-Uri': activePreviewContent.uri
+			})
 		},
 		body: JSON.stringify(data)
 	})

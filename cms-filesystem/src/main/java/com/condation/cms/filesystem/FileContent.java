@@ -24,6 +24,7 @@ package com.condation.cms.filesystem;
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.utils.PathUtil;
 import java.util.List;
@@ -102,10 +103,10 @@ public class FileContent implements Content {
 	}
 	
 	@Override
-	public List<ContentNode> searchByTitle (String input) {
-		var titleQuery =  fileSystem.getMetaData().searchByTitle(input);
+	public List<ContentNode> searchByTitle (String input, VariantSearchMode variantSearchMode) {
+		var titleQuery = fileSystem.getMetaData().searchByTitle(input);
 		
-		return titleQuery.list();
+		return titleQuery.list(variantSearchMode);
 	}
 	
 }

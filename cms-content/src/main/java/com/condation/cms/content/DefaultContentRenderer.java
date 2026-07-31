@@ -54,7 +54,6 @@ import com.condation.cms.hooksystem.extensions.DBHooks;
 import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.content.template.functions.MarkdownFunction;
-import com.condation.cms.content.template.functions.hooks.HooksTemlateFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;

@@ -24,6 +24,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
@@ -70,7 +71,7 @@ public class RemotePageEnpoints extends AbstractRemoteMethodeExtension {
 		}
 
 		final DB db = getContext().get(DBFeature.class).db();
-		var hits = db.getContent().searchByTitle(query).stream()
+		var hits = db.getContent().searchByTitle(query, VariantSearchMode.ORIGINAL).stream()
 				.map(node -> {
 					String url = node.url();
 					String previewUrl = HTTPUtil.modifyUrl(url, context);

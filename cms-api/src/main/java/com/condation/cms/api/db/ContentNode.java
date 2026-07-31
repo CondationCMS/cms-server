@@ -26,9 +26,8 @@ import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.MapUtil;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.api.utils.SectionUtil;
-import com.google.common.math.DoubleMath;
+import com.condation.cms.api.workflow.WFStatusProvider;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -125,6 +124,55 @@ public record ContentNode(String uri, String url, String name, Map<String, Objec
 
     public boolean isSectionEntry() {
         return SectionUtil.isSectionEntry(name);
+    }
+
+    public boolean isVariant() {
+        return variantPathSegment() >= 0;
+    }
+
+    public Optional<String> variantId() {
+        var pathParts = normalizedPathParts();
+        var variantSegment = variantPathSegment(pathParts);
+        if (variantSegment < 0 || variantSegment + 2 >= pathParts.length) {
+            return Optional.empty();
+        }
+        return Optional.of(pathParts[variantSegment + 2]);
+    }
+
+    /**
+     * Returns the indexed path of the canonical page represented by this
+     * variant.
+     */
+    public Optional<String> originalUri() {
+        var pathParts = normalizedPathParts();
+        var variantSegment = variantPathSegment(pathParts);
+        if (variantSegment < 0 || variantSegment + 1 >= pathParts.length) {
+            return Optional.empty();
+        }
+
+        var originalName = pathParts[variantSegment + 1] + ".md";
+        if (variantSegment == 0) {
+            return Optional.of(originalName);
+        }
+        return Optional.of(String.join("/", java.util.Arrays.copyOf(pathParts, variantSegment))
+                + "/" + originalName);
+    }
+
+    private int variantPathSegment() {
+        return variantPathSegment(normalizedPathParts());
+    }
+
+    private int variantPathSegment(String[] pathParts) {
+        for (int index = 0; index < pathParts.length; index++) {
+            if (".variants".equals(pathParts[index])) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private String[] normalizedPathParts() {
+        return uri.replace('\\', '/').split("/");
     }
 
     public boolean isRedirect() {

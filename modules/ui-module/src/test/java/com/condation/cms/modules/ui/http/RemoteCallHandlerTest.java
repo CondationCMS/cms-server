@@ -22,6 +22,11 @@ package com.condation.cms.modules.ui.http;
  */
 
 import com.condation.cms.api.module.SiteModuleContext;
+import com.condation.cms.api.db.Content;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.DB;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
 import com.condation.cms.api.ui.rpc.RPCException;
@@ -33,10 +38,13 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.eclipse.jetty.http.HttpFields;
+import org.eclipse.jetty.server.Request;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 class RemoteCallHandlerTest {
@@ -77,5 +85,56 @@ class RemoteCallHandlerTest {
 
 		assertThat(result.error()).isEqualTo(new RPCError("boom"));
 		assertThat(result.error().code()).isEqualTo(-1);
+	}
+
+	@Test
+	void contentUriHeaderAddsCurrentNodeFeature() throws Exception {
+		var context = new RequestContext();
+		var db = mock(DB.class);
+		var content = mock(Content.class);
+		var request = mock(Request.class);
+		var headers = mock(HttpFields.class);
+		var node = new ContentNode(
+				".variants/about/summer/about.md",
+				"/about",
+				"about.md",
+				Map.of()
+		);
+		when(moduleContext.has(DBFeature.class)).thenReturn(true);
+		when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+		when(db.getContent()).thenReturn(content);
+		when(request.getHeaders()).thenReturn(headers);
+		when(headers.get(RemoteCallHandler.CONTENT_URI_HEADER)).thenReturn(node.uri());
+		when(content.byUri(node.uri())).thenReturn(Optional.of(node));
+
+		var handler = new RemoteCallHandler(remoteMethodService, moduleContext, context);
+		var method = RemoteCallHandler.class.getDeclaredMethod("setCurrentContentNode", Request.class);
+		method.setAccessible(true);
+		method.invoke(handler, request);
+
+		assertThat(context.get(CurrentNodeFeature.class).node()).isEqualTo(node);
+	}
+
+	@Test
+	void unknownContentUriHeaderDoesNotAddCurrentNodeFeature() throws Exception {
+		var context = new RequestContext();
+		var db = mock(DB.class);
+		var content = mock(Content.class);
+		var request = mock(Request.class);
+		var headers = mock(HttpFields.class);
+		when(moduleContext.has(DBFeature.class)).thenReturn(true);
+		when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
+		when(db.getContent()).thenReturn(content);
+		when(request.getHeaders()).thenReturn(headers);
+		when(headers.get(RemoteCallHandler.CONTENT_URI_HEADER)).thenReturn("unknown.md");
+		when(content.byUri("unknown.md")).thenReturn(Optional.empty());
+		when(content.byPath("unknown.md")).thenReturn(Optional.empty());
+
+		var handler = new RemoteCallHandler(remoteMethodService, moduleContext, context);
+		var method = RemoteCallHandler.class.getDeclaredMethod("setCurrentContentNode", Request.class);
+		method.setAccessible(true);
+		method.invoke(handler, request);
+
+		assertThat(context.has(CurrentNodeFeature.class)).isFalse();
 	}
 }

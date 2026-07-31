@@ -18,10 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-export function renameFileAction({ state, getTargetFolder, filename }: {
+export function renameFileAction({ state, getTargetFolder, filename, title, content }: {
     state: any;
     getTargetFolder: any;
     filename: any;
+    title: any;
+    content: any;
 }): Promise<void>;
 export function deleteElementAction({ elementName, state, deleteFN, getTargetFolder }: {
     elementName: any;

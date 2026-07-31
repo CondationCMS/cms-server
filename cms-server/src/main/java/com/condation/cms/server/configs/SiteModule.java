@@ -63,7 +63,12 @@ import com.condation.cms.content.ContentRenderer;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.content.DefaultContentParser;
 import com.condation.cms.content.DefaultContentRenderer;
+import com.condation.cms.content.DefaultVariantSelector;
+import com.condation.cms.content.ConfigurableVariantSelector;
 import com.condation.cms.content.TaxonomyResolver;
+import com.condation.cms.content.VariantResolver;
+import com.condation.cms.api.variants.VariantSelector;
+import com.condation.cms.content.VariantSelectorConfigurationRepository;
 import com.condation.cms.content.ViewResolver;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
@@ -366,8 +371,42 @@ public class SiteModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public ContentResolver contentResolver(ContentRenderer contentRenderer,
-			FileDB db) {
-		return new ContentResolver(contentRenderer, db);
+			FileDB db, VariantResolver variantResolver, VariantSelector variantSelector) {
+		return new ContentResolver(contentRenderer, db, variantResolver, variantSelector);
+	}
+
+	@Provides
+	@Singleton
+	public VariantResolver variantResolver(FileDB db) {
+		return new VariantResolver(db);
+	}
+
+	@Provides
+	@Singleton
+	public VariantSelectorConfigurationRepository variantSelectorConfigurationRepository(
+			FileDB db,
+			VariantResolver variantResolver
+	) {
+		return new VariantSelectorConfigurationRepository(db, variantResolver);
+	}
+
+	@Provides
+	@Singleton
+	public ConfigurableVariantSelector configurableVariantSelector(
+			VariantSelectorConfigurationRepository configurationRepository,
+			ModuleManager moduleManager
+	) {
+		return new ConfigurableVariantSelector(
+				new DefaultVariantSelector(),
+				configurationRepository,
+				moduleManager
+		);
+	}
+
+	@Provides
+	@Singleton
+	public VariantSelector variantSelector(ConfigurableVariantSelector selector) {
+		return selector;
 	}
 
 	@Provides

@@ -22,7 +22,7 @@
 import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 
 export interface GetTransitionsRequest {
-	uri: string; // The URI of the folder where the page should be created
+	uri?: string;
 }
 export interface GetTransitionsDto {
 	id: string,
@@ -37,7 +37,7 @@ const getWfTransitions = async (options: GetTransitionsRequest) => {
 };
 
 export interface GetWFManagerRequest {
-	uri: string; // The URI of the folder where the page should be created
+	uri?: string;
 }
 export interface GetWFManagerStatusDto {
 	published: boolean,
@@ -64,7 +64,7 @@ const getWfManagerStatus = async (options: GetWFManagerRequest) => {
 };
 
 export interface WfTransitRequest {
-	uri: string; // The URI of the folder where the page should be created
+	uri?: string;
 	transitionId: string; // The URI of the folder where the page should be created
 }
 export interface WFTransitDto {

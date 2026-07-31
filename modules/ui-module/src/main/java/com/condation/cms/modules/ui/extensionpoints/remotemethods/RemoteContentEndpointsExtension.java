@@ -28,6 +28,7 @@ import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
@@ -47,6 +48,8 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.SectionEntry;
+import com.condation.cms.content.ConfigurableVariantSelector;
+import com.condation.cms.content.VariantResolver;
 import com.condation.cms.modules.ui.utils.FormHelper;
 import com.condation.cms.modules.ui.utils.MarkdownHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
@@ -69,7 +72,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
-		var uri = (String) parameters.get("uri");
+		var uri = contentUri(parameters);
 
 		var contentFile = contentBase.resolve(uri);
 
@@ -95,7 +98,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		var contentBase = db.getFileSystem().contentBase();
 
 		var updatedContent = FormHelper.getContent(parameters.get("content"));
-		var uri = (String) parameters.get("uri");
+		var uri = contentUri(parameters);
 
 		var contentFile = contentBase.resolve(uri);
 
@@ -128,7 +131,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		var replacement = (String)parameters.get("content");
 		int start = NumberUtils.toInt(parameters.getOrDefault("start", -1l));
 		int end = NumberUtils.toInt(parameters.getOrDefault("end", -1l));
-		var uri = (String) parameters.get("uri");
+		var uri = contentUri(parameters);
 
 		Map<String, Object> result = new HashMap<>();
 		result.put("uri", uri);
@@ -169,7 +172,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 
 		var updateParam = (Map<String, Map<String, Object>>) parameters.get("meta");
 		var update = MetaConverter.convertMeta(updateParam);
-		var uri = (String) parameters.get("uri");
+		var uri = contentUri(parameters);
 
 		var contentFile = contentBase.resolve(uri);
 
@@ -279,7 +282,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 
 		var content = (String) parameters.getOrDefault("content", "");
-		var parentUri = (String) parameters.get("parentUri");
+		var parentUri = contentUri(parameters, "parentUri");
 		var section = (String) parameters.get("section");
 		var sectionEntryName = (String) parameters.get("sectionEntryName");
 		var template = (String) parameters.get("template");
@@ -355,7 +358,31 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 			Map<String, Object> result = new HashMap<>();
 			result.put("url", url);
 			if (contentFile != null) {
-				result.put("uri", PathUtil.toRelativeFile(contentFile, contentBase));
+				var canonicalUri = PathUtil.toRelativeFile(contentFile, contentBase);
+				var selectedNode = db.getContent().byUri(canonicalUri).orElse(null);
+				var query = com.condation.cms.api.utils.HTTPUtil.queryParameters(URI.create(url).getQuery());
+				var variantId = query.getOrDefault(
+						ConfigurableVariantSelector.VARIANT_QUERY_PARAMETER,
+						List.of()
+				).stream().findFirst().orElse("").trim();
+				String activeVariantId = null;
+				if (selectedNode != null
+						&& !variantId.isBlank()
+						&& !ConfigurableVariantSelector.CANONICAL_VARIANT_ID.equalsIgnoreCase(variantId)) {
+					var selectedVariant = new VariantResolver(db).loadVariant(selectedNode, variantId);
+					if (selectedVariant.isPresent()) {
+						selectedNode = selectedVariant.get().node();
+						activeVariantId = selectedVariant.get().id();
+					}
+				}
+				if (selectedNode != null) {
+					contentFile = contentBase.resolve(selectedNode.uri());
+					result.put("uri", selectedNode.uri());
+				} else {
+					result.put("uri", canonicalUri);
+				}
+				result.put("canonicalUri", canonicalUri);
+				result.put("variantId", activeVariantId);
 				
 				var sectionEntries = db.getContent().listSectionEntries(contentFile);
 				Map<String, List<SectionEntry>> sectionMap = new HashMap<>();
@@ -371,5 +398,20 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 			}
 
 			return result;
+	}
+
+	private String contentUri(Map<String, Object> parameters) throws RPCException {
+		return contentUri(parameters, "uri");
+	}
+
+	private String contentUri(Map<String, Object> parameters, String parameterName) throws RPCException {
+		var value = parameters.get(parameterName);
+		if (value instanceof String uri && !uri.isBlank()) {
+			return uri;
+		}
+		if (getRequestContext().has(CurrentNodeFeature.class)) {
+			return getRequestContext().get(CurrentNodeFeature.class).node().uri();
+		}
+		throw new RPCException(400, parameterName + " must not be blank");
 	}
 }

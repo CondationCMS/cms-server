@@ -312,7 +312,8 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		}
 	}
 
-	void flushContentChanges() {
+	@Override
+	public void flushContentChanges() {
 		contentChangeCoordinator.flushNow();
 	}
 

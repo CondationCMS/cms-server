@@ -39,4 +39,32 @@ public class ContentNodeTest {
 		Assertions.assertThat(NodeVisibility.isVisible(contentNode)).isFalse();
 		Assertions.assertThat(contentNode.isVisible()).isFalse();
 	}
+
+	@Test
+	void detectsVariantAndExposesVariantMetadata() {
+		var contentNode = new ContentNode(
+				"products/.variants/about/summer/about.md",
+				"/products/.variants/about/summer/about",
+				"about.md",
+				Map.of()
+		);
+
+		Assertions.assertThat(contentNode.isVariant()).isTrue();
+		Assertions.assertThat(contentNode.variantId()).contains("summer");
+		Assertions.assertThat(contentNode.originalUri()).contains("products/about.md");
+	}
+
+	@Test
+	void doesNotTreatSimilarFolderNameAsVariant() {
+		var contentNode = new ContentNode(
+				"products/my.variants/about.md",
+				"/products/my.variants/about",
+				"about.md",
+				Map.of()
+		);
+
+		Assertions.assertThat(contentNode.isVariant()).isFalse();
+		Assertions.assertThat(contentNode.variantId()).isEmpty();
+		Assertions.assertThat(contentNode.originalUri()).isEmpty();
+	}
 }

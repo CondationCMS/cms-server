@@ -20,31 +20,56 @@
  */
 
 import { getPreviewUrl } from '@cms/modules/preview.utils.js';
-import { getContent, getContentNode } from '@cms/modules/rpc/rpc-content.js';
 import { getWfManagerStatus } from './rpc/rpc-workflow';
 import { executeScriptAction } from '../manager-globals';
+import { getActivePreviewContent } from './preview-context.js';
+
+const updateVariantBadge = (content) => {
+  const badge = document.querySelector('#cms-current-variant');
+  const label = document.querySelector('#cms-current-variant-label');
+  if (!badge || !label) {
+    return;
+  }
+
+  const variantId = content?.variantId;
+  label.textContent = content ? (variantId || 'Original') : 'Loading…';
+  badge.disabled = !content?.uri;
+  badge.classList.toggle('text-bg-warning', Boolean(variantId));
+  badge.classList.toggle('text-bg-secondary', !variantId);
+  badge.setAttribute(
+    'title',
+    variantId ? `Current variant: ${variantId}` : (content ? 'Original page' : 'Loading preview content')
+  );
+};
+
+window.addEventListener('cms:preview-context-changed', (event) => {
+  updateVariantBadge(event.detail);
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  const badge = document.querySelector('#cms-current-variant');
+  badge?.addEventListener('click', () => {
+    executeScriptAction({
+      module: window.manager.baseUrl + '/actions/page/variants',
+      function: 'runAction',
+      parameters: {}
+    });
+  });
+  updateVariantBadge(getActivePreviewContent());
+});
 
 export function updateStateButton() {
-  var previewUrl = getPreviewUrl();;
-  if (!previewUrl) {
-    document.querySelector('#cms-btn-status').classList.add('disabled');
-    document.querySelector('#cms-btn-status').setAttribute('title', 'No preview URL available');
+  const previewUrl = getPreviewUrl();
+  const activePreviewContent = getActivePreviewContent(previewUrl);
+  if (!previewUrl || !activePreviewContent?.uri) {
+    const statusButton = document.querySelector('#cms-btn-status');
+    statusButton?.classList.add('disabled');
+    statusButton?.setAttribute('title', 'No preview content available');
     return;
-
   }
-  var previewUrl = getPreviewUrl();
 
-  getContentNode({
-    url: previewUrl
-  }).then((contentNode) => {
-
-    getWfManagerStatus({
-      uri: contentNode.result.uri
-    }).then((getStatusResponse) => {
-      updateNodeStatus(getStatusResponse, contentNode.result.uri);
-    }).catch(() => {
-      hideStatusButton();
-    });
+  getWfManagerStatus({}).then((getStatusResponse) => {
+    updateNodeStatus(getStatusResponse);
   }).catch(() => {
     hideStatusButton();
   });
@@ -57,7 +82,7 @@ function hideStatusButton() {
   }
 }
 
-function updateNodeStatus(statusResponse, uri) {
+function updateNodeStatus(statusResponse) {
   const statusBtn = document.querySelector('#cms-btn-status');
   if (!statusBtn) return;
   const iconEl = statusBtn.querySelector('#cms-btn-status-icon');
@@ -106,10 +131,10 @@ function updateNodeStatus(statusResponse, uri) {
   iconEl.classList.add(statusIcon);
   statusBtn.querySelector('#cms-btn-status-text').textContent = statusText;
   
-  updateWorkflowStatus(statusResponse, uri);
+  updateWorkflowStatus(statusResponse);
 }
 
-const updateWorkflowStatus = (statusResponse, uri) => {
+const updateWorkflowStatus = (statusResponse) => {
 
   let visibilityStatus = document.querySelector('#cms-workflow-visibility');
   Array.from(visibilityStatus.classList).forEach(className => {
@@ -158,17 +183,16 @@ const updateWorkflowStatus = (statusResponse, uri) => {
   wfTransitionsContainer.querySelectorAll('.workflow-transition').forEach((btn, index) => {
     btn.addEventListener('click', () => {
       const transition = transitions[index];
-      executeTransition(uri, transition.id);
+      executeTransition(transition.id);
     });
   });
 }
 
-const executeTransition = async (uri, transitionId) => {
+const executeTransition = async (transitionId) => {
     var cmd = {
         "module": window.manager.baseUrl + "/actions/page/wf-run-transition",
         "function": "runAction",
         "parameters": {
-            "uri": uri,
             "transitionId": transitionId
         }
     }

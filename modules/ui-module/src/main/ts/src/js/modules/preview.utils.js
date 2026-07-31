@@ -20,6 +20,7 @@
  */
 
 import { EventBus } from "@cms/modules/event-bus.js";
+import { setActivePreviewContent } from "@cms/modules/preview-context.js";
 
 //PreviewHistory.init();
 // close overlay on preview loaded
@@ -58,8 +59,9 @@ const reloadPreview = () => {
 	getPreviewFrame().contentDocument.location.reload(true);
 }
 
-const loadPreview = (url) => {
+const loadPreview = (url, options = {}) => {
 	activatePreviewOverlay();
+	setActivePreviewContent(null);
 	
 	try {
 		// Fallback-Host für relative URLs, damit URL-Parsing funktioniert
@@ -69,6 +71,9 @@ const loadPreview = (url) => {
 		// Wenn "preview" bereits gesetzt ist, nicht erneut hinzufügen
 		if (!parsedUrl.searchParams.has("preview")) {
 			parsedUrl.searchParams.append("preview", "manager");
+		}
+		if (options.variant) {
+			parsedUrl.searchParams.set("variant", options.variant);
 		}
 		parsedUrl.searchParams.delete("preview-token")
 		//parsedUrl.searchParams.append("preview-token", window.manager.previewToken);

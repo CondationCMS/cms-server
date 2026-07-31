@@ -158,7 +158,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
             var contentNodes = result.stream()
                     .map(document -> document.get("_uri"))
-                    .map(metaData::byUri)
+                    .map(metaData::byPath)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .filter(node -> !node.isDirectory())

@@ -291,8 +291,8 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	}
 
 	@Override
-	public TitleQuery searchByTitle (String input, VariantSearchMode variantSearchMode) {
-		return new TitleQuery(titleQueryFactory, input, index, this, variantSearchMode);
+	public TitleQuery searchByTitle (String input) {
+		return new TitleQuery(titleQueryFactory, input, index, this);
 		
 	}
 }

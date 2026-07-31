@@ -65,11 +65,7 @@ public interface MetaData {
 
 	List<ContentNode> listSectionEntries(String pagePath);
 	
-	default TitleQuery searchByTitle(String input) {
-		return searchByTitle(input, VariantSearchMode.ALL);
-	}
-
-	TitleQuery searchByTitle(String input, VariantSearchMode variantSearchMode);
+	TitleQuery searchByTitle(String input);
 	
 	void clear ();
 	

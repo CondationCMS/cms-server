@@ -23,14 +23,15 @@ import { openModal } from '@cms/modules/modal.js';
 import { getPreviewUrl, loadPreview } from '@cms/modules/preview.utils.js';
 import { getContentNode } from '@cms/modules/rpc/rpc-content.js';
 import { getPageTemplates } from '@cms/modules/rpc/rpc-manager.js';
-import { createVariant } from '@cms/modules/rpc/rpc-variant.js';
+import { createVariant, getVariants } from '@cms/modules/rpc/rpc-variant.js';
 import { showToast } from '@cms/modules/toast.js';
 const value = (id) => document.getElementById(id)?.value.trim() ?? '';
 const validate = () => {
+    const copyContent = document.querySelector('input[name="cms-variant-content"]:checked')?.value === 'copy';
     const missing = [
         ['cms-variant-id', 'Variant ID'],
         ['cms-variant-title', 'Title'],
-        ['cms-variant-template', 'Template']
+        ...(copyContent ? [] : [['cms-variant-template', 'Template']])
     ].find(([id]) => !value(id) || (id === 'cms-variant-template' && value(id) === '__none__'));
     if (!missing) {
         return true;
@@ -45,13 +46,14 @@ const validate = () => {
 };
 export const runAction = async () => {
     try {
-        const [contentNode, templatesResponse] = await Promise.all([
+        const [activeContentNode, templatesResponse] = await Promise.all([
             getContentNode({ url: getPreviewUrl() }),
             getPageTemplates({})
         ]);
+        const variantContext = await getVariants({ uri: activeContentNode.result.uri });
         const templates = Array.from(templatesResponse.result ?? [])
             .sort((left, right) => String(left.name).localeCompare(String(right.name)));
-        const currentTemplate = contentNode.result.meta?.template ?? contentNode.result.data?.template ?? '';
+        const currentTemplate = variantContext.canonical.template;
         const options = templates.map((template) => {
             const selected = template.template === currentTemplate ? ' selected' : '';
             return `<option value="${escapeHtml(template.template)}"${selected}>${escapeHtml(template.name)}</option>`;
@@ -88,14 +90,27 @@ export const runAction = async () => {
             fullscreen: false,
             validate,
             onCancel: () => { },
+            onShow: (modalElement) => {
+                const templateSelect = modalElement.querySelector('#cms-variant-template');
+                const contentOptions = modalElement.querySelectorAll('input[name="cms-variant-content"]');
+                const syncTemplateState = () => {
+                    const copyContent = modalElement.querySelector('input[name="cms-variant-content"]:checked')?.value === 'copy';
+                    if (copyContent) {
+                        templateSelect.value = currentTemplate;
+                    }
+                    templateSelect.disabled = copyContent;
+                };
+                contentOptions.forEach(option => option.addEventListener('change', syncTemplateState));
+                syncTemplateState();
+            },
             onOk: async () => {
                 try {
                     const copyContent = document.querySelector('input[name="cms-variant-content"]:checked')?.value === 'copy';
                     const result = await createVariant({
-                        uri: contentNode.result.uri,
+                        uri: variantContext.canonical.uri,
                         id: value('cms-variant-id'),
                         title: value('cms-variant-title'),
-                        template: value('cms-variant-template'),
+                        template: copyContent ? currentTemplate : value('cms-variant-template'),
                         copyContent
                     });
                     showToast({

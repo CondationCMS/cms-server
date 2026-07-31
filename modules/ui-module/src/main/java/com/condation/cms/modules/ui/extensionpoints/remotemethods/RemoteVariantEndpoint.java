@@ -117,17 +117,23 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 		var template = stringParameter(parameters, "template");
 		var copyContent = Boolean.TRUE.equals(parameters.get("copyContent"));
 
-		if (uri.isBlank() || id.isBlank() || title.isBlank() || template.isBlank()) {
-			throw new RPCException(400, "uri, id, title and template must not be blank");
-		}
-		if (uiHooks().contentTypes().getPageTemplates().stream()
-				.noneMatch(pageTemplate -> pageTemplate.template().equals(template))) {
-			throw new RPCException(400, "unknown page template");
+		if (uri.isBlank() || id.isBlank() || title.isBlank()) {
+			throw new RPCException(400, "uri, id and title must not be blank");
 		}
 
 		var db = getDB(parameters);
 		var requestedNode = findContentNode(db, uri);
 		var canonicalNode = getVariantResolver(db).resolveContext(requestedNode).canonical();
+		var selectedTemplate = copyContent
+				? canonicalNode.getMetaValue(Constants.MetaFields.TEMPLATE, "")
+				: template;
+		if (selectedTemplate.isBlank()) {
+			throw new RPCException(400, "template must not be blank");
+		}
+		if (uiHooks().contentTypes().getPageTemplates().stream()
+				.noneMatch(pageTemplate -> pageTemplate.template().equals(selectedTemplate))) {
+			throw new RPCException(400, "unknown page template");
+		}
 		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 		var canonicalFile = contentBase.resolve(canonicalNode.path());
 		var variantId = UIPathUtil.toValidFilename(id);
@@ -169,7 +175,7 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 
 			Map<String, Object> meta = new HashMap<>();
 			meta.put(Constants.MetaFields.TITLE, title);
-			meta.put(Constants.MetaFields.TEMPLATE, template);
+			meta.put(Constants.MetaFields.TEMPLATE, selectedTemplate);
 			meta.put(Constants.MetaFields.STATUS, getContext().get(WorkflowFeature.class)
 					.workflow().getStatusProvider().newNodeStatus());
 			meta.put("createdAt", Date.from(Instant.now()));
@@ -291,7 +297,9 @@ public class RemoteVariantEndpoint extends AbstractRemoteMethodeExtension {
 				"uri", variantContext.canonical().uri(),
 				"url", managerPreviewUrl(variantContext.canonical().url()),
 				"title", variantContext.canonical()
-						.getMetaValue(Constants.MetaFields.TITLE, variantContext.canonical().name())
+						.getMetaValue(Constants.MetaFields.TITLE, variantContext.canonical().name()),
+				"template", variantContext.canonical()
+						.getMetaValue(Constants.MetaFields.TEMPLATE, "")
 		));
 		result.put("activeVariantId", variantContext.activeVariantId().orElse(null));
 		result.put("variants", variants);

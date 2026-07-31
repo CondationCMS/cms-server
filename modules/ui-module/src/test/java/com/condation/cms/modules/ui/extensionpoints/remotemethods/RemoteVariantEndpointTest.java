@@ -114,7 +114,10 @@ class RemoteVariantEndpointTest {
 
 	@Test
 	void getReturnsVariantsSortedById() throws RPCException {
-		var node = node("about.md", "/about", Map.of("title", "About"));
+		var node = node("about.md", "/about", Map.of(
+				"title", "About",
+				"template", "page.html"
+		));
 		var summerNode = node(
 				".variants/about/summer/about.md",
 				"/.variants/about/summer/about",
@@ -148,6 +151,8 @@ class RemoteVariantEndpointTest {
 						"/about?preview=manager&variant=summer"
 				);
 		assertThat(result).containsEntry("activeVariantId", null);
+		assertThat((Map<String, Object>) result.get("canonical"))
+				.containsEntry("template", "page.html");
 	}
 
 	@Test

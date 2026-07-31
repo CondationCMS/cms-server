@@ -34,6 +34,7 @@ export interface GetVariantsResult {
         uri: string;
         url: string;
         title: string;
+        template: string;
     };
     activeVariantId?: string | null;
     variants: VariantDto[];

@@ -51,15 +51,18 @@ public class TitleQuery {
 	private final String input;
 	private final LuceneIndex index;
 	private final MetaData metaData;
-	private final VariantSearchMode variantSearchMode;
 
 	private String contentType = Constants.DEFAULT_CONTENT_TYPE;
 
-	public List<ContentNode> list() {
-		return queryContentNodes();
+	public List<ContentNode> list(VariantSearchMode variantSearchMode) {
+		return queryContentNodes(variantSearchMode);
 	}
 
-	private List<ContentNode> queryContentNodes() {
+	public List<ContentNode> list() {
+		return queryContentNodes(VariantSearchMode.ALL);
+	}
+
+	private List<ContentNode> queryContentNodes(VariantSearchMode variantSearchMode) {
 
 		try {
 			BooleanQuery.Builder queryBuilder = new BooleanQuery.Builder();

@@ -30,7 +30,7 @@ object:
     features: search
 seo:
   description: hier kommt die beschreibung
-linked_page: about
+linked_page: /about
 translations:
   de: /
 taxonomy:

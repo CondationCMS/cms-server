@@ -71,6 +71,7 @@ const template = Handlebars.compile(`
 			<tr 
 				data-cms-file-uri="{{uri}}"
 				data-cms-file-name="{{name}}"
+				{{#if url}} data-cms-file-url="{{url}}"{{/if}}
 				{{#if directory}} data-cms-file-directory="true"{{/if}}>
 				<th scope="row">
 					{{#if directory}}

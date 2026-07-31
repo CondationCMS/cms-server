@@ -76,7 +76,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 				}
 				contentFile.children().stream()
 						.filter(child -> !SectionUtil.isSectionEntry(child.getFileName()))
-						.map(this::map)
+						.map(child -> map(child, contentBase))
 						.forEach(files::add);
 			} catch (IOException ex) {
 				log.error("", ex);
@@ -274,7 +274,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 				|| name.endsWith(".gif");
 	}
 	
-	private File map (ReadOnlyFile readOnlyFile) {
+	private File map (ReadOnlyFile readOnlyFile, ReadOnlyFile contentBase) {
 		if (readOnlyFile.isDirectory()) {
 			return new Directory(
 						readOnlyFile.getFileName(),
@@ -287,13 +287,14 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 			);
 		} else {
 			return new Content(
-					readOnlyFile.getFileName(), 
-					readOnlyFile.uri()
+					readOnlyFile.getFileName(),
+					readOnlyFile.uri(),
+					PathUtil.toURL(readOnlyFile, contentBase)
 			);
 		}
 	}
 	
-	public record Content(String name, String uri) implements File {
+	public record Content(String name, String uri, String url) implements File {
 	}
 	
 	public record Media(String name, String uri) implements File {

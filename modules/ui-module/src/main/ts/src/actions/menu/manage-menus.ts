@@ -20,6 +20,7 @@
  */
 
 import { openModal } from '@cms/modules/modal.js';
+import { openFileBrowser } from '@cms/modules/filebrowser/filebrowser.js';
 import { openPagePicker } from '@cms/modules/page-picker.js';
 import { showToast } from '@cms/modules/toast.js';
 import {
@@ -357,8 +358,13 @@ class MenuManager {
 				<label><span>Bezeichnung</span><input class="form-control form-control-sm" name="label"></label>
 				<label data-url-field><span>URL / Pfad</span><span class="input-group input-group-sm">
 					<input class="form-control" name="url" placeholder="/beispiel">
-					<button class="btn btn-outline-primary" type="button" data-select-page title="Interne Seite auswählen">
-						<i class="bi bi-search"></i> Seite
+					<button class="btn btn-outline-primary" type="button" data-select-page title="Seite suchen"
+						aria-label="Seite suchen">
+						<i class="bi bi-search"></i>
+					</button>
+					<button class="btn btn-outline-primary" type="button" data-browse-page title="Content-Browser öffnen"
+						aria-label="Content-Browser öffnen">
+						<i class="bi bi-folder2-open"></i>
 					</button>
 				</span></label>
 				<label><span>Typ</span><select class="form-select form-select-sm" name="type">
@@ -400,6 +406,17 @@ class MenuManager {
 					if (page.title && (!labelInput.value.trim() || labelInput.value === 'Neuer Menüpunkt')) {
 						labelInput.value = page.title;
 					}
+				}
+			});
+		});
+		element.querySelector('[data-browse-page]')?.addEventListener('click', () => {
+			openFileBrowser({
+				title: 'Interne Seite auswählen',
+				type: 'content',
+				filter: (file: any) => file.directory || file.content,
+				onSelect: (file: any) => {
+					if (!file.url) return;
+					(form.elements.namedItem('url') as HTMLInputElement).value = file.url;
 				}
 			});
 		});

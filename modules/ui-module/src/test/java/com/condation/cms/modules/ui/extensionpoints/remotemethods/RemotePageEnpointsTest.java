@@ -28,6 +28,7 @@ import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.module.SiteModuleContext;
@@ -174,7 +175,7 @@ public class RemotePageEnpointsTest {
         meta.put(Constants.MetaFields.TITLE, "Superman Returns");
         ContentNode node = new ContentNode("test/test1.md", "/test/test1", "test1.md", meta);
 
-        when(content.searchByTitle("superman")).thenReturn(List.of(node));
+        when(content.searchByTitle("superman", VariantSearchMode.ORIGINAL)).thenReturn(List.of(node));
         when(contentBase.resolve("test/test1.md")).thenReturn(contentFile);
         when(contentBase.relativize(contentFile)).thenReturn(contentFile);
         when(contentFile.toString()).thenReturn("test/test1.md");
@@ -195,6 +196,7 @@ public class RemotePageEnpointsTest {
         assertThat(hits).hasSize(1);
         assertThat(hits.get(0).title()).isEqualTo("Superman Returns");
         assertThat(hits.get(0).uri()).isNotNull();
+        verify(content).searchByTitle("superman", VariantSearchMode.ORIGINAL);
     }
 
     @Test
@@ -206,7 +208,7 @@ public class RemotePageEnpointsTest {
 
         ContentNode node = new ContentNode("test/test2.md", "/test/test2", "test2.md", new HashMap<>());
 
-        when(content.searchByTitle("")).thenReturn(List.of(node));
+        when(content.searchByTitle("", VariantSearchMode.ORIGINAL)).thenReturn(List.of(node));
         when(contentBase.resolve("test/test2.md")).thenReturn(contentFile);
         when(contentBase.relativize(contentFile)).thenReturn(contentFile);
         when(contentFile.toString()).thenReturn("test/test2.md");

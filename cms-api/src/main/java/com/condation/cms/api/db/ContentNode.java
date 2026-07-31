@@ -126,6 +126,55 @@ public record ContentNode(String uri, String url, String name, Map<String, Objec
         return SectionUtil.isSectionEntry(name);
     }
 
+    public boolean isVariant() {
+        return variantPathSegment() >= 0;
+    }
+
+    public Optional<String> variantId() {
+        var pathParts = normalizedPathParts();
+        var variantSegment = variantPathSegment(pathParts);
+        if (variantSegment < 0 || variantSegment + 2 >= pathParts.length) {
+            return Optional.empty();
+        }
+        return Optional.of(pathParts[variantSegment + 2]);
+    }
+
+    /**
+     * Returns the indexed path of the canonical page represented by this
+     * variant.
+     */
+    public Optional<String> originalUri() {
+        var pathParts = normalizedPathParts();
+        var variantSegment = variantPathSegment(pathParts);
+        if (variantSegment < 0 || variantSegment + 1 >= pathParts.length) {
+            return Optional.empty();
+        }
+
+        var originalName = pathParts[variantSegment + 1] + ".md";
+        if (variantSegment == 0) {
+            return Optional.of(originalName);
+        }
+        return Optional.of(String.join("/", java.util.Arrays.copyOf(pathParts, variantSegment))
+                + "/" + originalName);
+    }
+
+    private int variantPathSegment() {
+        return variantPathSegment(normalizedPathParts());
+    }
+
+    private int variantPathSegment(String[] pathParts) {
+        for (int index = 0; index < pathParts.length; index++) {
+            if (".variants".equals(pathParts[index])) {
+                return index;
+            }
+        }
+        return -1;
+    }
+
+    private String[] normalizedPathParts() {
+        return uri.replace('\\', '/').split("/");
+    }
+
     public boolean isRedirect() {
         return MapUtil.getValue(data, Constants.MetaFields.REDIRECT_LOCATION) != null;
     }

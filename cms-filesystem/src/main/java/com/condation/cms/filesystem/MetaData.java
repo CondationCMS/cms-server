@@ -24,6 +24,7 @@ package com.condation.cms.filesystem;
 
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.filesystem.metadata.persistent.TitleQuery;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -64,7 +65,11 @@ public interface MetaData {
 
 	List<ContentNode> listSectionEntries(String pagePath);
 	
-	TitleQuery searchByTitle(String path);
+	default TitleQuery searchByTitle(String input) {
+		return searchByTitle(input, VariantSearchMode.ALL);
+	}
+
+	TitleQuery searchByTitle(String input, VariantSearchMode variantSearchMode);
 	
 	void clear ();
 	

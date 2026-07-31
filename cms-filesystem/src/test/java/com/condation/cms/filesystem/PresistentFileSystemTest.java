@@ -23,14 +23,21 @@ package com.condation.cms.filesystem;
 
 import com.condation.cms.api.db.Content;
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.utils.FileUtils;
 import com.condation.cms.filesystem.metadata.query.ExtendableQuery;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
@@ -62,6 +69,15 @@ public class PresistentFileSystemTest {
 			}
 		});
 		fileSystem.init();
+		fileSystem.getMetaData().addFile(
+				"test/.variants/test1/summer/test1.md",
+				Map.of(
+						"name", "test1-summer",
+						"title", "Superman Summer",
+						"status", "published"
+				),
+				LocalDate.now()
+		);
 
 		content = new FileContent(fileSystem);
 	}
@@ -281,6 +297,52 @@ public class PresistentFileSystemTest {
 		List<ContentNode> nodes = content.searchByTitle("");
 
 		Assertions.assertThat(nodes).hasSize(3);
+	}
+
+	@Test
+	void test_searchByTitle_canSearchOnlyOriginals() {
+		List<ContentNode> nodes = content.searchByTitle("Superman", VariantSearchMode.ORIGINAL);
+
+		Assertions.assertThat(nodes)
+				.singleElement()
+				.satisfies(node -> {
+					Assertions.assertThat(node.isVariant()).isFalse();
+					Assertions.assertThat(node.data().get("name")).isEqualTo("test1");
+				});
+	}
+
+	@Test
+	void test_searchByTitle_canSearchOnlyVariants() {
+		List<ContentNode> nodes = inManagerContext(() ->
+				content.searchByTitle("Superman", VariantSearchMode.VARIANT));
+
+		Assertions.assertThat(nodes)
+				.singleElement()
+				.satisfies(node -> {
+					Assertions.assertThat(node.isVariant()).isTrue();
+					Assertions.assertThat(node.variantId()).contains("summer");
+					Assertions.assertThat(node.originalUri()).contains("test/test1.md");
+				});
+	}
+
+	@Test
+	void test_searchByTitle_canSearchOriginalsAndVariants() {
+		List<ContentNode> nodes = inManagerContext(() ->
+				content.searchByTitle("Superman", VariantSearchMode.ALL));
+
+		Assertions.assertThat(nodes).hasSize(2);
+	}
+
+	private List<ContentNode> inManagerContext(
+			Supplier<List<ContentNode>> search
+	) {
+		var requestContext = new RequestContext();
+		requestContext.add(
+				IsPreviewFeature.class,
+				new IsPreviewFeature(IsPreviewFeature.Mode.MANAGER)
+		);
+		return ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, requestContext)
+				.call(search::get);
 	}
 
 	@Test

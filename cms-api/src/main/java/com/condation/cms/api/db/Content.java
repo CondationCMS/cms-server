@@ -56,5 +56,12 @@ public interface Content {
 
 	public <T> ContentQuery<T> query(final String startURI, final BiFunction<ContentNode, Integer, T> nodeMapper);
 	
-	public List<ContentNode> searchByTitle (@NonNull String input);
+	default List<ContentNode> searchByTitle (@NonNull String input) {
+		return searchByTitle(input, VariantSearchMode.ALL);
+	}
+
+	List<ContentNode> searchByTitle(
+			@NonNull String input,
+			@NonNull VariantSearchMode variantSearchMode
+	);
 }

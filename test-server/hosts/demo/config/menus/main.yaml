@@ -1,0 +1,18 @@
+id: main
+name: Haupmenu
+items:
+- id: a772de6e-66f1-4b59-9345-82f44d4f36d2
+  type: link
+  label: Startseite
+  url: /
+  target: _self
+  enabled: true
+  children:
+  - id: e6eb3c9d-ee1c-40c0-8d74-2be5dfd66e70
+    type: link
+    label: Produkte
+    url: /products
+    target: _self
+    enabled: true
+    children: [
+      ]

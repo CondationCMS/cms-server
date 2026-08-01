@@ -31,6 +31,8 @@ public enum Hooks {
 	/* navigation */
 	NAVIGATION_PATH("system/navigation/%s/path"),
 	NAVIGATION_LIST("system/navigation/%s/list"),
+    /* menu */
+    MENU_FILTER("system/menu/%s/items"),
 	/* content */
 	CONTENT_SHORTCODES("system/content/shortcode"),
 	CONTENT_FILTER("system/content/filter"),

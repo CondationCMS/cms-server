@@ -23,11 +23,15 @@ package com.condation.cms.templates.functions.impl;
 
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.hooks.FilterContext;
+import com.condation.cms.api.hooks.Hooks;
 import com.condation.cms.api.menu.Menu;
 import com.condation.cms.api.menu.MenuItem;
 import com.condation.cms.api.menu.MenuService;
 import com.condation.cms.api.request.RequestContext;
+import com.condation.cms.hooksystem.CMSHookSystem;
 import com.google.inject.Injector;
 import java.util.List;
 import java.util.Map;
@@ -59,6 +63,38 @@ class MenuFunctionTest {
 
 		Assertions.assertThat(cachedMenu.items().get(0).current()).isFalse();
 		Assertions.assertThat(cachedMenu.items().get(1).children().get(0).current()).isFalse();
+	}
+
+	@Test
+	void filtersMenuItemsUsingModifiableLists() throws Exception {
+		Menu cachedMenu = new Menu("main", "Main", List.of(
+				new MenuItem("home", "link", "Home", "/", "_self", true, List.of()),
+				new MenuItem("products", "heading", "Products", "", "_self", true, List.of())));
+		MenuService menuService = Mockito.mock(MenuService.class);
+		Mockito.when(menuService.get("main")).thenReturn(Optional.of(cachedMenu));
+		Injector injector = Mockito.mock(Injector.class);
+		Mockito.when(injector.getInstance(MenuService.class)).thenReturn(menuService);
+
+		CMSHookSystem hookSystem = new CMSHookSystem();
+		hookSystem.registerFilter(Hooks.MENU_FILTER.hook("main"),
+				(FilterContext<List<MenuItem>> context) -> {
+					context.value().add(new MenuItem(
+							"contact", "link", "Contact", "/contact", "_self", true, List.of()));
+					context.value().get(1).children().add(new MenuItem(
+							"product", "link", "Product", "/products/product", "_self", true, List.of()));
+					return context.value();
+				});
+
+		RequestContext context = new RequestContext();
+		context.add(InjectorFeature.class, new InjectorFeature(injector));
+		context.add(HookSystemFeature.class, new HookSystemFeature(hookSystem));
+
+		Menu menu = (Menu) new MenuFunction(context).invoke("main");
+
+		Assertions.assertThat(menu.items()).extracting(MenuItem::id)
+				.containsExactly("home", "products", "contact");
+		Assertions.assertThat(menu.items().get(1).children()).extracting(MenuItem::id)
+				.containsExactly("product");
 	}
 
 	private Menu invoke(Injector injector, String currentUrl) {

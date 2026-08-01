@@ -22,9 +22,11 @@ package com.condation.cms.templates.functions.impl;
  */
 
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.HookSystemFeature;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.hooks.Hooks;
 import com.condation.cms.api.menu.Menu;
 import com.condation.cms.api.menu.MenuItem;
 import com.condation.cms.api.menu.MenuService;
@@ -32,9 +34,11 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.templates.functions.TemplateFunction;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -75,7 +79,13 @@ public class MenuFunction implements TemplateFunction {
 
 	private Menu withCurrentItems(Menu menu) {
 		Set<String> currentUrls = currentUrls();
-		return new Menu(menu.id(), menu.name(), copyItems(menu.items(), currentUrls));
+		List<MenuItem> items = copyItems(menu.items(), currentUrls);
+		if (requestContext.has(HookSystemFeature.class)) {
+			items = requestContext.get(HookSystemFeature.class)
+					.hookSystem()
+					.doFilter(Hooks.MENU_FILTER.hook(menu.id()), items);
+		}
+		return new Menu(menu.id(), menu.name(), items);
 	}
 
 	private List<MenuItem> copyItems(List<MenuItem> items, Set<String> currentUrls) {
@@ -89,7 +99,7 @@ public class MenuFunction implements TemplateFunction {
 						item.enabled(),
 						copyItems(item.children(), currentUrls),
 						isCurrent(item, currentUrls)))
-				.toList();
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	private boolean isCurrent(MenuItem item, Set<String> currentUrls) {

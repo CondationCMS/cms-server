@@ -21,6 +21,7 @@ package com.condation.cms.api.menu;
  * #L%
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,7 +38,7 @@ public record MenuItem(
 		boolean current) {
 
 	public MenuItem {
-		children = children == null ? List.of() : List.copyOf(children);
+		children = children == null ? new ArrayList<>() : new ArrayList<>(children);
 	}
 
 	public MenuItem(

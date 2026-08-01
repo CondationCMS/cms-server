@@ -17,3 +17,11 @@ items:
   enabled: true
   children: [
     ]
+- id: fa5c603d-e470-434c-86b7-6f387821b9c7
+  type: link
+  label: Content example
+  url: /content
+  target: _self
+  enabled: true
+  children: [
+    ]

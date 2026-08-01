@@ -66,6 +66,25 @@ class MenuFunctionTest {
 	}
 
 	@Test
+	void omitsDisabledItemsRecursively() throws Exception {
+		Menu cachedMenu = new Menu("main", "Main", List.of(
+				new MenuItem("visible", "heading", "Visible", "", "_self", true, List.of(
+						new MenuItem("hidden-child", "link", "Hidden", "/hidden", "_self", false, List.of()))),
+				new MenuItem("hidden-parent", "heading", "Hidden", "", "_self", false, List.of(
+						new MenuItem("visible-child", "link", "Visible", "/visible", "_self", true, List.of())))));
+		MenuService menuService = Mockito.mock(MenuService.class);
+		Mockito.when(menuService.get("main")).thenReturn(Optional.of(cachedMenu));
+		Injector injector = Mockito.mock(Injector.class);
+		Mockito.when(injector.getInstance(MenuService.class)).thenReturn(menuService);
+
+		Menu menu = invoke(injector, "/");
+
+		Assertions.assertThat(menu.items()).extracting(MenuItem::id)
+				.containsExactly("visible");
+		Assertions.assertThat(menu.items().getFirst().children()).isEmpty();
+	}
+
+	@Test
 	void filtersMenuItemsUsingModifiableLists() throws Exception {
 		Menu cachedMenu = new Menu("main", "Main", List.of(
 				new MenuItem("home", "link", "Home", "/", "_self", true, List.of()),
@@ -80,8 +99,12 @@ class MenuFunctionTest {
 				(FilterContext<List<MenuItem>> context) -> {
 					context.value().add(new MenuItem(
 							"contact", "link", "Contact", "/contact", "_self", true, List.of()));
+					context.value().add(new MenuItem(
+							"hidden", "link", "Hidden", "/hidden", "_self", false, List.of()));
 					context.value().get(1).children().add(new MenuItem(
 							"product", "link", "Product", "/products/product", "_self", true, List.of()));
+					context.value().get(1).children().add(new MenuItem(
+							"hidden-product", "link", "Hidden product", "/products/hidden", "_self", false, List.of()));
 					return context.value();
 				});
 

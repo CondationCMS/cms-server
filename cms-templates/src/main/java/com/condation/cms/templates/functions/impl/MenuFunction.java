@@ -85,7 +85,22 @@ public class MenuFunction implements TemplateFunction {
 					.hookSystem()
 					.doFilter(Hooks.MENU_FILTER.hook(menu.id()), items);
 		}
-		return new Menu(menu.id(), menu.name(), items);
+		return new Menu(menu.id(), menu.name(), enabledItems(items));
+	}
+
+	private List<MenuItem> enabledItems(List<MenuItem> items) {
+		return items.stream()
+				.filter(MenuItem::enabled)
+				.map(item -> new MenuItem(
+						item.id(),
+						item.type(),
+						item.label(),
+						item.url(),
+						item.target(),
+						true,
+						enabledItems(item.children()),
+						item.current()))
+				.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	private List<MenuItem> copyItems(List<MenuItem> items, Set<String> currentUrls) {

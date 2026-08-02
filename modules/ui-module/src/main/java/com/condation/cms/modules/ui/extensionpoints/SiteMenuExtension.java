@@ -176,14 +176,4 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 	)
 	public void search_pages() {
 	}
-
-	@ShortCut(
-			id = "manage_menus",
-			title = "Manage menus",
-			permissions = {Permissions.CONTENT_EDIT},
-			section = "tools",
-			scriptAction = @ScriptAction(module = "/manager/actions/menu/manage-menus")
-	)
-	public void manage_menus() {
-	}
 }

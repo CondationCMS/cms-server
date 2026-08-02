@@ -29,6 +29,8 @@ import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.action.UIScriptAction;
 import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.elements.MenuEntry;
+import com.condation.cms.modules.ui.utils.ActionFactory.AppHolder;
+import com.condation.cms.modules.ui.utils.template.UILinkFunction;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.hooksystem.CMSHookSystem;
@@ -40,6 +42,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
@@ -88,6 +91,41 @@ public class TemplateEngineTest {
 		Assertions.assertThatCode(() -> {
 			templateEngine.render("test.html", Map.of("actionFactory", new ActionFactory(context, siteProperties, hookSystem, moduleManager, new User("test", "asdasdfasdf", new String[]{"manager"}))));
 		}).doesNotThrowAnyException();
+	}
+
+	@Test
+	void rendersAppLauncher() throws Exception {
+		CacheManager cacheManager = new CacheManager(new LocalCacheProvider());
+		TemplateEngine templateEngine = new TemplateEngine(cacheManager);
+		ActionFactory actionFactory = Mockito.mock(ActionFactory.class);
+		Mockito.when(actionFactory.createApps()).thenReturn(List.of(new AppHolder(
+				"menu-manager",
+				"Menu Manager",
+				"/de/manager/public/apps/menu-manager.svg",
+				new UIScriptAction("/de/manager/actions/menu/manage-menus", Map.of()))));
+		Mockito.when(actionFactory.createContentTypeMenu()).thenReturn(new Menu());
+		Mockito.when(actionFactory.createMenu()).thenReturn(new Menu());
+		Mockito.when(actionFactory.createShortCuts()).thenReturn(List.of());
+		UILinkFunction links = Mockito.mock(UILinkFunction.class);
+		Mockito.when(links.createUrl(Mockito.anyString()))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+		TranslationHelper translation = Mockito.mock(TranslationHelper.class);
+
+		String result = templateEngine.render("index.html", Map.of(
+				"actionFactory", actionFactory,
+				"csrfToken", "csrf",
+				"links", links,
+				"managerBaseURL", "/de/manager",
+				"previewToken", "preview",
+				"contextPath", "/de",
+				"siteId", "demo",
+				"translation", translation));
+
+		Assertions.assertThat(result)
+				.contains("bi-grid-3x3-gap-fill")
+				.contains("cms-app-card")
+				.contains("/de/manager/public/apps/menu-manager.svg")
+				.contains("/de/manager/actions/menu/manage-menus");
 	}
 
 }

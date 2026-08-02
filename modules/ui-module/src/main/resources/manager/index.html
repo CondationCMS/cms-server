@@ -118,6 +118,7 @@
 </head>
 
 <body class="d-flex flex-column h-100 m-0">
+	{% assign apps = actionFactory.createApps() %}
 
     <div id="menu">
 
@@ -133,6 +134,14 @@
 
                 <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+						{% if apps.size() > 0 %}
+						<li class="nav-item">
+							<a class="nav-link cms-toolbar-button" href="#" role="button" title="Apps"
+								aria-label="Open apps" data-bs-toggle="modal" data-bs-target="#cms-apps-modal">
+								<i class="bi bi-grid-3x3-gap-fill" aria-hidden="true"></i>
+							</a>
+						</li>
+						{% endif %}
                         <li class="nav-item">
                             <a class="nav-link cms-toolbar-button" title="Reload"
                                data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/reload-preview') }}","parameters":{},"type":"script"}'>
@@ -311,6 +320,34 @@
 	<div id="modalContainer"></div>
 	<div id="sidebarContainer"></div>
 	<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+	{% if apps.size() > 0 %}
+	<div class="modal fade cms-apps-modal" id="cms-apps-modal" tabindex="-1"
+		aria-labelledby="cms-apps-modal-title" aria-hidden="true">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h2 class="modal-title h5" id="cms-apps-modal-title">Apps</h2>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body cms-apps-modal__body">
+					<div class="cms-app-grid">
+						{% for app in apps %}
+						<button class="cms-app-card" type="button"
+							data-cms-app-action='{{ app.getActionDefinition() }}'
+							aria-label="Open {{ app.title }}">
+							<span class="cms-app-card__icon" aria-hidden="true">
+								<img src="{{ app.icon }}" alt="" loading="lazy">
+							</span>
+							<span class="cms-app-card__title">{{ app.title }}</span>
+						</button>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
 
     <!-- formatter:off -->
 	<script type="module">

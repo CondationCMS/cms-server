@@ -27,6 +27,7 @@ import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.action.UIHookAction;
 import com.condation.cms.api.ui.action.UIAction;
 import com.condation.cms.api.ui.action.UIScriptAction;
+import com.condation.cms.api.ui.apps.AppExtensionPoint;
 import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.elements.MenuEntry;
 import com.condation.modules.api.ModuleManager;
@@ -44,6 +45,8 @@ import com.condation.cms.api.utils.JSONUtil;
 import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 
 /**
  *
@@ -69,6 +72,34 @@ public class ActionFactory {
 
         return shortCuts;
     }
+
+	public List<AppHolder> createApps() {
+		Map<String, AppHolder> apps = new LinkedHashMap<>();
+		moduleManager.extensions(AppExtensionPoint.class).forEach(extension -> {
+			try {
+				extension.getApps().stream()
+						.filter(app -> authService.hasAllPermissions(
+								user, app.permissions().toArray(String[]::new)))
+						.map(app -> new AppHolder(
+								app.id(),
+								app.title(),
+								HTTPUtil.modifyUrl(app.icon(), context),
+								withContext(app.action())))
+						.forEach(app -> {
+							if (apps.putIfAbsent(app.id(), app) != null) {
+								log.warn("Ignoring duplicate manager app id '{}'", app.id());
+							}
+						});
+			} catch (Exception exception) {
+				log.error("Could not register manager apps from {}",
+						extension.getClass().getName(), exception);
+			}
+		});
+
+		return apps.values().stream()
+				.sorted(Comparator.comparing(AppHolder::title, String.CASE_INSENSITIVE_ORDER))
+				.toList();
+	}
 
     public Menu createContentTypeMenu() {
         UIHooks uiHooks = new UIHooks(hookSystem);
@@ -148,7 +179,10 @@ public class ActionFactory {
                 menuAction = new UIHookAction(shortcutAnnotation.hookAction().value(), Map.of());
             } // 3. @ScriptAction in @MenuEntry
             else if (!shortcutAnnotation.scriptAction().module().isEmpty()) {
-                menuAction = new UIScriptAction(shortcutAnnotation.scriptAction().module(), shortcutAnnotation.scriptAction().function(), Map.of());
+				menuAction = scriptAction(
+						shortcutAnnotation.scriptAction().module(),
+						shortcutAnnotation.scriptAction().function(),
+						Map.of());
             }
 
             if (menuAction == null) {
@@ -158,7 +192,10 @@ public class ActionFactory {
                         menuAction = new UIHookAction(menuAnn.hookAction().value(), Map.of());
                     } // 3. @ScriptAction in @MenuEntry
                     else if (!menuAnn.scriptAction().module().isEmpty()) {
-                        menuAction = new UIScriptAction(menuAnn.scriptAction().module(), menuAnn.scriptAction().function(), Map.of());
+						menuAction = scriptAction(
+								menuAnn.scriptAction().module(),
+								menuAnn.scriptAction().function(),
+								Map.of());
                     }
                 }
             }
@@ -202,8 +239,10 @@ public class ActionFactory {
                 menuAction = new UIHookAction(menuAnn.hookAction().value(), Map.of());
             } // 3. @ScriptAction in @MenuEntry
             else if (!menuAnn.scriptAction().module().isEmpty()) {
-				var moduleWithContext = HTTPUtil.modifyUrl(menuAnn.scriptAction().module(), context);
-                menuAction = new UIScriptAction(moduleWithContext, menuAnn.scriptAction().function(), Map.of());
+				menuAction = scriptAction(
+						menuAnn.scriptAction().module(),
+						menuAnn.scriptAction().function(),
+						Map.of());
             }
 
             var entry = MenuEntry.builder()
@@ -293,11 +332,32 @@ public class ActionFactory {
 
     }
 
+	private UIScriptAction scriptAction(String module, String function, Map<String, Object> parameters) {
+		return new UIScriptAction(HTTPUtil.modifyUrl(module, context), function, parameters);
+	}
+
+	private UIAction withContext(UIAction action) {
+		if (action instanceof UIScriptAction scriptAction) {
+			return scriptAction(
+					scriptAction.getModule(),
+					scriptAction.getFunction(),
+					scriptAction.getParameters());
+		}
+		return action;
+	}
+
     public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action, String[] permissions) {
 
         public String getActionDefinition() {
             return action != null ? JSONUtil.toJson(action) : "";
         }
     }
+
+	public record AppHolder(String id, String title, String icon, UIAction action) {
+
+		public String getActionDefinition() {
+			return JSONUtil.toJson(action);
+		}
+	}
 ;
 }

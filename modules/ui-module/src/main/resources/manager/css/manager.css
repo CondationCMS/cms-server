@@ -885,6 +885,86 @@ i[data-cms-section-handle] {
 }
 
 /* =========================================================
+   APP LAUNCHER
+========================================================= */
+
+.cms-apps-modal__body {
+	display: flex;
+	justify-content: center;
+	padding: clamp(1.5rem, 5vw, 5rem);
+	background:
+		radial-gradient(circle at top left, rgba(var(--bs-primary-rgb), 0.14), transparent 34rem),
+		var(--bs-body-bg);
+}
+
+.cms-app-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+	align-content: start;
+	gap: clamp(1rem, 2vw, 1.75rem);
+	width: min(76rem, 100%);
+}
+
+.cms-app-card {
+	display: grid;
+	grid-template-rows: minmax(7rem, 1fr) auto;
+	place-items: center;
+	gap: 1rem;
+	min-height: 12rem;
+	padding: 1.25rem;
+	color: var(--bs-body-color);
+	background: rgba(26, 34, 43, 0.86);
+	border: 1px solid rgba(178, 191, 205, 0.18);
+	font: inherit;
+	text-align: center;
+	transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.cms-app-card:hover,
+.cms-app-card:focus-visible {
+	color: #fff;
+	background: rgba(42, 56, 69, 0.95);
+	border-color: rgba(var(--bs-primary-rgb), 0.75);
+	transform: translateY(-2px);
+}
+
+.cms-app-card__icon {
+	display: grid;
+	place-items: center;
+	width: 6rem;
+	height: 6rem;
+}
+
+.cms-app-card__icon img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+
+.cms-app-card__title {
+	font-size: 0.95rem;
+	font-weight: 600;
+	line-height: 1.25;
+}
+
+@media (max-width: 575.98px) {
+	.cms-app-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.cms-app-card {
+		min-height: 9.5rem;
+		padding: 1rem;
+	}
+
+	.cms-app-card__icon {
+		width: 4.5rem;
+		height: 4.5rem;
+	}
+}
+
+/* =========================================================
    CHERRY MARKDOWN EDITOR FIXES
 ========================================================= */
 

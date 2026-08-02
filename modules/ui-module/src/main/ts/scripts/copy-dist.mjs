@@ -21,6 +21,13 @@ for (const folder of folders) {
 }
 
 // dist erst löschen, wenn alles erfolgreich kopiert wurde
+const appAssetsSource = path.resolve(__dirname, "../src/public/apps");
+const appAssetsTarget = path.resolve(targetRoot, "public/apps");
+await mkdir(appAssetsTarget, { recursive: true });
+await cp(appAssetsSource, appAssetsTarget, { recursive: true });
+
+console.log(`Copied ${appAssetsSource} to ${appAssetsTarget}`);
+
 await rm(sourceRoot, { recursive: true, force: true });
 
 console.log(`Deleted ${sourceRoot}`);

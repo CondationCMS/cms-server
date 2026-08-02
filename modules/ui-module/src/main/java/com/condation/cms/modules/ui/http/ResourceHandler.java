@@ -32,10 +32,12 @@ import com.condation.cms.modules.ui.utils.ActionFactory;
 import com.condation.cms.modules.ui.utils.TokenUtils;
 import com.condation.cms.modules.ui.utils.TranslationHelper;
 import com.condation.cms.modules.ui.utils.template.UILinkFunction;
-import java.nio.charset.StandardCharsets;
+import java.nio.ByteBuffer;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Locale;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -101,13 +103,11 @@ public class ResourceHandler extends JettyHandler {
 
 			var path = files.resolve(resource);
 			if (Files.exists(path)) {
-				response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
-				Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
+				writeResource(path, response, callback);
 			} else {
 				path = files.resolve(resource + ".js");
 				if (Files.exists(path)) {
-					response.getHeaders().put(HttpHeader.CONTENT_TYPE, "%s; charset=UTF-8".formatted(Files.probeContentType(path)));
-					Content.Sink.write(response, true, Files.readString(path, StandardCharsets.UTF_8), callback);
+					writeResource(path, response, callback);
 				} else {
 					callback.succeeded();
 				}
@@ -115,5 +115,51 @@ public class ResourceHandler extends JettyHandler {
 		}
 
 		return true;
+	}
+
+	private void writeResource(Path path, Response response, Callback callback) throws Exception {
+		String contentType = contentType(path);
+		if (contentType.startsWith("text/")
+				|| "application/json".equals(contentType)
+				|| "image/svg+xml".equals(contentType)) {
+			contentType += "; charset=UTF-8";
+		}
+		response.getHeaders().put(HttpHeader.CONTENT_TYPE, contentType);
+		Content.Sink.write(response, true, ByteBuffer.wrap(Files.readAllBytes(path)));
+		callback.succeeded();
+	}
+
+	private String contentType(Path path) throws Exception {
+		String detected = Files.probeContentType(path);
+		if (detected != null) {
+			return detected;
+		}
+
+		String fileName = path.getFileName().toString().toLowerCase(Locale.ROOT);
+		if (fileName.endsWith(".js") || fileName.endsWith(".mjs")) {
+			return "text/javascript";
+		}
+		if (fileName.endsWith(".css")) {
+			return "text/css";
+		}
+		if (fileName.endsWith(".json")) {
+			return "application/json";
+		}
+		if (fileName.endsWith(".svg")) {
+			return "image/svg+xml";
+		}
+		if (fileName.endsWith(".png")) {
+			return "image/png";
+		}
+		if (fileName.endsWith(".jpg") || fileName.endsWith(".jpeg")) {
+			return "image/jpeg";
+		}
+		if (fileName.endsWith(".webp")) {
+			return "image/webp";
+		}
+		if (fileName.endsWith(".gif")) {
+			return "image/gif";
+		}
+		return "application/octet-stream";
 	}
 }

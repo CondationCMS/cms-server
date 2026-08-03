@@ -27,4 +27,8 @@ package com.condation.cms.auth.permissions;
  */
 public record Permission(String key, String description) {
 	public static final Permission CONTENT_EDIT = new Permission("content.edit", "Edit content");
+	public static final Permission CACHE_INVALIDATE = new Permission("cache.invalidate", "Invalidate caches");
+	public static final Permission USER_MANAGE = new Permission("user.manage", "Manage manager users");
+	public static final Permission ROLE_MANAGE = new Permission("role.manage", "Manage roles and permissions");
+	public static final Permission MENU_MANAGE = new Permission("menu.manage", "Manage navigation menus");
 }

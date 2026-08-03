@@ -131,7 +131,10 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 				new CacheManager.CacheConfig(10_000l, Duration.ofMinutes(5))
 		);
 
-		RemoteMethodService remoteCallService = new RemoteMethodService();
+		var roleService = getContext().get(com.condation.cms.api.feature.features.InjectorFeature.class)
+				.injector().getInstance(com.condation.cms.auth.services.RoleService.class);
+		RemoteMethodService remoteCallService = new RemoteMethodService(
+				new com.condation.cms.auth.services.AuthorizationService(roleService));
 		remoteCallService.init(moduleManager);
 
 		try {

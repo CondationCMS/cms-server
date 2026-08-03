@@ -52,6 +52,7 @@ class AuthorizationServiceTest {
 
         assertThat(authorizationService.hasPermission(manager, Permissions.CONTENT_EDIT)).isTrue();
         assertThat(authorizationService.hasPermission(manager, Permissions.CACHE_INVALIDATE)).isTrue();
+		assertThat(authorizationService.hasPermission(manager, Permissions.MENU_MANAGE)).isTrue();
     }
 
     @Test
@@ -60,6 +61,7 @@ class AuthorizationServiceTest {
 
         assertThat(authorizationService.hasPermission(admin, Permissions.CONTENT_EDIT)).isTrue();
         assertThat(authorizationService.hasPermission(admin, Permissions.CACHE_INVALIDATE)).isTrue();
+		assertThat(authorizationService.hasPermission(admin, Permissions.MENU_MANAGE)).isTrue();
     }
 
     @Test

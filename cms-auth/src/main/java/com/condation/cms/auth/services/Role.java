@@ -1,4 +1,4 @@
-package com.condation.cms.auth.permissions;
+package com.condation.cms.auth.services;
 
 /*-
  * #%L
@@ -21,35 +21,13 @@ package com.condation.cms.auth.permissions;
  * #L%
  */
 
-import java.util.Collection;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map;
+import java.util.Set;
 
-/**
- *
- * @author thmar
- */
-public class PermissionRegistry {
-
-	private static final Map<String, Permission> registry = new ConcurrentHashMap<>();
-
-	static {
-		register(Permission.CONTENT_EDIT);
-		register(Permission.CACHE_INVALIDATE);
-		register(Permission.USER_MANAGE);
-		register(Permission.ROLE_MANAGE);
-		register(Permission.MENU_MANAGE);
-	}
-
-	public static void register(Permission permission) {
-		registry.put(permission.key(), permission);
-	}
-
-	public static Permission get(String key) {
-		return registry.get(key);
-	}
-
-	public static Collection<Permission> all() {
-		return registry.values();
+/** A named collection of permission keys. */
+public record Role(String id, String name, Set<String> permissions) {
+	public Role {
+		id = id == null ? "" : id.trim().toLowerCase();
+		name = name == null || name.isBlank() ? id : name.trim();
+		permissions = permissions == null ? Set.of() : Set.copyOf(permissions);
 	}
 }

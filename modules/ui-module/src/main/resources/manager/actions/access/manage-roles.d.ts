@@ -1,8 +1,6 @@
-package com.condation.cms.api.auth;
-
 /*-
  * #%L
- * CMS Api
+ * UI Module
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -20,18 +18,4 @@ package com.condation.cms.api.auth;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
-/**
- *
- * @author thmar
- */
-public class Permissions {
-	public static final String CONTENT_EDIT = "content.edit";
-	public static final String CACHE_INVALIDATE = "cache.invalidate";
-	public static final String USER_MANAGE = "user.manage";
-	public static final String ROLE_MANAGE = "role.manage";
-	public static final String MENU_MANAGE = "menu.manage";
-
-	private Permissions() {
-	}
-}
+export declare const runAction: () => Promise<void>;

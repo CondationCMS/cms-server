@@ -32,6 +32,7 @@ import com.condation.cms.api.scheduler.CronJobScheduler;
 import com.condation.cms.api.site.SiteService;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.auth.services.UserService;
+import com.condation.cms.auth.services.RoleService;
 import com.condation.cms.core.configuration.ConfigurationFactory;
 import com.condation.cms.core.configuration.properties.ExtendedServerProperties;
 import com.condation.cms.core.eventbus.MessagingEventBus;
@@ -155,6 +156,12 @@ public class ServerGlobalModule implements com.google.inject.Module {
     public UserService userService() {
         return new UserService(ServerUtil.getHome());
     }
+
+	@Provides
+	@Singleton
+	public RoleService roleService() {
+		return new RoleService(ServerUtil.getHome());
+	}
 
     @Provides
     @Singleton

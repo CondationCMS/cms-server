@@ -1,0 +1,25 @@
+<!--
+  #%L
+  UI Module
+  %%
+  Copyright (C) 2023 - 2026 CondationCMS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  #L%
+  -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Role Manager</title><rect width="128" height="128" fill="#1a222b"/>
+  <path d="M64 15 106 31v29c0 27-17 45-42 55C39 105 22 87 22 60V31Z" fill="#25303b" stroke="#4da3ff" stroke-width="4"/>
+  <path d="m43 63 14 14 29-31" fill="none" stroke="#37d0c8" stroke-width="9" stroke-linecap="square"/>
+</svg>

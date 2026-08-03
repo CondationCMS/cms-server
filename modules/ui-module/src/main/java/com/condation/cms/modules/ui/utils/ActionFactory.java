@@ -44,6 +44,8 @@ import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.JSONUtil;
 import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
+import com.condation.cms.auth.services.RoleService;
+import com.condation.cms.api.feature.features.InjectorFeature;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -62,7 +64,19 @@ public class ActionFactory {
     private final ModuleManager moduleManager;
     private final User user;
 
-    AuthorizationService authService = new AuthorizationService();
+    AuthorizationService authService;
+
+	private AuthorizationService authorizationService() {
+		if (authService == null) {
+			if (context.has(InjectorFeature.class)) {
+				authService = new AuthorizationService(context.get(InjectorFeature.class)
+						.injector().getInstance(RoleService.class));
+			} else {
+				authService = new AuthorizationService();
+			}
+		}
+		return authService;
+	}
 
     public List<ShortCutHolder> createShortCuts() {
         List<ShortCutHolder> shortCuts = new ArrayList<>();
@@ -78,7 +92,7 @@ public class ActionFactory {
 		moduleManager.extensions(AppExtensionPoint.class).forEach(extension -> {
 			try {
 				extension.getApps().stream()
-						.filter(app -> authService.hasAllPermissions(
+						.filter(app -> authorizationService().hasAllPermissions(
 								user, app.permissions().toArray(String[]::new)))
 						.map(app -> new AppHolder(
 								app.id(),
@@ -152,7 +166,7 @@ public class ActionFactory {
         var filteredMenu = new Menu();
         var menuEntries = menu.entries();
         menuEntries.stream()
-                .filter(entry -> authService.hasAllPermissions(user, entry.getPermissions().toArray(new String[0])))
+                .filter(entry -> authorizationService().hasAllPermissions(user, entry.getPermissions().toArray(new String[0])))
                 .forEach(filteredMenu::addMenuEntry);
 
         return filteredMenu;

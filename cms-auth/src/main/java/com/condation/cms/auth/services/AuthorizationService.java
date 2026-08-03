@@ -21,9 +21,7 @@ package com.condation.cms.auth.services;
  * #L%
  */
 
-import com.condation.cms.api.auth.Permissions;
-import com.condation.cms.auth.permissions.Permission;
-import com.condation.cms.auth.permissions.PermissionRegistry;
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,34 +32,16 @@ import java.util.stream.Collectors;
  * Roles only contain permission keys so that modules can add custom permissions.
  */
 public class AuthorizationService {
+	private final RoleService roleService;
 
-    /**
-     * Predefined roles with associated permission keys.
-     * These can later be extended via configuration or by modules.
-     */
-    public enum Role {
-        EDITOR(Set.of(Permissions.CONTENT_EDIT)),
-        MANAGER(Set.of(Permissions.CONTENT_EDIT, Permissions.CACHE_INVALIDATE)),
-        ADMIN(Set.of(Permissions.CONTENT_EDIT, Permissions.CACHE_INVALIDATE));
+	/** Uses the built-in roles; primarily useful for isolated consumers and tests. */
+	public AuthorizationService() {
+		this.roleService = null;
+	}
 
-        private final Set<String> permissionKeys;
-
-        Role(Set<String> permissionKeys) {
-            this.permissionKeys = permissionKeys;
-        }
-
-        public Set<String> getPermissionKeys() {
-            return permissionKeys;
-        }
-
-        public static Role fromString(String role) {
-            try {
-                return Role.valueOf(role.toUpperCase(Locale.ROOT));
-            } catch (IllegalArgumentException e) {
-                return null; // ignore unknown roles
-            }
-        }
-    }
+	public AuthorizationService(RoleService roleService) {
+		this.roleService = Objects.requireNonNull(roleService);
+	}
 
     /**
      * Collects all permission keys of a given user (based on their roles).
@@ -70,11 +50,12 @@ public class AuthorizationService {
         if (user == null || user.roles() == null) {
             return Set.of();
         }
-        return Arrays.stream(user.roles())
-                .map(Role::fromString)
-                .filter(Objects::nonNull)
-                .flatMap(r -> r.getPermissionKeys().stream())
-                .collect(Collectors.toSet());
+		Map<String, Role> roles = rolesById();
+		return Arrays.stream(user.roles())
+				.map(role -> roles.get(role.toLowerCase(Locale.ROOT)))
+				.filter(Objects::nonNull)
+				.flatMap(role -> role.permissions().stream())
+				.collect(Collectors.toSet());
     }
 
     /**
@@ -111,8 +92,12 @@ public class AuthorizationService {
         return userPerms.containsAll(Set.of(required));
     }
 
-    // --- Register default/core permissions ---
-    static {
-        PermissionRegistry.register(Permission.CONTENT_EDIT);
-    }
+	private Map<String, Role> rolesById() {
+		try {
+			List<Role> roles = roleService == null ? RoleService.defaults() : roleService.list();
+			return roles.stream().collect(Collectors.toMap(Role::id, role -> role));
+		} catch (IOException exception) {
+			throw new IllegalStateException("Could not load roles", exception);
+		}
+	}
 }

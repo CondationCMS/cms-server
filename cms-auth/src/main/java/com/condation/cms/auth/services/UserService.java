@@ -81,6 +81,33 @@ public class UserService {
 		saveUsers(realm, users);
 	}
 
+	public List<User> listUsers(Realm realm) throws IOException {
+		return loadUsers(realm).stream()
+				.sorted(java.util.Comparator.comparing(User::username, String.CASE_INSENSITIVE_ORDER))
+				.toList();
+	}
+
+	/** Updates roles/data and changes the password only when a non-blank password is supplied. */
+	public void updateUser(Realm realm, String username, String password, String[] roles, Map<String, Object> data) throws IOException {
+		List<User> users = new ArrayList<>(loadUsers(realm));
+		int index = java.util.stream.IntStream.range(0, users.size())
+				.filter(position -> users.get(position).username().equals(username))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("User not found: " + username));
+		User existing = users.get(index);
+		Map<String, Object> userData = new HashMap<>(data == null ? Map.of() : data);
+		String passwordHash = existing.passwordHash();
+		if (password != null && !password.isBlank()) {
+			byte[] salt = SecurityUtil.generateSalt();
+			userData.put("salt", Base64.getEncoder().encodeToString(salt));
+			passwordHash = SecurityUtil.hashPBKDF2(password, salt);
+		} else if (existing.data() != null && existing.data().containsKey("salt")) {
+			userData.put("salt", existing.data().get("salt"));
+		}
+		users.set(index, new User(username, passwordHash, roles, userData));
+		saveUsers(realm, users);
+	}
+
 	public Optional<User> byUsername(final Realm realm, final String username) {
 		try {
 			return loadUsers(realm).stream().filter(user -> user.username().equals(username)).findFirst();

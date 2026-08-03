@@ -1,0 +1,29 @@
+<!--
+  #%L
+  UI Module
+  %%
+  Copyright (C) 2023 - 2026 CondationCMS
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU Affero General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU Affero General Public License
+  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  #L%
+  -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title">
+  <title id="title">Menu Manager</title>
+  <rect width="128" height="128" fill="#1a222b"/>
+  <rect x="18" y="18" width="92" height="92" fill="#25303b" stroke="#4da3ff" stroke-width="4"/>
+  <path d="M43 39h52M43 64h52M43 89h52" fill="none" stroke="#f4f7fb" stroke-width="8"/>
+  <rect x="29" y="33" width="12" height="12" fill="#4da3ff"/>
+  <rect x="29" y="58" width="12" height="12" fill="#37d0c8"/>
+  <rect x="29" y="83" width="12" height="12" fill="#f6c65b"/>
+</svg>

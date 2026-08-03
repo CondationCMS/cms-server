@@ -33,7 +33,6 @@ import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
 import java.util.Collections;
 import java.util.function.Function;
-import lombok.RequiredArgsConstructor;
 
 /**
  *
@@ -43,7 +42,11 @@ public class RemoteMethodService {
 	
 	public Map<String, RMethod> handlers = new HashMap<>();
 	
-	protected static AuthorizationService authorizationService = new AuthorizationService();
+	private final AuthorizationService authorizationService;
+
+	public RemoteMethodService(AuthorizationService authorizationService) {
+		this.authorizationService = authorizationService;
+	}
 	
 	public void init (final ModuleManager moduleManager) {
 		moduleManager.extensions(UIRemoteMethodExtensionPoint.class).forEach(this::register);
@@ -55,7 +58,8 @@ public class RemoteMethodService {
 					handlers.put(ann.annotation().name(), 
 							new RMethod(
 									ann.annotation(), 
-									(parameters) -> ann.invoke(parameters)
+									(parameters) -> ann.invoke(parameters),
+									authorizationService
 							));
 				});
 	}
@@ -67,13 +71,24 @@ public class RemoteMethodService {
 		return Optional.ofNullable(handlers.get(endpoint).execute(parameters, user));
 	}
 	
-	@RequiredArgsConstructor
 	public static class RMethod {
 		private final RemoteMethod remoteMethodAnnotation;
 		private final Function<Map<String, Object>, Object> function;
+		private final AuthorizationService authorizationService;
+
+		RMethod(RemoteMethod remoteMethodAnnotation, Function<Map<String, Object>, Object> function) {
+			this(remoteMethodAnnotation, function, new AuthorizationService());
+		}
+
+		RMethod(RemoteMethod remoteMethodAnnotation, Function<Map<String, Object>, Object> function,
+				AuthorizationService authorizationService) {
+			this.remoteMethodAnnotation = remoteMethodAnnotation;
+			this.function = function;
+			this.authorizationService = authorizationService;
+		}
 		
 		public Object execute (final Map<String, Object> parameters, User user) {
-			if (!RemoteMethodService.authorizationService.hasAnyPermission(user, remoteMethodAnnotation.permissions())) {
+			if (!authorizationService.hasAnyPermission(user, remoteMethodAnnotation.permissions())) {
 				throw new RemoteMethodException("access not allowed");
 			}
 			if (parameters != null) {

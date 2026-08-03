@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteMenuEndpoints extends AbstractRemoteMethodeExtension {
 
-	@RemoteMethod(name = "menu.list", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "menu.list", permissions = {Permissions.MENU_MANAGE})
 	public Object list(Map<String, Object> parameters) throws RPCException {
 		try {
 			return service().list();
@@ -49,7 +49,7 @@ public class RemoteMenuEndpoints extends AbstractRemoteMethodeExtension {
 		}
 	}
 
-	@RemoteMethod(name = "menu.get", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "menu.get", permissions = {Permissions.MENU_MANAGE})
 	public Object get(Map<String, Object> parameters) throws RPCException {
 		String id = requiredString(parameters, "id");
 		try {
@@ -62,7 +62,7 @@ public class RemoteMenuEndpoints extends AbstractRemoteMethodeExtension {
 		}
 	}
 
-	@RemoteMethod(name = "menu.create", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "menu.create", permissions = {Permissions.MENU_MANAGE})
 	public Object create(Map<String, Object> parameters) throws RPCException {
 		try {
 			return service().create(menu(parameters));
@@ -71,7 +71,7 @@ public class RemoteMenuEndpoints extends AbstractRemoteMethodeExtension {
 		}
 	}
 
-	@RemoteMethod(name = "menu.update", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "menu.update", permissions = {Permissions.MENU_MANAGE})
 	public Object update(Map<String, Object> parameters) throws RPCException {
 		try {
 			return service().update(menu(parameters));
@@ -80,7 +80,7 @@ public class RemoteMenuEndpoints extends AbstractRemoteMethodeExtension {
 		}
 	}
 
-	@RemoteMethod(name = "menu.delete", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "menu.delete", permissions = {Permissions.MENU_MANAGE})
 	public Object delete(Map<String, Object> parameters) throws RPCException {
 		String id = requiredString(parameters, "id");
 		try {

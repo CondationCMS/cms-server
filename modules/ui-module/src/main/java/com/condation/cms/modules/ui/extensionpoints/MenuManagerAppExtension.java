@@ -23,8 +23,6 @@ package com.condation.cms.modules.ui.extensionpoints;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.ui.action.UIScriptAction;
-import com.condation.cms.api.ui.annotations.ScriptAction;
-import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.cms.api.ui.apps.App;
 import com.condation.cms.api.ui.apps.AppExtensionPoint;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
@@ -45,6 +43,6 @@ public class MenuManagerAppExtension extends AbstractExtensionPoint implements A
                 "Menu Manager",
                 "/manager/assets/apps/menu-manager.svg",
                 new UIScriptAction("/manager/actions/menu/manage-menus", Map.of()),
-                List.of(Permissions.CONTENT_EDIT)));
+                List.of(Permissions.MENU_MANAGE)));
     }
 }

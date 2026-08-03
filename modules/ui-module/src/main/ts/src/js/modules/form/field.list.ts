@@ -20,7 +20,7 @@
  */
 import { createID } from "@cms/modules/form/utils.js";
 import { i18n } from "@cms/modules/localization.js"
-import { createForm, FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
+import { createForm, getFormFields, FieldOptions, FormContext, FormField } from "@cms/modules/form/forms.js";
 import { openModal } from "@cms/modules/modal.js";
 import { buildValuesFromFields } from "@cms/modules/node.js";
 import { getListItemTypes, getPageTemplates } from "@cms/modules/rpc/rpc-manager.js";
@@ -127,22 +127,22 @@ const getItemForm = async (el: HTMLElement) => {
 		const listContainer = el.closest("[data-cms-form-field-type='list']");
 		const fieldName = listContainer?.getAttribute('name');
 
-		var itemForm = []
+		var itemForm: any = { fields: [], tabs: [] }
 		if (selected.length === 1) {
-			itemForm = fieldName ? selected[0].forms?.[fieldName]?.fields ?? [] : [];
+			itemForm = fieldName ? selected[0].forms?.[fieldName] ?? itemForm : itemForm;
 		}
 
-		if (!itemForm || itemForm.length === 0) {
+		if (getFormFields(itemForm).length === 0) {
 			let itemTypes = (await getListItemTypes({})).result
 			var selectedItemType = itemTypes.filter((itemType : any) => itemType.name === fieldName)
 
-			itemForm = (selectedItemType.length === 1) ? selectedItemType[0].form?.fields ?? [] : []
+			itemForm = (selectedItemType.length === 1) ? selectedItemType[0].form ?? itemForm : itemForm
 		}
 
 		return itemForm
 	} catch (e) {
 		console.error("Error loading item form", e);
-		return [];
+		return { fields: [], tabs: [] };
 	}
 }
 
@@ -154,11 +154,13 @@ const handleDoubleClick = async (event: Event, context: FormContext) => {
 		const itemData = JSON.parse(itemDataString);
 
 		var itemForm = await getItemForm(el)
+		const itemFields = getFormFields(itemForm)
 
 		const form = createForm({
-			fields: itemForm,
+			fields: itemForm.fields ?? [],
+			tabs: itemForm.tabs ?? [],
 			values: {
-				...buildValuesFromFields(itemForm, itemData)
+				...buildValuesFromFields(itemFields, itemData)
 			}
 		});
 

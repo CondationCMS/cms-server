@@ -64,7 +64,11 @@ class ContentTypesJavaScriptInteropTest {
 					  contentFolder: 'content',
 					  forms: {
 					    settings: {
-					      fields: [{ type: 'text', name: 'title', required: true }]
+					      fields: [{ type: 'text', name: 'title', required: true }],
+					      tabs: [{
+					        title: 'SEO',
+					        fields: [{ type: 'text', name: 'meta.description' }]
+					      }]
 					    }
 					  }
 					});
@@ -84,6 +88,14 @@ class ContentTypesJavaScriptInteropTest {
 				.isInstanceOfSatisfying(StringField.class, field -> {
 					assertThat(field.getName()).isEqualTo("title");
 					assertThat(field.isRequired()).isTrue();
+				});
+		assertThat(pageTemplate.getForm("settings").tabs())
+				.singleElement()
+				.satisfies(tab -> {
+					assertThat(tab.title()).isEqualTo("SEO");
+					assertThat(tab.fields()).singleElement()
+							.isInstanceOfSatisfying(StringField.class,
+									field -> assertThat(field.getName()).isEqualTo("meta.description"));
 				});
 		assertThat(contentTypes.getSectionEntryTemplates("main")).hasSize(1);
 		assertThat(contentTypes.getListItemTypes()).hasSize(1);

@@ -23,6 +23,7 @@ package com.condation.cms.modules.ui.utils.json;
 
 import com.condation.cms.modules.ui.extensionpoints.remotemethods.RemoteFileEnpoints;
 import com.condation.cms.api.ui.elements.FormDefinition;
+import com.condation.cms.api.ui.elements.FormTab;
 import com.condation.cms.api.ui.elements.PageTemplate;
 import com.condation.cms.api.ui.elements.fields.StringField;
 import com.google.gson.JsonObject;
@@ -67,8 +68,10 @@ public class UIGsonProviderTest {
 				.name("StartPage")
 				.template("start.html")
 				.contentFolder("content")
-				.forms(Map.of("settings", new FormDefinition(List.of(
-						new StringField("title", "Title")))))
+				.forms(Map.of("settings", new FormDefinition(
+						List.of(new StringField("title", "Title")),
+						List.of(new FormTab("SEO", List.of(
+								new StringField("description", "Description")))))))
 				.build();
 
 		JsonObject json = JsonParser.parseString(UIGsonProvider.INSTANCE.toJson(pageTemplate))
@@ -86,6 +89,13 @@ public class UIGsonProviderTest {
 		Assertions.assertThat(fields.get(0).getAsJsonObject().get("type").getAsString()).isEqualTo("text");
 		Assertions.assertThat(fields.get(0).getAsJsonObject().get("name").getAsString()).isEqualTo("title");
 		Assertions.assertThat(fields.get(0).getAsJsonObject().get("title").getAsString()).isEqualTo("Title");
+		var tabs = json.getAsJsonObject("forms")
+				.getAsJsonObject("settings")
+				.getAsJsonArray("tabs");
+		Assertions.assertThat(tabs).hasSize(1);
+		Assertions.assertThat(tabs.get(0).getAsJsonObject().get("title").getAsString()).isEqualTo("SEO");
+		Assertions.assertThat(tabs.get(0).getAsJsonObject().getAsJsonArray("fields")
+				.get(0).getAsJsonObject().get("name").getAsString()).isEqualTo("description");
 	}
 	
 }

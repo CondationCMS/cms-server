@@ -31,14 +31,13 @@ export async function runAction(params) {
         var mediaForm = (await getMediaForm({
             form: params.options.form || 'meta'
         })).result;
-        const fields = [
-            ...mediaForm?.form?.fields
-        ];
+        const formDefinition = mediaForm?.form ?? {};
         const values = {
             ...(await getMediaMetaData({ image: params.options.image })).result.meta
         };
         const form = createForm({
-            fields: fields,
+            fields: formDefinition.fields ?? [],
+            tabs: formDefinition.tabs ?? [],
             values: values
         });
         openSidebar({

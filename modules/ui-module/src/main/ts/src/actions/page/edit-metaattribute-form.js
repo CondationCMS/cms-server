@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import {createForm} from '@cms/modules/form/forms.js'
+import {createForm, getFormFields} from '@cms/modules/form/forms.js'
 import {showToast} from '@cms/modules/toast.js'
 import {reloadPreview} from '@cms/modules/preview.utils.js'
 import { buildValuesFromFields, getValueByPath } from '@cms/modules/node.js'
@@ -45,24 +45,26 @@ export async function runAction(params) {
 
 		var selected = templates.filter(item => item.template === getContentResponse?.result?.meta?.template)
 
-		var attrForm = []
+		var attrForm = { fields: [], tabs: [] }
 		if (selected.length === 1) {
-			attrForm = selected[0].forms?.[params.form]?.fields ?? []
+			attrForm = selected[0].forms?.[params.form] ?? attrForm
 		}
+		const attrFields = getFormFields(attrForm)
 
 		//const previewMetaForm = getMetaForm()
 		const fields = [
-			...attrForm
+			...(attrForm.fields ?? [])
 		]
 
 
 		const values = {
-			...buildValuesFromFields(attrForm, getContentResponse?.result?.meta)
+			...buildValuesFromFields(attrFields, getContentResponse?.result?.meta)
 		}
 
 
 		const form = createForm({
 			fields: fields,
+			tabs: attrForm.tabs ?? [],
 			values: values
 		});
 

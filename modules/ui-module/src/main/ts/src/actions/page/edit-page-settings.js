@@ -19,7 +19,7 @@
  * #L%
  */
 import { openSidebar } from '@cms/modules/sidebar.js'
-import { createForm } from '@cms/modules/form/forms.js'
+import { createForm, getFormFields } from '@cms/modules/form/forms.js'
 import { showToast } from '@cms/modules/toast.js'
 import { setMeta, getContent } from '@cms/modules/rpc/rpc-content.js'
 import { reloadPreview } from '@cms/modules/preview.utils.js'
@@ -46,15 +46,16 @@ export async function runAction(params) {
 
 		var selected = pageTemplates.filter(pageTemplate => pageTemplate.template === getContentResponse?.result?.meta?.template)
 
-		var pageSettingsForm = []
+		var pageSettingsForm = { fields: [], tabs: [] }
 		if (selected.length === 1) {
-			pageSettingsForm = selected[0].forms?.settings?.fields ?? []
+			pageSettingsForm = selected[0].forms?.settings ?? pageSettingsForm
 		}
+		const pageSettingsFields = getFormFields(pageSettingsForm)
 
 		//const previewMetaForm = getMetaForm()
 		const fields = [
 			...DEFAULT_FIELDS,
-			...pageSettingsForm
+			...(pageSettingsForm.fields ?? [])
 		]
 
 
@@ -63,11 +64,12 @@ export async function runAction(params) {
 			'status': getContentResponse?.result?.meta?.status || 'draft',
 			'publish_date': getContentResponse?.result?.meta?.publish_date,
 			'unpublish_date': getContentResponse?.result?.meta?.unpublish_date,
-			...buildValuesFromFields(pageSettingsForm, getContentResponse?.result?.meta)
+			...buildValuesFromFields(pageSettingsFields, getContentResponse?.result?.meta)
 		}
 
 		const form = createForm({
 			fields: fields,
+			tabs: pageSettingsForm.tabs ?? [],
 			values: values
 		});
 

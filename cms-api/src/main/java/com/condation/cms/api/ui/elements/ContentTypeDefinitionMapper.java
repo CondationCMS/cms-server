@@ -115,6 +115,24 @@ final class ContentTypeDefinitionMapper {
 		return fields == null || fields.isEmpty() ? List.of() : List.copyOf(fields);
 	}
 
+	static List<FormTab> tabs(Object value) {
+		if (!(value instanceof Collection<?> tabs)) {
+			return List.of();
+		}
+
+		List<FormTab> result = new ArrayList<>();
+		for (Object tab : tabs) {
+			if (tab instanceof Map<?, ?> map) {
+				result.add(FormTab.fromMap(objectMap(map)));
+			}
+		}
+		return List.copyOf(result);
+	}
+
+	static List<FormTab> copyTabs(List<FormTab> tabs) {
+		return tabs == null || tabs.isEmpty() ? List.of() : List.copyOf(tabs);
+	}
+
 	private static FormField field(Map<String, Object> definition) {
 		String type = string(definition.get("type"), "");
 		String name = string(definition.get("name"), "");

@@ -34,10 +34,7 @@ export async function runAction(params) {
 			form: params.options.form || 'meta'
 		})).result
 
-
-		const fields = [
-			...mediaForm?.form?.fields
-		]
+		const formDefinition = mediaForm?.form ?? {}
 
 
 		const values = {
@@ -45,7 +42,8 @@ export async function runAction(params) {
 		}
 
 		const form = createForm({
-			fields: fields,
+			fields: formDefinition.fields ?? [],
+			tabs: formDefinition.tabs ?? [],
 			values: values
 		});
 
@@ -112,4 +110,3 @@ const buildValuesFromFields = (fields, sourceObj) => {
 	}
 	return values;
 };
-

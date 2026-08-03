@@ -26,32 +26,18 @@ import java.util.List;
 import java.util.Map;
 import lombok.Builder;
 
-/**
- * Definition of a manager form.
- *
- * Both Java and JavaScript hook registrations are normalized to typed field
- * objects before they are stored in this definition.
- */
+/** A named group of fields rendered as one tab of a manager form. */
 @Builder
-public record FormDefinition(List<FormField> fields, List<FormTab> tabs) {
+public record FormTab(String title, List<FormField> fields) {
 
-	public FormDefinition {
+	public FormTab {
+		title = ContentTypeDefinitionMapper.string(title, "");
 		fields = ContentTypeDefinitionMapper.copyFields(fields);
-		tabs = ContentTypeDefinitionMapper.copyTabs(tabs);
 	}
 
-	/** Keeps the original fields-only Java API source compatible. */
-	public FormDefinition(List<FormField> fields) {
-		this(fields, List.of());
-	}
-
-	static FormDefinition fromMap(Map<String, Object> form) {
-		return new FormDefinition(
-				ContentTypeDefinitionMapper.fields(form.get("fields")),
-				ContentTypeDefinitionMapper.tabs(form.get("tabs")));
-	}
-
-	public static FormDefinition empty() {
-		return new FormDefinition(List.of(), List.of());
+	static FormTab fromMap(Map<String, Object> tab) {
+		return new FormTab(
+				ContentTypeDefinitionMapper.string(tab.get("title"), ""),
+				ContentTypeDefinitionMapper.fields(tab.get("fields")));
 	}
 }

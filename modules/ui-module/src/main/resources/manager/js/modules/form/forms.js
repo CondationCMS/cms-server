@@ -39,16 +39,31 @@ import { TextAreaField } from "@cms/modules/form/field.textarea.js";
 import { ReferenceField } from "@cms/modules/form/field.reference.js";
 import { TagsField } from "@cms/modules/form/field.tags.js";
 import { i18n } from "@cms/modules/localization.js";
+const getFormFields = (definition) => {
+    const fields = Array.isArray(definition?.fields) ? definition.fields : [];
+    const tabFields = Array.isArray(definition?.tabs)
+        ? definition.tabs.flatMap((tab) => Array.isArray(tab?.fields) ? tab.fields : [])
+        : [];
+    return [...fields, ...tabFields];
+};
+const escapeHtml = (value) => String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 const createForm = (options) => {
-    const fields = options.fields || [];
+    const standaloneFields = Array.isArray(options.fields) ? options.fields : [];
+    const tabs = Array.isArray(options.tabs) ? options.tabs : [];
+    const fields = getFormFields({ fields: standaloneFields, tabs });
     const values = options.values || {};
     const formId = createID();
     const context = {
         formElement: null,
         fields: fields
     };
-    const fieldHtml = fields.map((field) => {
-        const val = values[field.name] || '';
+    const renderField = (field) => {
+        const val = values[field.name] ?? '';
         switch (field.type) {
             case 'email':
                 return MailField.markup(field, val);
@@ -91,12 +106,96 @@ const createForm = (options) => {
             default:
                 return '';
         }
-    }).join('\n');
+    };
+    const fieldHtml = standaloneFields.map(renderField).join('\n');
+    const tabsHtml = tabs.length > 0 ? `
+		<ul class="nav nav-tabs" role="tablist">
+			${tabs.map((tab, index) => {
+        const tabId = `${formId}-tab-${index}`;
+        const panelId = `${formId}-panel-${index}`;
+        const title = escapeHtml(tab?.title || `Tab ${index + 1}`);
+        return `<li class="nav-item" role="presentation">
+					<button type="button" id="${tabId}" class="nav-link${index === 0 ? ' active' : ''}"
+						data-cms-form-tab data-cms-form-tab-target="${panelId}" role="tab"
+						aria-controls="${panelId}" aria-selected="${index === 0}" tabindex="${index === 0 ? 0 : -1}">${title}</button>
+				</li>`;
+    }).join('\n')}
+		</ul>
+		<div class="tab-content pt-3 flex-grow-1">
+			${tabs.map((tab, index) => {
+        const tabId = `${formId}-tab-${index}`;
+        const panelId = `${formId}-panel-${index}`;
+        const tabFieldHtml = (Array.isArray(tab?.fields) ? tab.fields : []).map(renderField).join('\n');
+        return `<section id="${panelId}" class="tab-pane fade${index === 0 ? ' show active' : ''}"
+					role="tabpanel" aria-labelledby="${tabId}" tabindex="0"${index === 0 ? '' : ' hidden'}>
+					${tabFieldHtml}
+				</section>`;
+    }).join('\n')}
+		</div>` : '';
     const html = `
 		<form id="${formId}" class="needs-validation cms-form d-flex flex-column h-100" novalidate>
 			${fieldHtml}
+			${tabsHtml}
 		</form>
 	`;
+    const activateTab = (button) => {
+        if (!context.formElement) {
+            return;
+        }
+        const targetId = button.dataset.cmsFormTabTarget;
+        if (!targetId) {
+            return;
+        }
+        context.formElement.querySelectorAll('[data-cms-form-tab]').forEach(tabButton => {
+            const active = tabButton === button;
+            tabButton.classList.toggle('active', active);
+            tabButton.setAttribute('aria-selected', String(active));
+            tabButton.tabIndex = active ? 0 : -1;
+        });
+        context.formElement.querySelectorAll('.tab-pane').forEach(panel => {
+            const active = panel.id === targetId;
+            panel.classList.toggle('active', active);
+            panel.classList.toggle('show', active);
+            panel.hidden = !active;
+        });
+        requestAnimationFrame(() => {
+            const panel = context.formElement?.querySelector(`#${targetId}`);
+            panel?.querySelectorAll('.CodeMirror').forEach((editorElement) => {
+                editorElement.CodeMirror?.refresh();
+            });
+            window.dispatchEvent(new Event('resize'));
+        });
+    };
+    const initTabs = () => {
+        if (!context.formElement) {
+            return;
+        }
+        const tabButtons = Array.from(context.formElement.querySelectorAll('[data-cms-form-tab]'));
+        tabButtons.forEach((button, index) => {
+            button.addEventListener('click', () => activateTab(button));
+            button.addEventListener('keydown', (event) => {
+                let targetIndex = index;
+                if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+                    targetIndex = (index + 1) % tabButtons.length;
+                }
+                else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+                    targetIndex = (index - 1 + tabButtons.length) % tabButtons.length;
+                }
+                else if (event.key === 'Home') {
+                    targetIndex = 0;
+                }
+                else if (event.key === 'End') {
+                    targetIndex = tabButtons.length - 1;
+                }
+                else {
+                    return;
+                }
+                event.preventDefault();
+                activateTab(tabButtons[targetIndex]);
+                tabButtons[targetIndex].focus();
+            });
+        });
+    };
     const init = (container) => {
         if (typeof container === 'string') {
             container = document.querySelector(container);
@@ -121,6 +220,7 @@ const createForm = (options) => {
             e.stopPropagation();
             validate();
         });
+        initTabs();
         CodeField.init(context);
         MarkdownField.init(context);
         EasyMDEField.init(context);
@@ -237,6 +337,13 @@ const createForm = (options) => {
         });
         const firstInvalidContainer = invalidContainers[0];
         if (firstInvalidContainer) {
+            const tabPanel = firstInvalidContainer.closest('.tab-pane');
+            if (tabPanel) {
+                const tabButton = context.formElement.querySelector(`[data-cms-form-tab-target="${tabPanel.id}"]`);
+                if (tabButton) {
+                    activateTab(tabButton);
+                }
+            }
             firstInvalidContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
             const focusTarget = firstInvalidContainer.querySelector('input:not([type="hidden"]), select, textarea, button, [tabindex]');
             focusTarget?.focus();
@@ -274,5 +381,5 @@ const flattenFormData = (input) => {
     }
     return result;
 };
-export { createForm };
+export { createForm, getFormFields };
 ;

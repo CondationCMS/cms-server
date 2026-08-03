@@ -258,16 +258,15 @@ const openMediaMetadataForm = async (image, filename) => {
 			...getSiteOptions()
 		});
 
-		const fields = [
-			...(formResponse.result?.form?.fields || [])
-		];
+		const formDefinition = formResponse.result?.form || {};
 		const values = {
 			...metadataResponse.result.meta
 		};
 
 		state.metadataImage = image;
 		state.metadataForm = createForm({
-			fields: fields,
+			fields: formDefinition.fields || [],
+			tabs: formDefinition.tabs || [],
 			values: values
 		});
 

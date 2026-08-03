@@ -236,15 +236,14 @@ const openMediaMetadataForm = async (image, filename) => {
             image: image,
             ...getSiteOptions()
         });
-        const fields = [
-            ...(formResponse.result?.form?.fields || [])
-        ];
+        const formDefinition = formResponse.result?.form || {};
         const values = {
             ...metadataResponse.result.meta
         };
         state.metadataImage = image;
         state.metadataForm = createForm({
-            fields: fields,
+            fields: formDefinition.fields || [],
+            tabs: formDefinition.tabs || [],
             values: values
         });
         const title = document.getElementById("cms-media-metadata-title");

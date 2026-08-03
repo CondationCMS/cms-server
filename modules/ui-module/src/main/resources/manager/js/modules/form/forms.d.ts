@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+declare const getFormFields: (definition: any) => any[];
 declare const createForm: (options: any) => Form;
-export { createForm };
+export { createForm, getFormFields };
 export interface FormContext {
     formElement: HTMLFormElement | null;
     fields: any[];

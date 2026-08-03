@@ -43,7 +43,16 @@ class ContentTypesTest {
 				"name", "count",
 				"options", options));
 		List<Map<String, Object>> fields = new ArrayList<>(List.of(field));
-		Map<String, Object> settings = new HashMap<>(Map.of("fields", fields));
+		Map<String, Object> tabField = new HashMap<>(Map.of(
+				"type", "text",
+				"name", "description"));
+		List<Map<String, Object>> tabFields = new ArrayList<>(List.of(tabField));
+		Map<String, Object> tab = new HashMap<>(Map.of(
+				"title", "Details",
+				"fields", tabFields));
+		Map<String, Object> settings = new HashMap<>(Map.of(
+				"fields", fields,
+				"tabs", new ArrayList<>(List.of(tab))));
 		Map<String, Object> input = new HashMap<>(Map.of(
 				"name", "StartPage",
 				"template", "start.html",
@@ -65,23 +74,37 @@ class ContentTypesTest {
 					assertThat(numberField.getName()).isEqualTo("count");
 					assertThat(numberField.getOptions().min()).isEqualTo(1);
 				});
+		assertThat(pageTemplate.getForm("settings").tabs())
+				.singleElement()
+				.satisfies(storedTab -> {
+					assertThat(storedTab.title()).isEqualTo("Details");
+					assertThat(storedTab.fields()).singleElement()
+							.isInstanceOfSatisfying(StringField.class,
+									storedTabField -> assertThat(storedTabField.getName()).isEqualTo("description"));
+				});
 
 		input.put("template", "changed.html");
 		field.put("name", "changed");
 		options.put("min", 99);
+		tab.put("title", "Changed");
+		tabField.put("name", "changed");
 
 		assertThat(pageTemplate.template()).isEqualTo("start.html");
 		NumberField storedField = (NumberField) pageTemplate.getForm("settings").fields().getFirst();
 		assertThat(storedField.getName()).isEqualTo("count");
 		assertThat(storedField.getOptions().min()).isEqualTo(1);
+		assertThat(pageTemplate.getForm("settings").tabs().getFirst().title()).isEqualTo("Details");
+		assertThat(pageTemplate.getForm("settings").tabs().getFirst().fields().getFirst().getName())
+				.isEqualTo("description");
 	}
 
 	@Test
 	void supportsTypedJavaRegistration() {
-		FormDefinition form = new FormDefinition(List.of(
-				new StringField("title", "Title"),
-				new NumberField("count", "Count", 0, 100, 1),
-				new MarkdownField("description", "Description")));
+		FormDefinition form = new FormDefinition(
+				List.of(new StringField("title", "Title")),
+				List.of(new FormTab("Details", List.of(
+						new NumberField("count", "Count", 0, 100, 1),
+						new MarkdownField("description", "Description")))));
 		PageTemplate pageTemplate = PageTemplate.builder()
 				.name("Default")
 				.template("default.html")
@@ -106,5 +129,7 @@ class ContentTypesTest {
 		assertThat(contentTypes.getListItemTypes()).containsExactly(listItemType);
 		assertThat(pageTemplate.createButton()).isTrue();
 		assertThat(form.fields()).allMatch(FormField.class::isInstance);
+		assertThat(form.tabs()).singleElement()
+				.satisfies(tab -> assertThat(tab.fields()).allMatch(FormField.class::isInstance));
 	}
 }

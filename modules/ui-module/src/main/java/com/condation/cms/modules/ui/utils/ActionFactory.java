@@ -114,7 +114,7 @@ public class ActionFactory {
                     .action(new UIScriptAction(HTTPUtil.prependContext("/manager/actions/page/create-node", siteProperties),
                             Map.of(
                                     "name", pt.name(),
-                                    "folder", pt.getContentFolder(),
+                                    "folder", pt.contentFolder(),
                                     "template", pt.template(),
 									"contentType", pt.name()
                             )

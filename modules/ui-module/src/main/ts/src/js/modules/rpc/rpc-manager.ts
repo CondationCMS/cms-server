@@ -21,7 +21,43 @@
 
 import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 
-const getSectionEntryTemplates = async (options : any) => {
+export interface FormDefinition {
+	fields: FormFieldDefinition[];
+}
+
+export interface FormFieldDefinition {
+	type: string;
+	name: string;
+	title: string;
+	required: boolean;
+	requiredMessage?: string;
+}
+
+export interface PageTemplate {
+	name: string;
+	template: string;
+	forms: Record<string, FormDefinition>;
+	contentFolder: string;
+	createButton: boolean;
+}
+
+export interface SectionEntryTemplate {
+	section: string;
+	name: string;
+	template: string;
+	forms: Record<string, FormDefinition>;
+}
+
+export interface ListItemType {
+	name: string;
+	form: FormDefinition;
+}
+
+interface ContentTypeResponse<T> {
+	result: T[];
+}
+
+const getSectionEntryTemplates = async (options : any): Promise<ContentTypeResponse<SectionEntryTemplate>> => {
 	var data = {
 		method: "manager.contentTypes.sectionEntries",
 		parameters: options || {}
@@ -29,7 +65,7 @@ const getSectionEntryTemplates = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
-const getPageTemplates = async (options : any) => {
+const getPageTemplates = async (options : any): Promise<ContentTypeResponse<PageTemplate>> => {
 	var data = {
 		method: "manager.contentTypes.pages",
 		parameters: options || {}
@@ -37,7 +73,7 @@ const getPageTemplates = async (options : any) => {
 	return await executeRemoteCall(data);
 };
 
-const getListItemTypes = async (options : any) => {
+const getListItemTypes = async (options : any): Promise<ContentTypeResponse<ListItemType>> => {
 	var data = {
 		method: "manager.contentTypes.listItemTypes",
 		parameters: options || {}

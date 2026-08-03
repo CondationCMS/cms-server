@@ -22,8 +22,13 @@ package com.condation.cms.modules.ui.utils.json;
  */
 
 import com.condation.cms.modules.ui.extensionpoints.remotemethods.RemoteFileEnpoints;
+import com.condation.cms.api.ui.elements.FormDefinition;
+import com.condation.cms.api.ui.elements.PageTemplate;
+import com.condation.cms.api.ui.elements.fields.StringField;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.util.List;
+import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -55,5 +60,32 @@ public class UIGsonProviderTest {
         Assertions.assertThat(obj.get("media").getAsBoolean()).isFalse();
         Assertions.assertThat(obj.get("content").getAsBoolean()).isTrue();
     }
+
+	@Test
+	void serializesTypedPageTemplateAsFrontendContract() {
+		var pageTemplate = PageTemplate.builder()
+				.name("StartPage")
+				.template("start.html")
+				.contentFolder("content")
+				.forms(Map.of("settings", new FormDefinition(List.of(
+						new StringField("title", "Title")))))
+				.build();
+
+		JsonObject json = JsonParser.parseString(UIGsonProvider.INSTANCE.toJson(pageTemplate))
+				.getAsJsonObject();
+
+		Assertions.assertThat(json.has("data")).isFalse();
+		Assertions.assertThat(json.get("name").getAsString()).isEqualTo("StartPage");
+		Assertions.assertThat(json.get("template").getAsString()).isEqualTo("start.html");
+		Assertions.assertThat(json.get("contentFolder").getAsString()).isEqualTo("content");
+		Assertions.assertThat(json.get("createButton").getAsBoolean()).isTrue();
+		var fields = json.getAsJsonObject("forms")
+				.getAsJsonObject("settings")
+				.getAsJsonArray("fields");
+		Assertions.assertThat(fields).hasSize(1);
+		Assertions.assertThat(fields.get(0).getAsJsonObject().get("type").getAsString()).isEqualTo("text");
+		Assertions.assertThat(fields.get(0).getAsJsonObject().get("name").getAsString()).isEqualTo("title");
+		Assertions.assertThat(fields.get(0).getAsJsonObject().get("title").getAsString()).isEqualTo("Title");
+	}
 	
 }

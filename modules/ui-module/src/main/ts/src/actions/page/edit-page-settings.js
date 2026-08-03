@@ -48,7 +48,7 @@ export async function runAction(params) {
 
 		var pageSettingsForm = []
 		if (selected.length === 1) {
-			pageSettingsForm = selected[0].data?.forms?.settings ? selected[0].data.forms.settings.fields : []
+			pageSettingsForm = selected[0].forms?.settings?.fields ?? []
 		}
 
 		//const previewMetaForm = getMetaForm()

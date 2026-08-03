@@ -47,7 +47,7 @@ export async function runAction(params) {
 
 		var attrForm = []
 		if (selected.length === 1) {
-			attrForm = selected[0].data?.forms[params.form] ? selected[0].data.forms[params.form].fields : []
+			attrForm = selected[0].forms?.[params.form]?.fields ?? []
 		}
 
 		//const previewMetaForm = getMetaForm()

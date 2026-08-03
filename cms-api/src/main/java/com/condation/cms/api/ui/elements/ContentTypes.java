@@ -22,102 +22,85 @@ package com.condation.cms.api.ui.elements;
  */
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
 /**
+ * Registry populated by the manager content type hook.
+ *
+ * JavaScript extensions can keep passing object literals to the map overloads.
+ * The values are converted at that boundary, so consumers of this registry
+ * always receive typed definitions. Java extensions can use the typed
+ * overloads directly.
  *
  * @author thmar
  */
 public class ContentTypes {
 
-	public Set<PageTemplate> pageTemplates = new HashSet();
+	private final Set<PageTemplate> pageTemplates = new LinkedHashSet<>();
+	private final Set<SectionEntryTemplate> sectionEntryTemplates = new LinkedHashSet<>();
+	private final Set<ListItemType> listItemTypes = new LinkedHashSet<>();
 
-	public Set<SectionEntryTemplate> sectionEntryTemplates = new HashSet<>();
-	
-	public Set<ListItemType> listItemTypes = new HashSet<>();
+	public void registerListItemType(ListItemType listItemType) {
+		listItemTypes.add(Objects.requireNonNull(listItemType, "listItemType"));
+	}
 
+	/**
+	 * JavaScript interop overload. Prefer {@link #registerListItemType(ListItemType)}
+	 * from Java code.
+	 */
 	public void registerListItemType(Map<String, Object> listItemType) {
-		listItemTypes.add(new ListItemType(listItemType));
+		registerListItemType(ListItemType.fromMap(listItemType));
 	}
-	
-	public Set<ListItemType> getListItemTypes () {
-		return new HashSet<>(listItemTypes);
+
+	public Set<ListItemType> getListItemTypes() {
+		return Collections.unmodifiableSet(new LinkedHashSet<>(listItemTypes));
 	}
-	
-	public Optional<PageTemplate> getPageTemplate (String name) {
-		return pageTemplates.stream().filter(pt -> pt.name.equals(name)).findFirst();
+
+	public Optional<PageTemplate> getPageTemplate(String name) {
+		return pageTemplates.stream().filter(template -> template.name().equals(name)).findFirst();
 	}
-	
+
+	public void registerPageTemplate(PageTemplate pageTemplate) {
+		pageTemplates.add(Objects.requireNonNull(pageTemplate, "pageTemplate"));
+	}
+
+	/**
+	 * JavaScript interop overload. Prefer {@link #registerPageTemplate(PageTemplate)}
+	 * from Java code.
+	 */
 	public void registerPageTemplate(Map<String, Object> pageTemplate) {
-		pageTemplates.add(new PageTemplate(pageTemplate));
+		registerPageTemplate(PageTemplate.fromMap(pageTemplate));
 	}
 
+	public void registerSectionEntryTemplate(SectionEntryTemplate sectionEntryTemplate) {
+		sectionEntryTemplates.add(Objects.requireNonNull(sectionEntryTemplate, "sectionEntryTemplate"));
+	}
+
+	/**
+	 * JavaScript interop overload. Prefer
+	 * {@link #registerSectionEntryTemplate(SectionEntryTemplate)} from Java code.
+	 */
 	public void registerSectionEntryTemplate(Map<String, Object> sectionEntryTemplate) {
-		sectionEntryTemplates.add(new SectionEntryTemplate(sectionEntryTemplate));
+		registerSectionEntryTemplate(SectionEntryTemplate.fromMap(sectionEntryTemplate));
 	}
-	
-	public Set<PageTemplate> getPageTemplates () {
-		return new HashSet<>(pageTemplates);
+
+	public Set<PageTemplate> getPageTemplates() {
+		return Collections.unmodifiableSet(new LinkedHashSet<>(pageTemplates));
 	}
-	
-	public Set<SectionEntryTemplate> getSectionEntryTemplates (String section) {
-		return sectionEntryTemplates.stream()
+
+	public Set<SectionEntryTemplate> getSectionEntryTemplates(String section) {
+		Set<SectionEntryTemplate> result = new LinkedHashSet<>();
+		sectionEntryTemplates.stream()
 				.filter(template -> template.section().equals(section))
-				.collect(Collectors.toSet());
-	}
-	public Set<SectionEntryTemplate> getSectionEntryTemplates () {
-		return new HashSet<>(sectionEntryTemplates);
+				.forEach(result::add);
+		return Collections.unmodifiableSet(result);
 	}
 
-	public static record PageTemplate(String name, String template, Map<String, Object> data) {
-
-		public PageTemplate (Map<String, Object> data) {
-			this(
-					(String) data.getOrDefault("name", "<no name>"),
-					(String) data.getOrDefault("template", "<no template>"),
-					data);
-		}
-		
-		public Map<String, Object> getForm (String name) {
-			var forms = (Map<String, Object>)data.getOrDefault("forms", Collections.emptyMap());
-			return (Map<String, Object>)forms.getOrDefault(name, Collections.emptyMap());
-		}
-        
-        public String getContentFolder () {
-            return (String) data.getOrDefault("contentFolder", "");
-        }
-        public boolean addCreateButton () {
-            return (boolean) data.getOrDefault("createButton", true);
-        }
-	}
-
-	public static record SectionEntryTemplate(String name, String template, Map<String, Object> data) {
-
-		public SectionEntryTemplate (Map<String, Object> data) {
-			this(
-					(String) data.getOrDefault("name", "<no name>"),
-					(String) data.getOrDefault("template", "<no template>"),
-					data);
-		}
-
-		public String section() {
-			return (String) data.getOrDefault("section", "<no section>");
-		}
-	}
-	
-	public static record ListItemType(String name, Map<String, Object> data) {
-
-		public ListItemType (Map<String, Object> data) {
-			this(
-					(String) data.getOrDefault("name", "<no name>"),
-					data);
-		}
-
-		public Map<String, Object> getForm (String name) {
-			return (Map<String, Object>)data.getOrDefault("form", Collections.emptyMap());
-		}
+	public Set<SectionEntryTemplate> getSectionEntryTemplates() {
+		return Collections.unmodifiableSet(new LinkedHashSet<>(sectionEntryTemplates));
 	}
 }

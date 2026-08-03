@@ -18,9 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-declare const getSectionEntryTemplates: (options: any) => Promise<any>;
-declare const getPageTemplates: (options: any) => Promise<any>;
-declare const getListItemTypes: (options: any) => Promise<any>;
+export interface FormDefinition {
+    fields: FormFieldDefinition[];
+}
+export interface FormFieldDefinition {
+    type: string;
+    name: string;
+    title: string;
+    required: boolean;
+    requiredMessage?: string;
+}
+export interface PageTemplate {
+    name: string;
+    template: string;
+    forms: Record<string, FormDefinition>;
+    contentFolder: string;
+    createButton: boolean;
+}
+export interface SectionEntryTemplate {
+    section: string;
+    name: string;
+    template: string;
+    forms: Record<string, FormDefinition>;
+}
+export interface ListItemType {
+    name: string;
+    form: FormDefinition;
+}
+interface ContentTypeResponse<T> {
+    result: T[];
+}
+declare const getSectionEntryTemplates: (options: any) => Promise<ContentTypeResponse<SectionEntryTemplate>>;
+declare const getPageTemplates: (options: any) => Promise<ContentTypeResponse<PageTemplate>>;
+declare const getListItemTypes: (options: any) => Promise<ContentTypeResponse<ListItemType>>;
 declare const getMediaForm: (options: any) => Promise<any>;
 declare const createCSRFToken: (options: any) => Promise<any>;
 export declare enum Format {

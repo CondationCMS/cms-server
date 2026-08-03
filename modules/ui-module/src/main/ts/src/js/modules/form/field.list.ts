@@ -129,14 +129,14 @@ const getItemForm = async (el: HTMLElement) => {
 
 		var itemForm = []
 		if (selected.length === 1) {
-			itemForm = (fieldName && selected[0].data?.forms[fieldName]) ? selected[0].data.forms[fieldName].fields : [];
+			itemForm = fieldName ? selected[0].forms?.[fieldName]?.fields ?? [] : [];
 		}
 
 		if (!itemForm || itemForm.length === 0) {
 			let itemTypes = (await getListItemTypes({})).result
 			var selectedItemType = itemTypes.filter((itemType : any) => itemType.name === fieldName)
 
-			itemForm = (selectedItemType.length === 1) ? selectedItemType[0].data?.form.fields : []
+			itemForm = (selectedItemType.length === 1) ? selectedItemType[0].form?.fields ?? [] : []
 		}
 
 		return itemForm

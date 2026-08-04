@@ -31,4 +31,6 @@ public record Permission(String key, String description) {
 	public static final Permission USER_MANAGE = new Permission("user.manage", "Manage manager users");
 	public static final Permission ROLE_MANAGE = new Permission("role.manage", "Manage roles and permissions");
 	public static final Permission MENU_MANAGE = new Permission("menu.manage", "Manage navigation menus");
+	public static final Permission WORKFLOW_EXECUTE = new Permission("workflow.execute", "Execute workflow transitions");
+	public static final Permission WORKFLOW_PUBLISH = new Permission("workflow.publish", "Execute transitions that publish content");
 }

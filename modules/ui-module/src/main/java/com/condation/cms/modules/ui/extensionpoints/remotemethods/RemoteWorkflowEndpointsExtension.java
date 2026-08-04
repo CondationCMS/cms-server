@@ -25,7 +25,7 @@ import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
-import com.condation.cms.api.extensions.AbstractExtensionPoint;
+import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
@@ -40,9 +40,17 @@ import lombok.extern.slf4j.Slf4j;
 import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.workflow.WFTransitionException;
 import com.condation.cms.api.workflow.Workflow;
+import com.condation.cms.api.workflow.WFTransition;
+import com.condation.cms.auth.services.AuthorizationService;
+import com.condation.cms.auth.services.Realm;
+import com.condation.cms.auth.services.RoleService;
+import com.condation.cms.auth.services.User;
+import com.condation.cms.auth.services.UserService;
+import com.condation.cms.auth.services.WorkflowAuthorizationService;
 import com.condation.cms.core.content.io.ContentFileParser;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.List;
 
 /**
  *
@@ -50,7 +58,7 @@ import java.util.Optional;
  */
 @Slf4j
 @Extension(UIRemoteMethodExtensionPoint.class)
-public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
+public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExtension {
 
 	private Optional<ContentNode> getContentNode(String uri) {
 		final DB db = getContext().get(DBFeature.class).db();
@@ -104,7 +112,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 		var status = workflow.getStatusProvider().status(node);
 
 		result.put("status", status);
-        result.put("transitions", workflow.getNextTransitions(node));
+		result.put("transitions", transitionDtos(allowedTransitions(workflow, node)));
 
 		return result;
 	}
@@ -122,25 +130,18 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 			return result;
 		}
 
-		var validTransitions = getContext().get(WorkflowFeature.class).workflow().getNextTransitions(contentNodeOpt.get());
-
-		var transitions = validTransitions.stream().map(
-				transition -> Map.of(
-						"id", transition.id(),
-						"label", transition.label()
-				)).toList();
-
-		result.put("transitions", transitions);
+		Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
+		result.put("transitions", transitionDtos(allowedTransitions(workflow, contentNodeOpt.get())));
 
 		return result;
 	}
 
-	@RemoteMethod(name = "workflow.transit", permissions = {Permissions.CONTENT_EDIT})
+	@RemoteMethod(name = "workflow.transit", permissions = {Permissions.WORKFLOW_EXECUTE})
 	public Object transit(Map<String, Object> parameters) throws RPCException {
 		var result = new HashMap<String, Object>();
 		try {
 			var uri = contentUri(parameters);
-			var transition = (String) parameters.get("transitionId");
+			var transitionId = requiredTransitionId(parameters);
 
 			final DB db = getContext().get(DBFeature.class).db();
 
@@ -151,7 +152,13 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 
 			var contentNode = contentNodeOpt.get();
 
-			getContext().get(WorkflowFeature.class).workflow().transit(transition, contentNode);
+			Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
+			WFTransition transition = workflow.getNextTransitions(contentNode).stream()
+					.filter(candidate -> candidate.id().equals(transitionId))
+					.findFirst()
+					.orElseThrow(() -> new RPCException(400, "unknown or currently unavailable transition: " + transitionId));
+			ensureAllowed(transition);
+			workflow.transit(transitionId, contentNode);
 
 			var contentFile = getContentFile(uri);
 
@@ -161,11 +168,57 @@ public class RemoteWorkflowEndpointsExtension extends AbstractExtensionPoint imp
 			YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, contentNode.data(), parser.getContent());
 
 			result.put("success", true);
+		} catch (RPCException ex) {
+			throw ex;
 		} catch (IOException | WFTransitionException ex) {
 			log.error("error transit workflow", ex);
 			throw new RPCException(0, ex.getMessage());
 		}
 		return result;
+	}
+
+	private List<WFTransition> allowedTransitions(Workflow workflow, ContentNode node) {
+		Optional<User> user = currentUser();
+		if (user.isEmpty()) return List.of();
+		return workflowAuthorizationService().allowedTransitions(user.get(), workflow.getNextTransitions(node));
+	}
+
+	private List<Map<String, Object>> transitionDtos(List<WFTransition> transitions) {
+		return transitions.stream().map(transition -> Map.<String, Object>of(
+				"id", transition.id(),
+				"label", transition.label(),
+				"description", transition.description() == null ? "" : transition.description()
+		)).toList();
+	}
+
+	private void ensureAllowed(WFTransition transition) throws RPCException {
+		User user = currentUser().orElseThrow(() -> new RPCException(403, "workflow transition not permitted"));
+		if (!workflowAuthorizationService().canExecute(user, transition)) {
+			throw new RPCException(403, "workflow transition not permitted");
+		}
+	}
+
+	private Optional<User> currentUser() {
+		String username = getUserName();
+		if (username.isBlank()) return Optional.empty();
+		return getContext().get(InjectorFeature.class).injector().getInstance(UserService.class)
+				.byUsername(Realm.of("manager-users"), username);
+	}
+
+	private AuthorizationService authorizationService() {
+		RoleService roleService = getContext().get(InjectorFeature.class).injector().getInstance(RoleService.class);
+		return new AuthorizationService(roleService);
+	}
+
+	private WorkflowAuthorizationService workflowAuthorizationService() {
+		return new WorkflowAuthorizationService(authorizationService());
+	}
+
+	private String requiredTransitionId(Map<String, Object> parameters) throws RPCException {
+		if (parameters.get("transitionId") instanceof String transitionId && !transitionId.isBlank()) {
+			return transitionId;
+		}
+		throw new RPCException(400, "transitionId must not be blank");
 	}
 
 	private String contentUri(Map<String, Object> parameters) throws RPCException {

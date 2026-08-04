@@ -39,6 +39,8 @@ public class PermissionRegistry {
 		register(Permission.USER_MANAGE);
 		register(Permission.ROLE_MANAGE);
 		register(Permission.MENU_MANAGE);
+		register(Permission.WORKFLOW_EXECUTE);
+		register(Permission.WORKFLOW_PUBLISH);
 	}
 
 	public static void register(Permission permission) {

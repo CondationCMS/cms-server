@@ -22,6 +22,7 @@ package com.condation.cms.api.workflow;
  */
 
 import com.condation.cms.api.db.ContentNode;
+import java.util.Set;
 
 /**
  *
@@ -33,7 +34,13 @@ public record WFTransition(
         String description,
 		String toStage,
 		WFTransitionAction action,
-		WFTransitionGuard guard) {
+		WFTransitionGuard guard,
+		Set<String> permissions) {
+
+	public WFTransition(String id, String label, String description, String toStage,
+			WFTransitionAction action, WFTransitionGuard guard) {
+		this(id, label, description, toStage, action, guard, Set.of());
+	}
 	
 	public WFTransition {
 		if (action == null) {
@@ -42,6 +49,7 @@ public record WFTransition(
 		if (guard == null) {
 			guard = (node) -> true;
 		}
+		permissions = permissions == null ? Set.of() : Set.copyOf(permissions);
 	}
 	
 	void execute (ContentNode node) {

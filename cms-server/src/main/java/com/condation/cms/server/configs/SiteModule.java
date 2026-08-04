@@ -135,7 +135,8 @@ public class SiteModule extends AbstractModule {
                 "Sets the state of the node to published",
 				"published",
 				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_PUBLISHED),
-				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_DRAFT)
+				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_DRAFT),
+				java.util.Set.of(com.condation.cms.api.auth.Permissions.WORKFLOW_PUBLISH)
 		));
 
 		wf.addTransition(new WFTransition(

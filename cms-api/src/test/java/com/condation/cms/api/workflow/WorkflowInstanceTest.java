@@ -27,6 +27,8 @@ import java.util.HashMap;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import com.condation.cms.api.auth.Permissions;
+import java.util.Set;
 
 /**
  *
@@ -46,7 +48,8 @@ public class WorkflowInstanceTest {
                 "Sets the state of the node to published",
 				"published",
 				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_PUBLISHED),
-				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_DRAFT)
+				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_DRAFT),
+				Set.of(Permissions.WORKFLOW_PUBLISH)
 		));
 
 		wf.addTransition(new WFTransition(
@@ -57,6 +60,13 @@ public class WorkflowInstanceTest {
 				(node) -> node.data().put("status", DefaultWFStatusProvider.STATUS_DRAFT),
 				(node) -> node.data().getOrDefault("status", DefaultWFStatusProvider.STATUS_DRAFT).equals(DefaultWFStatusProvider.STATUS_PUBLISHED)
 		));
+	}
+
+	@Test
+	void transition_exposes_additional_permissions() {
+		ContentNode node = new ContentNode("test.md", "/test", "test", new HashMap<>());
+		WFTransition publish = wf.getNextTransitions(node).getFirst();
+		Assertions.assertThat(publish.permissions()).containsExactly(Permissions.WORKFLOW_PUBLISH);
 	}
 
 	@Test

@@ -77,15 +77,21 @@ public class RoleService {
 
 	public static List<Role> defaults() {
 		return List.of(
-				new Role("editor", "Editor", Set.of(Permissions.CONTENT_EDIT)),
+				new Role("editor", "Editor", Set.of(
+						Permissions.CONTENT_EDIT,
+						Permissions.WORKFLOW_EXECUTE)),
 				new Role("manager", "Manager", Set.of(
 						Permissions.CONTENT_EDIT,
 						Permissions.CACHE_INVALIDATE,
-						Permissions.MENU_MANAGE)),
+						Permissions.MENU_MANAGE,
+						Permissions.WORKFLOW_EXECUTE,
+						Permissions.WORKFLOW_PUBLISH)),
 				new Role("admin", "Administrator", Set.of(
 						Permissions.CONTENT_EDIT,
 						Permissions.CACHE_INVALIDATE,
 						Permissions.MENU_MANAGE,
+						Permissions.WORKFLOW_EXECUTE,
+						Permissions.WORKFLOW_PUBLISH,
 						Permissions.USER_MANAGE,
 						Permissions.ROLE_MANAGE)));
 	}

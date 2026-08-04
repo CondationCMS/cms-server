@@ -47,6 +47,14 @@ public interface ContentQuery<T> {
 	ContentQuery<T> html();
 	
 	ContentQuery<T> contentType(String contentType);
+
+	/**
+	 * Restricts the query to canonical content, variants, or both.
+	 *
+	 * @param mode variant selection to apply
+	 * @return this query
+	 */
+	ContentQuery<T> variants(VariantSearchMode mode);
 	
 	ContentQuery<T> where(final String field, final Object value);
 

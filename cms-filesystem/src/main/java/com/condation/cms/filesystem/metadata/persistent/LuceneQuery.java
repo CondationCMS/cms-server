@@ -24,6 +24,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.filesystem.metadata.PageMetaData;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
@@ -36,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -220,6 +222,18 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
     @Override
     public ContentQuery<T> contentType(String contentType) {
         this.contentType = contentType;
+        return this;
+    }
+
+    @Override
+    public ContentQuery<T> variants(VariantSearchMode mode) {
+        Objects.requireNonNull(mode, "mode must not be null");
+        if (mode != VariantSearchMode.ALL) {
+            queryBuilder.add(
+                    new TermQuery(new Term("_variant", Boolean.toString(mode == VariantSearchMode.VARIANT))),
+                    BooleanClause.Occur.FILTER
+            );
+        }
         return this;
     }
 

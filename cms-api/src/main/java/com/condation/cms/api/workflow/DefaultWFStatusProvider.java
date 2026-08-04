@@ -30,7 +30,7 @@ import java.util.Date;
  *
  * @author t.marx
  */
-public class DefaultWFStatusProvider implements WFStatusProvider {
+public class DefaultWFStatusProvider implements WFStatusQueryProvider {
 
 	public static final String STATUS_DRAFT = "draft";
 	public static final String STATUS_PUBLISHED = "published";
@@ -61,5 +61,11 @@ public class DefaultWFStatusProvider implements WFStatusProvider {
 	@Override
 	public String newNodeStatus() {
 		return STATUS_DRAFT;
+	}
+
+	@Override
+	public <T> com.condation.cms.api.db.ContentQuery<T> unpublished(
+			com.condation.cms.api.db.ContentQuery<T> query) {
+		return query.where(Constants.MetaFields.STATUS, "=", STATUS_DRAFT);
 	}
 }

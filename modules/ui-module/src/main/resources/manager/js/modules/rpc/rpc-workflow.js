@@ -19,6 +19,13 @@
  * #L%
  */
 import { executeRemoteCall } from '@cms/modules/rpc/rpc.js';
+const getUnpublishedPages = async (options) => {
+    const data = {
+        method: "workflow.pages.unpublished",
+        parameters: options
+    };
+    return (await executeRemoteCall(data)).result;
+};
 const getWfTransitions = async (options) => {
     var data = {
         method: "workflow.transitions.get",
@@ -40,4 +47,4 @@ const wfTransit = async (options) => {
     };
     return (await executeRemoteCall(data)).result;
 };
-export { getWfTransitions, getWfManagerStatus, wfTransit };
+export { getWfTransitions, getWfManagerStatus, wfTransit, getUnpublishedPages };

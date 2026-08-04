@@ -21,6 +21,22 @@
 export interface GetTransitionsRequest {
     uri?: string;
 }
+export interface ItemDto {
+    uri: string;
+    meta?: any;
+}
+export interface UnpublishedPagesRequest {
+    page?: number;
+    size?: number;
+}
+export interface UnpublishedPagesDto {
+    totalItems: number;
+    pageSize: number;
+    totalPages: number;
+    page: number;
+    items: ItemDto[];
+}
+declare const getUnpublishedPages: (options: UnpublishedPagesRequest) => Promise<UnpublishedPagesDto>;
 export interface GetTransitionsDto {
     id: string;
     label: string;
@@ -56,4 +72,4 @@ export interface WFTransitDto {
     success?: boolean;
 }
 declare const wfTransit: (options: WfTransitRequest) => Promise<WFTransitDto>;
-export { getWfTransitions, getWfManagerStatus, wfTransit };
+export { getWfTransitions, getWfManagerStatus, wfTransit, getUnpublishedPages };

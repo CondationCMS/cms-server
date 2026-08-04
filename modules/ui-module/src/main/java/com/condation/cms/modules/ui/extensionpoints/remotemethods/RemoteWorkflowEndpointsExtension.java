@@ -24,13 +24,16 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
-import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
+import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
 import com.condation.modules.api.annotation.Extension;
@@ -41,6 +44,7 @@ import com.condation.cms.api.ui.annotations.RemoteMethod;
 import com.condation.cms.api.workflow.WFTransitionException;
 import com.condation.cms.api.workflow.Workflow;
 import com.condation.cms.api.workflow.WFTransition;
+import com.condation.cms.api.workflow.WFStatusQueryProvider;
 import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.RoleService;
@@ -48,6 +52,8 @@ import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.auth.services.WorkflowAuthorizationService;
 import com.condation.cms.core.content.io.ContentFileParser;
+import com.condation.cms.modules.ui.model.NodeDTO;
+import com.condation.cms.modules.ui.utils.NumberUtils;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.List;
@@ -136,6 +142,31 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 		return result;
 	}
 
+	@RemoteMethod(name = "workflow.pages.unpublished", permissions = {Permissions.CONTENT_EDIT})
+	public Object unpublishedPages(Map<String, Object> parameters) throws RPCException {
+		DB db = getDB(parameters);
+		long requestedPage = Math.max(1, NumberUtils.toLong(parameters.getOrDefault("page", 1L)));
+		long requestedSize = Math.clamp(NumberUtils.toLong(parameters.getOrDefault("size", 10L)), 1, 100);
+		Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
+		var query = db.getContent().query((node, length) -> node)
+				.variants(VariantSearchMode.ORIGINAL);
+		Page<ContentNode> page;
+
+		if (workflow.getStatusProvider() instanceof WFStatusQueryProvider queryProvider) {
+			page = queryProvider.unpublished(query).page(requestedPage, requestedSize);
+		} else {
+			log.warn("Workflow '{}' status provider does not implement WFStatusQueryProvider; "
+					+ "falling back to in-memory unpublished-page filtering", workflow.getId());
+			List<ContentNode> unpublished = query.get().stream()
+					.filter(node -> !node.isVariant())
+					.filter(node -> !workflow.getStatusProvider().isPublished(node))
+					.toList();
+			page = inMemoryPage(unpublished, requestedPage, requestedSize);
+		}
+
+		return mapPage(db, page);
+	}
+
 	@RemoteMethod(name = "workflow.transit", permissions = {Permissions.WORKFLOW_EXECUTE})
 	public Object transit(Map<String, Object> parameters) throws RPCException {
 		var result = new HashMap<String, Object>();
@@ -189,6 +220,24 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 				"label", transition.label(),
 				"description", transition.description() == null ? "" : transition.description()
 		)).toList();
+	}
+
+	private Page<ContentNode> inMemoryPage(List<ContentNode> nodes, long requestedPage, long requestedSize) {
+		long totalItems = nodes.size();
+		long totalPages = totalItems == 0 ? 0 : (totalItems + requestedSize - 1) / requestedSize;
+		int pageNumber = (int) Math.min(requestedPage, Math.max(1, totalPages));
+		int from = (int) Math.min((long) (pageNumber - 1) * requestedSize, totalItems);
+		int to = (int) Math.min(from + requestedSize, totalItems);
+		return new Page<>(totalItems, requestedSize, totalPages, pageNumber, nodes.subList(from, to));
+	}
+
+	private Page<NodeDTO> mapPage(DB db, Page<ContentNode> page) {
+		var contentBase = db.getFileSystem().contentBase();
+		List<NodeDTO> items = page.getItems().stream().map(node -> {
+			String url = PathUtil.toURL(contentBase.resolve(node.uri()), contentBase);
+			return new NodeDTO(HTTPUtil.modifyUrl(url, getContext()), node.data());
+		}).toList();
+		return new Page<>(page.getTotalItems(), page.getPageSize(), page.getTotalPages(), page.getPage(), items);
 	}
 
 	private void ensureAllowed(WFTransition transition) throws RPCException {

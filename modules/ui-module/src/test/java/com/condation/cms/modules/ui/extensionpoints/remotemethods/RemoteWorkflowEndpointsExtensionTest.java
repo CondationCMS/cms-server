@@ -23,10 +23,19 @@ package com.condation.cms.modules.ui.extensionpoints.remotemethods;
 
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.DBFileSystem;
+import com.condation.cms.api.db.Content;
+import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.DBFeature;
+import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.rpc.RPCException;
+import com.condation.cms.api.workflow.WFStatusQueryProvider;
+import com.condation.cms.api.workflow.Workflow;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,6 +46,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doReturn;
 
 @ExtendWith(MockitoExtension.class)
 class RemoteWorkflowEndpointsExtensionTest {
@@ -65,8 +79,8 @@ class RemoteWorkflowEndpointsExtensionTest {
 		when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));
 		when(db.getFileSystem()).thenReturn(fileSystem);
 		when(fileSystem.contentBase()).thenReturn(contentBase);
-		when(contentBase.resolve("missing.md")).thenReturn(contentFile);
-		when(contentFile.exists()).thenReturn(false);
+		lenient().when(contentBase.resolve("missing.md")).thenReturn(contentFile);
+		lenient().when(contentFile.exists()).thenReturn(false);
 	}
 
 	@Test
@@ -98,5 +112,32 @@ class RemoteWorkflowEndpointsExtensionTest {
 		assertThatThrownBy(() -> endpoints.transit(params))
 				.isInstanceOf(RPCException.class)
 				.satisfies(ex -> assertThat(((RPCException) ex).getCode()).isEqualTo(404));
+	}
+
+	@Test
+	void unpublishedPages_delegatesFilteringAndPaginationToWorkflowProvider() throws RPCException {
+		Content content = mock(Content.class);
+		@SuppressWarnings("unchecked")
+		ContentQuery<ContentNode> query = mock(ContentQuery.class);
+		WFStatusQueryProvider statusProvider = mock(WFStatusQueryProvider.class);
+		Workflow workflow = mock(Workflow.class);
+		Page<ContentNode> emptyPage = new Page<>(0, 5, 0, 1, List.of());
+
+		when(db.getContent()).thenReturn(content);
+		doReturn(query).when(content).query(any());
+		when(query.variants(VariantSearchMode.ORIGINAL)).thenReturn(query);
+		when(statusProvider.unpublished(query)).thenReturn(query);
+		when(query.page(1, 5)).thenReturn(emptyPage);
+		when(workflow.getStatusProvider()).thenReturn(statusProvider);
+		when(moduleContext.get(WorkflowFeature.class)).thenReturn(new WorkflowFeature(workflow));
+
+		@SuppressWarnings("unchecked")
+		Page<Object> result = (Page<Object>) endpoints.unpublishedPages(Map.of("page", 1, "size", 5));
+
+		assertThat(result.getItems()).isEmpty();
+		assertThat(result.getTotalItems()).isZero();
+		verify(query).variants(VariantSearchMode.ORIGINAL);
+		verify(statusProvider).unpublished(query);
+		verify(query).page(1, 5);
 	}
 }

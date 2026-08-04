@@ -23,6 +23,7 @@ package com.condation.cms.api.workflow;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.request.RequestContext;
@@ -31,12 +32,27 @@ import java.util.Calendar;
 import java.util.Map;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  *
  * @author thorstenmarx
  */
 public class DefaultWFStatusProviderTest {
+
+	@Test
+	public void unpublishedQueryUsesWorkflowStatusSemantics() {
+		@SuppressWarnings("unchecked")
+		ContentQuery<ContentNode> query = mock(ContentQuery.class);
+		when(query.where(Constants.MetaFields.STATUS, "=", DefaultWFStatusProvider.STATUS_DRAFT)).thenReturn(query);
+
+		var result = new DefaultWFStatusProvider().unpublished(query);
+
+		Assertions.assertThat(result).isSameAs(query);
+		verify(query).where(Constants.MetaFields.STATUS, "=", DefaultWFStatusProvider.STATUS_DRAFT);
+	}
 
 	@Test
 	public void missingPublishDateRemainsUnsetAndHasNoStartLimit() {

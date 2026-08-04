@@ -99,6 +99,30 @@ public class PresistentFileSystemTest {
 		nodes = fileSystem.query((node, i) -> node).expression("featured = true").get();
 		Assertions.assertThat(nodes).hasSize(2);
 	}
+
+	@Test
+	void test_query_canFilterVariants() {
+		List<ContentNode> originals = inManagerContext(() -> fileSystem
+				.query((node, i) -> node)
+				.variants(VariantSearchMode.ORIGINAL)
+				.get());
+		List<ContentNode> variants = inManagerContext(() -> fileSystem
+				.query((node, i) -> node)
+				.variants(VariantSearchMode.VARIANT)
+				.get());
+		List<ContentNode> all = inManagerContext(() -> fileSystem
+				.query((node, i) -> node)
+				.variants(VariantSearchMode.ALL)
+				.get());
+
+		Assertions.assertThat(originals)
+				.hasSize(3)
+				.allMatch(node -> !node.isVariant());
+		Assertions.assertThat(variants)
+				.singleElement()
+				.matches(ContentNode::isVariant);
+		Assertions.assertThat(all).hasSize(originals.size() + variants.size());
+	}
 	
 	@Test
 	public void test_query_in() throws IOException {

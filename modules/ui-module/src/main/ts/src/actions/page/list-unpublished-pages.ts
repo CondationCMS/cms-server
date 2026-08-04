@@ -20,7 +20,7 @@
  */
 import { openModal } from '@cms/modules/modal.js'
 import { i18n } from '@cms/modules/localization.js';
-import { filterPages, FilterPagesOptions, FilterPagesResponse, ItemDto } from '@cms/modules/rpc/rpc-page'
+import { getUnpublishedPages, ItemDto } from '@cms/modules/rpc/rpc-workflow'
 import { loadPreview } from '@cms/modules/preview.utils';
 // hook.js
 
@@ -53,7 +53,7 @@ const renderPageListHtml = (pages: ItemDto[], currentPage: number, totalPages: n
         `;
     }
 
-    const paginationHtml = `
+    const paginationHtml = totalPages > 1 ? `
         <nav aria-label="Page navigation">
             <ul class="pagination justify-content-center mt-3">
                 <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
@@ -67,7 +67,7 @@ const renderPageListHtml = (pages: ItemDto[], currentPage: number, totalPages: n
                 </li>
             </ul>
         </nav>
-    `;
+    ` : '';
 
     return `
         <div>
@@ -83,22 +83,13 @@ const state: any = {
 
 const updateDialog = async (pageNumber: number) => {
 
-    const filterOptions: FilterPagesOptions = {
-        where: [
-            {
-                field: "status",
-                operator: "=",
-                value: "draft"
-            }
-        ],
+    const filterOptions = {
         page: pageNumber,
         size: ITEMS_PER_PAGE
     };
 
     try {
-        const response = await filterPages(filterOptions);
-
-        var pageData = response.result;
+		var pageData = await getUnpublishedPages(filterOptions);
         const modalBodyHtml = renderPageListHtml(pageData.items, pageData.page, pageData.totalPages);
 
         var modalElement = document.getElementById('cms-unpublished-pages-modal-body');

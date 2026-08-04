@@ -24,6 +24,28 @@ import { executeRemoteCall } from '@cms/modules/rpc/rpc.js'
 export interface GetTransitionsRequest {
 	uri?: string;
 }
+export interface ItemDto {
+	uri: string;
+	meta?: any;
+}
+export interface UnpublishedPagesRequest {
+	page?: number;
+	size?: number;
+}
+export interface UnpublishedPagesDto {
+	totalItems: number;
+	pageSize: number;
+	totalPages: number;
+	page: number;
+	items: ItemDto[];
+}
+const getUnpublishedPages = async (options: UnpublishedPagesRequest): Promise<UnpublishedPagesDto> => {
+	const data = {
+		method: "workflow.pages.unpublished",
+		parameters: options
+	};
+	return (await executeRemoteCall(data)).result as UnpublishedPagesDto;
+};
 export interface GetTransitionsDto {
 	id: string,
 	label: string
@@ -78,4 +100,4 @@ const wfTransit = async (options: WfTransitRequest) => {
 	return (await executeRemoteCall(data)).result as WFTransitDto;
 };
 
-export { getWfTransitions, getWfManagerStatus, wfTransit };
+export { getWfTransitions, getWfManagerStatus, wfTransit, getUnpublishedPages };

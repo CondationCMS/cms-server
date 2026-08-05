@@ -28,6 +28,7 @@ import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.auth.permissions.Permission;
 import com.condation.cms.auth.permissions.PermissionRegistry;
+import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.Role;
 import com.condation.cms.auth.services.RoleService;
@@ -40,6 +41,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -117,6 +120,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 			}
 			String[] roles = roleIds(parameters);
 			validateRoles(roles);
+			ensureCanAssignRoles(roles);
 			userService().addUser(MANAGER_REALM, username, password, roles, userData(parameters));
 			return userDto(userService().byUsername(MANAGER_REALM, username).orElseThrow());
 		} catch (RPCException exception) {
@@ -132,6 +136,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 		try {
 			String[] roles = roleIds(parameters);
 			validateRoles(roles);
+			ensureCanAssignRoles(roles);
 			String password = parameters.get("password") instanceof String value ? value : null;
 			userService().updateUser(MANAGER_REALM, username, password, roles, userData(parameters));
 			return userDto(userService().byUsername(MANAGER_REALM, username).orElseThrow());
@@ -162,6 +167,38 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 		if (!known.containsAll(Arrays.asList(roleIds))) {
 			throw new RPCException(1, "User contains unknown roles");
 		}
+	}
+
+	/**
+	 * A caller without {@code ROLE_MANAGE} may only grant roles whose permissions
+	 * are a subset of their own; otherwise they could bootstrap themselves or
+	 * others into an administrative role through {@code USER_MANAGE} alone.
+	 */
+	private void ensureCanAssignRoles(String[] roleIds) throws Exception {
+		User caller = currentUser().orElseThrow(() -> new RPCException(403, "not authenticated"));
+		if (authorizationService().hasPermission(caller, Permissions.ROLE_MANAGE)) {
+			return;
+		}
+		Map<String, Role> rolesById = roleService().list().stream()
+				.collect(Collectors.toMap(Role::id, role -> role));
+		Set<String> requiredPermissions = Arrays.stream(roleIds)
+				.map(rolesById::get)
+				.filter(Objects::nonNull)
+				.flatMap(role -> role.permissions().stream())
+				.collect(Collectors.toSet());
+		if (!authorizationService().hasAllPermissions(caller, requiredPermissions.toArray(String[]::new))) {
+			throw new RPCException(403, "Cannot assign a role with permissions you do not have");
+		}
+	}
+
+	private Optional<User> currentUser() {
+		String username = getUserName();
+		if (username.isBlank()) return Optional.empty();
+		return userService().byUsername(MANAGER_REALM, username);
+	}
+
+	private AuthorizationService authorizationService() {
+		return new AuthorizationService(roleService());
 	}
 
 	private String[] roleIds(Map<String, Object> parameters) throws RPCException {

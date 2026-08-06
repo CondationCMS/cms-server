@@ -396,7 +396,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	}
 
 	private int totalPages(long totalItems, long size) {
-		return (int) Math.min(Integer.MAX_VALUE, (totalItems + size - 1) / size);
+		return Math.clamp((totalItems + size - 1) / size, 0, Integer.MAX_VALUE);
 	}
 
     private NodeResult<T> mapContentNodes(List<ContentNode> contentNodes) {

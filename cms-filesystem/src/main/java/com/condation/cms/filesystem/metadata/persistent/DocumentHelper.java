@@ -117,11 +117,12 @@ public class DocumentHelper {
 						NumericUtils.doubleToSortableLong(numberValue.doubleValue())));
 			}
 			case Boolean booleanValue -> {
-				document.add(new StringField(name, booleanValue.toString(), Field.Store.NO));
-				document.add(new IntField("%s_bool".formatted(name), booleanValue ? 1 : 0, Field.Store.NO));
+                boolean bvalue = booleanValue.booleanValue();
+				document.add(new StringField(name, Boolean.toString(bvalue), Field.Store.NO));
+				document.add(new IntField("%s_bool".formatted(name), bvalue ? 1 : 0, Field.Store.NO));
 				document.add(new SortedNumericDocValuesField(
 						sortField(name, SortValueType.BOOLEAN),
-						booleanValue ? 1 : 0));
+						bvalue ? 1 : 0));
 			}
 			case Date dateValue -> {
 				// Datum lesbar in die Textsuche, Zeitstempel ins Long-Feld

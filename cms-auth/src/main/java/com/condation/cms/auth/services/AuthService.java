@@ -47,11 +47,11 @@ public class AuthService {
 	private final Path hostsBase;
 	
 	public Optional<Auth> load () {
-		var authFile = hostsBase.resolve("config/auth.yaml");
+		var authFile = hostsBase.resolve("config/" + FILENAME);
 		if (!Files.exists(authFile)) {
 			return Optional.empty();
 		}
-		try (InputStream in = Files.newInputStream(authFile)) {
+		try (var in = Files.newInputStream(authFile)) {
 			return Optional.ofNullable(new Yaml().loadAs(in, Auth.class));
 		} catch (Exception e) {
 			log.error("error loading auth file", e);

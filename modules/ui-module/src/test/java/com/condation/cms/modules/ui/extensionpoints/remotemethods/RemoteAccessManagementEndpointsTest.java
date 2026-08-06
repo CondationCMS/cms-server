@@ -156,4 +156,25 @@ class RemoteAccessManagementEndpointsTest {
 				.isInstanceOf(RPCException.class)
 				.satisfies(ex -> assertThat(((RPCException) ex).getCode()).isEqualTo(1));
 	}
+
+	@Test
+	void createUser_rejectsUsernameThatWouldCorruptTheRealmFile() {
+		assertThatThrownBy(() -> ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, contextFor("root"))
+				.call(() -> endpoints.createUser(Map.of(
+						"username", "evil:admin",
+						"password", "secret123",
+						"roles", List.of("helper")))))
+				.isInstanceOf(RPCException.class);
+	}
+
+	@Test
+	void createUser_rejectsInvalidMailAddress() {
+		assertThatThrownBy(() -> ScopedValue.where(RequestContextScope.REQUEST_CONTEXT, contextFor("root"))
+				.call(() -> endpoints.createUser(Map.of(
+						"username", "mailtest",
+						"password", "secret123",
+						"roles", List.of("helper"),
+						"mail", "not-an-email"))))
+				.isInstanceOf(RPCException.class);
+	}
 }

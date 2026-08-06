@@ -118,4 +118,16 @@ public class ParserTest {
 		Expression expr = parser.parse("country NOT IN ('DE', 'FR')");
 		assertThat(expr.toString()).isEqualTo("country NOT IN ('DE', 'FR')");
 	}
+
+	@Test
+	void parsesExists() {
+		Expression expr = parser.parse("status EXISTS");
+		assertThat(expr.toString()).isEqualTo("status EXISTS");
+	}
+
+	@Test
+	void parsesNotExists() {
+		Expression expr = parser.parse("status NOT EXISTS");
+		assertThat(expr.toString()).isEqualTo("status NOT EXISTS");
+	}
 }

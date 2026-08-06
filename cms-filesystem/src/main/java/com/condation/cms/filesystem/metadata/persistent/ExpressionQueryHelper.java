@@ -12,12 +12,14 @@ import static com.condation.cms.filesystem.metadata.persistent.QueryHelper.resol
 import com.condation.cms.filesystem.metadata.query.parser.expressions.Condition;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.ContainsCondition;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.Expression;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.ExistsCondition;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.InCondition;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.Logical;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.LogicalOperator;
 import com.condation.cms.filesystem.metadata.query.parser.values.Value;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.Query;
 
 /*-
@@ -49,6 +51,8 @@ public class ExpressionQueryHelper {
     public static void buildFromExpression(BooleanQuery.Builder queryBuilder, Expression expression) {
         if (expression instanceof Condition condition) {
             buildCondition(queryBuilder, condition);
+        } else if (expression instanceof ExistsCondition existsCondition) {
+            buildExistsCondition(queryBuilder, existsCondition);
         } else if (expression instanceof Logical logical) {
             // Subqueries bauen
             BooleanQuery.Builder leftBuilder = new BooleanQuery.Builder();
@@ -68,6 +72,20 @@ public class ExpressionQueryHelper {
         } else if (expression instanceof ContainsCondition containsCondition) {
             buildContainsCondition(queryBuilder, containsCondition);
         }
+    }
+
+    private static void buildExistsCondition(
+            BooleanQuery.Builder queryBuilder,
+            ExistsCondition condition) {
+        if (!condition.negated()) {
+            exists(queryBuilder, condition.field());
+            return;
+        }
+
+        var present = new BooleanQuery.Builder();
+        exists(present, condition.field());
+        queryBuilder.add(new MatchAllDocsQuery(), BooleanClause.Occur.MUST);
+        queryBuilder.add(present.build(), BooleanClause.Occur.MUST_NOT);
     }
 
     private static void buildInCondition(BooleanQuery.Builder queryBuilder, InCondition condition) {

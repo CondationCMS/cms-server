@@ -153,12 +153,20 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 
 		Document document = new Document();
 		document.add(new StringField("_uri", uri, Field.Store.YES));
-        document.add(new StringField("_url", node.url(), Field.Store.YES));
+		document.add(new StringField("_url", node.url(), Field.Store.YES));
 		document.add(new StringField("_variant", Boolean.toString(node.isVariant()), Field.Store.YES));
 		node.variantId().ifPresent(variantId ->
 				document.add(new StringField("_variant_id", variantId, Field.Store.YES)));
 		node.originalUri().ifPresent(originalUri ->
 				document.add(new StringField("_variant_original", originalUri, Field.Store.YES)));
+		document.add(new StringField(
+				DocumentHelper.FIELD_IS_PAGE,
+				Boolean.toString(!node.isSectionEntry()),
+				Field.Store.NO));
+		document.add(new StringField(
+				DocumentHelper.FIELD_HIDDEN_PATH,
+				Boolean.toString(node.isHidden() || node.isParentPathHidden()),
+				Field.Store.NO));
 		//document.add(new StringField("_source", GSON.toJson(node), Field.Store.NO));
 
 		DocumentHelper.addData(document, data);

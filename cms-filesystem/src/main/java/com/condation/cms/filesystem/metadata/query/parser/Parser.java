@@ -20,11 +20,12 @@ package com.condation.cms.filesystem.metadata.query.parser;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.filesystem.metadata.query.parser.expressions.Expression;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.Condition;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.ContainsCondition;
-import com.condation.cms.filesystem.metadata.query.parser.expressions.Logical;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.Expression;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.ExistsCondition;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.InCondition;
+import com.condation.cms.filesystem.metadata.query.parser.expressions.Logical;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.LogicalOperator;
 import com.condation.cms.filesystem.metadata.query.parser.expressions.Operator;
 import com.condation.cms.filesystem.metadata.query.parser.values.NumberValue;
@@ -112,6 +113,10 @@ public class Parser {
         String op = context.consume().text().toUpperCase();
 
         switch (op) {
+            case "EXISTS":
+                return new ExistsCondition(field, false);
+            case "NOT EXISTS":
+                return new ExistsCondition(field, true);
             case "IN":
                 return parseInCondition(context, field, false);
             case "NOT IN":

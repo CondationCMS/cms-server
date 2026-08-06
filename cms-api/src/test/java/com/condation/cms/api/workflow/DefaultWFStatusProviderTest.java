@@ -30,6 +30,7 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.request.RequestContextScope;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
@@ -43,15 +44,30 @@ import static org.mockito.Mockito.when;
 public class DefaultWFStatusProviderTest {
 
 	@Test
+	public void publishedQueryUsesWorkflowStatusSemantics() {
+		@SuppressWarnings("unchecked")
+		ContentQuery<ContentNode> query = mock(ContentQuery.class);
+		String expression = "(status = 'published') OR (status NOT EXISTS AND published = true)";
+		when(query.expression(expression)).thenReturn(query);
+
+		Optional<ContentQuery<ContentNode>> result = new DefaultWFStatusProvider().published(query);
+
+		Assertions.assertThat(result).containsSame(query);
+		verify(query).expression(expression);
+	}
+
+	@Test
 	public void unpublishedQueryUsesWorkflowStatusSemantics() {
 		@SuppressWarnings("unchecked")
 		ContentQuery<ContentNode> query = mock(ContentQuery.class);
-		when(query.where(Constants.MetaFields.STATUS, "=", DefaultWFStatusProvider.STATUS_DRAFT)).thenReturn(query);
+		String expression = "(status != 'published') OR "
+				+ "(status NOT EXISTS AND (published NOT EXISTS OR published = false))";
+		when(query.expression(expression)).thenReturn(query);
 
 		var result = new DefaultWFStatusProvider().unpublished(query);
 
 		Assertions.assertThat(result).isSameAs(query);
-		verify(query).where(Constants.MetaFields.STATUS, "=", DefaultWFStatusProvider.STATUS_DRAFT);
+		verify(query).expression(expression);
 	}
 
 	@Test

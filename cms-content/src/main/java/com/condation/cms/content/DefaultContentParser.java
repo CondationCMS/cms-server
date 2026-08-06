@@ -63,7 +63,7 @@ public class DefaultContentParser implements ContentParser {
 	public Content parse(final ReadOnlyFile contentFile) throws IOException {
         
         if (contentCache != null && contentCache.contains(contentFile.relativePath())) {
-            contentCache.get(contentFile.relativePath());
+            return contentCache.get(contentFile.relativePath());
         }
         
 		ContentRecord readContent = readContent(contentFile);

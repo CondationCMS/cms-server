@@ -25,6 +25,12 @@ import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.db.VariantSearchMode;
+import com.condation.cms.api.feature.features.IsPreviewFeature;
+import com.condation.cms.api.feature.features.WorkflowFeature;
+import com.condation.cms.api.request.RequestContextScope;
+import com.condation.cms.api.workflow.DefaultWFStatusProvider;
+import com.condation.cms.api.workflow.WFStatusQueryProvider;
+import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.filesystem.metadata.PageMetaData;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
@@ -42,11 +48,13 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.lucene.document.Document;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.PrefixQuery;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 
 /**
@@ -57,6 +65,9 @@ import org.apache.lucene.search.TermQuery;
 @Slf4j
 @RequiredArgsConstructor
 public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.Sort<T> {
+
+	private static final int SCAN_BATCH_SIZE = 128;
+	private static final WFStatusProvider DEFAULT_STATUS_PROVIDER = new DefaultWFStatusProvider();
 
     private final LuceneIndex index;
     private final MetaData metaData;
@@ -112,27 +123,36 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
     @Override
     public Page<T> page(long page, long size) {
+		validatePage(page, size);
+		long offset;
+		try {
+			offset = Math.multiplyExact(page - 1, size);
+		} catch (ArithmeticException ex) {
+			throw new IllegalArgumentException("page offset is too large", ex);
+		}
 
-        long offset = (page - 1) * size;
+		try {
+			Query structuralQuery = structuralVisibilityQuery(buildBaseQuery());
+			org.apache.lucene.search.Sort luceneSort = null;
+			if (orderByField.isPresent()) {
+				var resolvedSort = index.resolveSort(
+						orderByField.get(), Order.DESC.equals(sortOrder));
+				if (resolvedSort.isEmpty()) {
+					return inMemorySortedPage(page, size, offset);
+				}
+				luceneSort = resolvedSort.get();
+			}
 
-        var contentNodes = queryContentNodes();
+			var completeVisibilityQuery = completeVisibilityQuery(structuralQuery);
+			if (completeVisibilityQuery.isPresent() && extensionOperations.isEmpty()) {
+				return fastPage(completeVisibilityQuery.get(), luceneSort, page, size, offset);
+			}
 
-        // sorting
-        if (orderByField.isPresent()) {
-            contentNodes = QueryHelper.sorted(contentNodes, orderByField.get(), Order.ASC.equals(sortOrder));
-        }
-        // paging
-        var filteredTargetNodes = contentNodes.stream()
-                .skip(offset)
-                .limit(size)
-                .toList();
-        // mapping
-        var result = mapContentNodes(filteredTargetNodes);
-
-        var totalItems = contentNodes.size();
-
-        int totalPages = (int) Math.ceil((float) totalItems / size);
-        return new Page<>(totalItems, size, totalPages, (int) page, result.nodes);
+			return filteredPage(structuralQuery, luceneSort, page, size, offset);
+		} catch (IOException ex) {
+			log.error("error paging lucene query", ex);
+			return Page.EMPTY;
+		}
     }
 
     @Override
@@ -149,41 +169,235 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
         return result.nodes;
     }
 
-    private List<ContentNode> queryContentNodes() {
-        queryBuilder.add(new TermQuery(new Term("content.type", contentType)), BooleanClause.Occur.MUST);
-        if (startUri.isPresent()) {
-            queryBuilder.add(new PrefixQuery(new Term("_uri", startUri.get())), BooleanClause.Occur.FILTER);
-        }
+	private List<ContentNode> queryContentNodes() {
+		try {
+			var contentNodes = new ArrayList<ContentNode>();
+			var query = structuralVisibilityQuery(buildBaseQuery());
+			index.scanUris(query, null, SCAN_BATCH_SIZE, uri -> {
+				metaData.byPath(uri)
+						.filter(this::isAcceptedNode)
+						.ifPresent(contentNodes::add);
+				return true;
+			});
+			return contentNodes;
+		} catch (IOException ex) {
+			log.error("error scanning lucene query", ex);
+			return Collections.emptyList();
+		}
+	}
 
-        try {
-            List<Document> result = index.query(queryBuilder.build());
+	private Page<T> fastPage(
+			Query query,
+			org.apache.lucene.search.Sort sort,
+			long page,
+			long size,
+			long offset) throws IOException {
+		long totalItems = index.count(query);
+		if (offset >= totalItems) {
+			return new Page<>(totalItems, size, totalPages(totalItems, size), (int) page, List.of());
+		}
 
-            var contentNodes = result.stream()
-                    .map(document -> document.get("_uri"))
-                    .map(metaData::byPath)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .filter(node -> !node.isDirectory())
-                    .filter(PageMetaData::isPage)
-                    .filter(PageMetaData::isVisible)
-                    .toList();
+		var nodes = new ArrayList<ContentNode>((int) Math.min(size, Integer.MAX_VALUE));
+		var hitIndex = new long[]{0};
+		index.scanUris(query, sort, batchSize(size), uri -> {
+			long currentIndex = hitIndex[0]++;
+			if (currentIndex < offset) {
+				return true;
+			}
+			metaData.byPath(uri).ifPresent(nodes::add);
+			return nodes.size() < size;
+		});
 
-            if (!extensionOperations.isEmpty()) {
-                contentNodes = contentNodes.stream()
-                        .filter((node) -> {
-                            return extensionOperations.stream()
-                                    .map(predicate -> predicate.test(node))
-                                    .filter(value -> !value)
-                                    .count() == 0;
-                        })
-                        .toList();
-            }
-            return contentNodes;
-        } catch (IOException ex) {
-            log.error("", ex);
-        }
-        return Collections.emptyList();
-    }
+		return new Page<>(
+				totalItems,
+				size,
+				totalPages(totalItems, size),
+				(int) page,
+				mapContentNodes(nodes).nodes);
+	}
+
+	private Page<T> filteredPage(
+			Query query,
+			org.apache.lucene.search.Sort sort,
+			long page,
+			long size,
+			long offset) throws IOException {
+		var pageNodes = new ArrayList<ContentNode>((int) Math.min(size, Integer.MAX_VALUE));
+		var acceptedCount = new long[]{0};
+
+		index.scanUris(query, sort, batchSize(size), uri -> {
+			var node = metaData.byPath(uri);
+			if (node.isEmpty() || !isAcceptedNode(node.get())) {
+				return true;
+			}
+
+			long currentIndex = acceptedCount[0]++;
+			if (currentIndex >= offset && pageNodes.size() < size) {
+				pageNodes.add(node.get());
+			}
+			// Continue to preserve exact totalItems/totalPages for node-based filters.
+			return true;
+		});
+
+		long totalItems = acceptedCount[0];
+		return new Page<>(
+				totalItems,
+				size,
+				totalPages(totalItems, size),
+				(int) page,
+				mapContentNodes(pageNodes).nodes);
+	}
+
+	private Page<T> inMemorySortedPage(long page, long size, long offset) {
+		var contentNodes = QueryHelper.sorted(
+				queryContentNodes(),
+				orderByField.orElseThrow(),
+				Order.ASC.equals(sortOrder));
+		var pageNodes = contentNodes.stream().skip(offset).limit(size).toList();
+		long totalItems = contentNodes.size();
+		return new Page<>(
+				totalItems,
+				size,
+				totalPages(totalItems, size),
+				(int) page,
+				mapContentNodes(pageNodes).nodes);
+	}
+
+	private Query buildBaseQuery() {
+		var baseQuery = new BooleanQuery.Builder();
+		queryBuilder.build().clauses().forEach(baseQuery::add);
+		baseQuery.add(
+				new TermQuery(new Term("content.type", contentType)),
+				BooleanClause.Occur.MUST);
+		startUri.ifPresent(uri -> baseQuery.add(
+				new PrefixQuery(new Term("_uri", uri)),
+				BooleanClause.Occur.FILTER));
+		return baseQuery.build();
+	}
+
+	private Query structuralVisibilityQuery(Query query) {
+		var visiblePages = new BooleanQuery.Builder();
+		visiblePages.add(query, BooleanClause.Occur.MUST);
+		visiblePages.add(
+				new TermQuery(new Term(DocumentHelper.FIELD_IS_PAGE, Boolean.TRUE.toString())),
+				BooleanClause.Occur.FILTER);
+		if (!isManagerPreview()) {
+			visiblePages.add(
+					new TermQuery(new Term(DocumentHelper.FIELD_HIDDEN_PATH, Boolean.FALSE.toString())),
+					BooleanClause.Occur.FILTER);
+		}
+		return visiblePages.build();
+	}
+
+	private Optional<Query> completeVisibilityQuery(Query structuralQuery) {
+		if (hasPreview()) {
+			return Optional.of(structuralQuery);
+		}
+
+		var publishedQuery = indexedPublishedQuery();
+		if (publishedQuery.isEmpty()) {
+			return Optional.empty();
+		}
+
+		long now = System.currentTimeMillis();
+		var visible = new BooleanQuery.Builder();
+		visible.add(structuralQuery, BooleanClause.Occur.MUST);
+		visible.add(publishedQuery.get(), BooleanClause.Occur.FILTER);
+		visible.add(scheduleStartQuery(now), BooleanClause.Occur.FILTER);
+		visible.add(scheduleEndQuery(now), BooleanClause.Occur.FILTER);
+		return Optional.of(visible.build());
+	}
+
+	private Optional<Query> indexedPublishedQuery() {
+		if (!(statusProvider() instanceof WFStatusQueryProvider queryProvider)) {
+			return Optional.empty();
+		}
+
+		var workflowFilter = new LuceneQuery<T>(index, metaData, nodeMapper);
+		if (queryProvider.published(workflowFilter).isEmpty()) {
+			return Optional.empty();
+		}
+
+		var query = workflowFilter.queryBuilder.build();
+		return query.clauses().isEmpty() ? Optional.empty() : Optional.of(query);
+	}
+
+	private Query scheduleStartQuery(long now) {
+		return missingOr(
+				Constants.MetaFields.PUBLISH_DATE,
+				LongField.newRangeQuery(
+						Constants.MetaFields.PUBLISH_DATE + "_date",
+						Long.MIN_VALUE,
+						now));
+	}
+
+	private Query scheduleEndQuery(long now) {
+		return missingOr(
+				Constants.MetaFields.UNPUBLISH_DATE,
+				LongField.newRangeQuery(
+						Constants.MetaFields.UNPUBLISH_DATE + "_date",
+						now == Long.MAX_VALUE ? Long.MAX_VALUE : now + 1,
+						Long.MAX_VALUE));
+	}
+
+	private Query missingOr(String field, Query presentValueQuery) {
+		var missing = new BooleanQuery.Builder();
+		missing.add(new MatchAllDocsQuery(), BooleanClause.Occur.MUST);
+		missing.add(
+				new TermQuery(new Term("_fields", field)),
+				BooleanClause.Occur.MUST_NOT);
+
+		var result = new BooleanQuery.Builder();
+		result.add(missing.build(), BooleanClause.Occur.SHOULD);
+		result.add(presentValueQuery, BooleanClause.Occur.SHOULD);
+		result.setMinimumNumberShouldMatch(1);
+		return result.build();
+	}
+
+	private WFStatusProvider statusProvider() {
+		if (RequestContextScope.REQUEST_CONTEXT.isBound()) {
+			var context = RequestContextScope.REQUEST_CONTEXT.get();
+			if (context.has(WorkflowFeature.class)) {
+				return context.get(WorkflowFeature.class).workflow().getStatusProvider();
+			}
+		}
+		return DEFAULT_STATUS_PROVIDER;
+	}
+
+	private boolean hasPreview() {
+		return RequestContextScope.REQUEST_CONTEXT.isBound()
+				&& RequestContextScope.REQUEST_CONTEXT.get().has(IsPreviewFeature.class);
+	}
+
+	private boolean isManagerPreview() {
+		return hasPreview()
+				&& RequestContextScope.REQUEST_CONTEXT.get()
+						.get(IsPreviewFeature.class).mode() == IsPreviewFeature.Mode.MANAGER;
+	}
+
+	private boolean isAcceptedNode(ContentNode node) {
+		return !node.isDirectory()
+				&& PageMetaData.isPage(node)
+				&& PageMetaData.isVisible(node)
+				&& extensionOperations.stream().allMatch(predicate -> predicate.test(node));
+	}
+
+	private void validatePage(long page, long size) {
+		if (page < 1) {
+			throw new IllegalArgumentException("page must be greater than zero");
+		}
+		if (size < 1 || size > Integer.MAX_VALUE) {
+			throw new IllegalArgumentException("size must be between 1 and " + Integer.MAX_VALUE);
+		}
+	}
+
+	private int batchSize(long size) {
+		return (int) Math.max(SCAN_BATCH_SIZE, Math.min(1024, size * 2));
+	}
+
+	private int totalPages(long totalItems, long size) {
+		return (int) Math.min(Integer.MAX_VALUE, (totalItems + size - 1) / size);
+	}
 
     private NodeResult<T> mapContentNodes(List<ContentNode> contentNodes) {
         var mappedContentNodes = contentNodes.stream()

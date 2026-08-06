@@ -22,6 +22,7 @@ package com.condation.cms.api.workflow;
  */
 
 import com.condation.cms.api.db.ContentQuery;
+import java.util.Optional;
 
 /**
  * Optional status-provider capability for efficient, index-backed workflow
@@ -29,5 +30,20 @@ import com.condation.cms.api.db.ContentQuery;
  * {@link #isPublished(com.condation.cms.api.db.ContentNode)}.
  */
 public interface WFStatusQueryProvider extends WFStatusProvider {
+
+	/**
+	 * Adds the index-backed equivalent of {@link #isPublished} to the supplied
+	 * query. Providers should override this method when their published state can
+	 * be derived entirely from indexed node metadata.
+	 *
+	 * @param query query to extend
+	 * @param <T> result type of the query
+	 * @return the extended query, or an empty value when node-based evaluation is
+	 * required
+	 */
+	default <T> Optional<ContentQuery<T>> published(ContentQuery<T> query) {
+		return Optional.empty();
+	}
+
 	<T> ContentQuery<T> unpublished(ContentQuery<T> query);
 }

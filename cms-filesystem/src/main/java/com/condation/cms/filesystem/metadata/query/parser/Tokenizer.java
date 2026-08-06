@@ -80,7 +80,7 @@ public class Tokenizer {
                     case "AND" -> tokens.add(new Token(TokenType.AND, word));
                     case "OR" -> tokens.add(new Token(TokenType.OR, word));
                     case "TRUE", "FALSE" -> tokens.add(new Token(TokenType.BOOLEAN, word.toLowerCase()));
-                    case "IN", "NOT", "CONTAINS" -> {
+                    case "IN", "NOT", "CONTAINS", "EXISTS" -> {
                         // später schauen, ob zusammengesetzt
                         tokens.add(new Token(TokenType.OPERATOR, word.toUpperCase()));
                     }
@@ -159,8 +159,12 @@ public class Tokenizer {
             Token t = tokens.get(i);
 
             if (t.type() == TokenType.OPERATOR && t.text().equalsIgnoreCase("NOT")) {
-                if (i + 1 < tokens.size() && tokens.get(i + 1).text().equalsIgnoreCase("IN")) {
-                    merged.add(new Token(TokenType.OPERATOR, "NOT IN"));
+                if (i + 1 < tokens.size()
+                        && (tokens.get(i + 1).text().equalsIgnoreCase("IN")
+                        || tokens.get(i + 1).text().equalsIgnoreCase("EXISTS"))) {
+                    merged.add(new Token(
+                            TokenType.OPERATOR,
+                            "NOT " + tokens.get(i + 1).text().toUpperCase()));
                     i++;
                     continue;
                 }

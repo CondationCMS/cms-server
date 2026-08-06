@@ -23,13 +23,16 @@ package com.condation.cms.api.workflow;
 
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
+import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.utils.DateRange;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  *
  * @author t.marx
  */
+@SuppressWarnings("deprecation")
 public class DefaultWFStatusProvider implements WFStatusQueryProvider {
 
 	public static final String STATUS_DRAFT = "draft";
@@ -64,8 +67,24 @@ public class DefaultWFStatusProvider implements WFStatusQueryProvider {
 	}
 
 	@Override
-	public <T> com.condation.cms.api.db.ContentQuery<T> unpublished(
-			com.condation.cms.api.db.ContentQuery<T> query) {
-		return query.where(Constants.MetaFields.STATUS, "=", STATUS_DRAFT);
+	public <T> Optional<ContentQuery<T>> published(ContentQuery<T> query) {
+		return Optional.of(query.expression(
+				"(%s = '%s') OR (%s NOT EXISTS AND %s = true)".formatted(
+						Constants.MetaFields.STATUS,
+						STATUS_PUBLISHED,
+						Constants.MetaFields.STATUS,
+						Constants.MetaFields.PUBLISHED)));
+	}
+
+	@Override
+	public <T> ContentQuery<T> unpublished(
+			ContentQuery<T> query) {
+		return query.expression(
+				"(%s != '%s') OR (%s NOT EXISTS AND (%s NOT EXISTS OR %s = false))".formatted(
+						Constants.MetaFields.STATUS,
+						STATUS_PUBLISHED,
+						Constants.MetaFields.STATUS,
+						Constants.MetaFields.PUBLISHED,
+						Constants.MetaFields.PUBLISHED));
 	}
 }

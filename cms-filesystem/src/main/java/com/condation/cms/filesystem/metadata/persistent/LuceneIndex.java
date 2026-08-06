@@ -29,13 +29,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.core.KeywordAnalyzer;
 import org.apache.lucene.analysis.miscellaneous.PerFieldAnalyzerWrapper;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.index.DocValuesType;
 import org.apache.lucene.index.FieldInfos;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -46,6 +50,10 @@ import org.apache.lucene.search.SearcherFactory;
 import org.apache.lucene.search.SearcherManager;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortedNumericSelector;
+import org.apache.lucene.search.SortedNumericSortField;
+import org.apache.lucene.search.SortedSetSelector;
+import org.apache.lucene.search.SortedSetSortField;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NRTCachingDirectory;
@@ -56,6 +64,11 @@ import org.apache.lucene.store.NRTCachingDirectory;
  */
 @Slf4j
 public class LuceneIndex implements AutoCloseable {
+
+	@FunctionalInterface
+	interface UriVisitor {
+		boolean visit(String uri) throws IOException;
+	}
 
 	
 	public static final Analyzer INDEX_ANALYZER = new TitlePrefixAnalyzer();
@@ -149,6 +162,115 @@ public class LuceneIndex implements AutoCloseable {
 		return Collections.emptyList();
 	}
 
+	int count(Query query) throws IOException {
+		IndexSearcher searcher = nrt_manager.acquire();
+		try {
+			return searcher.count(query);
+		} finally {
+			nrt_manager.release(searcher);
+		}
+	}
+
+	void scanUris(Query query, Sort sort, int batchSize, UriVisitor visitor) throws IOException {
+		if (batchSize < 1) {
+			throw new IllegalArgumentException("batchSize must be greater than zero");
+		}
+
+		IndexSearcher searcher = nrt_manager.acquire();
+		try {
+			var storedFields = searcher.storedFields();
+			org.apache.lucene.search.ScoreDoc after = null;
+
+			while (true) {
+				var hits = sort == null
+						? searcher.searchAfter(after, query, batchSize)
+						: searcher.searchAfter(after, query, batchSize, sort);
+				if (hits.scoreDocs.length == 0) {
+					return;
+				}
+
+				for (var hit : hits.scoreDocs) {
+					var document = storedFields.document(hit.doc, Set.of("_uri"));
+					if (!visitor.visit(document.get("_uri"))) {
+						return;
+					}
+				}
+				after = hits.scoreDocs[hits.scoreDocs.length - 1];
+			}
+		} finally {
+			nrt_manager.release(searcher);
+		}
+	}
+
+	Optional<Sort> resolveSort(String field, boolean reverse) throws IOException {
+		IndexSearcher searcher = nrt_manager.acquire();
+		try {
+			var fieldInfos = FieldInfos.getMergedFieldInfos(searcher.getIndexReader());
+			var types = EnumSet.noneOf(DocumentHelper.SortValueType.class);
+			for (var type : DocumentHelper.SortValueType.values()) {
+				var fieldInfo = fieldInfos.fieldInfo(DocumentHelper.sortField(field, type));
+				if (fieldInfo != null && hasExpectedDocValuesType(fieldInfo.getDocValuesType(), type)) {
+					types.add(type);
+				}
+			}
+
+			if (types.size() != 1) {
+				return Optional.empty();
+			}
+			return Optional.of(new Sort(createSortField(field, types.iterator().next(), reverse)));
+		} finally {
+			nrt_manager.release(searcher);
+		}
+	}
+
+	private boolean hasExpectedDocValuesType(
+			DocValuesType docValuesType,
+			DocumentHelper.SortValueType type) {
+		return switch (type) {
+			case STRING -> docValuesType == DocValuesType.SORTED_SET;
+			case NUMBER, BOOLEAN, DATE -> docValuesType == DocValuesType.SORTED_NUMERIC;
+		};
+	}
+
+	private SortField createSortField(
+			String field,
+			DocumentHelper.SortValueType type,
+			boolean reverse) {
+		return switch (type) {
+			case STRING -> stringSortField(field, reverse);
+			case NUMBER -> numericSortField(
+					field, type, SortField.Type.DOUBLE, reverse, Double.NEGATIVE_INFINITY);
+			case BOOLEAN -> numericSortField(
+					field, type, SortField.Type.LONG, reverse, Long.MIN_VALUE);
+			case DATE -> numericSortField(
+					field, type, SortField.Type.LONG, reverse, Long.MIN_VALUE);
+		};
+	}
+
+	private SortField stringSortField(String field, boolean reverse) {
+		var sortField = new SortedSetSortField(
+				DocumentHelper.sortField(field, DocumentHelper.SortValueType.STRING),
+				reverse,
+				SortedSetSelector.Type.MIN);
+		sortField.setMissingValue(SortField.STRING_FIRST);
+		return sortField;
+	}
+
+	private SortField numericSortField(
+			String field,
+			DocumentHelper.SortValueType valueType,
+			SortField.Type sortType,
+			boolean reverse,
+			Object missingValue) {
+		var sortField = new SortedNumericSortField(
+				DocumentHelper.sortField(field, valueType),
+				sortType,
+				reverse,
+				SortedNumericSelector.Type.MIN);
+		sortField.setMissingValue(missingValue);
+		return sortField;
+	}
+
 	public void open(Path path) throws IOException {
 		if (Files.exists(path)) {
 			FileUtils.deleteFolder(path);
@@ -175,35 +297,4 @@ public class LuceneIndex implements AutoCloseable {
 		nrt_manager = new SearcherManager(writer, true, true, sf);
 	}
 
-	SortField.Type getFieldType(String fieldName) throws IOException {
-		IndexSearcher searcher = nrt_manager.acquire();
-		try {
-
-			var fieldInfos = FieldInfos.getMergedFieldInfos(searcher.getIndexReader());
-
-			var fieldInfo = fieldInfos.fieldInfo(fieldName);
-			if (fieldInfo == null) {
-				return null;
-			}
-
-			return switch (fieldInfo.getDocValuesType()) {
-				case NUMERIC -> SortField.Type.INT;
-				case BINARY -> SortField.Type.STRING;
-				case SORTED -> SortField.Type.STRING;
-				case SORTED_NUMERIC -> SortField.Type.INT;
-				case SORTED_SET -> SortField.Type.STRING;
-				default -> null;
-			}; // Prüfen Sie, ob das Feld integer, long, float oder double ist
-			// Diese Information ist nicht direkt in FieldInfo verfügbar,
-			// Sie müssen dies möglicherweise aus dem Kontext wissen
-			// Hier nehmen wir an, dass es ein Integer-Feld ist
-			// Ähnlich wie bei NUMERIC müssen Sie den genauen Typ kennen
-			// Hier nehmen wir an, dass es ein Integer-Feld ist
-		} catch (Exception e) {
-			log.error("", e);
-		} finally {
-			nrt_manager.release(searcher);
-		}
-		return null;
-	}
 }

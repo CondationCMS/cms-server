@@ -135,12 +135,12 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 
 		var contentNodeOpt = getContentNode(uri);
 		if (contentNodeOpt.isEmpty()) {
-			result.put("transitions", java.util.List.of());
+			result.put(TRANSITIONS, java.util.List.of());
 			return result;
 		}
 
 		Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
-		result.put("transitions", transitionDtos(allowedTransitions(workflow, contentNodeOpt.get())));
+		result.put(TRANSITIONS, transitionDtos(allowedTransitions(workflow, contentNodeOpt.get())));
 
 		return result;
 	}

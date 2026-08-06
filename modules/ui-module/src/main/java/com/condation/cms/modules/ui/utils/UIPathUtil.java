@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UIPathUtil {
 
-	public static Slugify SLUGIFY = Slugify.builder()
+	private static final Slugify SLUGIFIER = Slugify.builder()
 			.customReplacement("ä", "ae")
 			.customReplacement("Ä", "ae")
 			.customReplacement("ü", "ue")
@@ -79,7 +79,7 @@ public class UIPathUtil {
 	}
 
 	public static String slugify (String input) {
-		return SLUGIFY.slugify(input);
+		return SLUGIFIER.slugify(input);
 	}
 	
 	public static String toValidFilename(String input) {

@@ -36,6 +36,7 @@ import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.UserService;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import com.condation.modules.api.annotation.Extension;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -51,6 +52,9 @@ import java.util.stream.Collectors;
 public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtension {
 	private static final Realm MANAGER_REALM = Realm.of("manager-users");
 
+	private static final String PASSWORD = "password";
+	private static final String USERNAME = "username";
+	
 	@RemoteMethod(name = "access.permissions.list", permissions = {Permissions.ROLE_MANAGE})
 	public Object permissions(Map<String, Object> parameters) {
 		return PermissionRegistry.all().stream()
@@ -112,8 +116,8 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 
 	@RemoteMethod(name = "access.users.create", permissions = {Permissions.USER_MANAGE})
 	public Object createUser(Map<String, Object> parameters) throws RPCException {
-		String username = string(parameters, "username");
-		String password = string(parameters, "password");
+		String username = string(parameters, USERNAME);
+		String password = string(parameters, PASSWORD);
 		try {
 			if (userService().byUsername(MANAGER_REALM, username).isPresent()) {
 				throw new RPCException(1, "User already exists: " + username);
@@ -129,6 +133,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 			throw error("Could not create user", exception);
 		}
 	}
+	
 
 	@RemoteMethod(name = "access.users.update", permissions = {Permissions.USER_MANAGE})
 	public Object updateUser(Map<String, Object> parameters) throws RPCException {
@@ -162,7 +167,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 		}
 	}
 
-	private void validateRoles(String[] roleIds) throws Exception {
+	private void validateRoles(String[] roleIds) throws RPCException, IOException {
 		Set<String> known = roleService().list().stream().map(Role::id).collect(Collectors.toSet());
 		if (!known.containsAll(Arrays.asList(roleIds))) {
 			throw new RPCException(1, "User contains unknown roles");
@@ -174,7 +179,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 	 * are a subset of their own; otherwise they could bootstrap themselves or
 	 * others into an administrative role through {@code USER_MANAGE} alone.
 	 */
-	private void ensureCanAssignRoles(String[] roleIds) throws Exception {
+	private void ensureCanAssignRoles(String[] roleIds) throws RPCException, IOException {
 		User caller = currentUser().orElseThrow(() -> new RPCException(403, "not authenticated"));
 		if (authorizationService().hasPermission(caller, Permissions.ROLE_MANAGE)) {
 			return;
@@ -233,7 +238,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 		if (value == null) throw new RPCException(1, message);
 		try {
 			return UIGsonProvider.INSTANCE.fromJson(UIGsonProvider.INSTANCE.toJson(value), type);
-		} catch (RuntimeException exception) {
+		} catch (RuntimeException _) {
 			throw new RPCException(1, message);
 		}
 	}

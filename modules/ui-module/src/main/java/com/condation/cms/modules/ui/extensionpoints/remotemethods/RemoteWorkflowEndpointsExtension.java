@@ -66,6 +66,9 @@ import java.util.List;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExtension {
 
+	private static final String TRANSITIONS = "transitions";
+	private static final String STATUS = "status";
+	
 	private Optional<ContentNode> getContentNode(String uri) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
@@ -117,8 +120,8 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 
 		var status = workflow.getStatusProvider().status(node);
 
-		result.put("status", status);
-		result.put("transitions", transitionDtos(allowedTransitions(workflow, node)));
+		result.put(STATUS, status);
+		result.put(TRANSITIONS, transitionDtos(allowedTransitions(workflow, node)));
 
 		return result;
 	}
@@ -225,8 +228,8 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 	private Page<ContentNode> inMemoryPage(List<ContentNode> nodes, long requestedPage, long requestedSize) {
 		long totalItems = nodes.size();
 		long totalPages = totalItems == 0 ? 0 : (totalItems + requestedSize - 1) / requestedSize;
-		int pageNumber = (int) Math.min(requestedPage, Math.max(1, totalPages));
-		int from = (int) Math.min((long) (pageNumber - 1) * requestedSize, totalItems);
+		int pageNumber = (int) Math.clamp(requestedPage, 1, Math.max(1, totalPages));
+		int from = (int) Math.min((pageNumber - 1) * requestedSize, totalItems);
 		int to = (int) Math.min(from + requestedSize, totalItems);
 		return new Page<>(totalItems, requestedSize, totalPages, pageNumber, nodes.subList(from, to));
 	}

@@ -28,7 +28,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>'"]/g, character =>
 class RoleManager {
 	private roles: Role[] = [];
 	private permissions: Permission[] = [];
-	constructor(private root: HTMLElement) {}
+	constructor(private readonly root: HTMLElement) {}
 
 	async show(): Promise<void> {
 		this.root.innerHTML = '<div class="cms-access-loading"><span class="spinner-border"></span> Loading roles…</div>';

@@ -46,21 +46,23 @@ const renderPageListHtml = (pages, currentPage, totalPages) => {
             </ul>
         `;
     }
-    const paginationHtml = totalPages > 1 ? `
-        <nav aria-label="Page navigation">
+    const disabledState = (pageNumber) => pageNumber < 1 || pageNumber > totalPages ? 'disabled' : '';
+    let paginationHtml = '';
+    if (totalPages > 1) {
+        paginationHtml = `<nav aria-label="Page navigation">
             <ul class="pagination justify-content-center mt-3">
-                <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <li class="page-item ${disabledState(currentPage - 1)}">
                     <a class="page-link" href="#" data-page="${currentPage - 1}">${i18n.t('pagination.previous', 'Previous')}</a>
                 </li>
                 <li class="page-item disabled">
                     <span class="page-link">${currentPage} / ${totalPages}</span>
                 </li>
-                <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <li class="page-item ${disabledState(currentPage + 1)}">
                     <a class="page-link" href="#" data-page="${currentPage + 1}">${i18n.t('pagination.next', 'Next')}</a>
                 </li>
             </ul>
-        </nav>
-    ` : '';
+        </nav>`;
+    }
     return `
         <div>
             ${pageItemsHtml}
@@ -77,9 +79,9 @@ const updateDialog = async (pageNumber) => {
         size: ITEMS_PER_PAGE
     };
     try {
-		var pageData = await getUnpublishedPages(filterOptions);
+        let pageData = await getUnpublishedPages(filterOptions);
         const modalBodyHtml = renderPageListHtml(pageData.items, pageData.page, pageData.totalPages);
-        var modalElement = document.getElementById('cms-unpublished-pages-modal-body');
+        let modalElement = document.getElementById('cms-unpublished-pages-modal-body');
         if (modalElement) {
             modalElement.innerHTML = modalBodyHtml;
             modalElement.querySelectorAll('.page-link').forEach(link => {
@@ -101,7 +103,7 @@ const updateDialog = async (pageNumber) => {
         }
     }
     catch (e) {
-        var modalElement = document.getElementById('cms-unpublished-pages-modal-body');
+        let modalElement = document.getElementById('cms-unpublished-pages-modal-body');
         if (modalElement) {
             modalElement.innerHTML = `<p>${i18n.t('page.unpublished.loadError', 'Could not load unpublished pages.')}</p>`;
         }

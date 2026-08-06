@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MessageFunction implements TemplateFunction {
 
-	public static final String NAME = "message";
+	public static final String FUNCTION_NAME = "message";
 
     private final RequestContext context;
     
@@ -46,7 +46,7 @@ public class MessageFunction implements TemplateFunction {
 
 	@Override
 	public String name() {
-		return NAME;
+		return FUNCTION_NAME;
 	}
 
     @Override

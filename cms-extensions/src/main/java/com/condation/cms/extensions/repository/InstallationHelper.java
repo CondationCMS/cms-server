@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Path;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -94,7 +95,7 @@ public class InstallationHelper {
 				totalEntryArchive++;
 
 				ZipEntry entry = (ZipEntry) entries.nextElement();
-				File file = new File(targetDir, File.separator + entry.getName());
+				File file = resolveArchiveEntry(targetDir, entry);
 				if (entry.isDirectory() && !found) {
 					moduleid = file.getName();
 					found = true;
@@ -122,6 +123,15 @@ public class InstallationHelper {
 		return new File(targetDir, moduleid);
 	}
 
+	private static File resolveArchiveEntry(File targetDir, ZipEntry entry) {
+		Path targetPath = targetDir.toPath().toAbsolutePath().normalize();
+		Path entryPath = targetPath.resolve(entry.getName()).normalize();
+		if (!entryPath.startsWith(targetPath)) {
+			throw new InstallationSecurityException("Archive entry escapes target directory: " + entry.getName());
+		}
+		return entryPath.toFile();
+	}
+
 	private static int copyInputStream(ZipEntry ze, InputStream in, OutputStream out) throws IOException {
 		int totalSizeEntry = 0;
 		try (in; out) {
@@ -131,9 +141,9 @@ public class InstallationHelper {
 				totalSizeEntry += len;
 				out.write(buffer, 0, len);
 
-				double compressionRatio = totalSizeEntry / ze.getCompressedSize();
+				double compressionRatio = (double) totalSizeEntry / ze.getCompressedSize();
 				if (compressionRatio > THRESHOLD_RATIO) {
-					throw new InstallationSecurityException("compression ratio () to high, maybe zip bomb detected".formatted(THRESHOLD_RATIO));
+					throw new InstallationSecurityException("compression ratio (%s) too high, maybe zip bomb detected".formatted(THRESHOLD_RATIO));
 				}
 			}
 		}

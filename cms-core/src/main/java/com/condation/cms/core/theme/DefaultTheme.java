@@ -171,9 +171,11 @@ public class DefaultTheme implements Theme {
 
 	
 	public Path resolve(String path, Path override, Path parent) {
-		var resolved = override.resolve(path);
-		if (PathUtil.isChild(override, resolved)) {
-			return resolved;
+		if (override != null) {
+			var resolved = override.resolve(path);
+			if (PathUtil.isChild(override, resolved)) {
+				return resolved;
+			}
 		}
 		if (parent == null) {
 			return null;

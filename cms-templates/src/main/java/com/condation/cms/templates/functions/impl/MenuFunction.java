@@ -49,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MenuFunction implements TemplateFunction {
 
-	public static final String NAME = "menu";
+	public static final String FUNCTION_NAME = "menu";
 
 	private final RequestContext requestContext;
 
@@ -74,7 +74,7 @@ public class MenuFunction implements TemplateFunction {
 
 	@Override
 	public String name() {
-		return NAME;
+		return FUNCTION_NAME;
 	}
 
 	private Menu withCurrentItems(Menu menu) {

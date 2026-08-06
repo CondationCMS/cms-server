@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UriParamFunction implements TemplateFunction {
 
-	public static final String NAME = "uri_param";
+	public static final String FUNCTION_NAME = "uri_param";
 
 	@Override
 	public Object invoke(Object... params) {
@@ -52,7 +52,7 @@ public class UriParamFunction implements TemplateFunction {
 
 	@Override
 	public String name() {
-		return NAME;
+		return FUNCTION_NAME;
 	}
 	
 }

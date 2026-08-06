@@ -90,16 +90,16 @@ public class DefaultTemplate implements Template {
 
 	private ScopeStack createScope(Map<String, Object> context, DynamicConfiguration dynamicConfiguration) {
 		var scope = new ScopeStack(context);
-		scope.setVariable(DateFunction.NAME, new JexlTemplateFunction(new DateFunction()));
-		scope.setVariable(NodeFunction.NAME, new JexlTemplateFunction(new NodeFunction(dynamicConfiguration.requestContext())));
-		scope.setVariable(NodeMetaFunction.NAME, new JexlTemplateFunction(new NodeMetaFunction(dynamicConfiguration.requestContext())));
-		scope.setVariable(UriParamFunction.NAME, new JexlTemplateFunction(new UriParamFunction()));
-		//scope.setVariable(MessageFunction.NAME, new JexlTemplateFunction(new MessageFunction(dynamicConfiguration.requestContext())));
+		scope.setVariable(DateFunction.FUNCTION_NAME, new JexlTemplateFunction(new DateFunction()));
+		scope.setVariable(NodeFunction.FUNCTION_NAME, new JexlTemplateFunction(new NodeFunction(dynamicConfiguration.requestContext())));
+		scope.setVariable(NodeMetaFunction.FUNCTION_NAME, new JexlTemplateFunction(new NodeMetaFunction(dynamicConfiguration.requestContext())));
+		scope.setVariable(UriParamFunction.FUNCTION_NAME, new JexlTemplateFunction(new UriParamFunction()));
+		//scope.setVariable(MessageFunction.FUNCTION_NAME, new JexlTemplateFunction(new MessageFunction(dynamicConfiguration.requestContext())));
 
 		getOrCreateNamespace(scope, Constants.TemplateNamespaces.CMS)
-				.put(MessageFunction.NAME, new JexlTemplateFunction(new MessageFunction(dynamicConfiguration.requestContext())));
+				.put(MessageFunction.FUNCTION_NAME, new JexlTemplateFunction(new MessageFunction(dynamicConfiguration.requestContext())));
 		getOrCreateNamespace(scope, Constants.TemplateNamespaces.CMS)
-				.put(MenuFunction.NAME, new JexlTemplateFunction(new MenuFunction(dynamicConfiguration.requestContext())));
+				.put(MenuFunction.FUNCTION_NAME, new JexlTemplateFunction(new MenuFunction(dynamicConfiguration.requestContext())));
 		
 		dynamicConfiguration.templateFunctions().forEach(tf -> {
 			getOrCreateNamespace(scope, tf.namespace()).put(tf.name(), new JexlTemplateFunction(tf));

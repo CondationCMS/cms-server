@@ -63,24 +63,32 @@ public abstract class AbstractRemoteMethodeExtension extends AbstractExtensionPo
 	}
     
     public static ReadOnlyFile getBase(DBFileSystem fileSystem, String type) {
+		validateFileType(type);
 		return switch (type) {
 			case "content" ->
 				fileSystem.contentBase();
 			case "assets" ->
 				fileSystem.assetBase();
 			default ->
-				null;
+				throw new IllegalArgumentException("Unsupported file type: " + type);
 		};
 	}
 
 	public static Path getWritableBase(DBFileSystem fileSystem, String type) {
+		validateFileType(type);
 		return switch (type) {
 			case "content" ->
 				fileSystem.resolve(Constants.Folders.CONTENT);
 			case "assets" ->
 				fileSystem.resolve(Constants.Folders.ASSETS);
 			default ->
-				null;
+				throw new IllegalArgumentException("Unsupported file type: " + type);
 		};
+	}
+
+	private static void validateFileType(String type) {
+		if (!"content".equals(type) && !"assets".equals(type)) {
+			throw new IllegalArgumentException("Unsupported file type: " + type);
+		}
 	}
 }

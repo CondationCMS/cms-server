@@ -120,7 +120,7 @@ public class RoleService {
 			Files.writeString(temporaryFile, GSONProvider.GSON.toJson(sorted), StandardCharsets.UTF_8);
 			try {
 				Files.move(temporaryFile, rolesFile, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
-			} catch (java.nio.file.AtomicMoveNotSupportedException exception) {
+			} catch (java.nio.file.AtomicMoveNotSupportedException _) {
 				Files.move(temporaryFile, rolesFile, StandardCopyOption.REPLACE_EXISTING);
 			}
 		} finally {

@@ -27,6 +27,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.Map;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -34,7 +35,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 public class ContentFileParser {
 
 	private String content;
-	private Map<String, Object> header;
+	private Map<String, Object> header = new HashMap<>();
 
 	public ContentFileParser(String filePath) throws IOException {
 		String fileContent = new String(Files.readAllBytes(Paths.get(filePath)));
@@ -62,7 +63,8 @@ public class ContentFileParser {
 
 	private void parseHeader(String headerContent) {
 		Yaml yaml = new Yaml(new SafeConstructor(new LoaderOptions()));
-		this.header = yaml.load(headerContent);
+		Map<String, Object> parsedHeader = yaml.load(headerContent);
+		this.header = parsedHeader == null ? new HashMap<>() : parsedHeader;
 	}
 
 	public String getContent() {

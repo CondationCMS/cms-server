@@ -72,6 +72,19 @@ public class RemoteFileEnpointsTest {
 	}
 
 	@Test
+	void rejectsUnsupportedFileTypesInsteadOfReturningNullBases() {
+		Assertions.assertThatThrownBy(() -> AbstractRemoteMethodeExtension.getBase(dbFileSystem, "unknown"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Unsupported file type: unknown");
+		Assertions.assertThatThrownBy(() -> AbstractRemoteMethodeExtension.getWritableBase(dbFileSystem, "unknown"))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Unsupported file type: unknown");
+		Assertions.assertThatThrownBy(() -> AbstractRemoteMethodeExtension.getBase(dbFileSystem, null))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessage("Unsupported file type: null");
+	}
+
+	@Test
 	public void create_folder_with_absolut_path_throws_error() throws RPCException {
 		
 		Mockito.when(moduleContext.get(DBFeature.class)).thenReturn(new DBFeature(db));

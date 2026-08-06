@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NodeMetaFunction extends AbstractNodeFunction {
 
-	public static final String NAME = "select_node_meta";
+	public static final String FUNCTION_NAME = "select_node_meta";
 
 	public NodeMetaFunction(RequestContext requestContext) {
 		super(requestContext);
@@ -39,7 +39,7 @@ public class NodeMetaFunction extends AbstractNodeFunction {
 
 	@Override
 	public String name() {
-		return NAME;
+		return FUNCTION_NAME;
 	}
 	
 }

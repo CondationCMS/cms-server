@@ -235,7 +235,7 @@ public class UploadHandler extends JettyHandler {
 		}
 
 		// Slugify nur auf den Namensteil anwenden
-		String slug = UIPathUtil.SLUGIFY.slugify(namePart);
+		String slug = UIPathUtil.slugify(namePart);
 
 		// Endung wieder anhängen
 		return slug + extension.toLowerCase();

@@ -11,13 +11,29 @@
     <p>Welcome to our example blog! Here you'll find a collection of articles on various topics. Stay tuned for updates!</p>
     <div>
         {% assign pageNumber = requestContext.getQueryParameter('page', '1') %}
-		{% assign page = cms.nodeList.from("/usecases/blog/*").sort("publish_date").reverse(true).page(pageNumber).size(3).list() %}
-		{% for entry in page.items %}
-		<article class="">
-			<h2>{{ entry.name }}</h2>
+        {% assign page = cms.nodeList.from("/usecases/blog/*").sort("publish_date").reverse(true).page(pageNumber).size(3).list() %}
+        {% for entry in page.items %}
+        <article>
+            <h2>{{ entry.name }}</h2>
             <p>{{ entry.content }}</p>
-            <a href="{{ entry.path}}">Read more</a>
+            <a href="{{ entry.path }}">Read more</a>
         </article>
-		{% endfor %}
+        {% endfor %}
+
+        {% if page.totalPages > 0 %}
+        <nav aria-label="Blog pagination">
+            {% if page.page > 1 %}
+            <a href="?page={{ page.page - 1 }}" rel="prev">Previous</a>
+            {% endif %}
+
+            <span>Page {{ page.page }} of {{ page.totalPages }}</span>
+
+            {% if page.page < page.totalPages %}
+            <a href="?page={{ page.page + 1 }}" rel="next">Next</a>
+            {% endif %}
+        </nav>
+        {% endif %}
     </div>
+</body>
+
 </html>

@@ -52,7 +52,7 @@
 		<div>
 			<h3>Test Node references</h3>
 			<div>
-				{% assign globals = select_node("") %}
+				{% assign globals = select_node("/") %}
 				{% if globals != null %}
 					<h3>load secions from start page</h3>
 					{% if globals.sections.containsKey('asection') %}

@@ -1288,7 +1288,15 @@ body.resizing-sidebar {
 .cms-access-header p:last-child { color: var(--cms-access-muted); margin: 0; }
 .cms-access-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem; }
 .cms-access-card { display: grid; grid-template-columns: 3rem 1fr auto auto; align-items: center; gap: .75rem; padding: 1rem; background: var(--cms-access-surface); border-color: var(--cms-access-line); }
-.cms-access-card__icon { display: grid; place-items: center; width: 3rem; height: 3rem; background: rgba(77, 163, 255, .14); color: #73b9ff; font-size: 1.35rem; }
+.cms-access-card__icon {
+	display: grid;
+	place-items: center;
+	width: 3rem;
+	height: 3rem;
+	background: #2b3f56;
+	color: #73b9ff;
+	font-size: 1.35rem;
+}
 .cms-access-card div:nth-child(2) { display: grid; gap: .15rem; }
 .cms-access-card code, .cms-access-card small { color: var(--cms-access-muted); }
 .cms-access-editor { margin-top: 1.5rem; padding: 1.25rem; background: var(--cms-access-surface); border-color: var(--cms-access-line); }

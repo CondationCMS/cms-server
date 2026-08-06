@@ -20,19 +20,27 @@ package com.condation.cms.filesystem.metadata.query.parser;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class Tokenizer {
+
     private final String input;
     private int pos = 0;
+
+    private static final Set<String> MULTI_WORD_OPERATORS = Set.of(
+            "NOT IN",
+            "NOT EXISTS",
+            "CONTAINS NOT"
+    );
 
     public Tokenizer(String input) {
         this.input = input;
     }
 
-    public static List<Token> tokenize (String input) {
+    public static List<Token> tokenize(String input) {
         return new Tokenizer(input).tokenize();
     }
 
@@ -77,14 +85,18 @@ public class Tokenizer {
                 String word = readWord();
 
                 switch (word.toUpperCase()) {
-                    case "AND" -> tokens.add(new Token(TokenType.AND, word));
-                    case "OR" -> tokens.add(new Token(TokenType.OR, word));
-                    case "TRUE", "FALSE" -> tokens.add(new Token(TokenType.BOOLEAN, word.toLowerCase()));
+                    case "AND" ->
+                        tokens.add(new Token(TokenType.AND, word));
+                    case "OR" ->
+                        tokens.add(new Token(TokenType.OR, word));
+                    case "TRUE", "FALSE" ->
+                        tokens.add(new Token(TokenType.BOOLEAN, word.toLowerCase()));
                     case "IN", "NOT", "CONTAINS", "EXISTS" -> {
                         // später schauen, ob zusammengesetzt
                         tokens.add(new Token(TokenType.OPERATOR, word.toUpperCase()));
                     }
-                    default -> tokens.add(new Token(TokenType.IDENTIFIER, word));
+                    default ->
+                        tokens.add(new Token(TokenType.IDENTIFIER, word));
                 }
                 continue;
             }
@@ -116,8 +128,8 @@ public class Tokenizer {
 
     private String readNumber() {
         StringBuilder sb = new StringBuilder();
-        while (pos < input.length() &&
-                (Character.isDigit(input.charAt(pos)) || input.charAt(pos) == '.')) {
+        while (pos < input.length()
+                && (Character.isDigit(input.charAt(pos)) || input.charAt(pos) == '.')) {
             sb.append(input.charAt(pos++));
         }
         return sb.toString();
@@ -155,30 +167,37 @@ public class Tokenizer {
 
     private List<Token> mergeMultiWordOperators(List<Token> tokens) {
         List<Token> merged = new ArrayList<>();
+
         for (int i = 0; i < tokens.size(); i++) {
-            Token t = tokens.get(i);
+            Token current = tokens.get(i);
 
-            if (t.type() == TokenType.OPERATOR && t.text().equalsIgnoreCase("NOT")) {
-                if (i + 1 < tokens.size()
-                        && (tokens.get(i + 1).text().equalsIgnoreCase("IN")
-                        || tokens.get(i + 1).text().equalsIgnoreCase("EXISTS"))) {
-                    merged.add(new Token(
-                            TokenType.OPERATOR,
-                            "NOT " + tokens.get(i + 1).text().toUpperCase()));
-                    i++;
-                    continue;
-                }
-            }
-            if (t.type() == TokenType.OPERATOR && t.text().equalsIgnoreCase("CONTAINS")) {
-                if (i + 1 < tokens.size() && tokens.get(i + 1).text().equalsIgnoreCase("NOT")) {
-                    merged.add(new Token(TokenType.OPERATOR, "CONTAINS NOT"));
+            if (i + 1 < tokens.size()) {
+                var combined = mergeOperator(current, tokens.get(i + 1));
+
+                if (combined != null) {
+                    merged.add(combined);
                     i++;
                     continue;
                 }
             }
 
-            merged.add(t);
+            merged.add(current);
         }
+
         return merged;
+    }
+
+    private Token mergeOperator(Token first, Token second) {
+        if (first.type() != TokenType.OPERATOR
+                || second.type() != TokenType.OPERATOR) {
+            return null;
+        }
+
+        String operator = "%s %s".formatted(first.text(), second.text())
+                .toUpperCase(Locale.ROOT);
+
+        return MULTI_WORD_OPERATORS.contains(operator)
+                ? new Token(TokenType.OPERATOR, operator)
+                : null;
     }
 }

@@ -54,6 +54,8 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 
 	private static final String PASSWORD = "password";
 	private static final String USERNAME = "username";
+	private static final String ROLES = "roles";
+	private static final String MAIL = "mail";
 	
 	@RemoteMethod(name = "access.permissions.list", permissions = {Permissions.ROLE_MANAGE})
 	public Object permissions(Map<String, Object> parameters) {
@@ -137,12 +139,12 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 
 	@RemoteMethod(name = "access.users.update", permissions = {Permissions.USER_MANAGE})
 	public Object updateUser(Map<String, Object> parameters) throws RPCException {
-		String username = string(parameters, "username");
+		String username = string(parameters, USERNAME);
 		try {
 			String[] roles = roleIds(parameters);
 			validateRoles(roles);
 			ensureCanAssignRoles(roles);
-			String password = parameters.get("password") instanceof String value ? value : null;
+			String password = parameters.get(PASSWORD) instanceof String value ? value : null;
 			userService().updateUser(MANAGER_REALM, username, password, roles, userData(parameters));
 			return userDto(userService().byUsername(MANAGER_REALM, username).orElseThrow());
 		} catch (RPCException exception) {
@@ -154,7 +156,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 
 	@RemoteMethod(name = "access.users.delete", permissions = {Permissions.USER_MANAGE})
 	public Object deleteUser(Map<String, Object> parameters) throws RPCException {
-		String username = string(parameters, "username");
+		String username = string(parameters, USERNAME);
 		if (username.equals(getUserName())) {
 			throw new RPCException(1, "You cannot delete your own account");
 		}
@@ -207,7 +209,7 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 	}
 
 	private String[] roleIds(Map<String, Object> parameters) throws RPCException {
-		Object value = parameters.get("roles");
+		Object value = parameters.get(ROLES);
 		if (!(value instanceof List<?> values) || values.isEmpty()) {
 			throw new RPCException(1, "At least one role is required");
 		}
@@ -216,15 +218,14 @@ public class RemoteAccessManagementEndpoints extends AbstractRemoteMethodeExtens
 
 	private Map<String, Object> userData(Map<String, Object> parameters) {
 		Map<String, Object> data = new HashMap<>();
-		if (parameters.get("mail") instanceof String mail && !mail.isBlank()) data.put("mail", mail.trim());
+		if (parameters.get(MAIL) instanceof String mail && !mail.isBlank()) data.put(MAIL, mail.trim());
 		return data;
 	}
 
 	private Map<String, Object> userDto(User user) {
-		return Map.of(
-				"username", user.username(),
-				"mail", user.data() != null ? String.valueOf(user.data().getOrDefault("mail", "")) : "",
-				"roles", user.roles() == null ? List.of() : Arrays.asList(user.roles()));
+		return Map.of(USERNAME, user.username(), 
+				MAIL, user.data() != null ? String.valueOf(user.data().getOrDefault(MAIL, "")) : "", 
+				ROLES, user.roles() == null ? List.of() : Arrays.asList(user.roles()));
 	}
 
 	private String string(Map<String, Object> parameters, String key) throws RPCException {

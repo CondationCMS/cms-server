@@ -41,6 +41,11 @@ import java.util.Map;
  * @author thorstenmarx
  */
 public abstract class AbstractRemoteMethodeExtension extends AbstractExtensionPoint implements UIRemoteMethodExtensionPoint {
+	
+	private static final String SITE_ID = "siteId";
+	private static final String ASSETS = "assets";
+	private static final String CONTENT = "content";
+	
 	protected String getUserName() {
 		if (getRequestContext().has(AuthFeature.class)) {
 			return getRequestContext().get(AuthFeature.class).username();
@@ -53,21 +58,21 @@ public abstract class AbstractRemoteMethodeExtension extends AbstractExtensionPo
 	}
 	
 	protected DB getDB (Map<String, Object> parameters) {
-		if (parameters.containsKey("siteId")) {
-			return ServiceRegistry.getInstance().get(
-					(String)parameters.get("siteId"), 
+		if (parameters.containsKey(SITE_ID)) {
+			return ServiceRegistry.getInstance().get((String)parameters.get(SITE_ID), 
 					SiteDBService.class).get().db();
 		} else {
 			return getContext().get(DBFeature.class).db();
 		}
 	}
+	
     
     public static ReadOnlyFile getBase(DBFileSystem fileSystem, String type) {
 		validateFileType(type);
 		return switch (type) {
-			case "content" ->
+			case CONTENT ->
 				fileSystem.contentBase();
-			case "assets" ->
+			case ASSETS ->
 				fileSystem.assetBase();
 			default ->
 				throw new IllegalArgumentException("Unsupported file type: " + type);
@@ -77,9 +82,9 @@ public abstract class AbstractRemoteMethodeExtension extends AbstractExtensionPo
 	public static Path getWritableBase(DBFileSystem fileSystem, String type) {
 		validateFileType(type);
 		return switch (type) {
-			case "content" ->
+			case CONTENT ->
 				fileSystem.resolve(Constants.Folders.CONTENT);
-			case "assets" ->
+			case ASSETS ->
 				fileSystem.resolve(Constants.Folders.ASSETS);
 			default ->
 				throw new IllegalArgumentException("Unsupported file type: " + type);
@@ -87,7 +92,7 @@ public abstract class AbstractRemoteMethodeExtension extends AbstractExtensionPo
 	}
 
 	private static void validateFileType(String type) {
-		if (!"content".equals(type) && !"assets".equals(type)) {
+		if (!CONTENT.equals(type) && !ASSETS.equals(type)) {
 			throw new IllegalArgumentException("Unsupported file type: " + type);
 		}
 	}

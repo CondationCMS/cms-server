@@ -21,6 +21,7 @@ package com.condation.cms.modules.ui.http;
  * #L%
  */
 import com.condation.cms.api.utils.PathUtil;
+import com.condation.cms.api.utils.SecureFileUtils;
 import com.condation.cms.modules.ui.utils.UIPathUtil;
 import com.condation.cms.modules.ui.utils.json.UIGsonProvider;
 import com.google.common.io.ByteStreams;
@@ -57,7 +58,7 @@ public class UploadHandler extends JettyHandler {
 	private final String contextPath;
 	private final Path outputDir;
 
-	private final Path TEMP_UPLOAD_DIR;
+	private final Path tempUploadDir;
 
 	private final boolean useDateFolder;
 
@@ -86,9 +87,15 @@ public class UploadHandler extends JettyHandler {
 		super();
 		this.useDateFolder = useDateFolder;
 		this.contextPath = contextPath;
-		this.outputDir = outputDir;
-		ensureDirExists(this.outputDir);
-		this.TEMP_UPLOAD_DIR = Files.createTempDirectory("condation-uploads");
+		Path normalizedOutputDir = outputDir.toAbsolutePath().normalize();
+		ensureDirExists(normalizedOutputDir);
+		this.outputDir = normalizedOutputDir.toRealPath();
+		Path outputParent = this.outputDir.getParent();
+		if (outputParent == null) {
+			throw new IOException("Upload directory must have a parent: " + outputDir);
+		}
+		this.tempUploadDir = SecureFileUtils.ensurePrivateDirectory(
+				outputParent.resolve(".condation-upload-work"));
 	}
 
 	@Override
@@ -113,7 +120,7 @@ public class UploadHandler extends JettyHandler {
 
 		String boundary = MultiPart.extractBoundary(contentType);
 		MultiPartFormData.Parser formData = new MultiPartFormData.Parser(boundary);
-		formData.setFilesDirectory(TEMP_UPLOAD_DIR);
+		formData.setFilesDirectory(tempUploadDir);
 
 		try {
 			formData.parse(request, new org.eclipse.jetty.util.Promise.Invocable<MultiPartFormData.Parts>() {
@@ -173,46 +180,62 @@ public class UploadHandler extends JettyHandler {
 				String rawFilename = filePart.getFileName();
 				if (StringUtil.isNotBlank(rawFilename)) {
 					// Temporäre Datei erzeugen, um MIME-Type zu ermitteln
-					Path tempFile = Files.createTempFile("upload-", ".tmp");
-					try (InputStream inputStream = Content.Source.asInputStream(filePart.getContentSource()); OutputStream outputStream = Files.newOutputStream(tempFile)) {
-						long bytesCopied = ByteStreams.copy(inputStream, outputStream);
+					Path tempFile = SecureFileUtils.createPrivateTempFile(
+							tempUploadDir, "upload-", ".tmp");
+					try {
+						long bytesCopied;
+						try (InputStream inputStream = ByteStreams.limit(
+								Content.Source.asInputStream(filePart.getContentSource()),
+								MAX_FILE_SIZE_BYTES + 1);
+								OutputStream outputStream = Files.newOutputStream(tempFile)) {
+							bytesCopied = ByteStreams.copy(inputStream, outputStream);
+						}
 
 						if (bytesCopied > MAX_FILE_SIZE_BYTES) {
-							Files.deleteIfExists(tempFile);
-							throw new IOException("Uploaded file too large (" + bytesCopied + " bytes)");
+							throw new IOException("Uploaded file too large (more than "
+									+ MAX_FILE_SIZE_BYTES + " bytes)");
 						}
-					}
 
-					String detectedMimeType = tika.detect(tempFile);
-					log.debug("Detected MIME type: {}", detectedMimeType);
+						String detectedMimeType = tika.detect(tempFile);
+						log.debug("Detected MIME type: {}", detectedMimeType);
 
-					if (!ALLOWED_MIME_TYPES.contains(detectedMimeType)) {
+						if (!ALLOWED_MIME_TYPES.contains(detectedMimeType)) {
+							throw new IOException("Unsupported file type: " + detectedMimeType);
+						}
+
+						String safeFilename = slugifyFilename(rawFilename);
+						Path targetDir = outputDir;
+
+						if (StringUtil.isNotBlank(uri)) {
+							uri = uri.replaceAll("[^a-zA-Z0-9/_\\-]", "_");
+							targetDir = outputDir.resolve(uri).normalize();
+						}
+
+						// Check before creating directories, then resolve symlinks and check again.
+						if (!targetDir.startsWith(outputDir)) {
+							throw new IOException("Upload target escapes the configured output directory");
+						}
+						ensureDirExists(targetDir);
+						Path realTargetDir = targetDir.toRealPath();
+						if (!realTargetDir.startsWith(outputDir)) {
+							throw new IOException("Upload target resolves outside the configured output directory");
+						}
+
+						Path outputFile = realTargetDir.resolve(safeFilename).normalize();
+						if (!realTargetDir.equals(outputFile.getParent())) {
+							throw new IOException("Invalid upload filename");
+						}
+
+						Files.move(
+								tempFile,
+								outputFile,
+								java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+						log.info("Saved uploaded file to {}", outputFile);
+
+						return PathUtil.toRelativeFile(outputFile, outputDir);
+					} finally {
 						Files.deleteIfExists(tempFile);
-						throw new IOException("Unsupported file type: " + detectedMimeType);
 					}
-
-					// Zieldatei vorbereiten
-					//String safeFilename = URLEncoder.encode(rawFilename, StandardCharsets.UTF_8);
-					String safeFilename = slugifyFilename(rawFilename);
-					Path targetDir = outputDir;
-
-					if (StringUtil.isNotBlank(uri)) {
-						uri = uri.replaceAll("[^a-zA-Z0-9/_\\-]", "_"); // nur sichere Zeichen
-						targetDir = outputDir.resolve(uri).normalize();
-					}
-
-					if (!PathUtil.isChild(outputDir, targetDir)) {
-						throw new RuntimeException("");
-					}
-
-					ensureDirExists(targetDir);
-					Path outputFile = targetDir.resolve(safeFilename);
-
-					// Temporäre Datei an Zielort verschieben
-					Files.move(tempFile, outputFile, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-					log.info("Saved uploaded file to {}", outputFile);
-
-					return PathUtil.toRelativeFile(outputFile, outputDir);
 				}
 			}
 		} finally {
@@ -224,18 +247,33 @@ public class UploadHandler extends JettyHandler {
 		return "";
 	}
 
-	private String slugifyFilename(String rawFilename) {
-		String extension = "";
-		int dotIndex = rawFilename.lastIndexOf('.');
-		String namePart = rawFilename;
+	String slugifyFilename(String rawFilename) throws IOException {
+		String normalizedFilename = rawFilename.replace('\\', '/');
+		int slashIndex = normalizedFilename.lastIndexOf('/');
+		if (slashIndex >= 0) {
+			normalizedFilename = normalizedFilename.substring(slashIndex + 1);
+		}
+		if (normalizedFilename.isBlank()) {
+			throw new IOException("Invalid upload filename");
+		}
 
-		if (dotIndex > 0 && dotIndex < rawFilename.length() - 1) {
-			extension = rawFilename.substring(dotIndex); // inkl. Punkt
-			namePart = rawFilename.substring(0, dotIndex);
+		String extension = "";
+		int dotIndex = normalizedFilename.lastIndexOf('.');
+		String namePart = normalizedFilename;
+
+		if (dotIndex > 0 && dotIndex < normalizedFilename.length() - 1) {
+			extension = normalizedFilename.substring(dotIndex);
+			if (!extension.matches("\\.[a-zA-Z0-9]{1,10}")) {
+				throw new IOException("Invalid upload file extension");
+			}
+			namePart = normalizedFilename.substring(0, dotIndex);
 		}
 
 		// Slugify nur auf den Namensteil anwenden
 		String slug = UIPathUtil.slugify(namePart);
+		if (slug.isBlank()) {
+			throw new IOException("Invalid upload filename");
+		}
 
 		// Endung wieder anhängen
 		return slug + extension.toLowerCase();

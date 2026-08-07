@@ -20,7 +20,10 @@
  */
 // frameMessenger.js
 const listeners = new Map();
-function send(targetWindow, message, targetOrigin = '*') {
+function send(targetWindow, message, targetOrigin = window.location.origin) {
+    if (targetOrigin === '*') {
+        throw new Error('frameMessenger requires an explicit target origin');
+    }
     targetWindow.postMessage({ __frameMessenger: true, ...message }, targetOrigin);
 }
 function on(type, callback) {
@@ -39,6 +42,9 @@ function off(type, callback) {
     }
 }
 function handleMessage(event) {
+    if (event.origin !== window.location.origin) {
+        return;
+    }
     const data = event.data;
     if (!data || !data.__frameMessenger || !data.type)
         return;

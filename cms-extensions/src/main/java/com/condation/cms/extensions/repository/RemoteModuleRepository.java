@@ -20,6 +20,8 @@ package com.condation.cms.extensions.repository;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.utils.FileUtils;
+import com.condation.cms.api.utils.SecureFileUtils;
 import com.condation.cms.core.utils.HashVerifier;
 import java.io.File;
 import java.io.IOException;
@@ -29,12 +31,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermissions;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.SystemUtils;
 import org.yaml.snakeyaml.Yaml;
 
 @Slf4j
@@ -85,34 +85,61 @@ public class RemoteModuleRepository<T> {
 	}
 
 	public void download(String url, String signature, Path target) {
+		Path tempDirectory = null;
 		try {
-			Path tempDirectory = Files.createTempDirectory("modules");
-			if (SystemUtils.IS_OS_UNIX) {
-				Files.setPosixFilePermissions(tempDirectory, PosixFilePermissions.fromString("rwx------"));
-			} else {
-				File f = tempDirectory.toFile();
-				f.setReadable(true, true);
-				f.setWritable(true, true);
-				f.setExecutable(true, true);
+			Path normalizedTarget = target.toAbsolutePath().normalize();
+			Files.createDirectories(normalizedTarget);
+			normalizedTarget = normalizedTarget.toRealPath();
+			Path targetParent = normalizedTarget.getParent();
+			if (targetParent == null) {
+				throw new IOException("Module target must have a parent: " + target);
 			}
+
+			Path workRoot = SecureFileUtils.ensurePrivateDirectory(
+					targetParent.resolve("." + normalizedTarget.getFileName() + "-module-work"));
+			tempDirectory = SecureFileUtils.createPrivateTempDirectory(workRoot, "module-");
 
 			HttpRequest request = HttpRequest.newBuilder(URI.create(url)).GET().build();
 			HttpResponse<Path> response = client.send(
 					request,
-					HttpResponse.BodyHandlers.ofFile(tempDirectory.resolve(System.currentTimeMillis() + ".zip")));
+					HttpResponse.BodyHandlers.ofFile(tempDirectory.resolve("download.zip")));
+			if (response.statusCode() < 200 || response.statusCode() >= 300) {
+				throw new IOException("Module download failed with HTTP status " + response.statusCode());
+			}
 
 			Path downloaded = response.body();
-			
-			if (!HashVerifier.verifySHA256(downloaded, signature)) {
-				throw new RuntimeException("sinature does not match");
-			}
-			
-			File moduleTempDir = InstallationHelper.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
-			InstallationHelper.moveDirectoy(moduleTempDir, target.resolve(moduleTempDir.getName()).toFile());
 
+			if (!HashVerifier.verifySHA256(downloaded, signature)) {
+				throw new IOException("Module signature does not match");
+			}
+
+			File moduleTempDir = InstallationHelper.unpackArchive(downloaded.toFile(), tempDirectory.toFile());
+			if (moduleTempDir == null || moduleTempDir.getName().isBlank()) {
+				throw new IOException("Downloaded archive does not contain a module directory");
+			}
+			Path destination = normalizedTarget.resolve(moduleTempDir.getName()).normalize();
+			if (!destination.startsWith(normalizedTarget)) {
+				throw new IOException("Invalid module directory in downloaded archive");
+			}
+			if (!InstallationHelper.moveDirectoy(moduleTempDir, destination.toFile())) {
+				throw new IOException("Could not install module into " + destination);
+			}
+		} catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+			log.error("Module download was interrupted", ex);
+			throw new RuntimeException("error downloading module", ex);
 		} catch (Exception ex) {
 			log.error("Error downloading module: {}", ex.getMessage(), ex);
-			throw new RuntimeException("error downloading module");
+			throw new RuntimeException("error downloading module", ex);
+		} finally {
+			if (tempDirectory != null) {
+				try {
+					FileUtils.deleteFolder(tempDirectory);
+				} catch (IOException cleanupException) {
+					log.warn("Could not remove module download work directory {}", tempDirectory,
+							cleanupException);
+				}
+			}
 		}
 	}
 }

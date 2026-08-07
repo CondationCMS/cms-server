@@ -112,6 +112,7 @@ class SignaturedRemoteModuleRepositoryTest {
 
 		// Führe Download und Verifikation durch
 		repo.download(fileBaseUrl + "/test.zip", hash, installTarget);
+		assertWorkDirectoryIsEmpty(installTarget);
 
 		// Prüfung, ob Datei im entpackten Verzeichnis vorhanden ist
 		boolean found = false;
@@ -136,6 +137,16 @@ class SignaturedRemoteModuleRepositoryTest {
 		Assertions.assertThatCode(() -> {
 			repo.download(fileBaseUrl + "/test.zip", "wrong_signature", installTarget);
 		}).isInstanceOf(RuntimeException.class).hasMessage("error downloading module");
+		assertWorkDirectoryIsEmpty(installTarget);
 
+	}
+
+	private void assertWorkDirectoryIsEmpty(Path installTarget) throws Exception {
+		Path workRoot = installTarget.getParent().resolve(
+				"." + installTarget.getFileName() + "-module-work");
+		Assertions.assertThat(workRoot).isDirectory();
+		try (var entries = Files.list(workRoot)) {
+			Assertions.assertThat(entries).isEmpty();
+		}
 	}
 }

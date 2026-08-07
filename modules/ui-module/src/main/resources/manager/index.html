@@ -75,18 +75,22 @@
 	
 	<link
       rel="stylesheet"
-	  crossorigin="anonymous" 
+	  crossorigin="anonymous"
+	  integrity="sha384-aAnSxsq722V/k3IpqBPCipf0zWkgkdLJd7YTIQuN47kam702LovoL5V3tzvYj0W8"
       href="https://unpkg.com/condation-command-palette@1.0.3/dist/bw-command-palette.min.css"
     />
     <script 
 		crossorigin="anonymous" 
+		integrity="sha384-o6ZTpH8hPq/QVTaWyNhQ6T2GTiHqhSRuYRTMJ2FzR98ia45fsMkFmD7TmXX4K3SW"
 		src="https://unpkg.com/condation-command-palette@1.0.3/dist/bw-command-palette.min.js"></script>
 
 	<script 
 		crossorigin="anonymous" 
+		integrity="sha384-YDXeUfPZ4SP6vJpnF+ZMmf4B1bax6yd4Q/aNbkvLidRD843hPG5RE67M0IYT4LOq"
 		src="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.js"></script>
 	<link rel="stylesheet" 
 		  crossorigin="anonymous" 
+		  integrity="sha384-3AvV7152TgYAMYdGZPqG9BpmSH2ZW6ewTDL0QV5PyNkl19KMI+yLMdJz183N8A2d"
 		  href="https://cdn.jsdelivr.net/npm/easymde@2.20.0/dist/easymde.min.css" />
 
 	<script type="module">
@@ -95,12 +99,21 @@
 	</script>
 	<link rel="stylesheet"
 		  crossorigin="anonymous" 
+		  integrity="sha384-tCXVgYdm4ixWMWG7wGj/NSsOLRXAv45qKWJE96/9UhmF6dLX272a9RPoNDhwwJHW"
 		  href="https://cdn.jsdelivr.net/npm/bootstrap5-tags@1.7.17/tags-pure.min.css" />
 
-	<script crossorigin="anonymous" src="https://cdn.jsdelivr.net/npm/cherry-markdown@0.11.1/dist/cherry-markdown.core.min.js"></script>
-	<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/cherry-markdown@0.11.1/dist/cherry-markdown.min.css">
+	<script crossorigin="anonymous"
+			integrity="sha384-UNLQabHANHlDPzv5Ajpd4rJk4Q7kKprGUf28eXwfYxVPmrUOGA/S6tYlt7eqpxOv"
+		src="https://cdn.jsdelivr.net/npm/cherry-markdown@0.11.1/dist/cherry-markdown.core.min.js"></script>
+	<link rel="stylesheet" 
+		  crossorigin="anonymous" 
+		  integrity="sha384-k1wc0wK52MyE71Mv/UxbrcLVh9Z3YLeS3OdlnqJ46FenniTf7YyhhJtnFh8HD3JI"
+		  href="https://cdn.jsdelivr.net/npm/cherry-markdown@0.11.1/dist/cherry-markdown.min.css">
 	
-	<link rel="stylesheet" crossorigin="anonymous" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.3.2/css/flag-icons.min.css" />
+	<link rel="stylesheet" 
+		  crossorigin="anonymous" 
+		  integrity="sha384-8olrmTcwXL3OYMeB+2ok8jx9/U/FZxeLnoRWdu1Pyi+lakrkqoI7hfysfQF5Q1Xx"
+		  href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.5.0/css/flag-icons.min.css" />
 
 	<style>
 		html,
@@ -324,8 +337,6 @@
 	<script src="{{ links.createUrl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.53.0/min/vs/loader.js"></script>
 
-	<script src="{{ links.createUrl('/manager/js/ui-actions.js') }}" type="module"></script>
-
 	<div id="modalContainer"></div>
 	<div id="sidebarContainer"></div>
 	<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
@@ -361,7 +372,7 @@
     <!-- formatter:off -->
 	<script type="module">
 
-		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
+		import {executeScriptAction, executeHookAction} from "@cms/js/manager.bundle.js";
 
 		var shortCuts = [
 			{% for entry in actionFactory.createShortCuts() %}

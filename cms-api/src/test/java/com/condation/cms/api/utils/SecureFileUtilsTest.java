@@ -27,7 +27,11 @@ import static org.assertj.core.api.Assertions.assertThatIOException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.EnumSet;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -51,7 +55,22 @@ class SecureFileUtilsTest {
 					.isEqualTo(PosixFilePermissions.fromString("rwx------"));
 			assertThat(Files.getPosixFilePermissions(workFile))
 					.isEqualTo(PosixFilePermissions.fromString("rw-------"));
+		} else if (Files.getFileStore(workDirectory).supportsFileAttributeView("acl")) {
+			assertOwnerOnlyAcl(workRoot);
+			assertOwnerOnlyAcl(workDirectory);
+			assertOwnerOnlyAcl(workFile);
 		}
+	}
+
+	private static void assertOwnerOnlyAcl(Path path) throws IOException {
+		AclFileAttributeView aclView = Files.getFileAttributeView(path, AclFileAttributeView.class);
+
+		assertThat(aclView.getAcl()).singleElement().satisfies(entry -> {
+			assertThat(entry.type()).isEqualTo(AclEntryType.ALLOW);
+			assertThat(entry.principal()).isEqualTo(aclView.getOwner());
+			assertThat(entry.permissions())
+					.isEqualTo(EnumSet.allOf(AclEntryPermission.class));
+		});
 	}
 
 	@Test

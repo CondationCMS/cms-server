@@ -21,14 +21,19 @@ package com.condation.cms.api.utils;
  * #L%
  */
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.attribute.AclEntry;
+import java.nio.file.attribute.AclEntryPermission;
+import java.nio.file.attribute.AclEntryType;
+import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.EnumSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -41,6 +46,8 @@ public final class SecureFileUtils {
 			PosixFilePermissions.fromString("rwx------");
 	private static final Set<PosixFilePermission> FILE_PERMISSIONS =
 			PosixFilePermissions.fromString("rw-------");
+	private static final Set<AclEntryPermission> OWNER_PERMISSIONS =
+			Set.copyOf(EnumSet.allOf(AclEntryPermission.class));
 
 	private SecureFileUtils() {
 	}
@@ -69,7 +76,7 @@ public final class SecureFileUtils {
 				|| !Files.isDirectory(normalized, LinkOption.NOFOLLOW_LINKS)) {
 			throw new IOException("Private work path is not a regular directory: " + normalized);
 		}
-		restrictToOwner(normalized, true);
+		restrictToOwner(normalized);
 		return normalized.toRealPath();
 	}
 
@@ -83,7 +90,7 @@ public final class SecureFileUtils {
 		}
 
 		Path directory = Files.createTempDirectory(parent, prefix);
-		restrictToOwner(directory, true);
+		restrictToOwner(directory);
 		return directory;
 	}
 
@@ -99,7 +106,7 @@ public final class SecureFileUtils {
 		}
 
 		Path file = Files.createTempFile(parent, prefix, suffix);
-		restrictToOwner(file, false);
+		restrictToOwner(file);
 		return file;
 	}
 
@@ -107,23 +114,30 @@ public final class SecureFileUtils {
 		return Files.getFileStore(path).supportsFileAttributeView("posix");
 	}
 
-	private static void restrictToOwner(Path path, boolean directory) throws IOException {
+	private static void restrictToOwner(Path path) throws IOException {
 		if (supportsPosix(path)) {
 			Files.setPosixFilePermissions(
 					path,
-					directory ? DIRECTORY_PERMISSIONS : FILE_PERMISSIONS);
+					Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
+							? DIRECTORY_PERMISSIONS
+							: FILE_PERMISSIONS);
 			return;
 		}
 
-		File file = path.toFile();
-		boolean restricted = file.setReadable(false, false)
-				&& file.setWritable(false, false)
-				&& (!directory || file.setExecutable(false, false))
-				&& file.setReadable(true, true)
-				&& file.setWritable(true, true)
-				&& (!directory || file.setExecutable(true, true));
-		if (!restricted) {
-			throw new IOException("Could not restrict work path permissions: " + path);
+		AclFileAttributeView aclView = Files.getFileAttributeView(
+				path,
+				AclFileAttributeView.class,
+				LinkOption.NOFOLLOW_LINKS);
+		if (aclView == null) {
+			throw new IOException(
+					"File system does not support POSIX permissions or ACLs: " + path);
 		}
+
+		AclEntry ownerAccess = AclEntry.newBuilder()
+				.setType(AclEntryType.ALLOW)
+				.setPrincipal(aclView.getOwner())
+				.setPermissions(OWNER_PERMISSIONS)
+				.build();
+		aclView.setAcl(List.of(ownerAccess));
 	}
 }

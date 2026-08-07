@@ -74,7 +74,6 @@ modules/api-module/src/test/resources/site/data
 cms-content/src/test/resources/site/data
 integration-tests/hosts/test/data
 /modules/example-module/src/main/ts/node_modules/
-/modules/example-module/src/main/ts/pnpm-lock.yaml
 *.jfr
 /modules/ui-module/src/main/ts/node_modules
 /modules/ui-module/src/main/theme/node_modules

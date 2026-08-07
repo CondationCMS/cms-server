@@ -39,7 +39,7 @@ class UploadHandlerSecurityTest {
 	void createsAPrivateUploadWorkDirectoryOutsideThePublicOutputDirectory() throws Exception {
 		Path outputDirectory = temporaryDirectory.resolve("assets");
 
-		new UploadHandler("/upload", outputDirectory);
+		new UploadHandler("/upload", outputDirectory, false);
 
 		Path workDirectory = temporaryDirectory.resolve(".condation-upload-work");
 		assertThat(workDirectory).isDirectory();
@@ -53,7 +53,7 @@ class UploadHandlerSecurityTest {
 
 	@Test
 	void stripsClientSidePathsFromUploadedFilenames() throws Exception {
-		UploadHandler handler = new UploadHandler("/upload", temporaryDirectory.resolve("assets"));
+		UploadHandler handler = new UploadHandler("/upload", temporaryDirectory.resolve("assets"), false);
 
 		assertThat(handler.slugifyFilename("../../Bad Name.PNG")).isEqualTo("bad-name.png");
 		assertThat(handler.slugifyFilename("..\\..\\Photo.JPEG")).isEqualTo("photo.jpeg");

@@ -151,7 +151,9 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 							new CSRFHandler(getContext()),
 							new UploadHandler(
 									"/manager/upload",
-									getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS))
+									getContext().get(DBFeature.class).db().getFileSystem().resolve(Constants.Folders.ASSETS), 
+									false
+							)
 					)));
 			mapping.add(PathSpec.from("/manager/upload2"),
 					new CompositeHttpHandler(List.of(

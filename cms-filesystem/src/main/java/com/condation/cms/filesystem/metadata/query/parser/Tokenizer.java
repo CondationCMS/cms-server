@@ -91,10 +91,7 @@ public class Tokenizer {
                         tokens.add(new Token(TokenType.OR, word));
                     case "TRUE", "FALSE" ->
                         tokens.add(new Token(TokenType.BOOLEAN, word.toLowerCase()));
-                    case "IN", "NOT", "CONTAINS", "EXISTS" -> {
-                        // später schauen, ob zusammengesetzt
-                        tokens.add(new Token(TokenType.OPERATOR, word.toUpperCase()));
-                    }
+                    case "IN", "NOT", "CONTAINS", "EXISTS" -> tokens.add(new Token(TokenType.OPERATOR, word.toUpperCase()));
                     default ->
                         tokens.add(new Token(TokenType.IDENTIFIER, word));
                 }

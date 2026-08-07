@@ -392,7 +392,7 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	}
 
 	private int batchSize(long size) {
-		return (int) Math.max(SCAN_BATCH_SIZE, Math.min(1024, size * 2));
+		return (int) Math.clamp(size * 2, SCAN_BATCH_SIZE, 1024);
 	}
 
 	private int totalPages(long totalItems, long size) {

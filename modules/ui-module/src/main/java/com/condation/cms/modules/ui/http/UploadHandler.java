@@ -84,16 +84,17 @@ public class UploadHandler extends JettyHandler {
 	}
 
 	public UploadHandler(String contextPath, Path outputDir, boolean useDateFolder) throws IOException {
-		super();
 		this.useDateFolder = useDateFolder;
 		this.contextPath = contextPath;
 		Path normalizedOutputDir = outputDir.toAbsolutePath().normalize();
 		ensureDirExists(normalizedOutputDir);
-		this.outputDir = normalizedOutputDir.toRealPath();
-		Path outputParent = this.outputDir.getParent();
+		final Path toRealPath = normalizedOutputDir.toRealPath();
+		this.outputDir = toRealPath;
+		Path outputParent = toRealPath.getParent();
 		if (outputParent == null) {
 			throw new IOException("Upload directory must have a parent: " + outputDir);
 		}
+		super();
 		this.tempUploadDir = SecureFileUtils.ensurePrivateDirectory(
 				outputParent.resolve(".condation-upload-work"));
 	}

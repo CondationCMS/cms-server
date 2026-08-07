@@ -61,7 +61,7 @@ public final class SecureFileUtils {
 			} else {
 				Files.createDirectory(normalized);
 			}
-		} catch (FileAlreadyExistsException ex) {
+		} catch (FileAlreadyExistsException _) {
 			// Validate and tighten an existing application work directory below.
 		}
 

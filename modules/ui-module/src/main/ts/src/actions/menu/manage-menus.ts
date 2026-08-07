@@ -23,6 +23,7 @@ import { openModal } from '@cms/modules/modal.js';
 import { openFileBrowser } from '@cms/modules/filebrowser/filebrowser.js';
 import { openPagePicker } from '@cms/modules/page-picker.js';
 import { showToast } from '@cms/modules/toast.js';
+import { uuid } from '@cms/modules/utils.js';
 import {
 	createMenu,
 	deleteMenu,
@@ -44,13 +45,6 @@ const escapeHtml = (value: string): string => value
 	.replace(/>/g, '&gt;')
 	.replace(/"/g, '&quot;')
 	.replace(/'/g, '&#039;');
-
-const uuid = (): string => {
-	if (typeof crypto.randomUUID === 'function') {
-		return crypto.randomUUID();
-	}
-	return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
 
 const createItem = (type: MenuItemType = 'link'): MenuItem => ({
 	id: uuid(),

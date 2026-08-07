@@ -18,7 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-const createID = () => "id" + Math.random().toString(16).slice(2);
+import { uuid } from '@cms/modules/utils.js';
+
+const createID = () => `id${uuid()}`;
 
 const utcToLocalDateTimeInputValue = (utcString : string) => {
 	const date = new Date(utcString);

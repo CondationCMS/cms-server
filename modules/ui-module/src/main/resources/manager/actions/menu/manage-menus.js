@@ -22,6 +22,7 @@ import { openModal } from '@cms/modules/modal.js';
 import { openFileBrowser } from '@cms/modules/filebrowser/filebrowser.js';
 import { openPagePicker } from '@cms/modules/page-picker.js';
 import { showToast } from '@cms/modules/toast.js';
+import { uuid } from '@cms/modules/utils.js';
 import { createMenu, deleteMenu, getMenu, listMenus, updateMenu } from '@cms/modules/rpc/rpc-menu.js';
 // @ts-ignore SortableJS is loaded as an ESM dependency from the same CDN used by the manager.
 import Sortable from 'https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/+esm';
@@ -32,12 +33,6 @@ const escapeHtml = (value) => value
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
-const uuid = () => {
-    if (typeof crypto.randomUUID === 'function') {
-        return crypto.randomUUID();
-    }
-    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-};
 const createItem = (type = 'link') => ({
     id: uuid(),
     type,

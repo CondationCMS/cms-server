@@ -79,24 +79,36 @@ public class UploadHandler extends JettyHandler {
 
 	private static final Tika tika = new Tika();
 
-	public UploadHandler(String contextPath, Path outputDir) throws IOException {
-		this(contextPath, outputDir, false);
+	public UploadHandler(String contextPath, Path outputDir, boolean useDateFolder) throws IOException {
+		this(contextPath, prepareOutputDirectory(outputDir), useDateFolder);
 	}
 
-	public UploadHandler(String contextPath, Path outputDir, boolean useDateFolder) throws IOException {
+	private UploadHandler(String contextPath, OutputDirectory outputDirectory, boolean useDateFolder) throws IOException {
+		super();
+
 		this.useDateFolder = useDateFolder;
 		this.contextPath = contextPath;
+		this.outputDir = outputDirectory.path();
+		this.tempUploadDir = SecureFileUtils.ensurePrivateDirectory(
+				outputDirectory.parent().resolve(".condation-upload-work"));
+	}
+
+	private static OutputDirectory prepareOutputDirectory(Path outputDir) throws IOException {
 		Path normalizedOutputDir = outputDir.toAbsolutePath().normalize();
 		ensureDirExists(normalizedOutputDir);
-		final Path toRealPath = normalizedOutputDir.toRealPath();
-		this.outputDir = toRealPath;
-		Path outputParent = toRealPath.getParent();
-		if (outputParent == null) {
+
+		Path realPath = normalizedOutputDir.toRealPath();
+		Path parent = realPath.getParent();
+
+		if (parent == null) {
 			throw new IOException("Upload directory must have a parent: " + outputDir);
 		}
-		super();
-		this.tempUploadDir = SecureFileUtils.ensurePrivateDirectory(
-				outputParent.resolve(".condation-upload-work"));
+
+		return new OutputDirectory(realPath, parent);
+	}
+
+	private record OutputDirectory(Path path, Path parent) {
+
 	}
 
 	@Override
@@ -187,8 +199,7 @@ public class UploadHandler extends JettyHandler {
 						long bytesCopied;
 						try (InputStream inputStream = ByteStreams.limit(
 								Content.Source.asInputStream(filePart.getContentSource()),
-								MAX_FILE_SIZE_BYTES + 1);
-								OutputStream outputStream = Files.newOutputStream(tempFile)) {
+								MAX_FILE_SIZE_BYTES + 1); OutputStream outputStream = Files.newOutputStream(tempFile)) {
 							bytesCopied = ByteStreams.copy(inputStream, outputStream);
 						}
 

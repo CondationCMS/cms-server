@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-// frameMessenger.js
 const listeners = new Map();
 function send(targetWindow, message, targetOrigin = window.location.origin) {
     if (targetOrigin === '*') {
@@ -30,31 +29,39 @@ function on(type, callback) {
     if (!listeners.has(type)) {
         listeners.set(type, []);
     }
-    listeners.get(type).push(callback);
+    listeners.get(type)?.push(callback);
 }
 function off(type, callback) {
     const callbacks = listeners.get(type);
-    if (!callbacks)
+    if (!callbacks) {
         return;
+    }
     const index = callbacks.indexOf(callback);
     if (index >= 0) {
         callbacks.splice(index, 1);
     }
 }
+function isFrameMessage(data) {
+    if (typeof data !== 'object' || data === null) {
+        return false;
+    }
+    const candidate = data;
+    return candidate.__frameMessenger === true
+        && typeof candidate.type === 'string'
+        && candidate.type.length > 0;
+}
 function handleMessage(event) {
-    if (event.origin !== window.location.origin) {
+    if (event.origin !== window.location.origin || !isFrameMessage(event.data)) {
         return;
     }
     const data = event.data;
-    if (!data || !data.__frameMessenger || !data.type)
-        return;
-    const callbacks = listeners.get(data.type) || [];
-    for (const cb of callbacks) {
+    const callbacks = listeners.get(data.type) ?? [];
+    for (const callback of callbacks) {
         try {
-            cb(data.payload, event);
+            callback(data.payload, event);
         }
-        catch (err) {
-            console.error('frameMessenger callback error:', err);
+        catch (error) {
+            console.error('frameMessenger callback error:', error);
         }
     }
 }

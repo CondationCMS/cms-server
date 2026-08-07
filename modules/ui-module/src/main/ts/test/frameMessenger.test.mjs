@@ -12,7 +12,10 @@ globalThis.window = {
 	}
 };
 
-const source = await readFile(new URL('../src/js/modules/frameMessenger.js', import.meta.url));
+const source = await readFile(new URL(
+	'../../resources/manager/js/modules/frameMessenger.js',
+	import.meta.url
+));
 const moduleUrl = `data:text/javascript;base64,${source.toString('base64')}`;
 const frameMessenger = (await import(moduleUrl)).default;
 

@@ -4,7 +4,7 @@
   "version": "0.3.0",
   "scripts": {
     "build": "tsc && node scripts/copy-dist.mjs",
-    "test": "node --test test/*.test.mjs"
+    "test": "tsc --noEmit && node --test test/*.test.mjs"
   },
   "devDependencies": {
     "typescript": "^6.0.3"

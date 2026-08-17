@@ -23,7 +23,6 @@
   // Basis-URLs aus Parent ableiten
   const parentManager = window.parent?.manager || {};
   const baseUrl = parentManager.baseUrl || '/manager';
-  const contextPath = parentManager.contextPath || '/';
   
   const importMap = {
     imports: {

@@ -20,7 +20,6 @@ package com.condation.cms.api.utils;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import java.time.Instant;
 import java.util.Date;
 
 public class DateRange {
@@ -39,11 +38,7 @@ public class DateRange {
             return false;
         }
 
-        if (to != null && !now.before(to)) {
-            return false;
-        }
-
-        return true;
+        return to == null || now.before(to);
     }
 
 }

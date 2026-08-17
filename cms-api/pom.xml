@@ -14,7 +14,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.15.0</version>
 				<configuration>
 					<compilerArgs>
 						<arg>--enable-preview</arg>
@@ -75,7 +74,4 @@
 			<version>9.10.1</version>
 		</dependency>
 	</dependencies>
-    <properties>
-        <maven.compiler.release>25</maven.compiler.release>
-    </properties>
 </project>

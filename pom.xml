@@ -8,8 +8,8 @@
 	<packaging>pom</packaging>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>25</maven.compiler.source>
-		<maven.compiler.target>25</maven.compiler.target>
+		<maven.compiler.release>25</maven.compiler.release>
+		<lombok.version>1.18.46</lombok.version>
 		<exec.mainClass>com.condation.cms.Startup</exec.mainClass>
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<jetty.version>12.1.12</jetty.version>
@@ -197,7 +197,7 @@
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
-				<version>1.18.46</version>
+				<version>${lombok.version}</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -404,33 +404,6 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.15.0</version>
-					<configuration>
-						<annotationProcessorPaths>
-							<path>
-								<groupId>org.projectlombok</groupId>
-								<artifactId>lombok</artifactId>
-								<version>1.18.46</version>
-							</path>
-							<path>
-								<groupId>com.google.auto.service</groupId>
-								<artifactId>auto-service</artifactId>
-								<version>1.1.1</version>
-							</path>
-							<path>
-								<groupId>com.condation.modules.framework</groupId>
-								<artifactId>modules-api</artifactId>
-								<version>${modules-framework.version}</version>
-							</path>
-						</annotationProcessorPaths>
-						<compilerArgs>
-							<arg>--enable-preview</arg>
-						</compilerArgs>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
 					<version>3.5.1</version>
 				</plugin>
@@ -553,7 +526,7 @@
 						<path>
 							<groupId>org.projectlombok</groupId>
 							<artifactId>lombok</artifactId>
-							<version>1.18.46</version>
+							<version>${lombok.version}</version>
 						</path>
 						<path>
 							<groupId>com.google.auto.service</groupId>
@@ -563,7 +536,7 @@
 						<path>
 							<groupId>com.condation.modules.framework</groupId>
 							<artifactId>modules-api</artifactId>
-							<version>1.5.0</version>
+							<version>${modules-framework.version}</version>
 						</path>
 					</annotationProcessorPaths>
 				</configuration>

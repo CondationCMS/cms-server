@@ -70,6 +70,23 @@ function hideStatusButton() {
         statusBtn.classList.add('disabled');
     }
 }
+const getWorkflowDisplayState = (status) => {
+    if (!status?.published) {
+        return 'draft';
+    }
+    if (!status.withinSchedule) {
+        return 'scheduled';
+    }
+    return 'visible';
+};
+const replaceModifierClass = (element, prefix, modifier) => {
+    Array.from(element.classList).forEach(className => {
+        if (className.startsWith(prefix)) {
+            element.classList.remove(className);
+        }
+    });
+    element.classList.add(`${prefix}${modifier}`);
+};
 function updateNodeStatus(statusResponse) {
     const statusBtn = document.querySelector('#cms-btn-status');
     if (!statusBtn)
@@ -93,56 +110,37 @@ function updateNodeStatus(statusResponse) {
             iconEl.classList.remove(className);
         }
     });
-    var published = statusResponse?.status.published;
     // Status bestimmen (Provider-fähig)
-    let statusClass = "workflow-status-button--";
+    const displayState = getWorkflowDisplayState(statusResponse.status);
     let statusIcon = "";
     let statusText = "";
-    if (!published) {
-        statusClass += 'draft';
+    if (displayState === 'draft') {
         statusIcon = "bi-pencil";
         statusText = "Draft";
     }
-    else if (!statusResponse?.status.withinSchedule) {
-        statusClass += 'scheduled';
+    else if (displayState === 'scheduled') {
         statusIcon = "bi-eye-slash";
         statusText = "Scheduled";
     }
     else {
-        statusClass += 'visible';
         statusIcon = "bi-eye-fill";
         statusText = "Visible";
     }
-    statusBtn.classList.add(statusClass);
+    statusBtn.classList.add(`workflow-status-button--${displayState}`);
     iconEl.classList.add(statusIcon);
     statusBtn.querySelector('#cms-btn-status-text').textContent = statusText;
     updateWorkflowStatus(statusResponse);
 }
 const updateWorkflowStatus = (statusResponse) => {
-    let visibilityStatus = document.querySelector('#cms-workflow-visibility');
-    Array.from(visibilityStatus.classList).forEach(className => {
-        if (className.startsWith('bi-')) {
-            visibilityStatus.classList.remove(className);
-        }
-    });
-    let statusClass = "workflow-status-button--";
-    var published = statusResponse?.status.published;
-    let visibilityText = "";
-    if (!published) {
-        visibilityText = "Not visible";
-        statusClass += 'draft';
-    }
-    else if (!statusResponse?.status.withinSchedule) {
-        visibilityText = "Not visible";
-        statusClass += 'scheduled';
-    }
-    else {
-        visibilityText = "Visible";
-        statusClass += 'visible';
-    }
-    document.querySelector('#cms-workflow-stage').textContent = statusResponse?.status.currentStage || '---';
-    visibilityStatus.textContent = visibilityText;
-    visibilityStatus.classList.add(statusClass);
+    const stageStatus = document.querySelector('#cms-workflow-stage');
+    const visibilityStatus = document.querySelector('#cms-workflow-visibility');
+    const displayState = getWorkflowDisplayState(statusResponse.status);
+    const currentStage = statusResponse.status.currentStage || '---';
+    const stageModifier = currentStage.toLowerCase().replace(/[^a-z0-9_-]+/g, '-');
+    stageStatus.textContent = currentStage;
+    replaceModifierClass(stageStatus, 'workflow-stage--', stageModifier);
+    visibilityStatus.textContent = displayState === 'visible' ? 'Visible' : 'Not visible';
+    replaceModifierClass(visibilityStatus, 'workflow-visibility--', displayState);
     const formatter = new Intl.DateTimeFormat(undefined, {
         dateStyle: "medium",
         timeStyle: "short"

@@ -61,7 +61,7 @@ public class MailConfig {
 			acc.setUsername(resolve((String) values.get("username"), env));
 			acc.setPassword(resolve((String) values.get("password"), env));
 			var port = values.get("port");
-			if (port instanceof int intValue) {
+			if (port instanceof Integer intValue) {
 				acc.setPort(intValue);
 			} else if (port instanceof String stringValue) {
 				acc.setPort(Integer.parseInt(resolve(stringValue, env)));

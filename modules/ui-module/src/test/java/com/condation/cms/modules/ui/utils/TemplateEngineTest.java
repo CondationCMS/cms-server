@@ -122,6 +122,7 @@ public class TemplateEngineTest {
 				"translation", translation));
 
 		Assertions.assertThat(result)
+				.contains("<script src=\"/manager/js/ui-actions.js\" type=\"module\"></script>")
 				.contains("bi-grid-3x3-gap-fill")
 				.contains("cms-app-card")
 				.contains("/de/manager/public/apps/menu-manager.svg")

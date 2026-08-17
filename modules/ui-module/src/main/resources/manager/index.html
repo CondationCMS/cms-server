@@ -254,7 +254,7 @@
                                         <span class="workflow-info-label">Stage</span>
 
                                         <span class="workflow-info-value">
-                                            <span id="cms-workflow-stage" class="workflow-stage workflow-stage--published">
+                                            <span id="cms-workflow-stage" class="workflow-stage">
                                                 ---
                                             </span>
                                         </span>
@@ -264,7 +264,7 @@
                                         <span class="workflow-info-label">Visibility</span>
 
                                         <span class="workflow-info-value">
-                                            <span id="cms-workflow-visibility" class="workflow-visibility workflow-visibility--visible">
+                                            <span id="cms-workflow-visibility" class="workflow-visibility">
                                                 ---
                                             </span>
                                         </span>
@@ -336,6 +336,7 @@
 
 	<script src="{{ links.createUrl('/manager/bootstrap/bootstrap.bundle.min.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.53.0/min/vs/loader.js"></script>
+	<script src="{{ links.createUrl('/manager/js/ui-actions.js') }}" type="module"></script>
 
 	<div id="modalContainer"></div>
 	<div id="sidebarContainer"></div>
@@ -372,7 +373,7 @@
     <!-- formatter:off -->
 	<script type="module">
 
-		import {executeScriptAction, executeHookAction} from "@cms/js/manager.bundle.js";
+		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
 
 		var shortCuts = [
 			{% for entry in actionFactory.createShortCuts() %}

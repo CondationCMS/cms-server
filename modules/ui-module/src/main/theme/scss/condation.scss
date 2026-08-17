@@ -392,6 +392,10 @@
 	color: color.adjust($success, $lightness: 8%);
 }
 
+.workflow-visibility--draft {
+	color: color.adjust($warning, $lightness: 8%);
+}
+
 .workflow-visibility--scheduled {
 	color: color.adjust($info, $lightness: 8%);
 }

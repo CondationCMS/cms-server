@@ -20,33 +20,30 @@ package com.condation.cms.api.utils;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
 import java.time.Instant;
 import java.util.Date;
 
 public class DateRange {
 
-    
-
     /**
      * Checks if the current UTC time is within the range.
-	 * @param from
-	 * @param to
-	 * @return 
+     *
+     * @param from
+     * @param to
+     * @return
      */
     public static boolean isNowWithin(Date from, Date to) {
-        
-		var now = Date.from(Instant.now());
-		
-		if ( from != null && !(from.before(now) || from.equals(now)) ) {
-			return false;
-		}
-		if (to != null
-				&& (to.before(now) || to.equals(now))) {
-			return false;
-		}
-		return true;
+        Date now = new Date();
+
+        if (from != null && now.before(from)) {
+            return false;
+        }
+
+        if (to != null && !now.before(to)) {
+            return false;
+        }
+
+        return true;
     }
 
-    
 }

@@ -20,7 +20,6 @@ package com.condation.cms.hooksystem.executor;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
 import com.condation.cms.api.hooks.FilterContext;
 import com.condation.cms.hooksystem.registry.FilterRegistry;
 import lombok.RequiredArgsConstructor;
@@ -40,18 +39,17 @@ public class FilterExecutor {
 
     @SuppressWarnings("unchecked")
     public <T> T execute(String name, T value) {
-        final FilterContext<T> result = new FilterContext<>(value);
+        T result = value;
 
-        registry.get(name).forEach(hook -> {
+        for (var hook : registry.get(name)) {
             try {
-                var context = new FilterContext<>(result.value());
-                T filtered = (T) hook.function().apply(context);
-                result.value(filtered);
+                var context = new FilterContext<>(result);
+                result = (T) hook.function().apply(context);
             } catch (Exception e) {
                 log.error("error executing filter hook '{}'", name, e);
             }
-        });
-
-        return result.value();
+        }
+        
+        return result;
     }
 }

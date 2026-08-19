@@ -39,6 +39,10 @@
 			<source> ${project.build.directory}/${project.artifactId}-${project.version}.jar</source>
 			<outputDirectory>/</outputDirectory>
 		</file>
+		<file>
+			<source>${project.basedir}/../target/condationcms-sbom.json</source>
+			<outputDirectory>security</outputDirectory>
+		</file>
 	</files>
 	<dependencySets>
 		<dependencySet>

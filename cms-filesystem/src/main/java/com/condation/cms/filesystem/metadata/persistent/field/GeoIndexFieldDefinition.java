@@ -26,7 +26,7 @@ import java.util.Map;
 public record GeoIndexFieldDefinition(String latitude, String longitude)
 		implements IndexFieldDefinition {
 
-	public static final String TYPE = "geo";
+	public static final String FIELD_TYPE = "geo";
 
 	private static final String DEFAULT_LATITUDE = "latitude";
 	private static final String DEFAULT_LONGITUDE = "longitude";
@@ -38,13 +38,13 @@ public record GeoIndexFieldDefinition(String latitude, String longitude)
 
 	@Override
 	public String type() {
-		return TYPE;
+		return FIELD_TYPE;
 	}
 
 	public static GeoIndexFieldDefinition from(Map<?, ?> values) {
 		return new GeoIndexFieldDefinition(
-				stringValue(values.get("latitude")),
-				stringValue(values.get("longitude")));
+				stringValue(values.get(DEFAULT_LATITUDE)),
+				stringValue(values.get(DEFAULT_LONGITUDE)));
 	}
 
 	private static String stringValue(Object value) {

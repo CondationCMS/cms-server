@@ -32,7 +32,7 @@ public class GeoIndexFieldHandler implements IndexFieldHandler<GeoIndexFieldDefi
 
 	@Override
 	public String type() {
-		return GeoIndexFieldDefinition.TYPE;
+		return GeoIndexFieldDefinition.FIELD_TYPE;
 	}
 
 	@Override

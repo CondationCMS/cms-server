@@ -29,7 +29,10 @@ import java.util.function.Function;
 public final class IndexFieldConfiguration {
 
 	private static final Map<String, Function<Map<?, ?>, IndexFieldDefinition>> DEFINITION_FACTORIES = Map.of(
-			GeoIndexFieldDefinition.TYPE, GeoIndexFieldDefinition::from);
+			GeoIndexFieldDefinition.FIELD_TYPE, GeoIndexFieldDefinition::from);
+
+	private record RawDefinition(String type, Map<?, ?> values) {
+	}
 
 	private IndexFieldConfiguration() {
 	}
@@ -50,23 +53,17 @@ public final class IndexFieldConfiguration {
 	}
 
 	private static IndexFieldDefinition parseDefinition(Object value) {
-		final String type;
-		final Map<?, ?> values;
-		if (value instanceof String typeName) {
-			type = normalizeType(typeName);
-			values = Map.of();
-		} else if (value instanceof Map<?, ?> definition) {
-			type = normalizeType(definition.get("type"));
-			values = definition;
-		} else {
-			throw new IllegalArgumentException("index field definition must be a map or type name");
-		}
+		var definition = switch (value) {
+			case String typeName -> new RawDefinition(normalizeType(typeName), Map.of());
+			case Map<?, ?> values -> new RawDefinition(normalizeType(values.get("type")), values);
+			default -> throw new IllegalArgumentException("index field definition must be a map or type name");
+		};
 
-		var factory = DEFINITION_FACTORIES.get(type);
+		var factory = DEFINITION_FACTORIES.get(definition.type());
 		if (factory == null) {
-			throw new IllegalArgumentException("unsupported index field type: " + type);
+			throw new IllegalArgumentException("unsupported index field type: " + definition.type());
 		}
-		return factory.apply(values);
+		return factory.apply(definition.values());
 	}
 
 	private static String normalizeType(Object value) {

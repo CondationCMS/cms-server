@@ -115,12 +115,10 @@ public class DocumentHelper {
 				return;
 			}
 
-			if (value instanceof Map<?, ?> nested) {
-				addData(document, nested, name, fieldDefinitions);
-			} else if (value instanceof List<?> list) {
-				handleList(document, name, list);
-			} else {
-				addValue(document, name, value);
+			switch (value) {
+				case Map<?, ?> nested -> addData(document, nested, name, fieldDefinitions);
+				case List<?> list -> handleList(document, name, list);
+				default -> addValue(document, name, value);
 			}
 		});
 	}

@@ -57,15 +57,31 @@ public class FileDB implements DB {
 	
 	
 	public void init () throws IOException {
+		var siteProperties = configuration.get(SiteConfiguration.class).siteProperties();
 		fileSystem = new FileSystem(
-				configuration.get(SiteConfiguration.class).siteProperties().id(),
-				hostBaseDirectory, eventBus, contentParser);
+				siteProperties.id(),
+				hostBaseDirectory,
+				eventBus,
+				contentParser,
+				indexFields(siteProperties.get("index.fields")));
 		fileSystem.init();
 		readOnlyFileSystem = new WrappedReadOnlyFileSystem(fileSystem);
 		
 		content = new FileContent(fileSystem);
 		
 		taxonomies = new FileTaxonomies(configuration, content);	
+	}
+
+	private static Map<String, ?> indexFields(Object value) {
+		if (!(value instanceof Map<?, ?> fields)) {
+			return Map.of();
+		}
+
+		return fields.entrySet().stream()
+				.filter(entry -> entry.getKey() instanceof String)
+				.collect(java.util.stream.Collectors.toUnmodifiableMap(
+						entry -> (String) entry.getKey(),
+						Map.Entry::getValue));
 	}
 
 	@Deprecated

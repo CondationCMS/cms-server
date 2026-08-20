@@ -20,7 +20,9 @@ package com.condation.cms.filesystem.metadata.persistent;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.filesystem.metadata.persistent.utils.FlattenMap;
+import com.condation.cms.filesystem.metadata.persistent.field.GeoIndexFieldHandler;
+import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldDefinition;
+import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldHandler;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -30,7 +32,6 @@ import java.util.Map;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.DoubleField;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FloatField;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.SortedNumericDocValuesField;
@@ -54,6 +55,8 @@ public class DocumentHelper {
 	private static final String SORT_NUMBER_PREFIX = "_sort_number.";
 	private static final String SORT_BOOLEAN_PREFIX = "_sort_boolean.";
 	private static final String SORT_DATE_PREFIX = "_sort_date.";
+	private static final Map<String, IndexFieldHandler<?>> INDEX_FIELD_HANDLERS = Map.of(
+			"geo", new GeoIndexFieldHandler());
 
 	enum SortValueType {
 		STRING,
@@ -81,20 +84,45 @@ public class DocumentHelper {
 	}
 
 	public static void addData(final Document document, Map<String, Object> data) {
-		var flatten = FlattenMap.flattenMap(data);
+		addData(document, data, Map.of());
+	}
 
-		flatten.entrySet().stream()
-				.filter(entry -> entry.getValue() != null)
-				.forEach(entry -> {
+	public static void addData(
+			final Document document,
+			final Map<String, Object> data,
+			final Map<String, IndexFieldDefinition> fieldDefinitions) {
+		addData(document, data, "", fieldDefinitions);
+	}
 
-					switch (entry.getValue()) {
-						case List listValue ->
-							handleList(document, entry.getKey(), listValue);
-						default -> {
-							addValue(document, entry.getKey(), entry.getValue());
-						}
-					}
-				});
+	private static void addData(
+			Document document,
+			Map<?, ?> data,
+			String prefix,
+			Map<String, IndexFieldDefinition> fieldDefinitions) {
+		data.forEach((key, value) -> {
+			if (value == null) {
+				return;
+			}
+
+			String name = prefix.isEmpty() ? key.toString() : prefix + "." + key;
+			var definition = fieldDefinitions.get(name);
+			if (definition != null) {
+				var handler = INDEX_FIELD_HANDLERS.get(definition.type());
+				if (handler == null) {
+					throw new IllegalArgumentException("unsupported index field type: " + definition.type());
+				}
+				handler.index(document, name, value, definition);
+				return;
+			}
+
+			if (value instanceof Map<?, ?> nested) {
+				addData(document, nested, name, fieldDefinitions);
+			} else if (value instanceof List<?> list) {
+				handleList(document, name, list);
+			} else {
+				addValue(document, name, value);
+			}
+		});
 	}
 
 	private static void handleList(Document document, String name, List<?> list) {

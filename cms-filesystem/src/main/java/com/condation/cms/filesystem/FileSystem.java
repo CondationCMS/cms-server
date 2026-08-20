@@ -58,14 +58,12 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  *
  * @author t.marx
  */
-@RequiredArgsConstructor
 @Slf4j
 public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
@@ -75,6 +73,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	private final Path hostBaseDirectory;
 	private final EventBus eventBus;
 	final Function<Path, Map<String, Object>> contentParser;
+	private final Map<String, ?> indexFields;
 
 	private MultiRootRecursiveWatcher fileWatcher;
 	private ContentChangeCoordinator contentChangeCoordinator;
@@ -82,6 +81,27 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 
 	@Getter
 	private MetaData metaData;
+
+	public FileSystem(
+			String siteId,
+			Path hostBaseDirectory,
+			EventBus eventBus,
+			Function<Path, Map<String, Object>> contentParser) {
+		this(siteId, hostBaseDirectory, eventBus, contentParser, Map.of());
+	}
+
+	public FileSystem(
+			String siteId,
+			Path hostBaseDirectory,
+			EventBus eventBus,
+			Function<Path, Map<String, Object>> contentParser,
+			Map<String, ?> indexFields) {
+		this.siteId = siteId;
+		this.hostBaseDirectory = hostBaseDirectory;
+		this.eventBus = eventBus;
+		this.contentParser = contentParser;
+		this.indexFields = indexFields == null ? Map.of() : Map.copyOf(indexFields);
+	}
 
 	@Override
 	public Path hostBase() {
@@ -257,7 +277,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	public void init() throws IOException {
 		log.debug("init filesystem");
 
-		this.metaData = new PersistentMetaData(this.hostBaseDirectory);
+		this.metaData = new PersistentMetaData(this.hostBaseDirectory, indexFields);
 
 		this.metaData.open();
 

@@ -73,6 +73,20 @@ public interface ContentQuery<T> {
 	ContentQuery<T> whereNotIn(final String field, final List<Object> value);
 	
 	ContentQuery<T> whereExists(final String field);
+
+	ContentQuery<T> within(
+			final String field,
+			final double latitude,
+			final double longitude,
+			final double radius,
+			final DistanceUnit unit);
+
+	ContentQuery<T> within(
+			final String field,
+			final double latitude,
+			final double longitude,
+			final double radius,
+			final String unit);
 	
 	ContentQuery<T> expression(final String expressions);
 

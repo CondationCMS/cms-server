@@ -1,0 +1,35 @@
+<!DOCTYPE html SYSTEM>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		{% include "libs/fragments.html" %}
+	</head>
+	<body class="centered">
+		<div class="container">
+			<h1>{{ node.meta.get('title') }}</h1>
+			{{ node.content | raw }}
+
+			{% assign centerLatitude = 51.4818 %}
+			{% assign centerLongitude = 7.2162 %}
+			{% assign locations = cms.query.create('/locations').within('location', centerLatitude, centerLongitude, 20, 'km').get() %}
+
+			<ul>
+				{% for location in locations %}
+					<li>
+						<a href="{{ location.path }}">{{ location.meta.get('title') }}</a>
+						—
+						{{ cms.geo.distance(
+							centerLatitude,
+							centerLongitude,
+							location.meta.get('location.latitude'),
+							location.meta.get('location.longitude'),
+							'km',
+							2
+						) }} km
+					</li>
+				{% endfor %}
+			</ul>
+		</div>
+	</body>
+</html>

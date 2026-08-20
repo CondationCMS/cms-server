@@ -23,6 +23,7 @@ package com.condation.cms.filesystem.metadata.persistent;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.DistanceUnit;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
@@ -49,6 +50,7 @@ import java.util.function.Predicate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.LatLonPoint;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause;
 import org.apache.lucene.search.BooleanQuery;
@@ -507,6 +509,39 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
         QueryHelper.exists(queryBuilder, field);
         return this;
     }
+
+	@Override
+	public ContentQuery<T> within(
+			String field,
+			double latitude,
+			double longitude,
+			double radius,
+			DistanceUnit unit) {
+		Objects.requireNonNull(field, "field must not be null");
+		Objects.requireNonNull(unit, "distance unit must not be null");
+		if (!Double.isFinite(radius) || radius < 0) {
+			throw new IllegalArgumentException("radius must be a finite, non-negative value");
+		}
+
+		queryBuilder.add(
+				LatLonPoint.newDistanceQuery(
+						field,
+						latitude,
+						longitude,
+						unit.toMeters(radius)),
+				BooleanClause.Occur.FILTER);
+		return this;
+	}
+
+	@Override
+	public ContentQuery<T> within(
+			String field,
+			double latitude,
+			double longitude,
+			double radius,
+			String unit) {
+		return within(field, latitude, longitude, radius, DistanceUnit.fromString(unit));
+	}
 
     @Override
     public ContentQuery<T> expression(final String expression) {

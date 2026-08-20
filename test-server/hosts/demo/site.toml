@@ -37,4 +37,7 @@ site = "demo-de-site"               # site id for this mapping
 
 [[translation.mapping]]
 site = "demo-site"                  # site id for this mapping
-language = "en"                     # language code for this mapping    
+language = "en"                     # language code for this mapping
+
+[index.fields.location]
+type = "geo"

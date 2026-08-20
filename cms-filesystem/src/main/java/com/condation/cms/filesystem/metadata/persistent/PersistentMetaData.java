@@ -28,6 +28,8 @@ import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
+import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldConfiguration;
+import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldDefinition;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,7 +39,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -54,10 +55,10 @@ import org.h2.mvstore.MVStore;
  * @author t.marx
  */
 @Slf4j
-@RequiredArgsConstructor
 public class PersistentMetaData extends AbstractMetaData implements AutoCloseable {
 
 	private final Path hostPath;
+	private final Map<String, IndexFieldDefinition> indexFieldDefinitions;
 
 	private LuceneIndex index;
 	private MVStore store;
@@ -66,6 +67,15 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 	private MVMap<String, ContentNode> nodesByPath;
 	
 	private TitleQueryFactory titleQueryFactory;
+
+	public PersistentMetaData(Path hostPath) {
+		this(hostPath, Map.of());
+	}
+
+	public PersistentMetaData(Path hostPath, Map<String, ?> indexFields) {
+		this.hostPath = hostPath;
+		this.indexFieldDefinitions = IndexFieldConfiguration.parse(indexFields);
+	}
 
 	@Override
 	public void open() throws IOException {
@@ -169,7 +179,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 				Field.Store.NO));
 		//document.add(new StringField("_source", GSON.toJson(node), Field.Store.NO));
 
-		DocumentHelper.addData(document, data);
+		DocumentHelper.addData(document, data, indexFieldDefinitions);
 
 		DocumentHelper.addSearchFields(document, data);
 		

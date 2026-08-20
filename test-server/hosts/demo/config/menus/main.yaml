@@ -25,3 +25,11 @@ items:
   enabled: true
   children: [
     ]
+- id: af033b5a-33b5-4345-bc81-df78732cb7ce
+  type: link
+  label: Locations
+  url: /locations
+  target: _self
+  enabled: true
+  children: [
+    ]

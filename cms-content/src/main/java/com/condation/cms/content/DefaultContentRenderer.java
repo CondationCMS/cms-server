@@ -54,6 +54,7 @@ import com.condation.cms.hooksystem.extensions.DBHooks;
 import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.cms.content.template.functions.LinkFunction;
 import com.condation.cms.content.template.functions.MarkdownFunction;
+import com.condation.cms.content.template.functions.geo.GeoFunction;
 import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder;
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
@@ -170,6 +171,7 @@ public class DefaultContentRenderer implements ContentRenderer {
 		
 		QueryFunction queryFunction = createQueryFunction(contentFile, context);
 		namespace.add(Constants.TemplateNamespaces.CMS, "query", queryFunction);
+		namespace.add(Constants.TemplateNamespaces.CMS, "geo", new GeoFunction());
 		
 		MarkdownFunction markdownFunction = createMarkdownFunction(context);
 		namespace.add(Constants.TemplateNamespaces.CMS, "markdown", markdownFunction);

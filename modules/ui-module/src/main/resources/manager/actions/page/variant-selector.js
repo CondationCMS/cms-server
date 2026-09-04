@@ -24,6 +24,7 @@ import { getPreviewUrl } from '@cms/modules/preview.utils.js';
 import { getContentNode } from '@cms/modules/rpc/rpc-content.js';
 import { getVariantSelectors, setVariantSelector } from '@cms/modules/rpc/rpc-variant.js';
 import { showToast } from '@cms/modules/toast.js';
+import { ensureVariantsSupported } from '@cms/modules/variant-support.js';
 const SELECT_ID = 'cms-variant-selector';
 const escapeHtml = (input) => {
     const element = document.createElement('div');
@@ -41,6 +42,9 @@ const showError = (error) => showToast({
 export const runAction = async () => {
     try {
         const contentNode = await getContentNode({ url: getPreviewUrl() });
+        if (!ensureVariantsSupported(contentNode.result)) {
+            return;
+        }
         const result = await getVariantSelectors(contentNode.result.uri);
         openModal({
             title: i18n.t('manager.actions.page.variant-selector.title', 'Configure variant selection'),

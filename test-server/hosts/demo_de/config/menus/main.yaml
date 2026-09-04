@@ -1,0 +1,35 @@
+id: main
+name: Mainmenu
+items:
+- id: a772de6e-66f1-4b59-9345-82f44d4f36d2
+  type: link
+  label: Startseite
+  url: /
+  target: _self
+  enabled: true
+  children: [
+    ]
+- id: 07bc9ae6-d520-442e-93cb-9c53d12af13a
+  type: link
+  label: das ist eine neue seite
+  url: /total-other-page
+  target: _self
+  enabled: true
+  children: [
+    ]
+- id: fa5c603d-e470-434c-86b7-6f387821b9c7
+  type: link
+  label: Content example
+  url: /content
+  target: _self
+  enabled: true
+  children: [
+    ]
+- id: af033b5a-33b5-4345-bc81-df78732cb7ce
+  type: link
+  label: Locations
+  url: /locations
+  target: _self
+  enabled: true
+  children: [
+    ]

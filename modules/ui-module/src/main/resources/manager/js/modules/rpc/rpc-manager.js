@@ -40,6 +40,12 @@ const getListItemTypes = async (options) => {
     };
     return await executeRemoteCall(data);
 };
+const getCollectionTypes = async () => {
+    return await executeRemoteCall({
+        method: "manager.contentTypes.collections",
+        parameters: {}
+    });
+};
 const getMediaForm = async (options) => {
     var data = {
         method: "manager.media.form",
@@ -74,4 +80,4 @@ const getShortCodeNames = async (options) => {
     };
     return await executeRemoteCall(data);
 };
-export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getShortCodeNames, getMediaFormats, getListItemTypes, createCSRFToken };
+export { getSectionEntryTemplates, getPageTemplates, getMediaForm, getShortCodeNames, getMediaFormats, getListItemTypes, getCollectionTypes, createCSRFToken };

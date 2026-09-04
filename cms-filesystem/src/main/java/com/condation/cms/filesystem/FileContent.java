@@ -104,9 +104,10 @@ public class FileContent implements Content {
 	
 	@Override
 	public List<ContentNode> searchByTitle (String input, VariantSearchMode variantSearchMode) {
-		var titleQuery = fileSystem.getMetaData().searchByTitle(input);
-		
-		return titleQuery.list(variantSearchMode);
+		return query((node, excerptLength) -> node)
+				.searchByTitle(input)
+				.variants(variantSearchMode)
+				.get();
 	}
 	
 }

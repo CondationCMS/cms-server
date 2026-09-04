@@ -115,6 +115,17 @@ const editAttributes = (event) => {
     */
     frameMessenger.send(window.parent, command);
 };
+const editCollectionItem = (event) => {
+    const toolbar = event.target.closest('[data-cms-toolbar]');
+    const definition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
+    frameMessenger.send(window.parent, {
+        type: 'edit-collection-item',
+        payload: {
+            collection: definition.collection,
+            id: definition.itemId
+        }
+    });
+};
 const initDragDrop = (container) => {
     if (container.dataset.cmsDragDropInitialized === 'true') {
         return;
@@ -132,7 +143,7 @@ const initDragDrop = (container) => {
     const keepPlaceholderPosition = Symbol('keepPlaceholderPosition');
     const createPlaceholder = (item) => {
         const nextPlaceholder = document.createElement('div');
-        nextPlaceholder.setAttribute('data-cms-drag-placeholder', '');
+        nextPlaceholder.dataset.cmsDragPlaceholder = 'true';
         const cs = getComputedStyle(item);
         nextPlaceholder.style.width = item.offsetWidth + 'px';
         nextPlaceholder.style.height = item.offsetHeight + 'px';
@@ -213,7 +224,7 @@ const initDragDrop = (container) => {
         if (itemToolbar && !itemToolbar.querySelector('[data-cms-drag-handle]')) {
             const handle = document.createElement('button');
             handle.setAttribute('type', 'button');
-            handle.setAttribute('data-cms-drag-handle', '');
+            handle.dataset.cmsDragHandle = '';
             handle.setAttribute('title', 'Drag to reorder');
             handle.setAttribute('aria-label', 'Drag to reorder');
             handle.innerHTML = MOVE_ICON;
@@ -334,7 +345,7 @@ export const initToolbar = (container) => {
     toolbarDefinition.actions.forEach((action) => {
         if (action === "editContent") {
             const button = document.createElement('button');
-            button.setAttribute('data-cms-action', 'edit');
+            button.dataset.cmsAction = 'edit';
             button.innerHTML = EDIT_PAGE_ICON;
             button.setAttribute("title", "Edit content");
             button.addEventListener('click', editContent);
@@ -342,15 +353,23 @@ export const initToolbar = (container) => {
         }
         else if (action === "editAttributes") {
             const button = document.createElement('button');
-            button.setAttribute('data-cms-action', 'editAttributes');
+            button.dataset.cmsAction = 'editAttributes';
             button.innerHTML = EDIT_ATTRIBUTES_ICON;
             button.setAttribute("title", "Edit attributes");
             button.addEventListener('click', editAttributes);
             toolbar.appendChild(button);
         }
+        else if (action === "editCollectionItem") {
+            const button = document.createElement('button');
+            button.dataset.cmsAction = 'editCollectionItem';
+            button.innerHTML = EDIT_ATTRIBUTES_ICON;
+            button.setAttribute('title', 'Edit collection item');
+            button.addEventListener('click', editCollectionItem);
+            toolbar.appendChild(button);
+        }
         else if (action === "orderSectionEntries") {
             const button = document.createElement('button');
-            button.setAttribute('data-cms-action', 'editSections');
+            button.dataset.cmsAction = 'editSections';
             button.innerHTML = SECTION_SORT_ICON;
             button.setAttribute("title", "Order");
             button.addEventListener('click', orderSections);
@@ -358,7 +377,7 @@ export const initToolbar = (container) => {
         }
         else if (action === "addSectionEntry") {
             const button = document.createElement('button');
-            button.setAttribute('data-cms-action', 'addSection');
+            button.dataset.cmsAction = 'addSection';
             button.innerHTML = SECTION_ADD_ICON;
             button.setAttribute("title", "Add");
             button.addEventListener('click', addSection);
@@ -366,7 +385,7 @@ export const initToolbar = (container) => {
         }
         else if (action === "deleteSectionEntry") {
             const button = document.createElement('button');
-            button.setAttribute('data-cms-action', 'deleteSection');
+            button.dataset.cmsAction = 'deleteSection';
             button.innerHTML = SECTION_DELETE_ICON;
             button.setAttribute("title", "Delete");
             button.addEventListener('click', deleteSection);
@@ -382,8 +401,8 @@ export const initToolbar = (container) => {
     });
     if (toolbarDefinition.type === "sectionEntry") {
         const button = document.createElement('button');
-        button.setAttribute('data-cms-action', 'publish');
-        button.setAttribute('data-cms-section-uri', toolbarDefinition.uri);
+        button.dataset.cmsAction = 'publish';
+        button.dataset.cmsSectionUri = toolbarDefinition.uri;
         button.classList.add('cms-unpublished');
         button.innerHTML = SECTION_UNPUBLISHED_ICON;
         button.setAttribute("title", "Publish");

@@ -22,6 +22,7 @@ package com.condation.cms.api.db;
  */
 
 import com.condation.cms.api.db.taxonomy.Taxonomies;
+import com.condation.cms.api.db.collection.Collections;
 import com.condation.cms.api.db.cms.ReadOnlyFileSystem;
 
 
@@ -40,6 +41,8 @@ public interface DB extends AutoCloseable{
 	public ReadOnlyFileSystem getReadOnlyFileSystem();
 	
 	public Content getContent();
+
+	public Collections getCollections();
 	
 	public Taxonomies getTaxonomies();
 }

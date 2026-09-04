@@ -1,0 +1,6 @@
+collections:
+  authors:
+    site: demo-site
+    detail:
+      route: /collections/authors/{slug}
+      template: collections/author-detail.html

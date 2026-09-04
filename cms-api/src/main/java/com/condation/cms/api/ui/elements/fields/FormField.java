@@ -28,6 +28,7 @@ import lombok.Getter;
 public abstract sealed class FormField permits
 		CheckboxField,
 		CodeField,
+		CollectionField,
 		ColorField,
 		DateField,
 		DateTimeField,

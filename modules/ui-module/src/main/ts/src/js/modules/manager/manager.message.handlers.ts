@@ -146,6 +146,17 @@ const initMessageHandlers = () => {
         executeScriptAction(cmd)
     });
 
+	frameMessenger.on('edit-collection-item', (payload: any) => {
+		executeScriptAction({
+			module: window.manager.baseUrl + '/actions/collection/edit-collection-item',
+			function: 'runAction',
+			parameters: {
+				collection: payload.collection,
+				id: payload.id
+			}
+		});
+	});
+
     frameMessenger.on('add-sectionEntry', (payload: any) => {
         var cmd : any = {
             "module": window.manager.baseUrl + "/actions/page/add-section",

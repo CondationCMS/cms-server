@@ -23,6 +23,7 @@ package com.condation.cms.content;
 
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.collection.CollectionItem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.model.ListNode;
@@ -46,6 +47,13 @@ public interface ContentRenderer {
 	String render(final ReadOnlyFile contentFile, final RequestContext context, final Map<String, List<SectionEntry>> sectionEntries) throws IOException;
 
 	String render(final ReadOnlyFile contentFile, final RequestContext context, final Map<String, List<SectionEntry>> sectionEntries, final Map<String, Object> meta, final String markdownContent, final Consumer<TemplateEngine.Model> modelExtending) throws IOException;
+
+	String renderCollection(
+			final ReadOnlyFile collectionFile,
+			final ContentNode collectionNode,
+			final CollectionItem item,
+			final String template,
+			final RequestContext context) throws IOException;
 
 	Map<String, List<SectionEntry>> renderSectionEntries(final List<ContentNode> sectionEntryNodes, final RequestContext context) throws IOException;
 

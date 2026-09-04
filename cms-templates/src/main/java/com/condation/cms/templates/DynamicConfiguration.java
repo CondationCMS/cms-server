@@ -119,7 +119,13 @@ public record DynamicConfiguration(TemplateComponents templateComponents, Map<St
 				} else if (params.length == 1 && params[0] instanceof Map) {
 					parameter = new Parameter((Map<String, Object>)params[0], requestContext);
 				} else {
-					parameter = new Parameter();
+					parameter = new Parameter(requestContext);
+					for (int index = 0; index < params.length; index++) {
+						parameter.put(Integer.toString(index), params[index]);
+					}
+					if (params.length == 1) {
+						parameter.put("value", params[0]);
+					}
 				}
 				return function.apply(parameter);
 		}

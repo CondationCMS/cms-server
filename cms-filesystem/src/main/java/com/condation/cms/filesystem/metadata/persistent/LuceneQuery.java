@@ -23,7 +23,9 @@ package com.condation.cms.filesystem.metadata.persistent;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
+import com.condation.cms.api.db.CursorPage;
 import com.condation.cms.api.db.DistanceUnit;
+import com.condation.cms.api.db.NodeVisibility;
 import com.condation.cms.api.db.Page;
 import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.feature.features.IsPreviewFeature;
@@ -47,7 +49,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Predicate;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.LatLonPoint;
@@ -58,6 +59,7 @@ import org.apache.lucene.search.MatchAllDocsQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.queryparser.flexible.core.QueryNodeException;
 
 /**
  *
@@ -65,7 +67,6 @@ import org.apache.lucene.search.TermQuery;
  * @param <T>
  */
 @Slf4j
-@RequiredArgsConstructor
 public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.Sort<T> {
 
 	private static final int SCAN_BATCH_SIZE = 128;
@@ -74,6 +75,8 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
     private final LuceneIndex index;
     private final MetaData metaData;
     private final ExcerptMapperFunction<T> nodeMapper;
+	private final LuceneQueryPolicy policy;
+	private final Optional<Query> scopeQuery;
 
     private String contentType = Constants.DEFAULT_CONTENT_TYPE;
 
@@ -90,16 +93,37 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
     private List<Predicate<ContentNode>> extensionOperations = new ArrayList<>();
 
-    private final Parser expressionsParser = new Parser();
+	private final Parser expressionsParser = new Parser();
+	private final TitleQueryFactory titleQueryFactory = new TitleQueryFactory(LuceneIndex.SEARCH_ANALYZER);
 
     public LuceneQuery(
             final String startUri,
             final LuceneIndex index,
             final MetaData metaData,
             final ExcerptMapperFunction<T> nodeMapper) {
-        this(index, metaData, nodeMapper);
+		this(index, metaData, nodeMapper, LuceneQueryPolicy.CONTENT, null);
         this.startUri = Optional.ofNullable(startUri);
     }
+
+	public LuceneQuery(
+			final LuceneIndex index,
+			final MetaData metaData,
+			final ExcerptMapperFunction<T> nodeMapper) {
+		this(index, metaData, nodeMapper, LuceneQueryPolicy.CONTENT, null);
+	}
+
+	public LuceneQuery(
+			final LuceneIndex index,
+			final MetaData metaData,
+			final ExcerptMapperFunction<T> nodeMapper,
+			final LuceneQueryPolicy policy,
+			final Query scopeQuery) {
+		this.index = Objects.requireNonNull(index, "index must not be null");
+		this.metaData = Objects.requireNonNull(metaData, "metaData must not be null");
+		this.nodeMapper = Objects.requireNonNull(nodeMapper, "nodeMapper must not be null");
+		this.policy = Objects.requireNonNull(policy, "policy must not be null");
+		this.scopeQuery = Optional.ofNullable(scopeQuery);
+	}
 
     @Override
     public ContentQuery<T> excerpt(long excerptLength) {
@@ -171,6 +195,43 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
         return result.nodes;
     }
 
+	CursorPage<T> cursorPage(String cursor, long size) {
+		if (size < 1 || size > 10_000) {
+			throw new IllegalArgumentException("cursor page size must be between 1 and 10000");
+		}
+		if (!extensionOperations.isEmpty()) {
+			throw new UnsupportedOperationException(
+					"cursor paging is not available with in-memory query extensions");
+		}
+		try {
+			var structuralQuery = structuralVisibilityQuery(buildBaseQuery());
+			var completeQuery = completeVisibilityQuery(structuralQuery)
+					.orElseThrow(() -> new UnsupportedOperationException(
+							"cursor paging requires an indexable workflow visibility filter"));
+			org.apache.lucene.search.Sort sort = null;
+			if (orderByField.isPresent()) {
+				sort = index.resolveSort(orderByField.get(), Order.DESC.equals(sortOrder))
+						.orElseThrow(() -> new UnsupportedOperationException(
+								"cursor paging requires an indexed sort field: " + orderByField.get()));
+			}
+			// Visibility schedule bounds contain the current millisecond and therefore
+			// are intentionally excluded from the stable cursor identity.
+			var cursorKey = structuralQuery.toString()
+					+ "|preview=" + hasPreview()
+					+ "|workflow=" + statusProvider().getClass().getName();
+			var result = index.cursorPage(
+					completeQuery, sort, Math.toIntExact(size), cursor, cursorKey);
+			var nodes = result.uris().stream()
+					.map(metaData::byPath)
+					.flatMap(Optional::stream)
+					.toList();
+			return new CursorPage<>(mapContentNodes(nodes).nodes, result.nextCursor());
+		} catch (IOException ex) {
+			log.error("error cursor-paging lucene query", ex);
+			return new CursorPage<>(List.of(), null);
+		}
+	}
+
 	private List<ContentNode> queryContentNodes() {
 		try {
 			var contentNodes = new ArrayList<ContentNode>();
@@ -194,26 +255,16 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 			long page,
 			long size,
 			long offset) throws IOException {
-		long totalItems = index.count(query);
-		if (offset >= totalItems) {
-			return new Page<>(totalItems, size, totalPages(totalItems, size), (int) page, List.of());
-		}
-
-		var nodes = new ArrayList<ContentNode>((int) Math.min(size, Integer.MAX_VALUE));
-		var hitIndex = new long[]{0};
-		index.scanUris(query, sort, batchSize(size), uri -> {
-			long currentIndex = hitIndex[0]++;
-			if (currentIndex < offset) {
-				return true;
-			}
-			metaData.byPath(uri).ifPresent(nodes::add);
-			return nodes.size() < size;
-		});
+		var result = index.seekPage(query, sort, offset, Math.toIntExact(size));
+		var nodes = result.uris().stream()
+				.map(metaData::byPath)
+				.flatMap(Optional::stream)
+				.toList();
 
 		return new Page<>(
-				totalItems,
+				result.totalItems(),
 				size,
-				totalPages(totalItems, size),
+				totalPages(result.totalItems(), size),
 				(int) page,
 				mapContentNodes(nodes).nodes);
 	}
@@ -268,16 +319,35 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	private Query buildBaseQuery() {
 		var baseQuery = new BooleanQuery.Builder();
 		queryBuilder.build().clauses().forEach(baseQuery::add);
-		baseQuery.add(
-				new TermQuery(new Term("content.type", contentType)),
-				BooleanClause.Occur.MUST);
-		startUri.ifPresent(uri -> baseQuery.add(
-				new PrefixQuery(new Term("_uri", uri)),
-				BooleanClause.Occur.FILTER));
+		scopeQuery.ifPresent(query -> baseQuery.add(query, BooleanClause.Occur.FILTER));
+		if (policy == LuceneQueryPolicy.CONTENT) {
+			baseQuery.add(
+					new TermQuery(new Term("content.type", contentType)),
+					BooleanClause.Occur.MUST);
+			startUri.ifPresent(uri -> baseQuery.add(
+					new PrefixQuery(new Term("_uri", uri)),
+					BooleanClause.Occur.FILTER));
+		}
 		return baseQuery.build();
 	}
 
+	@Override
+	public ContentQuery<T> searchByTitle(String input) {
+		if (input == null || input.isBlank()) {
+			return this;
+		}
+		try {
+			queryBuilder.add(titleQueryFactory.createQuery(input), BooleanClause.Occur.MUST);
+			return this;
+		} catch (QueryNodeException ex) {
+			throw new IllegalArgumentException("invalid title search", ex);
+		}
+	}
+
 	private Query structuralVisibilityQuery(Query query) {
+		if (policy == LuceneQueryPolicy.COLLECTION) {
+			return query;
+		}
 		var visiblePages = new BooleanQuery.Builder();
 		visiblePages.add(query, BooleanClause.Occur.MUST);
 		visiblePages.add(
@@ -378,10 +448,17 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 	}
 
 	private boolean isAcceptedNode(ContentNode node) {
-		return !node.isDirectory()
-				&& PageMetaData.isPage(node)
-				&& PageMetaData.isVisible(node)
-				&& extensionOperations.stream().allMatch(predicate -> predicate.test(node));
+		if (node.isDirectory()) {
+			return false;
+		}
+		if (policy == LuceneQueryPolicy.COLLECTION && !NodeVisibility.isVisible(node)) {
+			return false;
+		}
+		if (policy == LuceneQueryPolicy.CONTENT
+				&& (!PageMetaData.isPage(node) || !PageMetaData.isVisible(node))) {
+			return false;
+		}
+		return extensionOperations.stream().allMatch(predicate -> predicate.test(node));
 	}
 
 	private void validatePage(long page, long size) {
@@ -425,18 +502,27 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
 
     @Override
     public ContentQuery<T> json() {
+		if (policy == LuceneQueryPolicy.COLLECTION) {
+			return this;
+		}
         this.contentType = Constants.ContentTypes.JSON;
         return this;
     }
 
     @Override
     public ContentQuery<T> html() {
+		if (policy == LuceneQueryPolicy.COLLECTION) {
+			return this;
+		}
         this.contentType = Constants.ContentTypes.HTML;
         return this;
     }
 
     @Override
     public ContentQuery<T> contentType(String contentType) {
+		if (policy == LuceneQueryPolicy.COLLECTION) {
+			return this;
+		}
         this.contentType = contentType;
         return this;
     }
@@ -444,6 +530,9 @@ public class LuceneQuery<T> extends ExtendableQuery<T> implements ContentQuery.S
     @Override
     public ContentQuery<T> variants(VariantSearchMode mode) {
         Objects.requireNonNull(mode, "mode must not be null");
+		if (policy == LuceneQueryPolicy.COLLECTION) {
+			return this;
+		}
         if (mode != VariantSearchMode.ALL) {
             queryBuilder.add(
                     new TermQuery(new Term("_variant", Boolean.toString(mode == VariantSearchMode.VARIANT))),

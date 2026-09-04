@@ -46,6 +46,7 @@ import com.condation.cms.auth.services.AuthorizationService;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.auth.services.RoleService;
 import com.condation.cms.api.feature.features.InjectorFeature;
+import com.condation.cms.api.feature.features.DBFeature;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -136,6 +137,23 @@ public class ActionFactory {
                     .children(new ArrayList<>())
                     .build();
         }).forEach(menu::addMenuEntry);
+
+		context.get(DBFeature.class).db().getCollections().names().stream()
+				.filter(context.get(DBFeature.class).db().getCollections()::isLocal)
+				.sorted()
+				.map(name -> MenuEntry.builder()
+						.id("collection-" + name)
+						.name(contentTypes.getCollection(name)
+								.map(collection -> collection.label())
+								.orElse(name))
+						.action(new UIScriptAction(
+								HTTPUtil.prependContext(
+										"/manager/actions/collection/create-collection-item",
+										siteProperties),
+								Map.of("collection", name)))
+						.children(new ArrayList<>())
+						.build())
+				.forEach(menu::addMenuEntry);
 
         return menu;
     }

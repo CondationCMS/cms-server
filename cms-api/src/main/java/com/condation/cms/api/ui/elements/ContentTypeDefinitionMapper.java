@@ -23,6 +23,7 @@ package com.condation.cms.api.ui.elements;
 
 import com.condation.cms.api.ui.elements.fields.CheckboxField;
 import com.condation.cms.api.ui.elements.fields.CodeField;
+import com.condation.cms.api.ui.elements.fields.CollectionField;
 import com.condation.cms.api.ui.elements.fields.ColorField;
 import com.condation.cms.api.ui.elements.fields.DateField;
 import com.condation.cms.api.ui.elements.fields.DateTimeField;
@@ -196,6 +197,9 @@ final class ContentTypeDefinitionMapper {
 			case "reference" -> ReferenceField.builder()
 					.name(name).title(title).required(required).requiredMessage(requiredMessage)
 					.siteId(string(options.get("siteid"), null)).build();
+			case "collection" -> CollectionField.builder()
+					.name(name).title(title).required(required).requiredMessage(requiredMessage)
+					.collection(string(options.get("collection"), null)).build();
 			case "tags" -> TagsField.builder()
 					.name(name).title(title).required(required).requiredMessage(requiredMessage)
 					.taxonomy(string(options.get("taxonomy"), null)).build();

@@ -56,34 +56,55 @@ public class ConfigManagement {
 	}
 	
 	public void initConfiguration (Configuration configuration) {
+		var serverConfiguration = require("server", SimpleConfiguration.class);
+		var siteConfiguration = require("site", SimpleConfiguration.class);
+		var taxonomyConfiguration = require(
+				"taxonomy", com.condation.cms.core.configuration.configs.TaxonomyConfiguration.class);
+		var collectionConfiguration = require(
+				"collections", com.condation.cms.core.configuration.configs.CollectionConfiguration.class);
+		var mediaConfiguration = require(
+				"media", com.condation.cms.core.configuration.configs.MediaConfiguration.class);
+
 		configuration.add(
 				ServerConfiguration.class, 
-				new ServerConfiguration(new ExtendedServerProperties((SimpleConfiguration) get("server").get()))
+				new ServerConfiguration(new ExtendedServerProperties(serverConfiguration))
 		);
 		
 		configuration.add(
 				SiteConfiguration.class, 
-				new SiteConfiguration(new ExtendedSiteProperties((SimpleConfiguration) get("site").get()))
+				new SiteConfiguration(new ExtendedSiteProperties(siteConfiguration))
 		);
 		configuration.add(
 				com.condation.cms.api.configuration.configs.TaxonomyConfiguration.class, 
 				new com.condation.cms.api.configuration.configs.TaxonomyConfiguration(
-						((com.condation.cms.core.configuration.configs.TaxonomyConfiguration) get("taxonomy")
-								.get()).getTaxonomies()
+						taxonomyConfiguration.getTaxonomies()
 				)
 		);
+		configuration.add(
+				com.condation.cms.api.configuration.configs.CollectionConfiguration.class,
+				collectionConfiguration.apiConfiguration()
+		);
 		var mediaConfig = new com.condation.cms.api.configuration.configs.MediaConfiguration(
-						((com.condation.cms.core.configuration.configs.MediaConfiguration) get("media")
-								.get()).getMediaFormats()
+						mediaConfiguration.getMediaFormats()
 				);
-		mediaConfig.setProcessor(((com.condation.cms.core.configuration.configs.MediaConfiguration) get("media")
-								.get()).getProcessor());
-		mediaConfig.setBinPath(((com.condation.cms.core.configuration.configs.MediaConfiguration) get("media")
-								.get()).getValueOrDefault("bin_path", ""));
+		mediaConfig.setProcessor(mediaConfiguration.getProcessor());
+		mediaConfig.setBinPath(mediaConfiguration.getValueOrDefault("bin_path", ""));
 		configuration.add(
 				com.condation.cms.api.configuration.configs.MediaConfiguration.class, 
 				mediaConfig
 		);
 		
+	}
+
+	private <T extends IConfiguration> T require(String key, Class<T> type) {
+		var configuration = configurations.get(key);
+		if (configuration == null) {
+			throw new IllegalStateException("Missing configuration: " + key);
+		}
+		if (!type.isInstance(configuration)) {
+			throw new IllegalStateException("Configuration '%s' is not of type %s"
+					.formatted(key, type.getSimpleName()));
+		}
+		return type.cast(configuration);
 	}
 }

@@ -58,7 +58,7 @@ export function initIframe() {
                     continue;
                 }
                 if (item.data.status === 'published') {
-                    sectionContainer.setAttribute('data-cms-action', 'unpublish');
+                    sectionContainer.dataset.cmsAction = 'unpublish';
                     sectionContainer.setAttribute("title", "Unpublish");
                     if (isSectionPublishedExpired(item)) {
                         sectionContainer.innerHTML = SECTION_UNPUBLISHED_ICON;
@@ -75,7 +75,7 @@ export function initIframe() {
                 }
                 else {
                     sectionContainer.innerHTML = SECTION_UNPUBLISHED_ICON;
-                    sectionContainer.setAttribute('data-cms-action', 'publish');
+                    sectionContainer.dataset.cmsAction = 'publish';
                     sectionContainer.setAttribute("title", "Publish");
                     sectionContainer.classList.remove('cms-published');
                     sectionContainer.classList.remove('cms-published-expired');

@@ -46,7 +46,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -100,6 +99,7 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 				.add("fn_param", "{{ ext.testfn4({'name': 'World'}) }}")
 				// explicit namespace
 				.add("fn_namespace", "{{ ns1.shout({'text': 'hello'}) }}")
+				.add("fn_collection", "{{ cms.collection('blog').query() }}")
 				// chained with filter
 				.add("fn_chained", "{{ ext.testfn3() | upper }}");
 	}
@@ -157,6 +157,13 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 				.isEqualToIgnoringWhitespace("HELLO!");
 	}
 
+	@Test
+	void test_collection_function_accepts_scalar_name_and_can_be_chained() throws IOException {
+		Template template = SUT.getTemplate("fn_collection");
+		Assertions.assertThat(template.evaluate(Map.of(), dynamicConfiguration))
+				.isEqualToIgnoringWhitespace("blog");
+	}
+
 	// --- function result can be chained with filter ---
 
 	@Test
@@ -171,8 +178,9 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 	@Test
 	void all_functions_are_registered() {
 		var tfs = dynamicConfiguration.templateFunctions();
-		// testfn1 (map), testfn2 (Parameter), testfn3 (no-arg), testfn4 (@Param), shout (@Param, ns1)
-		Assertions.assertThat(tfs).isNotNull().hasSize(5);
+		// testfn1 (map), testfn2 (Parameter), testfn3 (no-arg), testfn4 (@Param),
+		// shout (@Param, ns1), collection (Parameter, cms)
+		Assertions.assertThat(tfs).isNotNull().hasSize(6);
 	}
 
 	@Test
@@ -215,6 +223,18 @@ public class TemplateEngineFunctionsTest extends AbstractTemplateEngineTest {
 		@TemplateFunction(value = "shout", namespace = "ns1")
 		public Object shout(@Param("text") String text) {
 			return text.toUpperCase() + "!";
+		}
+
+		@TemplateFunction(value = "collection", namespace = "cms")
+		public Object collection(Parameter params) {
+			return new TestCollection(params.get("value").toString());
+		}
+	}
+
+	public record TestCollection(String name) {
+
+		public String query() {
+			return name;
 		}
 	}
 }

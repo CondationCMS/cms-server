@@ -24,12 +24,15 @@ import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.ui.extensions.UIScriptActionSourceExtension;
 import com.google.common.base.Strings;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.http.HttpHeader;
+import org.eclipse.jetty.http.HttpStatus;
 import org.eclipse.jetty.io.Content;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Response;
@@ -42,6 +45,7 @@ import org.eclipse.jetty.util.Callback;
 @Slf4j
 @RequiredArgsConstructor
 public class JSActionHandler extends JettyHandler {
+	private static final String JAVASCRIPT_EXTENSION = ".js";
 
 	private final FileSystem fileSystem;
 	private final String base;
@@ -62,12 +66,10 @@ public class JSActionHandler extends JettyHandler {
 		if (moduleContent.isPresent()) {
 			scriptContent = moduleContent.get();
 		} else {
-			var resourceFile = resourceName + ".js";
-			var files = fileSystem.getPath(base);
-			var path = files.resolve(resourceFile);
-			if (Files.exists(path)) {
-				scriptContent = Files.readString(path);
-			}
+			var bundledScript = getBundledScript(resourceName);
+			scriptContent = bundledScript.isPresent()
+					? bundledScript.get()
+					: getScriptFromFileSystem(resourceName).orElse("");
 		}
 		
 		
@@ -75,10 +77,45 @@ public class JSActionHandler extends JettyHandler {
 			response.getHeaders().put(HttpHeader.CONTENT_TYPE, "application/javascript; charset=UTF-8");
 				Content.Sink.write(response, true, scriptContent, callback);
 		} else {
+			response.setStatus(HttpStatus.NOT_FOUND_404);
 			callback.succeeded();
 		}
 
 		return true;
+	}
+
+	Optional<String> getBundledScript(String resourceName) {
+		var resourcePath = "%s/%s".formatted(base, scriptResourceName(resourceName));
+		try (var stream = JSActionHandler.class.getResourceAsStream(resourcePath)) {
+			if (stream == null) {
+				return Optional.empty();
+			}
+			return Optional.of(new String(stream.readAllBytes(), StandardCharsets.UTF_8));
+		} catch (IOException exception) {
+			log.error("Could not load manager action {}", resourcePath, exception);
+			return Optional.empty();
+		}
+	}
+
+	private Optional<String> getScriptFromFileSystem(String resourceName) {
+		var resourceFile = scriptResourceName(resourceName);
+		var files = fileSystem.getPath(base);
+		var path = files.resolve(resourceFile);
+		if (!Files.exists(path)) {
+			return Optional.empty();
+		}
+		try {
+			return Optional.of(Files.readString(path));
+		} catch (IOException exception) {
+			log.error("Could not load manager action {}", path, exception);
+			return Optional.empty();
+		}
+	}
+
+	private String scriptResourceName(String resourceName) {
+		return resourceName.endsWith(JAVASCRIPT_EXTENSION)
+				? resourceName
+				: resourceName + JAVASCRIPT_EXTENSION;
 	}
 	
 	private Optional<String> getScriptContentFromModules (String filename) {

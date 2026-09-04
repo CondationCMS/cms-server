@@ -31,6 +31,7 @@ import {
 	VariantDto
 } from '@cms/modules/rpc/rpc-variant.js'
 import { showToast } from '@cms/modules/toast.js'
+import { ensureVariantsSupported } from '@cms/modules/variant-support.js'
 
 const VARIANT_LIST_ID = 'cms-page-variants';
 
@@ -201,6 +202,9 @@ export const runAction = async () => {
 		const contentNode = await getContentNode({
 			url: getPreviewUrl()
 		});
+		if (!ensureVariantsSupported(contentNode.result)) {
+			return;
+		}
 		const result = await getVariants({
 			uri: contentNode.result.uri
 		});

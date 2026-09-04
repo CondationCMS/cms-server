@@ -3,6 +3,7 @@
   "author": "CondationCMS",
   "version": "0.3.0",
   "scripts": {
+    "dist": "tsc",
     "build": "tsc && node scripts/copy-dist.mjs",
     "test": "tsc --noEmit && node --test test/*.test.mjs"
   },

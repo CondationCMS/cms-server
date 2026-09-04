@@ -28,6 +28,23 @@ const updateVariantBadge = (content) => {
     if (!badge || !label) {
         return;
     }
+    const hasContent = Boolean(content?.uri);
+    const supportsVariants = hasContent
+        && content?.supportsVariants !== false
+        && content?.contentKind !== 'collection';
+    badge.hidden = !hasContent;
+    if (!hasContent) {
+        badge.disabled = true;
+        return;
+    }
+    if (!supportsVariants) {
+        label.textContent = 'Unsupported';
+        badge.disabled = false;
+        badge.classList.remove('text-bg-warning');
+        badge.classList.add('text-bg-secondary');
+        badge.setAttribute('title', 'Collections do not support variants');
+        return;
+    }
     const variantId = content?.variantId;
     label.textContent = content ? (variantId || 'Original') : 'Loading…';
     badge.disabled = !content?.uri;

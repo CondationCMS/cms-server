@@ -37,6 +37,7 @@ import { MediaField } from "@cms/modules/form/field.media.js";
 import { ListField } from "@cms/modules/form/field.list.js";
 import { TextAreaField } from "@cms/modules/form/field.textarea.js";
 import { ReferenceField } from "@cms/modules/form/field.reference.js";
+import { CollectionField } from "@cms/modules/form/field.collection.js";
 import { TagsField } from "@cms/modules/form/field.tags.js";
 import { i18n } from "@cms/modules/localization.js";
 
@@ -48,13 +49,13 @@ const getFormFields = (definition: any): any[] => {
 	return [...fields, ...tabFields];
 };
 
-const escapeHtml = (value: any): string => String(value ?? '')
-	.replace(/&/g, '&amp;')
-	.replace(/</g, '&lt;')
-	.replace(/>/g, '&gt;')
-	.replace(/"/g, '&quot;')
-	.replace(/'/g, '&#039;');
-
+const escapeHtml = (value: string | number | boolean | null | undefined): string =>
+    String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
 
 const createForm = (options : any) : Form => {
 	const standaloneFields = Array.isArray(options.fields) ? options.fields : [];
@@ -107,6 +108,8 @@ const createForm = (options : any) : Form => {
 				return TextAreaField.markup(field, val)	
 			case 'reference':
 				return ReferenceField.markup(field, val)
+			case 'collection':
+				return CollectionField.markup(field, val)
 			case 'tags':
 				return TagsField.markup(field, val)
 			default:
@@ -239,6 +242,7 @@ const createForm = (options : any) : Form => {
 		MediaField.init(context)
 		ListField.init(context)
 		ReferenceField.init(context)
+		CollectionField.init(context)
 		TagsField.init(context)
 		markRequiredFields();
 	};
@@ -266,6 +270,7 @@ const createForm = (options : any) : Form => {
 			...ListField.data(context),
 			...TextAreaField.data(context), 
 			...ReferenceField.data(context),
+			...CollectionField.data(context),
 			...TagsField.data(context)
 		};
 		return data

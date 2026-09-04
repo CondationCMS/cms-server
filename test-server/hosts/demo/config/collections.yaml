@@ -1,0 +1,9 @@
+collections:
+  blog:
+    detail:
+      route: /blog/{publish_date:yyyy}/{publish_date:MM}/{id}
+      template: collections/blog-detail.html
+  authors:
+    detail:
+      route: /collections/authors/{slug}
+      template: collections/author-detail.html

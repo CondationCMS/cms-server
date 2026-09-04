@@ -48,5 +48,6 @@ public class MenuManagerUiActionExtension extends AbstractExtensionPoint impleme
             scriptAction = @ScriptAction(module = "/manager/actions/menu/manage-menus")
     )
     public void manage_menus() {
+        // can be empty
     }
 }

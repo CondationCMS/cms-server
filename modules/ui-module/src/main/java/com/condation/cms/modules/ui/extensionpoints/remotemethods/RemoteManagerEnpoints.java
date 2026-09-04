@@ -99,6 +99,16 @@ public class RemoteManagerEnpoints extends AbstractRemoteMethodeExtension {
 			throw new RPCException(0, e.getMessage());
 		}
 	}
+
+	@RemoteMethod(name = "manager.contentTypes.collections", permissions = {Permissions.CONTENT_EDIT})
+	public Object getCollectionTypes(Map<String, Object> parameters) throws RPCException {
+		try {
+			return uiHooks().contentTypes().getCollections();
+		} catch (Exception ex) {
+			log.error("could not load collection editor definitions", ex);
+			throw new RPCException(0, ex.getMessage());
+		}
+	}
 	
 	@RemoteMethod(name = "manager.token.createCSRF", permissions = {Permissions.CONTENT_EDIT})
 	public Object createCSRFToken(Map<String, Object> parameters) throws RPCException {

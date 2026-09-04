@@ -26,6 +26,7 @@ import { getContentNode } from '@cms/modules/rpc/rpc-content.js'
 import { getPageTemplates } from '@cms/modules/rpc/rpc-manager.js'
 import { createVariant, getVariants } from '@cms/modules/rpc/rpc-variant.js'
 import { showToast } from '@cms/modules/toast.js'
+import { ensureVariantsSupported } from '@cms/modules/variant-support.js'
 
 const value = (id: string): string =>
 	(document.getElementById(id) as HTMLInputElement | HTMLSelectElement)?.value.trim() ?? '';
@@ -58,10 +59,11 @@ const validate = (): boolean => {
 
 export const runAction = async () => {
 	try {
-		const [activeContentNode, templatesResponse] = await Promise.all([
-			getContentNode({ url: getPreviewUrl() }),
-			getPageTemplates({})
-		]);
+		const activeContentNode = await getContentNode({ url: getPreviewUrl() });
+		if (!ensureVariantsSupported(activeContentNode.result)) {
+			return;
+		}
+		const templatesResponse = await getPageTemplates({});
 		const variantContext = await getVariants({ uri: activeContentNode.result.uri });
 		const templates = Array.from(templatesResponse.result ?? [])
 			.sort((left: any, right: any) => String(left.name).localeCompare(String(right.name)));

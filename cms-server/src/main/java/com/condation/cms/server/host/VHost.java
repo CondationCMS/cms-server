@@ -70,6 +70,7 @@ import com.condation.cms.server.filter.RequestLoggingFilter;
 import com.condation.cms.server.filter.PreviewFilter;
 import com.condation.cms.server.handler.StaticFileHandler;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
+import com.condation.cms.server.handler.content.JettyCollectionHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
 import com.condation.cms.server.handler.content.JettyViewHandler;
@@ -165,6 +166,16 @@ public class VHost {
             injector.getInstance(EventBus.class).syncPublish(new HostReloadedEvent(id()));
         } catch (Exception e) {
             log.error("", e);
+        }
+    }
+
+    public void reindex() {
+        try {
+            injector.getInstance(ConfigManagement.class).reload();
+            injector.getInstance(FileDB.class).reindex();
+            log.info("reindex of host {} completed", id());
+        } catch (Exception e) {
+            log.error("reindex of host {} failed", id(), e);
         }
     }
 
@@ -402,6 +413,7 @@ public class VHost {
         contentHandler = injector.getInstance(JettyContentHandler.class);
 
         var taxonomyHandler = injector.getInstance(JettyTaxonomyHandler.class);
+        var collectionHandler = injector.getInstance(JettyCollectionHandler.class);
         var viewHandler = injector.getInstance(JettyViewHandler.class);
         var routesHandler = injector.getInstance(RoutesHandler.class);
         var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
@@ -422,6 +434,7 @@ public class VHost {
                 uiPreviewFilter,
                 viewHandler,
                 taxonomyHandler,
+                collectionHandler,
                 contentHandler
         );
 

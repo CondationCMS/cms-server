@@ -47,6 +47,8 @@ public interface DBFileSystem {
 
 	ReadOnlyFile contentBase();
 
+	ReadOnlyFile collectionsBase();
+
 	ReadOnlyFile assetBase();
 
 	/**

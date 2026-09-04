@@ -22,8 +22,13 @@ package com.condation.cms.content.template.functions;
  */
 
 
+import com.condation.cms.api.configuration.configs.CollectionConfiguration;
+import com.condation.cms.api.db.collection.CollectionItem;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
+import com.condation.cms.content.CollectionRouteTemplate;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -37,5 +42,30 @@ public class LinkFunction {
 	
 	public String createUrl (String url) {
 		return HTTPUtil.modifyUrl(url, requestContext);
+	}
+
+	/**
+	 * Creates the configured detail URL for a collection item.
+	 *
+	 * @param item collection item to link to
+	 * @return context-aware detail URL
+	 */
+	public String collectionUrl(CollectionItem item) {
+		Objects.requireNonNull(item, "collection item must not be null");
+		var configuration = requestContext.get(ConfigurationFeature.class)
+				.configuration()
+				.get(CollectionConfiguration.class);
+		if (configuration == null) {
+			throw new IllegalStateException("collection configuration is not available");
+		}
+
+		var definition = configuration.collection(item.collection())
+				.orElseThrow(() -> new IllegalArgumentException(
+						"collection is not configured: " + item.collection()));
+		var detail = definition.detailPage()
+				.orElseThrow(() -> new IllegalArgumentException(
+						"collection has no detail route: " + item.collection()));
+		var route = new CollectionRouteTemplate(detail).render(item.id(), item.meta());
+		return createUrl(route);
 	}
 }

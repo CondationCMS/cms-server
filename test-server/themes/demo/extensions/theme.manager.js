@@ -40,6 +40,50 @@ const UnPublishDateField = {
 
 
 $hooks.registerFilter("manager/contentTypes/register", (contentTypes) => {
+	contentTypes.registerCollection({
+		name: "blog",
+		label: "Blog",
+		forms: {
+			edit: {
+				fields: [
+					TitleField,
+					DescriptionField,
+					{
+						type: "markdown",
+						name: "content",
+						title: "Content",
+						height: "60vh"
+					}
+				]
+			}
+		}
+	});
+
+	contentTypes.registerCollection({
+		name: "authors",
+		label: "Authors",
+		forms: {
+			edit: {
+				fields: [
+					TitleField,
+					DescriptionField,
+					{
+						type: "text",
+						name: "slug",
+						title: "Slug",
+						required: true
+					},
+					{
+						type: "markdown",
+						name: "content",
+						title: "Content",
+						height: "60vh"
+					}
+				]
+			}
+		}
+	});
+
 	contentTypes.registerPageTemplate({
 		name: "StartPage",
 		template: "start.html",
@@ -53,6 +97,14 @@ $hooks.registerFilter("manager/contentTypes/register", (contentTypes) => {
 								type: "reference",
 								name: "linked_page",
 								title: "Verlinkte Seite"
+							},
+							{
+								type: "collection",
+								name: "author",
+								title: "Autor",
+								options: {
+									collection: "authors"
+								}
 							},
 							{
 								type: "media",

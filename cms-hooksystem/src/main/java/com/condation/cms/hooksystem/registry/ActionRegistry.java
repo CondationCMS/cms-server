@@ -35,13 +35,13 @@ import java.util.List;
  */
 public class ActionRegistry {
 
-    private final Multimap<String, ActionHook> hooks = ArrayListMultimap.create();
+    private final Multimap<String, ActionHook<?>> hooks = ArrayListMultimap.create();
     
     public <T> void register(String name, ActionFunction<T> function, int priority) {
         hooks.put(name, new ActionHook<>(name, priority, function));
     }
 
-    public List<ActionHook> get(String name) {
+    public List<ActionHook<?>> get(String name) {
         return hooks.get(name).stream()
                 .sorted(Comparator.comparingInt(ActionHook::priority))
                 .toList();

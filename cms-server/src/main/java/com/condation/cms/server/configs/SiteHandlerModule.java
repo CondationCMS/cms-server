@@ -44,6 +44,7 @@ import com.condation.cms.server.filter.PreviewFilter;
 import com.condation.cms.server.handler.StaticFileHandler;
 import com.condation.cms.server.handler.WellKnownHandler;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
+import com.condation.cms.server.handler.content.JettyCollectionHandler;
 import com.condation.cms.server.handler.content.JettyContentHandler;
 import com.condation.cms.server.handler.content.JettyTaxonomyHandler;
 import com.condation.cms.server.handler.content.JettyViewHandler;
@@ -73,6 +74,7 @@ public class SiteHandlerModule extends AbstractModule {
 	protected void configure() {
 		
 		bind(JettyViewHandler.class).in(Singleton.class);
+		bind(JettyCollectionHandler.class).in(Singleton.class);
 		bind(JettyContentHandler.class).in(Singleton.class);
 		bind(JettyTaxonomyHandler.class).in(Singleton.class);
 		bind(RoutesHandler.class).in(Singleton.class);

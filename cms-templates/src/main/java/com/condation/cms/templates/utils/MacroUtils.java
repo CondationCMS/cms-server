@@ -50,7 +50,7 @@ public class MacroUtils {
 
             List<String> paramList = new ArrayList<>();
             if (!params.isEmpty()) {
-                paramList = Arrays.asList(params.split("\\s*,\\s*"));
+                paramList = Arrays.asList(params.split("\\s*+,\\s*+"));
             }
 
             return Optional.of(new MacroTag.Macro(methodName, paramList));

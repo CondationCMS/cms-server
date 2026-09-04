@@ -22,6 +22,8 @@ package com.condation.cms.modules.ui.http;
  */
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.CurrentCollectionItemFeature;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.ui.rpc.RPCError;
@@ -50,6 +52,8 @@ import org.eclipse.jetty.util.Callback;
 public class RemoteCallHandler extends JettyHandler {
 
 	public static final String CONTENT_URI_HEADER = "X-CMS-Content-Uri";
+	public static final String COLLECTION_HEADER = "X-CMS-Collection";
+	public static final String COLLECTION_ITEM_HEADER = "X-CMS-Collection-Item";
 
 	private final RemoteMethodService remoteCallService;
 	private final SiteModuleContext moduleContext;
@@ -93,6 +97,9 @@ public class RemoteCallHandler extends JettyHandler {
 	}
 
 	private void setCurrentContentNode(Request request) {
+		if (setCurrentCollectionItem(request)) {
+			return;
+		}
 		var uri = request.getHeaders().get(CONTENT_URI_HEADER);
 		if (uri == null || uri.isBlank()) {
 			return;
@@ -107,6 +114,33 @@ public class RemoteCallHandler extends JettyHandler {
 						CurrentNodeFeature.class,
 						new CurrentNodeFeature(node)
 				));
+	}
+
+	private boolean setCurrentCollectionItem(Request request) {
+		var collectionName = request.getHeaders().get(COLLECTION_HEADER);
+		if (collectionName == null || collectionName.isBlank()) {
+			return false;
+		}
+		var itemId = request.getHeaders().get(COLLECTION_ITEM_HEADER);
+		if (itemId == null || itemId.isBlank()) {
+			return false;
+		}
+		if (!moduleContext.has(DBFeature.class)) {
+			return false;
+		}
+		try {
+			var item = moduleContext.get(DBFeature.class).db()
+					.getCollections().collection(collectionName.trim()).item(itemId.trim());
+			item.ifPresent(value -> {
+				requestContext.add(CurrentCollectionItemFeature.class, new CurrentCollectionItemFeature(value));
+				requestContext.add(CurrentNodeFeature.class, new CurrentNodeFeature(new ContentNode(
+						value.path(), value.path(), value.id() + ".md", value.meta())));
+			});
+			return item.isPresent();
+		} catch (IllegalArgumentException ex) {
+			log.warn("invalid collection preview context", ex);
+			return false;
+		}
 	}
 
 	private RPCResult buildErrorResult(Exception e, String method) {

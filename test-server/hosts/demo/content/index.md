@@ -41,6 +41,7 @@ taxonomy:
   - kinderkleidung
   - Small Test
   - New tag
+author: thorsten
 ---
 
 # Demo Project

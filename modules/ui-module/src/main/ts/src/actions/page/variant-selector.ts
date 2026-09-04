@@ -29,6 +29,7 @@ import {
 	VariantSelectorDto
 } from '@cms/modules/rpc/rpc-variant.js'
 import { showToast } from '@cms/modules/toast.js'
+import { ensureVariantsSupported } from '@cms/modules/variant-support.js'
 
 const SELECT_ID = 'cms-variant-selector';
 
@@ -55,6 +56,9 @@ const showError = (error: unknown) => showToast({
 export const runAction = async () => {
 	try {
 		const contentNode = await getContentNode({ url: getPreviewUrl() });
+		if (!ensureVariantsSupported(contentNode.result)) {
+			return;
+		}
 		const result = await getVariantSelectors(contentNode.result.uri);
 
 		openModal({

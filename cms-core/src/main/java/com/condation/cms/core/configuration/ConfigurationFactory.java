@@ -25,6 +25,7 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.ReloadMediaConfig;
+import com.condation.cms.api.eventbus.events.ReloadCollectionsConfig;
 import com.condation.cms.api.eventbus.events.ReloadParentThemeConfig;
 import com.condation.cms.api.eventbus.events.ReloadServerConfig;
 import com.condation.cms.api.eventbus.events.ReloadSiteConfig;
@@ -51,6 +52,7 @@ import java.util.List;
  * @author t.marx
  */
 public class ConfigurationFactory {
+	private static final String CONFIG_RELOAD_CRON = "0/10 * * * * ?";
 
 	public static ConfigManagement create(Path hostBase, EventBus eventBus, CronJobScheduler cronScheduler) throws IOException {
 		ConfigManagement management = new ConfigManagement();
@@ -61,7 +63,7 @@ public class ConfigurationFactory {
 				serverConfiguration.getString("env", "dev"), 
 				hostBase,
 				new CompositeReload(
-						new CronReload("0/10 * * * * ?", cronScheduler),
+					new CronReload(CONFIG_RELOAD_CRON, cronScheduler),
 						new EventReload<>(eventBus, ReloadSiteConfig.class)
 				)
 		);
@@ -69,8 +71,16 @@ public class ConfigurationFactory {
 				eventBus, 
 				hostBase,
 				new CompositeReload(
-						new CronReload("0/10 * * * * ?", cronScheduler),
+					new CronReload(CONFIG_RELOAD_CRON, cronScheduler),
 						new EventReload<>(eventBus, ReloadTaxonomyConfig.class)
+				)
+		);
+		final com.condation.cms.core.configuration.configs.CollectionConfiguration collectionConfiguration = collectionConfiguration(
+				eventBus,
+				hostBase,
+				new CompositeReload(
+					new CronReload(CONFIG_RELOAD_CRON, cronScheduler),
+						new EventReload<>(eventBus, ReloadCollectionsConfig.class)
 				)
 		);
 
@@ -97,6 +107,7 @@ public class ConfigurationFactory {
 		management.add(serverConfiguration.id(), serverConfiguration);
 		management.add(siteConfiguration.id(), siteConfiguration);
 		management.add(taxonomyConfiguration.id(), taxonomyConfiguration);
+		management.add(collectionConfiguration.id(), collectionConfiguration);
 		management.add(mediaConfiguration.id(), mediaConfiguration);
 		management.add(themeConfiguration.id(), themeConfiguration);
 		management.add(themeConfiguration.id(), parentThemeConfiguration);
@@ -109,9 +120,12 @@ public class ConfigurationFactory {
 	}
 	private static SimpleConfiguration themeConfiguration(String id, EventBus eventBus, String theme) throws IOException {
 		var themeBase = ServerUtil.getPath(Constants.Folders.THEMES);
-		ReloadStrategy reloadStrategy = "parent-theme".equals(id)
-				? new EventReload<>(eventBus, ReloadParentThemeConfig.class)
-				: new EventReload<>(eventBus, ReloadThemeConfig.class);
+		ReloadStrategy reloadStrategy;
+		if ("parent-theme".equals(id)) {
+			reloadStrategy = new EventReload<>(eventBus, ReloadParentThemeConfig.class);
+		} else {
+			reloadStrategy = new EventReload<>(eventBus, ReloadThemeConfig.class);
+		}
 		return SimpleConfiguration.builder(eventBus)
 				.id(id)
 				.reloadStrategy(reloadStrategy)
@@ -188,6 +202,18 @@ public class ConfigurationFactory {
 				.hostBase(hostBase)
 				.addSource(YamlConfigSource.build(hostBase.resolve("config/taxonomy.yaml")))
 				.addSource(TomlConfigSource.build(hostBase.resolve("config/taxonomy.toml")))
+				.build();
+	}
+
+	private static com.condation.cms.core.configuration.configs.CollectionConfiguration collectionConfiguration(
+			EventBus eventBus,
+			Path hostBase,
+			ReloadStrategy reloadStrategy) throws IOException {
+		return com.condation.cms.core.configuration.configs.CollectionConfiguration.builder(eventBus)
+				.id("collections")
+				.reloadStrategy(reloadStrategy)
+				.addSource(YamlConfigSource.build(hostBase.resolve("config/collections.yaml")))
+				.addSource(TomlConfigSource.build(hostBase.resolve("config/collections.toml")))
 				.build();
 	}
 }

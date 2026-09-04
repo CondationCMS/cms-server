@@ -66,6 +66,12 @@ const executeRemoteMethodCall = async (method : string, parameters : any) => {
 			...(csrfToken && { 'X-CSRF-Token': csrfToken }),
 			...(activePreviewContent?.uri && {
 				'X-CMS-Content-Uri': activePreviewContent.uri
+			}),
+			...(activePreviewContent?.contentKind === 'collection' && activePreviewContent.collection && {
+				'X-CMS-Collection': activePreviewContent.collection
+			}),
+			...(activePreviewContent?.contentKind === 'collection' && activePreviewContent.collectionItemId && {
+				'X-CMS-Collection-Item': activePreviewContent.collectionItemId
 			})
 		},
 		body: JSON.stringify(data)

@@ -30,7 +30,11 @@ import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.feature.features.InjectorFeature;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.CurrentCollectionItemFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
+import com.condation.cms.api.feature.features.EventBusFeature;
+import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
+import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.ui.rpc.RPCException;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.HTTPUtil;
@@ -57,6 +61,7 @@ import com.condation.cms.modules.ui.utils.NumberUtils;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.List;
+import java.nio.file.Path;
 
 /**
  *
@@ -69,10 +74,10 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 	private static final String TRANSITIONS = "transitions";
 	private static final String STATUS = "status";
 	
-	private Optional<ContentNode> getContentNode(String uri) {
+	private Optional<WorkflowTarget> getContentTarget(String uri) {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
-		var contentFile = getContentFile(uri);
+		var contentFile = contentBase.resolve(uri);
 
 		if (!contentFile.exists()) {
 			return Optional.empty();
@@ -85,7 +90,7 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 			return Optional.empty();
 		}
 
-		return Optional.of(
+		return Optional.of(new WorkflowTarget(
 				new ContentNode(
 						node.get().uri(),
                         node.get().url(),
@@ -93,29 +98,58 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 						node.get().data(),
 						node.get().directory(),
 						node.get().children(),
-						node.get().lastmodified()
-				));
+						node.get().lastmodified()),
+				contentFile,
+				db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri),
+				false,
+				null,
+				null));
 	}
 
-	private ReadOnlyFile getContentFile(String uri) {
+	private Optional<WorkflowTarget> getWorkflowTarget(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getFileSystem().contentBase();
-		return contentBase.resolve(uri);
+		if (!parameters.containsKey("uri")
+				&& getRequestContext().has(CurrentCollectionItemFeature.class)) {
+			var item = getRequestContext().get(CurrentCollectionItemFeature.class).item();
+			if (!db.getCollections().isLocal(item.collection())) {
+				return Optional.empty();
+			}
+			var node = new ContentNode(
+					item.path(),
+					item.path(),
+					item.id() + ".md",
+					new HashMap<>(item.meta()));
+			return Optional.of(new WorkflowTarget(
+					node,
+					db.getFileSystem().collectionsBase().resolve(item.path()),
+					db.getFileSystem().resolve(Constants.Folders.COLLECTIONS).resolve(item.path()),
+					true,
+					item.collection(),
+					item.id()));
+		}
+		return getContentTarget(contentUri(parameters));
+	}
+
+	private record WorkflowTarget(
+			ContentNode node,
+			ReadOnlyFile file,
+			Path writableFile,
+			boolean collection,
+			String collectionName,
+			String itemId) {
 	}
     
 	@RemoteMethod(name = "workflow.manager.node.status", permissions = {Permissions.CONTENT_EDIT})
 	public Object nodeStatus(Map<String, Object> parameters) throws RPCException {
 
-		var uri = contentUri(parameters);
 		Map<String, Object> result = new HashMap<>();
 
-		var contentNodeOpt = getContentNode(uri);
-
-		if (contentNodeOpt.isEmpty()) {
+		var target = getWorkflowTarget(parameters);
+		if (target.isEmpty()) {
 			return result;
 		}
 
-        var node = contentNodeOpt.get();
+		var node = target.get().node();
         final Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
 
 		var status = workflow.getStatusProvider().status(node);
@@ -129,18 +163,16 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 	@RemoteMethod(name = "workflow.transitions.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getTransitions(Map<String, Object> parameters) throws RPCException {
 
-		var uri = contentUri(parameters);
-
 		Map<String, Object> result = new HashMap<>();
 
-		var contentNodeOpt = getContentNode(uri);
-		if (contentNodeOpt.isEmpty()) {
+		var target = getWorkflowTarget(parameters);
+		if (target.isEmpty()) {
 			result.put(TRANSITIONS, java.util.List.of());
 			return result;
 		}
 
 		Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
-		result.put(TRANSITIONS, transitionDtos(allowedTransitions(workflow, contentNodeOpt.get())));
+		result.put(TRANSITIONS, transitionDtos(allowedTransitions(workflow, target.get().node())));
 
 		return result;
 	}
@@ -174,17 +206,16 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 	public Object transit(Map<String, Object> parameters) throws RPCException {
 		var result = new HashMap<String, Object>();
 		try {
-			var uri = contentUri(parameters);
 			var transitionId = requiredTransitionId(parameters);
 
 			final DB db = getContext().get(DBFeature.class).db();
 
-			var contentNodeOpt = getContentNode(uri);
-			if (contentNodeOpt.isEmpty()) {
+			var target = getWorkflowTarget(parameters);
+			if (target.isEmpty()) {
 				throw new RPCException(404, "content node not found");
 			}
 
-			var contentNode = contentNodeOpt.get();
+			var contentNode = target.get().node();
 
 			Workflow workflow = getContext().get(WorkflowFeature.class).workflow();
 			WFTransition transition = workflow.getNextTransitions(contentNode).stream()
@@ -194,12 +225,17 @@ public class RemoteWorkflowEndpointsExtension extends AbstractRemoteMethodeExten
 			ensureAllowed(transition);
 			workflow.transit(transitionId, contentNode);
 
-			var contentFile = getContentFile(uri);
-
-			ContentFileParser parser = new ContentFileParser(contentFile);
-
-			var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
-			YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, contentNode.data(), parser.getContent());
+			ContentFileParser parser = new ContentFileParser(target.get().file());
+			YamlHeaderUpdater.saveMarkdownFileWithHeader(
+					target.get().writableFile(), contentNode.data(), parser.getContent());
+			if (target.get().collection()) {
+				db.getCollections().refresh(target.get().collectionName(), target.get().itemId());
+			} else {
+				getContext().get(EventBusFeature.class).eventBus()
+						.publish(new ReIndexContentMetaDataEvent(contentNode.uri()));
+				db.getFileSystem().flushContentChanges();
+			}
+			getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateContentCacheEvent());
 
 			result.put("success", true);
 		} catch (RPCException ex) {

@@ -27,6 +27,7 @@ import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.db.Page;
+import com.condation.cms.api.db.collection.CollectionItem;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.extensions.ContentQueryOperatorExtensionPoint;
@@ -89,6 +90,14 @@ public class DefaultContentRenderer implements ContentRenderer {
 	private final SiteProperties siteProperties;
 	private final ModuleManager moduleManager;
 
+	private record ResolvedRenderInput(
+			String uri,
+			Map<String, List<SectionEntry>> sectionEntries,
+			Map<String, Object> meta,
+			String rawContent,
+			Optional<ContentNode> contentNode) {
+	}
+
 	@Override
 	public String render(final ReadOnlyFile contentFile, final RequestContext context) throws IOException {
 		return render(contentFile, context, Collections.emptyMap());
@@ -138,6 +147,30 @@ public class DefaultContentRenderer implements ContentRenderer {
 	}
 
 	@Override
+	public String renderCollection(
+			ReadOnlyFile collectionFile,
+			ContentNode collectionNode,
+			CollectionItem item,
+			String template,
+			RequestContext context) throws IOException {
+		var meta = new HashMap<>(item.meta());
+		meta.put("template", template);
+		return renderResolved(
+				collectionFile,
+				context,
+				new ResolvedRenderInput(
+						collectionNode.url(),
+						Collections.emptyMap(),
+						meta,
+						item.content(),
+						Optional.of(collectionNode)),
+				model -> {
+					model.values.put("collection_item", item);
+					model.values.put("collection", db.getCollections().collection(item.collection()));
+				});
+	}
+
+	@Override
 	public String render(final ReadOnlyFile contentFile, final RequestContext context,
 			final Map<String, List<SectionEntry>> sectionEntries,
 			final Map<String, Object> meta, final String rawContent, final Consumer<TemplateEngine.Model> modelExtending
@@ -145,7 +178,28 @@ public class DefaultContentRenderer implements ContentRenderer {
 		var uri = PathUtil.toRelativeFile(contentFile, db.getFileSystem().contentBase());
 		
 		Optional<ContentNode> contentNode = db.getContent().byUri(uri);
+		return renderResolved(
+				contentFile,
+				context,
+				new ResolvedRenderInput(
+						uri,
+						sectionEntries,
+						meta,
+						rawContent,
+						contentNode),
+				modelExtending);
+	}
 
+	private String renderResolved(
+			ReadOnlyFile contentFile,
+			RequestContext context,
+			ResolvedRenderInput input,
+			Consumer<TemplateEngine.Model> modelExtending) throws IOException {
+		var uri = input.uri();
+		var sectionEntries = input.sectionEntries();
+		var meta = input.meta();
+		var rawContent = input.rawContent();
+		var contentNode = input.contentNode();
 		TemplateEngine.Model model = new TemplateEngine.Model(
 				contentFile, 
 				contentNode.orElse(null),

@@ -59,6 +59,7 @@ import com.condation.cms.api.workflow.WFTransition;
 import com.condation.cms.api.workflow.Workflow;
 import com.condation.cms.api.workflow.WorkflowInstance;
 import com.condation.cms.auth.services.AuthService;
+import com.condation.cms.content.CollectionResolver;
 import com.condation.cms.content.ContentRenderer;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.content.DefaultContentParser;
@@ -374,6 +375,15 @@ public class SiteModule extends AbstractModule {
 	public ContentResolver contentResolver(ContentRenderer contentRenderer,
 			FileDB db, VariantResolver variantResolver, VariantSelector variantSelector) {
 		return new ContentResolver(contentRenderer, db, variantResolver, variantSelector);
+	}
+
+	@Provides
+	@Singleton
+	public CollectionResolver collectionResolver(
+			ContentRenderer contentRenderer,
+			FileDB db,
+			Configuration configuration) {
+		return new CollectionResolver(contentRenderer, db, configuration);
 	}
 
 	@Provides

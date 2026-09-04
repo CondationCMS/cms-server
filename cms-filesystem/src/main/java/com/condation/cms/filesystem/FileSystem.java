@@ -73,7 +73,7 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	private final Path hostBaseDirectory;
 	private final EventBus eventBus;
 	final Function<Path, Map<String, Object>> contentParser;
-	private final Map<String, ?> indexFields;
+	private Map<String, ?> indexFields;
 
 	private MultiRootRecursiveWatcher fileWatcher;
 	private ContentChangeCoordinator contentChangeCoordinator;
@@ -337,6 +337,16 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		contentChangeCoordinator.flushNow();
 	}
 
+	public void reindex(Map<String, ?> indexFields) {
+		var fields = indexFields == null ? Map.<String, Object>of() : Map.copyOf(indexFields);
+		if (metaData instanceof PersistentMetaData persistentMetaData) {
+			persistentMetaData.configureIndexFields(fields);
+		}
+		this.indexFields = fields;
+		contentChangeCoordinator.requestFullResync();
+		contentChangeCoordinator.flushNow();
+	}
+
 	private void processContentChanges(boolean fullResync, Set<Path> paths) {
 		MdcScope.forSite(siteId).run(() -> {
 			try {
@@ -398,6 +408,12 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 	@Override
 	public ReadOnlyFile contentBase() {
 		var path = resolve(Constants.Folders.CONTENT);
+		return new NIOReadOnlyFile(path, path);
+	}
+
+	@Override
+	public ReadOnlyFile collectionsBase() {
+		var path = resolve(Constants.Folders.COLLECTIONS);
 		return new NIOReadOnlyFile(path, path);
 	}
 

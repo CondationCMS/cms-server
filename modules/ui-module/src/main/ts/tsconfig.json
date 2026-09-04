@@ -3,10 +3,10 @@
     "outDir": "dist",
     "rootDir": "src",
     "module": "esnext",
-    "target": "es2020",
+    "target": "es2021",
     "allowJs": true,
     "checkJs": false,
-    "lib": ["dom", "es2020"],
+    "lib": ["dom", "es2021"],
     "sourceMap": false,
     "declaration": true,
     "paths": {

@@ -9,7 +9,10 @@
     "allowJs": true,
     "checkJs": false,
     "lib": ["dom", "es2020"],
-    "sourceMap": false
+    "sourceMap": false,
+    "paths": {
+      "@cms/modules/*": ["./node_modules/condation-cms-ui/dist/js/modules/*"]
+    }
   },
   "include": [
     "src/**/*",

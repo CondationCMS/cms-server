@@ -60,8 +60,8 @@ public class ImageTags extends RegisterShortCodesExtensionPoint {
 				.formatted(
 						mediaUrl,
 						StringEscapeUtils.ESCAPE_HTML4.translate(altText),
-						media.meta().getOrDefault("width", -1),
-						media.meta().getOrDefault("height", -1)
+						(int) media.meta().getOrDefault("width", -1),
+						(int) media.meta().getOrDefault("height", -1)
 				);
 	}
 	

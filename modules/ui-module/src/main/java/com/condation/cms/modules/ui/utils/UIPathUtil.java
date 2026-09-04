@@ -21,7 +21,7 @@ package com.condation.cms.modules.ui.utils;
  * #L%
  */
 import com.condation.cms.api.utils.FileUtils;
-import com.github.slugify.Slugify;
+import com.condation.cms.content.utils.SlugUtil;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -34,16 +34,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UIPathUtil {
 
-	private static final Slugify SLUGIFIER = Slugify.builder()
-			.customReplacement("ä", "ae")
-			.customReplacement("Ä", "ae")
-			.customReplacement("ü", "ue")
-			.customReplacement("Ü", "ue")
-			.customReplacement("ö", "oe")
-			.customReplacement("Ö", "oe")
-			.customReplacement("ß", "ss")
-			.lowerCase(true).build();
-	
 	public static String toUri(final Path contentFile, final Path contentBase) {
 		Path relativize = contentBase.relativize(contentFile);
 //		if (Files.isDirectory(contentFile)) {
@@ -79,7 +69,7 @@ public class UIPathUtil {
 	}
 
 	public static String slugify (String input) {
-		return SLUGIFIER.slugify(input);
+		return SlugUtil.slugify(input);
 	}
 	
 	public static String toValidFilename(String input) {

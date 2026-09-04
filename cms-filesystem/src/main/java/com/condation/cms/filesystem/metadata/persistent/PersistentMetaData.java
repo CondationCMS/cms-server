@@ -25,7 +25,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.db.ContentQuery;
 import com.condation.cms.api.db.NodeVisibility;
-import com.condation.cms.api.db.VariantSearchMode;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldConfiguration;
@@ -58,15 +57,13 @@ import org.h2.mvstore.MVStore;
 public class PersistentMetaData extends AbstractMetaData implements AutoCloseable {
 
 	private final Path hostPath;
-	private final Map<String, IndexFieldDefinition> indexFieldDefinitions;
+	private volatile Map<String, IndexFieldDefinition> indexFieldDefinitions;
 
 	private LuceneIndex index;
 	private MVStore store;
 	private SectionIndex sectionIndex;
 	private UrlIndex urlIndex;
 	private MVMap<String, ContentNode> nodesByPath;
-	
-	private TitleQueryFactory titleQueryFactory;
 
 	public PersistentMetaData(Path hostPath) {
 		this(hostPath, Map.of());
@@ -74,6 +71,10 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 
 	public PersistentMetaData(Path hostPath, Map<String, ?> indexFields) {
 		this.hostPath = hostPath;
+		this.indexFieldDefinitions = IndexFieldConfiguration.parse(indexFields);
+	}
+
+	public synchronized void configureIndexFields(Map<String, ?> indexFields) {
 		this.indexFieldDefinitions = IndexFieldConfiguration.parse(indexFields);
 	}
 
@@ -102,7 +103,6 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		sectionIndex.clear();
 		urlIndex.clear();
 
-		titleQueryFactory = new TitleQueryFactory(LuceneIndex.SEARCH_ANALYZER);
 	}
 
 	@Override
@@ -308,9 +308,4 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		return new LuceneQuery<>(uri, this.index, this, new ExcerptMapperFunction<>(nodeMapper));
 	}
 
-	@Override
-	public TitleQuery searchByTitle (String input) {
-		return new TitleQuery(titleQueryFactory, input, index, this);
-		
-	}
 }

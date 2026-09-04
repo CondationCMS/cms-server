@@ -22,6 +22,7 @@ package com.condation.cms.api.db;
  */
 
 
+import com.condation.cms.api.Constants;
 import java.util.List;
 import java.util.Map;
 
@@ -89,6 +90,17 @@ public interface ContentQuery<T> {
 			final String unit);
 	
 	ContentQuery<T> expression(final String expressions);
+
+	/**
+	 * Restricts the query to items whose title matches the input.
+	 *
+	 * Implementations with a full-text title index should override this method.
+	 * The default keeps existing query implementations source compatible and uses
+	 * their regular title-field matching.
+	 */
+	default ContentQuery<T> searchByTitle(final String input) {
+		return where(Constants.MetaFields.TITLE, input);
+	}
 
 	public static interface Sort<T> {
 		public ContentQuery<T> asc();

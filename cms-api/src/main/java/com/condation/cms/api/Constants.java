@@ -75,6 +75,7 @@ public abstract class Constants {
 	
 	public static class Folders {
 		public static final String CONTENT = "content/";
+		public static final String COLLECTIONS = "collections/";
 		public static final String TEMPLATES = "templates/";
 		public static final String ASSETS = "assets/";
 		public static final String EXTENSIONS = "extensions/";

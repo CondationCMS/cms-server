@@ -53,6 +53,12 @@ export interface ListItemType {
 	form: FormDefinition;
 }
 
+export interface CollectionType {
+	name: string;
+	label: string;
+	forms: Record<string, FormDefinition>;
+}
+
 interface ContentTypeResponse<T> {
 	result: T[];
 }
@@ -79,6 +85,13 @@ const getListItemTypes = async (options : any): Promise<ContentTypeResponse<List
 		parameters: options || {}
 	}
 	return await executeRemoteCall(data);
+};
+
+const getCollectionTypes = async (): Promise<ContentTypeResponse<CollectionType>> => {
+	return await executeRemoteCall({
+		method: "manager.contentTypes.collections",
+		parameters: {}
+	});
 };
 
 const getMediaForm = async (options : any) => {
@@ -138,5 +151,6 @@ export {
 	getShortCodeNames, 
 	getMediaFormats,
 	getListItemTypes,
+	getCollectionTypes,
 	createCSRFToken
 };

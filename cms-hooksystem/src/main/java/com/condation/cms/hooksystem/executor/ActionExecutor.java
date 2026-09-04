@@ -22,6 +22,7 @@ package com.condation.cms.hooksystem.executor;
  */
 
 import com.condation.cms.api.hooks.ActionContext;
+import com.condation.cms.hooksystem.ActionHook;
 import com.condation.cms.hooksystem.registry.ActionRegistry;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -47,7 +48,8 @@ public class ActionExecutor {
 
         registry.get(name).forEach(hook -> {
             try {
-                T result = (T) hook.function().apply(context);
+                var typedHook = (ActionHook<T>) hook;
+                T result = (T) typedHook.function().apply(context);
                 if (result != null) {
                     context.results().add(result);
                 }

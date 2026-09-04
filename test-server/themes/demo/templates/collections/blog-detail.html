@@ -1,0 +1,20 @@
+<!DOCTYPE html SYSTEM>
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		{% include "libs/fragments.html" %}
+	</head>
+
+	<body class="centered">
+		<div id="content" {{ ext.ui.collectionToolbar(collection_item, ["editCollectionItem"]) | raw }}>
+			<h1>{{ node.meta.title }}</h1>
+			<p>{{ node.meta.description }}</p>
+			<div class="container">
+				{{ node.content | raw }}
+			</div>
+		</div>
+	</body>
+
+</html>

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import { showToast } from 'condation-cms-ui/dist/js/modules/toast.js';
+import { showToast } from '@cms/modules/toast.js';
 export async function runAction(parameters) {
     console.log("This is an example action");
     showToast({

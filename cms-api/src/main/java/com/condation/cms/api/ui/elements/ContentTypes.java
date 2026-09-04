@@ -43,6 +43,26 @@ public class ContentTypes {
 	private final Set<PageTemplate> pageTemplates = new LinkedHashSet<>();
 	private final Set<SectionEntryTemplate> sectionEntryTemplates = new LinkedHashSet<>();
 	private final Set<ListItemType> listItemTypes = new LinkedHashSet<>();
+	private final Set<CollectionType> collectionTypes = new LinkedHashSet<>();
+
+	public void registerCollection(CollectionType collectionType) {
+		var registeredType = Objects.requireNonNull(collectionType, "collectionType");
+		collectionTypes.removeIf(existing -> existing.name().equals(registeredType.name()));
+		collectionTypes.add(registeredType);
+	}
+
+	/** JavaScript interop overload. */
+	public void registerCollection(Map<String, Object> collectionType) {
+		registerCollection(CollectionType.fromMap(collectionType));
+	}
+
+	public Optional<CollectionType> getCollection(String name) {
+		return collectionTypes.stream().filter(type -> type.name().equals(name)).findFirst();
+	}
+
+	public Set<CollectionType> getCollections() {
+		return Collections.unmodifiableSet(new LinkedHashSet<>(collectionTypes));
+	}
 
 	public void registerListItemType(ListItemType listItemType) {
 		listItemTypes.add(Objects.requireNonNull(listItemType, "listItemType"));

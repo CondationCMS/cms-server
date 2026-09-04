@@ -26,6 +26,7 @@ import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.eventbus.Event;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.ReIndexHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ReloadHostEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerReadyEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.ServerShutdownInitiated;
@@ -103,6 +104,13 @@ public class JettyServer implements AutoCloseable {
 				});
 	}
 
+	public void reindexVHost(String vhost) {
+		log.info("reindexing host {}", vhost);
+		vhosts.stream()
+				.filter(host -> host.id().equals(vhost))
+				.forEach(host -> MdcScope.forSite(host.id()).run(host::reindex));
+	}
+
 	public void startup() throws IOException {
         
         // init metrics
@@ -146,6 +154,10 @@ public class JettyServer implements AutoCloseable {
 
 		serverEventBus.register(ReloadHostEvent.class, (event) -> {
 			reloadVHost(event.host());
+		});
+
+		serverEventBus.register(ReIndexHostEvent.class, (event) -> {
+			reindexVHost(event.host());
 		});
 
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {

@@ -25,6 +25,7 @@ import { getPreviewUrl, loadPreview } from '@cms/modules/preview.utils.js';
 import { getContentNode } from '@cms/modules/rpc/rpc-content.js';
 import { deleteVariant, getVariants } from '@cms/modules/rpc/rpc-variant.js';
 import { showToast } from '@cms/modules/toast.js';
+import { ensureVariantsSupported } from '@cms/modules/variant-support.js';
 const VARIANT_LIST_ID = 'cms-page-variants';
 const variantTitle = (variant) => {
     const title = variant.meta?.title;
@@ -137,6 +138,9 @@ export const runAction = async () => {
         const contentNode = await getContentNode({
             url: getPreviewUrl()
         });
+        if (!ensureVariantsSupported(contentNode.result)) {
+            return;
+        }
         const result = await getVariants({
             uri: contentNode.result.uri
         });

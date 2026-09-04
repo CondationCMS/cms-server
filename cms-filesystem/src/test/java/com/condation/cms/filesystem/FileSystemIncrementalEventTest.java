@@ -21,7 +21,10 @@ package com.condation.cms.filesystem;
  * #L%
  */
 
+import static org.mockito.Mockito.mock;
+
 import com.condation.cms.api.Constants;
+import com.condation.cms.api.db.ContentNode;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.eventbus.events.ContentChangedEvent;
@@ -29,6 +32,7 @@ import com.condation.cms.api.eventbus.events.InvalidateContentCacheEvent;
 import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -51,7 +55,7 @@ public class FileSystemIncrementalEventTest {
 		writePage(oldDirectory.resolve("nested/child.md"), "/stable-child");
 		writePage(content.resolve("unaffected/page.md"), "/unaffected");
 
-		var fileSystem = new FileSystem("test-site", tempDirectory, Mockito.mock(EventBus.class), file -> {
+		var fileSystem = new FileSystem("test-site", tempDirectory, mock(EventBus.class), file -> {
 			try {
 				return new Yaml().load(Files.readString(file));
 			} catch (Exception ex) {
@@ -133,6 +137,41 @@ public class FileSystemIncrementalEventTest {
 			Assertions.assertThat(parseCount).hasValue(4);
 			Mockito.verify(eventBus, Mockito.times(4)).publish(Mockito.any(ContentChangedEvent.class));
 			Mockito.verify(eventBus, Mockito.times(1)).publish(Mockito.any(InvalidateContentCacheEvent.class));
+		} finally {
+			fileSystem.shutdown();
+		}
+	}
+
+	@Test
+	public void explicitReindexReparsesContentWithUpdatedIndexFields() throws Exception {
+		var content = tempDirectory.resolve("content");
+		Files.createDirectories(content);
+		Files.writeString(content.resolve("location.md"), """
+				status: published
+				location:
+				  latitude: 51.4818
+				  longitude: 7.2162
+				""");
+		var parseCount = new AtomicInteger();
+		var fileSystem = new FileSystem("test-site", tempDirectory, mock(EventBus.class), file -> {
+			parseCount.incrementAndGet();
+			try {
+				return new Yaml().load(Files.readString(file));
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		});
+
+		try {
+			fileSystem.init();
+			fileSystem.reindex(Map.of("location", "geo"));
+
+			Assertions.assertThat(parseCount).hasValue(2);
+			Assertions.assertThat(fileSystem.query((node, excerptLength) -> node)
+					.within("location", 51.4818, 7.2162, 1, "km")
+					.get())
+					.extracting(ContentNode::uri)
+					.containsExactly("location.md");
 		} finally {
 			fileSystem.shutdown();
 		}

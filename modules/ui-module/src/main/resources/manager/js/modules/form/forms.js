@@ -37,6 +37,7 @@ import { MediaField } from "@cms/modules/form/field.media.js";
 import { ListField } from "@cms/modules/form/field.list.js";
 import { TextAreaField } from "@cms/modules/form/field.textarea.js";
 import { ReferenceField } from "@cms/modules/form/field.reference.js";
+import { CollectionField } from "@cms/modules/form/field.collection.js";
 import { TagsField } from "@cms/modules/form/field.tags.js";
 import { i18n } from "@cms/modules/localization.js";
 const getFormFields = (definition) => {
@@ -47,11 +48,11 @@ const getFormFields = (definition) => {
     return [...fields, ...tabFields];
 };
 const escapeHtml = (value) => String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 const createForm = (options) => {
     const standaloneFields = Array.isArray(options.fields) ? options.fields : [];
     const tabs = Array.isArray(options.tabs) ? options.tabs : [];
@@ -101,6 +102,8 @@ const createForm = (options) => {
                 return TextAreaField.markup(field, val);
             case 'reference':
                 return ReferenceField.markup(field, val);
+            case 'collection':
+                return CollectionField.markup(field, val);
             case 'tags':
                 return TagsField.markup(field, val);
             default:
@@ -227,6 +230,7 @@ const createForm = (options) => {
         MediaField.init(context);
         ListField.init(context);
         ReferenceField.init(context);
+        CollectionField.init(context);
         TagsField.init(context);
         markRequiredFields();
     };
@@ -253,6 +257,7 @@ const createForm = (options) => {
             ...ListField.data(context),
             ...TextAreaField.data(context),
             ...ReferenceField.data(context),
+            ...CollectionField.data(context),
             ...TagsField.data(context)
         };
         return data;

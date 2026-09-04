@@ -44,7 +44,7 @@ public class TemplateUtils {
 			return false;
 		}
 
-		String[] parts = expression.split("\\s+\\|\\s+"); // Nur " | " als Trenner verwenden
+		String[] parts = expression.split("\\s++\\|\\s++"); // Nur " | " als Trenner verwenden
 		return parts.length > 1;
 	}
 
@@ -54,7 +54,7 @@ public class TemplateUtils {
 			return filters;
 		}
 
-		String[] parts = expression.split("\\s+\\|\\s+");
+		String[] parts = expression.split("\\s++\\|\\s++");
 		if (parts.length < 2) {
 			return filters;
 		}

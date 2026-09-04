@@ -21,6 +21,7 @@ package com.condation.cms.api.ui.elements;
  * #L%
  */
 
+import com.condation.cms.api.ui.elements.fields.CollectionField;
 import com.condation.cms.api.ui.elements.fields.FormField;
 import com.condation.cms.api.ui.elements.fields.MarkdownField;
 import com.condation.cms.api.ui.elements.fields.NumberField;
@@ -59,9 +60,14 @@ class ContentTypesTest {
 				"contentFolder", "content",
 				"createButton", false,
 				"forms", Map.of("settings", settings)));
+		Map<String, Object> collectionInput = new HashMap<>(Map.of(
+				"name", "blog",
+				"label", "Blog posts",
+				"forms", Map.of("edit", settings)));
 
 		ContentTypes contentTypes = new ContentTypes();
 		contentTypes.registerPageTemplate(input);
+		contentTypes.registerCollection(collectionInput);
 
 		PageTemplate pageTemplate = contentTypes.getPageTemplate("StartPage").orElseThrow();
 		assertThat(pageTemplate).isInstanceOf(PageTemplate.class);
@@ -96,6 +102,10 @@ class ContentTypesTest {
 		assertThat(pageTemplate.getForm("settings").tabs().getFirst().title()).isEqualTo("Details");
 		assertThat(pageTemplate.getForm("settings").tabs().getFirst().fields().getFirst().getName())
 				.isEqualTo("description");
+		assertThat(contentTypes.getCollection("blog")).hasValueSatisfying(collection -> {
+			assertThat(collection.label()).isEqualTo("Blog posts");
+			assertThat(collection.getForm("edit").fields()).hasSize(1);
+		});
 	}
 
 	@Test
@@ -118,18 +128,46 @@ class ContentTypesTest {
 				.forms(Map.of("attributes", form))
 				.build();
 		ListItemType listItemType = new ListItemType("features", form);
+		CollectionType collectionType = new CollectionType("blog", "Blog posts", Map.of("edit", form));
 
 		ContentTypes contentTypes = new ContentTypes();
 		contentTypes.registerPageTemplate(pageTemplate);
 		contentTypes.registerSectionEntryTemplate(sectionEntryTemplate);
 		contentTypes.registerListItemType(listItemType);
+		contentTypes.registerCollection(collectionType);
 
 		assertThat(contentTypes.getPageTemplates()).containsExactly(pageTemplate);
 		assertThat(contentTypes.getSectionEntryTemplates("main")).containsExactly(sectionEntryTemplate);
 		assertThat(contentTypes.getListItemTypes()).containsExactly(listItemType);
+		assertThat(contentTypes.getCollections()).containsExactly(collectionType);
 		assertThat(pageTemplate.createButton()).isTrue();
 		assertThat(form.fields()).allMatch(FormField.class::isInstance);
 		assertThat(form.tabs()).singleElement()
 				.satisfies(tab -> assertThat(tab.fields()).allMatch(FormField.class::isInstance));
+	}
+
+	@Test
+	void mapsCollectionFieldAndItsConfiguredCollection() {
+		Map<String, Object> collectionField = Map.of(
+				"type", "collection",
+				"name", "author",
+				"title", "Author",
+				"required", true,
+				"options", Map.of("collection", "authors"));
+		Map<String, Object> input = Map.of(
+				"name", "Article",
+				"template", "article.html",
+				"forms", Map.of("settings", Map.of("fields", List.of(collectionField))));
+
+		ContentTypes contentTypes = new ContentTypes();
+		contentTypes.registerPageTemplate(input);
+
+		assertThat(contentTypes.getPageTemplate("Article").orElseThrow().getForm("settings").fields())
+				.singleElement()
+				.isInstanceOfSatisfying(CollectionField.class, field -> {
+					assertThat(field.getName()).isEqualTo("author");
+					assertThat(field.isRequired()).isTrue();
+					assertThat(field.getOptions().collection()).isEqualTo("authors");
+				});
 	}
 }

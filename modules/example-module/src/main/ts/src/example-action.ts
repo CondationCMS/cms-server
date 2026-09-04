@@ -19,7 +19,7 @@
  * #L%
  */
 
-import { showToast } from 'condation-cms-ui/dist/js/modules/toast.js';
+import { showToast } from '@cms/modules/toast.js';
 
 export async function runAction(parameters : any) : Promise<void> {
 	console.log("This is an example action");

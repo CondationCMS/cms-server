@@ -29,9 +29,12 @@ import com.condation.cms.api.eventbus.events.ReIndexContentMetaDataEvent;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
 import com.condation.cms.api.feature.features.DBFeature;
 import com.condation.cms.api.feature.features.CurrentNodeFeature;
+import com.condation.cms.api.feature.features.CurrentCollectionItemFeature;
 import com.condation.cms.api.feature.features.EventBusFeature;
 import com.condation.cms.api.feature.features.RequestFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
+import com.condation.cms.api.feature.features.ConfigurationFeature;
+import com.condation.cms.api.configuration.configs.CollectionConfiguration;
 import com.condation.cms.api.ui.extensions.UIRemoteMethodExtensionPoint;
 import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.ContentFileParser;
@@ -50,6 +53,7 @@ import com.condation.cms.api.utils.SectionUtil;
 import com.condation.cms.content.SectionEntry;
 import com.condation.cms.content.ConfigurableVariantSelector;
 import com.condation.cms.content.VariantResolver;
+import com.condation.cms.content.CollectionRouteResolver;
 import com.condation.cms.modules.ui.utils.FormHelper;
 import com.condation.cms.modules.ui.utils.MarkdownHelper;
 import com.condation.cms.modules.ui.utils.MetaConverter;
@@ -70,24 +74,22 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object getContent(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getFileSystem().contentBase();
-
-		var uri = contentUri(parameters);
-
-		var contentFile = contentBase.resolve(uri);
+		var target = editableTarget(parameters, db);
 
 		Map<String, Object> result = new HashMap<>();
-		result.put("uri", uri);
-		if (contentFile != null) {
+		result.put("uri", target.uri());
+		if (target.file().exists()) {
 			try {
-				ContentFileParser parser = new ContentFileParser(contentFile);
-				result.put("content", parser.getContent());
+				ContentFileParser parser = new ContentFileParser(target.file());
+				result.put(Parameters.CONTENT, parser.getContent());
 				result.put("meta", parser.getHeader());
 			} catch (IOException ex) {
 				log.error("", ex);
 				throw new RPCException(0, ex.getMessage());
 			}
-		}
+		} else {
+            throw new RPCException(404, "content not found");
+        }
 
 		return result;
 	}
@@ -95,25 +97,19 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "content.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setContent(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getFileSystem().contentBase();
-
-		var updatedContent = FormHelper.getContent(parameters.get("content"));
-		var uri = contentUri(parameters);
-
-		var contentFile = contentBase.resolve(uri);
+		var updatedContent = FormHelper.getContent(parameters.get(Parameters.CONTENT));
+		var target = editableTarget(parameters, db);
 
 		Map<String, Object> result = new HashMap<>();
-		result.put("uri", uri);
-		if (contentFile != null) {
+		result.put("uri", target.uri());
+		if (target.file().exists()) {
 			try {
-				ContentFileParser parser = new ContentFileParser(contentFile);
+				ContentFileParser parser = new ContentFileParser(target.file());
 
 				Map<String, Object> meta = parser.getHeader();
-
-				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
-
-				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, updatedContent);
-				log.debug("file {} saved", uri);
+				YamlHeaderUpdater.saveMarkdownFileWithHeader(target.writableFile(db), meta, updatedContent);
+				refresh(target, db);
+				log.debug(LOG_PATTERN, target.uri());
 			} catch (IOException ex) {
 				log.error("", ex);
 				throw new RPCException(0, ex.getMessage());
@@ -122,13 +118,14 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 
 		return result;
 	}
+    private static final String LOG_PATTERN = "file {} saved";
 	
 	@RemoteMethod(name = "content.replace", permissions = {Permissions.CONTENT_EDIT})
 	public Object replaceContent(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().contentBase();
 
-		var replacement = (String)parameters.get("content");
+		var replacement = (String)parameters.get(Parameters.CONTENT);
 		int start = NumberUtils.toInt(parameters.getOrDefault("start", -1l));
 		int end = NumberUtils.toInt(parameters.getOrDefault("end", -1l));
 		var uri = contentUri(parameters);
@@ -155,7 +152,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 
 				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, parser.getHeader(), updatedContent);
-				log.debug("file {} saved", uri);
+				log.debug(LOG_PATTERN, uri);
 			} catch (IOException ex) {
 				log.error("", ex);
 				throw new RPCException(0, ex.getMessage());
@@ -168,29 +165,22 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 	@RemoteMethod(name = "meta.set", permissions = {Permissions.CONTENT_EDIT})
 	public Object setMeta(Map<String, Object> parameters) throws RPCException {
 		final DB db = getContext().get(DBFeature.class).db();
-		var contentBase = db.getFileSystem().contentBase();
-
 		var updateParam = (Map<String, Map<String, Object>>) parameters.get("meta");
 		var update = MetaConverter.convertMeta(updateParam);
-		var uri = contentUri(parameters);
-
-		var contentFile = contentBase.resolve(uri);
+		var target = editableTarget(parameters, db);
 
 		Map<String, Object> result = new HashMap<>();
-		result.put("uri", uri);
-		if (contentFile != null) {
+		result.put("uri", target.uri());
+		if (target.file().exists()) {
 			try {
-				ContentFileParser parser = new ContentFileParser(contentFile);
+				ContentFileParser parser = new ContentFileParser(target.file());
 
 				Map<String, Object> meta = parser.getHeader();
 				YamlHeaderUpdater.mergeFlatMapIntoNestedMap(meta, update);
 
-				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
-
-				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, parser.getContent());
-				log.debug("file {} saved", uri);
-
-				getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
+				YamlHeaderUpdater.saveMarkdownFileWithHeader(target.writableFile(db), meta, parser.getContent());
+				refresh(target, db);
+				log.debug(LOG_PATTERN, target.uri());
 			} catch (IOException ex) {
 				log.error("", ex);
 				throw new RPCException(0, ex.getMessage());
@@ -233,7 +223,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 						var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(update.uri);
 
 						YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, fileMeta, parser.getContent());
-						log.debug("file {} saved", update.uri);
+						log.debug(LOG_PATTERN, update.uri);
 
 						getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(update.uri));
 					} catch (IOException ex) {
@@ -281,7 +271,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		final DB db = getContext().get(DBFeature.class).db();
 		var contentBase = db.getFileSystem().resolve(Constants.Folders.CONTENT);
 
-		var content = (String) parameters.getOrDefault("content", "");
+		var content = (String) parameters.getOrDefault(Parameters.CONTENT, "");
 		var parentUri = contentUri(parameters, "parentUri");
 		var section = (String) parameters.get("section");
 		var sectionEntryName = (String) parameters.get("sectionEntryName");
@@ -308,7 +298,7 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 				var filePath = db.getFileSystem().resolve(Constants.Folders.CONTENT).resolve(uri);
 
 				YamlHeaderUpdater.saveMarkdownFileWithHeader(filePath, meta, content);
-				log.debug("file {} saved", uri);
+				log.debug(LOG_PATTERN, uri);
 
 				getContext().get(EventBusFeature.class).eventBus().publish(new ReIndexContentMetaDataEvent(uri));
 			} catch (IOException ex) {
@@ -370,8 +360,25 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 		Map<String, Object> result = new HashMap<>();
 		result.put("url", url);
 		if (contentFile == null || canonicalUri == null) {
+			var collectionConfiguration = getContext().get(ConfigurationFeature.class)
+					.configuration().get(CollectionConfiguration.class);
+			var collectionRoute = new CollectionRouteResolver(db, collectionConfiguration).resolve(path);
+			if (collectionRoute.isEmpty()) {
+				return result;
+			}
+			var item = collectionRoute.get().item();
+			result.put("uri", item.path());
+			result.put("canonicalUri", item.path());
+			result.put("variantId", null);
+			result.put("contentKind", "collection");
+			result.put("supportsVariants", false);
+			result.put("collection", item.collection());
+			result.put("collectionItemId", item.id());
+			result.put("sections", Map.of());
 			return result;
 		}
+		result.put("contentKind", "content");
+		result.put("supportsVariants", true);
 
 		var query = com.condation.cms.api.utils.HTTPUtil.queryParameters(requestUri.getQuery());
 		var variantId = query.getOrDefault(
@@ -425,5 +432,51 @@ public class RemoteContentEndpointsExtension extends AbstractExtensionPoint impl
 			return getRequestContext().get(CurrentNodeFeature.class).node().uri();
 		}
 		throw new RPCException(400, parameterName + " must not be blank");
+	}
+
+	private EditableTarget editableTarget(Map<String, Object> parameters, DB db) throws RPCException {
+		if (!parameters.containsKey("uri")
+				&& getRequestContext().has(CurrentCollectionItemFeature.class)) {
+			var item = getRequestContext().get(CurrentCollectionItemFeature.class).item();
+			if (!db.getCollections().isLocal(item.collection())) {
+				throw new RPCException(403, "referenced collection is read-only: " + item.collection());
+			}
+			return new EditableTarget(
+					item.path(),
+					db.getFileSystem().collectionsBase().resolve(item.path()),
+					item.collection(),
+					item.id());
+		}
+		var uri = contentUri(parameters);
+		return new EditableTarget(
+				uri,
+				db.getFileSystem().contentBase().resolve(uri),
+				null,
+				null);
+	}
+
+	private void refresh(EditableTarget target, DB db) {
+		if (target.collectionName() != null) {
+			db.getCollections().refresh(target.collectionName(), target.itemId());
+		} else {
+			getContext().get(EventBusFeature.class).eventBus()
+					.publish(new ReIndexContentMetaDataEvent(target.uri()));
+			db.getFileSystem().flushContentChanges();
+		}
+		getContext().get(EventBusFeature.class).eventBus().publish(new InvalidateContentCacheEvent());
+	}
+
+	private record EditableTarget(
+			String uri,
+			ReadOnlyFile file,
+			String collectionName,
+			String itemId) {
+
+		private Path writableFile(DB db) {
+			var folder = collectionName == null
+					? Constants.Folders.CONTENT
+					: Constants.Folders.COLLECTIONS;
+			return db.getFileSystem().resolve(folder).resolve(uri);
+		}
 	}
 }

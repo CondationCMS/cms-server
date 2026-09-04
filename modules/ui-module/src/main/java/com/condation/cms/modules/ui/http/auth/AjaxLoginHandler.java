@@ -63,6 +63,8 @@ public class AjaxLoginHandler extends JettyHandler {
 
 	private static final int ATTEMPTS_TO_BLOCK = 3;
 
+	private static final SecureRandom SECURE_RANDOM = new SecureRandom();
+	
 	public static record Login(User user, String token) {
 
 	}
@@ -210,7 +212,7 @@ public class AjaxLoginHandler extends JettyHandler {
 	}
 
 	private String generateCode() {
-		int code = new SecureRandom().nextInt(1_000_000);
+		int code = SECURE_RANDOM.nextInt(1_000_000);
 		return String.format("%06d", code);
 	}
 

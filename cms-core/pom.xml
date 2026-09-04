@@ -26,12 +26,12 @@
         <dependency>
             <groupId>io.github.wasabithumb</groupId>
             <artifactId>jtoml</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.wasabithumb</groupId>
             <artifactId>jtoml-serializer-gson</artifactId>
-            <version>1.5.2</version>
+            <version>1.6.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.cdimascio</groupId>

@@ -60,6 +60,7 @@ class ActionFactoryAppsTest {
 		@com.condation.cms.api.ui.annotations.ShortCut(section = "Apps")
 		@com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/editor")
 		public void editorApp() {
+			// method is only for annotations
 		}
 
 		@com.condation.cms.api.ui.annotations.App(
@@ -70,6 +71,7 @@ class ActionFactoryAppsTest {
 		@com.condation.cms.api.ui.annotations.ShortCut(section = "Apps")
 		@com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/manager")
 		public void managerApp() {
+			// method is only for annotations
 		}
 	}
 

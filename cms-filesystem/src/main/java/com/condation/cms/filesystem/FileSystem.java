@@ -285,8 +285,16 @@ public class FileSystem implements ModuleFileSystem, DBFileSystem {
 		this.contentChangeCoordinator = new ContentChangeCoordinator(
 				CONTENT_CHANGE_QUIET_PERIOD, this::processContentChanges);
 		var templateBase = resolve("templates/");
+		var extensionsBase = resolve("extensions/");
 		log.debug("init filewatcher");
-		this.fileWatcher = new MultiRootRecursiveWatcher(siteId, List.of(contentBase, templateBase));
+		this.fileWatcher = new MultiRootRecursiveWatcher(siteId, List.of(contentBase, templateBase, extensionsBase));
+		fileWatcher.getPublisher(extensionsBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
+			@Override
+			public void onNext(FileEvent item) {
+				eventBus.publish(new com.condation.cms.api.eventbus.events.ContentTypesChangedEvent());
+				this.subscription.request(1);
+			}
+		});
 		fileWatcher.getPublisher(contentBase).subscribe(new MultiRootRecursiveWatcher.AbstractFileEventSubscriber() {
 			@Override
 			public void onNext(FileEvent item) {

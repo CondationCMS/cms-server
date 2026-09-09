@@ -21,6 +21,19 @@
 export namespace ACTION_LOCALIZATIONS {
     let en: {};
     let de: {
+        "usage.title": string;
+        "usage.scope": string;
+        "usage.incomplete": string;
+        "usage.problems": string;
+        "usage.empty": string;
+        "usage.count": string;
+        "usage.source": string;
+        "usage.site": string;
+        "usage.location": string;
+        "usage.status": string;
+        "usage.loading": string;
+        "usage.noNode": string;
+        "usage.error": string;
         "addsection.input.name": string;
         "addsection.select.": string;
         "addsection.titles.modal": string;

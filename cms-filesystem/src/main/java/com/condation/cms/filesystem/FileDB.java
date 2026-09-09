@@ -72,6 +72,8 @@ public class FileDB implements DB {
 		
 		content = new FileContent(fileSystem);
 		localCollections = new FileCollections(siteProperties.id(), hostBaseDirectory, contentParser);
+		localCollections.onChange(path -> eventBus.publish(
+				new com.condation.cms.api.eventbus.events.CollectionChangedEvent(path)));
 		localCollections.init();
 		var collectionConfiguration = configuration.get(
 				com.condation.cms.api.configuration.configs.CollectionConfiguration.class);

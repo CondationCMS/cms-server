@@ -71,6 +71,12 @@ public class FileCollections implements Collections, CollectionCursorSupport, Au
 	private CollectionMetaData metaData;
 	private MultiRootRecursiveWatcher watcher;
 	private ContentChangeCoordinator changeCoordinator;
+	private Consumer<Path> changeListener = path -> {};
+
+	/** Invoked after metadata changes are visible to readers. */
+	public void onChange(Consumer<Path> listener) {
+		this.changeListener = Objects.requireNonNull(listener);
+	}
 
 	public FileCollections(
 			String siteId,
@@ -147,6 +153,7 @@ public class FileCollections implements Collections, CollectionCursorSupport, Au
 			} else {
 				metaData.removeFile(collection + "/" + id + ".md");
 			}
+			changeListener.accept(file);
 		} catch (IOException ex) {
 			throw new IllegalStateException("could not refresh collection item", ex);
 		}
@@ -173,10 +180,12 @@ public class FileCollections implements Collections, CollectionCursorSupport, Au
 		try {
 			if (fullResync) {
 				rebuild(true);
+				changeListener.accept(collectionsBase);
 				return;
 			}
 			for (var path : paths) {
 				processPath(path);
+				changeListener.accept(path);
 			}
 		} catch (IOException ex) {
 			log.error("error processing collection changes", ex);

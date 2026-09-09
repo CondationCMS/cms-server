@@ -374,12 +374,14 @@
 	<script type="module">
 
 		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
+		import { i18n } from "@cms/modules/localization.js";
+		await i18n.init();
 
 		var shortCuts = [
 			{% for entry in actionFactory.createShortCuts() %}
 		{
 			id: '{{ entry.id }}',
-			label: '{{ entry.title }}',
+			label: i18n.t('{{ entry.id }}', '{{ entry.title }}'),
 			icon: '{{ entry.icon }}',
 			group: '{{ entry.section }}',
 			action: () => {
@@ -393,6 +395,17 @@
 		},
 		{% endfor %}
 		];
+        document.addEventListener('keydown', (event) => {
+            if (event.ctrlKey && !event.altKey && !event.shiftKey && !event.metaKey
+                    && event.key === '9' && !event.repeat
+                    && !document.querySelector('.modal.show')) {
+                const command = shortCuts.find(entry => entry.id === 'page-usages');
+                if (command) {
+                    event.preventDefault();
+                    command.action();
+                }
+            }
+        });
 		window.manager.commandPalette = new BWCommandPalette({
 			trigger: 'mod+k',
 			placeholder: 'Type a command...',

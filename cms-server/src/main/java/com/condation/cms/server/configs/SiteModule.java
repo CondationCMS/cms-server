@@ -36,6 +36,7 @@ import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
+import com.condation.cms.api.configuration.configs.SiteConfiguration;
 import com.condation.cms.api.content.ContentParser;
 import com.condation.cms.api.content.RenderContentFunction;
 import com.condation.cms.api.db.DB;
@@ -71,6 +72,8 @@ import com.condation.cms.content.VariantResolver;
 import com.condation.cms.api.variants.VariantSelector;
 import com.condation.cms.content.VariantSelectorConfigurationRepository;
 import com.condation.cms.content.ViewResolver;
+import com.condation.cms.content.usage.EditorialUsageIndex;
+import com.condation.cms.content.usage.UsageSite;
 import com.condation.cms.content.shortcodes.ShortCodeParser;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
 import com.condation.cms.core.request.visitor.VisitorContextService;
@@ -123,6 +126,7 @@ public class SiteModule extends AbstractModule {
 		//bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
 		bind(TaxonomyFunction.class).in(Singleton.class);
 		bind(TaxonomyResolver.class).in(Singleton.class);
+		bind(com.condation.cms.api.usage.UsageIndex.class).to(EditorialUsageIndex.class);
 	}
 
 	@Provides
@@ -291,6 +295,15 @@ public class SiteModule extends AbstractModule {
 	@Singleton
 	public FileDB fileDb(DB db) throws IOException {
 		return (FileDB) db;
+	}
+
+	@Provides
+	@Singleton
+	public EditorialUsageIndex usageIndex(DB db, Configuration configuration,
+			RequestContextFactory requestContextFactory) {
+		var id = configuration.get(SiteConfiguration.class).siteProperties().id();
+		return new EditorialUsageIndex(new UsageSite(id, db.getFileSystem().hostBase(), db,
+				configuration, requestContextFactory::contentTypes));
 	}
 
 	@Provides

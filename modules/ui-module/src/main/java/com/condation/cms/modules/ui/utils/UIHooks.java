@@ -35,7 +35,7 @@ public class UIHooks {
 
 	public static final String HOOK_MENU = "module/ui/menu";
 	public static final String HOOK_TRANSLATIONS = "module/ui/translations";
-	public static final String HOOK_REGISTER_CONTENT_TYPES = "manager/contentTypes/register";
+	public static final String HOOK_REGISTER_CONTENT_TYPES = com.condation.cms.api.ui.elements.ContentTypeProvider.REGISTER_HOOK;
 	public static final String HOOK_REGISTER_MEDIA_FORMS = "manager/media/forms";
 
 	private final HookSystem hookSystem;
@@ -45,9 +45,7 @@ public class UIHooks {
 	}
 
 	public ContentTypes contentTypes () {
-		var contentTypes = new ContentTypes();
-		
-		return hookSystem.doFilter(HOOK_REGISTER_CONTENT_TYPES, contentTypes);
+		return com.condation.cms.api.ui.elements.ContentTypeProvider.load(hookSystem);
 	}
 	
 	public MediaForms mediaForms () {

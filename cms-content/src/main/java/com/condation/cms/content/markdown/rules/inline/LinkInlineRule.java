@@ -37,6 +37,13 @@ import java.util.regex.Pattern;
  */
 public class LinkInlineRule implements InlineElementRule {
 
+	private final boolean modifyUrls;
+
+	public LinkInlineRule() { this(true); }
+
+	/** Allows static consumers to inspect the stored URL without request transformations. */
+	public LinkInlineRule(boolean modifyUrls) { this.modifyUrls = modifyUrls; }
+
 	static final Slugify SLUG = Slugify.builder().build();
 
 	static final Pattern PATTERN = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<url>[^\\s)]+)(?: \"(?<title>[^\"]*)\")?\\)");
@@ -53,7 +60,7 @@ public class LinkInlineRule implements InlineElementRule {
 			var id = SLUG.slugify(text);
 
 			
-			if (RequestContextScope.REQUEST_CONTEXT.isBound()
+			if (modifyUrls && RequestContextScope.REQUEST_CONTEXT.isBound()
 					&& isInternalUrl(href)) {
 
 				var requestContext = RequestContextScope.REQUEST_CONTEXT.get();

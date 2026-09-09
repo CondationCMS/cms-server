@@ -21,7 +21,6 @@ package com.condation.cms.cli.commands.server;
  * #L%
  */
 
-import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.ServerUtil;
 import com.condation.cms.auth.services.Realm;
 

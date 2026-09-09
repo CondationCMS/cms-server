@@ -126,11 +126,24 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
         // can be empty
     }
 
+    @ShortCut(
+            id = "page-usages",
+            title = "Show usages",
+            permissions = {Permissions.CONTENT_EDIT},
+            hotkey = "ctrl-9",
+            section = "Page",
+            scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/show-usages")
+    )
+    public void showUsages() {
+        // Registered through the shortcut annotation.
+    }
+
     @Override
     public Map<String, Map<String, String>> getLocalizations() {
         return Map.of(
                 "de", Map.of(
                         "pageMenu", "Seite",
+                        "page-usages", "Verwendungen anzeigen",
                         "page-create", "Neue Seite erstellen",
                         "page-edit-content", "Inhalt bearbeiten",
                         "page-edit-meta", "Metadaten bearbeiten",
@@ -142,6 +155,7 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
                 ),
                 "en", Map.of(
                         "pageMenu", "Page",
+                        "page-usages", "Show usages",
                         "page-create", "Create new page",
                         "page-edit-content", "Edit content",
                         "page-edit-meta", "Edit metadata",

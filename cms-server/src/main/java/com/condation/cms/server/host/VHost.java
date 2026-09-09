@@ -173,6 +173,7 @@ public class VHost {
         try {
             injector.getInstance(ConfigManagement.class).reload();
             injector.getInstance(FileDB.class).reindex();
+            injector.getInstance(com.condation.cms.api.usage.UsageIndex.class).rebuild();
             log.info("reindex of host {} completed", id());
         } catch (Exception e) {
             log.error("reindex of host {} failed", id(), e);

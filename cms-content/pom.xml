@@ -26,6 +26,18 @@
     </build>
     <dependencies>
 		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analysis-common</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>com.condation.cms</groupId>
 			<artifactId>cms-api</artifactId>
 		</dependency>

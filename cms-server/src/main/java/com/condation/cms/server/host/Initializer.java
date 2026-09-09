@@ -24,6 +24,14 @@ package com.condation.cms.server.host;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.CollectionChangedEvent;
+import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
+import com.condation.cms.api.eventbus.events.ContentChangedEvent;
+import com.condation.cms.api.eventbus.events.ContentTypesChangedEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.HostReadyEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
+import com.condation.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
+import com.condation.cms.content.usage.EditorialUsageIndex;
 import com.condation.cms.core.serivce.ServiceRegistry;
 import com.condation.cms.core.serivce.impl.NodeTranslationService;
 import com.condation.cms.core.serivce.impl.SiteDBService;
@@ -52,5 +60,20 @@ public class Initializer {
 		ServiceRegistry.getInstance().register(host.id(), SitePropertiesService.class, new SitePropertiesService(config));
 		
 		ServiceRegistry.getInstance().register(host.id(), NodeTranslationService.class, new NodeTranslationService(db, host.injector.getInstance(EventBus.class)));
+		initUsageIndex();
+	}
+
+	private void initUsageIndex() {
+		var index = host.injector.getInstance(EditorialUsageIndex.class);
+		var events = host.injector.getInstance(EventBus.class);
+		events.register(ContentChangedEvent.class,
+				event -> index.refresh(event.contentPath()));
+		events.register(CollectionChangedEvent.class,
+				event -> index.refresh(event.path()));
+		events.register(HostReadyEvent.class, event -> index.synchronize());
+		events.register(HostReloadedEvent.class, event -> index.synchronize());
+		events.register(ConfigurationReloadEvent.class, event -> index.synchronize());
+		events.register(ContentTypesChangedEvent.class, event -> index.synchronize());
+		events.register(HostStoppedEvent.class, event -> index.close());
 	}
 }

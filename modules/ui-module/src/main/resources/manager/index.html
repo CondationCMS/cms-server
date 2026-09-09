@@ -375,20 +375,36 @@
 
 		import {executeScriptAction, executeHookAction} from "@cms/js/manager-globals.js";
 
+		const createCommandIcon = (source) => {
+			if (!source) {
+				return null;
+			}
+			const image = document.createElement('img');
+			image.src = source;
+			image.alt = '';
+			image.className = 'cms-command-palette-app-icon';
+			return image;
+		};
+
+		const executeUIAction = (action) => {
+			if (action.type === "hook") {
+				executeHookAction(action)
+			} else if (action.type === "script") {
+				executeScriptAction(action)
+			}
+		};
+
 		var shortCuts = [
 			{% for entry in actionFactory.createShortCuts() %}
 		{
-			id: '{{ entry.id }}',
-			label: '{{ entry.title }}',
-			icon: '{{ entry.icon }}',
-			group: '{{ entry.section }}',
+			id: {{ entry.getIdDefinition() | raw }},
+			label: {{ entry.getTitleDefinition() | raw }},
+			icon: createCommandIcon({{ entry.getIconDefinition() | raw }}),
+			group: {{ entry.getSectionDefinition() | raw }},
+			shortcut: {{ entry.getHotkeyDefinition() | raw }},
 			action: () => {
-				var action = {{ entry.getActionDefinition() | raw }}
-				if (action.type === "hook") {
-					executeHookAction(action)
-				} else if (action.type === "script") {
-					executeScriptAction(action)
-				}
+				const action = {{ entry.getActionDefinition() | raw }}
+				executeUIAction(action)
 			}
 		},
 		{% endfor %}

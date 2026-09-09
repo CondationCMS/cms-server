@@ -30,6 +30,7 @@ import com.condation.cms.api.ui.action.UIScriptAction;
 import com.condation.cms.api.ui.elements.Menu;
 import com.condation.cms.api.ui.elements.MenuEntry;
 import com.condation.cms.modules.ui.utils.ActionFactory.AppHolder;
+import com.condation.cms.modules.ui.utils.ActionFactory.ShortCutHolder;
 import com.condation.cms.modules.ui.utils.template.UILinkFunction;
 import com.condation.cms.auth.services.User;
 import com.condation.cms.core.cache.LocalCacheProvider;
@@ -105,7 +106,15 @@ public class TemplateEngineTest {
 				new UIScriptAction("/de/manager/actions/menu/manage-menus", Map.of()))));
 		Mockito.when(actionFactory.createContentTypeMenu()).thenReturn(new Menu());
 		Mockito.when(actionFactory.createMenu()).thenReturn(new Menu());
-		Mockito.when(actionFactory.createShortCuts()).thenReturn(List.of());
+		Mockito.when(actionFactory.createShortCuts()).thenReturn(List.of(new ShortCutHolder(
+				"menu-manager",
+				"Menu Manager",
+				"/de/manager/public/apps/menu-manager.svg",
+				"",
+				"",
+				"Apps",
+				new UIScriptAction("/de/manager/actions/menu/manage-menus", Map.of()),
+				new String[]{Permissions.MENU_MANAGE})));
 		UILinkFunction links = Mockito.mock(UILinkFunction.class);
 		Mockito.when(links.createUrl(Mockito.anyString()))
 				.thenAnswer(invocation -> invocation.getArgument(0));
@@ -126,6 +135,8 @@ public class TemplateEngineTest {
 				.contains("bi-grid-3x3-gap-fill")
 				.contains("cms-app-card")
 				.contains("/de/manager/public/apps/menu-manager.svg")
+				.contains("icon: createCommandIcon(\"/de/manager/public/apps/menu-manager.svg\")")
+				.contains("group: \"Apps\"")
 				.contains("/de/manager/actions/menu/manage-menus");
 	}
 

@@ -208,7 +208,10 @@ public class UIJettyHttpHandlerExtension extends HttpRoutesExtensionPoint {
 							createFileSystem("/manager"),
 							"/manager",
 							List.of(
-									"public/manager-login.js"
+									"public/manager-login.js",
+									"public/apps/menu-manager.svg",
+									"public/apps/role-manager.svg",
+									"public/apps/user-manager.svg"
 							)
 					)
 			);

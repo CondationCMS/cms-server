@@ -22,27 +22,26 @@ package com.condation.cms.modules.ui.extensionpoints;
  */
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
-import com.condation.cms.api.ui.action.UIScriptAction;
-import com.condation.cms.api.ui.apps.App;
-import com.condation.cms.api.ui.apps.AppExtensionPoint;
+import com.condation.cms.api.ui.annotations.App;
+import com.condation.cms.api.ui.annotations.ScriptAction;
+import com.condation.cms.api.ui.annotations.ShortCut;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Makes the menu manager available as the first manager app.
  */
-@Extension(AppExtensionPoint.class)
-public class MenuManagerAppExtension extends AbstractExtensionPoint implements AppExtensionPoint, UIActionsExtensionPoint {
+@Extension(UIActionsExtensionPoint.class)
+public class MenuManagerAppExtension extends AbstractExtensionPoint implements UIActionsExtensionPoint {
 
-    @Override
-    public List<App> getApps() {
-        return List.of(new App(
-                "menu-manager",
-                "Menu Manager",
-                "/manager/assets/apps/menu-manager.svg",
-                new UIScriptAction("/manager/actions/menu/manage-menus", Map.of()),
-                List.of(Permissions.MENU_MANAGE)));
+	@App(
+			id = "menu-manager",
+			title = "Menu Manager",
+			icon = "/manager/public/apps/menu-manager.svg",
+			permissions = Permissions.MENU_MANAGE)
+	@ShortCut(section = "Apps")
+	@ScriptAction(module = "/manager/actions/menu/manage-menus")
+	public void manageMenus() {
+		// Marker method for manager UI annotations.
     }
 }

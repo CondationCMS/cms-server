@@ -23,24 +23,35 @@ package com.condation.cms.modules.ui.extensionpoints;
 
 import com.condation.cms.api.auth.Permissions;
 import com.condation.cms.api.extensions.AbstractExtensionPoint;
-import com.condation.cms.api.ui.action.UIScriptAction;
-import com.condation.cms.api.ui.apps.App;
-import com.condation.cms.api.ui.apps.AppExtensionPoint;
+import com.condation.cms.api.ui.annotations.App;
+import com.condation.cms.api.ui.annotations.ScriptAction;
+import com.condation.cms.api.ui.annotations.ShortCut;
+import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.modules.api.annotation.Extension;
-import java.util.List;
-import java.util.Map;
 
 /** Registers role and manager-user administration apps. */
-@Extension(AppExtensionPoint.class)
-public class AccessManagerAppExtension extends AbstractExtensionPoint implements AppExtensionPoint {
-	@Override
-	public List<App> getApps() {
-		return List.of(
-				new App("role-manager", "Roles", "/manager/assets/apps/role-manager.svg",
-						new UIScriptAction("/manager/actions/access/manage-roles", Map.of()),
-						List.of(Permissions.ROLE_MANAGE)),
-				new App("user-manager", "Users", "/manager/assets/apps/user-manager.svg",
-						new UIScriptAction("/manager/actions/access/manage-users", Map.of()),
-						List.of(Permissions.USER_MANAGE)));
+@Extension(UIActionsExtensionPoint.class)
+public class AccessManagerAppExtension extends AbstractExtensionPoint implements UIActionsExtensionPoint {
+
+	@App(
+			id = "role-manager",
+			title = "Roles",
+			icon = "/manager/public/apps/role-manager.svg",
+			permissions = Permissions.ROLE_MANAGE)
+	@ShortCut(section = "Apps")
+	@ScriptAction(module = "/manager/actions/access/manage-roles")
+	public void manageRoles() {
+		// Marker method for manager UI annotations.
+	}
+
+	@App(
+			id = "user-manager",
+			title = "Users",
+			icon = "/manager/public/apps/user-manager.svg",
+			permissions = Permissions.USER_MANAGE)
+	@ShortCut(section = "Apps")
+	@ScriptAction(module = "/manager/actions/access/manage-users")
+	public void manageUsers() {
+		// Marker method for manager UI annotations.
 	}
 }

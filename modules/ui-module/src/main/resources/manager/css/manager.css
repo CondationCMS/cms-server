@@ -979,6 +979,13 @@ i[data-cms-section-handle] {
 	line-height: 1.25;
 }
 
+.cms-command-palette-app-icon {
+	display: block;
+	width: 24px;
+	height: 24px;
+	object-fit: contain;
+}
+
 @media (max-width: 575.98px) {
 	.cms-app-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));

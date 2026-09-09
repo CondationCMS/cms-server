@@ -82,7 +82,12 @@ public class ActionFactory {
     public List<ShortCutHolder> createShortCuts() {
         List<ShortCutHolder> shortCuts = new ArrayList<>();
         moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
-            shortCuts.addAll(scanShortCuts(extension));
+			try {
+				shortCuts.addAll(scanShortCuts(extension));
+			} catch (Exception exception) {
+				log.error("Could not register manager shortcuts from {}",
+						extension.getClass().getName(), exception);
+			}
         });
 
         return shortCuts;
@@ -92,21 +97,17 @@ public class ActionFactory {
 		Map<String, AppHolder> apps = new LinkedHashMap<>();
 		moduleManager.extensions(AppExtensionPoint.class).forEach(extension -> {
 			try {
-				extension.getApps().stream()
-						.filter(app -> authorizationService().hasAllPermissions(
-								user, app.permissions().toArray(String[]::new)))
-						.map(app -> new AppHolder(
-								app.id(),
-								app.title(),
-								HTTPUtil.modifyUrl(app.icon(), context),
-								withContext(app.action())))
-						.forEach(app -> {
-							if (apps.putIfAbsent(app.id(), app) != null) {
-								log.warn("Ignoring duplicate manager app id '{}'", app.id());
-							}
-						});
+				extension.getApps().forEach(app -> registerApp(apps, app));
 			} catch (Exception exception) {
 				log.error("Could not register manager apps from {}",
+						extension.getClass().getName(), exception);
+			}
+		});
+		moduleManager.extensions(UIActionsExtensionPoint.class).forEach(extension -> {
+			try {
+				scanApps(extension).forEach(app -> registerApp(apps, app, true));
+			} catch (Exception exception) {
+				log.error("Could not register annotated manager apps from {}",
 						extension.getClass().getName(), exception);
 			}
 		});
@@ -114,6 +115,55 @@ public class ActionFactory {
 		return apps.values().stream()
 				.sorted(Comparator.comparing(AppHolder::title, String.CASE_INSENSITIVE_ORDER))
 				.toList();
+	}
+
+	private void registerApp(Map<String, AppHolder> apps, com.condation.cms.api.ui.apps.App app) {
+		registerApp(apps, app, false);
+	}
+
+	private void registerApp(
+			Map<String, AppHolder> apps,
+			com.condation.cms.api.ui.apps.App app,
+			boolean actionHasContext) {
+		if (!authorizationService().hasAllPermissions(
+				user, app.permissions().toArray(String[]::new))) {
+			return;
+		}
+
+		var holder = new AppHolder(
+				app.id(),
+				app.title(),
+				HTTPUtil.modifyUrl(app.icon(), context),
+				actionHasContext ? app.action() : withContext(app.action()));
+		if (apps.putIfAbsent(holder.id(), holder) != null) {
+			log.warn("Ignoring duplicate manager app id '{}'", holder.id());
+		}
+	}
+
+	private List<com.condation.cms.api.ui.apps.App> scanApps(Object moduleInstance) {
+		List<com.condation.cms.api.ui.apps.App> apps = new ArrayList<>();
+
+		for (Method method : moduleInstance.getClass().getMethods()) {
+			var appAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.App.class);
+			if (appAnnotation == null) {
+				continue;
+			}
+
+			UIAction action = resolveMethodAction(method);
+			if (action == null) {
+				log.warn("Ignoring manager app '{}' without an action", appAnnotation.id());
+				continue;
+			}
+
+			apps.add(new com.condation.cms.api.ui.apps.App(
+					appAnnotation.id(),
+					appAnnotation.title(),
+					appAnnotation.icon(),
+					action,
+					Arrays.asList(appAnnotation.permissions())));
+		}
+
+		return apps;
 	}
 
     public Menu createContentTypeMenu() {
@@ -199,49 +249,33 @@ public class ActionFactory {
                 continue;
             }
 
-            method.setAccessible(true);
-            UIAction menuAction = null;
+			var appAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.App.class);
+			String id = fallback(shortcutAnnotation.id(), appAnnotation == null ? "" : appAnnotation.id());
+			String title = fallback(shortcutAnnotation.title(), appAnnotation == null ? "" : appAnnotation.title());
+			String icon = fallback(shortcutAnnotation.icon(), appAnnotation == null ? "" : appAnnotation.icon());
+			String[] permissions = shortcutAnnotation.permissions().length > 0
+					? shortcutAnnotation.permissions()
+					: appAnnotation == null ? new String[0] : appAnnotation.permissions();
 
-            // 1. Methode hat @Action?
-            Action actionAnn = method.getAnnotation(Action.class);
-            if (actionAnn != null) {
-                menuAction = new UIHookAction(actionAnn.value(), Map.of());
-            } // 2. @Hook in @MenuEntry
-            else if (!shortcutAnnotation.hookAction().value().isEmpty()) {
-                menuAction = new UIHookAction(shortcutAnnotation.hookAction().value(), Map.of());
-            } // 3. @ScriptAction in @MenuEntry
-            else if (!shortcutAnnotation.scriptAction().module().isEmpty()) {
-				menuAction = scriptAction(
-						shortcutAnnotation.scriptAction().module(),
-						shortcutAnnotation.scriptAction().function(),
-						Map.of());
-            }
+			if (id.isBlank() || title.isBlank()) {
+				log.warn("Ignoring manager shortcut on {} without id or title", method);
+				continue;
+			}
+			if (!authorizationService().hasAllPermissions(user, permissions)) {
+				continue;
+			}
 
-            if (menuAction == null) {
-                var menuAnn = method.getAnnotation(com.condation.cms.api.ui.annotations.MenuEntry.class);
-                if (menuAnn != null) {
-                    if (!menuAnn.hookAction().value().isEmpty()) {
-                        menuAction = new UIHookAction(menuAnn.hookAction().value(), Map.of());
-                    } // 3. @ScriptAction in @MenuEntry
-                    else if (!menuAnn.scriptAction().module().isEmpty()) {
-						menuAction = scriptAction(
-								menuAnn.scriptAction().module(),
-								menuAnn.scriptAction().function(),
-								Map.of());
-                    }
-                }
-            }
-
-            if (menuAction != null) {
+			UIAction menuAction = resolveShortcutAction(method, shortcutAnnotation);
+			if (menuAction != null) {
                 shortCuts.add(new ShortCutHolder(
-                        shortcutAnnotation.id(),
-                        shortcutAnnotation.title(),
-                        shortcutAnnotation.icon(),
+						id,
+						title,
+						icon.isBlank() ? "" : HTTPUtil.modifyUrl(icon, context),
                         shortcutAnnotation.hotkey(),
                         shortcutAnnotation.parent(),
                         shortcutAnnotation.section(),
                         menuAction,
-                        shortcutAnnotation.permissions()));
+						permissions));
             }
 
         }
@@ -259,23 +293,7 @@ public class ActionFactory {
                 continue;
             }
 
-            method.setAccessible(true);
-            UIAction menuAction = null;
-
-            // 1. Methode hat @Action?
-            Action actionAnn = method.getAnnotation(Action.class);
-            if (actionAnn != null) {
-                menuAction = new UIHookAction(actionAnn.value(), Map.of());
-            } // 2. @Hook in @MenuEntry
-            else if (!menuAnn.hookAction().value().isEmpty()) {
-                menuAction = new UIHookAction(menuAnn.hookAction().value(), Map.of());
-            } // 3. @ScriptAction in @MenuEntry
-            else if (!menuAnn.scriptAction().module().isEmpty()) {
-				menuAction = scriptAction(
-						menuAnn.scriptAction().module(),
-						menuAnn.scriptAction().function(),
-						Map.of());
-            }
+			UIAction menuAction = resolveMenuAction(method, menuAnn);
 
             var entry = MenuEntry.builder()
                     .id(menuAnn.id())
@@ -360,9 +378,72 @@ public class ActionFactory {
         return Optional.empty();
     }
 
-    private record EntryHolder(String parent, MenuEntry entry) {
+	private record EntryHolder(String parent, MenuEntry entry) {
 
-    }
+	}
+
+	private UIAction resolveMethodAction(Method method) {
+		Action actionAnnotation = method.getAnnotation(Action.class);
+		if (actionAnnotation != null) {
+			return new UIHookAction(actionAnnotation.value(), Map.of());
+		}
+
+		var hookAction = method.getAnnotation(com.condation.cms.api.ui.annotations.HookAction.class);
+		if (hookAction != null && !hookAction.value().isBlank()) {
+			return new UIHookAction(hookAction.value(), Map.of());
+		}
+
+		var scriptAction = method.getAnnotation(com.condation.cms.api.ui.annotations.ScriptAction.class);
+		if (scriptAction != null && !scriptAction.module().isBlank()) {
+			return scriptAction(scriptAction.module(), scriptAction.function(), Map.of());
+		}
+
+		return null;
+	}
+
+	private UIAction resolveShortcutAction(
+			Method method,
+			com.condation.cms.api.ui.annotations.ShortCut shortcutAnnotation) {
+		UIAction action = resolveMethodAction(method);
+		if (action != null) {
+			return action;
+		}
+		if (!shortcutAnnotation.hookAction().value().isBlank()) {
+			return new UIHookAction(shortcutAnnotation.hookAction().value(), Map.of());
+		}
+		if (!shortcutAnnotation.scriptAction().module().isBlank()) {
+			return scriptAction(
+					shortcutAnnotation.scriptAction().module(),
+					shortcutAnnotation.scriptAction().function(),
+					Map.of());
+		}
+
+		var menuAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.MenuEntry.class);
+		return menuAnnotation == null ? null : resolveMenuAction(method, menuAnnotation);
+	}
+
+	private UIAction resolveMenuAction(
+			Method method,
+			com.condation.cms.api.ui.annotations.MenuEntry menuAnnotation) {
+		UIAction action = resolveMethodAction(method);
+		if (action != null) {
+			return action;
+		}
+		if (!menuAnnotation.hookAction().value().isBlank()) {
+			return new UIHookAction(menuAnnotation.hookAction().value(), Map.of());
+		}
+		if (!menuAnnotation.scriptAction().module().isBlank()) {
+			return scriptAction(
+					menuAnnotation.scriptAction().module(),
+					menuAnnotation.scriptAction().function(),
+					Map.of());
+		}
+		return null;
+	}
+
+	private String fallback(String value, String fallback) {
+		return value == null || value.isBlank() ? fallback : value;
+	}
 
 	private UIScriptAction scriptAction(String module, String function, Map<String, Object> parameters) {
 		return new UIScriptAction(HTTPUtil.modifyUrl(module, context), function, parameters);
@@ -378,12 +459,32 @@ public class ActionFactory {
 		return action;
 	}
 
-    public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action, String[] permissions) {
+	public record ShortCutHolder(String id, String title, String icon, String hotkey, String parent, String section, UIAction action, String[] permissions) {
 
-        public String getActionDefinition() {
-            return action != null ? JSONUtil.toJson(action) : "";
-        }
-    }
+		public String getActionDefinition() {
+			return action != null ? JSONUtil.toJson(action) : "";
+		}
+
+		public String getIdDefinition() {
+			return JSONUtil.toJson(id);
+		}
+
+		public String getTitleDefinition() {
+			return JSONUtil.toJson(title);
+		}
+
+		public String getIconDefinition() {
+			return JSONUtil.toJson(icon);
+		}
+
+		public String getHotkeyDefinition() {
+			return JSONUtil.toJson(hotkey);
+		}
+
+		public String getSectionDefinition() {
+			return JSONUtil.toJson(section);
+		}
+	}
 
 	public record AppHolder(String id, String title, String icon, UIAction action) {
 

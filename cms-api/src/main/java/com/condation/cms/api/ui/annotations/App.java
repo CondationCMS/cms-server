@@ -10,14 +10,14 @@ package com.condation.cms.api.ui.annotations;
  * it under the terms of the GNU Affero General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
 
@@ -27,21 +27,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * @author thorstenmarx
+ * Registers a method as an application in the manager app launcher.
+ * The action is supplied by {@link ScriptAction}, {@link HookAction}, or
+ * {@link com.condation.cms.api.annotations.Action} on the same method.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ShortCut {
-	String title() default "";
-	String id() default "";
-	String parent() default "";
-	String icon() default "";
-	String hotkey () default "";
-	String section () default "";
-	
+public @interface App {
+
+	String id();
+
+	String title();
+
+	String icon();
+
 	String[] permissions() default {};
-	
-	ScriptAction scriptAction () default @ScriptAction(function = "", module = "");
-	HookAction hookAction () default @HookAction("");
 }

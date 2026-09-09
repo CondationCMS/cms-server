@@ -34,6 +34,7 @@ import com.condation.cms.api.ui.apps.App;
 import com.condation.cms.api.ui.apps.AppExtensionPoint;
 import com.condation.cms.api.ui.elements.CollectionType;
 import com.condation.cms.api.ui.elements.ContentTypes;
+import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.cms.auth.services.User;
 import com.condation.modules.api.ModuleManager;
 import java.util.List;
@@ -47,6 +48,30 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.any;
 
 class ActionFactoryAppsTest {
+
+	private static class AnnotatedApps extends com.condation.cms.api.extensions.AbstractExtensionPoint
+			implements UIActionsExtensionPoint {
+
+		@com.condation.cms.api.ui.annotations.App(
+				id = "editor-app",
+				title = "Editor's app",
+				icon = "/manager/public/apps/editor.svg",
+				permissions = Permissions.CONTENT_EDIT)
+		@com.condation.cms.api.ui.annotations.ShortCut(section = "Apps")
+		@com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/editor")
+		public void editorApp() {
+		}
+
+		@com.condation.cms.api.ui.annotations.App(
+				id = "manager-app",
+				title = "Manager app",
+				icon = "/manager/public/apps/manager.svg",
+				permissions = Permissions.CACHE_INVALIDATE)
+		@com.condation.cms.api.ui.annotations.ShortCut(section = "Apps")
+		@com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/manager")
+		public void managerApp() {
+		}
+	}
 
 	@Test
 	void createsAuthorizedAppsWithContextAwareIconAndScriptAction() {
@@ -88,6 +113,45 @@ class ActionFactoryAppsTest {
 					UIScriptAction.class,
 					action -> Assertions.assertThat(action.getModule())
 							.isEqualTo("/de/manager/actions/menu/manage-menus"));
+		});
+	}
+
+	@Test
+	void createsAnnotatedAppsAndInheritsTheirShortcutMetadata() {
+		SiteProperties siteProperties = mock(SiteProperties.class);
+		when(siteProperties.contextPath()).thenReturn("/de");
+		SiteModuleContext context = mock(SiteModuleContext.class);
+		when(context.get(SitePropertiesFeature.class))
+				.thenReturn(new SitePropertiesFeature(siteProperties));
+
+		ModuleManager moduleManager = mock(ModuleManager.class);
+		when(moduleManager.extensions(AppExtensionPoint.class)).thenReturn(List.of());
+		when(moduleManager.extensions(UIActionsExtensionPoint.class))
+				.thenReturn(List.of(new AnnotatedApps()));
+
+		ActionFactory factory = new ActionFactory(
+				context,
+				siteProperties,
+				null,
+				moduleManager,
+				new User("editor", "hash", new String[]{"editor"}));
+
+		Assertions.assertThat(factory.createApps()).singleElement().satisfies(app -> {
+			Assertions.assertThat(app.id()).isEqualTo("editor-app");
+			Assertions.assertThat(app.title()).isEqualTo("Editor's app");
+			Assertions.assertThat(app.icon()).isEqualTo("/de/manager/public/apps/editor.svg");
+			Assertions.assertThat(app.action()).isInstanceOfSatisfying(
+					UIScriptAction.class,
+					action -> Assertions.assertThat(action.getModule())
+							.isEqualTo("/de/manager/actions/editor"));
+		});
+
+		Assertions.assertThat(factory.createShortCuts()).singleElement().satisfies(shortcut -> {
+			Assertions.assertThat(shortcut.id()).isEqualTo("editor-app");
+			Assertions.assertThat(shortcut.title()).isEqualTo("Editor's app");
+			Assertions.assertThat(shortcut.icon()).isEqualTo("/de/manager/public/apps/editor.svg");
+			Assertions.assertThat(shortcut.section()).isEqualTo("Apps");
+			Assertions.assertThat(shortcut.permissions()).containsExactly(Permissions.CONTENT_EDIT);
 		});
 	}
 

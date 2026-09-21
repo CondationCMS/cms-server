@@ -67,7 +67,7 @@ public interface Content {
 	/**
 	 * @deprecated use {@link com.condation.cms.api.repository.ContentRepository#get(String)}
 	 */
-	@Deprecated(since = "8.4.0")
+	@Deprecated(since = "8.3.0")
 	Optional<ContentNode> byUri (final String uri);
 
 	/**

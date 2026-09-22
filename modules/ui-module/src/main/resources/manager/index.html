@@ -236,12 +236,12 @@
                                     <i class="bi bi-sliders"></i>
                                     <span>Page settings</span>
                                 </button>
-                                {% if translation.enabled %}
+                                {% if multisite.grouped() %}
                                 <button class="dropdown-item" data-cms-i18n-lang="en"
-                                        data-cms-i18n-key="menu.page.translation"
-                                        data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/translations')}}","parameters":{},"type":"script"}'>
-                                    <i class="bi bi-translate"></i>
-                                    <span>Translation</span>
+                                        data-cms-i18n-key="menu.page.alternates"
+                                        data-cms-action-definition='{"function":"runAction","module":"{{ links.createUrl('/manager/actions/page/alternates')}}","parameters":{},"type":"script"}'>
+                                    <i class="bi bi-link-45deg"></i>
+                                    <span>Alternates</span>
                                 </button>
                                 {% endif %}
                                 <div class="dropdown-divider"></div>

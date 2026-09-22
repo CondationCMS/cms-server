@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	const pageUrl = urlParams.get('page');
 
 	/*
-		page param is use for deeplinks when changing translation
+		The page parameter is used for deep links when switching sites.
 	*/
 	if (pageUrl) {
 		loadPreview(pageUrl);

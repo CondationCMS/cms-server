@@ -1,8 +1,8 @@
-package com.condation.cms.core.configuration.properties;
+package com.condation.cms.modules.ui.extensionpoints.remotemethods.dto;
 
 /*-
  * #%L
- * CMS Core
+ * UI Module
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,34 +21,4 @@ package com.condation.cms.core.configuration.properties;
  * #L%
  */
 
-import com.condation.cms.api.TranslationProperties;
-import java.util.List;
-
-/**
- *
- * @author t.marx
- */
-public class ExtendedTranslationProperties implements TranslationProperties {
-
-	
-	private boolean enabled = false;
-	
-	private List<Mapping> mapping;
-
-	private List<String> languages;
-
-	@Override
-	public List<String> getLanguages() {
-		return languages;
-	}
-	
-	@Override
-	public boolean isEnabled() {
-		return enabled;
-	}
-
-	@Override
-	public List<Mapping> getMapping() {
-		return mapping;
-	}
-}
+public record AlternateDto(String site, String locale, String url, String managerDeepLink) {}

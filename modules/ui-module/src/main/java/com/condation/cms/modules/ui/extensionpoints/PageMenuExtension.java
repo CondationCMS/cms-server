@@ -79,14 +79,14 @@ public class PageMenuExtension extends HookSystemRegisterExtensionPoint implemen
     }
 
     @ShortCut(
-            id = "page-edit-translations",
-            title = "Edit page translations",
+            id = "page-edit-alternates",
+            title = "Edit page alternates",
             permissions = {Permissions.CONTENT_EDIT},
             hotkey = "ctrl-5",
             section = "Page",
-            scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/translations")
+            scriptAction = @com.condation.cms.api.ui.annotations.ScriptAction(module = "/manager/actions/page/alternates")
     )
-    public void manageTranslations() {
+    public void manageAlternates() {
         // can be empty
     }
 

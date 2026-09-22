@@ -5,9 +5,9 @@
   <h2>running in preview</h2>
 {% endif %}
 <div class="language-buttons">
-  {% for translation in node.translation.translations() %}
-  <a href="{{ translation.url() }}" class="lang {% if translation.current() %}active{% endif %}">
-    <img src="https://flagcdn.com/w20/{{ translation.locale() }}.png" width="20" height="15">
+  {% for alternate in node.alternates.entries() %}
+  <a href="{{ alternate.url() }}" class="lang {% if alternate.current() %}active{% endif %}">
+    <img src="https://flagcdn.com/w20/{{ alternate.country() }}.png" width="20" height="15" alt="{{ alternate.locale() }}">
   </a>
   {% endfor %}
 </div>

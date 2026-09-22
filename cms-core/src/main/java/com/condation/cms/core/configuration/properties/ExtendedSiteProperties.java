@@ -23,7 +23,6 @@ package com.condation.cms.core.configuration.properties;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.MultisiteProperties;
-import com.condation.cms.api.TranslationProperties;
 import com.condation.cms.api.UIProperties;
 import com.condation.cms.core.configuration.configs.SimpleConfiguration;
 import java.util.List;
@@ -160,11 +159,6 @@ public class ExtendedSiteProperties implements SiteProperties {
 	@Override
 	public UIProperties ui() {
 		return configuration.get("ui", ExtendedUIProperties.class);
-	}
-
-	@Override
-	public TranslationProperties translation() {
-		return configuration.get("translation", ExtendedTranslationProperties.class);
 	}
 
 	@Override

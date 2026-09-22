@@ -28,19 +28,5 @@ your login code: <code>
 active = ["example-module"]         # list of active modules for this site
 
 
-# translation settings
-[translation]
-enabled = true                      # enable translation for this site
-languages = ["de", "en"]            # languages available for this site
-
-# config mulitsite translation mapping
-[[translation.mapping]]
-language = "de"                     # language code for this mapping
-site = "demo-de-site"               # site id for this mapping
-
-[[translation.mapping]]
-site = "demo-site"                  # site id for this mapping
-language = "en"                     # language code for this mapping
-
 [index.fields.location]
 type = "geo"

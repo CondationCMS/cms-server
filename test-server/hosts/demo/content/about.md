@@ -6,8 +6,8 @@ features: [
   ]
 background_color: '#000000'
 range_test: 0
-translations:
-  de: /ueber
+alternates:
+  demo-de-site: /ueber
 count: 46
 description: desc
 unpublish_date: null

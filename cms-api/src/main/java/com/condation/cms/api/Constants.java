@@ -69,7 +69,7 @@ public abstract class Constants {
 		public static final String ALIASES = "aliases";
 		public static final String ALIASES_REDIRECT = "aliases_redirect";
 		
-		public static final String TRANSLATIONS = "translations";
+		public static final String ALTERNATES = "alternates";
         public static final String URL = "url";
 	}
 	

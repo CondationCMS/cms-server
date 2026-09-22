@@ -30,7 +30,6 @@ import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.modules.ui.extensionpoints.UILifecycleExtension;
 import com.condation.cms.modules.ui.utils.ActionFactory;
 import com.condation.cms.modules.ui.utils.TokenUtils;
-import com.condation.cms.modules.ui.utils.TranslationHelper;
 import com.condation.cms.modules.ui.utils.template.UILinkFunction;
 import java.nio.ByteBuffer;
 import java.nio.file.FileSystem;
@@ -87,7 +86,7 @@ public class ResourceHandler extends JettyHandler {
 								"previewToken", TokenUtils.createToken(getUsername(request, context, requestContext), secret, Duration.ofHours(1), Duration.ofDays(7)),
 								"contextPath", siteProperties.contextPath(),
 								"siteId", siteProperties.id(),
-								"translation", new TranslationHelper(siteProperties)
+								"multisite", siteProperties.multisite()
 						));
 				Content.Sink.write(response, true, content, callback);
 			} catch (Exception e) {

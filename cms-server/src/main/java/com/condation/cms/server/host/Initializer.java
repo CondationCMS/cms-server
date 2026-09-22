@@ -24,7 +24,7 @@ package com.condation.cms.server.host;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.core.serivce.ServiceRegistry;
-import com.condation.cms.core.serivce.impl.NodeTranslationService;
+import com.condation.cms.core.serivce.impl.NodeAlternateService;
 import com.condation.cms.core.serivce.impl.SiteDBService;
 import com.condation.cms.core.serivce.impl.SiteCollectionRepositoryService;
 import com.condation.cms.core.serivce.impl.SiteContentRepositoryService;
@@ -64,7 +64,7 @@ public class Initializer {
 		
 		ServiceRegistry.getInstance().register(host.id(), SitePropertiesService.class, new SitePropertiesService(config));
 		
-		ServiceRegistry.getInstance().register(host.id(), NodeTranslationService.class,
-				new NodeTranslationService(host.injector.getInstance(MutableContentRepository.class)));
+		ServiceRegistry.getInstance().register(host.id(), NodeAlternateService.class,
+				new NodeAlternateService(host.injector.getInstance(MutableContentRepository.class)));
 	}
 }

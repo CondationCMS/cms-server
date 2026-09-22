@@ -27,8 +27,8 @@ object:
   - name: Test 2 update
 seo:
   description: hier kommt die beschreibung
-translations:
-  en: /
+alternates:
+  demo-site: /
 ---
 
 # Demo de Projekt

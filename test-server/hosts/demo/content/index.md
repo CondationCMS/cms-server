@@ -23,8 +23,8 @@ features:
 search:
   index: false
 background_color: '#c2e0c6'
-translations:
-  de: /
+alternates:
+  demo-de-site: /
 checked:
 - farbe
 unpublish_date: null

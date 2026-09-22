@@ -61,8 +61,8 @@ import com.condation.cms.content.template.functions.list.NodeListFunctionBuilder
 import com.condation.cms.content.template.functions.navigation.NavigationFunction;
 import com.condation.cms.content.template.functions.query.QueryFunction;
 import com.condation.cms.content.template.functions.taxonomy.TaxonomyFunction;
-import com.condation.cms.content.template.functions.translation.NodeTranslations;
-import com.condation.cms.content.template.functions.translation.SiteTranslations;
+import com.condation.cms.content.template.functions.alternate.NodeAlternates;
+import com.condation.cms.api.site.SiteService;
 import com.condation.modules.api.ModuleManager;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -272,7 +272,10 @@ public class DefaultContentRenderer implements ContentRenderer {
         // sections will be removed
 		namespace.add(Constants.TemplateNamespaces.NODE, "sections", sectionEntries);
 		namespace.add(Constants.TemplateNamespaces.NODE, "uri", uri);
-		namespace.add(Constants.TemplateNamespaces.NODE, "translation", new NodeTranslations(contentNode.orElse(null), siteProperties));
+		namespace.add(Constants.TemplateNamespaces.NODE, "alternates", new NodeAlternates(
+				contentNode.orElse(null),
+				siteProperties,
+				context.get(InjectorFeature.class).injector().getInstance(SiteService.class)));
 		
 		namespace.add(Constants.TemplateNamespaces.NODE, "properties", new MapAccess((NodeProperties.createNodeProperties(contentNode.orElse(null), siteProperties))));
 		
@@ -295,7 +298,6 @@ public class DefaultContentRenderer implements ContentRenderer {
 		namespace.add(Constants.TemplateNamespaces.CMS, "taxonomies", context.get(InjectorFeature.class).injector().getInstance(TaxonomyFunction.class));
 
 		namespace.add(Constants.TemplateNamespaces.SITE, "properties", siteProperties);
-		namespace.add(Constants.TemplateNamespaces.SITE, "translation", new SiteTranslations(siteProperties));
 		
 		var theme = context.get(RenderContext.class).theme();
 		if (theme.empty()) {

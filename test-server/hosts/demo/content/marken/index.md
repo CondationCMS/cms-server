@@ -12,8 +12,6 @@ range_test: 0
 unpublish_date: null
 status: published
 publish_date: null
-translations:
-  de: /ueber
 ---
 
 # Out brands

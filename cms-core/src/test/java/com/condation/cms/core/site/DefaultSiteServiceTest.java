@@ -87,13 +87,6 @@ class DefaultSiteServiceTest {
 				@Override public boolean managerEnabled() { return true; }
 			};
 		}
-		@Override public com.condation.cms.api.TranslationProperties translation() {
-			return new com.condation.cms.api.TranslationProperties() {
-				@Override public boolean isEnabled() { return false; }
-				@Override public List<String> getLanguages() { return List.of(); }
-				@Override public List<Mapping> getMapping() { return List.of(); }
-			};
-		}
 		@Override public MultisiteProperties multisite() {
 			return new MultisiteProperties(group, Map.of());
 		}

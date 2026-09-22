@@ -118,8 +118,6 @@ public class TemplateEngineTest {
 		UILinkFunction links = Mockito.mock(UILinkFunction.class);
 		Mockito.when(links.createUrl(Mockito.anyString()))
 				.thenAnswer(invocation -> invocation.getArgument(0));
-		TranslationHelper translation = Mockito.mock(TranslationHelper.class);
-
 		String result = templateEngine.render("index.html", Map.of(
 				"actionFactory", actionFactory,
 				"csrfToken", "csrf",
@@ -128,7 +126,7 @@ public class TemplateEngineTest {
 				"previewToken", "preview",
 				"contextPath", "/de",
 				"siteId", "demo",
-				"translation", translation));
+				"multisite", com.condation.cms.api.MultisiteProperties.empty()));
 
 		Assertions.assertThat(result)
 				.contains("<script src=\"/manager/js/ui-actions.js\" type=\"module\"></script>")

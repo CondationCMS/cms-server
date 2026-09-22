@@ -333,7 +333,7 @@ public class PresistentFileSystemTest {
 				.singleElement()
 				.satisfies(node -> {
 					Assertions.assertThat(node.path()).isEqualTo("test/test1.md");
-					Assertions.assertThat(node.data().get("name")).isEqualTo("test1");
+					Assertions.assertThat(node.data()).containsEntry("name", "test1");
 				});
 	}
 

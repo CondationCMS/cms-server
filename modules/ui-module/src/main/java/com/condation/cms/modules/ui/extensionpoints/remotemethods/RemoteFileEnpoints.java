@@ -324,7 +324,7 @@ public class RemoteFileEnpoints extends AbstractRemoteMethodeExtension {
 				.filter(node -> !".variants".equals(node.name()))
 				.map(node -> (File) (node.isDirectory()
 						? new Directory(node.name(), node.path())
-						: new Content(node.name(), node.path(), node.url(),
+						: new Content(node.name(), node.url(), node.url(),
 								node.getMetaValue(Constants.MetaFields.TITLE, node.name()))))
 				.collect(java.util.stream.Collectors.toCollection(ArrayList::new));
 		var parent = parentPath(uri);

@@ -98,7 +98,7 @@ public class RemoteFileEnpointsTest {
 	}
 
 	@Test
-	void listUsesContentTitleButKeepsTechnicalName() throws Exception {
+	void listUsesPublicContentUrlButKeepsTechnicalName() throws Exception {
 		var node = new ContentNode(
 				"about.md",
 				"/about",
@@ -119,6 +119,7 @@ public class RemoteFileEnpointsTest {
 
 		Assertions.assertThat(files).singleElement().satisfies(file -> {
 			Assertions.assertThat(file.name()).isEqualTo("about.md");
+			Assertions.assertThat(file.uri()).isEqualTo("/about");
 			Assertions.assertThat(file.displayName()).isEqualTo("About us");
 			Assertions.assertThat(((RemoteFileEnpoints.Content) file).url()).isEqualTo("/about");
 			Assertions.assertThat(((RemoteFileEnpoints.Content) file).title()).isEqualTo("About us");

@@ -127,7 +127,7 @@ public class SiteMenuExtension extends AbstractExtensionPoint implements UIActio
 		var siteService = getContext().get(InjectorFeature.class).injector().getInstance(SiteService.class);
 
 		var counter = new AtomicInteger(1);
-		return new ArrayList<>(siteService.sites()
+		return new ArrayList<>(siteService.descriptors()
 				.filter(site -> site.manager())
 				.map(site -> {
 			return com.condation.cms.api.ui.elements.MenuEntry.builder()

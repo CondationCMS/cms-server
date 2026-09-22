@@ -1,4 +1,4 @@
-package com.condation.cms.api.site;
+package com.condation.cms.api;
 
 /*-
  * #%L
@@ -20,38 +20,27 @@ package com.condation.cms.api.site;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-import com.condation.cms.api.SiteProperties;
-import com.google.inject.Injector;
-import java.util.List;
+
+import java.util.Map;
 
 /**
+ * Configuration that associates a site with a multisite group.
  *
- * @author thmar
+ * @param group the group identifier, or an empty string for an independent site
+ * @param attributes optional dimensions such as market or brand
  */
-public record Site(Injector injector) {
+public record MultisiteProperties(String group, Map<String, Object> attributes) {
 
-	public SiteDescriptor descriptor() {
-		return SiteDescriptor.from(injector.getInstance(SiteProperties.class));
+	public MultisiteProperties {
+		group = group == null ? "" : group;
+		attributes = attributes == null ? Map.of() : Map.copyOf(attributes);
 	}
 
-	public String id() {
-		return injector.getInstance(SiteProperties.class).id();
+	public static MultisiteProperties empty() {
+		return new MultisiteProperties("", Map.of());
 	}
 
-	public List<String> modules() {
-		return injector.getInstance(SiteProperties.class).activeModules();
+	public boolean grouped() {
+		return !group.isBlank();
 	}
-
-	public String baseurl() {
-		return (String) injector.getInstance(SiteProperties.class).get("baseurl");
-	}
-
-	public boolean manager() {
-		return injector.getInstance(SiteProperties.class).ui().managerEnabled();
-	}
-
-	public String realUrl() {
-		return descriptor().realUrl();
-	}
-
 }

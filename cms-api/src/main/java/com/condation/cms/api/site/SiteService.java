@@ -21,6 +21,7 @@ package com.condation.cms.api.site;
  * #L%
  */
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -31,4 +32,31 @@ public interface SiteService {
 	void add (Site site);
 	
 	Stream<Site> sites ();
+
+	default Stream<SiteDescriptor> descriptors() {
+		return sites().map(Site::descriptor);
+	}
+
+	default Optional<SiteDescriptor> get(String siteId) {
+		return descriptors()
+				.filter(site -> site.id().equals(siteId))
+				.findFirst();
+	}
+
+	default Stream<SiteDescriptor> sitesInGroup(String group) {
+		if (group == null || group.isBlank()) {
+			return Stream.empty();
+		}
+		return descriptors().filter(site -> group.equals(site.group()));
+	}
+
+	default Stream<SiteDescriptor> relatedSites(String siteId) {
+		var current = get(siteId);
+		if (current.isEmpty() || !current.get().grouped()) {
+			return Stream.empty();
+		}
+
+		return sitesInGroup(current.get().group())
+				.filter(site -> !site.id().equals(siteId));
+	}
 }

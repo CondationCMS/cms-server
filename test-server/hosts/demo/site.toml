@@ -5,6 +5,9 @@ locale = "en_US"
 theme = "demo"
 context_path = "/"
 
+[multisite]
+group = "demo"
+
 # ui manager application configuration
 [ui]
 force2fa = false                    # force 2fa for all users

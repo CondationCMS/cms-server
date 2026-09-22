@@ -5,6 +5,9 @@ locale = "de_DE"
 theme = "demo"
 context_path = "/de"
 
+[multisite]
+group = "demo"
+
 [ui]
 force2fa = false
 managerEnabled = true

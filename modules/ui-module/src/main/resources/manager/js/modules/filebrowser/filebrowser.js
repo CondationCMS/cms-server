@@ -154,14 +154,16 @@ const fileActions = () => {
         element.addEventListener("click", async (event) => {
             event.stopPropagation();
             const uri = element.getAttribute("data-cms-file-uri");
-            const filename = element.closest("[data-cms-file-name]").dataset.cmsFileName;
+            const row = element.closest("[data-cms-file-name]");
+            const filename = row.dataset.cmsFileName;
+            const url = row.getAttribute("data-cms-file-url") || uri;
             const action = element.getAttribute("data-cms-file-action");
             if (action === "open") {
-                await loadPreview(uri);
+                await loadPreview(url);
                 state.modal.hide();
             }
             else if (action === "copyUrl") {
-                navigator.clipboard.writeText(uri).then(() => {
+                navigator.clipboard.writeText(url).then(() => {
                     showToast({
                         title: i18n.t('filebrowser.actions.url.copy.title', "URL copied"),
                         message: i18n.t('filebrowser.actions.url.copy.message', "URL copied to clipboard"),

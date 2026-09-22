@@ -53,6 +53,13 @@ const reloadPreview = () => {
     activatePreviewOverlay();
     getPreviewFrame().contentDocument.location.reload(true);
 };
+const normalizePreviewPath = (path) => {
+    if (path.endsWith("/index.md")) {
+        const directory = path.substring(0, path.length - "index.md".length);
+        return directory === "/" ? directory : directory.replace(/\/$/, "");
+    }
+    return path.endsWith(".md") ? path.substring(0, path.length - ".md".length) : path;
+};
 const loadPreview = (url, options = {}) => {
     activatePreviewOverlay();
     setActivePreviewContent(null);
@@ -60,6 +67,7 @@ const loadPreview = (url, options = {}) => {
         // Fallback-Host für relative URLs, damit URL-Parsing funktioniert
         const dummyBase = window.location.origin;
         const parsedUrl = new URL(url, dummyBase);
+        parsedUrl.pathname = normalizePreviewPath(parsedUrl.pathname);
         // Wenn "preview" bereits gesetzt ist, nicht erneut hinzufügen
         if (!parsedUrl.searchParams.has("preview")) {
             parsedUrl.searchParams.append("preview", "manager");

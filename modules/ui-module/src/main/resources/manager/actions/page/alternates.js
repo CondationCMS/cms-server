@@ -48,9 +48,9 @@ export async function runAction(params) {
                             siteId: targetSite,
                             type: 'content',
                             onSelect: async (file) => {
-                                if (!file?.uri)
+                                if (!file?.url)
                                     return;
-                                await addAlternate({ uri, targetSite, alternateUri: file.uri });
+                                await addAlternate({ uri, targetSite, alternateUri: file.url });
                                 showToast({ title: 'Alternate added', message: 'The alternate page was linked.', type: 'success', timeout: 3000 });
                             }
                         });

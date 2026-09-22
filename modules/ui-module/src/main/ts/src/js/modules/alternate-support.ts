@@ -31,10 +31,10 @@ export const ensureAlternatesSupported = (content?: ActivePreviewContent | null)
 		return true;
 	}
 	showToast({
-		title: i18n.t('manager.actions.page.alternates.unsupported.title', 'Alternates not supported'),
+		title: i18n.t('manager.actions.page.alternates.unsupported.title', 'Translations not supported'),
 		message: i18n.t(
 			'manager.actions.page.alternates.unsupported.message',
-			'Collections do not support alternates.'
+			'Translations for collections are not supported yet.'
 		),
 		type: 'info',
 		timeout: 3000

@@ -26,8 +26,8 @@ export const ensureAlternatesSupported = (content) => {
         return true;
     }
     showToast({
-        title: i18n.t('manager.actions.page.alternates.unsupported.title', 'Alternates not supported'),
-        message: i18n.t('manager.actions.page.alternates.unsupported.message', 'Collections do not support alternates.'),
+        title: i18n.t('manager.actions.page.alternates.unsupported.title', 'Translations not supported'),
+        message: i18n.t('manager.actions.page.alternates.unsupported.message', 'Translations for collections are not supported yet.'),
         type: 'info',
         timeout: 3000
     });

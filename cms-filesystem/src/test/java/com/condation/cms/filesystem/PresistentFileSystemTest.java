@@ -117,10 +117,12 @@ public class PresistentFileSystemTest {
 
 		Assertions.assertThat(originals)
 				.hasSize(3)
-				.allMatch(node -> !node.isVariant());
+				.extracting(ContentNode::path)
+				.doesNotContain("test/.variants/test1/summer/test1.md");
 		Assertions.assertThat(variants)
 				.singleElement()
-				.matches(ContentNode::isVariant);
+				.extracting(ContentNode::path)
+				.isEqualTo("test/.variants/test1/summer/test1.md");
 		Assertions.assertThat(all).hasSize(originals.size() + variants.size());
 	}
 	
@@ -330,7 +332,7 @@ public class PresistentFileSystemTest {
 		Assertions.assertThat(nodes)
 				.singleElement()
 				.satisfies(node -> {
-					Assertions.assertThat(node.isVariant()).isFalse();
+					Assertions.assertThat(node.path()).isEqualTo("test/test1.md");
 					Assertions.assertThat(node.data().get("name")).isEqualTo("test1");
 				});
 	}
@@ -343,9 +345,9 @@ public class PresistentFileSystemTest {
 		Assertions.assertThat(nodes)
 				.singleElement()
 				.satisfies(node -> {
-					Assertions.assertThat(node.isVariant()).isTrue();
-					Assertions.assertThat(node.variantId()).contains("summer");
-					Assertions.assertThat(node.originalUri()).contains("test/test1.md");
+					Assertions.assertThat(node.path())
+							.isEqualTo("test/.variants/test1/summer/test1.md");
+					Assertions.assertThat(node.data().get("name")).isEqualTo("test1-summer");
 				});
 	}
 

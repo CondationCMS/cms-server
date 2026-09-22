@@ -30,6 +30,7 @@ import com.condation.cms.filesystem.metadata.AbstractMetaData;
 import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldConfiguration;
 import com.condation.cms.filesystem.metadata.persistent.field.IndexFieldDefinition;
 import com.condation.cms.filesystem.metadata.query.ExcerptMapperFunction;
+import com.condation.cms.filesystem.variants.VariantPathResolver;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -164,11 +165,7 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		Document document = new Document();
 		document.add(new StringField("_uri", uri, Field.Store.YES));
 		document.add(new StringField("_url", node.url(), Field.Store.YES));
-		document.add(new StringField("_variant", Boolean.toString(node.isVariant()), Field.Store.YES));
-		node.variantId().ifPresent(variantId ->
-				document.add(new StringField("_variant_id", variantId, Field.Store.YES)));
-		node.originalUri().ifPresent(originalUri ->
-				document.add(new StringField("_variant_original", originalUri, Field.Store.YES)));
+		addVariantFields(document, node);
 		document.add(new StringField(
 				DocumentHelper.FIELD_IS_PAGE,
 				Boolean.toString(!node.isSectionEntry()),
@@ -191,6 +188,18 @@ public class PersistentMetaData extends AbstractMetaData implements AutoCloseabl
 		} catch (IOException ex) {
 			log.error("", ex);
 		}
+	}
+
+	private static void addVariantFields(Document document, ContentNode node) {
+		var variantLocation = VariantPathResolver.resolve(node.path());
+		document.add(new StringField(
+				"_variant",
+				Boolean.toString(variantLocation.isPresent()),
+				Field.Store.YES));
+		variantLocation.ifPresent(location -> {
+			document.add(new StringField("_variant_id", location.variantId(), Field.Store.YES));
+			document.add(new StringField("_variant_original", location.canonicalPath(), Field.Store.YES));
+		});
 	}
 
 	@Override

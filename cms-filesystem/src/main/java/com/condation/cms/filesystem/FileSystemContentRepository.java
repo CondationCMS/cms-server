@@ -47,8 +47,8 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.utils.FileUtils;
-import com.condation.cms.api.utils.PathUtil;
 import com.condation.cms.core.content.io.YamlHeaderUpdater;
+import com.condation.cms.filesystem.variants.VariantPathResolver;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
@@ -248,13 +248,13 @@ public final class FileSystemContentRepository implements MutableContentReposito
 	@Override
 	public VariantContext variantContext(ContentNode node) {
 		Objects.requireNonNull(node, "node");
-		var location = variantLocation(node);
+		var location = VariantPathResolver.resolve(node.path());
 		var canonical = location
 				.flatMap(value -> get(value.canonicalPath()))
 				.orElse(node);
 		var activeVariantId = location
 				.filter(value -> !canonical.equals(node))
-				.map(VariantLocation::variantId);
+				.map(VariantPathResolver.VariantLocation::variantId);
 		return new VariantContext(canonical, activeVariantId, variants(canonical));
 	}
 
@@ -297,35 +297,9 @@ public final class FileSystemContentRepository implements MutableContentReposito
 	}
 
 	private ContentNode canonicalNode(ContentNode node) {
-		return variantLocation(node)
+		return VariantPathResolver.resolve(node.path())
 				.flatMap(location -> get(location.canonicalPath()))
 				.orElse(node);
-	}
-
-	private Optional<VariantLocation> variantLocation(ContentNode node) {
-		var pathParts = normalize(node.path()).split("/");
-		for (int index = 0; index < pathParts.length; index++) {
-			if (!".variants".equals(pathParts[index])) {
-				continue;
-			}
-			if (index + 3 != pathParts.length - 1) {
-				return Optional.empty();
-			}
-
-			var pageFolder = pathParts[index + 1];
-			var variantId = pathParts[index + 2];
-			var fileName = pathParts[index + 3];
-			if (!pageFolder.equals(removeMarkdown(fileName))) {
-				return Optional.empty();
-			}
-
-			var canonicalPath = index == 0
-					? fileName
-					: String.join(Constants.PATH_SEPARATOR, java.util.Arrays.copyOf(pathParts, index))
-							+ Constants.PATH_SEPARATOR + fileName;
-			return Optional.of(new VariantLocation(canonicalPath, variantId));
-		}
-		return Optional.empty();
 	}
 
 	@Override
@@ -383,6 +357,4 @@ public final class FileSystemContentRepository implements MutableContentReposito
 	private record VariantCandidate(String id, String path) {
 	}
 
-	private record VariantLocation(String canonicalPath, String variantId) {
-	}
 }

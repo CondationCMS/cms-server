@@ -171,16 +171,16 @@ const makeDirectoriesClickable = () => {
 const fileActions = () => {
 	const elements = document.querySelectorAll("[data-cms-file-action]");
 	elements.forEach((element) => {
-		element.addEventListener("click", async (event) => {
+		element.addEventListener("click", (event) => {
 			event.stopPropagation();
-			const uri = element.getAttribute("data-cms-file-uri");
+			const uri = element.dataset.cmsFileUri;
 			const row = element.closest("[data-cms-file-name]");
 			const filename = row.dataset.cmsFileName
-			const url = row.getAttribute("data-cms-file-url") || uri;
-			const action = element.getAttribute("data-cms-file-action");
+			const url = row.dataset.cmsFileUrl || uri;
+			const action = element.dataset.cmsFileAction;
 
 			if (action === "open") {
-				await loadPreview(url);
+				loadPreview(url);
 				state.modal.hide();
 			} else if (action === "copyUrl") {
 				navigator.clipboard.writeText(url).then(

@@ -66,12 +66,28 @@ public record SiteDescriptor(
 	}
 
 	public String realUrl() {
-		String normalizedBase = baseUrl.replaceAll("/+$", "");
-		String normalizedContext = contextPath.equals("/") ? "" : contextPath.replaceAll("^/+", "");
+		String normalizedBase = withoutTrailingSlashes(baseUrl);
+		String normalizedContext = contextPath.equals("/") ? "" : withoutLeadingSlashes(contextPath);
 
 		if (normalizedContext.isEmpty()) {
 			return normalizedBase + "/";
 		}
 		return normalizedBase + "/" + normalizedContext + "/";
+	}
+
+	private static String withoutTrailingSlashes(String value) {
+		int end = value.length();
+		while (end > 0 && value.charAt(end - 1) == '/') {
+			end--;
+		}
+		return value.substring(0, end);
+	}
+
+	private static String withoutLeadingSlashes(String value) {
+		int start = 0;
+		while (start < value.length() && value.charAt(start) == '/') {
+			start++;
+		}
+		return value.substring(start);
 	}
 }

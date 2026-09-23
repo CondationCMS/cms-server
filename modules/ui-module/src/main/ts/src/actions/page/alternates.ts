@@ -44,8 +44,8 @@ export async function runAction(params: any) {
 			modalElement.querySelectorAll<HTMLElement>('button[data-action]').forEach(button => {
 				button.addEventListener('click', async event => {
 					const element = event.currentTarget as HTMLElement
-					const action = element.getAttribute('data-action')
-					const targetSite = element.getAttribute('data-site') || ''
+					const action = element.dataset.action
+					const targetSite = element.dataset.site || ''
 
 					if (action === 'select') {
 						openFileBrowser({

@@ -41,8 +41,8 @@ export async function runAction(params) {
             modalElement.querySelectorAll('button[data-action]').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const element = event.currentTarget;
-                    const action = element.getAttribute('data-action');
-                    const targetSite = element.getAttribute('data-site') || '';
+                    const action = element.dataset.action;
+                    const targetSite = element.dataset.site || '';
                     if (action === 'select') {
                         openFileBrowser({
                             siteId: targetSite,

@@ -50,11 +50,13 @@ import lombok.extern.slf4j.Slf4j;
 @Extension(UIRemoteMethodExtensionPoint.class)
 public class RemoteAlternateEndpoints extends AbstractRemoteMethodeExtension {
 
+	private static final String CONTENT_NODE_NOT_FOUND = "content node for uri %s not found";
+
 	@RemoteMethod(name = "alternates.get", permissions = {Permissions.CONTENT_EDIT})
 	public Object get(Map<String, Object> parameters) throws RPCException {
 		var uri = (String) parameters.getOrDefault("uri", "");
 		var contentNode = getContentRepository(parameters).get(uri)
-				.orElseThrow(() -> new RPCException("content node for uri %s not found".formatted(uri)));
+				.orElseThrow(() -> new RPCException(CONTENT_NODE_NOT_FOUND.formatted(uri)));
 		var properties = siteProperties();
 		var alternates = alternateMap(contentNode.data());
 		List<AlternateDto> result = new ArrayList<>();
@@ -104,7 +106,7 @@ public class RemoteAlternateEndpoints extends AbstractRemoteMethodeExtension {
 
 		var repository = getMutableContentRepository(parameters);
 		var node = repository.get(uri)
-				.orElseThrow(() -> new RPCException("content node for uri %s not found".formatted(uri)));
+				.orElseThrow(() -> new RPCException(CONTENT_NODE_NOT_FOUND.formatted(uri)));
 		var alternates = alternateMap(node.data());
 		var alternateUri = String.valueOf(alternates.getOrDefault(targetSite, ""));
 		if (alternateUri.isBlank()) {
@@ -134,14 +136,14 @@ public class RemoteAlternateEndpoints extends AbstractRemoteMethodeExtension {
 
 	private String currentAlternate(String uri, String targetSite) throws RPCException {
 		var node = getContentRepository(Map.of()).get(uri)
-				.orElseThrow(() -> new RPCException("content node for uri %s not found".formatted(uri)));
+				.orElseThrow(() -> new RPCException(CONTENT_NODE_NOT_FOUND.formatted(uri)));
 		return String.valueOf(alternateMap(node.data()).getOrDefault(targetSite, ""));
 	}
 
 	private void updateLocal(String uri, String targetSite, String alternateUri) throws RPCException {
 		var repository = getMutableContentRepository(Map.of());
 		var node = repository.get(uri)
-				.orElseThrow(() -> new RPCException("content node for uri %s not found".formatted(uri)));
+				.orElseThrow(() -> new RPCException(CONTENT_NODE_NOT_FOUND.formatted(uri)));
 		try {
 			var document = repository.load(node).orElseThrow();
 			Map<String, Object> meta = new HashMap<>(node.data());

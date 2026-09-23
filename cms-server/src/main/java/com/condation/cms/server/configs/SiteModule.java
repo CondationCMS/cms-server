@@ -484,7 +484,10 @@ public class SiteModule extends AbstractModule {
     
     @Provides
     @Singleton
+    @Eager
     public VisitorContextService visitorContextService () {
-        return new VisitorContextService();
+        var service = new VisitorContextService();
+        service.create("curl/8.7.1");
+        return service;
     }
 }

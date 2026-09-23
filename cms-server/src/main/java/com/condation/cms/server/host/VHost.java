@@ -88,7 +88,6 @@ import java.util.ArrayList;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import com.condation.cms.server.annotations.Eager;
 import com.condation.cms.server.filter.metrics.PipelineRequestMetricsFilter;
 import com.condation.cms.server.filter.metrics.RequestMetricsFilter;
 import com.condation.cms.server.handler.WellKnownHandler;
@@ -184,14 +183,7 @@ public class VHost {
     }
 
     public void startUpWarmup() {
-        injector.getAllBindings().values().forEach(binding -> {
-
-            Class<?> type = binding.getKey().getTypeLiteral().getRawType();
-
-            if (type.isAnnotationPresent(Eager.class)) {
-                injector.getInstance(type);
-            }
-        });
+        EagerInitializer.initialize(injector);
     }
 
     public void init() throws IOException {

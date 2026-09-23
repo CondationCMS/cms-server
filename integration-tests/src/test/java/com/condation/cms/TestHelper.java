@@ -80,7 +80,7 @@ public abstract class TestHelper {
 		var tagparser = new ShortCodeParser(new JexlBuilder().create());
 		
 		context.add(RequestFeature.class, new RequestFeature(uri, Map.of()));
-		context.add(RequestExtensions.class, new RequestExtensions(null, null));
+		context.add(RequestExtensions.class, new RequestExtensions(null));
 		context.add(RenderContext.class, new RenderContext(markdownRenderer, new ShortCodes(Map.of(), tagparser), DefaultTheme.NO_THEME));
 
 		context.add(SiteMediaServiceFeature.class, new SiteMediaServiceFeature(new FileMediaService(null)));

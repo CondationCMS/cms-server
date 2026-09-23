@@ -82,8 +82,6 @@ public class ExtensionManagerTest {
 	@BeforeEach
 	public void setup() throws Exception {
 
-		Mockito.when(fileSystem.resolve("libs/"))
-				.thenReturn(Path.of("src/test/resources/site/libs"));
 		Mockito.when(fileSystem.resolve("extensions/"))
 				.thenReturn(Path.of("src/test/resources/site/extensions"));
 		Mockito.when(db.getFileSystem()).thenReturn(fileSystem);

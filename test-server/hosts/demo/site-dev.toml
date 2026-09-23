@@ -5,3 +5,18 @@ hostname = [ "localhost5" ]           # hostnames for this site, used for reques
 [api]
 enabled = true
 whitelist = ["meta.*", "title"]
+
+# ui manager application configuration
+[ui]
+force2fa = false                    # force 2fa for all users
+managerEnabled = true               # enable the ui manager application
+
+[ui.2fa]
+mail_from = "noreply@localhost.de"
+mail_sender = "CondationCMS"
+mail_title = "CondationCMS: your login code"
+mail_message = '''
+Hello <username>,
+
+your login code: <code>
+'''

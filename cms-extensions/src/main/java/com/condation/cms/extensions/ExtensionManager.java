@@ -33,8 +33,6 @@ import org.graalvm.polyglot.*;
 import org.graalvm.polyglot.io.IOAccess;
 
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
@@ -50,54 +48,12 @@ public class ExtensionManager {
 	}
 
 	private final ConcurrentHashMap<String, CachedSource> CACHE = new ConcurrentHashMap<>();
-	private volatile ClassLoader cachedLibClassLoader;
 
 	private final DB db;
 	private final ServerProperties serverProperties;
 
 	@Getter
 	private final Engine engine;
-
-	/**
-	 * Build or reuse the classloader for extensions/libs.
-	 */
-	private ClassLoader getOrCreateLibClassLoader() throws IOException {
-		if (cachedLibClassLoader != null) {
-			return cachedLibClassLoader;
-		}
-
-		synchronized (this) {
-			if (cachedLibClassLoader != null) {
-				return cachedLibClassLoader;
-			}
-
-			Path libs = db.getFileSystem().resolve("libs/");
-			List<URL> urls = new ArrayList<>();
-
-			if (Files.exists(libs)) {
-				try (var libsStream = Files.list(libs)) {
-					libsStream.filter(f -> f.toString().endsWith(".jar"))
-							.forEach(f -> {
-								try {
-									urls.add(f.toUri().toURL());
-								} catch (Exception e) {
-									log.error("Invalid JAR URL in libs/: {}", f, e);
-								}
-							});
-				}
-			}
-
-			cachedLibClassLoader = new URLClassLoader(
-					urls.toArray(new URL[0]),
-					ClassLoader.getSystemClassLoader()
-			);
-
-			if (log.isDebugEnabled()) {
-				log.debug("Loaded {} extension libraries.", urls.size());
-			}
-			return cachedLibClassLoader;
-		}
-	}
 
 	/**
 	 * Load extension JS files from a directory and apply loader callback.
@@ -152,8 +108,6 @@ public class ExtensionManager {
 	 */
 	public RequestExtensions newContext(Theme theme, RequestContext requestContext) throws IOException {
 
-		ClassLoader libsClassLoader = getOrCreateLibClassLoader();
-
 		Context context = Context.newBuilder("js")
 				.option("js.ecmascript-version", "2025")
 				.option("js.console", "false")
@@ -167,7 +121,6 @@ public class ExtensionManager {
 				.allowEnvironmentAccess(EnvironmentAccess.NONE)
 				.allowNativeAccess(false)
 				.allowPolyglotAccess(PolyglotAccess.NONE)
-				.hostClassLoader(libsClassLoader)
 				.allowIO(IOAccess.newBuilder()
 						.fileSystem(new ExtensionFileSystem(
 								db.getFileSystem().resolve("extensions/"), theme))
@@ -175,7 +128,7 @@ public class ExtensionManager {
 				.engine(engine)
 				.build();
 
-		RequestExtensions requestExtensions = new RequestExtensions(context, libsClassLoader);
+		RequestExtensions requestExtensions = new RequestExtensions(context);
 
 		setUpBindings(context.getBindings("js"), requestExtensions, theme, requestContext);
 

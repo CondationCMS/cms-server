@@ -24,7 +24,6 @@ package com.condation.cms.extensions.request;
 
 import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
-import java.net.URLClassLoader;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.graalvm.polyglot.Context;
@@ -40,16 +39,10 @@ public class RequestExtensions implements AutoCloseable, Feature {
 	@Getter
 	private final Context context;
 
-	@Getter
-	private final ClassLoader libsClassLoader;
-	
 	@Override
 	public void close() throws Exception {
 		if (context != null) {
 			context.close();
-		}
-		if (libsClassLoader != null) {
-			((URLClassLoader)libsClassLoader).close();
 		}
 	}
 }

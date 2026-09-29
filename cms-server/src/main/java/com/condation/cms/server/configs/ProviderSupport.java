@@ -35,8 +35,6 @@ final class ProviderSupport {
     static <T> T provide(Factory<T> factory) {
         try {
             return factory.create();
-        } catch (RuntimeException | Error exception) {
-            throw exception;
         } catch (Exception exception) {
             throw new ProviderSupportException("Unable to create injector binding", exception);
         }

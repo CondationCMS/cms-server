@@ -23,7 +23,6 @@ package com.condation.cms.core.injector;
 import com.condation.cms.api.injector.Binding;
 import com.condation.cms.api.injector.Injector;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 
 /**

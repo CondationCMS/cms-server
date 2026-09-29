@@ -38,7 +38,13 @@ final class ProviderSupport {
         } catch (RuntimeException | Error exception) {
             throw exception;
         } catch (Exception exception) {
-            throw new IllegalStateException("Unable to create injector binding", exception);
+            throw new ProviderSupportException("Unable to create injector binding", exception);
+        }
+    }
+    
+    public static class ProviderSupportException extends RuntimeException {
+        public ProviderSupportException (String message, Throwable throwable) {
+            super(message, throwable);
         }
     }
 }

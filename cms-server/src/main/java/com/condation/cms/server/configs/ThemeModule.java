@@ -52,12 +52,12 @@ public class ThemeModule implements com.condation.cms.api.injector.Module {
         injector.register(ThemeMediaManager.class,
                 i -> provide(() -> themeMediaManager(i.getInstance(Theme.class), i.getInstance(Configuration.class),
                         i.getInstance(DB.class), i.getInstance(EventBus.class)))).singleton();
-        injector.register(Constants.DI_SCOPES.THEME_MEDIA, JettyMediaHandler.class,
+        injector.register(Constants.DiScopes.THEME_MEDIA, JettyMediaHandler.class,
                 i -> provide(() -> themeMediaHandler(i.getInstance(ThemeMediaManager.class)))).singleton();
-        injector.register(Constants.DI_SCOPES.THEME_ASSETS, ResourceHandler.class,
+        injector.register(Constants.DiScopes.THEME_ASSETS, ResourceHandler.class,
                 i -> themeAssetsHandler(i.getInstance(Theme.class), i.getInstance(ServerProperties.class))).singleton();
-        injector.register(Constants.DI_SCOPES.THEME_PUBLIC, StaticFileHandler.class,
-                i -> themePublicHandler(i.getInstance(Theme.class), i.getInstance(ServerProperties.class))).singleton();
+        injector.register(Constants.DiScopes.THEME_PUBLIC, StaticFileHandler.class,
+                i -> themePublicHandler(i.getInstance(Theme.class))).singleton();
     }
 
     public ThemeMediaManager themeMediaManager(Theme theme, Configuration configuration, DB db, EventBus eventBus) throws IOException {
@@ -94,7 +94,7 @@ public class ThemeModule implements com.condation.cms.api.injector.Module {
         return assetsHandler;
     }
 
-    public StaticFileHandler themePublicHandler(Theme theme, ServerProperties serverProperties) {
+    public StaticFileHandler themePublicHandler(Theme theme) {
         List<Path> paths = new ArrayList<>();
         paths.add(theme.publicPath());
         

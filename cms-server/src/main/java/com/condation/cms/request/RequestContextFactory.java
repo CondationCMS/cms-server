@@ -51,7 +51,6 @@ import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.media.MediaService;
 import com.condation.cms.api.model.Parameter;
-import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.repository.CollectionRepository;
 import com.condation.cms.api.repository.ContentRepository;

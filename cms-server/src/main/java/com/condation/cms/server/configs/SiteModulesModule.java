@@ -64,10 +64,10 @@ public class SiteModulesModule implements com.condation.cms.api.injector.Module 
         injector.register(TemplateEngine.class,
                 i -> resolveTemplateEngine(i.getInstance(SiteProperties.class), i.getInstance(Theme.class),
                         i.getInstance(ModuleManager.class))).singleton();
-        injector.register(Constants.DI_SCOPES.GLOBAL, HookSystem.class,
+        injector.register(Constants.DiScopes.GLOBAL, HookSystem.class,
                 i -> globalHookSystem(i.getInstance(ModuleManager.class))).singleton();
         injector.register(HookSystem.class,
-                i -> hookSystem(i.getInstance(Constants.DI_SCOPES.GLOBAL, HookSystem.class)));
+                i -> hookSystem(i.getInstance(Constants.DiScopes.GLOBAL, HookSystem.class)));
     }
 
     public ModuleManager moduleManager(Injector injector, SiteModuleContext context) {

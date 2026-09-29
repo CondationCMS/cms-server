@@ -161,7 +161,7 @@ public class JettyServer implements AutoCloseable {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.debug("shutting down");
 
-			var moduleManager = globalInjector.getInstance(Constants.DI_SCOPES.SERVER, ModuleManager.class);
+			var moduleManager = globalInjector.getInstance(Constants.DiScopes.SERVER, ModuleManager.class);
 			moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::stopped);
 
 			vhosts.forEach(host -> {

@@ -151,12 +151,16 @@ public abstract class Constants {
 	
 	public static final String REQUEST_CONTEXT_ATTRIBUTE_NAME = "_requestContext";
     
-    public static class DI_SCOPES {
+    public static class DiScopes {
+        
+        private DiScopes () {}
         public static final String SERVER = "server";
         public static final String GLOBAL = "global";
         public static final String SITE = "site";
         public static final String PUBLIC = "public";
         public static final String ASSETS = "assets";
+        public static final String CONTENT = "content";
+        public static final String TEMPLATES = "templates";
         public static final String SITE_MEDIA = "site.media";
         public static final String SITE_ASSETS = "site.assets";
         public static final String SITE_PUBLIC = "site.public";

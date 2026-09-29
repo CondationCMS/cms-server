@@ -102,15 +102,15 @@ public class SiteHandlerModule implements com.condation.cms.api.injector.Module 
 		injector.register(JettyModuleHandler.class,
 				i -> provide(() -> moduleHandler(i.getInstance(Theme.class), i.getInstance(ModuleManager.class),
 						i.getInstance(SiteProperties.class)))).singleton();
-		injector.register(Constants.DI_SCOPES.SITE_MEDIA, JettyMediaHandler.class,
+		injector.register(Constants.DiScopes.SITE_MEDIA, JettyMediaHandler.class,
 				i -> provide(() -> mediaHandler(i.getInstance(SiteMediaManager.class)))).singleton();
-		injector.register(Constants.DI_SCOPES.SITE_ASSETS, ResourceHandler.class,
-				i -> provide(() -> assetsHandler(i.getInstance(Constants.DI_SCOPES.ASSETS, Path.class),
+		injector.register(Constants.DiScopes.SITE_ASSETS, ResourceHandler.class,
+				i -> provide(() -> assetsHandler(i.getInstance(Constants.DiScopes.ASSETS, Path.class),
 						i.getInstance(ServerProperties.class)))).singleton();
-		injector.register(Constants.DI_SCOPES.SITE_PUBLIC, StaticFileHandler.class,
-				i -> provide(() -> publicHandler(i.getInstance(Constants.DI_SCOPES.PUBLIC, Path.class)))).singleton();
+		injector.register(Constants.DiScopes.SITE_PUBLIC, StaticFileHandler.class,
+				i -> provide(() -> publicHandler(i.getInstance(Constants.DiScopes.PUBLIC, Path.class)))).singleton();
 		injector.register(WellKnownHandler.class,
-				i -> provide(() -> wellKnownHandler(i.getInstance(Constants.DI_SCOPES.PUBLIC, Path.class),
+				i -> provide(() -> wellKnownHandler(i.getInstance(Constants.DiScopes.PUBLIC, Path.class),
 						i.getInstance(Theme.class)))).singleton();
 	}
 	
@@ -148,7 +148,7 @@ public class SiteHandlerModule implements com.condation.cms.api.injector.Module 
 		return assetsHandler;
 	}
     
-	public StaticFileHandler publicHandler (Path publicBase) throws IOException {
+	public StaticFileHandler publicHandler (Path publicBase) {
 		return new StaticFileHandler(List.of(publicBase));
 	}
 	

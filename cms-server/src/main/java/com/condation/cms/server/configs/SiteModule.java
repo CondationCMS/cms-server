@@ -148,16 +148,16 @@ public class SiteModule implements com.condation.cms.api.injector.Module {
 		injector.register(MenuService.class,
 				i -> menuService(i.getInstance(DB.class), i.getInstance(CacheManager.class),
 						i.getInstance(EventBus.class))).singleton();
-		injector.register("assets", Path.class, i -> assetsPath(i.getInstance(DB.class))).singleton();
-		injector.register("public", Path.class, i -> publicPath(i.getInstance(DB.class))).singleton();
-		injector.register("templates", Path.class, i -> templatesPath(i.getInstance(DB.class))).singleton();
-		injector.register("content", Path.class, i -> contentPath(i.getInstance(DB.class))).singleton();
+		injector.register(Constants.DiScopes.ASSETS, Path.class, i -> assetsPath(i.getInstance(DB.class))).singleton();
+		injector.register(Constants.DiScopes.PUBLIC, Path.class, i -> publicPath(i.getInstance(DB.class))).singleton();
+		injector.register(Constants.DiScopes.TEMPLATES, Path.class, i -> templatesPath(i.getInstance(DB.class))).singleton();
+		injector.register(Constants.DiScopes.CONTENT, Path.class, i -> contentPath(i.getInstance(DB.class))).singleton();
 		injector.register(FileDB.class, i -> provide(() -> fileDb(i.getInstance(DB.class)))).singleton();
 		injector.register(MessageSource.class,
 				i -> provide(() -> messages(i.getInstance(SiteProperties.class), i.getInstance(DB.class),
 						i.getInstance(CacheManager.class)))).singleton();
 		injector.register(DB.class,
-				i -> provide(() -> fileDb(i.getInstance(SiteProperties.class),
+				i -> provide(() -> fileDb(
 						i.getInstance(DefaultContentParser.class), i.getInstance(Configuration.class),
 						i.getInstance(EventBus.class)))).eager();
 		injector.register(ContentStore.class, i -> contentStore(i.getInstance(DB.class))).singleton();
@@ -174,11 +174,11 @@ public class SiteModule implements com.condation.cms.api.injector.Module {
 				i -> provide(() -> extensionManager(i.getInstance(DB.class), i.getInstance(Configuration.class),
 						i.getInstance(Engine.class)))).singleton();
 		injector.register(SiteMediaManager.class,
-				i -> provide(() -> siteMediaManager(i.getInstance(DB.class), i.getInstance("assets", Path.class),
+				i -> provide(() -> siteMediaManager(i.getInstance(DB.class), i.getInstance(Constants.DiScopes.ASSETS, Path.class),
 						i.getInstance(Theme.class), i.getInstance(Configuration.class),
 						i.getInstance(EventBus.class)))).singleton();
 		injector.register(MediaService.class,
-				i -> provide(() -> mediaService(i.getInstance("assets", Path.class)))).singleton();
+				i -> provide(() -> mediaService(i.getInstance(Constants.DiScopes.ASSETS, Path.class)))).singleton();
 		injector.register(RequestContextFactory.class, this::requestContextFactory).singleton();
 		injector.register(RenderContentFunction.class,
 				i -> renderContentFunction(i.getInstance(ContentResolver.class),
@@ -350,7 +350,7 @@ public class SiteModule implements com.condation.cms.api.injector.Module {
 		return messages;
 	}
 
-	public DB fileDb(SiteProperties site, DefaultContentParser contentParser, Configuration configuration, EventBus eventBus) throws IOException {
+	public DB fileDb(DefaultContentParser contentParser, Configuration configuration, EventBus eventBus) throws IOException {
 		var db = new FileDB(hostBase, eventBus, (file) -> {
 			try {
 				ReadOnlyFile cmsFile = new NIOReadOnlyFile(file, hostBase.resolve(Constants.Folders.CONTENT));

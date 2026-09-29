@@ -33,7 +33,13 @@ import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.ICache;
+import com.condation.cms.api.configuration.Configuration;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.theme.Theme;
+import com.condation.cms.content.CollectionResolver;
+import com.condation.cms.content.ContentResolver;
+import com.condation.cms.content.TaxonomyResolver;
+import com.condation.cms.content.ViewResolver;
 import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.auth.services.UserService;
@@ -41,6 +47,7 @@ import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.server.FileFolderPathResource;
 import com.condation.cms.server.filter.InitRequestContextFilter;
 import com.condation.cms.server.filter.PreviewFilter;
+import com.condation.cms.request.RequestContextFactory;
 import com.condation.cms.server.handler.StaticFileHandler;
 import com.condation.cms.server.handler.WellKnownHandler;
 import com.condation.cms.server.handler.auth.JettyAuthenticationHandler;
@@ -54,10 +61,7 @@ import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import static com.condation.cms.server.configs.ProviderSupport.provide;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -68,28 +72,48 @@ import lombok.RequiredArgsConstructor;
  * @author t.marx
  */
 @RequiredArgsConstructor
-public class SiteHandlerModule extends AbstractModule {
+public class SiteHandlerModule implements com.condation.cms.api.injector.Module {
 
 	@Override
-	protected void configure() {
-		
-		bind(JettyViewHandler.class).in(Singleton.class);
-		bind(JettyCollectionHandler.class).in(Singleton.class);
-		bind(JettyContentHandler.class).in(Singleton.class);
-		bind(JettyTaxonomyHandler.class).in(Singleton.class);
-		bind(RoutesHandler.class).in(Singleton.class);
-		bind(JettyHttpHandlerExtensionHandler.class).in(Singleton.class);
-		bind(InitRequestContextFilter.class).in(Singleton.class);
-
-		bind(APIHandler.class).in(Singleton.class);
-		
-		bind(PreviewFilter.class).in(Singleton.class);
-        
-		//bind(JettyAuthenticationHandler.class).in(Singleton.class);
+	public void register(Injector injector) {
+		injector.register(JettyViewHandler.class,
+				i -> new JettyViewHandler(i.getInstance(ViewResolver.class))).singleton();
+		injector.register(JettyCollectionHandler.class,
+				i -> new JettyCollectionHandler(i.getInstance(CollectionResolver.class))).singleton();
+		injector.register(JettyContentHandler.class,
+				i -> new JettyContentHandler(i.getInstance(ContentResolver.class),
+						i.getInstance(RequestContextFactory.class))).singleton();
+		injector.register(JettyTaxonomyHandler.class,
+				i -> new JettyTaxonomyHandler(i.getInstance(TaxonomyResolver.class))).singleton();
+		injector.register(RoutesHandler.class,
+				i -> new RoutesHandler(i.getInstance(ModuleManager.class))).singleton();
+		injector.register(JettyHttpHandlerExtensionHandler.class,
+				_ -> new JettyHttpHandlerExtensionHandler()).singleton();
+		injector.register(InitRequestContextFilter.class,
+				i -> new InitRequestContextFilter(i.getInstance(RequestContextFactory.class))).singleton();
+		injector.register(APIHandler.class,
+				i -> new APIHandler(i.getInstance(ModuleManager.class))).singleton();
+		injector.register(PreviewFilter.class,
+				i -> new PreviewFilter(i.getInstance(Configuration.class))).singleton();
+		injector.register(JettyAuthenticationHandler.class,
+				i -> provide(() -> authHandler(i.getInstance(CacheManager.class), i.getInstance(UserService.class),
+						i.getInstance(AuthService.class)))).singleton();
+		injector.register(JettyModuleHandler.class,
+				i -> provide(() -> moduleHandler(i.getInstance(Theme.class), i.getInstance(ModuleManager.class),
+						i.getInstance(SiteProperties.class)))).singleton();
+		injector.register("site.media", JettyMediaHandler.class,
+				i -> provide(() -> mediaHandler(i.getInstance(SiteMediaManager.class)))).singleton();
+		injector.register("site.assets", ResourceHandler.class,
+				i -> provide(() -> assetsHandler(i.getInstance("assets", Path.class),
+						i.getInstance(ServerProperties.class)))).singleton();
+		injector.register("site.public", StaticFileHandler.class,
+				i -> provide(() -> publicHandler(i.getInstance("public", Path.class),
+						i.getInstance(ServerProperties.class)))).singleton();
+		injector.register(WellKnownHandler.class,
+				i -> provide(() -> wellKnownHandler(i.getInstance("public", Path.class),
+						i.getInstance(Theme.class)))).singleton();
 	}
 	
-	@Provides
-	@Singleton
 	public JettyAuthenticationHandler authHandler(CacheManager cacheManager, UserService userSerivce, AuthService authService) throws IOException {
 		
 		ICache<String, AtomicInteger> cache = cacheManager.get("loginFails", 
@@ -100,23 +124,15 @@ public class SiteHandlerModule extends AbstractModule {
 		return new JettyAuthenticationHandler(authService, userSerivce, cache);
 	}
 	
-	@Provides
-	@Singleton
 	public JettyModuleHandler moduleHandler(Theme theme, ModuleManager moduleManager, SiteProperties siteProperties) throws IOException {
 		return new JettyModuleHandler(moduleManager, SiteUtil.getActiveModules(siteProperties, theme));
 	}
 	
-	@Provides
-	@Singleton
-	@Named("site.media")
 	public JettyMediaHandler mediaHandler(SiteMediaManager mediaManager) throws IOException {
 		return new JettyMediaHandler(mediaManager);
 	}
 
-	@Provides
-	@Singleton
-	@Named("site.assets")
-	public ResourceHandler assetsHandler (@Named("assets") Path assetBase, ServerProperties serverProperties) throws IOException {
+	public ResourceHandler assetsHandler (Path assetBase, ServerProperties serverProperties) throws IOException {
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
 		assetsHandler.setBaseResource(new FileFolderPathResource(assetBase));
@@ -132,16 +148,11 @@ public class SiteHandlerModule extends AbstractModule {
 		return assetsHandler;
 	}
     
-    @Provides
-	@Singleton
-	@Named("site.public")
-	public StaticFileHandler publicHandler (@Named("public") Path publicBase, ServerProperties serverProperties) throws IOException {
+	public StaticFileHandler publicHandler (Path publicBase, ServerProperties serverProperties) throws IOException {
 		return new StaticFileHandler(List.of(publicBase));
 	}
 	
-	@Provides
-	@Singleton
-	public WellKnownHandler wellKnownHandler (@Named("public") Path publicBase, Theme theme) throws IOException {
+	public WellKnownHandler wellKnownHandler (Path publicBase, Theme theme) throws IOException {
 		
 		List<Path> paths = new ArrayList<>();
 		paths.add(publicBase);

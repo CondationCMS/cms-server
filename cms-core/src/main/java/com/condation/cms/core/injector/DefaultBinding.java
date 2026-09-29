@@ -1,8 +1,8 @@
-package com.condation.cms.server.host;
+package com.condation.cms.core.injector;
 
 /*-
  * #%L
- * CMS Server
+ * CMS Core
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -20,16 +20,48 @@ package com.condation.cms.server.host;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
-
+import com.condation.cms.api.injector.Binding;
 import com.condation.cms.api.injector.Injector;
+import java.util.function.Function;
 
-/** Creates eager bindings before the first request. */
-final class EagerInitializer {
+/**
+ *
+ * @author thorstenmarx
+ */
+public class DefaultBinding<T> implements Binding {
 
-    private EagerInitializer() {
-    }
+	Function<Injector, T> function;
 
-    static void initialize(Injector injector) {
-        injector.initializeEager();
-    }
+	boolean singleton = false;
+	
+	boolean eager = false;
+
+	T singletonInstance;
+
+	T newInstance(Injector injector) {
+		if (!singleton) {
+			return function.apply(injector);
+		}
+
+		synchronized (this) {
+			if (singletonInstance == null) {
+				singletonInstance = function.apply(injector);
+			}
+			return singletonInstance;
+		}
+	}
+
+	@Override
+	public void singleton() {
+		this.singleton = true;
+	}
+
+	@Override
+	public void eager() {
+		this.singleton = true;
+		this.eager = true;
+	}
+	
+	
+
 }

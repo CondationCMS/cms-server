@@ -1,8 +1,8 @@
-package com.condation.cms.server.annotations;
+package com.condation.cms.api.injector;
 
 /*-
  * #%L
- * CMS Server
+ * CMS Core
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,14 +21,21 @@ package com.condation.cms.server.annotations;
  * #L%
  */
 
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.ElementType.TYPE;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import java.util.function.Function;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+/**
+ *
+ * @author thorstenmarx
+ */
+public interface Injector {
+	
+	<T> Binding register (Class<T> clazz, Function<Injector, T> newInstanceFunction);
+	
+	<T> Binding register (String name, Class<T> clazz, Function<Injector, T> newInstanceFunction);
+	
+	<T> T getInstance (Class<T> clazz);
+	
+	<T> T getInstance (String name, Class<T> clazz);
 
-/** Marks a Guice binding for creation during site startup. */
-@Target({ TYPE, METHOD })
-@Retention(RUNTIME)
-public @interface Eager {}
+	void initializeEager ();
+}

@@ -32,7 +32,7 @@ import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.Role;
 import com.condation.cms.auth.services.RoleService;
 import com.condation.cms.auth.services.UserService;
-import com.google.inject.Guice;
+import com.condation.cms.core.injector.DefaultInjector;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -73,9 +73,9 @@ class RemoteAccessManagementEndpointsTest {
 		userService.addUser(MANAGER_REALM, "support", "secret123", new String[]{"support"});
 		userService.addUser(MANAGER_REALM, "root", "secret123", new String[]{"admin"});
 
-		var injector = Guice.createInjector(binder -> {
-			binder.bind(UserService.class).toInstance(userService);
-			binder.bind(RoleService.class).toInstance(roleService);
+		var injector = DefaultInjector.create(bindings -> {
+			bindings.register(UserService.class, _ -> userService).singleton();
+			bindings.register(RoleService.class, _ -> roleService).singleton();
 		});
 		var context = new SiteModuleContext();
 		context.add(InjectorFeature.class, new InjectorFeature(injector));

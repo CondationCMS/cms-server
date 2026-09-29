@@ -31,7 +31,7 @@ import com.condation.cms.cli.tools.ThemesUtil;
 import com.condation.cms.ipc.IPCServer;
 import com.condation.cms.server.configs.ServerGlobalModule;
 import com.condation.cms.server.JettyServer;
-import com.google.inject.Guice;
+import com.condation.cms.core.injector.DefaultInjector;
 import java.io.IOException;
 import java.util.Properties;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +62,7 @@ public class Startup implements Runnable {
             System.setProperty("polyglotimpl.AttachLibraryFailureAction","ignore");
 			//System.setProperty("polyglot.engine.WarnVirtualThreadSupport", "false");
 
-			var globalInjector = Guice.createInjector(new ServerGlobalModule());
+			var globalInjector = DefaultInjector.create(new ServerGlobalModule());
 			ServerProperties properties = globalInjector.getInstance(ServerProperties.class);
 			
 			checkInstalledModules();

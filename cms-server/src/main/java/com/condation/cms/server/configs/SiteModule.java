@@ -43,6 +43,7 @@ import com.condation.cms.api.workflow.DefaultWFStatusProvider;
 import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.db.cms.ReadOnlyFile;
 import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.eventbus.events.ConfigurationReloadEvent;
 import com.condation.cms.api.mail.MailService;
 import com.condation.cms.api.menu.Menu;
@@ -100,15 +101,10 @@ import com.condation.cms.media.SiteMediaManager;
 import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
+import static com.condation.cms.server.configs.ProviderSupport.provide;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import com.condation.cms.server.annotations.Eager;
 
 /**
  *
@@ -116,23 +112,103 @@ import com.condation.cms.server.annotations.Eager;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class SiteModule extends AbstractModule {
+public class SiteModule implements com.condation.cms.api.injector.Module {
 
 	private final String siteId;
 	private final Path hostBase;
 	private final Configuration configuration;
 
 	@Override
-	protected void configure() {
-		bind(Configuration.class).toInstance(configuration);
-		bind(EventBus.class).to(MessagingEventBus.class).in(Singleton.class);
-		//bind(ContentParser.class).to(DefaultContentParser.class).in(Singleton.class);
-		bind(TaxonomyFunction.class).in(Singleton.class);
-		bind(TaxonomyResolver.class).in(Singleton.class);
+	public void register(Injector injector) {
+		injector.register(Configuration.class, _ -> configuration).singleton();
+		injector.register(EventBus.class,
+				i -> new MessagingEventBus(i.getInstance(Messaging.class))).singleton();
+		injector.register(TaxonomyFunction.class,
+				i -> new TaxonomyFunction(i.getInstance(DB.class))).singleton();
+		injector.register(TaxonomyResolver.class,
+				i -> new TaxonomyResolver(i.getInstance(ContentRenderer.class), i.getInstance(DB.class),
+						i.getInstance(ContentNodeMapper.class), i.getInstance(ContentRepository.class))).singleton();
+		injector.register(DefaultContentParser.class, _ -> new DefaultContentParser());
+		injector.register(Workflow.class, _ -> workflow()).singleton();
+		injector.register(Messaging.class, _ -> messaging()).singleton();
+		injector.register(ContentNodeMapper.class,
+				i -> contentNodeMapper(i.getInstance(ContentRepository.class))).singleton();
+		injector.register(ContentParser.class,
+				i -> contentParser(i.getInstance(Configuration.class), i.getInstance(CacheManager.class))).singleton();
+		injector.register(ShortCodeParser.class,
+				i -> ShortCodeParser(i.getInstance(Configuration.class), i.getInstance(MarkdownRenderer.class))).singleton();
+		injector.register(ConfigManagement.class,
+				i -> provide(() -> configurationManagement(i.getInstance(SiteCronJobScheduler.class),
+						i.getInstance(EventBus.class)))).singleton();
+		injector.register(SiteProperties.class,
+				i -> provide(() -> siteProperties(i.getInstance(ServerProperties.class))));
+		injector.register(Theme.class,
+				i -> provide(() -> loadTheme(i.getInstance(SiteProperties.class), i.getInstance(ServerProperties.class),
+						i.getInstance(MessageSource.class), i.getInstance(CacheManager.class))));
+		injector.register(AuthService.class, i -> authService(i.getInstance(DB.class))).singleton();
+		injector.register(MenuService.class,
+				i -> menuService(i.getInstance(DB.class), i.getInstance(CacheManager.class),
+						i.getInstance(EventBus.class))).singleton();
+		injector.register("assets", Path.class, i -> assetsPath(i.getInstance(DB.class))).singleton();
+		injector.register("public", Path.class, i -> publicPath(i.getInstance(DB.class))).singleton();
+		injector.register("templates", Path.class, i -> templatesPath(i.getInstance(DB.class))).singleton();
+		injector.register("content", Path.class, i -> contentPath(i.getInstance(DB.class))).singleton();
+		injector.register(FileDB.class, i -> provide(() -> fileDb(i.getInstance(DB.class)))).singleton();
+		injector.register(MessageSource.class,
+				i -> provide(() -> messages(i.getInstance(SiteProperties.class), i.getInstance(DB.class),
+						i.getInstance(CacheManager.class)))).singleton();
+		injector.register(DB.class,
+				i -> provide(() -> fileDb(i.getInstance(SiteProperties.class),
+						i.getInstance(DefaultContentParser.class), i.getInstance(Configuration.class),
+						i.getInstance(EventBus.class)))).eager();
+		injector.register(ContentStore.class, i -> contentStore(i.getInstance(DB.class))).singleton();
+		injector.register(MutableContentRepository.class,
+				i -> mutableContentRepository(i.getInstance(DB.class), i.getInstance(ContentStore.class),
+						i.getInstance(ContentParser.class))).singleton();
+		injector.register(ContentRepository.class,
+				i -> contentRepository(i.getInstance(MutableContentRepository.class))).singleton();
+		injector.register(MutableCollectionRepository.class,
+				i -> mutableCollectionRepository(i.getInstance(DB.class))).singleton();
+		injector.register(CollectionRepository.class,
+				i -> collectionRepository(i.getInstance(MutableCollectionRepository.class))).singleton();
+		injector.register(ExtensionManager.class,
+				i -> provide(() -> extensionManager(i.getInstance(DB.class), i.getInstance(Configuration.class),
+						i.getInstance(Engine.class)))).singleton();
+		injector.register(SiteMediaManager.class,
+				i -> provide(() -> siteMediaManager(i.getInstance(DB.class), i.getInstance("assets", Path.class),
+						i.getInstance(Theme.class), i.getInstance(Configuration.class),
+						i.getInstance(EventBus.class)))).singleton();
+		injector.register(MediaService.class,
+				i -> provide(() -> mediaService(i.getInstance("assets", Path.class)))).singleton();
+		injector.register(RequestContextFactory.class, this::requestContextFactory).singleton();
+		injector.register(RenderContentFunction.class,
+				i -> renderContentFunction(i.getInstance(ContentResolver.class),
+						i.getInstance(RequestContextFactory.class))).singleton();
+		injector.register(ContentRenderer.class,
+				i -> contentRenderer(i, i.getInstance(FileDB.class), i.getInstance(SiteProperties.class),
+						i.getInstance(ModuleManager.class), i.getInstance(ContentRepository.class),
+						i.getInstance(CollectionRepository.class))).singleton();
+		injector.register(ContentResolver.class,
+				i -> contentResolver(i.getInstance(ContentRenderer.class), i.getInstance(ContentRepository.class),
+						i.getInstance(VariantSelector.class))).singleton();
+		injector.register(CollectionResolver.class,
+				i -> collectionResolver(i.getInstance(ContentRenderer.class), i.getInstance(CollectionRepository.class),
+						i.getInstance(Configuration.class))).singleton();
+		injector.register(VariantSelectorConfigurationRepository.class,
+				i -> variantSelectorConfigurationRepository(i.getInstance(ContentRepository.class),
+						i.getInstance(MutableContentRepository.class))).singleton();
+		injector.register(ConfigurableVariantSelector.class,
+				i -> configurableVariantSelector(i.getInstance(VariantSelectorConfigurationRepository.class),
+						i.getInstance(ModuleManager.class))).singleton();
+		injector.register(VariantSelector.class,
+				i -> variantSelector(i.getInstance(ConfigurableVariantSelector.class))).singleton();
+		injector.register(ViewResolver.class,
+				i -> viewResolver(i.getInstance(ContentRenderer.class), i.getInstance(ContentRepository.class))).singleton();
+		injector.register(CronJobContext.class, _ -> cronJobContext()).singleton();
+		injector.register(MailService.class, i -> mailServife(i.getInstance(DB.class))).singleton();
+		injector.register(VisitorContextService.class, _ -> visitorContextService()).eager();
 	}
 
-	@Provides
-	@Singleton
 	public Workflow workflow () {
 		WorkflowInstance wf = new WorkflowInstance("release", "Release", new DefaultWFStatusProvider());
 		
@@ -158,20 +234,14 @@ public class SiteModule extends AbstractModule {
 		return wf;
 	}
 	
-	@Provides
-	@Singleton
 	public Messaging messaging () {
 		return new DefaultMessaging(this.siteId);
 	}
 	
-	@Provides
-	@Singleton
 	public ContentNodeMapper contentNodeMapper (ContentRepository contentRepository) {
 		return new ContentNodeMapper(contentRepository);
 	}
 	
-    @Provides
-	@Singleton
 	public ContentParser contentParser (Configuration configuration, CacheManager cacheManager) {
 		boolean IS_DEV = configuration.get(ServerConfiguration.class).serverProperties().dev();
 		if (IS_DEV) {
@@ -184,8 +254,6 @@ public class SiteModule extends AbstractModule {
 		}
 	}
     
-	@Provides
-	@Singleton
 	public ShortCodeParser ShortCodeParser (Configuration configuration, MarkdownRenderer markdownRenderer) {
 		var engine = new JexlBuilder()
 				.strict(true)
@@ -202,8 +270,6 @@ public class SiteModule extends AbstractModule {
 		return new ShortCodeParser(engine.create(), markdownRenderer);
 	}
 	
-	@Provides
-	@Singleton
 	public ConfigManagement configurationManagement(SiteCronJobScheduler scheduler, EventBus eventBus) throws IOException {
 		ConfigManagement cm = ConfigurationFactory.create(hostBase, eventBus, scheduler);		
 		return cm;
@@ -215,7 +281,6 @@ public class SiteModule extends AbstractModule {
 	 * @return
 	 * @throws IOException 
 	 */
-	@Provides
 	public SiteProperties siteProperties(ServerProperties serverProperties) throws IOException {
 		return new ExtendedSiteProperties(ConfigurationFactory.siteConfiguration(
 				serverProperties.env(), 
@@ -232,7 +297,6 @@ public class SiteModule extends AbstractModule {
 	 * @return
 	 * @throws IOException 
 	 */
-	@Provides
 	public Theme loadTheme(
 		SiteProperties siteProperties, 
 		ServerProperties serverProperties, 
@@ -247,14 +311,10 @@ public class SiteModule extends AbstractModule {
 		return DefaultTheme.NO_THEME;
 	}
 	
-	@Provides
-	@Singleton
 	public AuthService authService(DB db) {
 		return new AuthService(db.getFileSystem().hostBase());
 	}
 
-	@Provides
-	@Singleton
 	public MenuService menuService(DB db, CacheManager cacheManager, EventBus eventBus) {
 		ICache<String, Menu> menuCache = cacheManager.get(
 				Constants.CacheNames.MENU,
@@ -265,51 +325,32 @@ public class SiteModule extends AbstractModule {
 				eventBus);
 	}
 	
-	@Provides
-	@Singleton
-	@Named("assets")
 	public Path assetsPath(DB db) {
 		return db.getFileSystem().resolve(Constants.Folders.ASSETS);
 	}
 
-    @Provides
-	@Singleton
-	@Named("public")
 	public Path publicPath(DB db) {
 		return db.getFileSystem().resolve(Constants.Folders.PUBLIC);
 	}
     
-	@Provides
-	@Singleton
-	@Named("templates")
 	public Path templatesPath(DB db) {
 		return db.getFileSystem().resolve(Constants.Folders.TEMPLATES);
 	}
 
-	@Provides
-	@Singleton
-	@Named("content")
 	public Path contentPath(DB db) {
 		return db.getFileSystem().resolve(Constants.Folders.CONTENT);
 	}
 
-	@Provides
-	@Singleton
 	public FileDB fileDb(DB db) throws IOException {
 		return (FileDB) db;
 	}
 
-	@Provides
-	@Singleton
 	public MessageSource messages(SiteProperties site, DB db, CacheManager cacheManager) throws IOException {
 		ICache<String, String> cache = cacheManager.get("messages", new CacheManager.CacheConfig(500l, Duration.ofMinutes(5)));
 		var messages = new DefaultMessageSource(site, db.getFileSystem().resolve("messages/"), cache);
 		return messages;
 	}
 
-	@Provides
-	@Singleton
-	@Eager
 	public DB fileDb(SiteProperties site, DefaultContentParser contentParser, Configuration configuration, EventBus eventBus) throws IOException {
 		var db = new FileDB(hostBase, eventBus, (file) -> {
 			try {
@@ -324,14 +365,10 @@ public class SiteModule extends AbstractModule {
 		return db;
 	}
 
-	@Provides
-	@Singleton
 	public ContentStore contentStore(DB db) {
 		return new FileSystemContentStore(db.getFileSystem());
 	}
 
-	@Provides
-	@Singleton
 	public MutableContentRepository mutableContentRepository(
 			DB db,
 			ContentStore contentStore,
@@ -343,26 +380,18 @@ public class SiteModule extends AbstractModule {
 				contentParser);
 	}
 
-	@Provides
-	@Singleton
 	public ContentRepository contentRepository(MutableContentRepository repository) {
 		return repository;
 	}
 
-	@Provides
-	@Singleton
 	public MutableCollectionRepository mutableCollectionRepository(DB db) {
 		return db.getCollectionRepository();
 	}
 
-	@Provides
-	@Singleton
 	public CollectionRepository collectionRepository(MutableCollectionRepository repository) {
 		return repository;
 	}
 
-	@Provides
-	@Singleton
 	public ExtensionManager extensionManager(DB db, Configuration configuration, Engine engine) throws IOException {
 		var extensionManager = new ExtensionManager(
 				db, 
@@ -373,36 +402,26 @@ public class SiteModule extends AbstractModule {
 		return extensionManager;
 	}
 
-	@Provides
-	@Singleton
-	public SiteMediaManager siteMediaManager(DB db, @Named("assets") Path assetBase, Theme theme, Configuration configuration, EventBus eventbus) throws IOException {
+	public SiteMediaManager siteMediaManager(DB db, Path assetBase, Theme theme, Configuration configuration, EventBus eventbus) throws IOException {
 		var mediaManager = new SiteMediaManager(assetBase, db.getFileSystem().resolve("temp"), theme, configuration);
 		eventbus.register(ConfigurationReloadEvent.class, mediaManager);
 		return mediaManager;
 	}
 
-	@Provides
-	@Singleton
-	public MediaService mediaService(@Named("assets") Path assetBase) throws IOException {
+	public MediaService mediaService(Path assetBase) throws IOException {
 		return new FileMediaService(assetBase);
 	}
 
-	@Provides
-	@Singleton
 	public RequestContextFactory requestContextFactory(Injector injector) {
 		return new RequestContextFactory(
 				injector
 		);
 	}
 	
-	@Provides
-	@Singleton
 	public RenderContentFunction renderContentFunction (ContentResolver contentResolver, RequestContextFactory requestContextFatory) {
 		return new DefaultRenderContentFunction(contentResolver, requestContextFatory);
 	}
 
-	@Provides
-	@Singleton
 	public ContentRenderer contentRenderer(Injector injector, FileDB db,
 			SiteProperties siteProperties, ModuleManager moduleManager,
 			ContentRepository contentRepository,
@@ -416,15 +435,11 @@ public class SiteModule extends AbstractModule {
 				collectionRepository);
 	}
 
-	@Provides
-	@Singleton
 	public ContentResolver contentResolver(ContentRenderer contentRenderer,
 			ContentRepository contentRepository, VariantSelector variantSelector) {
 		return new ContentResolver(contentRenderer, contentRepository, variantSelector);
 	}
 
-	@Provides
-	@Singleton
 	public CollectionResolver collectionResolver(
 			ContentRenderer contentRenderer,
 			CollectionRepository collectionRepository,
@@ -432,8 +447,6 @@ public class SiteModule extends AbstractModule {
 		return new CollectionResolver(contentRenderer, collectionRepository, configuration);
 	}
 
-	@Provides
-	@Singleton
 	public VariantSelectorConfigurationRepository variantSelectorConfigurationRepository(
 			ContentRepository contentRepository,
 			MutableContentRepository mutableContentRepository
@@ -441,8 +454,6 @@ public class SiteModule extends AbstractModule {
 		return new VariantSelectorConfigurationRepository(contentRepository, mutableContentRepository);
 	}
 
-	@Provides
-	@Singleton
 	public ConfigurableVariantSelector configurableVariantSelector(
 			VariantSelectorConfigurationRepository configurationRepository,
 			ModuleManager moduleManager
@@ -454,21 +465,15 @@ public class SiteModule extends AbstractModule {
 		);
 	}
 
-	@Provides
-	@Singleton
 	public VariantSelector variantSelector(ConfigurableVariantSelector selector) {
 		return selector;
 	}
 
-	@Provides
-	@Singleton
 	public ViewResolver viewResolver(ContentRenderer contentRenderer,
 			ContentRepository contentRepository) {
 		return new ViewResolver(contentRenderer, contentRepository);
 	}
 	
-	@Provides
-	@Singleton
 	public CronJobContext cronJobContext() {
 		final CronJobContext cronJobContext = new CronJobContext();
 		
@@ -476,15 +481,10 @@ public class SiteModule extends AbstractModule {
 	}
 	
 	
-	@Provides
-	@Singleton
 	public MailService mailServife (DB db) {
 		return new DefaultMailService(db);
 	}
     
-    @Provides
-    @Singleton
-    @Eager
     public VisitorContextService visitorContextService () {
         var service = new VisitorContextService();
         service.create("curl/8.7.1");

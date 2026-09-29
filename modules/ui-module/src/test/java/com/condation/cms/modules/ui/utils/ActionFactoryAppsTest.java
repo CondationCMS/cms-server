@@ -40,7 +40,7 @@ import com.condation.cms.api.ui.elements.ContentTypes;
 import com.condation.cms.api.ui.extensions.UIActionsExtensionPoint;
 import com.condation.cms.auth.services.User;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

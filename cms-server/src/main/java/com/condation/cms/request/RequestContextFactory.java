@@ -46,6 +46,7 @@ import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.hooks.HookSystem;
 import com.condation.cms.api.hooks.Hooks;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.mapper.ContentNodeMapper;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.media.MediaService;
@@ -70,7 +71,6 @@ import com.condation.cms.hooksystem.extensions.DBHooks;
 import com.condation.cms.hooksystem.extensions.ServerHooks;
 import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Injector;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -256,7 +256,7 @@ public class RequestContextFactory {
 	}
 
 	/**
-	 * HookSystem must be registered here instead of the guice module because otherwise the RequestContext may not be present
+	 * HookSystem must be registered here because the RequestContext may not exist during module registration.
 	 * @param requestContext 
 	 */
 	private void initHookSystem(RequestContext requestContext) {

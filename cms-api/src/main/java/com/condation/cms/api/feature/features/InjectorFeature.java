@@ -24,7 +24,7 @@ package com.condation.cms.api.feature.features;
 
 import com.condation.cms.api.annotations.FeatureScope;
 import com.condation.cms.api.feature.Feature;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 
 /**
  *

@@ -26,7 +26,7 @@ import com.condation.cms.api.menu.Menu;
 import com.condation.cms.api.menu.MenuService;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.core.menu.FileMenuService;
-import com.google.inject.Guice;
+import com.condation.cms.core.injector.DefaultInjector;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -42,8 +42,8 @@ class RemoteMenuEndpointsTest {
 	@Test
 	void exposesAllMenuCrudOperations() throws Exception {
 		MenuService service = new FileMenuService(siteDirectory);
-		var injector = Guice.createInjector(binder ->
-				binder.bind(MenuService.class).toInstance(service));
+		var injector = DefaultInjector.create(bindings ->
+				bindings.register(MenuService.class, _ -> service).singleton());
 		var context = new SiteModuleContext();
 		context.add(InjectorFeature.class, new InjectorFeature(injector));
 		var endpoints = new RemoteMenuEndpoints();

@@ -40,6 +40,7 @@ import com.condation.cms.api.feature.features.ServerPropertiesFeature;
 import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.SiteModuleContext;
@@ -55,12 +56,11 @@ import com.condation.cms.core.scheduler.SiteCronJobScheduler;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.module.DefaultRenderContentFunction;
 import com.condation.cms.request.RequestContextFactory;
-import com.google.inject.Injector;
 
 import lombok.RequiredArgsConstructor;
 
 /**
- * This is an initializer for some site configurations that make problem due to circular dependencies in guice.
+ * Initializes site configuration after its dependencies are available.
  * 
  */
 @RequiredArgsConstructor

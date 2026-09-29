@@ -24,7 +24,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.feature.Feature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.request.RequestContextFactory;
-import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Request;
@@ -40,7 +39,6 @@ public class InitRequestContextFilter extends Handler.Abstract {
 
 	private final RequestContextFactory requestContextFactory;
 
-	@Inject
 	public InitRequestContextFilter(final RequestContextFactory requestContextFactory) {
 		super();
 		this.requestContextFactory = requestContextFactory;

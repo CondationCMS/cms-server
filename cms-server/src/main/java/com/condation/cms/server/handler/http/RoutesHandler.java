@@ -32,7 +32,6 @@ import com.condation.cms.extensions.HttpHandlerExtension;
 import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
 import com.condation.cms.hooksystem.extensions.ServerHooks;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,8 +44,7 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor(onConstructor = @__({
-		@Inject }))
+@RequiredArgsConstructor
 @Slf4j
 public class RoutesHandler extends Handler.Abstract {
 

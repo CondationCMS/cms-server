@@ -25,7 +25,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.content.DefaultContentResponse;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.CollectionResolver;
-import com.google.inject.Inject;
 import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.http.HttpHeader;
 import org.eclipse.jetty.io.Content;
@@ -37,7 +36,7 @@ import org.eclipse.jetty.util.Callback;
 /**
  * Serves collection items whose detail routes are configured for the site.
  */
-@RequiredArgsConstructor(onConstructor = @__({@Inject}))
+@RequiredArgsConstructor
 public class JettyCollectionHandler extends Handler.Abstract {
 
 	private final CollectionResolver collectionResolver;

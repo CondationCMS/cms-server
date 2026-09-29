@@ -41,9 +41,7 @@ import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.core.eventbus.DefaultEventBus;
 import com.condation.cms.core.utils.MdcScope;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
+import com.condation.cms.api.injector.Injector;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -163,7 +161,7 @@ public class JettyServer implements AutoCloseable {
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			log.debug("shutting down");
 
-			var moduleManager = globalInjector.getInstance(Key.get(ModuleManager.class, Names.named("server")));
+			var moduleManager = globalInjector.getInstance("server", ModuleManager.class);
 			moduleManager.extensions(ServerLifecycleExtensionPoint.class).forEach(ServerLifecycleExtensionPoint::stopped);
 
 			vhosts.forEach(host -> {
@@ -247,7 +245,7 @@ public class JettyServer implements AutoCloseable {
 	}
 
 	private void initServerModules() {
-		var moduleManager = globalInjector.getInstance(Key.get(ModuleManager.class, Names.named("server")));
+		var moduleManager = globalInjector.getInstance("server", ModuleManager.class);
 		moduleManager.initModules();
 		List<String> activeModules = globalInjector.getInstance(ServerProperties.class).activeModules();
 		activeModules.stream()
@@ -262,7 +260,7 @@ public class JettyServer implements AutoCloseable {
 				});
 		var context = globalInjector.getInstance(ServerModuleContext.class);
 
-		var hookSystem = globalInjector.getInstance(Key.get(HookSystem.class, Names.named("server")));
+		var hookSystem = globalInjector.getInstance("server", HookSystem.class);
 		moduleManager.extensions(ServerHookSystemRegisterExtensionPoint.class).forEach(extensionPoint -> {
 			extensionPoint.register(hookSystem);
 			hookSystem.register(extensionPoint);

@@ -33,7 +33,6 @@ import com.condation.cms.api.model.ListNode;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.repository.ContentDocument;
 import com.condation.cms.api.repository.ContentRepository;
-import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +52,6 @@ public class TaxonomyResolver {
 	private final ContentNodeMapper contentNodeMapper;
 	private final ContentRepository contentRepository;
 
-	@Inject
 	public TaxonomyResolver(
 			ContentRenderer contentRenderer,
 			DB db,

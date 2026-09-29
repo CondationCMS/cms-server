@@ -1,8 +1,8 @@
-package com.condation.cms.server.host;
+package com.condation.cms.api.injector;
 
 /*-
  * #%L
- * CMS Server
+ * CMS Core
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,15 +21,11 @@ package com.condation.cms.server.host;
  * #L%
  */
 
-import com.condation.cms.api.injector.Injector;
+/**
+ *
+ * @author thorstenmarx
+ */
+public interface Module {
 
-/** Creates eager bindings before the first request. */
-final class EagerInitializer {
-
-    private EagerInitializer() {
-    }
-
-    static void initialize(Injector injector) {
-        injector.initializeEager();
-    }
+	void register (Injector injector);
 }

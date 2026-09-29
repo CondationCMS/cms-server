@@ -53,7 +53,7 @@ import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import com.condation.cms.test.TestSiteProperties;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;

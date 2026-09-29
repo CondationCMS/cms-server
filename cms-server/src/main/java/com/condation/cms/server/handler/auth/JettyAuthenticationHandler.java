@@ -28,7 +28,6 @@ import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.auth.services.AuthService;
 import com.condation.cms.auth.services.Realm;
 import com.condation.cms.auth.services.UserService;
-import com.google.inject.Inject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
@@ -48,8 +47,7 @@ import org.eclipse.jetty.util.Callback;
  * @author t.marx
  */
 @Slf4j
-@RequiredArgsConstructor(onConstructor = @__({
-	@Inject}))
+@RequiredArgsConstructor
 public class JettyAuthenticationHandler extends Handler.Abstract {
 
 	private final AuthService authService;

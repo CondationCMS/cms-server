@@ -39,7 +39,7 @@ import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.cms.templates.components.TemplateComponents;
 import com.condation.cms.templates.loaders.StringTemplateLoader;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;

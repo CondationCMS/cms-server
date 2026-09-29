@@ -26,7 +26,6 @@ import com.condation.cms.api.Constants;
 import com.condation.cms.api.content.TaxonomyResponse;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.content.TaxonomyResolver;
-import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +39,7 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor(onConstructor = @__({@Inject}))
+@RequiredArgsConstructor
 @Slf4j
 public class JettyTaxonomyHandler extends Handler.Abstract {
 	private final TaxonomyResolver taxonomyResolver;

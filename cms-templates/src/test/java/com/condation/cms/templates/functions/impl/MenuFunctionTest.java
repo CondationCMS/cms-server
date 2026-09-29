@@ -32,7 +32,7 @@ import com.condation.cms.api.menu.MenuItem;
 import com.condation.cms.api.menu.MenuService;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.hooksystem.CMSHookSystem;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;

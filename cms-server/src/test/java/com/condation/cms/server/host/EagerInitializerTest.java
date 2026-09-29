@@ -21,11 +21,7 @@ package com.condation.cms.server.host;
  * #L%
  */
 
-import com.condation.cms.server.annotations.Eager;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
+import com.condation.cms.core.injector.DefaultInjector;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 
@@ -39,26 +35,13 @@ class EagerInitializerTest {
         var typeCalls = new AtomicInteger();
         var lazyCalls = new AtomicInteger();
 
-        var injector = Guice.createInjector(new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(EagerType.class).in(Singleton.class);
-                bind(LazyType.class).in(Singleton.class);
-            }
-
-            @Provides
-            @Singleton
-            @Eager
-            EagerService eagerService() {
+        var injector = DefaultInjector.create(bindings -> {
+            bindings.register(EagerType.class, _ -> new EagerType(new CounterHolder(typeCalls, lazyCalls))).eager();
+            bindings.register(LazyType.class, _ -> new LazyType(new CounterHolder(typeCalls, lazyCalls))).singleton();
+            bindings.register(EagerService.class, _ -> {
                 providerCalls.incrementAndGet();
                 return new EagerService();
-            }
-
-            @Provides
-            @Singleton
-            CounterHolder counters() {
-                return new CounterHolder(typeCalls, lazyCalls);
-            }
+            }).eager();
         });
 
         assertEquals(0, providerCalls.get());
@@ -76,16 +59,13 @@ class EagerInitializerTest {
     private static class EagerService {
     }
 
-    @Eager
     private static class EagerType {
-        @com.google.inject.Inject
         EagerType(CounterHolder counters) {
             counters.eager().incrementAndGet();
         }
     }
 
     private static class LazyType {
-        @com.google.inject.Inject
         LazyType(CounterHolder counters) {
             counters.lazy().incrementAndGet();
         }

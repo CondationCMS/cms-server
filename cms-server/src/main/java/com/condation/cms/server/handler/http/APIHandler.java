@@ -34,7 +34,6 @@ import com.condation.cms.extensions.http.JettyHttpHandlerWrapper;
 import com.condation.cms.hooksystem.extensions.ServerHooks;
 import com.condation.cms.server.handler.AbstractHandler;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Inject;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +46,7 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor(onConstructor = @__({
-        @Inject }))
+@RequiredArgsConstructor
 @Slf4j
 public class APIHandler extends AbstractHandler {
 

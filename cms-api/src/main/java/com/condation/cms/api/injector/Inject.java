@@ -1,8 +1,8 @@
-package com.condation.cms.server.host;
+package com.condation.cms.api.injector;
 
 /*-
  * #%L
- * CMS Server
+ * CMS Api
  * %%
  * Copyright (C) 2023 - 2026 CondationCMS
  * %%
@@ -21,15 +21,12 @@ package com.condation.cms.server.host;
  * #L%
  */
 
-import com.condation.cms.api.injector.Injector;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/** Creates eager bindings before the first request. */
-final class EagerInitializer {
-
-    private EagerInitializer() {
-    }
-
-    static void initialize(Injector injector) {
-        injector.initializeEager();
-    }
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD, ElementType.METHOD})
+public @interface Inject {
 }

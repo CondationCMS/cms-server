@@ -24,7 +24,6 @@ package com.condation.cms.content.template.functions.taxonomy;
 
 import com.condation.cms.api.db.taxonomy.Taxonomy;
 import com.condation.cms.api.db.DB;
-import com.google.inject.Inject;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +33,7 @@ import lombok.RequiredArgsConstructor;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor(onConstructor = @__({@Inject}))
+@RequiredArgsConstructor
 public class TaxonomyFunction {
 	
 	private final DB db;

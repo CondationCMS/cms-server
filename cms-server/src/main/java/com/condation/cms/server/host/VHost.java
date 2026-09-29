@@ -46,11 +46,13 @@ import com.condation.cms.api.eventbus.events.InvalidateTemplateCacheEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostReloadedEvent;
 import com.condation.cms.api.eventbus.events.lifecycle.HostStoppedEvent;
 import com.condation.cms.api.feature.features.ThemeFeature;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
 import com.condation.cms.api.theme.Theme;
 import com.condation.cms.core.utils.SiteUtil;
 import com.condation.cms.core.configuration.ConfigManagement;
+import com.condation.cms.core.injector.DefaultInjector;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.media.MediaManager;
 import com.condation.cms.media.SiteMediaManager;
@@ -80,9 +82,6 @@ import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.google.inject.name.Names;
 import java.nio.file.Files;
 import java.util.ArrayList;
 
@@ -117,7 +116,7 @@ public class VHost {
         this.siteId = siteId;
         this.hostBase = hostBase;
 
-        this.injector = globalInjector.createChildInjector(new SiteGlobalModule(),
+        this.injector = DefaultInjector.create(globalInjector, new SiteGlobalModule(),
                 new SiteModule(siteId, hostBase, this.configuration),
                 new SiteModulesModule(modulesPath),
                 new SiteHandlerModule(),
@@ -154,7 +153,7 @@ public class VHost {
 
             this.injector.getInstance(ThemeMediaManager.class).reloadTheme(theme);
 
-            ResourceHandler themeAssetsHandler = this.injector.getInstance(Key.get(ResourceHandler.class, Names.named("theme.assets")));
+            ResourceHandler themeAssetsHandler = this.injector.getInstance("theme.assets", ResourceHandler.class);
             themeAssetsHandler.stop();
             themeAssetsHandler.setBaseResource(new FileFolderPathResource(theme.assetsPath()));
             themeAssetsHandler.start();
@@ -183,7 +182,7 @@ public class VHost {
     }
 
     public void startUpWarmup() {
-        EagerInitializer.initialize(injector);
+        injector.initializeEager();
     }
 
     public void init() throws IOException {
@@ -245,7 +244,7 @@ public class VHost {
 				rootSequence);
 		
 		log.debug("create assets handler for site");
-        ResourceHandler assetsHandler = injector.getInstance(Key.get(ResourceHandler.class, Names.named("site.assets")));
+        ResourceHandler assetsHandler = injector.getInstance("site.assets", ResourceHandler.class);
 		
         pathMappingsHandler.addMapping(
                 PathSpec.from("/assets/*"),
@@ -260,7 +259,7 @@ public class VHost {
                 assetsMediaManager.clearTempDirectory();
             }
         });
-        final JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("site.media")));
+        final JettyMediaHandler mediaHandler = this.injector.getInstance("site.media", JettyMediaHandler.class);
 
         var siteMediaHandlerSequence = new Handler.Sequence(
                 uiPreviewFilter,
@@ -378,8 +377,8 @@ public class VHost {
     private ContextHandler themeContextHandler() {
         final MediaManager themeAssetsMediaManager = this.injector.getInstance(ThemeMediaManager.class);
         injector.getInstance(EventBus.class).register(ConfigurationReloadEvent.class, themeAssetsMediaManager);
-        JettyMediaHandler mediaHandler = this.injector.getInstance(Key.get(JettyMediaHandler.class, Names.named("theme.media")));
-        ResourceHandler assetsHandler = this.injector.getInstance(Key.get(ResourceHandler.class, Names.named("theme.assets")));
+        JettyMediaHandler mediaHandler = this.injector.getInstance("theme.media", JettyMediaHandler.class);
+        ResourceHandler assetsHandler = this.injector.getInstance("theme.assets", ResourceHandler.class);
 
         PathMappingsHandler pathMappingsHandler = new PathMappingsHandler();
         pathMappingsHandler.addMapping(
@@ -411,11 +410,11 @@ public class VHost {
         var authHandler = injector.getInstance(JettyAuthenticationHandler.class);
         var initContextHandler = injector.getInstance(InitRequestContextFilter.class);
 
-        var publicHandler = injector.getInstance(Key.get(StaticFileHandler.class, Names.named("site.public")));
+        var publicHandler = injector.getInstance("site.public", StaticFileHandler.class);
         var publicHandlerList = new ArrayList<Handler>();
         publicHandlerList.add(publicHandler);
         if (!injector.getInstance(Theme.class).empty()) {
-            var themePublicHandler = injector.getInstance(Key.get(StaticFileHandler.class, Names.named("theme.public")));
+            var themePublicHandler = injector.getInstance("theme.public", StaticFileHandler.class);
             publicHandlerList.add(themePublicHandler);
         }
 

@@ -30,7 +30,6 @@ import com.condation.cms.api.feature.features.IsPreviewFeature;
 import com.condation.cms.api.request.RequestContext;
 import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.modules.ui.utils.TokenUtils;
-import com.google.inject.Inject;
 import java.time.Duration;
 import java.util.Map;
 import java.util.Optional;
@@ -50,7 +49,6 @@ public class PreviewFilter extends Handler.Abstract {
 
 	private final Configuration configuration;
 
-	@Inject
 	public PreviewFilter(Configuration configuration) {
 		this.configuration = configuration;
 	}

@@ -26,7 +26,6 @@ import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.eventbus.EventListener;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.messaging.Topic;
-import com.google.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -38,7 +37,6 @@ public class MessagingEventBus implements EventBus {
 
 	private final Messaging messaging;
 
-	@Inject
 	public MessagingEventBus(final Messaging messaging) {
 		this.messaging = messaging;
 	}

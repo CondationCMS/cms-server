@@ -26,6 +26,7 @@ import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
 import com.condation.cms.api.extensions.TemplateEngineProviderExtensionPoint;
 import com.condation.cms.api.feature.features.ModuleManagerFeature;
 import com.condation.cms.api.hooks.HookSystem;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.markdown.MarkdownRenderer;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.template.TemplateEngine;
@@ -35,11 +36,6 @@ import com.condation.cms.hooksystem.CMSHookSystem;
 import com.condation.modules.api.ModuleManager;
 import com.condation.modules.manager.ModuleAPIClassLoader;
 import com.condation.modules.manager.ModuleManagerImpl;
-import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -53,16 +49,26 @@ import lombok.extern.slf4j.Slf4j;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class SiteModulesModule extends AbstractModule {
+public class SiteModulesModule implements com.condation.cms.api.injector.Module {
 
     private final Path modulesPath;
 
     @Override
-    protected void configure() {
+    public void register(Injector injector) {
+        injector.register(ModuleManager.class,
+                i -> moduleManager(i, i.getInstance(SiteModuleContext.class))).singleton();
+        injector.register(SiteModuleContext.class, _ -> moduleContext()).singleton();
+        injector.register(MarkdownRenderer.class,
+                i -> markdownRenderer(i.getInstance(SiteProperties.class), i.getInstance(ModuleManager.class))).singleton();
+        injector.register(TemplateEngine.class,
+                i -> resolveTemplateEngine(i.getInstance(SiteProperties.class), i.getInstance(Theme.class),
+                        i.getInstance(ModuleManager.class))).singleton();
+        injector.register("global", HookSystem.class,
+                i -> globalHookSystem(i.getInstance(ModuleManager.class))).singleton();
+        injector.register(HookSystem.class,
+                i -> hookSystem(i.getInstance("global", HookSystem.class)));
     }
 
-    @Provides
-    @Singleton
     public ModuleManager moduleManager(Injector injector, SiteModuleContext context) {
         var classLoader = new ModuleAPIClassLoader(ClassLoader.getSystemClassLoader(),
                 List.of(
@@ -79,7 +85,7 @@ public class SiteModulesModule extends AbstractModule {
                 ));
         var moduleManager = ModuleManagerImpl.builder()
                 .setClassLoader(classLoader)
-                .setInjector((instance) -> injector.injectMembers(instance))
+                
                 .setModulesDataPath(injector.getInstance(FileDB.class).getFileSystem().resolve("modules_data").toFile())
                 .setModulesPath(modulesPath.toFile())
                 .setContext(context)
@@ -90,8 +96,6 @@ public class SiteModulesModule extends AbstractModule {
         return moduleManager;
     }
 
-    @Provides
-    @Singleton
     public SiteModuleContext moduleContext() {
         final SiteModuleContext cmsModuleContext = new SiteModuleContext();
 
@@ -105,8 +109,6 @@ public class SiteModulesModule extends AbstractModule {
      * @param moduleManager
      * @return
      */
-    @Provides
-    @Singleton
     public MarkdownRenderer markdownRenderer(SiteProperties siteProperties, ModuleManager moduleManager) {
         var engine = siteProperties.markdownEngine();
 
@@ -136,8 +138,6 @@ public class SiteModulesModule extends AbstractModule {
         return used_engine.orElse("system");
     }
 
-    @Provides
-    @Singleton
     public TemplateEngine resolveTemplateEngine(SiteProperties siteProperties, Theme theme, ModuleManager moduleManager) {
         var engine = getTemplateEngine(siteProperties, theme);
 
@@ -151,9 +151,6 @@ public class SiteModulesModule extends AbstractModule {
         throw new RuntimeException("no template engine found");
     }
 
-    @Provides
-    @Singleton
-    @Named("global")
     public HookSystem globalHookSystem(final ModuleManager moduleManager) {
         var hookSystem = new CMSHookSystem();
 
@@ -170,8 +167,7 @@ public class SiteModulesModule extends AbstractModule {
      * @param moduleManager
      * @return
      */
-    @Provides
-    public HookSystem hookSystem(final @Named("global") HookSystem globalHooks) {
+    public HookSystem hookSystem(final HookSystem globalHooks) {
         var hookSystem = new CMSHookSystem((CMSHookSystem) globalHooks);
         return hookSystem;
     }

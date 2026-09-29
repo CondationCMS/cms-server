@@ -23,9 +23,10 @@ package com.condation.cms.core.site;
 
 import com.condation.cms.api.MultisiteProperties;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.injector.Injector;
+import com.condation.cms.api.injector.Module;
 import com.condation.cms.api.site.Site;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
+import com.condation.cms.core.injector.DefaultInjector;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -55,12 +56,13 @@ class DefaultSiteServiceTest {
 	}
 
 	private Site site(String id, String group, Locale locale) {
-		SiteProperties properties = new StubSiteProperties(id, group, locale);
-		var injector = Guice.createInjector(new AbstractModule() {
+		final SiteProperties properties = new StubSiteProperties(id, group, locale);
+		var injector = DefaultInjector.create(new Module() {
 			@Override
-			protected void configure() {
-				bind(SiteProperties.class).toInstance(properties);
+			public void register(Injector injector) {
+				injector.register(SiteProperties.class, (_) -> properties);
 			}
+
 		});
 		return new Site(injector);
 	}

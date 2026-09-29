@@ -27,14 +27,11 @@ import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.cache.CacheProvider;
 import com.condation.cms.api.extensions.CacheProviderExtensionPoint;
+import com.condation.cms.api.injector.Injector;
 import com.condation.cms.api.scheduler.CronJobContext;
 import com.condation.cms.core.cache.LocalCacheProvider;
 import com.condation.cms.core.scheduler.SiteCronJobScheduler;
 import com.condation.modules.api.ModuleManager;
-import com.google.inject.Binder;
-import com.google.inject.Injector;
-import com.google.inject.Provides;
-import com.google.inject.Singleton;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -45,27 +42,28 @@ import org.quartz.Scheduler;
  * @author t.marx
  */
 @Slf4j
-public class SiteGlobalModule implements com.google.inject.Module {
+public class SiteGlobalModule implements com.condation.cms.api.injector.Module {
 
 	@Override
-	public void configure(Binder binder) {
-
+	public void register(Injector injector) {
+		injector.register(SiteCronJobScheduler.class,
+				i -> cronJobScheduler(i.getInstance(Scheduler.class), i.getInstance(CronJobContext.class),
+						i.getInstance(SiteProperties.class))).singleton();
+		injector.register(CacheManager.class,
+				i -> cacheManager(i.getInstance(CacheProvider.class))).singleton();
+		injector.register(CacheProvider.class,
+				i -> cacheProvider(i.getInstance(ModuleManager.class), i.getInstance(SiteProperties.class))).singleton();
+		injector.register(SiteConfigInitializer.class, this::siteConfigInitializer).singleton();
 	}
 	
-	@Provides
-	@Singleton
 	public SiteCronJobScheduler cronJobScheduler (Scheduler scheduler, CronJobContext context, SiteProperties siteProperties) {
 		return new SiteCronJobScheduler(scheduler, context, siteProperties);
 	}
 	
-	@Provides
-	@Singleton
 	public CacheManager cacheManager (CacheProvider cacheProvider) {
 		return new CacheManager(cacheProvider);
 	}
 	
-	@Provides
-	@Singleton
 	public CacheProvider cacheProvider (ModuleManager moduleManager, SiteProperties siteProperties) {
 		var cacheEngine = siteProperties.cacheEngine();
 		if (Constants.DEFAULT_CACHE_ENGINE.equals(cacheEngine)) {
@@ -80,8 +78,6 @@ public class SiteGlobalModule implements com.google.inject.Module {
 		return new LocalCacheProvider();
 	}
 
-	@Provides
-	@Singleton
 	public SiteConfigInitializer siteConfigInitializer (Injector injector) {
 		var configInitializer = new SiteConfigInitializer(injector);
 		return configInitializer;

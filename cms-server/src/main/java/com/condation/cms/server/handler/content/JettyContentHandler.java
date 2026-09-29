@@ -32,7 +32,6 @@ import com.condation.cms.api.utils.HTTPUtil;
 import com.condation.cms.api.utils.RequestUtil;
 import com.condation.cms.content.ContentResolver;
 import com.condation.cms.request.RequestContextFactory;
-import com.google.inject.Inject;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,8 +47,7 @@ import org.eclipse.jetty.util.Callback;
  *
  * @author t.marx
  */
-@RequiredArgsConstructor(onConstructor = @__({
-    @Inject}))
+@RequiredArgsConstructor
 @Slf4j
 public class JettyContentHandler extends Handler.Abstract {
 

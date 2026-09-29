@@ -52,7 +52,7 @@ import com.condation.cms.hooksystem.CMSHookSystem;
 import com.condation.cms.hooksystem.extensions.DBHooks;
 import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.cms.test.TestSiteProperties;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 import java.io.IOException;
 import java.util.Map;
 import org.apache.commons.jexl3.JexlBuilder;

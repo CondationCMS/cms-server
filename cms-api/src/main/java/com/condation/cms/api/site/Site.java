@@ -21,7 +21,7 @@ package com.condation.cms.api.site;
  * #L%
  */
 import com.condation.cms.api.SiteProperties;
-import com.google.inject.Injector;
+import com.condation.cms.api.injector.Injector;
 import java.util.List;
 
 /**

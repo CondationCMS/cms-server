@@ -21,6 +21,7 @@ package com.condation.cms.server.configs;
  * #L%
  */
 
+import com.condation.cms.api.Constants;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -101,16 +102,15 @@ public class SiteHandlerModule implements com.condation.cms.api.injector.Module 
 		injector.register(JettyModuleHandler.class,
 				i -> provide(() -> moduleHandler(i.getInstance(Theme.class), i.getInstance(ModuleManager.class),
 						i.getInstance(SiteProperties.class)))).singleton();
-		injector.register("site.media", JettyMediaHandler.class,
+		injector.register(Constants.DI_SCOPES.SITE_MEDIA, JettyMediaHandler.class,
 				i -> provide(() -> mediaHandler(i.getInstance(SiteMediaManager.class)))).singleton();
-		injector.register("site.assets", ResourceHandler.class,
-				i -> provide(() -> assetsHandler(i.getInstance("assets", Path.class),
+		injector.register(Constants.DI_SCOPES.SITE_ASSETS, ResourceHandler.class,
+				i -> provide(() -> assetsHandler(i.getInstance(Constants.DI_SCOPES.ASSETS, Path.class),
 						i.getInstance(ServerProperties.class)))).singleton();
-		injector.register("site.public", StaticFileHandler.class,
-				i -> provide(() -> publicHandler(i.getInstance("public", Path.class),
-						i.getInstance(ServerProperties.class)))).singleton();
+		injector.register(Constants.DI_SCOPES.SITE_PUBLIC, StaticFileHandler.class,
+				i -> provide(() -> publicHandler(i.getInstance(Constants.DI_SCOPES.PUBLIC, Path.class)))).singleton();
 		injector.register(WellKnownHandler.class,
-				i -> provide(() -> wellKnownHandler(i.getInstance("public", Path.class),
+				i -> provide(() -> wellKnownHandler(i.getInstance(Constants.DI_SCOPES.PUBLIC, Path.class),
 						i.getInstance(Theme.class)))).singleton();
 	}
 	
@@ -132,7 +132,7 @@ public class SiteHandlerModule implements com.condation.cms.api.injector.Module 
 		return new JettyMediaHandler(mediaManager);
 	}
 
-	public ResourceHandler assetsHandler (Path assetBase, ServerProperties serverProperties) throws IOException {
+	public ResourceHandler assetsHandler (Path assetBase, ServerProperties serverProperties) {
 		ResourceHandler assetsHandler = new ResourceHandler();
 		assetsHandler.setDirAllowed(false);
 		assetsHandler.setBaseResource(new FileFolderPathResource(assetBase));
@@ -148,11 +148,11 @@ public class SiteHandlerModule implements com.condation.cms.api.injector.Module 
 		return assetsHandler;
 	}
     
-	public StaticFileHandler publicHandler (Path publicBase, ServerProperties serverProperties) throws IOException {
+	public StaticFileHandler publicHandler (Path publicBase) throws IOException {
 		return new StaticFileHandler(List.of(publicBase));
 	}
 	
-	public WellKnownHandler wellKnownHandler (Path publicBase, Theme theme) throws IOException {
+	public WellKnownHandler wellKnownHandler (Path publicBase, Theme theme) {
 		
 		List<Path> paths = new ArrayList<>();
 		paths.add(publicBase);

@@ -20,6 +20,7 @@ package com.condation.cms.server.configs;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.eventbus.EventBus;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -75,19 +76,19 @@ public class ServerGlobalModule implements com.condation.cms.api.injector.Module
     public void register(Injector injector) {
         injector.register(MeterRegistry.class, _ -> metricRegisry()).singleton();
         injector.register(Scheduler.class, _ -> scheduler()).singleton();
-        injector.register("server", Messaging.class, _ -> serverMessaging()).singleton();
-        injector.register("server", EventBus.class, this::serverEventBus).singleton();
-        injector.register("server", CronJobScheduler.class,
+        injector.register(Constants.DI_SCOPES.SERVER, Messaging.class, _ -> serverMessaging()).singleton();
+        injector.register(Constants.DI_SCOPES.SERVER, EventBus.class, this::serverEventBus).singleton();
+        injector.register(Constants.DI_SCOPES.SERVER, CronJobScheduler.class,
                 i -> serverCronJobScheudler(i.getInstance(Scheduler.class))).singleton();
         injector.register(ServerProperties.class, _ -> provide(this::serverProperties));
         injector.register(Engine.class, _ -> provide(this::engine)).singleton();
         injector.register(UserService.class, _ -> userService()).singleton();
         injector.register(RoleService.class, _ -> roleService()).singleton();
         injector.register(SiteService.class, _ -> siteService()).singleton();
-        injector.register("server", HookSystem.class, _ -> hookSystem()).singleton();
+        injector.register(Constants.DI_SCOPES.SERVER, HookSystem.class, _ -> hookSystem()).singleton();
         injector.register(ServerModuleContext.class,
-                i -> serverModuleContext(i, i.getInstance("server", HookSystem.class))).singleton();
-        injector.register("server", ModuleManager.class,
+                i -> serverModuleContext(i, i.getInstance(Constants.DI_SCOPES.SERVER, HookSystem.class))).singleton();
+        injector.register(Constants.DI_SCOPES.SERVER, ModuleManager.class,
                 i -> serverModuleManager(i, i.getInstance(ServerModuleContext.class))).singleton();
     }
 
@@ -131,7 +132,7 @@ public class ServerGlobalModule implements com.condation.cms.api.injector.Module
     }
 
     public EventBus serverEventBus(Injector injector) {
-        return new MessagingEventBus(injector.getInstance("server", Messaging.class));
+        return new MessagingEventBus(injector.getInstance(Constants.DI_SCOPES.SERVER, Messaging.class));
     }
 
     public CronJobScheduler serverCronJobScheudler(Scheduler scheduler) {

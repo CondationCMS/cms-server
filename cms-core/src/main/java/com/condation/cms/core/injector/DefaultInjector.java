@@ -24,13 +24,6 @@ package com.condation.cms.core.injector;
 import com.condation.cms.api.injector.Binding;
 import com.condation.cms.api.injector.Module;
 import com.condation.cms.api.injector.Injector;
-import com.condation.cms.api.injector.Inject;
-import com.condation.cms.api.injector.Named;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.Parameter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.Function;
@@ -110,5 +103,5 @@ public class DefaultInjector implements Injector {
 				.forEach(binding -> binding.newInstance(this));
 	}
 	
-	private record BindingKey (String name, Class<?> clazz) {};
+	private record BindingKey (String name, Class<?> clazz) {}
 }

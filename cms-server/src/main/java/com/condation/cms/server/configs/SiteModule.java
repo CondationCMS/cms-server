@@ -94,7 +94,6 @@ import com.condation.cms.extensions.ExtensionManager;
 import com.condation.cms.filesystem.FileDB;
 import com.condation.cms.filesystem.FileSystemContentRepository;
 import com.condation.cms.filesystem.FileSystemContentStore;
-import com.condation.cms.filesystem.MetaData;
 import com.condation.cms.filesystem.NIOReadOnlyFile;
 import com.condation.cms.media.FileMediaService;
 import com.condation.cms.media.SiteMediaManager;
@@ -402,7 +401,7 @@ public class SiteModule implements com.condation.cms.api.injector.Module {
 		return extensionManager;
 	}
 
-	public SiteMediaManager siteMediaManager(DB db, Path assetBase, Theme theme, Configuration configuration, EventBus eventbus) throws IOException {
+	public SiteMediaManager siteMediaManager(DB db, Path assetBase, Theme theme, Configuration configuration, EventBus eventbus) {
 		var mediaManager = new SiteMediaManager(assetBase, db.getFileSystem().resolve("temp"), theme, configuration);
 		eventbus.register(ConfigurationReloadEvent.class, mediaManager);
 		return mediaManager;

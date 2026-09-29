@@ -20,6 +20,7 @@ package com.condation.cms.server.configs;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.SiteProperties;
 import com.condation.cms.api.extensions.HookSystemRegisterExtensionPoint;
 import com.condation.cms.api.extensions.MarkdownRendererProviderExtensionPoint;
@@ -63,10 +64,10 @@ public class SiteModulesModule implements com.condation.cms.api.injector.Module 
         injector.register(TemplateEngine.class,
                 i -> resolveTemplateEngine(i.getInstance(SiteProperties.class), i.getInstance(Theme.class),
                         i.getInstance(ModuleManager.class))).singleton();
-        injector.register("global", HookSystem.class,
+        injector.register(Constants.DI_SCOPES.GLOBAL, HookSystem.class,
                 i -> globalHookSystem(i.getInstance(ModuleManager.class))).singleton();
         injector.register(HookSystem.class,
-                i -> hookSystem(i.getInstance("global", HookSystem.class)));
+                i -> hookSystem(i.getInstance(Constants.DI_SCOPES.GLOBAL, HookSystem.class)));
     }
 
     public ModuleManager moduleManager(Injector injector, SiteModuleContext context) {

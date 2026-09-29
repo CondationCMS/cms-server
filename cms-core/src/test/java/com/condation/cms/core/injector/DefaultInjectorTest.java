@@ -21,8 +21,6 @@ package com.condation.cms.core.injector;
  * #L%
  */
 
-import com.condation.cms.api.injector.Inject;
-import com.condation.cms.api.injector.Named;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,18 +43,5 @@ class DefaultInjectorTest {
     }
 
     private record Service(String value) {
-    }
-
-    private static class Extension {
-        @Inject
-        @Named("message")
-        private String message;
-
-        private int number;
-
-        @Inject
-        void setNumber(Integer number) {
-            this.number = number;
-        }
     }
 }

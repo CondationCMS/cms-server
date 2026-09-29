@@ -20,6 +20,7 @@ package com.condation.cms.server.configs;
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * #L%
  */
+import com.condation.cms.api.Constants;
 import com.condation.cms.api.ServerProperties;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.db.DB;
@@ -35,9 +36,7 @@ import static com.condation.cms.server.configs.ProviderSupport.provide;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import lombok.RequiredArgsConstructor;
+import java.util.List;import lombok.RequiredArgsConstructor;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.util.resource.ResourceFactory;
 
@@ -53,11 +52,11 @@ public class ThemeModule implements com.condation.cms.api.injector.Module {
         injector.register(ThemeMediaManager.class,
                 i -> provide(() -> themeMediaManager(i.getInstance(Theme.class), i.getInstance(Configuration.class),
                         i.getInstance(DB.class), i.getInstance(EventBus.class)))).singleton();
-        injector.register("theme.media", JettyMediaHandler.class,
+        injector.register(Constants.DI_SCOPES.THEME_MEDIA, JettyMediaHandler.class,
                 i -> provide(() -> themeMediaHandler(i.getInstance(ThemeMediaManager.class)))).singleton();
-        injector.register("theme.assets", ResourceHandler.class,
+        injector.register(Constants.DI_SCOPES.THEME_ASSETS, ResourceHandler.class,
                 i -> themeAssetsHandler(i.getInstance(Theme.class), i.getInstance(ServerProperties.class))).singleton();
-        injector.register("theme.public", StaticFileHandler.class,
+        injector.register(Constants.DI_SCOPES.THEME_PUBLIC, StaticFileHandler.class,
                 i -> themePublicHandler(i.getInstance(Theme.class), i.getInstance(ServerProperties.class))).singleton();
     }
 

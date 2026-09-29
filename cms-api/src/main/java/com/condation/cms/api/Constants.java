@@ -150,4 +150,18 @@ public abstract class Constants {
 	}
 	
 	public static final String REQUEST_CONTEXT_ATTRIBUTE_NAME = "_requestContext";
+    
+    public static class DI_SCOPES {
+        public static final String SERVER = "server";
+        public static final String GLOBAL = "global";
+        public static final String SITE = "site";
+        public static final String PUBLIC = "public";
+        public static final String ASSETS = "assets";
+        public static final String SITE_MEDIA = "site.media";
+        public static final String SITE_ASSETS = "site.assets";
+        public static final String SITE_PUBLIC = "site.public";
+        public static final String THEME_MEDIA = "theme.media";
+        public static final String THEME_ASSETS = "theme.assets";
+        public static final String THEME_PUBLIC = "theme.public";
+    }
 }

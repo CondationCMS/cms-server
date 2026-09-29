@@ -41,7 +41,6 @@ import com.condation.cms.api.feature.features.SitePropertiesFeature;
 import com.condation.cms.api.feature.features.ThemeFeature;
 import com.condation.cms.api.feature.features.WorkflowFeature;
 import com.condation.cms.api.injector.Injector;
-import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.module.SiteModuleContext;
 import com.condation.cms.api.repository.CollectionRepository;

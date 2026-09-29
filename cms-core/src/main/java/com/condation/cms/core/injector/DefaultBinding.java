@@ -22,6 +22,8 @@ package com.condation.cms.core.injector;
  */
 import com.condation.cms.api.injector.Binding;
 import com.condation.cms.api.injector.Injector;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -30,38 +32,45 @@ import java.util.function.Function;
  */
 public class DefaultBinding<T> implements Binding {
 
-	Function<Injector, T> function;
+    Function<Injector, T> function;
 
-	boolean singleton = false;
-	
-	boolean eager = false;
+    boolean singleton = false;
 
-	T singletonInstance;
+    boolean eager = false;
 
-	T newInstance(Injector injector) {
-		if (!singleton) {
-			return function.apply(injector);
-		}
+    private volatile T singletonInstance;
 
-		synchronized (this) {
-			if (singletonInstance == null) {
-				singletonInstance = function.apply(injector);
-			}
-			return singletonInstance;
-		}
-	}
+    T newInstance(Injector injector) {
+        if (!singleton) {
+            return function.apply(injector);
+        }
 
-	@Override
-	public void singleton() {
-		this.singleton = true;
-	}
+        T instance = singletonInstance;
+        if (instance == null) {
+            synchronized (this) {
+                instance = singletonInstance;
+                if (instance == null) {
+                    instance = Objects.requireNonNull(
+                            function.apply(injector),
+                            "Singleton factory returned null"
+                    );
+                    singletonInstance = instance;
+                }
+            }
+        }
 
-	@Override
-	public void eager() {
-		this.singleton = true;
-		this.eager = true;
-	}
-	
-	
+        return instance;
+    }
+
+    @Override
+    public void singleton() {
+        this.singleton = true;
+    }
+
+    @Override
+    public void eager() {
+        this.singleton = true;
+        this.eager = true;
+    }
 
 }

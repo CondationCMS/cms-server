@@ -25,8 +25,37 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultInjectorTest {
+
+    @Test
+    void duplicateBindingInSameInjectorFailsDuringModuleRegistration() {
+        var exception = assertThrows(IllegalStateException.class, () -> DefaultInjector.create(
+                bindings -> bindings.register(String.class, _ -> "first"),
+                bindings -> bindings.register(String.class, _ -> "second")
+        ));
+
+        assertTrue(exception.getMessage().contains(String.class.getName()));
+    }
+
+    @Test
+    void namedBindingsAreDistinctByNameAndTypeAndCannotBeOverwritten() {
+        var injector = DefaultInjector.create(bindings -> {
+            bindings.register("one", String.class, _ -> "first");
+            bindings.register("two", String.class, _ -> "second");
+            bindings.register("one", Integer.class, _ -> 42);
+        });
+
+        var exception = assertThrows(IllegalStateException.class,
+                () -> injector.register("one", String.class, _ -> "replacement"));
+
+        assertTrue(exception.getMessage().contains("one"));
+        assertEquals("first", injector.getInstance("one", String.class));
+        assertEquals("second", injector.getInstance("two", String.class));
+        assertEquals(42, injector.getInstance("one", Integer.class));
+    }
 
     @Test
     void parentSingletonUsesParentDependenciesWhenResolvedThroughChild() {

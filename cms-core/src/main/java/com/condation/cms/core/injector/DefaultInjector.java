@@ -76,7 +76,13 @@ public class DefaultInjector implements Injector {
 		
 		binding.function = newInstanceFunction;
 		
-		bindings.put(new BindingKey(name, clazz), binding);
+		final BindingKey bindingKey = new BindingKey(name, clazz);
+
+		if (bindings.putIfAbsent(bindingKey, binding) != null) {
+			throw new IllegalStateException(
+					"Binding already registered: " + clazz.getName() + " (name: " + name + ")"
+			);
+		}
 		
 		return binding;
 	}

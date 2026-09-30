@@ -238,10 +238,10 @@ public class JettyServer implements AutoCloseable {
 				host.getInjector().getInstance(EventBus.class).publish(new HostReadyEvent(host.id()));
 				host.getInjector().getInstance(EventBus.class).publish(new ServerReadyEvent());
 			});
+			System.out.println("cms startup successfully");
 		} catch (Exception ex) {
 			log.error(null, ex);
 		}
-		System.out.println("cms startup successfully");
 	}
 
 	private void initServerModules() {

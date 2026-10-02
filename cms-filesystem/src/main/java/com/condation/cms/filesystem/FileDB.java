@@ -72,7 +72,7 @@ public class FileDB implements DB {
 		
 		content = new FileContent(fileSystem);
 		localCollectionRepository = new FileSystemCollectionRepository(
-				siteProperties.id(), hostBaseDirectory, contentParser);
+				siteProperties.id(), hostBaseDirectory, contentParser, eventBus);
 		localCollectionRepository.init();
 		var collectionConfiguration = configuration.get(
 				com.condation.cms.api.configuration.configs.CollectionConfiguration.class);

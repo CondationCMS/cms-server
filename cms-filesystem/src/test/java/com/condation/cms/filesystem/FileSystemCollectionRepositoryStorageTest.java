@@ -30,6 +30,7 @@ import com.condation.cms.api.request.RequestContextScope;
 import com.condation.cms.api.workflow.WFStatusProvider;
 import com.condation.cms.api.workflow.WFStatusQueryProvider;
 import com.condation.cms.api.workflow.WorkflowInstance;
+import com.condation.cms.core.eventbus.DefaultEventBus;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -162,12 +163,12 @@ class FileSystemCollectionRepositoryStorageTest {
 			return parseMeta(path);
 		};
 
-		var first = new FileSystemCollectionRepository("test-site", tempDirectory, parser);
+		var first = new FileSystemCollectionRepository("test-site", tempDirectory, parser, new DefaultEventBus());
 		first.init();
 		first.close();
 		Assertions.assertThat(parseCount).hasValue(2);
 
-		var second = new FileSystemCollectionRepository("test-site", tempDirectory, parser);
+		var second = new FileSystemCollectionRepository("test-site", tempDirectory, parser, new DefaultEventBus());
 		try {
 			second.init();
 			Assertions.assertThat(parseCount).hasValue(2);
@@ -186,7 +187,7 @@ class FileSystemCollectionRepositoryStorageTest {
 		var collections = new FileSystemCollectionRepository("test-site", tempDirectory, path -> {
 			parseCount.incrementAndGet();
 			return parseMeta(path);
-		});
+		}, new DefaultEventBus());
 
 		try {
 			collections.init();
@@ -433,7 +434,7 @@ class FileSystemCollectionRepositoryStorageTest {
 
 	private FileSystemCollectionRepository createCollections() throws Exception {
 		var collections = new FileSystemCollectionRepository(
-				"test-site", tempDirectory, FileSystemCollectionRepositoryStorageTest::parseMeta);
+				"test-site", tempDirectory, FileSystemCollectionRepositoryStorageTest::parseMeta, new DefaultEventBus());
 		collections.init();
 		return collections;
 	}

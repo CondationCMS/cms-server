@@ -22,6 +22,8 @@ package com.condation.cms.filesystem;
  */
 
 import com.condation.cms.api.repository.CollectionAccess;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.CollectionItemChangedEvent;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -31,6 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.mockito.Mockito;
 
 class FileSystemCollectionRepositoryTest {
 
@@ -38,12 +41,14 @@ class FileSystemCollectionRepositoryTest {
 	Path tempDirectory;
 
 	private FileSystemCollectionRepository repository;
+	private EventBus eventBus;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		Files.createDirectories(tempDirectory.resolve("collections/blog"));
+		eventBus = Mockito.mock(EventBus.class);
 		repository = new FileSystemCollectionRepository(
-				"test-site", tempDirectory, _ -> Map.of("status", "published"));
+				"test-site", tempDirectory, _ -> Map.of("status", "published"), eventBus);
 		repository.init();
 	}
 
@@ -72,6 +77,29 @@ class FileSystemCollectionRepositoryTest {
 		repository.delete("blog", "entry");
 		Assertions.assertThat(item).doesNotExist();
 		Assertions.assertThat(repository.get("blog", "entry")).isEmpty();
+	}
+
+	@Test
+	void publishesTheSameChangeEventForCreateSaveAndDelete() throws Exception {
+		var item = tempDirectory.resolve("collections/blog/entry.md");
+		var expected = new CollectionItemChangedEvent("blog", "entry");
+
+		repository.create("blog", "entry", Map.of("title", "First"), "First body");
+		repository.handleEvent(new FileEvent(item.toFile(), FileEvent.Type.CREATED));
+		repository.flushChanges();
+		Mockito.verify(eventBus, Mockito.atLeastOnce()).publish(expected);
+
+		Mockito.clearInvocations(eventBus);
+		repository.save("blog", "entry", Map.of("title", "Changed"), "Changed body");
+		repository.handleEvent(new FileEvent(item.toFile(), FileEvent.Type.MODIFIED));
+		repository.flushChanges();
+		Mockito.verify(eventBus, Mockito.atLeastOnce()).publish(expected);
+
+		Mockito.clearInvocations(eventBus);
+		repository.delete("blog", "entry");
+		repository.handleEvent(new FileEvent(item.toFile(), FileEvent.Type.DELETED));
+		repository.flushChanges();
+		Mockito.verify(eventBus, Mockito.atLeastOnce()).publish(expected);
 	}
 
 	@Test

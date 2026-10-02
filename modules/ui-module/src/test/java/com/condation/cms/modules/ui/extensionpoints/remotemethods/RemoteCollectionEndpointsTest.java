@@ -90,7 +90,7 @@ class RemoteCollectionEndpointsTest {
 		collectionsDirectory = tempDirectory.resolve(Constants.Folders.COLLECTIONS);
 		Files.createDirectories(collectionsDirectory.resolve("blog"));
 		fileRepository = new FileSystemCollectionRepository(
-				"test-site", tempDirectory, RemoteCollectionEndpointsTest::parseMeta);
+				"test-site", tempDirectory, RemoteCollectionEndpointsTest::parseMeta, eventBus);
 		fileRepository.init();
 		repository = fileRepository;
 		endpoints = new RemoteCollectionEndpoints() {

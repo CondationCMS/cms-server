@@ -30,6 +30,8 @@ import com.condation.cms.api.db.collection.Collection;
 import com.condation.cms.api.db.collection.CollectionItem;
 import com.condation.cms.api.db.collection.CollectionItemId;
 import com.condation.cms.api.db.collection.CollectionItemMetadata;
+import com.condation.cms.api.eventbus.EventBus;
+import com.condation.cms.api.eventbus.events.CollectionItemChangedEvent;
 import com.condation.cms.api.repository.CollectionAccess;
 import com.condation.cms.api.repository.MutableCollectionRepository;
 import com.condation.cms.api.utils.PathUtil;
@@ -67,6 +69,7 @@ public final class FileSystemCollectionRepository
 	private final Path hostBase;
 	private final Path collectionsBase;
 	private final Function<Path, Map<String, Object>> metaParser;
+	private final EventBus eventBus;
 	private final Set<String> collectionNames = ConcurrentHashMap.newKeySet();
 
 	private CollectionMetaData metaData;
@@ -76,11 +79,13 @@ public final class FileSystemCollectionRepository
 	public FileSystemCollectionRepository(
 			String siteId,
 			Path hostBase,
-			Function<Path, Map<String, Object>> metaParser) {
+			Function<Path, Map<String, Object>> metaParser,
+			EventBus eventBus) {
 		this.siteId = siteId;
 		this.hostBase = hostBase;
 		this.collectionsBase = hostBase.resolve(Constants.Folders.COLLECTIONS);
 		this.metaParser = metaParser;
+		this.eventBus = java.util.Objects.requireNonNull(eventBus, "eventBus");
 	}
 
 	public void init() throws IOException {
@@ -222,20 +227,33 @@ public final class FileSystemCollectionRepository
 		try {
 			if (fullResync) {
 				rebuild(true);
+				// A full resync can change any item; consumers should rebuild their index.
+				eventBus.publish(new CollectionItemChangedEvent(null, null));
 				return;
 			}
 			for (var path : paths) {
-				processPath(path);
+				var relative = PathUtil.toRelativeEntry(path, collectionsBase);
+				if (!relative.isBlank() && !relative.startsWith("../") && !relative.contains("/")) {
+					processPath(path);
+					eventBus.publish(new CollectionItemChangedEvent(null, null));
+					continue;
+				}
+				if (processPath(path)) {
+					var separator = relative.indexOf('/');
+					eventBus.publish(new CollectionItemChangedEvent(
+							relative.substring(0, separator),
+							relative.substring(separator + 1, relative.length() - 3)));
+				}
 			}
 		} catch (IOException ex) {
 			log.error("error processing collection changes", ex);
 		}
 	}
 
-	private void processPath(Path path) throws IOException {
+	private boolean processPath(Path path) throws IOException {
 		var relative = PathUtil.toRelativeEntry(path, collectionsBase);
 		if (relative.isBlank() || relative.startsWith("../")) {
-			return;
+			return false;
 		}
 		var parts = relative.split("/");
 		if (parts.length == 1) {
@@ -245,16 +263,19 @@ public final class FileSystemCollectionRepository
 				metaData.removeDirectory(parts[0]);
 				collectionNames.remove(parts[0]);
 			}
-			return;
+			return false;
 		}
 		if (parts.length != 2 || !isValidItemFile(path) || !isValidCollectionName(parts[0])) {
-			return;
+			return false;
 		}
 		if (Files.isRegularFile(path)) {
 			index(path);
 		} else if (!Files.exists(path)) {
 			metaData.removeFile(relative);
+		} else {
+			return false;
 		}
+		return true;
 	}
 
 	private void rebuild(boolean force) throws IOException {

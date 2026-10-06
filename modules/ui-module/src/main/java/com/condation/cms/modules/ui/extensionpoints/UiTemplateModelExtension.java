@@ -110,6 +110,17 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			return collectionToolbar(item, actions, Map.of());
 		}
 
+		public String collectionToolbar(String collection, String[] actions) {
+			if (!requestContext.has(IsPreviewFeature.class)) {
+				return "";
+			}
+			var collections = siteContext.get(RepositoryFeature.class).collectionRepository();
+			if (collections.access(collection) != CollectionAccess.READ_WRITE) {
+				return "";
+			}
+			return toolbar(collection, "collection", actions, Map.of("collection", collection));
+		}
+
 		public String collectionToolbar(
 				CollectionItem item,
 				String[] actions,

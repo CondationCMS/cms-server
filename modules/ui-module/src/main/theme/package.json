@@ -8,6 +8,9 @@
   },
   "devDependencies": {
     "bootstrap": "^5.3.8",
-    "sass": "^1.89.2"
+    "sass": "^1.105.1"
+  },
+  "overrides": {
+    "source-map-js": "1.2.2"
   }
 }

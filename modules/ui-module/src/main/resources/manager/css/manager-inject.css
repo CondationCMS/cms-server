@@ -50,6 +50,10 @@
 	display: block;
 }
 
+.cms-ui-editable-collection-item::after {
+	border-color: var(--cms-edit-box-sections);
+}
+
 .cms-ui-editable-sections {
 	position: relative; /* falls noch nicht gesetzt */
 }

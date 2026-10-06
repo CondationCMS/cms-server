@@ -24,4 +24,6 @@ export interface CreateCollectionItemOptions {
     onCreated?: (item: CollectionItemSummary) => void | Promise<void>;
 }
 export declare const openCollectionItemCreator: (options: CreateCollectionItemOptions) => Promise<void>;
-export declare const runAction: (options: CreateCollectionItemOptions) => Promise<void>;
+export declare const runAction: (options: CreateCollectionItemOptions & {
+    reloadAfterCreate?: boolean;
+}) => Promise<void>;

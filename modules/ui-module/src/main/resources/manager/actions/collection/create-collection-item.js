@@ -22,7 +22,7 @@ import { collectionForm } from './edit-collection-item.js';
 import { createForm, getFormFields } from '@cms/modules/form/forms.js';
 import { i18n } from '@cms/modules/localization.js';
 import { openModal } from '@cms/modules/modal.js';
-import { loadPreview } from '@cms/modules/preview.utils.js';
+import { loadPreview, reloadPreview } from '@cms/modules/preview.utils.js';
 import { createCollectionItem } from '@cms/modules/rpc/rpc-collection.js';
 import { getCollectionTypes } from '@cms/modules/rpc/rpc-manager.js';
 import { showToast } from '@cms/modules/toast.js';
@@ -100,7 +100,10 @@ export const runAction = async (options) => {
     await openCollectionItemCreator({
         ...options,
         onCreated: item => {
-            if (item.detailUrl) {
+            if (options.reloadAfterCreate) {
+                reloadPreview();
+            }
+            else if (item.detailUrl) {
                 loadPreview(item.detailUrl);
             }
         }

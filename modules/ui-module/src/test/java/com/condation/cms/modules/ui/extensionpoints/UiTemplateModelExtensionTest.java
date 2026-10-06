@@ -60,4 +60,44 @@ class UiTemplateModelExtensionTest {
 
 		Assertions.assertThat(toolbar).isEmpty();
 	}
+
+	@Test
+	void rendersCollectionCreateToolbarForWritableCollectionInPreview() {
+		var collections = mock(CollectionRepository.class);
+		when(collections.access("blog")).thenReturn(CollectionAccess.READ_WRITE);
+		var siteContext = mock(SiteModuleContext.class);
+		when(siteContext.get(RepositoryFeature.class)).thenReturn(new RepositoryFeature(
+				mock(com.condation.cms.api.repository.ContentRepository.class), collections));
+		var requestContext = new RequestContext();
+		requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
+		var helper = new UiTemplateModelExtension.UIHelper(requestContext, siteContext);
+
+		var toolbar = helper.collectionToolbar("blog", new String[]{"createCollectionItem"});
+
+		Assertions.assertThat(toolbar)
+				.contains("data-cms-toolbar=")
+				.contains("\"collection\":\"blog\"")
+				.contains("createCollectionItem");
+	}
+
+	@Test
+	void doesNotRenderCollectionCreateToolbarForReadOnlyCollection() {
+		var collections = mock(CollectionRepository.class);
+		when(collections.access("authors")).thenReturn(CollectionAccess.READ_ONLY);
+		var siteContext = mock(SiteModuleContext.class);
+		when(siteContext.get(RepositoryFeature.class)).thenReturn(new RepositoryFeature(
+				mock(com.condation.cms.api.repository.ContentRepository.class), collections));
+		var requestContext = new RequestContext();
+		requestContext.add(IsPreviewFeature.class, new IsPreviewFeature());
+		var helper = new UiTemplateModelExtension.UIHelper(requestContext, siteContext);
+
+		Assertions.assertThat(helper.collectionToolbar("authors", new String[]{"createCollectionItem"})).isEmpty();
+	}
+
+	@Test
+	void doesNotRenderCollectionCreateToolbarOutsidePreview() {
+		var helper = new UiTemplateModelExtension.UIHelper(new RequestContext(), mock(SiteModuleContext.class));
+
+		Assertions.assertThat(helper.collectionToolbar("blog", new String[]{"createCollectionItem"})).isEmpty();
+	}
 }

@@ -155,6 +155,16 @@ const initMessageHandlers = () => {
             }
         });
     });
+    frameMessenger.on('create-collection-item', (payload) => {
+        executeScriptAction({
+            module: window.manager.baseUrl + '/actions/collection/create-collection-item',
+            function: 'runAction',
+            parameters: {
+                collection: payload.collection,
+                reloadAfterCreate: true
+            }
+        });
+    });
     frameMessenger.on('add-sectionEntry', (payload) => {
         var cmd = {
             "module": window.manager.baseUrl + "/actions/page/add-section",

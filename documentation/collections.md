@@ -1,5 +1,20 @@
 # Collections
 
+In a preview template, wrap a collection list with a toolbar to create items directly from the
+page. The toolbar is shown only for writable collections and remains available when the list is
+empty. Existing items can keep their own edit toolbars:
+
+```html
+<div {{ ext.ui.collectionToolbar("blog", ["createCollectionItem"]) | raw }}>
+  <h2>Blog</h2>
+  {% for item in cms.collection("blog").query().get() %}
+    <div {{ ext.ui.collectionToolbar(item, ["editCollectionItem"]) | raw }}>
+      {{ item.meta.title }}
+    </div>
+  {% endfor %}
+</div>
+```
+
 Collection detail pages are configured in `config/collections.yaml`. A route can use the item ID
 and any number of metadata fields. Nested metadata is addressed with dot notation.
 

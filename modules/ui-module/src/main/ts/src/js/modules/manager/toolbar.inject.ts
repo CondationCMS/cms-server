@@ -144,6 +144,15 @@ const editCollectionItem = (event: Event) => {
 	});
 };
 
+const createCollectionItem = (event: Event) => {
+	const toolbar = (event.currentTarget as HTMLElement).closest('[data-cms-toolbar]') as HTMLElement;
+	const definition = JSON.parse(toolbar.dataset.cmsToolbar || '{}');
+	frameMessenger.send(window.parent, {
+		type: 'create-collection-item',
+		payload: { collection: definition.collection }
+	});
+};
+
 
 const initDragDrop = (container: HTMLElement) => {
 	if (container.dataset.cmsDragDropInitialized === 'true') {
@@ -379,6 +388,9 @@ export const initToolbar = (container: HTMLElement) => {
 		container.classList.add("cms-ui-editable-sections");
 	} else {
 		container.classList.add("cms-ui-editable");
+		if (toolbarDefinition.type === "collectionItem") {
+			container.classList.add("cms-ui-editable-collection-item");
+		}
 	}
 
 	const toolbar = document.createElement('div');
@@ -423,6 +435,16 @@ export const initToolbar = (container: HTMLElement) => {
 			button.innerHTML = EDIT_ATTRIBUTES_ICON;
 			button.setAttribute('title', 'Edit collection item');
 			button.addEventListener('click', editCollectionItem);
+
+			toolbar.appendChild(button);
+		} else if (action === "createCollectionItem") {
+			const button = document.createElement('button');
+			button.type = 'button';
+			button.dataset.cmsAction = 'createCollectionItem';
+			button.innerHTML = SECTION_ADD_ICON;
+			button.setAttribute('title', 'Create collection item');
+			button.setAttribute('aria-label', 'Create collection item');
+			button.addEventListener('click', createCollectionItem);
 
 			toolbar.appendChild(button);
 		} else if (action === "orderSectionEntries") {

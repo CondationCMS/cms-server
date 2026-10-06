@@ -165,7 +165,7 @@ const initMessageHandlers = () => {
 				collection: payload.collection,
 				reloadAfterCreate: true
 			}
-		});
+		}).catch(error => console.error('Could not open collection item creator:', error));
 	});
 
     frameMessenger.on('add-sectionEntry', (payload: any) => {

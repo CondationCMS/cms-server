@@ -42,6 +42,8 @@ import lombok.RequiredArgsConstructor;
 @Extension(TemplateModelExtendingExtensionPoint.class)
 public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoint {
 
+	private static final String COLLECTION = "collection";
+	
 	@Override
 	public Map<String, Object> getModel() {
 		return Map.of("ui", new UIHelper(getRequestContext(), getContext()));	
@@ -118,7 +120,7 @@ public class UiTemplateModelExtension extends TemplateModelExtendingExtensionPoi
 			if (collections.access(collection) != CollectionAccess.READ_WRITE) {
 				return "";
 			}
-			return toolbar(collection, "collection", actions, Map.of("collection", collection));
+			return toolbar(collection, COLLECTION, actions, Map.of("collection", collection));
 		}
 
 		public String collectionToolbar(

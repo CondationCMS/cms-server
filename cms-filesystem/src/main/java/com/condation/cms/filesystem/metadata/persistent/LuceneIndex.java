@@ -29,9 +29,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.EnumSet;
 import java.util.List;
@@ -229,11 +231,20 @@ public class LuceneIndex implements AutoCloseable {
 					? searcher.searchAfter(after, query, pageSize)
 					: searcher.searchAfter(after, query, pageSize, sort);
 			var storedFields = searcher.storedFields();
-			var uris = new ArrayList<String>(hits.scoreDocs.length);
-			for (var hit : hits.scoreDocs) {
-				uris.add(storedFields.document(hit.doc, Set.of("_uri")).get("_uri"));
+			try {
+				var uris = Arrays.stream(hits.scoreDocs)
+						.map(hit -> {
+							try {
+								return storedFields.document(hit.doc, Set.of("_uri")).get("_uri");
+							} catch (IOException exception) {
+								throw new UncheckedIOException(exception);
+							}
+						})
+						.toList();
+				return new SeekPageResult(totalItems, List.copyOf(uris));
+			} catch (UncheckedIOException exception) {
+				throw exception.getCause();
 			}
-			return new SeekPageResult(totalItems, List.copyOf(uris));
 		} finally {
 			nrt_manager.release(searcher);
 		}

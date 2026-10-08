@@ -122,12 +122,12 @@ public class ParserTest {
 	@Test
 	void parsesExists() {
 		Expression expr = parser.parse("status EXISTS");
-		assertThat(expr.toString()).isEqualTo("status EXISTS");
+		assertThat(expr).hasToString("status EXISTS");
 	}
 
 	@Test
 	void parsesNotExists() {
 		Expression expr = parser.parse("status NOT EXISTS");
-		assertThat(expr.toString()).isEqualTo("status NOT EXISTS");
+		assertThat(expr).hasToString("status NOT EXISTS");
 	}
 }

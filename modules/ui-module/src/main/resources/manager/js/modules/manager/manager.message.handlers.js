@@ -153,7 +153,7 @@ const initMessageHandlers = () => {
                 collection: payload.collection,
                 id: payload.id
             }
-        });
+        }).catch(error => console.error('Could not open collection item editor:', error));
     });
     frameMessenger.on('create-collection-item', (payload) => {
         executeScriptAction({

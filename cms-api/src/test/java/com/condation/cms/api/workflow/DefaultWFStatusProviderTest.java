@@ -44,7 +44,7 @@ import static org.mockito.Mockito.when;
 public class DefaultWFStatusProviderTest {
 
 	@Test
-	public void publishedQueryUsesWorkflowStatusSemantics() {
+	void publishedQueryUsesWorkflowStatusSemantics() {
 		@SuppressWarnings("unchecked")
 		ContentQuery<ContentNode> query = mock(ContentQuery.class);
 		String expression = "(status = 'published') OR (status NOT EXISTS AND published = true)";
@@ -57,7 +57,7 @@ public class DefaultWFStatusProviderTest {
 	}
 
 	@Test
-	public void unpublishedQueryUsesWorkflowStatusSemantics() {
+	void unpublishedQueryUsesWorkflowStatusSemantics() {
 		@SuppressWarnings("unchecked")
 		ContentQuery<ContentNode> query = mock(ContentQuery.class);
 		String expression = "(status != 'published') OR "
@@ -71,7 +71,7 @@ public class DefaultWFStatusProviderTest {
 	}
 
 	@Test
-	public void missingPublishDateRemainsUnsetAndHasNoStartLimit() {
+	void missingPublishDateRemainsUnsetAndHasNoStartLimit() {
 		var contentNode = new ContentNode("", "", "", Map.of(
 				Constants.MetaFields.STATUS, DefaultWFStatusProvider.STATUS_PUBLISHED
 		));
@@ -83,7 +83,7 @@ public class DefaultWFStatusProviderTest {
 	}
 	
 	@Test
-	public void test_publish_date_1_11_2023() {
+	void test_publish_date_1_11_2023() {
 		var cal = Calendar.getInstance();
 		cal.set(2023, 11, 1);
 		var contentNode = new ContentNode("", "", "", Map.of(
@@ -94,7 +94,7 @@ public class DefaultWFStatusProviderTest {
 	}
 	
 	@Test
-	public void test_publish_date_1_11_2123() {
+	void test_publish_date_1_11_2123() {
 		var cal = Calendar.getInstance();
 		cal.set(2123, 11, 1);
 		var contentNode = new ContentNode("", "", "", Map.of(
@@ -105,7 +105,7 @@ public class DefaultWFStatusProviderTest {
 	}
 	
 	@Test
-	public void test_unpublish_date_1_11_2023() {
+	void test_unpublish_date_1_11_2023() {
 		var cal = Calendar.getInstance();
 		cal.set(2023, 11, 1);
 		var contentNode = new ContentNode("", "", "", Map.of(
@@ -116,7 +116,7 @@ public class DefaultWFStatusProviderTest {
 	}
 	
 	@Test
-	public void test_unpublish_date_1_11_2123() {
+	void test_unpublish_date_1_11_2123() {
 		var cal = Calendar.getInstance();
 		cal.set(2123, 11, 1);
 		var contentNode = new ContentNode("", "", "", Map.of(

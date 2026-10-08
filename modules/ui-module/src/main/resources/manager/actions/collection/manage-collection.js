@@ -33,11 +33,12 @@ const escapeHtml = (value) => String(value ?? '')
     .replaceAll('>', '&gt;')
     .replaceAll('"', '&quot;')
     .replaceAll("'", '&#039;');
-const renderItems = (items) => {
-    if (items.length === 0) {
-        return `<p class="text-muted mb-0">${i18n.t('collection.items.empty', 'No collection items found.')}</p>`;
-    }
-    return `<div class="list-group">${items.map(item => `
+const renderItem = (item) => {
+    const openButton = item.detailUrl ? `<button type="button" class="btn btn-outline-secondary"
+					data-collection-open="${escapeHtml(item.detailUrl)}">
+					${i18n.t('collection.items.open', 'Open detail page')}
+				</button>` : '';
+    return `
 		<div class="list-group-item d-flex justify-content-between align-items-center gap-3">
 			<div class="text-truncate">
 				<strong>${escapeHtml(item.title)}</strong><br>
@@ -47,18 +48,21 @@ const renderItems = (items) => {
 				<button type="button" class="btn btn-outline-primary" data-collection-edit="${escapeHtml(item.id)}">
 					${i18n.t('collection.items.edit', 'Edit')}
 				</button>
-				${item.detailUrl ? `<button type="button" class="btn btn-outline-secondary"
-					data-collection-open="${escapeHtml(item.detailUrl)}">
-					${i18n.t('collection.items.open', 'Open detail page')}
-				</button>` : ''}
+				${openButton}
 				<button type="button" class="btn btn-outline-danger" data-collection-delete="${escapeHtml(item.id)}"
 					title="${i18n.t('collection.items.delete', 'Delete')}">
 					<i class="bi bi-trash"></i>
 				</button>
 			</div>
-		</div>`).join('')}</div>`;
+		</div>`;
 };
-export const runAction = async (options) => {
+const renderItems = (items) => {
+    if (items.length === 0) {
+        return `<p class="text-muted mb-0">${i18n.t('collection.items.empty', 'No collection items found.')}</p>`;
+    }
+    return `<div class="list-group">${items.map(renderItem).join('')}</div>`;
+};
+export const runAction = (options) => {
     let currentPage = 1;
     let cursorHistory = [''];
     let currentQuery = '';
@@ -200,7 +204,9 @@ export const runAction = async (options) => {
                 return;
             }
             root.innerHTML = renderItems(page.items);
-            pagination.innerHTML = currentPage > 1 || page.nextCursor ? `
+            pagination.innerHTML = '';
+            if (currentPage > 1 || page.nextCursor) {
+                pagination.innerHTML = `
 				<nav aria-label="Collection pagination">
 					<ul class="pagination justify-content-center mb-0">
 						<li class="page-item ${currentPage <= 1 ? 'disabled' : ''}">
@@ -215,9 +221,10 @@ export const runAction = async (options) => {
 							</button>
 						</li>
 					</ul>
-				</nav>` : '';
+				</nav>`;
+            }
             root.querySelectorAll('[data-collection-edit]').forEach(button => {
-                button.addEventListener('click', () => openEditor(button.dataset.collectionEdit ?? ''));
+                button.addEventListener('click', () => { void openEditor(button.dataset.collectionEdit ?? ''); });
             });
             root.querySelectorAll('[data-collection-open]').forEach(button => {
                 button.addEventListener('click', () => {
@@ -262,7 +269,7 @@ export const runAction = async (options) => {
                     else if (button.dataset.collectionDirection === 'previous' && currentPage > 1) {
                         currentPage--;
                     }
-                    update();
+                    void update();
                 });
             });
         }
@@ -288,9 +295,9 @@ export const runAction = async (options) => {
             const input = element.querySelector('#cms-collection-search');
             element.querySelectorAll('[data-collection-editor-back], [data-collection-editor-cancel]')
                 .forEach(button => button.addEventListener('click', closeEditor));
-            editorSaveButton?.addEventListener('click', saveEditor);
+            editorSaveButton?.addEventListener('click', () => { void saveEditor(); });
             element.querySelector('[data-collection-create]')?.addEventListener('click', () => {
-                openCollectionItemCreator({
+                void openCollectionItemCreator({
                     collection: options.collection,
                     onCreated: async () => {
                         currentQuery = '';
@@ -312,10 +319,10 @@ export const runAction = async (options) => {
                     currentQuery = value;
                     currentPage = 1;
                     cursorHistory = [''];
-                    update();
+                    void update();
                 }, 300);
             });
-            update();
+            void update();
         }
     });
 };

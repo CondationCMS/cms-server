@@ -39,7 +39,7 @@ public class UserServiceTest {
 	private static UserService userService;
 
 	@BeforeAll
-	public static void setup () throws IOException {
+	static void setup () throws IOException {
 		var base = Path.of("target/" + System.currentTimeMillis());
 		Files.createDirectories(base);
 		var hostConfig = base.resolve("demo/config");
@@ -49,7 +49,7 @@ public class UserServiceTest {
 	
 
 	@Test
-	public void test_login_and_remove() throws Exception {
+	void test_login_and_remove() throws Exception {
 		
 		com.condation.cms.auth.services.Realm realm = Realm.of("users");
 		
@@ -65,7 +65,7 @@ public class UserServiceTest {
 	}
 	
 	@Test
-	public void test_multiple_users() throws Exception {
+	void test_multiple_users() throws Exception {
 
 		com.condation.cms.auth.services.Realm realm = Realm.of("musers");
 
@@ -76,7 +76,7 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void addUser_rejectsUsernameThatWouldCorruptTheRealmFile() {
+	void addUser_rejectsUsernameThatWouldCorruptTheRealmFile() {
 		var realm = Realm.of("invalid-usernames");
 
 		Assertions.assertThatThrownBy(() -> userService.addUser(realm, "evil:admin", "demo", new String[]{"eins"}))
@@ -88,16 +88,17 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void addUser_rejectsInvalidMailAddress() {
+	void addUser_rejectsInvalidMailAddress() {
 		var realm = Realm.of("invalid-mail");
+		Map<String, Object> invalidMail = Map.of("mail", "not-an-email");
 
 		Assertions.assertThatThrownBy(() -> userService.addUser(realm, "mailuser", "demo", new String[]{"eins"},
-				Map.of("mail", "not-an-email")))
+				invalidMail))
 				.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
-	public void addUser_acceptsValidMailAddress() throws Exception {
+	void addUser_acceptsValidMailAddress() throws Exception {
 		var realm = Realm.of("valid-mail");
 
 		userService.addUser(realm, "mailuser2", "demo", new String[]{"eins"}, Map.of("mail", "someone@example.com"));
@@ -108,12 +109,13 @@ public class UserServiceTest {
 	}
 
 	@Test
-	public void updateUser_rejectsInvalidMailAddress() throws Exception {
+	void updateUser_rejectsInvalidMailAddress() throws Exception {
 		var realm = Realm.of("update-invalid-mail");
 		userService.addUser(realm, "mailuser3", "demo", new String[]{"eins"});
+		Map<String, Object> invalidMail = Map.of("mail", "not-an-email");
 
 		Assertions.assertThatThrownBy(() -> userService.updateUser(realm, "mailuser3", null, new String[]{"eins"},
-				Map.of("mail", "not-an-email")))
+				invalidMail))
 				.isInstanceOf(IllegalArgumentException.class);
 	}
 

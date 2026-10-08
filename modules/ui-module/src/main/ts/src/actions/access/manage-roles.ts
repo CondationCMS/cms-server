@@ -90,5 +90,9 @@ class RoleManager {
 	private fail(title: string, error: unknown) { this.toast(title, error instanceof Error ? error.message : 'Unknown error', 'error'); }
 }
 
-export const runAction = async (): Promise<void> => openModal({ title: 'Manage roles', fullscreen: true, showFooter: false,
-	body: '<div class="cms-access-root"></div>', onShow: (modal: HTMLElement) => new RoleManager(modal.querySelector('.cms-access-root') as HTMLElement).show() });
+export const runAction = (): void => {
+	openModal({ title: 'Manage roles', fullscreen: true, showFooter: false,
+		body: '<div class="cms-access-root"></div>', onShow: (modal: HTMLElement) => {
+			void new RoleManager(modal.querySelector('.cms-access-root') as HTMLElement).show();
+		} });
+};

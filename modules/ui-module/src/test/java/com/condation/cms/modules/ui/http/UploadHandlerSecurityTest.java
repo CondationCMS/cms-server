@@ -43,7 +43,7 @@ class UploadHandlerSecurityTest {
 
 		Path workDirectory = temporaryDirectory.resolve(".condation-upload-work");
 		assertThat(workDirectory).isDirectory();
-		assertThat(workDirectory.toRealPath().getParent()).isEqualTo(temporaryDirectory.toRealPath());
+		assertThat(workDirectory.toRealPath()).hasParentRaw(temporaryDirectory.toRealPath());
 		assertThat(workDirectory.startsWith(outputDirectory)).isFalse();
 		if (Files.getFileStore(workDirectory).supportsFileAttributeView("posix")) {
 			assertThat(Files.getPosixFilePermissions(workDirectory))

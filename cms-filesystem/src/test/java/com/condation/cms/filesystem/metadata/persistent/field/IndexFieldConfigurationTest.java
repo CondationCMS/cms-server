@@ -45,13 +45,14 @@ class IndexFieldConfigurationTest {
 	void usesTypeSpecificDefaultsForTheCompactConfiguration() {
 		var definitions = IndexFieldConfiguration.parse(Map.of("location", "geo"));
 
-		Assertions.assertThat(definitions.get("location"))
-				.isEqualTo(new GeoIndexFieldDefinition("latitude", "longitude"));
+		Assertions.assertThat(definitions)
+				.containsEntry("location", new GeoIndexFieldDefinition("latitude", "longitude"));
 	}
 
 	@Test
 	void rejectsTypesWithoutARegisteredDefinitionFactory() {
-		Assertions.assertThatThrownBy(() -> IndexFieldConfiguration.parse(Map.of("price", "money")))
+		var configuration = Map.of("price", "money");
+		Assertions.assertThatThrownBy(() -> IndexFieldConfiguration.parse(configuration))
 				.isInstanceOf(IllegalArgumentException.class)
 				.hasMessageContaining("money");
 	}

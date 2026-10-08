@@ -21,6 +21,8 @@ package com.condation.cms.server.configs;
  * #L%
  */
 
+import java.io.IOException;
+
 /** Adapts providers that can throw checked exceptions to injector factories. */
 final class ProviderSupport {
 
@@ -29,13 +31,13 @@ final class ProviderSupport {
 
     @FunctionalInterface
     interface Factory<T> {
-        T create() throws Exception;
+        T create() throws IOException;
     }
 
     static <T> T provide(Factory<T> factory) {
         try {
             return factory.create();
-        } catch (Exception exception) {
+        } catch (IOException | RuntimeException exception) {
             throw new ProviderSupportException("Unable to create injector binding", exception);
         }
     }

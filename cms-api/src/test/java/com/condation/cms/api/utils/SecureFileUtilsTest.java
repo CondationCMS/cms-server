@@ -49,7 +49,7 @@ class SecureFileUtilsTest {
 		Path workFile = SecureFileUtils.createPrivateTempFile(workDirectory, "upload-", ".tmp");
 
 		assertThat(workDirectory).isDirectory().isDirectoryContaining(path -> path.equals(workFile));
-		assertThat(workDirectory.getParent()).isEqualTo(workRoot.toRealPath());
+		assertThat(workDirectory).hasParentRaw(workRoot.toRealPath());
 		if (Files.getFileStore(workDirectory).supportsFileAttributeView("posix")) {
 			assertThat(Files.getPosixFilePermissions(workDirectory))
 					.isEqualTo(PosixFilePermissions.fromString("rwx------"));

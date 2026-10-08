@@ -347,7 +347,7 @@ public class PresistentFileSystemTest {
 				.satisfies(node -> {
 					Assertions.assertThat(node.path())
 							.isEqualTo("test/.variants/test1/summer/test1.md");
-					Assertions.assertThat(node.data().get("name")).isEqualTo("test1-summer");
+					Assertions.assertThat(node.data()).containsEntry("name", "test1-summer");
 				});
 	}
 

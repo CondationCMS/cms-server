@@ -146,22 +146,19 @@ public class ActionFactory {
 
 		for (Method method : moduleInstance.getClass().getMethods()) {
 			var appAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.App.class);
-			if (appAnnotation == null) {
-				continue;
+			if (appAnnotation != null) {
+				UIAction action = resolveMethodAction(method);
+				if (action == null) {
+					log.warn("Ignoring manager app '{}' without an action", appAnnotation.id());
+				} else {
+					apps.add(new com.condation.cms.api.ui.apps.App(
+							appAnnotation.id(),
+							appAnnotation.title(),
+							appAnnotation.icon(),
+							action,
+							Arrays.asList(appAnnotation.permissions())));
+				}
 			}
-
-			UIAction action = resolveMethodAction(method);
-			if (action == null) {
-				log.warn("Ignoring manager app '{}' without an action", appAnnotation.id());
-				continue;
-			}
-
-			apps.add(new com.condation.cms.api.ui.apps.App(
-					appAnnotation.id(),
-					appAnnotation.title(),
-					appAnnotation.icon(),
-					action,
-					Arrays.asList(appAnnotation.permissions())));
 		}
 
 		return apps;
@@ -247,38 +244,33 @@ public class ActionFactory {
 
         for (Method method : moduleInstance.getClass().getMethods()) {
             var shortcutAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.ShortCut.class);
-            if (shortcutAnnotation == null) {
-                continue;
-            }
+			if (shortcutAnnotation != null) {
+				var appAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.App.class);
+				String id = fallback(shortcutAnnotation.id(), appAnnotation == null ? "" : appAnnotation.id());
+				String title = fallback(shortcutAnnotation.title(), appAnnotation == null ? "" : appAnnotation.title());
+				String icon = fallback(shortcutAnnotation.icon(), appAnnotation == null ? "" : appAnnotation.icon());
+				String[] permissions = shortcutAnnotation.permissions();
+				if (permissions.length == 0) {
+					permissions = appAnnotation == null ? new String[0] : appAnnotation.permissions();
+				}
 
-			var appAnnotation = method.getAnnotation(com.condation.cms.api.ui.annotations.App.class);
-			String id = fallback(shortcutAnnotation.id(), appAnnotation == null ? "" : appAnnotation.id());
-			String title = fallback(shortcutAnnotation.title(), appAnnotation == null ? "" : appAnnotation.title());
-			String icon = fallback(shortcutAnnotation.icon(), appAnnotation == null ? "" : appAnnotation.icon());
-			String[] permissions = shortcutAnnotation.permissions().length > 0
-					? shortcutAnnotation.permissions()
-					: appAnnotation == null ? new String[0] : appAnnotation.permissions();
-
-			if (id.isBlank() || title.isBlank()) {
-				log.warn("Ignoring manager shortcut on {} without id or title", method);
-				continue;
+				if (id.isBlank() || title.isBlank()) {
+					log.warn("Ignoring manager shortcut on {} without id or title", method);
+				} else if (authorizationService().hasAllPermissions(user, permissions)) {
+					UIAction menuAction = resolveShortcutAction(method, shortcutAnnotation);
+					if (menuAction != null) {
+						shortCuts.add(new ShortCutHolder(
+								id,
+								title,
+								icon.isBlank() ? "" : HTTPUtil.modifyUrl(icon, context),
+								shortcutAnnotation.hotkey(),
+								shortcutAnnotation.parent(),
+								shortcutAnnotation.section(),
+								menuAction,
+								permissions));
+					}
+				}
 			}
-			if (!authorizationService().hasAllPermissions(user, permissions)) {
-				continue;
-			}
-
-			UIAction menuAction = resolveShortcutAction(method, shortcutAnnotation);
-			if (menuAction != null) {
-                shortCuts.add(new ShortCutHolder(
-						id,
-						title,
-						icon.isBlank() ? "" : HTTPUtil.modifyUrl(icon, context),
-                        shortcutAnnotation.hotkey(),
-                        shortcutAnnotation.parent(),
-                        shortcutAnnotation.section(),
-                        menuAction,
-						permissions));
-            }
 
         }
 

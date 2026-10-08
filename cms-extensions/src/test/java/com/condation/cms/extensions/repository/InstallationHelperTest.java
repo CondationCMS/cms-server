@@ -50,8 +50,10 @@ class InstallationHelperTest {
 	void unpackArchiveRejectsEntriesOutsideTargetDirectory() throws Exception {
 		Path archive = createArchive("example/", "../../escaped.txt");
 		Path target = tempDir.resolve("installation/target");
+		var archiveFile = archive.toFile();
+		var targetFile = target.toFile();
 
-		Assertions.assertThatThrownBy(() -> InstallationHelper.unpackArchive(archive.toFile(), target.toFile()))
+		Assertions.assertThatThrownBy(() -> InstallationHelper.unpackArchive(archiveFile, targetFile))
 				.isInstanceOf(InstallationSecurityException.class)
 				.hasMessageContaining("escapes target directory");
 		Assertions.assertThat(tempDir.resolve("escaped.txt")).doesNotExist();

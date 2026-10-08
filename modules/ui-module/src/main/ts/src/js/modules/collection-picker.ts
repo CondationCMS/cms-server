@@ -142,10 +142,10 @@ export const openCollectionItemPicker = (options: CollectionItemPickerOptions): 
 								return;
 							}
 							currentPage = targetPage;
-							loadPage();
+							void loadPage();
 						}));
 				} catch (error) {
-					// exception is ignored, message to user is displayed in the modal
+					console.error('Could not load collection items:', error);
 					if (version !== requestVersion) return;
 					resultsElement.innerHTML = `
 						<div class="alert alert-danger mb-0">
@@ -158,7 +158,7 @@ export const openCollectionItemPicker = (options: CollectionItemPickerOptions): 
 				window.clearTimeout(debounceTimer);
 				debounceTimer = window.setTimeout(() => {
 					currentPage = 1;
-					loadPage();
+					void loadPage();
 				}, 300);
 			});
 			input.addEventListener('keydown', event => {
@@ -166,11 +166,11 @@ export const openCollectionItemPicker = (options: CollectionItemPickerOptions): 
 					event.preventDefault();
 					window.clearTimeout(debounceTimer);
 					currentPage = 1;
-					loadPage();
+					void loadPage();
 				}
 			});
 
-			loadPage();
+			void loadPage();
 			input.focus();
 		}
 	});

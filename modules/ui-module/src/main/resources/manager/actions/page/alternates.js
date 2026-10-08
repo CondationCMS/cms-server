@@ -37,27 +37,42 @@ export async function runAction(params) {
         body: createAlternatesTable(response.alternates),
         onCancel: () => { },
         onOk: async () => { },
-        onShow: async (modalElement) => {
+        onShow: (modalElement) => {
             modalElement.querySelectorAll('button[data-action]').forEach(button => {
                 button.addEventListener('click', async (event) => {
                     const element = event.currentTarget;
                     const action = element.dataset.action;
                     const targetSite = element.dataset.site || '';
-                    if (action === 'select') {
-                        openFileBrowser({
-                            siteId: targetSite,
-                            type: 'content',
-                            onSelect: async (file) => {
-                                if (!file?.url)
-                                    return;
-                                await addAlternate({ uri, targetSite, alternateUri: file.url });
-                                showToast({ title: 'Alternate added', message: 'The alternate page was linked.', type: 'success', timeout: 3000 });
-                            }
-                        });
+                    try {
+                        if (action === 'select') {
+                            await openFileBrowser({
+                                siteId: targetSite,
+                                type: 'content',
+                                onSelect: async (file) => {
+                                    if (!file?.url)
+                                        return;
+                                    try {
+                                        await addAlternate({ uri, targetSite, alternateUri: file.url });
+                                        showToast({ title: 'Alternate added', message: 'The alternate page was linked.', type: 'success', timeout: 3000 });
+                                    }
+                                    catch (error) {
+                                        showToast({ title: 'Could not update alternate', message: error instanceof Error ? error.message : String(error), type: 'error', timeout: 3000 });
+                                    }
+                                }
+                            });
+                        }
+                        else if (action === 'remove') {
+                            await removeAlternate({ uri, targetSite });
+                            showToast({ title: 'Alternate removed', message: 'The alternate page link was removed.', type: 'success', timeout: 3000 });
+                        }
                     }
-                    else if (action === 'remove') {
-                        await removeAlternate({ uri, targetSite });
-                        showToast({ title: 'Alternate removed', message: 'The alternate page link was removed.', type: 'success', timeout: 3000 });
+                    catch (error) {
+                        showToast({
+                            title: 'Could not update alternate',
+                            message: error instanceof Error ? error.message : String(error),
+                            type: 'error',
+                            timeout: 3000
+                        });
                     }
                 });
             });

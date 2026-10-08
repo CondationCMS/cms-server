@@ -100,5 +100,9 @@ class UserManager {
     toast(title, message, type = 'success') { showToast({ title, message, type }); }
     fail(title, error) { this.toast(title, error instanceof Error ? error.message : 'Unknown error', 'error'); }
 }
-export const runAction = async () => openModal({ title: 'Manage users', fullscreen: true, showFooter: false,
-    body: '<div class="cms-access-root"></div>', onShow: (modal) => new UserManager(modal.querySelector('.cms-access-root')).show() });
+export const runAction = () => {
+    openModal({ title: 'Manage users', fullscreen: true, showFooter: false,
+        body: '<div class="cms-access-root"></div>', onShow: (modal) => {
+            void new UserManager(modal.querySelector('.cms-access-root')).show();
+        } });
+};

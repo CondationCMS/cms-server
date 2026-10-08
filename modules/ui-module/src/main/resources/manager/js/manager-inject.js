@@ -41,4 +41,4 @@
     // 4. Plugins laden
     const { initIframe } = await import('@cms/js/manager-inject-init.js');
     initIframe();
-})();
+})().catch(error => console.error('Could not initialize manager preview:', error));

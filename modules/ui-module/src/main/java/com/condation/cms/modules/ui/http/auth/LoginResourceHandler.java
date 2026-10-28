@@ -60,23 +60,29 @@ public class LoginResourceHandler extends JettyHandler {
 			var siteProperties = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
 			var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 			var force2fa = siteProperties.ui().force2fa();
-			String csrfToken;
-			try {
-				csrfToken = TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1));
-			} catch (IllegalArgumentException e) {
-				log.error("Could not create manager login page: {}", e.getMessage());
-				String content = renderLoginPage("", e.getMessage(), force2fa);
-				Content.Sink.write(response, true, content, callback);
+			if (!renderLoginPage(response, callback, secret, force2fa)) {
 				return true;
 			}
-			String content = renderLoginPage(csrfToken, "", force2fa);
-			Content.Sink.write(response, true, content, callback);
 		} catch (Exception e) {
 			log.error("", e);
 			callback.failed(e);
 		}
 
 		return true;
+	}
+
+	private boolean renderLoginPage(Response response, Callback callback, String secret, boolean force2fa) throws Exception {
+		try {
+			String csrfToken = TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1));
+			String content = renderLoginPage(csrfToken, "", force2fa);
+			Content.Sink.write(response, true, content, callback);
+			return true;
+		} catch (IllegalArgumentException e) {
+			log.error("Could not create manager login page: {}", e.getMessage());
+			String content = renderLoginPage("", e.getMessage(), force2fa);
+			Content.Sink.write(response, true, content, callback);
+			return false;
+		}
 	}
 
 	private String renderLoginPage(String csrfToken, String errorMessage, boolean force2fa) throws Exception {

@@ -27,6 +27,7 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -58,7 +59,14 @@ public class TokenUtils {
 		Instant maxAt = now.plus(maxLifetime);
 		
 		// Erstelle Secret Key aus String
-		SecretKey key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+		SecretKey key;
+		try {
+			key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+		} catch (WeakKeyException exception) {
+			throw new IllegalArgumentException(
+					"Invalid configuration 'ui.secret': must contain at least 32 bytes (256 bits) for JWT HMAC signing.",
+					exception);
+		}
 		
 		// Baue das JWT
 		String token = Jwts.builder()

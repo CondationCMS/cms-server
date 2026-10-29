@@ -138,4 +138,28 @@ public class TemplateEngineTest {
 				.contains("/de/manager/actions/menu/manage-menus");
 	}
 
+	@Test
+	void rendersLoginErrorMessage() throws Exception {
+		CacheManager cacheManager = new CacheManager(new LocalCacheProvider());
+		TemplateEngine templateEngine = new TemplateEngine(cacheManager);
+		UILinkFunction links = Mockito.mock(UILinkFunction.class);
+		Mockito.when(links.createUrl(Mockito.anyString()))
+				.thenAnswer(invocation -> invocation.getArgument(0));
+
+		String result = templateEngine.render("login.html", Map.of(
+				"csrfToken", "",
+				"errorMessage", "Invalid configuration 'ui.secret': must contain at least 32 bytes (256 bits).",
+				"loginDisabled", true,
+				"links", links,
+				"managerBaseURL", "/manager",
+				"force2fa", false
+		));
+
+		Assertions.assertThat(result)
+				.contains("Invalid configuration 'ui.secret': must contain at least 32 bytes (256 bits).")
+				.contains("id=\"loginMessage\" class=\"alert alert-danger mt-3\"")
+				.contains("id=\"signInButton\" disabled")
+				.doesNotContain("WeakKeyException");
+	}
+
 }

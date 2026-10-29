@@ -60,19 +60,40 @@ public class LoginResourceHandler extends JettyHandler {
 			var siteProperties = context.get(ConfigurationFeature.class).configuration().get(SiteConfiguration.class).siteProperties();
 			var secret = context.get(ConfigurationFeature.class).configuration().get(ServerConfiguration.class).serverProperties().secret();
 			var force2fa = siteProperties.ui().force2fa();
-			String content = UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of(
-					"csrfToken", TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1)),
-					"links", new LinkFunction(requestContext),
-					"managerBaseURL", managerBaseURL(requestContext),
-					"force2fa", force2fa
-			));
-			Content.Sink.write(response, true, content, callback);
+			if (!renderLoginPage(response, callback, secret, force2fa)) {
+				return true;
+			}
 		} catch (Exception e) {
 			log.error("", e);
 			callback.failed(e);
 		}
 
 		return true;
+	}
+
+	private boolean renderLoginPage(Response response, Callback callback, String secret, boolean force2fa) throws Exception {
+		try {
+			String csrfToken = TokenUtils.createToken("csrf", secret, Duration.ofHours(1), Duration.ofHours(1));
+			String content = renderLoginPage(csrfToken, "", force2fa);
+			Content.Sink.write(response, true, content, callback);
+			return true;
+		} catch (IllegalArgumentException e) {
+			log.error("Could not create manager login page: {}", e.getMessage());
+			String content = renderLoginPage("", e.getMessage(), force2fa);
+			Content.Sink.write(response, true, content, callback);
+			return false;
+		}
+	}
+
+	private String renderLoginPage(String csrfToken, String errorMessage, boolean force2fa) throws Exception {
+		return UILifecycleExtension.getInstance(context).getTemplateEngine().render("login.html", Map.of(
+				"csrfToken", csrfToken,
+				"errorMessage", errorMessage,
+				"loginDisabled", !errorMessage.isBlank(),
+				"links", new LinkFunction(requestContext),
+				"managerBaseURL", managerBaseURL(requestContext),
+				"force2fa", force2fa
+		));
 	}
 
 }

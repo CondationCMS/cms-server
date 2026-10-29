@@ -69,5 +69,17 @@ public class TokenUtilsTest {
 		var payload = TokenUtils.getPayload("bliblablub", secret);
 		Assertions.assertThat(payload).isNotPresent();
 	}
+
+	@Test
+	public void create_token__secret_too_short() {
+		var idleTimeout = Duration.ofHours(1);
+		var maxLifetime = Duration.ofHours(1);
+
+		Assertions.assertThatThrownBy(() -> TokenUtils.createToken(
+						"condation", "short secret", idleTimeout, maxLifetime))
+				.isInstanceOf(IllegalArgumentException.class)
+				.hasMessageContaining("ui.secret")
+				.hasMessageContaining("32 bytes (256 bits)");
+	}
 	
 }

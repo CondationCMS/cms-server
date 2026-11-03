@@ -21,6 +21,7 @@
 	<modules>
 		<module>cms-api</module>
 		<module>cms-server</module>
+		<module>cms-updater</module>
 		<module>modules</module>
 		<module>cms-filesystem</module>
 		<module>cms-media</module>
@@ -70,6 +71,11 @@
 				<groupId>com.condation.cms</groupId>
 				<artifactId>cms-api</artifactId>
 				<version>${project.version}</version>            
+			</dependency>
+			<dependency>
+				<groupId>com.condation.cms</groupId>
+				<artifactId>cms-updater</artifactId>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.condation.cms</groupId>

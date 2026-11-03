@@ -33,6 +33,13 @@
 				<include>**/*</include>
 			</includes>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/assembly/migrations</directory>
+			<outputDirectory>migrations</outputDirectory>
+			<includes>
+				<include>*.jar</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 	<files>
 		<file>
@@ -42,6 +49,11 @@
 		<file>
 			<source>${project.basedir}/../target/condationcms-sbom.json</source>
 			<outputDirectory>security</outputDirectory>
+		</file>
+		<file>
+			<source>${project.basedir}/../cms-updater/target/cms-updater-${project.version}-jar-with-dependencies.jar</source>
+			<outputDirectory>bin</outputDirectory>
+			<destName>cms-updater.jar</destName>
 		</file>
 	</files>
 	<dependencySets>

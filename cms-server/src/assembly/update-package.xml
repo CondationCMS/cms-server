@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="cms-update-package" default="create-update-package">
+    <target name="create-update-package">
+        <property name="staging.dir" value="${project.build.directory}/update-package-staging"/>
+        <property name="release.root" value="${staging.dir}/${project.artifactId}-${project.version}"/>
+        <property name="scripts.dir" value="${project.build.directory}/update-package-scripts"/>
+        <property name="update.archive" value="${project.build.directory}/${project.artifactId}-${project.version}-update.zip"/>
+
+        <delete dir="${staging.dir}"/>
+        <mkdir dir="${staging.dir}"/>
+        <mkdir dir="${scripts.dir}"/>
+        <unzip src="${project.build.directory}/${project.artifactId}-${project.version}.zip"
+               dest="${staging.dir}"/>
+
+        <java jar="${release.root}/bin/cms-updater.jar" fork="true" failonerror="true">
+            <arg value="create-package"/>
+            <arg value="--home"/>
+            <arg file="${release.root}"/>
+            <arg value="--scripts"/>
+            <arg file="${scripts.dir}"/>
+            <arg value="--output"/>
+            <arg file="${update.archive}"/>
+            <arg value="--version"/>
+            <arg value="${project.version}"/>
+            <arg value="--minimum-version"/>
+            <arg value="${cms.update.minimum.version}"/>
+        </java>
+    </target>
+</project>

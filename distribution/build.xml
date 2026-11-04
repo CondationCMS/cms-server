@@ -1,30 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="distribution" default="distribution" basedir=".">
-	<property name="cms.version">7.8.0</property>
-	
+	<property name="cms.version">8.4.0</property>
+	<property name="cms.update.minimum.version">8.2.0</property>
+	<property name="condation.version">2026.10</property>
+	<property name="jdk.version">jdk-27+35</property> <!-- jdk-27+35 -->
+
 	<target name="copy-server" description="--> copy server">
 		<unzip src="../cms-server/target/cms-server-${cms.version}.zip" dest="temp/" />
-		<copy todir="build/themes/demo">
-			<fileset dir="../test-server/themes/demo"/>
-		</copy>
 		<copy todir="build/lib">
 			<fileset dir="temp/cms-server-${cms.version}/lib"/>
 		</copy>
-		<copy todir="build/hosts/demo">
-			<fileset dir="../test-server/hosts/demo"/>
+		<copy todir="build/hosts/showcase">
+			<fileset dir="../../demo-project/hosts/showcase"/>
 		</copy>
 		<copy todir="build/">
 			<resources>
 				<file file="temp/cms-server-${cms.version}/cms-server-${cms.version}.jar"/>
+				<file file="temp/cms-server-${cms.version}/security/condationcms-sbom.json"/>
 				<file file="../test-server/server.toml"/>
 				<file file="../test-server/log4j2.xml"/>
-				<file file="../LICENSE"/>
+				<file file="../LICENSE.md"/>
+				<file file="../LICENSE-EXCEPTION.md"/>
 			</resources>
 		</copy>
+		<copy file="temp/cms-server-${cms.version}/bin/cms-updater.jar" todir="build/bin"/>
 		<copy todir="dist/">
 			<fileset dir="scripts/">
 				<include name="server.sh"/>
 				<include name="server.bat"/>
+				<include name="debug.sh"/>
+				<include name="debug.bat"/>
+				<include name="server.toml" />
 			</fileset>
 			<filterchain>
 				<replacetokens>
@@ -32,36 +38,80 @@
 				</replacetokens>
 			</filterchain>
 		</copy>
+		<copy todir="dist/config">
+			<fileset dir="scripts/config">
+				<include name="backup.yaml"/>
+			</fileset>
+		</copy>
+		<mkdir dir="build/migrations"/>
+		<copy todir="build/migrations" flatten="true">
+			<fileset dir="../cms-migrations">
+				<include name="**/target/migration-*.jar"/>
+				<exclude name="**/target/*-sources.jar"/>
+				<exclude name="**/target/*-javadoc.jar"/>
+			</fileset>
+		</copy>
 		<fixcrlf srcdir="dist" includes="server.sh" eol="unix"/>
+		<fixcrlf srcdir="dist" includes="debug.sh" eol="unix"/>
 	</target>
-	
+
+	<target name="create-update-package" depends="copy-server">
+		<java jar="temp/cms-server-${cms.version}/bin/cms-updater.jar" fork="true" failonerror="true">
+			<arg value="create-package"/>
+			<arg value="--home"/>
+			<arg file="build"/>
+			<arg value="--scripts"/>
+			<arg file="dist"/>
+			<arg value="--output"/>
+			<arg file="dist/cms-server-${cms.version}-update.zip"/>
+			<arg value="--version"/>
+			<arg value="${cms.version}"/>
+			<arg value="--minimum-version"/>
+			<arg value="${cms.update.minimum.version}"/>
+		</java>
+	</target>
+
 	<target name="download-jre" description="--> download jres">
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_mac_hotspot_21.0.8_9.tar.gz"></get>
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_x64_windows_hotspot_21.0.8_9.zip" dest="temp/OpenJDK21U-jre_x64_windows_hotspot_21.0.8_9.zip"></get>
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_x64_linux_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_x64_linux_hotspot_21.0.8_9.tar.gz"></get>
-		<get skipexisting="true" src="https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.8%2B9/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.8_9.tar.gz" dest="temp/OpenJDK21U-jre_aarch64_linux_hotspot_21.0.8_9.tar.gz"></get>
+		<get skipexisting="true"
+			 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/windows/x64/jdk/hotspot/normal/eclipse" dest="temp/jdk_x64_windows.zip">
+		</get>
+		<get skipexisting="true"
+		 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/mac/aarch64/jdk/hotspot/normal/eclipse" dest="temp/jdk_aarch64_mac.tar.gz">
+		</get>
+		<get skipexisting="true"
+			 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/linux/x64/jdk/hotspot/normal/eclipse" dest="temp/jdk_x64_linux.tar.gz">
+		</get>
+		<get skipexisting="true"
+			 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/linux/aarch64/jdk/hotspot/normal/eclipse" dest="temp/jdk_aarch64_linux.tar.gz">
+		</get>
+		<!--get skipexisting="true"
+			 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/alpine-linux/x64/jdk/hotspot/normal/eclipse" dest="temp/jdk_x64_alpine.tar.gz">
+		</get>
+		<get skipexisting="true"
+			 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/alpine-linux/aarch64/jdk/hotspot/normal/eclipse" dest="temp/jdk_aarch64_alpine.tar.gz">
+		</get-->
 	</target>
 
 	<target name="clean">
 		<delete dir="build" />
 		<delete dir="temp" />
 		<delete dir="dist" />
-		
+
 		<mkdir  dir="dist/"  />
 		<mkdir  dir="temp/"  />
 		<mkdir  dir="build/modules/" />
 	</target>
-	
+
 	<target name="dist" description="--> build distribution">
 		<echo>build ${system.name} ${system.arch} distribution </echo>
 
 		<property name="dist.path">dist/${system.name}_${system.arch}</property>
 		<property name="dist.java.path">dist/java/${system.name}_${system.arch}</property>
-		<property name="dist.name">condation-server-${system.name}-${system.arch}-${cms.version}</property>
-		
-		<property name="java.filename">OpenJDK21U-jre_${system.arch}_${system.name}_hotspot_21.0.8_9</property>
-		
-		
+		<property name="dist.name">condation-server-${system.name}-${system.arch}-${condation.version}</property>
+
+		<property name="java.filename">jdk_${system.arch}_${system.name}</property>
+
+
 		<condition property="is.windows">
 			<equals arg1="${system.name}" arg2="windows"/>
 		</condition>
@@ -76,75 +126,96 @@
 		<!-- Entpacke JRE temporär -->
 		<antcall target="unpack-java-tgz" />
 		<antcall target="unpack-java-zip" />
-		
-		
+
+
 		<antcall target="package-zip"/>
 		<antcall target="package-tar"/>
 	</target>
-	
+
 	<target name="unpack-java-tgz" unless="is.windows">
 		<untar src="temp/${java.filename}.tar.gz"
 			   dest="${dist.java.path}"
 			   compression="gzip"/>
 	</target>
-	
+
 	<target name="unpack-java-zip" if="is.windows">
 		<unzip src="temp/${java.filename}.zip"
 			   dest="${dist.java.path}"/>
 	</target>
-	
+
 	<target name="package-tar" unless="is.windows">
 		<tar destfile="dist/${dist.name}.tar.gz" compression="gzip">
-			<tarfileset dir="${dist.path}" prefix="condation-server"/>
+			<tarfileset dir="${dist.path}" prefix="condation-server">
+				<exclude name="server.toml"/>
+			</tarfileset>
 			<tarfileset file="dist/server.sh" mode="755" fullpath="condation-server/server.sh"/>
+			<tarfileset file="dist/debug.sh" mode="755" fullpath="condation-server/debug.sh"/>
 			<tarfileset dir="dist/java/${system.name}_${system.arch}/${java.path}/" prefix="condation-server/java">
 				<exclude name="bin/java"/>
 			</tarfileset>
 			<tarfileset file="dist/java/${system.name}_${system.arch}/${java.path}/bin/java" mode="755" fullpath="condation-server/java/bin/java"/>
-			<tarfileset dir="../" includes="README.md" prefix="condation-server"/>
-			<tarfileset dir="../" includes="CHANGELOG.md" prefix="condation-server"/>
+			<tarfileset file="README.md" prefix="condation-server"/>
+			<tarfileset file="dist/server.toml" prefix="condation-server"/>
+			<tarfileset dir="dist/config" prefix="condation-server/config"/>
 		</tar>
 	</target>
 
 	<target name="package-zip" if="is.windows">
 		<zip destfile="dist/${dist.name}.zip">
-			<zipfileset dir="${dist.path}" prefix="condation-server"/>
+			<zipfileset dir="${dist.path}" prefix="condation-server">
+				<exclude name="server.toml"/>
+			</zipfileset>
 			<zipfileset file="dist/server.bat" fullpath="condation-server/server.bat"/>
+			<zipfileset file="dist/debug.bat" fullpath="condation-server/debug.bat"/>
 			<zipfileset dir="dist/java/${system.name}_${system.arch}/${java.path}/" prefix="condation-server/java">
 				<exclude name="bin/java"/>
 			</zipfileset>
 			<zipfileset file="dist/java/${system.name}_${system.arch}/${java.path}/bin/java" fullpath="condation-server/java/bin/java"/>
-			<zipfileset dir="../" includes="README.md" prefix="condation-server"/>
-			<zipfileset dir="../" includes="CHANGELOG.md" prefix="condation-server"/>
+			<zipfileset file="dist/server.toml" prefix="condation-server"/>
+			<zipfileset dir="dist/config" prefix="condation-server/config"/>
 		</zip>
 	</target>
-	
-	<target name="distribution" depends="clean,download-jre,copy-server">
-		
+
+	<target name="distribution" depends="clean,download-jre,create-update-package">
+
 		<echo>create binary distributions</echo>
-		
-		<antcall target="dist">
-			<param name="system.name" value="linux" />
-			<param name="system.arch" value="x64" />
-			<param name="java.path" value="jdk-21.0.8+9-jre" />
-		</antcall>
-		
-		<antcall target="dist">
-			<param name="system.name" value="linux" />
-			<param name="system.arch" value="aarch64" />
-			<param name="java.path" value="jdk-21.0.8+9-jre" />
-		</antcall>
-		
+
 		<antcall target="dist">
 			<param name="system.name" value="windows" />
 			<param name="system.arch" value="x64" />
-			<param name="java.path" value="jdk-21.0.8+9-jre" />
+			<param name="java.path" value="${jdk.version}" />
 		</antcall>
-		
+
+
+		<antcall target="dist">
+			<param name="system.name" value="linux" />
+			<param name="system.arch" value="x64" />
+			<param name="java.path" value="${jdk.version}" />
+		</antcall>
+
+		<antcall target="dist">
+			<param name="system.name" value="linux" />
+			<param name="system.arch" value="aarch64" />
+			<param name="java.path" value="${jdk.version}" />
+		</antcall>
+
+		<!--antcall target="dist">
+			<param name="system.name" value="alpine" />
+			<param name="system.arch" value="x64" />
+			<param name="java.path" value="${jdk.version}" />
+		</antcall>
+
+		<antcall target="dist">
+			<param name="system.name" value="alpine" />
+			<param name="system.arch" value="aarch64" />
+			<param name="java.path" value="${jdk.version}" />
+		</antcall-->
+
+
 		<antcall target="dist">
 			<param name="system.name" value="mac" />
 			<param name="system.arch" value="aarch64" />
-			<param name="java.path" value="jdk-21.0.8+9-jre/Contents/Home" />
+			<param name="java.path" value="./${jdk.version}/Contents/Home" />
 		</antcall>
 	</target>
 </project>

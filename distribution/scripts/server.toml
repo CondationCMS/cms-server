@@ -1,0 +1,24 @@
+env = "dev"
+
+[server]
+port = 2020
+ip = "127.0.0.1"
+
+# ui manager properties
+[ui]
+secret = "${env:CMS_UI_SECRET}"	  # secret for JWT
+
+[ipc]
+port = 6868
+password = "test_pwd"
+
+[apm]
+enabled = false
+max_requests = 100
+thread_limit = 10
+
+[performance]
+pool_enabled = false
+
+[modules]
+active = ["backup-server-module"]

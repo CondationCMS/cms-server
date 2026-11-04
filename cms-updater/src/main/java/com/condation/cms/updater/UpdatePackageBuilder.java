@@ -22,6 +22,8 @@ package com.condation.cms.updater;
  */
 
 import com.google.gson.GsonBuilder;
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
+import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,8 +32,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HexFormat;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 /** Builds a full-file update ZIP from a staged CMS distribution. */
 public final class UpdatePackageBuilder {
@@ -65,7 +65,7 @@ public final class UpdatePackageBuilder {
             }
         }
 
-        for (String script : List.of("server.sh", "server.bat")) {
+        for (String script : List.of("server.sh", "server.bat", "debug.sh", "debug.bat")) {
             Path file = scriptsDirectory.resolve(script);
             if (Files.isRegularFile(file)) payload.add(payload(file, script));
         }
@@ -82,23 +82,28 @@ public final class UpdatePackageBuilder {
         }
 
         List<UpdateManifest.UpdateFile> manifestFiles = payload.stream()
-                .map(file -> new UpdateManifest.UpdateFile(file.entryName(), file.target(), file.sha256())).toList();
+                .map(file -> new UpdateManifest.UpdateFile(file.entryName(), file.target(), file.sha256(), file.executable())).toList();
         UpdateManifest manifest = new UpdateManifest(PRODUCT, version, minimumVersion, manifestFiles,
                 migrations, List.of("lib"), List.of("cms-server-*.jar"));
         Files.createDirectories(outputFile.getParent());
-        try (ZipOutputStream zip = new ZipOutputStream(Files.newOutputStream(outputFile))) {
+        try (ZipArchiveOutputStream zip = new ZipArchiveOutputStream(outputFile)) {
             put(zip, "manifest.json", new GsonBuilder().setPrettyPrinting().create().toJson(manifest).getBytes(java.nio.charset.StandardCharsets.UTF_8));
-            for (PayloadFile file : payload) putFile(zip, file.entryName(), file.source());
+            for (PayloadFile file : payload) putFile(zip, file.entryName(), file.source(), file.executable());
             for (UpdateManifest.MigrationEntry migration : migrations) {
-                putFile(zip, migration.artifact(), migrationsDirectory.resolve(Path.of(migration.artifact()).getFileName()));
+                putFile(zip, migration.artifact(), migrationsDirectory.resolve(Path.of(migration.artifact()).getFileName()), false);
             }
         }
         return outputFile;
     }
 
     private static PayloadFile payload(Path file, String target) throws IOException {
-        String source = "files/" + target.replace('\\', '/');
-        return new PayloadFile(file, source, target.replace('\\', '/'), sha256(file));
+        String normalizedTarget = target.replace('\\', '/');
+        String source = "files/" + normalizedTarget;
+        return new PayloadFile(file, source, normalizedTarget, sha256(file), isUnixExecutableScript(normalizedTarget));
+    }
+
+    private static boolean isUnixExecutableScript(String target) {
+        return target.equals("server.sh") || target.equals("debug.sh");
     }
 
     private static String sha256(Path file) throws IOException {
@@ -115,17 +120,19 @@ public final class UpdatePackageBuilder {
         }
     }
 
-    private static void putFile(ZipOutputStream zip, String name, Path file) throws IOException {
-        zip.putNextEntry(new ZipEntry(name));
+    private static void putFile(ZipArchiveOutputStream zip, String name, Path file, boolean executable) throws IOException {
+        ZipArchiveEntry entry = new ZipArchiveEntry(name);
+        if (executable) entry.setUnixMode(0755);
+        zip.putArchiveEntry(entry);
         try (var input = Files.newInputStream(file)) { input.transferTo(zip); }
-        zip.closeEntry();
+        zip.closeArchiveEntry();
     }
 
-    private static void put(ZipOutputStream zip, String name, byte[] bytes) throws IOException {
-        zip.putNextEntry(new ZipEntry(name));
+    private static void put(ZipArchiveOutputStream zip, String name, byte[] bytes) throws IOException {
+        zip.putArchiveEntry(new ZipArchiveEntry(name));
         zip.write(bytes);
-        zip.closeEntry();
+        zip.closeArchiveEntry();
     }
 
-    private record PayloadFile(Path source, String entryName, String target, String sha256) { }
+    private record PayloadFile(Path source, String entryName, String target, String sha256, boolean executable) { }
 }

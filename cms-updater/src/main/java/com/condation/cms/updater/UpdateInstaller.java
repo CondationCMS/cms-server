@@ -29,6 +29,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -101,6 +102,9 @@ public final class UpdateInstaller {
             if (file == null || !isSha256(file.sha256())) throw new IOException("Each update file needs a SHA-256 checksum");
             safeZipEntry(file.source());
             UpdatePaths.resolveInside(Path.of("/installation-root"), file.target());
+            if (file.executable() && !file.target().endsWith(".sh")) {
+                throw new IOException("Only shell scripts may be marked executable: " + file.target());
+            }
             if (!targets.add(file.target())) throw new IOException("Duplicate update target: " + file.target());
         }
         Set<String> migrationIds = new HashSet<>();
@@ -137,7 +141,7 @@ public final class UpdateInstaller {
                 Files.copy(input, stagedPath, StandardCopyOption.REPLACE_EXISTING);
             }
             if (!file.sha256().equalsIgnoreCase(sha256(stagedPath))) throw new IOException("Checksum mismatch for " + file.source());
-            staged.add(new StagedFile(stagedPath, file.target()));
+            staged.add(new StagedFile(stagedPath, file.target(), file.executable()));
         }
     }
 
@@ -155,6 +159,18 @@ public final class UpdateInstaller {
                 Files.copy(target, backup, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
             }
             Files.copy(file.stagedPath(), target, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+            if (file.executable()) setExecutable(target);
+        }
+    }
+
+    private static void setExecutable(Path file) throws IOException {
+        try {
+            Files.setPosixFilePermissions(file, Set.of(
+                    PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE,
+                    PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_EXECUTE,
+                    PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_EXECUTE));
+        } catch (UnsupportedOperationException ignored) {
+            // Filesystems without POSIX permissions, such as Windows, have no execute bit to set.
         }
     }
 
@@ -266,5 +282,5 @@ public final class UpdateInstaller {
         }
     }
 
-    private record StagedFile(Path stagedPath, String target) { }
+    private record StagedFile(Path stagedPath, String target, boolean executable) { }
 }

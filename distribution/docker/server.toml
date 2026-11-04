@@ -4,23 +4,13 @@ env = "dev"
 port = 2020
 ip = "0.0.0.0"
 
+# ui manager properties
+[ui]
+secret = "${env:CMS_UI_SECRET}"	  # secret for JWT
+
 [ipc]
 port = 6868
 password = "test_pwd"
 
-[apm]
-enabled = false
-max_requests = 100
-thread_limit = 10
-
-[performance]
-pool_enabled = false
-
-[list]
-test = ["eins", "zwei"]
-
-[map]
-test = {"key1"="value2", "key2"="value2"}
-
-[ui]
-secret = "super-secret-token"
+[modules]
+#active = ["backup-server-module"]

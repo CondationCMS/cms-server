@@ -32,7 +32,11 @@ public record UpdateManifest(String product, String version, String minimumVersi
         this(product, version, minimumVersion, files, migrations, List.of(), List.of());
     }
 
-    public record UpdateFile(String source, String target, String sha256) { }
+    public record UpdateFile(String source, String target, String sha256, boolean executable) {
+        public UpdateFile(String source, String target, String sha256) {
+            this(source, target, sha256, false);
+        }
+    }
 
     /** Entries are executed in manifest order. */
     public record MigrationEntry(String id, String artifact, String sha256) { }

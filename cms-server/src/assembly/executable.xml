@@ -33,13 +33,6 @@
 				<include>**/*</include>
 			</includes>
 		</fileSet>
-		<fileSet>
-			<directory>${project.basedir}/src/assembly/migrations</directory>
-			<outputDirectory>migrations</outputDirectory>
-			<includes>
-				<include>*.jar</include>
-			</includes>
-		</fileSet>
 	</fileSets>
 	<files>
 		<file>

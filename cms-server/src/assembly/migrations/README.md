@@ -1,1 +1,1 @@
-Place release migration JARs here. Each JAR filename without the `.jar` suffix is used as the migration ID.
+Migration JARs are built from the modules under the top-level `cms-migrations` Maven project and copied into the update package automatically when their filename matches `migration-*-to-<target-version>.jar`. Do not place release migration JARs in this directory; they are not part of the build input.

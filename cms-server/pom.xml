@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>com.condation.cms</groupId>
+            <artifactId>migration-8.4.0-to-8.5.0</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.condation.cms</groupId>
             <artifactId>cms-api</artifactId>
         </dependency>
         <dependency>
@@ -186,9 +191,6 @@
     <profiles>
         <profile>
             <id>dist</id>
-            <properties>
-                <cms.update.minimum.version>8.2.0</cms.update.minimum.version>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -227,29 +229,6 @@
                                 <goals>
                                     <goal>single</goal>
                                 </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-antrun-plugin</artifactId>
-                        <version>3.1.0</version>
-                        <executions>
-                            <execution>
-                                <id>build-update-package</id>
-                                <phase>package</phase>
-                                <goals><goal>run</goal></goals>
-                                <configuration>
-                                    <target>
-                                        <ant antfile="${project.basedir}/src/assembly/update-package.xml"
-                                             target="create-update-package" inheritAll="false">
-                                            <property name="project.build.directory" value="${project.build.directory}"/>
-                                            <property name="project.artifactId" value="${project.artifactId}"/>
-                                            <property name="project.version" value="${project.version}"/>
-                                            <property name="cms.update.minimum.version" value="${cms.update.minimum.version}"/>
-                                        </ant>
-                                    </target>
-                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -23,8 +23,8 @@
 				<file file="../LICENSE-EXCEPTION.md"/>
 			</resources>
 		</copy>
-		<copy file="temp/cms-server-${cms.version}/bin/cms-updater.jar" todir="build/bin"/>
-		<copy todir="dist/">
+		<copy file="temp/cms-server-${cms.version}/bin/cms-updater.jar" todir="build/bin" overwrite="true"/>
+		<copy todir="dist/" overwrite="true">
 			<fileset dir="scripts/">
 				<include name="server.sh"/>
 				<include name="server.bat"/>
@@ -55,7 +55,7 @@
 		<fixcrlf srcdir="dist" includes="debug.sh" eol="unix"/>
 	</target>
 
-	<target name="create-update-package" depends="copy-server">
+	<target name="create-update-package" depends="clean,copy-server">
 		<java jar="temp/cms-server-${cms.version}/bin/cms-updater.jar" fork="true" failonerror="true">
 			<arg value="create-package"/>
 			<arg value="--home"/>

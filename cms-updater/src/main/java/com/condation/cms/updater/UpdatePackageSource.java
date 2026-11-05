@@ -49,7 +49,7 @@ final class UpdatePackageSource implements AutoCloseable {
             URI uri;
             try { uri = URI.create(value); }
             catch (IllegalArgumentException exception) { throw new IOException("Invalid update package URL", exception); }
-            Path temporaryFile = Files.createTempFile("condation-update-download-", ".zip");
+            Path temporaryFile = UpdaterTempFiles.createFile("condation-update-download-", ".zip");
             boolean success = false;
             try {
                 HttpRequest request = HttpRequest.newBuilder(uri).timeout(Duration.ofMinutes(5)).GET().build();

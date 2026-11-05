@@ -56,7 +56,7 @@ public final class UpdateInstaller {
         try (ZipFile zip = new ZipFile(updatePackage.toFile())) {
             UpdateManifest manifest = readManifest(zip);
             validateManifest(manifest, installedVersion);
-            Path staging = Files.createTempDirectory("condation-update-");
+            Path staging = UpdaterTempFiles.createDirectory("condation-update-");
             List<StagedFile> stagedFiles = new ArrayList<>();
             try {
                 stageFiles(zip, manifest, staging, stagedFiles);

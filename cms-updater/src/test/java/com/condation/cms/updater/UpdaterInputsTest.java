@@ -57,7 +57,9 @@ class UpdaterInputsTest {
     @Test
     void fallsBackToVersionInServerJarFilename() throws Exception {
         Path home = Files.createDirectory(temporary.resolve("home"));
-        try (JarOutputStream ignored = new JarOutputStream(Files.newOutputStream(home.resolve("cms-server-8.2.3.jar")))) { }
+        try (JarOutputStream jar = new JarOutputStream(Files.newOutputStream(home.resolve("cms-server-8.2.3.jar")))) {
+            jar.finish();
+        }
 
         assertEquals("8.2.3", new InstalledVersionResolver().resolve(home));
     }

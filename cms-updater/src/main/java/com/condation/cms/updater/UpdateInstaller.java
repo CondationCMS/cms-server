@@ -86,6 +86,14 @@ public final class UpdateInstaller {
     }
 
     private void validateManifest(UpdateManifest manifest, String installedVersion) throws IOException {
+        validateVersions(manifest, installedVersion);
+        validateFiles(manifest.files());
+        validateMigrations(manifest.migrations());
+        validateReplacementDirectories(manifest.replaceDirectories());
+        validateRemovalPatterns(manifest.removePatterns());
+    }
+
+    private void validateVersions(UpdateManifest manifest, String installedVersion) throws IOException {
         if (!PRODUCT.equals(manifest.product())) throw new IOException("Unexpected update product: " + manifest.product());
         if (!validVersion(installedVersion) || !validVersion(manifest.version()) || !validVersion(manifest.minimumVersion())) {
             throw new IOException("Versions must use numeric major.minor[.patch] format");
@@ -96,9 +104,12 @@ public final class UpdateInstaller {
         if (compareVersions(manifest.version(), installedVersion) <= 0) {
             throw new IOException("Target version must be newer than installed version");
         }
-        if (manifest.files() == null || manifest.migrations() == null) throw new IOException("Manifest files and migrations must be present");
+    }
+
+    private void validateFiles(List<UpdateManifest.UpdateFile> files) throws IOException {
+        if (files == null) throw new IOException("Manifest files must be present");
         Set<String> targets = new HashSet<>();
-        for (UpdateManifest.UpdateFile file : manifest.files()) {
+        for (UpdateManifest.UpdateFile file : files) {
             if (file == null || !isSha256(file.sha256())) throw new IOException("Each update file needs a SHA-256 checksum");
             safeZipEntry(file.source());
             UpdatePaths.resolveInside(Path.of("/installation-root"), file.target());
@@ -107,26 +118,34 @@ public final class UpdateInstaller {
             }
             if (!targets.add(file.target())) throw new IOException("Duplicate update target: " + file.target());
         }
+    }
+
+    private void validateMigrations(List<UpdateManifest.MigrationEntry> migrations) throws IOException {
+        if (migrations == null) throw new IOException("Manifest migrations must be present");
         Set<String> migrationIds = new HashSet<>();
-        for (UpdateManifest.MigrationEntry migration : manifest.migrations()) {
+        for (UpdateManifest.MigrationEntry migration : migrations) {
             if (migration == null || migration.id() == null || migration.id().isBlank() || !isSha256(migration.sha256())) throw new IOException("Each migration needs an id and SHA-256 checksum");
             safeZipEntry(migration.artifact());
             if (!migrationIds.add(migration.id())) throw new IOException("Duplicate migration id: " + migration.id());
         }
-        if (manifest.replaceDirectories() != null) {
-            for (String directory : manifest.replaceDirectories()) {
-                UpdatePaths.resolveInside(Path.of("/installation-root"), directory);
-                if (directory.contains("\\")) throw new IOException("Invalid replacement directory: " + directory);
-            }
+    }
+
+    private void validateReplacementDirectories(List<String> directories) throws IOException {
+        if (directories == null) return;
+        for (String directory : directories) {
+            UpdatePaths.resolveInside(Path.of("/installation-root"), directory);
+            if (directory.contains("\\")) throw new IOException("Invalid replacement directory: " + directory);
         }
-        if (manifest.removePatterns() != null) {
-            for (String pattern : manifest.removePatterns()) {
-                if (pattern == null || pattern.isBlank() || pattern.contains("/") || pattern.contains("\\")) {
-                    throw new IOException("Removal patterns must match files directly under the installation root");
-                }
-                try { Path.of("probe").getFileSystem().getPathMatcher("glob:" + pattern); }
-                catch (RuntimeException invalidPattern) { throw new IOException("Invalid removal pattern: " + pattern, invalidPattern); }
+    }
+
+    private void validateRemovalPatterns(List<String> patterns) throws IOException {
+        if (patterns == null) return;
+        for (String pattern : patterns) {
+            if (pattern == null || pattern.isBlank() || pattern.contains("/") || pattern.contains("\\")) {
+                throw new IOException("Removal patterns must match files directly under the installation root");
             }
+            try { Path.of("probe").getFileSystem().getPathMatcher("glob:" + pattern); }
+            catch (RuntimeException invalidPattern) { throw new IOException("Invalid removal pattern: " + pattern, invalidPattern); }
         }
     }
 
@@ -169,37 +188,47 @@ public final class UpdateInstaller {
                     PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE,
                     PosixFilePermission.GROUP_READ, PosixFilePermission.GROUP_EXECUTE,
                     PosixFilePermission.OTHERS_READ, PosixFilePermission.OTHERS_EXECUTE));
-        } catch (UnsupportedOperationException ignored) {
+        } catch (UnsupportedOperationException _) {
             // Filesystems without POSIX permissions, such as Windows, have no execute bit to set.
         }
     }
 
     private void prepareReplacements(Path installation, UpdateManifest manifest) throws IOException {
         String version = manifest.version();
-        if (manifest.replaceDirectories() != null) {
-            for (String relativeDirectory : manifest.replaceDirectories()) {
-                Path directory = UpdatePaths.resolveInside(installation, relativeDirectory);
-                if (!Files.exists(directory)) continue;
-                if (!Files.isDirectory(directory)) throw new IOException("Replacement path is not a directory: " + relativeDirectory);
-                Path backup = backupPath(installation, version, relativeDirectory);
-                if (!Files.exists(backup)) copyTree(directory, backup);
-                deleteTree(directory);
-            }
+        replaceDirectories(installation, version, manifest.replaceDirectories());
+        removeMatchingFiles(installation, version, manifest.removePatterns());
+    }
+
+    private void replaceDirectories(Path installation, String version, List<String> directories) throws IOException {
+        if (directories == null) return;
+        for (String relativeDirectory : directories) {
+            Path directory = UpdatePaths.resolveInside(installation, relativeDirectory);
+            if (!Files.exists(directory)) continue;
+            if (!Files.isDirectory(directory)) throw new IOException("Replacement path is not a directory: " + relativeDirectory);
+            Path backup = backupPath(installation, version, relativeDirectory);
+            if (!Files.exists(backup)) copyTree(directory, backup);
+            deleteTree(directory);
         }
-        if (manifest.removePatterns() != null) {
-            for (String pattern : manifest.removePatterns()) {
-                var matcher = installation.getFileSystem().getPathMatcher("glob:" + pattern);
-                try (var entries = Files.list(installation)) {
-                    for (Path entry : entries.filter(path -> matcher.matches(path.getFileName())).toList()) {
-                        if (Files.isDirectory(entry)) throw new IOException("Removal pattern matched a directory: " + entry.getFileName());
-                        Path backup = backupPath(installation, version, entry.getFileName().toString());
-                        Files.createDirectories(backup.getParent());
-                        if (!Files.exists(backup)) Files.copy(entry, backup, StandardCopyOption.COPY_ATTRIBUTES);
-                        Files.delete(entry);
-                    }
+    }
+
+    private void removeMatchingFiles(Path installation, String version, List<String> patterns) throws IOException {
+        if (patterns == null) return;
+        for (String pattern : patterns) {
+            var matcher = installation.getFileSystem().getPathMatcher("glob:" + pattern);
+            try (var entries = Files.list(installation)) {
+                for (Path entry : entries.filter(path -> matcher.matches(path.getFileName())).toList()) {
+                    removeMatchingFile(installation, version, entry);
                 }
             }
         }
+    }
+
+    private void removeMatchingFile(Path installation, String version, Path entry) throws IOException {
+        if (Files.isDirectory(entry)) throw new IOException("Removal pattern matched a directory: " + entry.getFileName());
+        Path backup = backupPath(installation, version, entry.getFileName().toString());
+        Files.createDirectories(backup.getParent());
+        if (!Files.exists(backup)) Files.copy(entry, backup, StandardCopyOption.COPY_ATTRIBUTES);
+        Files.delete(entry);
     }
 
     private static void copyTree(Path source, Path destination) throws IOException {
@@ -231,10 +260,10 @@ public final class UpdateInstaller {
                 migration.execute(new MigrationContext(installation, installedVersion, manifest.version()));
             } catch (IOException exception) {
                 throw exception;
-            } catch (Exception exception) {
+            } catch (MigrationException exception) {
                 throw new IOException("Migration failed: " + entry.id(), exception);
             }
-            history.record(entry.id());
+            history.markCompleted(entry.id());
             completedThisRun.add(entry.id());
         }
         return List.copyOf(completedThisRun);
@@ -246,7 +275,7 @@ public final class UpdateInstaller {
         Path temp = file.resolveSibling(file.getFileName() + ".tmp");
         Files.writeString(temp, version + System.lineSeparator());
         try { Files.move(temp, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING); }
-        catch (IOException noAtomicMove) { Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING); }
+        catch (IOException _) { Files.move(temp, file, StandardCopyOption.REPLACE_EXISTING); }
     }
 
     private Path backupPath(Path installation, String version, String target) {
@@ -261,7 +290,8 @@ public final class UpdateInstaller {
 
     private static boolean validVersion(String value) { return value != null && value.matches("\\d+(?:\\.\\d+){1,2}"); }
     private static int compareVersions(String left, String right) {
-        String[] a = left.split("\\."), b = right.split("\\.");
+        String[] a = left.split("\\.");
+        String[] b = right.split("\\.");
         for (int i = 0; i < Math.max(a.length, b.length); i++) {
             long av = i < a.length ? Long.parseLong(a[i]) : 0;
             long bv = i < b.length ? Long.parseLong(b[i]) : 0;

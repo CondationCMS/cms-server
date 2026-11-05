@@ -77,8 +77,9 @@ class UpdateInstallerTest {
         Path installation = installation("8.2.0");
         Path archive = packageZip("8.5.0", "8.2.0", List.of(new FileSpec("files/server.jar", "../escaped", "bad", null)), List.of());
 
+        UpdateInstaller installer = new UpdateInstaller();
         assertThrows(IllegalArgumentException.class,
-                () -> new UpdateInstaller().install(installation, archive, "8.2.0"));
+                () -> installer.install(installation, archive, "8.2.0"));
         assertEquals("old server", Files.readString(installation.resolve("lib/server.jar")));
     }
 
@@ -232,19 +233,27 @@ class UpdateInstallerTest {
 
     public static class FirstMigration implements Migration {
         public String id() { return "first"; }
-        public void execute(MigrationContext context) throws Exception {
+        public void execute(MigrationContext context) throws MigrationException {
             Path file = context.resolve("data/system/migration-order");
-            Files.createDirectories(file.getParent());
-            Files.writeString(file, "first\n", java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+            try {
+                Files.createDirectories(file.getParent());
+                Files.writeString(file, "first\n", java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+            } catch (IOException exception) {
+                throw new MigrationException("Could not record first test migration", exception);
+            }
         }
     }
 
     public static class SecondMigration implements Migration {
         public String id() { return "second"; }
-        public void execute(MigrationContext context) throws Exception {
+        public void execute(MigrationContext context) throws MigrationException {
             Path file = context.resolve("data/system/migration-order");
-            Files.createDirectories(file.getParent());
-            Files.writeString(file, "second\n", java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+            try {
+                Files.createDirectories(file.getParent());
+                Files.writeString(file, "second\n", java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+            } catch (IOException exception) {
+                throw new MigrationException("Could not record second test migration", exception);
+            }
         }
     }
 

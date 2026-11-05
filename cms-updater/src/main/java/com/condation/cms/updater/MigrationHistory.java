@@ -57,14 +57,14 @@ final class MigrationHistory {
         return completed.contains(id);
     }
 
-    void record(String id) throws IOException {
+    void markCompleted(String id) throws IOException {
         completed.add(id);
         Files.createDirectories(file.getParent());
         Path temporary = file.resolveSibling(file.getFileName() + ".tmp");
         Files.writeString(temporary, GSON.toJson(new HistoryDocument(completed)));
         try {
             Files.move(temporary, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException atomicMoveUnavailable) {
+        } catch (IOException _) {
             Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING);
         }
     }

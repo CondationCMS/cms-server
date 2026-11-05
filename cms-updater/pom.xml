@@ -8,9 +8,6 @@
     </parent>
     <artifactId>cms-updater</artifactId>
     <name>CondationCMS Updater</name>
-    <properties>
-        <maven.compiler.release>17</maven.compiler.release>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>

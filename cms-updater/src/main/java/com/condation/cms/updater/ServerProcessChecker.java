@@ -49,7 +49,7 @@ public final class ServerProcessChecker {
         try {
             pid = Long.parseLong(properties.getProperty(PID_PROPERTY));
             expectedStart = Long.parseLong(properties.getProperty(STARTED_AT_PROPERTY));
-        } catch (NumberFormatException | NullPointerException invalidPidFile) {
+        } catch (NumberFormatException | NullPointerException _) {
             Files.deleteIfExists(pidFile);
             return Optional.empty();
         }

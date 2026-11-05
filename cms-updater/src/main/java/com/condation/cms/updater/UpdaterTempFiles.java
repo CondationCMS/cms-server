@@ -45,7 +45,7 @@ final class UpdaterTempFiles {
         Path parent = privateDirectory();
         try {
             return Files.createTempDirectory(parent, prefix, posixAttribute(PRIVATE_DIRECTORY_PERMISSIONS));
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             return Files.createTempDirectory(parent, prefix);
         }
     }
@@ -54,7 +54,7 @@ final class UpdaterTempFiles {
         Path parent = privateDirectory();
         try {
             return Files.createTempFile(parent, prefix, suffix, posixAttribute(PRIVATE_FILE_PERMISSIONS));
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             return Files.createTempFile(parent, prefix, suffix);
         }
     }
@@ -71,18 +71,18 @@ final class UpdaterTempFiles {
                     || homePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
                 throw new IOException("User home is writable by other users: " + home);
             }
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             // Non-POSIX filesystems use the home directory's ACLs.
         }
         Path directory = home.resolve(".condationcms-updater-tmp");
         try {
             Files.createDirectory(directory, posixAttribute(PRIVATE_DIRECTORY_PERMISSIONS));
-        } catch (FileAlreadyExistsException alreadyExists) {
+        } catch (FileAlreadyExistsException _) {
             // Validate the existing directory before using it.
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             try {
                 Files.createDirectory(directory);
-            } catch (FileAlreadyExistsException alreadyExists) {
+            } catch (FileAlreadyExistsException _) {
                 // Validate the existing directory before using it.
             }
         }
@@ -99,7 +99,7 @@ final class UpdaterTempFiles {
             if (!Files.getPosixFilePermissions(directory).equals(PRIVATE_DIRECTORY_PERMISSIONS)) {
                 throw new IOException("Updater temporary directory permissions are not private: " + directory);
             }
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             // Non-POSIX filesystems use the user's home ACLs.
         }
         return directory;

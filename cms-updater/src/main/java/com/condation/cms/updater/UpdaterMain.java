@@ -21,6 +21,7 @@ package com.condation.cms.updater;
  * #L%
  */
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -35,13 +36,17 @@ public final class UpdaterMain {
                 return;
             }
             run(args);
-        } catch (Exception exception) {
-            System.err.println("Update failed: " + exception.getMessage());
+        } catch (InterruptedException exception) {
+            Thread.currentThread().interrupt();
+            UpdaterConsole.error("Update interrupted");
+            System.exit(1);
+        } catch (IOException | IllegalArgumentException exception) {
+            UpdaterConsole.error("Update failed: " + exception.getMessage());
             System.exit(1);
         }
     }
 
-    static UpdateResult run(String[] args) throws Exception {
+    static UpdateResult run(String[] args) throws IOException, InterruptedException {
         Options options = parse(args);
         Path installation = options.home().toAbsolutePath().normalize();
         if (!Files.isDirectory(installation)) throw new IllegalArgumentException("Installation home not found: " + installation);
@@ -52,8 +57,8 @@ public final class UpdaterMain {
             if (!Files.isRegularFile(source.path())) throw new IllegalArgumentException("Update package not found: " + source.path());
             result = new UpdateInstaller().install(installation, source.path(), currentVersion);
         }
-        System.out.println("Updated CondationCMS from " + result.previousVersion() + " to " + result.installedVersion());
-        for (String migration : result.migrationsExecuted()) System.out.println("Migration completed: " + migration);
+        UpdaterConsole.info("Updated CondationCMS from " + result.previousVersion() + " to " + result.installedVersion());
+        for (String migration : result.migrationsExecuted()) UpdaterConsole.info("Migration completed: " + migration);
         return result;
     }
 
@@ -64,10 +69,12 @@ public final class UpdaterMain {
         if (args.length == 0 || !"install".equals(args[0])) throw new IllegalArgumentException(usage());
         Path home = Path.of("../");
         String packageLocation = null;
-        for (int i = 1; i < args.length; i++) {
+        int i = 1;
+        while (i < args.length) {
             String option = args[i];
             if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + option + "\n" + usage());
-            String value = args[++i];
+            String value = args[i + 1];
+            i += 2;
             switch (option) {
                 case "--home" -> home = Path.of(value);
                 case "--package" -> packageLocation = value;
@@ -79,18 +86,18 @@ public final class UpdaterMain {
     }
 
     private static String usage() {
-        return "Usage:\n"
-                + "  java -jar cms-updater.jar install [--home <installation>] --package <update.zip|URL>\n"
-                + "  java -jar cms-updater.jar create-package --home <release-home> --scripts <scripts-dir>"
-                + " --output <update.zip> --version <version> --minimum-version <version>\n"
-                + "Default install home: ../ (relative to the current working directory)";
+        return """
+                Usage:
+                  java -jar cms-updater.jar install [--home <installation>] --package <update.zip|URL>
+                  java -jar cms-updater.jar create-package --home <release-home> --scripts <scripts-dir> --output <update.zip> --version <version> --minimum-version <version>
+                Default install home: ../ (relative to the current working directory)""";
     }
 
-    private static void createPackage(String[] args) throws Exception {
+    private static void createPackage(String[] args) throws IOException {
         var options = parsePackageBuild(args);
         Path output = new UpdatePackageBuilder().build(options.home(), options.scripts(), options.output(),
                 options.version(), options.minimumVersion());
-        System.out.println("Created update package: " + output);
+        UpdaterConsole.info("Created update package: " + output);
     }
 
     private static PackageBuildOptions parsePackageBuild(String[] args) {
@@ -99,10 +106,13 @@ public final class UpdaterMain {
         Path output = null;
         String version = null;
         String minimumVersion = null;
-        for (int i = 1; i < args.length; i++) {
-            if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + args[i] + "\n" + usage());
-            String value = args[++i];
-            switch (args[i - 1]) {
+        int i = 1;
+        while (i < args.length) {
+            String option = args[i];
+            if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + option + "\n" + usage());
+            String value = args[i + 1];
+            i += 2;
+            switch (option) {
                 case "--home" -> home = Path.of(value);
                 case "--scripts" -> scripts = Path.of(value);
                 case "--output" -> output = Path.of(value);

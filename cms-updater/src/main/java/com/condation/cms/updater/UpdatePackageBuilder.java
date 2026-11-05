@@ -122,7 +122,7 @@ public final class UpdatePackageBuilder {
 
     private static void putFile(ZipArchiveOutputStream zip, String name, Path file, boolean executable) throws IOException {
         ZipArchiveEntry entry = new ZipArchiveEntry(name);
-        if (executable) entry.setUnixMode(0755);
+        if (executable) entry.setUnixMode(0_755);
         zip.putArchiveEntry(entry);
         try (var input = Files.newInputStream(file)) { input.transferTo(zip); }
         zip.closeArchiveEntry();

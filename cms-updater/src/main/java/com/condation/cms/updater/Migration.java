@@ -25,5 +25,5 @@ package com.condation.cms.updater;
 public interface Migration {
     String id();
 
-    void execute(MigrationContext context) throws Exception;
+    void execute(MigrationContext context) throws MigrationException;
 }

@@ -63,7 +63,7 @@ class UpdaterTempFilesTest {
         Set<PosixFilePermission> originalPermissions;
         try {
             originalPermissions = Files.getPosixFilePermissions(temporary);
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             assumeTrue(false, "POSIX permissions are required for this test");
             return;
         }
@@ -73,7 +73,7 @@ class UpdaterTempFilesTest {
                     PosixFilePermission.OTHERS_WRITE));
             withUserHome(temporary, () -> assertThrows(IOException.class,
                     () -> UpdaterTempFiles.createFile("download-", ".zip")));
-        } catch (UnsupportedOperationException unsupported) {
+        } catch (UnsupportedOperationException _) {
             assumeTrue(false, "POSIX permissions are required for this test");
         } finally {
             Files.setPosixFilePermissions(temporary, originalPermissions);

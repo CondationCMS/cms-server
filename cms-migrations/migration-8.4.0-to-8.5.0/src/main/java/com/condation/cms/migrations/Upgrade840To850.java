@@ -23,19 +23,21 @@ package com.condation.cms.migrations;
 
 import com.condation.cms.updater.Migration;
 import com.condation.cms.updater.MigrationContext;
+import java.util.logging.Logger;
 
-/** Example migration that writes the transition versions to standard output. */
+/** Example migration that logs the transition versions. */
 public final class Upgrade840To850 implements Migration {
-    public static final String ID = "migration-8.4.0-to-8.5.0";
+    private static final Logger LOGGER = Logger.getLogger(Upgrade840To850.class.getName());
+    public static final String MIGRATION_ID = "migration-8.4.0-to-8.5.0";
 
     @Override
     public String id() {
-        return ID;
+        return MIGRATION_ID;
     }
 
     @Override
     public void execute(MigrationContext context) {
-        System.out.printf("Example migration executed: CondationCMS %s -> %s%n",
-                context.fromVersion(), context.toVersion());
+        LOGGER.info(() -> "Example migration executed: CondationCMS "
+                + context.fromVersion() + " -> " + context.toVersion());
     }
 }

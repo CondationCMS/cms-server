@@ -39,6 +39,12 @@ public interface Topic {
 	 * @param dataType 
 	 */
 	<RT> void subscribe(Listener<RT> listener, Class<RT> dataType);
+
+	/** Subscribe with a handle that removes the listener when closed. */
+	default <RT> Subscription subscribeWithHandle(Listener<RT> listener, Class<RT> dataType) {
+		subscribe(listener, dataType);
+		return Subscription.NOOP;
+	}
 	
 	/**
 	 * Publish a message on the topic with mode.

@@ -65,7 +65,7 @@ public final class UpdatePackageBuilder {
             }
         }
 
-        for (String script : List.of("server.sh", "server.bat", "debug.sh", "debug.bat")) {
+        for (String script : List.of("server.sh", "server.bat", "debug.sh", "debug.bat", "cms-update.sh", "cms-update.bat")) {
             Path file = scriptsDirectory.resolve(script);
             if (Files.isRegularFile(file)) payload.add(payload(file, script));
         }
@@ -103,7 +103,7 @@ public final class UpdatePackageBuilder {
     }
 
     private static boolean isUnixExecutableScript(String target) {
-        return target.equals("server.sh") || target.equals("debug.sh");
+        return target.equals("server.sh") || target.equals("debug.sh") || target.equals("cms-update.sh");
     }
 
     private static String sha256(Path file) throws IOException {

@@ -27,6 +27,13 @@ import java.nio.file.Path;
 
 /** Command-line entry point for the executable updater artifact. */
 public final class UpdaterMain {
+
+    private static final String USAGE = """
+                Usage:
+                  java -jar cms-updater.jar install [--home <installation>] --package <update.zip|URL>
+                  java -jar cms-updater.jar create-package --home <release-home> --scripts <scripts-dir> --output <update.zip> --version <version> --minimum-version <version>
+                Default install home: ../ (relative to the current working directory)""";
+
     private UpdaterMain() { }
 
     public static void main(String[] args) {
@@ -36,7 +43,7 @@ public final class UpdaterMain {
                 return;
             }
             run(args);
-        } catch (InterruptedException exception) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
             UpdaterConsole.error("Update interrupted");
             System.exit(1);
@@ -64,34 +71,27 @@ public final class UpdaterMain {
 
     static Options parse(String[] args) {
         if (args.length == 1 && ("--help".equals(args[0]) || "-h".equals(args[0]))) {
-            throw new IllegalArgumentException(usage());
+            throw new IllegalArgumentException(USAGE);
         }
-        if (args.length == 0 || !"install".equals(args[0])) throw new IllegalArgumentException(usage());
+        if (args.length == 0 || !"install".equals(args[0])) throw new IllegalArgumentException(USAGE);
         Path home = Path.of("../");
         String packageLocation = null;
         int i = 1;
         while (i < args.length) {
             String option = args[i];
-            if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + option + "\n" + usage());
+            if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + option + "\n" + USAGE);
             String value = args[i + 1];
             i += 2;
             switch (option) {
                 case "--home" -> home = Path.of(value);
                 case "--package" -> packageLocation = value;
-                default -> throw new IllegalArgumentException("Unknown option: " + option + "\n" + usage());
+                default -> throw new IllegalArgumentException("Unknown option: " + option + "\n" + USAGE);
             }
         }
-        if (packageLocation == null || packageLocation.isBlank()) throw new IllegalArgumentException("--package is required\n" + usage());
+        if (packageLocation == null || packageLocation.isBlank()) throw new IllegalArgumentException("--package is required\n" + USAGE);
         return new Options(home, packageLocation);
     }
 
-    private static String usage() {
-        return """
-                Usage:
-                  java -jar cms-updater.jar install [--home <installation>] --package <update.zip|URL>
-                  java -jar cms-updater.jar create-package --home <release-home> --scripts <scripts-dir> --output <update.zip> --version <version> --minimum-version <version>
-                Default install home: ../ (relative to the current working directory)""";
-    }
 
     private static void createPackage(String[] args) throws IOException {
         var options = parsePackageBuild(args);
@@ -109,7 +109,7 @@ public final class UpdaterMain {
         int i = 1;
         while (i < args.length) {
             String option = args[i];
-            if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + option + "\n" + usage());
+            if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + option + "\n" + USAGE);
             String value = args[i + 1];
             i += 2;
             switch (option) {
@@ -118,11 +118,11 @@ public final class UpdaterMain {
                 case "--output" -> output = Path.of(value);
                 case "--version" -> version = value;
                 case "--minimum-version" -> minimumVersion = value;
-                default -> throw new IllegalArgumentException("Unknown option: " + args[i - 1] + "\n" + usage());
+                default -> throw new IllegalArgumentException("Unknown option: " + args[i - 1] + "\n" + USAGE);
             }
         }
         if (home == null || scripts == null || output == null || version == null || minimumVersion == null) {
-            throw new IllegalArgumentException("Missing create-package option\n" + usage());
+            throw new IllegalArgumentException("Missing create-package option\n" + USAGE);
         }
         return new PackageBuildOptions(home, scripts, output, version, minimumVersion);
     }

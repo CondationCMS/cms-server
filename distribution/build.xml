@@ -2,7 +2,7 @@
 <project name="distribution" default="distribution" basedir=".">
 	<property name="cms.version">8.4.0</property>
 	<property name="cms.update.minimum.version">8.2.0</property>
-	<property name="condation.version">2026.10</property>
+	<property name="condation.version">8.4.0</property>
 	<property name="jdk.version">jdk-27+35</property> <!-- jdk-27+35 -->
 
 	<target name="copy-server" description="--> copy server">
@@ -30,6 +30,8 @@
 				<include name="server.bat"/>
 				<include name="debug.sh"/>
 				<include name="debug.bat"/>
+				<include name="cms-update.sh"/>
+				<include name="cms-update.bat"/>
 				<include name="server.toml" />
 			</fileset>
 			<filterchain>
@@ -53,10 +55,11 @@
 		</copy>
 		<fixcrlf srcdir="dist" includes="server.sh" eol="unix"/>
 		<fixcrlf srcdir="dist" includes="debug.sh" eol="unix"/>
+		<fixcrlf srcdir="dist" includes="cms-update.sh" eol="unix"/>
 	</target>
 
-	<target name="create-update-package" depends="clean,copy-server">
-		<java jar="temp/cms-server-${cms.version}/bin/cms-updater.jar" fork="true" failonerror="true">
+	<target name="create-update-package" depends="clean,download-jre,copy-server,make-build-jdk-executable">
+		<java jar="temp/cms-server-${cms.version}/bin/cms-updater.jar" jvm="${basedir}/temp/build-jdk/${build.jdk.java}" fork="true" failonerror="true">
 			<arg value="create-package"/>
 			<arg value="--home"/>
 			<arg file="build"/>
@@ -90,6 +93,65 @@
 		<get skipexisting="true"
 			 src="https://api.adoptium.net/v3/binary/version/${jdk.version}/alpine-linux/aarch64/jdk/hotspot/normal/eclipse" dest="temp/jdk_aarch64_alpine.tar.gz">
 		</get-->
+	</target>
+
+	<target name="select-build-jdk">
+		<condition property="build.jdk.archive" value="jdk_x64_windows.zip">
+			<and><os family="windows"/><or>
+				<equals arg1="${os.arch}" arg2="amd64" casesensitive="false"/>
+				<equals arg1="${os.arch}" arg2="x86_64" casesensitive="false"/>
+			</or></and>
+		</condition>
+		<condition property="build.jdk.archive" value="jdk_aarch64_mac.tar.gz">
+			<and><os family="mac"/><or>
+				<equals arg1="${os.arch}" arg2="aarch64" casesensitive="false"/>
+				<equals arg1="${os.arch}" arg2="arm64" casesensitive="false"/>
+			</or></and>
+		</condition>
+		<condition property="build.jdk.archive" value="jdk_aarch64_linux.tar.gz">
+			<and><os name="Linux"/><or>
+				<equals arg1="${os.arch}" arg2="aarch64" casesensitive="false"/>
+				<equals arg1="${os.arch}" arg2="arm64" casesensitive="false"/>
+			</or></and>
+		</condition>
+		<condition property="build.jdk.archive" value="jdk_x64_linux.tar.gz">
+			<and><os name="Linux"/><or>
+				<equals arg1="${os.arch}" arg2="amd64" casesensitive="false"/>
+				<equals arg1="${os.arch}" arg2="x86_64" casesensitive="false"/>
+			</or></and>
+		</condition>
+		<fail unless="build.jdk.archive" message="No downloaded JDK is configured for build host ${os.name}/${os.arch}"/>
+
+		<condition property="build.jdk.is.zip">
+			<equals arg1="${build.jdk.archive}" arg2="jdk_x64_windows.zip"/>
+		</condition>
+		<condition property="build.jdk.java" value="${jdk.version}/bin/java.exe">
+			<os family="windows"/>
+		</condition>
+		<condition property="build.jdk.java" value="${jdk.version}/Contents/Home/bin/java">
+			<os family="mac"/>
+		</condition>
+		<condition property="build.jdk.java" value="${jdk.version}/bin/java">
+			<os name="Linux"/>
+		</condition>
+		<echo message="Use downloaded ${build.jdk.archive} to run the update package builder"/>
+	</target>
+
+	<target name="unpack-build-jdk-zip" depends="select-build-jdk" if="build.jdk.is.zip">
+		<unzip src="temp/${build.jdk.archive}" dest="temp/build-jdk"/>
+	</target>
+
+	<target name="unpack-build-jdk-tar" depends="select-build-jdk" unless="build.jdk.is.zip">
+		<untar src="temp/${build.jdk.archive}" dest="temp/build-jdk" compression="gzip"/>
+	</target>
+
+	<target name="prepare-build-jdk" depends="unpack-build-jdk-zip,unpack-build-jdk-tar">
+		<available file="temp/build-jdk/${build.jdk.java}" property="build.jdk.available"/>
+		<fail unless="build.jdk.available" message="Downloaded build JDK executable was not found: temp/build-jdk/${build.jdk.java}"/>
+	</target>
+
+	<target name="make-build-jdk-executable" depends="prepare-build-jdk" unless="build.jdk.is.zip">
+		<chmod file="temp/build-jdk/${build.jdk.java}" perm="755" type="file"/>
 	</target>
 
 	<target name="clean">
@@ -150,6 +212,7 @@
 			</tarfileset>
 			<tarfileset file="dist/server.sh" mode="755" fullpath="condation-server/server.sh"/>
 			<tarfileset file="dist/debug.sh" mode="755" fullpath="condation-server/debug.sh"/>
+			<tarfileset file="dist/cms-update.sh" mode="755" fullpath="condation-server/cms-update.sh"/>
 			<tarfileset dir="dist/java/${system.name}_${system.arch}/${java.path}/" prefix="condation-server/java">
 				<exclude name="bin/java"/>
 			</tarfileset>
@@ -167,6 +230,7 @@
 			</zipfileset>
 			<zipfileset file="dist/server.bat" fullpath="condation-server/server.bat"/>
 			<zipfileset file="dist/debug.bat" fullpath="condation-server/debug.bat"/>
+			<zipfileset file="dist/cms-update.bat" fullpath="condation-server/cms-update.bat"/>
 			<zipfileset dir="dist/java/${system.name}_${system.arch}/${java.path}/" prefix="condation-server/java">
 				<exclude name="bin/java"/>
 			</zipfileset>

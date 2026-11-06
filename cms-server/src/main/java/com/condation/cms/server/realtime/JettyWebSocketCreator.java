@@ -129,10 +129,11 @@ public class JettyWebSocketCreator implements WebSocketCreator {
         }
 
         @Override
-        public void onWebSocketClose(int statusCode, String reason) {
+        public void onWebSocketClose(int statusCode, String reason, Callback callback) {
             log.debug("WebSocket closed with {}: {}", statusCode, reason);
             session = null;
             notifyCloseHandlers();
+            callback.succeed();
         }
 
         @Override

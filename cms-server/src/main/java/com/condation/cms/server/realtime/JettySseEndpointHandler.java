@@ -42,6 +42,9 @@ import org.eclipse.jetty.util.Callback;
 public class JettySseEndpointHandler extends Handler.Abstract {
 
     private final Map<String, java.util.List<RealtimeEndpointRegistration>> endpoints;
+    private static final String EVENTS = "/events";
+
+    
 
     public JettySseEndpointHandler(Iterable<RealtimeEndpointRegistration> registrations) {
         var found = new java.util.HashMap<String, java.util.List<RealtimeEndpointRegistration>>();
@@ -61,8 +64,8 @@ public class JettySseEndpointHandler extends Handler.Abstract {
             return true;
         }
         String path = Request.getPathInContext(request);
-        if (!path.startsWith("/events")) {
-            path = path.isEmpty() || "/".equals(path) ? "/events" : "/events" + path;
+        if (!path.startsWith(EVENTS)) {
+            path = path.isEmpty() || "/".equals(path) ? EVENTS : EVENTS + path;
         }
         log.debug("SSE request for path {}; registered paths: {}", path, endpoints.keySet());
         var registrations = endpoints.get(path);

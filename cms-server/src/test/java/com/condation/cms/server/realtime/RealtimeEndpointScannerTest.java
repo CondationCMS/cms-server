@@ -71,32 +71,38 @@ class RealtimeEndpointScannerTest {
     public static class ExampleRealtimeExtension extends RealtimeExtensionPoint {
         @RealtimeEndpoint(transport = RealtimeTransport.SSE)
         public void events(SseConnection connection) {
+            // empty for test
         }
 
         @RealtimeEndpoint(transport = RealtimeTransport.WEBSOCKET, path = "echo")
         public void echo(WebSocketConnection connection) {
+            // empty for test
         }
     }
 
     public static class InvalidRealtimeExtension extends RealtimeExtensionPoint {
         @RealtimeEndpoint(transport = RealtimeTransport.SSE)
         public void invalid(String value) {
+            // empty for test
         }
     }
 
     public static class DuplicateRealtimeExtension extends RealtimeExtensionPoint {
         @RealtimeEndpoint(transport = RealtimeTransport.SSE, path = "updates")
         public void first(SseConnection connection) {
+            // empty for test
         }
 
         @RealtimeEndpoint(transport = RealtimeTransport.SSE, path = "updates")
         public void second(SseConnection connection) {
+            // empty for test
         }
     }
 
     public static class SharedRootExtension extends RealtimeExtensionPoint {
         @RealtimeEndpoint(transport = RealtimeTransport.SSE)
         public void contribute(SseConnection connection) {
+            // empty for test
         }
     }
 }

@@ -25,6 +25,7 @@ import com.condation.cms.api.messaging.Messaging;
 import com.condation.cms.api.messaging.Topic;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,20 @@ public class DefaultMessagingTest {
 				.atMost(Duration.ofSeconds(1))
 				.until(received::get);
 	}
+
+    @Test
+    void subscriptionCanBeClosedToStopReceivingMessages() {
+        AtomicInteger received = new AtomicInteger();
+        var topic = messaging.topic("test/cancellable");
+        var subscription = topic.subscribeWithHandle(data -> received.incrementAndGet(), String.class);
+
+        topic.publish("first", Topic.Mode.SYNC);
+        subscription.close();
+        subscription.close();
+        topic.publish("second", Topic.Mode.SYNC);
+
+        org.assertj.core.api.Assertions.assertThat(received.get()).isEqualTo(1);
+    }
 	
 	public static record DataObject (String value){}
 	public static record AnotherObject (String value){}

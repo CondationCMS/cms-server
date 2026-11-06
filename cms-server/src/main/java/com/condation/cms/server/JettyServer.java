@@ -118,10 +118,15 @@ public class JettyServer implements AutoCloseable {
         
         initServerModules();
 
+        QueuedThreadPool threadPool = new QueuedThreadPool();
+        threadPool.setName("cms-request-worker");
+        threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
+        server = new Server(threadPool);
+
 		SiteUtil.sitesStream().forEach((site) -> {
 			MdcScope.forSite(site.id()).run(() -> {
 				try {
-					var host = new VHost(site.id(), site.basePath(), ServerUtil.getPath(Constants.Folders.MODULES), globalInjector);
+					var host = new VHost(site.id(), site.basePath(), ServerUtil.getPath(Constants.Folders.MODULES), globalInjector, server);
 					log.debug("warmup host {}", site.id());
 					host.startUpWarmup();
 					log.debug("init host {}", site.id());
@@ -193,11 +198,6 @@ public class JettyServer implements AutoCloseable {
 		HTTP2CServerConnectionFactory h2c = new HTTP2CServerConnectionFactory(httpConfig);
 
 		//QueuedThreadPool threadPool = new QueuedThreadPool(properties.performance().request_workers());
-		QueuedThreadPool threadPool = new QueuedThreadPool();
-		threadPool.setName("cms-request-worker");
-		threadPool.setVirtualThreadsExecutor(Executors.newVirtualThreadPerTaskExecutor());
-
-		server = new Server(threadPool);
 		server.setRequestLog(new CustomRequestLog(new Slf4jRequestLogWriter(), CustomRequestLog.EXTENDED_NCSA_FORMAT));
 
 		ServerConnector connector = new ServerConnector(server, http11, h2c);

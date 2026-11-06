@@ -59,6 +59,8 @@ Theme: [[ext:theme_name]][[/ext:theme_name]]
 
 [about](/about)
 
+[Realtime SSE and WebSocket examples](/realtime)
+
 [this is a new page](/this-is-a-new-page)
 
 

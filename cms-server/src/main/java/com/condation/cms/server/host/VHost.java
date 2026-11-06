@@ -27,11 +27,14 @@ import java.util.List;
 
 import org.eclipse.jetty.http.pathmap.PathSpec;
 import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.PathMappingsHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.websocket.server.WebSocketUpgradeHandler;
 import com.condation.cms.api.SiteProperties;
+import com.condation.cms.api.extensions.RealtimeExtensionPoint;
 import com.condation.cms.api.cache.CacheManager;
 import com.condation.cms.api.configuration.Configuration;
 import com.condation.cms.api.configuration.configs.ServerConfiguration;
@@ -81,6 +84,9 @@ import com.condation.cms.server.handler.http.APIHandler;
 import com.condation.cms.server.handler.http.RoutesHandler;
 import com.condation.cms.server.handler.media.JettyMediaHandler;
 import com.condation.cms.server.handler.module.JettyModuleHandler;
+import com.condation.cms.server.realtime.JettySseEndpointHandler;
+import com.condation.cms.server.realtime.JettyWebSocketCreator;
+import com.condation.cms.server.realtime.RealtimeEndpointScanner;
 import com.condation.modules.api.ModuleManager;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -101,6 +107,7 @@ public class VHost {
 
     private final String siteId;
     private final Path hostBase;
+    private final Server server;
 
     @Getter
     private Handler hostHandler;
@@ -112,9 +119,10 @@ public class VHost {
 
     List<String> requiredDirs = List.of("content", "assets", "public");
 
-    public VHost(final String siteId, final Path hostBase, Path modulesPath, Injector globalInjector) {
+    public VHost(final String siteId, final Path hostBase, Path modulesPath, Injector globalInjector, Server server) {
         this.siteId = siteId;
         this.hostBase = hostBase;
+        this.server = server;
 
         this.injector = DefaultInjector.create(globalInjector, new SiteGlobalModule(),
                 new SiteModule(siteId, hostBase, this.configuration),
@@ -297,10 +305,46 @@ public class VHost {
 				)
         );
 
+        var realtimeEndpoints = new RealtimeEndpointScanner()
+                .scan(injector.getInstance(ModuleManager.class).extensions(RealtimeExtensionPoint.class));
+        log.debug("Registered realtime endpoints for {}: {}", siteId,
+                realtimeEndpoints.stream().map(endpoint -> endpoint.transport() + " " + endpoint.path()).toList());
+        var ssePipeline = new Handler.Sequence(
+                injector.getInstance(JettyAuthenticationHandler.class),
+                injector.getInstance(InitRequestContextFilter.class),
+                instrument("sse", new JettySseEndpointHandler(realtimeEndpoints)));
+        var sseHandler = requestContextFilter(ssePipeline, injector);
+        pathMappingsHandler.addMapping(PathSpec.from("/events"), sseHandler);
+        pathMappingsHandler.addMapping(PathSpec.from("/events/*"), sseHandler);
+
+        Handler webSocketNotFound = new Handler.Abstract() {
+            @Override
+            public boolean handle(org.eclipse.jetty.server.Request request,
+                    org.eclipse.jetty.server.Response response,
+                    org.eclipse.jetty.util.Callback callback) {
+                org.eclipse.jetty.server.Response.writeError(request, response, callback, 404);
+                return true;
+            }
+        };
+        pathMappingsHandler.addMapping(PathSpec.from("/ws"), webSocketNotFound);
+        pathMappingsHandler.addMapping(PathSpec.from("/ws/*"), webSocketNotFound);
+
         ContextHandler defaultContextHandler = new ContextHandler(
                 pathMappingsHandler,
                 injector.getInstance(SiteProperties.class).contextPath()
         );
+        var webSocketCreator = new JettyWebSocketCreator(realtimeEndpoints);
+        var webSocketUpgradeHandler = WebSocketUpgradeHandler.from(server, defaultContextHandler,
+                container -> realtimeEndpoints.stream()
+                        .filter(endpoint -> endpoint.transport() == com.condation.cms.api.realtime.RealtimeTransport.WEBSOCKET)
+                        .forEach(endpoint -> container.addMapping(endpoint.path(), webSocketCreator)));
+        var webSocketPipeline = requestContextFilter(
+                new Handler.Sequence(
+                        injector.getInstance(JettyAuthenticationHandler.class),
+                        injector.getInstance(InitRequestContextFilter.class),
+                        webSocketUpgradeHandler),
+                injector);
+        defaultContextHandler.setHandler(new Handler.Sequence(webSocketPipeline, pathMappingsHandler));
         defaultContextHandler.setVirtualHosts(injector.getInstance(SiteProperties.class).hostnames());
 
         ContextHandlerCollection contextCollection = new ContextHandlerCollection(

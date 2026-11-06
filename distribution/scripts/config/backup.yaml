@@ -1,0 +1,13 @@
+# target directory for backups
+target : "/entwicklung/backups"
+# cron schedule for backups (every 30 seconds)
+cron: "0/30 * * * * ?"
+# list of backup jobs
+backups:
+  # demo-minutly backup job
+  - name: "demo-minutly"
+    enabled: false
+    include_files:
+      - "config/manager-users.realm"
+    include_dirs:
+      - "hosts/demo/"

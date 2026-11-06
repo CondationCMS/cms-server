@@ -18,6 +18,17 @@
     <dependencies>
         <dependency>
             <groupId>com.condation.cms</groupId>
+            <artifactId>cms-updater</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.condation.cms</groupId>
+            <artifactId>migration-8.4.0-to-8.5.0</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.condation.cms</groupId>
             <artifactId>cms-api</artifactId>
         </dependency>
         <dependency>

@@ -11,20 +11,20 @@ export const options = {
 export default function () {
 
     
-    var res = http.get("http://localhost2:1010");
+    var res = http.get("http://localhost:2020");
     check(res, {
         'is status 200': (r) => r.status === 200,
         'template supplier via extension hook': (r) =>
             r.body.includes('My name is CondationCMS'),
     });
-    res = http.get("http://localhost2:1010");
+    res = http.get("http://localhost:2020");
     check(res, {
         'is status 200': (r) => r.status === 200,
         'template function via extension hook': (r) =>
             r.body.includes('Hello CondationCMS'),
     });
 
-    res = http.get("http://localhost2:1010");
+    res = http.get("http://localhost:2020");
     check(res, {
         'is status 200': (r) => r.status === 200,
         'template calling a shortcode': (r) =>

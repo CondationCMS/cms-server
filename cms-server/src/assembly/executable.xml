@@ -43,6 +43,11 @@
 			<source>${project.basedir}/../target/condationcms-sbom.json</source>
 			<outputDirectory>security</outputDirectory>
 		</file>
+		<file>
+			<source>${project.basedir}/../cms-updater/target/cms-updater-${project.version}-jar-with-dependencies.jar</source>
+			<outputDirectory>bin</outputDirectory>
+			<destName>cms-updater.jar</destName>
+		</file>
 	</files>
 	<dependencySets>
 		<dependencySet>

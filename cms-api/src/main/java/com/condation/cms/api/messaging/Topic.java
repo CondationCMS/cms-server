@@ -38,10 +38,10 @@ public interface Topic {
 	 * @param listener
 	 * @param dataType 
 	 */
-	<RT> void subscribe(Listener<RT> listener, Class<RT> dataType);
+	<T> void subscribe(Listener<T> listener, Class<T> dataType);
 
 	/** Subscribe with a handle that removes the listener when closed. */
-	default <RT> Subscription subscribeWithHandle(Listener<RT> listener, Class<RT> dataType) {
+	default <T> Subscription subscribeWithHandle(Listener<T> listener, Class<T> dataType) {
 		subscribe(listener, dataType);
 		return Subscription.NOOP;
 	}

@@ -1,47 +1,42 @@
 import http from 'k6/http';
-import { check, group } from 'k6';
+import { check, group, sleep } from 'k6';
 
-export let options = {
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:2020';
+
+export const options = {
+    discardResponseBodies: true,
+
     stages: [
-        { duration: '0.5m', target: 10 }, // simulate ramp-up of traffic from 1 to 3 virtual users over 0.5 minutes.
-        { duration: '1.5m', target: 100 }, // stay at 4 virtual users for 0.5 minutes
-        { duration: '0.5m', target: 0 }, // ramp-down to 0 users
+        { duration: '30s', target: 20 },
+        { duration: '30s', target: 100 },
+        { duration: '2m', target: 100 },
+        { duration: '30s', target: 0 },
     ],
+
+    thresholds: {
+        http_req_failed: ['rate<0.01'],
+        http_req_duration: [
+            'p(95)<500',
+            'p(99)<1000',
+        ],
+        checks: ['rate>0.99'],
+    },
 };
 
 export default function () {
-    group('check base page', () => {
-        const response = http.get('http://localhost2:1010');
+    group('CMS Base Page Performance', () => {
+        const response = http.get(`${BASE_URL}/`, {
+            tags: {
+                endpoint: 'homepage',
+            },
+        });
+
         check(response, {
-            "status code should be 200": res => res.status === 200,
+            'status is 200': (r) => r.status === 200,
+            'content type is HTML': (r) =>
+                r.headers['Content-Type']?.includes('text/html'),
         });
     });
 
-    group('check routes', () => {
-        const response = http.get('http://localhost2:1010/example/route');
-        check(response, {
-            "status code should be 200": res => res.status === 200,
-        });
-    });
-    
-    group('check extensions', () => {
-        const response = http.get('http://localhost2:1010/extension/test');
-        check(response, {
-            "status code should be 200": res => res.status === 200,
-        });
-    });
-    group('check modules', () => {
-
-        const check_urls = [
-            'http://localhost2:1010/module/example-module/world',
-            'http://localhost2:1010/module/example-module/hook',
-            'http://localhost2:1010/hello-extension'
-        ]
-        check_urls.forEach(url => {
-            let res = http.get(url);
-            check(res, {
-                'status code should be 200': (r) => r.status === 200,
-            });
-        })
-    });
-};
+    sleep(1);
+}

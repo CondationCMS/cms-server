@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.condation.cms</groupId>
+        <artifactId>cms-migrations</artifactId>
+        <version>8.4.0</version>
+    </parent>
+    <artifactId>migration-8.4.0-to-8.5.0</artifactId>
+    <name>Migration 8.4.0 to 8.5.0</name>
+    <properties>
+        <maven.compiler.release>17</maven.compiler.release>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>com.condation.cms</groupId>
+            <artifactId>cms-updater</artifactId>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    <build>
+        <finalName>migration-8.4.0-to-8.5.0</finalName>
+    </build>
+</project>

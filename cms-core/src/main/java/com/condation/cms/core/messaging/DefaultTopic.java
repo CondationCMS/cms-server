@@ -22,9 +22,10 @@ package com.condation.cms.core.messaging;
  */
 import com.condation.cms.api.messaging.Topic;
 import com.condation.cms.api.messaging.Listener;
+import com.condation.cms.api.messaging.Subscription;
 import com.condation.cms.core.utils.MdcScope;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,12 +49,20 @@ public final class DefaultTopic implements Topic {
 	public DefaultTopic(String name, String siteId) {
 		this.name = name;
 		this.siteId = siteId;
-		listeners = new ArrayList<>();
+		listeners = new CopyOnWriteArrayList<>();
 	}
 
 	@Override
-	public <RT> void subscribe(Listener<RT> listener, Class<RT> dataType) {
+	public <T> void subscribe(Listener<T> listener, Class<T> dataType) {
 		listeners.add(new ListenerHolder<>(listener, dataType));
+	}
+
+	@Override
+	public <T> Subscription subscribeWithHandle(
+			Listener<T> listener, Class<T> dataType) {
+		var holder = new ListenerHolder<>(listener, dataType);
+		listeners.add(holder);
+		return () -> listeners.remove(holder);
 	}
 
 	@Override

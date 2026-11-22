@@ -24,6 +24,7 @@ package com.condation.cms.updater;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -51,10 +52,12 @@ class UpdaterTempFilesTest {
             assertEquals(expectedParent, file.getParent());
             assertTrue(Files.isDirectory(directory));
             assertTrue(Files.isRegularFile(file));
-            assertEquals(Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE,
-                    PosixFilePermission.OWNER_EXECUTE), Files.getPosixFilePermissions(directory));
-            assertEquals(Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE),
-                    Files.getPosixFilePermissions(file));
+            if (Files.getFileAttributeView(directory, PosixFileAttributeView.class) != null) {
+                assertEquals(Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE,
+                        PosixFilePermission.OWNER_EXECUTE), Files.getPosixFilePermissions(directory));
+                assertEquals(Set.of(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE),
+                        Files.getPosixFilePermissions(file));
+            }
         });
     }
 

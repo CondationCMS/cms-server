@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.attribute.UserPrincipal;
@@ -65,14 +66,13 @@ final class UpdaterTempFiles {
 
         Path home = Path.of(userHome).toAbsolutePath().normalize();
         if (!Files.isDirectory(home)) throw new IOException("User home is not a directory: " + home);
-        try {
+        boolean posixFileSystem = Files.getFileAttributeView(home, PosixFileAttributeView.class) != null;
+        if (posixFileSystem) {
             Set<PosixFilePermission> homePermissions = Files.getPosixFilePermissions(home);
             if (homePermissions.contains(PosixFilePermission.GROUP_WRITE)
                     || homePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
                 throw new IOException("User home is writable by other users: " + home);
             }
-        } catch (UnsupportedOperationException _) {
-            // Non-POSIX filesystems use the home directory's ACLs.
         }
         Path directory = home.resolve(".condationcms-updater-tmp");
         try {
@@ -90,9 +90,13 @@ final class UpdaterTempFiles {
         if (Files.isSymbolicLink(directory) || !Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
             throw new IOException("Updater temporary path is not a private directory: " + directory);
         }
-        UserPrincipal homeOwner = Files.getOwner(home);
-        UserPrincipal directoryOwner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
-        if (!homeOwner.equals(directoryOwner)) throw new IOException("Updater temporary directory has a different owner: " + directory);
+        if (posixFileSystem) {
+            UserPrincipal homeOwner = Files.getOwner(home);
+            UserPrincipal directoryOwner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
+            if (!homeOwner.equals(directoryOwner)) {
+                throw new IOException("Updater temporary directory has a different owner: " + directory);
+            }
+        }
 
         try {
             Files.setPosixFilePermissions(directory, PRIVATE_DIRECTORY_PERMISSIONS);

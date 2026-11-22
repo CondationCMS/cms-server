@@ -71,4 +71,9 @@ public class TestTemplateEngine implements TemplateEngine {
 	public void updateTheme(Theme theme) {
 	}
 
+    @Override
+    public String render(String templateFile, Model model, String alternateTemplateString) throws IOException {
+        return "";
+    }
+
 }

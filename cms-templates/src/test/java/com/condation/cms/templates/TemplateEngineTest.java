@@ -46,7 +46,17 @@ public class TemplateEngineTest extends AbstractTemplateEngineTest {
 				.add("text_expression_raw", "{{ ns.content | raw }}");
 		
 	}
+    
+    @Test
+    void test_exists () {
+        Assertions.assertThat(SUT.exists("simple")).isTrue();
+    }
 	
+    @Test
+    void test_exists_not () {
+        Assertions.assertThat(SUT.exists("not_existing")).isFalse();
+    }
+    
 	@RepeatedTest(5)
 	public void test_simple() throws IOException {
 		

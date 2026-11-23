@@ -90,6 +90,15 @@ public class CMSTemplateEngine {
 		return useTemplateCache;
 	}
 	
+    public boolean exists ( String template ) {
+       if (useCache() && templateCache.contains(template)) {
+			return true;
+		}
+		
+		String templateString = configuration.getTemplateLoader().load(template);
+        return templateString != null;
+    }
+    
 	public Template getTemplate (String template) {
 		
 		if (useCache() && templateCache.contains(template)) {

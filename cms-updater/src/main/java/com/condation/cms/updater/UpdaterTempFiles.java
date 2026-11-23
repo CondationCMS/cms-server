@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.nio.file.attribute.UserPrincipal;
@@ -65,16 +66,41 @@ final class UpdaterTempFiles {
 
         Path home = Path.of(userHome).toAbsolutePath().normalize();
         if (!Files.isDirectory(home)) throw new IOException("User home is not a directory: " + home);
-        try {
+        boolean posixFileSystem = Files.getFileAttributeView(home, PosixFileAttributeView.class) != null;
+        if (posixFileSystem) {
             Set<PosixFilePermission> homePermissions = Files.getPosixFilePermissions(home);
-            if (homePermissions.contains(PosixFilePermission.GROUP_WRITE)
-                    || homePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
-                throw new IOException("User home is writable by other users: " + home);
-            }
-        } catch (UnsupportedOperationException _) {
-            // Non-POSIX filesystems use the home directory's ACLs.
+            checkHomePermissions(homePermissions, home);
         }
         Path directory = home.resolve(".condationcms-updater-tmp");
+        createDirectoryWithPermissions(directory);
+
+        if (Files.isSymbolicLink(directory) || !Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
+            throw new IOException("Updater temporary path is not a private directory: " + directory);
+        }
+        if (posixFileSystem) {
+            checkOwner(home, directory);
+        }
+
+        try {
+            Files.setPosixFilePermissions(directory, PRIVATE_DIRECTORY_PERMISSIONS);
+            if (!Files.getPosixFilePermissions(directory).equals(PRIVATE_DIRECTORY_PERMISSIONS)) {
+                throw new IOException("Updater temporary directory permissions are not private: " + directory);
+            }
+        } catch (UnsupportedOperationException _) {
+            // Non-POSIX filesystems use the user's home ACLs.
+        }
+        return directory;
+    }
+
+    private static void checkOwner(Path home, Path directory) throws IOException {
+        UserPrincipal homeOwner = Files.getOwner(home);
+        UserPrincipal directoryOwner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
+        if (!homeOwner.equals(directoryOwner)) {
+            throw new IOException("Updater temporary directory has a different owner: " + directory);
+        }
+    }
+
+    private static void createDirectoryWithPermissions(Path directory) throws IOException {
         try {
             Files.createDirectory(directory, posixAttribute(PRIVATE_DIRECTORY_PERMISSIONS));
         } catch (FileAlreadyExistsException _) {
@@ -86,23 +112,13 @@ final class UpdaterTempFiles {
                 // Validate the existing directory before using it.
             }
         }
+    }
 
-        if (Files.isSymbolicLink(directory) || !Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
-            throw new IOException("Updater temporary path is not a private directory: " + directory);
+    private static void checkHomePermissions(Set<PosixFilePermission> homePermissions, Path home) throws IOException {
+        if (homePermissions.contains(PosixFilePermission.GROUP_WRITE)
+                || homePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
+            throw new IOException("User home is writable by other users: " + home);
         }
-        UserPrincipal homeOwner = Files.getOwner(home);
-        UserPrincipal directoryOwner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
-        if (!homeOwner.equals(directoryOwner)) throw new IOException("Updater temporary directory has a different owner: " + directory);
-
-        try {
-            Files.setPosixFilePermissions(directory, PRIVATE_DIRECTORY_PERMISSIONS);
-            if (!Files.getPosixFilePermissions(directory).equals(PRIVATE_DIRECTORY_PERMISSIONS)) {
-                throw new IOException("Updater temporary directory permissions are not private: " + directory);
-            }
-        } catch (UnsupportedOperationException _) {
-            // Non-POSIX filesystems use the user's home ACLs.
-        }
-        return directory;
     }
 
     private static FileAttribute<Set<PosixFilePermission>> posixAttribute(Set<PosixFilePermission> permissions) {

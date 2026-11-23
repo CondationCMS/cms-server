@@ -22,7 +22,6 @@ package com.condation.cms.templates.module;
  */
 import com.condation.cms.api.Constants;
 import com.condation.cms.api.cache.CacheManager;
-import com.condation.cms.api.cache.ICache;
 import com.condation.cms.api.db.DB;
 import com.condation.cms.api.extensions.RegisterTemplateComponentExtensionPoint;
 import com.condation.cms.api.feature.features.InjectorFeature;
@@ -33,12 +32,15 @@ import com.condation.cms.api.theme.Theme;
 import com.condation.cms.hooksystem.extensions.TemplateHooks;
 import com.condation.cms.templates.CMSTemplateEngine;
 import com.condation.cms.templates.DynamicConfiguration;
+import com.condation.cms.templates.Template;
 import com.condation.cms.templates.TemplateEngineFactory;
 import com.condation.cms.templates.TemplateLoader;
 import com.condation.cms.templates.components.TemplateComponents;
+import com.condation.cms.templates.exceptions.TemplateNotFoundException;
 import com.condation.cms.templates.loaders.CompositeTemplateLoader;
 import com.condation.cms.templates.loaders.FileTemplateLoader;
 import com.condation.modules.api.ModuleManager;
+import com.google.common.base.Strings;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -156,6 +158,23 @@ public class CMSModuleTemplateEngine implements TemplateEngine {
 		var template = templateEngine.getTemplateFromString(templateString);
 		return template.evaluate(model.values, createDynamicConfiguration(model));
 	}
+
+    @Override
+    public String render(String templateFile, Model model, String alternateTemplateString) throws IOException {
+        Template template = null;
+        if (!Strings.isNullOrEmpty(templateFile) && templateEngine.exists(templateFile)) {
+            template = templateEngine.getTemplate(templateFile);
+        }
+        if (template == null && !Strings.isNullOrEmpty(alternateTemplateString)) {
+            template = templateEngine.getTemplateFromString(alternateTemplateString);
+        }
+        
+        if (template == null) {
+            throw new TemplateNotFoundException("no template found");
+        }
+        
+        return template.evaluate(model.values, createDynamicConfiguration(model));
+    }
 	
 	
 

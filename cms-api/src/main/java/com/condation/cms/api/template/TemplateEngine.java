@@ -43,6 +43,17 @@ public interface TemplateEngine {
 	default String renderFromString(final String templateString, final TemplateEngine.Model model) throws IOException {
 		return templateString;
 	}
+    
+    /**
+     * If a template for templateFile is existing, this will be rendered, otherwise, the alterntateTemplateString is rendered
+     * 
+     * @param templateFile
+     * @param model
+     * @param alternateTemplateString
+     * @return
+     * @throws IOException 
+     */
+    String render ( final String templateFile, final TemplateEngine.Model model, final String alternateTemplateString) throws IOException;
 
 	@RequiredArgsConstructor
 	public static class Model {

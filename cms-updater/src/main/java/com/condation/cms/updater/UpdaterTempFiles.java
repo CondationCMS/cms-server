@@ -69,33 +69,16 @@ final class UpdaterTempFiles {
         boolean posixFileSystem = Files.getFileAttributeView(home, PosixFileAttributeView.class) != null;
         if (posixFileSystem) {
             Set<PosixFilePermission> homePermissions = Files.getPosixFilePermissions(home);
-            if (homePermissions.contains(PosixFilePermission.GROUP_WRITE)
-                    || homePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
-                throw new IOException("User home is writable by other users: " + home);
-            }
+            checkHomePermissions(homePermissions, home);
         }
         Path directory = home.resolve(".condationcms-updater-tmp");
-        try {
-            Files.createDirectory(directory, posixAttribute(PRIVATE_DIRECTORY_PERMISSIONS));
-        } catch (FileAlreadyExistsException _) {
-            // Validate the existing directory before using it.
-        } catch (UnsupportedOperationException _) {
-            try {
-                Files.createDirectory(directory);
-            } catch (FileAlreadyExistsException _) {
-                // Validate the existing directory before using it.
-            }
-        }
+        createDirectoryWithPermissions(directory);
 
         if (Files.isSymbolicLink(directory) || !Files.isDirectory(directory, LinkOption.NOFOLLOW_LINKS)) {
             throw new IOException("Updater temporary path is not a private directory: " + directory);
         }
         if (posixFileSystem) {
-            UserPrincipal homeOwner = Files.getOwner(home);
-            UserPrincipal directoryOwner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
-            if (!homeOwner.equals(directoryOwner)) {
-                throw new IOException("Updater temporary directory has a different owner: " + directory);
-            }
+            checkOwner(home, directory);
         }
 
         try {
@@ -107,6 +90,35 @@ final class UpdaterTempFiles {
             // Non-POSIX filesystems use the user's home ACLs.
         }
         return directory;
+    }
+
+    private static void checkOwner(Path home, Path directory) throws IOException {
+        UserPrincipal homeOwner = Files.getOwner(home);
+        UserPrincipal directoryOwner = Files.getOwner(directory, LinkOption.NOFOLLOW_LINKS);
+        if (!homeOwner.equals(directoryOwner)) {
+            throw new IOException("Updater temporary directory has a different owner: " + directory);
+        }
+    }
+
+    private static void createDirectoryWithPermissions(Path directory) throws IOException {
+        try {
+            Files.createDirectory(directory, posixAttribute(PRIVATE_DIRECTORY_PERMISSIONS));
+        } catch (FileAlreadyExistsException _) {
+            // Validate the existing directory before using it.
+        } catch (UnsupportedOperationException _) {
+            try {
+                Files.createDirectory(directory);
+            } catch (FileAlreadyExistsException _) {
+                // Validate the existing directory before using it.
+            }
+        }
+    }
+
+    private static void checkHomePermissions(Set<PosixFilePermission> homePermissions, Path home) throws IOException {
+        if (homePermissions.contains(PosixFilePermission.GROUP_WRITE)
+                || homePermissions.contains(PosixFilePermission.OTHERS_WRITE)) {
+            throw new IOException("User home is writable by other users: " + home);
+        }
     }
 
     private static FileAttribute<Set<PosixFilePermission>> posixAttribute(Set<PosixFilePermission> permissions) {

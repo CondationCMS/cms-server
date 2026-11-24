@@ -127,7 +127,7 @@ public final class ServerProcess {
         try (var socket = new Socket()) {
             socket.connect(new InetSocketAddress("127.0.0.1", port), 500);
             return true;
-        } catch (IOException e) {
+        } catch (IOException _) {
             return false;
         }
     }
@@ -149,7 +149,7 @@ public final class ServerProcess {
             return ProcessHandle.of(pid)
                     .filter(ProcessHandle::isAlive)
                     .filter(h -> h.info().startInstant().map(i -> i.toEpochMilli() == startedAt).orElse(false));
-        } catch (IOException | RuntimeException e) {
+        } catch (IOException | RuntimeException _) {
             return Optional.empty();
         }
     }

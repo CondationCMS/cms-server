@@ -65,7 +65,7 @@ public class RunMojo extends AbstractCondationMojo {
             var exit = process.waitFor();
             try {
                 Runtime.getRuntime().removeShutdownHook(hook);
-            } catch (IllegalStateException e) {
+            } catch (IllegalStateException _) {
                 // already shutting down
             }
             if (isFailure(exit, stoppedByHook.get())) {
@@ -74,7 +74,7 @@ public class RunMojo extends AbstractCondationMojo {
             getLog().info("CMS server exited with code " + exit);
         } catch (IOException e) {
             throw new MojoExecutionException("Cannot start CMS server: " + e.getMessage(), e);
-        } catch (InterruptedException e) {
+        } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
         }
     }

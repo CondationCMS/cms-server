@@ -73,7 +73,7 @@ public class FakeServer {
                     while (true) {
                         socket.accept().close();
                     }
-                } catch (Exception e) {
+                } catch (Exception _) {
                     // closed
                 }
             });

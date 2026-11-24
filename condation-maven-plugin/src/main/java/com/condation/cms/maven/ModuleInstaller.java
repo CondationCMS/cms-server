@@ -53,16 +53,13 @@ public final class ModuleInstaller {
             // validate all entries before touching the file system
             var entries = zipFile.stream().toList();
             for (var entry : entries) {
-                var path = modulesDir.resolve(entry.getName()).normalize();
-                if (!path.startsWith(target)) {
-                    throw new IOException("Illegal zip entry (outside of module folder): " + entry.getName());
-                }
+                resolveEntryPath(target, id, entry.getName(), entry.isDirectory());
             }
 
             deleteRecursively(target);
             Files.createDirectories(target);
             for (var entry : entries) {
-                var path = modulesDir.resolve(entry.getName()).normalize();
+                var path = resolveEntryPath(target, id, entry.getName(), entry.isDirectory());
                 if (entry.isDirectory()) {
                     Files.createDirectories(path);
                 } else {
@@ -76,14 +73,43 @@ public final class ModuleInstaller {
         }
     }
 
+    private static Path resolveEntryPath(Path target, String id, String entryName, boolean directory) throws IOException {
+        var name = entryName.replace('\\', '/');
+        if (name.startsWith("/") || (name.length() >= 2 && Character.isLetter(name.charAt(0)) && name.charAt(1) == ':')) {
+            throw new IOException("Illegal absolute zip entry: " + entryName);
+        }
+
+        var segments = name.split("/", -1);
+        if (segments.length == 0 || !segments[0].equals(id)) {
+            throw new IOException("Illegal zip entry (outside of module folder): " + entryName);
+        }
+        for (int i = 0; i < segments.length; i++) {
+            var segment = segments[i];
+            var trailingDirectorySeparator = directory && i == segments.length - 1 && segment.isEmpty();
+            if (segment.equals(".") || segment.equals("..")
+                    || (segment.isEmpty() && !trailingDirectorySeparator && !(i == 0 && segments.length == 1))) {
+                throw new IOException("Illegal zip entry path: " + entryName);
+            }
+        }
+
+        var relativeName = name.substring(id.length());
+        if (relativeName.startsWith("/")) {
+            relativeName = relativeName.substring(1);
+        }
+        var path = relativeName.isEmpty() ? target : target.resolve(relativeName).normalize();
+        if (!path.startsWith(target)) {
+            throw new IOException("Illegal zip entry (outside of module folder): " + entryName);
+        }
+        return path;
+    }
+
     private static String topLevelFolder(ZipFile zipFile) throws IOException {
         var folders = zipFile.stream()
                 .map(e -> e.getName().replace('\\', '/'))
-                .map(name -> name.startsWith("/") ? name.substring(1) : name)
                 .map(name -> name.contains("/") ? name.substring(0, name.indexOf('/')) : name)
                 .distinct()
                 .toList();
-        if (folders.size() != 1 || folders.get(0).isBlank() || folders.get(0).equals("..")) {
+        if (folders.size() != 1 || folders.get(0).isBlank() || folders.get(0).equals(".") || folders.get(0).equals("..")) {
             throw new IOException("Module zip must contain exactly one top-level folder, found: " + folders);
         }
         return folders.get(0);

@@ -103,6 +103,26 @@ class ModuleInstallerTest {
     }
 
     @Test
+    void should_reject_backslash_entry_escaping_module_folder() throws IOException {
+        var home = home();
+        var zip = zip("evil-backslash.zip", Map.of("m1\\..\\..\\evil.txt", "x"));
+
+        assertThatThrownBy(() -> ModuleInstaller.install(zip, home))
+                .isInstanceOf(IOException.class);
+
+        assertThat(tmp.resolve("evil.txt")).doesNotExist();
+    }
+
+    @Test
+    void should_reject_absolute_zip_entry() throws IOException {
+        var home = home();
+        var zip = zip("evil-absolute.zip", Map.of("/m1/evil.txt", "x"));
+
+        assertThatThrownBy(() -> ModuleInstaller.install(zip, home))
+                .isInstanceOf(IOException.class);
+    }
+
+    @Test
     void should_fail_when_zip_has_multiple_top_level_folders() throws IOException {
         var entries = new LinkedHashMap<String, String>();
         entries.put("m1/a.txt", "a");

@@ -56,18 +56,16 @@ public class RunMojo extends AbstractCondationMojo {
                     if (process.isAlive()) {
                         ServerProcess.terminate(process);
                     }
-                } catch (IOException | InterruptedException e) {
+                } catch (InterruptedException _) {
+                    Thread.currentThread().interrupt();
+                } catch (IOException _) {
                     // shutting down anyway
                 }
             }, "condation-stop");
             Runtime.getRuntime().addShutdownHook(hook);
             getLog().info("CMS server running, press Ctrl+C to stop");
             var exit = process.waitFor();
-            try {
-                Runtime.getRuntime().removeShutdownHook(hook);
-            } catch (IllegalStateException _) {
-                // already shutting down
-            }
+            removeShutdownHook(hook);
             if (isFailure(exit, stoppedByHook.get())) {
                 throw new MojoExecutionException("CMS server terminated with exit code " + exit);
             }
@@ -76,6 +74,14 @@ public class RunMojo extends AbstractCondationMojo {
             throw new MojoExecutionException("Cannot start CMS server: " + e.getMessage(), e);
         } catch (InterruptedException _) {
             Thread.currentThread().interrupt();
+        }
+    }
+
+    private static void removeShutdownHook(Thread hook) {
+        try {
+            Runtime.getRuntime().removeShutdownHook(hook);
+        } catch (IllegalStateException _) {
+            // already shutting down
         }
     }
 

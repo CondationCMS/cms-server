@@ -24,7 +24,9 @@ package com.condation.cms.maven;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Test double for CMSCli: "server start" opens the configured port and writes cms.pid,
@@ -54,7 +56,7 @@ public class FakeServer {
             System.exit(1);
         }
         if (mode.equals("hang")) {
-            Thread.sleep(Long.MAX_VALUE);
+            new CountDownLatch(1).await();
         }
 
         try (var socket = new ServerSocket(ServerPort.read(home))) {
@@ -79,8 +81,11 @@ public class FakeServer {
             });
             accepter.setDaemon(true);
             accepter.start();
-            while (Files.exists(pidFile) || mode.equals("ignorestop")) {
-                Thread.sleep(100);
+            try (var watchService = home.getFileSystem().newWatchService()) {
+                home.register(watchService, StandardWatchEventKinds.ENTRY_DELETE);
+                while (Files.exists(pidFile) || mode.equals("ignorestop")) {
+                    watchService.take().reset();
+                }
             }
         }
     }

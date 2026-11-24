@@ -5,6 +5,9 @@ It installs the module zip (`*-bin.zip`, built by the assembly plugin) into the 
 
 The plugin has the same version as the CMS release (`cmsVersion` defaults to the plugin version).
 
+New modules created with the `cms-module-archetype` already contain the plugin and a minimal `cms-home`:
+`mvn package condation:run` works right away (see `cms-module-archetype/README.md`).
+
 #### Prepare a server home
 
 The plugin does **not** create a home for you. Create a directory (default: `cms-home` in your project) with at least:

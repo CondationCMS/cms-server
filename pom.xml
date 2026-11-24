@@ -35,6 +35,7 @@
 		<module>cms-test</module>
 		<module>cms-test-server</module>
 		<module>condation-maven-plugin</module>
+		<module>cms-module-archetype</module>
 		<module>cms-hooksystem</module>
 	</modules>
 	<inceptionYear>2023</inceptionYear>

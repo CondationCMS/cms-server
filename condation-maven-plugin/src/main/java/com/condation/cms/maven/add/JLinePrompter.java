@@ -164,7 +164,7 @@ public class JLinePrompter implements Prompter, AutoCloseable {
     private static List<AttributedString> selectionLines(String label, List<String> choices, int cursor, int rows) {
         // header and hint use two rows, the rest shows a window around the cursor
         var visible = Math.clamp(choices.size(), 3, Math.max(3, rows - 3));
-        var start = Math.clamp(cursor - visible / 2, 0, Math.max(0, choices.size() - visible));
+        var start = Math.clamp((long) cursor - visible / 2, 0, Math.max(0, choices.size() - visible));
         var lines = new java.util.ArrayList<AttributedString>();
         lines.add(new AttributedStringBuilder()
                 .style(AttributedStyle.BOLD).append("? " + label).toAttributedString());

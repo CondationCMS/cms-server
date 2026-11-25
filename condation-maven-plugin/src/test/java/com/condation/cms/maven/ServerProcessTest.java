@@ -167,4 +167,15 @@ class ServerProcessTest {
         assertThat(started.isAlive()).isTrue();
         assertThat(ServerProcess.isRunning(home)).isTrue();
     }
+
+    @Test
+    void should_use_java_exe_on_windows() {
+        assertThat(ServerProcess.javaExecutable("Windows 11", "C:\\jdk")).isEqualTo(Path.of("C:\\jdk", "bin", "java.exe"));
+    }
+
+    @Test
+    void should_use_plain_java_binary_on_unix() {
+        assertThat(ServerProcess.javaExecutable("Mac OS X", "/jdk")).isEqualTo(Path.of("/jdk", "bin", "java"));
+        assertThat(ServerProcess.javaExecutable(null, "/jdk")).isEqualTo(Path.of("/jdk", "bin", "java"));
+    }
 }

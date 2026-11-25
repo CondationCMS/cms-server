@@ -57,5 +57,11 @@
                 <include>hosts/*/templates/**</include>
             </includes>
         </fileSet>
+        <fileSet filtered="false" packaged="false">
+            <directory>.mvn</directory>
+            <includes>
+                <include>jvm.config</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </archetype-descriptor>

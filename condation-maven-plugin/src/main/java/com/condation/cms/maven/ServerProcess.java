@@ -45,10 +45,16 @@ public final class ServerProcess {
     private ServerProcess() {
     }
 
+    /** The java binary of the running JDK, with the explicit <code>.exe</code> on Windows. */
+    static Path javaExecutable(String osName, String javaHome) {
+        var windows = osName != null && osName.toLowerCase().contains("win");
+        return Path.of(javaHome, "bin", windows ? "java.exe" : "java");
+    }
+
     public static Process launch(ServerLaunch launch, String... cliArgs) throws IOException {
         var home = launch.cmsHome().toAbsolutePath();
         var cmd = new ArrayList<String>();
-        cmd.add(Path.of(System.getProperty("java.home"), "bin", "java").toString());
+        cmd.add(javaExecutable(System.getProperty("os.name"), System.getProperty("java.home")).toString());
         // relative to the working directory: CMSCli cannot handle an absolute cms.home
         cmd.add("-Dcms.home=.");
         if (launch.jvmArgs() != null) {

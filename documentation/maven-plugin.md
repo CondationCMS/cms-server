@@ -41,10 +41,11 @@ The server log of `start` is written to `<home>/logs/plugin-server.out`.
 mvn condation:add
 ```
 
-asks for the type of the extension (a numbered list, choose by number or name, tab completes), the class name, the package and the
+asks for the type of the extension (a list: move with arrow up/down, confirm with enter, ctrl+c aborts), the class name, the package and the
 type specific values (e.g. the shortcode name or the API path) and creates the class in `src/main/java`. The class
 already contains a first working element, e.g. a `@ShortCode("hello")` method. The package defaults to the package of
-your existing `@Extension` classes. An existing file is only replaced after confirmation.
+your existing `@Extension` classes. An existing file is only replaced after confirmation. On terminals without cursor key support (`TERM=dumb`) the list is a
+numbered text prompt instead.
 
 Types: `hook` (action/filter), `shortcode`, `template-function`, `template-component`, `realtime` (SSE/WebSocket),
 `api-handler`, `http-handler`, `http-routes`, `routes`, `template-model`, `query-operator`, `variant-selector`,
@@ -65,6 +66,7 @@ mvn condation:add -Dcondation.add.type=shortcode -Dcondation.add.name=HelloTag \
 | `condation.add.package` | package of the class |
 | `condation.add.options` | answers of the type specific questions as `key=value,key=value` (shortcode: `name`, `param`; hook: `kind`, `hook`, `scope`; realtime: `transport`, `path`; api-handler/routes: `path`, `method` ...) |
 | `condation.add.overwrite` | replace an existing file without asking |
+| `condation.add.skip` | skip `add` (independent of `condation.skip`, which only switches off `start`, `stop` and `run`) |
 
 #### Use in integration tests
 
@@ -101,3 +103,18 @@ mvn condation:add -Dcondation.add.type=shortcode -Dcondation.add.name=HelloTag \
 | `skip` / `condation.skip` | `false` | skip the goal |
 
 The previous module folder `<home>/modules/<id>` is removed before the new one is extracted.
+
+#### Compatibility
+
+- Maven 3.10 and Maven 4.0.0-rc-7 were tested interactively (arrow key selection, batch mode, files created) on macOS with
+  JDK 25. The workflow `.github/workflows/maven-plugin-compat.yml` builds and tests the plugin and the archetype on Linux,
+  macOS and Windows with Maven 3.9 and Maven 4.
+- `condation:add` only prompts if stdin and stdout are a terminal and Maven is not in batch mode (`-B`). Otherwise (CI,
+  Git Bash/mintty on Windows, mvnd, redirected output) pass the values as `-Dcondation.add.*` properties; a missing value
+  fails with a message naming the property.
+- On Unix the terminal uses `stty` and needs no native access. On Windows JLine uses native providers; JDK 24+ prints a
+  warning for them unless Maven runs with `--enable-native-access=ALL-UNNAMED`. Projects created from the archetype
+  contain `.mvn/jvm.config` with this flag; add it to your own projects the same way.
+- Projects created with an older archetype: `condation:add` has its own switch `condation.add.skip` (`<addSkip>`). Add
+  `<addSkip>true</addSkip>` next to `<skip>true</skip>` in the parent pom and `<addSkip>false</addSkip>` in the module
+  project, otherwise `mvn condation:add` from the project root also asks in the api project.

@@ -319,12 +319,25 @@ class AddMojoTest {
     }
 
     @Test
-    void should_do_nothing_when_skip_set() {
+    void should_do_nothing_when_add_skip_set() {
         var mojo = mojo(new FakePrompter());
-        mojo.skip = true;
+        mojo.addSkip = true;
 
         assertThatCode(mojo::execute).doesNotThrowAnyException();
         assertThat(tmp.resolve("src")).doesNotExist();
+    }
+
+    @Test
+    void should_ignore_server_skip_flag() throws Exception {
+        var mojo = mojo(new FakePrompter());
+        mojo.skip = true;
+        mojo.addType = "module-lifecycle";
+        mojo.addName = "X";
+        mojo.addPackage = "a.b";
+
+        mojo.execute();
+
+        assertThat(file("a/b/X.java")).exists();
     }
 
     @Test

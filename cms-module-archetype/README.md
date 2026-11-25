@@ -35,7 +35,9 @@ mvn package                  # module zip: module/target/my-module-bin.zip
 mvn package condation:run    # installs the zip into module/cms-home and runs the CMS (Ctrl+C stops it)
 ```
 
-`mvn condation:add` creates further extensions (shortcode, hook, API handler ...) interactively.
+`mvn condation:add` creates further extensions (shortcode, hook, API handler ...) interactively: choose the type with
+arrow up/down and enter. The parent and api project are skipped (`<addSkip>`), only the module project asks. The project also
+contains `.mvn/jvm.config` (`--enable-native-access=ALL-UNNAMED`) to avoid JLine native access warnings on Windows.
 
 The generated project contains the `condation-maven-plugin` and a minimal server home `module/cms-home`
 (`server.toml` with development values, the example site in `hosts/local`, an empty `themes/`). Add your test sites and themes there.

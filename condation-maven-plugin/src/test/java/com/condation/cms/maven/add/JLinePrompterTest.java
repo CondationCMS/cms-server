@@ -135,4 +135,16 @@ class JLinePrompterTest {
             assertThat(prompter.confirm("Overwrite?", false)).isTrue();
         }
     }
+
+    @Test
+    void should_prefer_exec_provider_on_unix_to_avoid_native_access_warnings() {
+        assertThat(JLinePrompter.preferredProviders("Mac OS X")).containsExactly("exec");
+        assertThat(JLinePrompter.preferredProviders("Linux")).containsExactly("exec");
+    }
+
+    @Test
+    void should_use_default_providers_on_windows() {
+        assertThat(JLinePrompter.preferredProviders("Windows 11")).isEmpty();
+        assertThat(JLinePrompter.preferredProviders(null)).isEmpty();
+    }
 }

@@ -64,6 +64,10 @@ public class AddMojo extends AbstractCondationMojo {
     @Parameter(property = "condation.add.options")
     protected String addOptions;
 
+    /** Skips only this goal, independent of <code>condation.skip</code> which switches off the server goals. */
+    @Parameter(property = "condation.add.skip", defaultValue = "false")
+    protected boolean addSkip;
+
     @Parameter(property = "condation.add.overwrite", defaultValue = "false")
     protected boolean addOverwrite;
 
@@ -86,7 +90,7 @@ public class AddMojo extends AbstractCondationMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        if (skip) {
+        if (addSkip) {
             getLog().info("condation:add skipped");
             return;
         }

@@ -342,7 +342,9 @@ class AddMojoTest {
 
     @Test
     void should_signal_unavailable_prompter_with_dedicated_exception() {
-        assertThatThrownBy(() -> new UnavailablePrompter().ask("x", "y", s -> true, "bad"))
+        var unavailable = new UnavailablePrompter();
+
+        assertThatThrownBy(() -> unavailable.ask("x", "y", s -> true, "bad"))
                 .isInstanceOf(PromptUnavailableException.class);
     }
 

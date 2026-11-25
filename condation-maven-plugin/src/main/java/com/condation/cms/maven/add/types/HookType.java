@@ -29,18 +29,21 @@ import com.condation.cms.maven.add.Question;
  */
 public final class HookType extends BaseType {
 
+    private static final String SCOPE = "scope";
+    private static final String REQUEST = "REQUEST";
+
     public HookType() {
         super("hook", "Hook (action or filter)",
                 Question.choice("kind", "Kind of hook", "action", "action", "filter"),
                 Question.text("hook", "Hook name", "my/hook"),
-                Question.choice("scope", "Scope", "REQUEST", "REQUEST", "APPLICATION"));
+                Question.choice(SCOPE, "Scope", REQUEST, REQUEST, "APPLICATION"));
     }
 
     @Override
     public String render(ExtensionSpec spec) {
         var filter = "filter".equals(spec.option("kind"));
-        var scope = spec.option("scope");
-        if (!scope.equals("REQUEST") && !scope.equals("APPLICATION")) {
+        var scope = spec.option(SCOPE);
+        if (!scope.equals(REQUEST) && !scope.equals("APPLICATION")) {
             throw new IllegalArgumentException("Invalid scope: " + scope);
         }
         return fill(spec, """
@@ -60,7 +63,7 @@ public final class HookType extends BaseType {
                 """,
                 "annotation", filter ? "Filter" : "Action",
                 "hook", literal(spec, "hook"),
-                "scope", scope,
+                SCOPE, scope,
                 "method", filter
                         ? """
                         public Object filter(Object value) {

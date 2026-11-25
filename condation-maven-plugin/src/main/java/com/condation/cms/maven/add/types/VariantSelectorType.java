@@ -29,10 +29,12 @@ import com.condation.cms.maven.add.Question;
  */
 public final class VariantSelectorType extends BaseType {
 
+    private static final String LABEL = "label";
+
     public VariantSelectorType() {
         super("variant-selector", "Variant selector",
                 Question.text("id", "Selector id", "my-variant"),
-                Question.text("label", "Selector label", "My variant"));
+                Question.text(LABEL, "Selector label", "My variant"));
     }
 
     @Override
@@ -69,6 +71,6 @@ public final class VariantSelectorType extends BaseType {
                 }
                 """,
                 "id", literal(spec, "id"),
-                "label", literal(spec, "label"));
+                LABEL, literal(spec, LABEL));
     }
 }

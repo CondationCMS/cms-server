@@ -58,7 +58,7 @@ public final class PackageDetector {
                 if (best.isPresent()) {
                     return best.get().getKey();
                 }
-            } catch (IOException e) {
+            } catch (IOException _) {
                 // fall back to the group id
             }
         }
@@ -73,14 +73,14 @@ public final class PackageDetector {
             }
             var matcher = PACKAGE.matcher(content);
             return matcher.find() ? java.util.Optional.of(matcher.group(1)) : java.util.Optional.empty();
-        } catch (IOException e) {
+        } catch (IOException _) {
             return java.util.Optional.empty();
         }
     }
 
     static String sanitize(String groupId) {
         return Arrays.stream(groupId.split("\\."))
-                .map(segment -> segment.replaceAll("[^A-Za-z0-9_]", "_"))
+                .map(segment -> segment.replaceAll("\\W", "_"))
                 .map(segment -> segment.isEmpty() || Character.isDigit(segment.charAt(0)) ? "_" + segment : segment)
                 .map(segment -> SourceVersion.isKeyword(segment) ? segment + "_" : segment)
                 .collect(Collectors.joining("."));

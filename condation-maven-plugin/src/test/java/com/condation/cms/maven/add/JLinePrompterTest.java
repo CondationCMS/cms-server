@@ -108,7 +108,9 @@ class JLinePrompterTest {
     @Test
     void should_throw_abort_when_end_of_input_during_select() throws IOException {
         try (var prompter = prompter("")) {
-            assertThatThrownBy(() -> prompter.select("T", List.of("A", "B"), "A")).isInstanceOf(UserAbortException.class);
+            var choices = List.of("A", "B");
+
+            assertThatThrownBy(() -> prompter.select("T", choices, "A")).isInstanceOf(UserAbortException.class);
         }
     }
 

@@ -29,9 +29,11 @@ import com.condation.cms.maven.add.Question;
  */
 public final class QueryOperatorType extends BaseType {
 
+    private static final String OPERATOR = "operator";
+
     public QueryOperatorType() {
         super("query-operator", "Content query operator",
-                Question.text("operator", "Operator name", "my-operator"));
+                Question.text(OPERATOR, "Operator name", "my-operator"));
     }
 
     @Override
@@ -58,6 +60,6 @@ public final class QueryOperatorType extends BaseType {
                     }
                 }
                 """,
-                "operator", literal(spec, "operator"));
+                OPERATOR, literal(spec, OPERATOR));
     }
 }

@@ -139,7 +139,17 @@ class JLineArrowSelectTest {
     }
 
     @Test
-    void should_still_accept_typed_names_on_dumb_terminals() throws IOException {
+    void should_work_on_very_small_terminals_and_short_lists() throws IOException {
+        try (var prompter = prompter(DOWN + ENTER, 3)) {
+            assertThat(prompter.select("Extension type", CHOICES, "hook")).isEqualTo("shortcode");
+        }
+        try (var prompter = prompter(DOWN + ENTER, 24)) {
+            assertThat(prompter.select("Extension type", List.of("a", "b"), "a")).isEqualTo("b");
+        }
+    }
+
+    @Test
+    void should_still_accept_typed_names_on_dumb_terminals() {
         // covered in JLinePrompterTest: dumb terminals keep the numbered text prompt
         assertThat(JLinePrompter.supportsArrowSelection("dumb")).isFalse();
         assertThat(JLinePrompter.supportsArrowSelection("dumb-color")).isFalse();

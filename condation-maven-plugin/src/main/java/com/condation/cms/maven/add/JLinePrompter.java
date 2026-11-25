@@ -81,7 +81,7 @@ public class JLinePrompter implements Prompter, AutoCloseable {
         for (var provider : preferredProviders(System.getProperty("os.name"))) {
             try {
                 return TerminalBuilder.builder().system(true).provider(provider).build();
-            } catch (IOException | RuntimeException e) {
+            } catch (IOException | RuntimeException _) {
                 // try the next provider, finally the default selection
             }
         }
@@ -152,7 +152,7 @@ public class JLinePrompter implements Prompter, AutoCloseable {
                     }
                 }
             }
-        } catch (EndOfFileException | IOError e) {
+        } catch (EndOfFileException | IOError _) {
             throw new UserAbortException();
         } finally {
             terminal.puts(Capability.cursor_normal);
@@ -163,8 +163,8 @@ public class JLinePrompter implements Prompter, AutoCloseable {
 
     private static List<AttributedString> selectionLines(String label, List<String> choices, int cursor, int rows) {
         // header and hint use two rows, the rest shows a window around the cursor
-        var visible = Math.max(3, Math.min(choices.size(), rows - 3));
-        var start = Math.max(0, Math.min(cursor - visible / 2, choices.size() - visible));
+        var visible = Math.clamp(choices.size(), 3, Math.max(3, rows - 3));
+        var start = Math.clamp(cursor - visible / 2, 0, Math.max(0, choices.size() - visible));
         var lines = new java.util.ArrayList<AttributedString>();
         lines.add(new AttributedStringBuilder()
                 .style(AttributedStyle.BOLD).append("? " + label).toAttributedString());
@@ -249,7 +249,7 @@ public class JLinePrompter implements Prompter, AutoCloseable {
     private String read(String prompt) {
         try {
             return reader.readLine(prompt);
-        } catch (UserInterruptException | EndOfFileException e) {
+        } catch (UserInterruptException | EndOfFileException _) {
             throw new UserAbortException();
         }
     }

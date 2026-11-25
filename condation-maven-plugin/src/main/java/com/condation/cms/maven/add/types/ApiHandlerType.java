@@ -29,10 +29,12 @@ import com.condation.cms.maven.add.Question;
  */
 public final class ApiHandlerType extends BaseType {
 
+    private static final String METHOD = "method";
+
     public ApiHandlerType() {
         super("api-handler", "API handler (path + HTTP method)",
                 Question.absolutePath("path", "API path", "/my-api"),
-                Question.choice("method", "HTTP method", "GET", "GET", "POST", "PUT", "DELETE"));
+                Question.choice(METHOD, "HTTP method", "GET", "GET", "POST", "PUT", "DELETE"));
     }
 
     @Override
@@ -62,6 +64,6 @@ public final class ApiHandlerType extends BaseType {
                 }
                 """,
                 "path", absolutePath(spec, "path"),
-                "method", choice(spec, "method", "GET", "POST", "PUT", "DELETE"));
+                METHOD, choice(spec, METHOD, "GET", "POST", "PUT", "DELETE"));
     }
 }

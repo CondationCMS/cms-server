@@ -46,7 +46,7 @@ class FormattingTest {
     void should_indent_in_steps_of_four_spaces(ExtensionType type) {
         var lines = type.render(spec(type)).lines().filter(l -> !l.isBlank()).toList();
 
-        assertThat(lines).allSatisfy(line -> {
+        assertThat(lines).isNotEmpty().allSatisfy(line -> {
             var indent = line.length() - line.stripLeading().length();
             assertThat(indent % 4).as("indent of: " + line).isZero();
         });

@@ -100,7 +100,7 @@ public class AddMojo extends AbstractCondationMojo {
         }
         try {
             run();
-        } catch (UserAbortException e) {
+        } catch (UserAbortException _) {
             throw new MojoExecutionException("Aborted, nothing was created");
         } catch (IllegalArgumentException e) {
             throw new MojoExecutionException(e.getMessage(), e);
@@ -234,7 +234,7 @@ public class AddMojo extends AbstractCondationMojo {
         try {
             check.run();
             return true;
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException _) {
             return false;
         }
     }

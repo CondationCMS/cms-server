@@ -29,10 +29,12 @@ import com.condation.cms.maven.add.Question;
  */
 public final class RoutesType extends BaseType {
 
+    private static final String METHOD = "method";
+
     public RoutesType() {
         super("routes", "Routes (@Route)",
                 Question.absolutePath("path", "Route path", "/my-route"),
-                Question.choice("method", "HTTP method", "GET", "GET", "POST", "PUT", "DELETE"));
+                Question.choice(METHOD, "HTTP method", "GET", "GET", "POST", "PUT", "DELETE"));
     }
 
     @Override
@@ -60,6 +62,6 @@ public final class RoutesType extends BaseType {
                 }
                 """,
                 "path", absolutePath(spec, "path"),
-                "method", choice(spec, "method", "GET", "POST", "PUT", "DELETE"));
+                METHOD, choice(spec, METHOD, "GET", "POST", "PUT", "DELETE"));
     }
 }

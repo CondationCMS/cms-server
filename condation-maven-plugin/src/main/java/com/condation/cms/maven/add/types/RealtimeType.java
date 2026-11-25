@@ -29,15 +29,17 @@ import com.condation.cms.maven.add.Question;
  */
 public final class RealtimeType extends BaseType {
 
+    private static final String TRANSPORT = "transport";
+
     public RealtimeType() {
         super("realtime", "Realtime endpoint (SSE / WebSocket)",
-                Question.choice("transport", "Transport", "SSE", "SSE", "WEBSOCKET"),
+                Question.choice(TRANSPORT, "Transport", "SSE", "SSE", "WEBSOCKET"),
                 Question.relativePath("path", "Endpoint path", "events"));
     }
 
     @Override
     public String render(ExtensionSpec spec) {
-        var transport = spec.option("transport");
+        var transport = spec.option(TRANSPORT);
         var websocket = "WEBSOCKET".equals(transport);
         if (!websocket && !"SSE".equals(transport)) {
             throw new IllegalArgumentException("Invalid transport: " + transport);
@@ -60,7 +62,7 @@ public final class RealtimeType extends BaseType {
                     }
                 }
                 """,
-                "transport", transport,
+                TRANSPORT, transport,
                 "connection", websocket ? "WebSocketConnection" : "SseConnection",
                 "path", relativePath(spec, "path"),
                 "body", websocket

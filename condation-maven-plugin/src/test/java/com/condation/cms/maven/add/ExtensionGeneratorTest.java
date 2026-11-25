@@ -46,8 +46,8 @@ class ExtensionGeneratorTest {
     void should_write_file_into_package_directory() throws IOException {
         var file = ExtensionGenerator.write(tmp, type, spec("com.example.mod", "HelloTag"), false);
 
-        assertThat(file).isEqualTo(tmp.resolve("com/example/mod/HelloTag.java"));
-        assertThat(file).content().contains("package com.example.mod;").contains("class HelloTag");
+        assertThat(file).isEqualTo(tmp.resolve("com/example/mod/HelloTag.java")).content()
+                .contains("package com.example.mod;").contains("class HelloTag");
     }
 
     @Test
@@ -81,9 +81,12 @@ class ExtensionGeneratorTest {
 
     @Test
     void should_reject_invalid_class_name_without_writing() throws IOException {
-        assertThatThrownBy(() -> ExtensionGenerator.write(tmp, type, spec("a.b", "1Bad"), false))
+        var badClassName = spec("a.b", "1Bad");
+        var badPackage = spec("a.class", "Ok");
+
+        assertThatThrownBy(() -> ExtensionGenerator.write(tmp, type, badClassName, false))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> ExtensionGenerator.write(tmp, type, spec("a.class", "Ok"), false))
+        assertThatThrownBy(() -> ExtensionGenerator.write(tmp, type, badPackage, false))
                 .isInstanceOf(IllegalArgumentException.class);
 
         try (var files = Files.list(tmp)) {
@@ -92,7 +95,7 @@ class ExtensionGeneratorTest {
     }
 
     @Test
-    void should_not_leave_partial_file_when_rendering_fails() throws IOException {
+    void should_not_leave_partial_file_when_rendering_fails() {
         var bad = new ExtensionSpec("a.b", "X", Map.of("name", "hello", "param", "my param"));
 
         assertThatThrownBy(() -> ExtensionGenerator.write(tmp, type, bad, false))
@@ -102,7 +105,7 @@ class ExtensionGeneratorTest {
     }
 
     @Test
-    void should_report_whether_target_exists() throws IOException {
+    void should_report_whether_target_exists() {
         assertThat(ExtensionGenerator.target(tmp, spec("a.b", "X"))).isEqualTo(tmp.resolve("a/b/X.java"));
     }
 }

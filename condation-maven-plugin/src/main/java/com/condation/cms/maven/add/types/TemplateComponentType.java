@@ -29,15 +29,17 @@ import com.condation.cms.maven.add.Question;
  */
 public final class TemplateComponentType extends BaseType {
 
+    private static final String PARAM = "param";
+
     public TemplateComponentType() {
         super("template-component", "Template component",
                 Question.text("name", "Component name", "hello"),
-                Question.identifier("param", "Parameter name", "name"));
+                Question.identifier(PARAM, "Parameter name", "name"));
     }
 
     @Override
     public String render(ExtensionSpec spec) {
-        var param = identifier(spec, "param");
+        var param = identifier(spec, PARAM);
         return fill(spec, """
                 package {{package}};
 
@@ -58,6 +60,6 @@ public final class TemplateComponentType extends BaseType {
                 }
                 """,
                 "name", literal(spec, "name"),
-                "param", param);
+                PARAM, param);
     }
 }

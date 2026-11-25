@@ -14,6 +14,7 @@
         <maven.api.version>3.10.2</maven.api.version>
         <maven.resolver.version>1.9.27</maven.resolver.version>
         <maven-plugin-tools.version>3.16.0</maven-plugin-tools.version>
+        <jline.version>4.7.0</jline.version>
     </properties>
 
     <dependencies>
@@ -44,6 +45,25 @@
         <dependency>
             <groupId>org.tomlj</groupId>
             <artifactId>tomlj</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jline</groupId>
+            <artifactId>jline</artifactId>
+            <version>${jline.version}</version>
+        </dependency>
+
+        <!-- generated extension sources are compiled against the real APIs in the tests -->
+        <dependency>
+            <groupId>com.condation.cms</groupId>
+            <artifactId>cms-api</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.condation.modules.framework</groupId>
+            <artifactId>modules-api</artifactId>
+            <version>${modules-framework.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

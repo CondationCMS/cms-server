@@ -35,6 +35,37 @@ mvn package condation:run
 
 The server log of `start` is written to `<home>/logs/plugin-server.out`.
 
+#### Add an extension: `condation:add`
+
+```
+mvn condation:add
+```
+
+asks for the type of the extension (a numbered list, choose by number or name, tab completes), the class name, the package and the
+type specific values (e.g. the shortcode name or the API path) and creates the class in `src/main/java`. The class
+already contains a first working element, e.g. a `@ShortCode("hello")` method. The package defaults to the package of
+your existing `@Extension` classes. An existing file is only replaced after confirmation.
+
+Types: `hook` (action/filter), `shortcode`, `template-function`, `template-component`, `realtime` (SSE/WebSocket),
+`api-handler`, `http-handler`, `http-routes`, `routes`, `template-model`, `query-operator`, `variant-selector`,
+`backup-post-processing`, `cache-provider`, `markdown-renderer`, `template-engine`, `server-lifecycle`,
+`server-hook` and `module-lifecycle` (activate/deactivate of the module).
+
+Without a terminal (CI, scripts) every value is given as property:
+
+```
+mvn condation:add -Dcondation.add.type=shortcode -Dcondation.add.name=HelloTag \
+    -Dcondation.add.package=com.example.mod -Dcondation.add.options=name=hello,param=name
+```
+
+| Property | Description |
+|---|---|
+| `condation.add.type` | type id, see above |
+| `condation.add.name` | class name |
+| `condation.add.package` | package of the class |
+| `condation.add.options` | answers of the type specific questions as `key=value,key=value` (shortcode: `name`, `param`; hook: `kind`, `hook`, `scope`; realtime: `transport`, `path`; api-handler/routes: `path`, `method` ...) |
+| `condation.add.overwrite` | replace an existing file without asking |
+
 #### Use in integration tests
 
 ```xml

@@ -1,0 +1,10 @@
+[server]
+port = 2929
+ip = "127.0.0.1"
+
+[ipc]
+port = 6969
+password = "it-password"
+
+[ui]
+secret = "0123456789012345678901234567890123456789"

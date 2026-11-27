@@ -1,0 +1,14 @@
+# Server home for local module development (condation:run / condation:start).
+# Development values only, do not use them for a real installation.
+env = "dev"
+
+[server]
+port = 2020
+ip = "127.0.0.1"
+
+[ipc]
+port = 6868
+password = "dev-only-password"
+
+[ui]
+secret = "dev-only-secret-dev-only-secret-dev-only-secret"

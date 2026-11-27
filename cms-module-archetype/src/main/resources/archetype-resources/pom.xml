@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifactId}-parent</artifactId>
+    <version>${version}</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <module.id>${artifactId}</module.id>
+        <module.name>${moduleName}</module.name>
+        <module.priority>HIGH</module.priority>
+
+        <cms.version>@project.version@</cms.version>
+        <modules.version>@modules-framework.version@</modules.version>
+        <lombok.version>@lombok.version@</lombok.version>
+        <maven.compiler.source>25</maven.compiler.source>
+        <maven.compiler.target>25</maven.compiler.target>
+    </properties>
+
+    <modules>
+        <module>api</module>
+        <module>module</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>${artifactId}-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.condation.cms</groupId>
+                <artifactId>cms-api</artifactId>
+                <version>${cms.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.condation.modules.framework</groupId>
+                <artifactId>modules-api</artifactId>
+                <version>${modules.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>${lombok.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <!-- Makes `mvn package condation:run` and `mvn condation:add` work from the project root.
+                 The goals are skipped here (and in api) and enabled in the module project. -->
+            <plugin>
+                <groupId>com.condation.cms</groupId>
+                <artifactId>condation-maven-plugin</artifactId>
+                <version>${cms.version}</version>
+                <configuration>
+                    <skip>true</skip>
+                    <addSkip>true</addSkip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.15.0</version>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                        <path>
+                            <groupId>com.condation.modules.framework</groupId>
+                            <artifactId>modules-api</artifactId>
+                            <version>${modules.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

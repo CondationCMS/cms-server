@@ -5,3 +5,5 @@
 [Routing](routing.md)
 
 [Collections](collections.md)
+
+[Maven plugin for module development](maven-plugin.md)

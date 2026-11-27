@@ -1,0 +1,70 @@
+name: Maven plugin compatibility
+
+# condation-maven-plugin and the module archetype on Windows, Linux and macOS and with Maven 3.9 and Maven 4.
+# The plugin forks the CMS server and uses a JLine terminal, both behave differently per platform.
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'condation-maven-plugin/**'
+      - 'cms-module-archetype/**'
+      - '.github/workflows/maven-plugin-compat.yml'
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'condation-maven-plugin/**'
+      - 'cms-module-archetype/**'
+      - '.github/workflows/maven-plugin-compat.yml'
+
+jobs:
+  plugin:
+    name: ${{ matrix.os }} / Maven ${{ matrix.maven }}
+    runs-on: ${{ matrix.os }}
+    # Maven 4 is a release candidate: report problems without blocking
+    continue-on-error: ${{ startsWith(matrix.maven, '4.') }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        maven: [ '3.9.11' ]
+        include:
+          - os: ubuntu-latest
+            maven: '4.0.0-rc-7'
+          - os: windows-latest
+            maven: '4.0.0-rc-7'
+
+    steps:
+    - uses: actions/checkout@v6
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v5
+      with:
+        java-version: '25'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Set up Maven ${{ matrix.maven }}
+      uses: stCarolas/setup-maven@v5
+      with:
+        maven-version: ${{ matrix.maven }}
+
+    # the plugin tests compile generated extensions against cms-api and start a fake server
+    - name: Install plugin and the modules it depends on
+      run: mvn -B -ntp install -DskipTests -pl condation-maven-plugin,cms-module-archetype -am
+
+    - name: Plugin tests
+      run: mvn -B -ntp verify -pl condation-maven-plugin
+
+    # generates a module from the archetype and builds it (archetype integration test)
+    - name: Archetype integration test
+      run: mvn -B -ntp verify -pl cms-module-archetype
+
+    - name: Upload reports on failure
+      if: failure()
+      uses: actions/upload-artifact@v7
+      with:
+        name: reports-${{ matrix.os }}-maven-${{ matrix.maven }}
+        path: |
+          condation-maven-plugin/target/surefire-reports
+          cms-module-archetype/target/test-classes/projects

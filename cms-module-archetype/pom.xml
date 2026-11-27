@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.condation.cms</groupId>
+        <artifactId>cms-parent</artifactId>
+        <version>8.4.0</version>
+    </parent>
+    <groupId>com.condation.cms.modules</groupId>
+    <artifactId>cms-module-archetype</artifactId>
+    <packaging>maven-archetype</packaging>
+    <name>CondationCMS Module Archetype</name>
+    <description>Maven archetype for creating CondationCMS modules</description>
+
+    <properties>
+        <!-- the archetype templates must stay untouched: no license headers -->
+        <license.skipUpdateLicense>true</license.skipUpdateLicense>
+    </properties>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>3.4.1</version>
+            </extension>
+        </extensions>
+        <!-- only the generated parent pom is filtered at build time (@...@), so it always uses the
+             versions of this build. Everything else contains Velocity placeholders and is copied as is. -->
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>archetype-resources/pom.xml</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>archetype-resources/pom.xml</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.4.0</version>
+                <configuration>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                    <delimiters>
+                        <delimiter>@</delimiter>
+                    </delimiters>
+                    <addDefaultExcludes>false</addDefaultExcludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
